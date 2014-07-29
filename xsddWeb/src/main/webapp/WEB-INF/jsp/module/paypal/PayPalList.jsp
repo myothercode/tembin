@@ -33,7 +33,7 @@
             $("#paypallisttable").initTable({
                 url:path + "/ajax/loadPayPalList.do",
                 columnData:[
-                    {title:"状态",name:"statusName",width:"8%",align:"left"},
+                    {title:"状态",name:"payPalName",width:"8%",align:"left"},
                     {title:"操作",name:"option1",width:"8%",align:"left",format:function(json){return "ghghg";}}
                 ],
                 selectDataNow:false,

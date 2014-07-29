@@ -2,8 +2,11 @@ package com.module.controller;
 
 import com.base.database.trading.model.TradingDataDictionary;
 import com.base.database.trading.model.TradingPaypal;
+import com.base.domains.CommonParmVO;
 import com.base.domains.querypojos.BuyerRequirementDetailsQuery;
 import com.base.domains.querypojos.PaypalQuery;
+import com.base.mybatis.page.Page;
+import com.base.mybatis.page.PageJsonBean;
 import com.base.utils.cache.DataDictionarySupport;
 import com.base.utils.common.ObjectUtils;
 import com.common.base.utils.ajax.AjaxSupport;
@@ -38,18 +41,23 @@ public class PayPalController extends BaseAction{
 
     @RequestMapping("/PayPalList.do")
     public ModelAndView payPalList(HttpServletRequest request,HttpServletResponse response,ModelMap modelMap){
-        Map m = new HashMap();
-        List<PaypalQuery> paypalli = this.iTradingPayPal.selectByPayPalList(m);
-        modelMap.put("paypalli",paypalli);
+        //Map m = new HashMap();
+        //List<PaypalQuery> paypalli = this.iTradingPayPal.selectByPayPalList(m);
+        //modelMap.put("paypalli",paypalli);
         return forword("module/paypal/PayPalList",modelMap);
     }
 
     @RequestMapping("/ajax/loadPayPalList.do")
     @ResponseBody
-    public void loadPayPalList(ModelMap modelMap){
+    public void loadPayPalList(ModelMap modelMap,CommonParmVO commonParmVO){
         Map m = new HashMap();
-        List<PaypalQuery> paypalli = this.iTradingPayPal.selectByPayPalList(m);
-        AjaxSupport.sendSuccessText("",paypalli);
+        /**分页组装*/
+        PageJsonBean jsonBean=commonParmVO.getJsonBean();
+        Page page=jsonBean.toPage();
+        List<PaypalQuery> paypalli = this.iTradingPayPal.selectByPayPalList(m,page);
+        jsonBean.setList(paypalli);
+        jsonBean.setTotal((int)page.getTotalCount());
+        AjaxSupport.sendSuccessText("",jsonBean);
     }
 
     @RequestMapping("/addPayPal.do")
@@ -72,8 +80,8 @@ public class PayPalController extends BaseAction{
         modelMap.put("paypalList",paypalList);
         Map m = new HashMap();
         m.put("id",request.getParameter("id"));
-        List<PaypalQuery> paypalli = this.iTradingPayPal.selectByPayPalList(m);
-        modelMap.put("paypal",paypalli.get(0));
+       PaypalQuery paypalli = this.iTradingPayPal.selectByPayPal(m);
+        modelMap.put("paypal",paypalli);
         return forword("module/paypal/addPayPal",modelMap);
     }
 

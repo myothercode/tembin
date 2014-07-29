@@ -2,6 +2,7 @@ package com.trading.service;
 
 import com.base.database.trading.model.TradingPaypal;
 import com.base.domains.querypojos.PaypalQuery;
+import com.base.mybatis.page.Page;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
@@ -15,5 +16,7 @@ public interface ITradingPayPal {
 
     TradingPaypal toDAOPojo(String payName, String site, String paypal, String paymentinstructions) throws Exception;
 
-    List<PaypalQuery> selectByPayPalList(Map map);
+    List<PaypalQuery> selectByPayPalList(Map map,Page page);
+
+    PaypalQuery selectByPayPal(Map map);
 }

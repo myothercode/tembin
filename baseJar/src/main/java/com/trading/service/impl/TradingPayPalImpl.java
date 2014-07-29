@@ -4,6 +4,7 @@ import com.base.database.customtrading.mapper.PaypalMapper;
 import com.base.database.trading.mapper.TradingPaypalMapper;
 import com.base.database.trading.model.TradingPaypal;
 import com.base.domains.querypojos.PaypalQuery;
+import com.base.mybatis.page.Page;
 import com.base.utils.common.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -46,8 +47,16 @@ public class TradingPayPalImpl implements com.trading.service.ITradingPayPal {
     }
 
     @Override
-    public List<PaypalQuery> selectByPayPalList(Map map){
-        return this.paypalMapper.selectByPayPalList(map);
+    public List<PaypalQuery> selectByPayPalList(Map map,Page page){
+        return this.paypalMapper.selectByPayPalList(map,page);
+    }
+
+    @Override
+    public PaypalQuery selectByPayPal(Map map){
+        Page page=new Page();
+        page.setCurrentPage(1);
+        page.setPageSize(100);
+        return this.paypalMapper.selectByPayPalList(map,page).get(0);
     }
 
 }

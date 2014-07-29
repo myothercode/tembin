@@ -7,3 +7,9 @@
 .tab_ZY tr.clickCss td{background:#bdd8ff; border-bottom:1px solid #79aeff; border-top:1px solid #79aeff;}
 .tab_ZY td a { color:#1a93c2; text-decoration:none; cursor:pointer;}
 .tab_ZY td a:hover { color:#1a93c2; text-decoration:none; cursor:pointer;}
+/*分页栏样式*/
+.mtop1 { margin-top:6px;}
+.page { text-align:center;  height:30px; line-height:30px; text-indent:10px; color:#4e4e4e;}
+.page a { border:1px solid #bbd5e2;border-top:1px solid #bbd5e2; color:#4e4e4e; text-decoration:none; padding:3px 6px 1px 6px; cursor:pointer;margin-right:5px;}
+.page a:hover { border:1px solid #bbd5e2; color:#ffffff; background:#93bee1; text-decoration:none; padding:3px 6px 1px 6px; cursor:pointer;margin-right:5px;}
+

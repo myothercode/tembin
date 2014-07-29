@@ -199,7 +199,7 @@
 				table.append(
 					$("<tr></tr>")
 						.append($("<td></td>").attr("colspan",leftTrSize).attr("width","50%").attr("height", 200).attr("align","right")
-								.append($("<img src='" + window["contextPath"] + "/js/table/100.png'>")))
+								.append($("<img src='" + path + "/js/table/100.png'>")))
 						.append($("<td></td>").attr("colspan",rightTrSize).attr("width","50%").attr("align", "left").attr("style","font-size:20px;")
 							.html("\u6CA1\u6709\u641C\u7D22\u5230\u7ED3\u679C!"))
 				);

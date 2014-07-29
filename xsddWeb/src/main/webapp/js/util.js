@@ -247,4 +247,27 @@ function pageParam(div) {
 	return {"page.pageSize": div.attr("pageSize"), "page.currentPage": div.attr("currentPage")};
 }
 
+//全局事件绑定注册
+$(function () {
+    var document$ = $(document);
+
+    //时间控件
+    document$.on("focus", "input.date", function () {
+        window["WdatePicker"] && (window["WdatePicker"]());
+    });
+
+    //分页链接
+    document$.on("click", "a[page='true']", function () {
+        if(window["clickPage"]) {
+            var self = $(this);
+            var pageDiv = $(self.parents("div.page")[0]);
+            var currentPage = self.attr("currentPage");
+            if(currentPage == 0)
+                return;
+            var pageSize = pageDiv.attr("pageSize");
+            window["clickPage"](pageSize, currentPage, this);
+        }
+    });
+});
+
 
