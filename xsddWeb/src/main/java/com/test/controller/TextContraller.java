@@ -80,8 +80,6 @@ public class TextContraller extends BaseAction {
         List<PublicUserConfig> x2=DataDictionarySupport.getPublicUserConfigByType("d",9L);
 
 
-
-
         ApplicationContext xc= ApplicationContextUtil.getContext();
         CacheManager cacheManager= (CacheManager) xc.getBean(CacheManager.class);
         String[] ss = cacheManager.getCacheNames();//查询有哪些缓存库

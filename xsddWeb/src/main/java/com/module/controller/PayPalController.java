@@ -6,6 +6,7 @@ import com.base.domains.querypojos.BuyerRequirementDetailsQuery;
 import com.base.domains.querypojos.PaypalQuery;
 import com.base.utils.cache.DataDictionarySupport;
 import com.base.utils.common.ObjectUtils;
+import com.common.base.utils.ajax.AjaxSupport;
 import com.common.base.web.BaseAction;
 import com.trading.service.ITradingDataDictionary;
 import com.trading.service.ITradingPayPal;
@@ -13,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
@@ -40,6 +42,14 @@ public class PayPalController extends BaseAction{
         List<PaypalQuery> paypalli = this.iTradingPayPal.selectByPayPalList(m);
         modelMap.put("paypalli",paypalli);
         return forword("module/paypal/PayPalList",modelMap);
+    }
+
+    @RequestMapping("/ajax/loadPayPalList.do")
+    @ResponseBody
+    public void loadPayPalList(ModelMap modelMap){
+        Map m = new HashMap();
+        List<PaypalQuery> paypalli = this.iTradingPayPal.selectByPayPalList(m);
+        AjaxSupport.sendSuccessText("",paypalli);
     }
 
     @RequestMapping("/addPayPal.do")

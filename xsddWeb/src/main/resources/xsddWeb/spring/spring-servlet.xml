@@ -32,20 +32,24 @@
     <!-- 启动Spring MVC的注解功能，完成请求和注解POJO的映射 -->
     <!--<bean class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter" />-->
 
+
     <mvc:interceptors>
+
         <bean class="com.common.interceptor.exception.ExceptionInterceptor"></bean>
         <mvc:interceptor>
             <mvc:mapping path="/*.do"/>
+            <mvc:mapping path="/ajax/*.do"/>
             <bean class="com.common.interceptor.randr.SessionVOInterceptor" />
+        </mvc:interceptor>
+        <mvc:interceptor>
+            <mvc:mapping path="/*.do"/>
+            <mvc:mapping path="/ajax/*.do"/>
+            <bean class="com.common.interceptor.randr.RequestAndResponseInterceptor"></bean>
         </mvc:interceptor>
         <!--<mvc:interceptor>
             <mvc:mapping path="/*.do"/>
             <bean class="com.common.interceptor.randr.AuthorityInterceptor" />
         </mvc:interceptor>-->
-        <mvc:interceptor>
-            <mvc:mapping path="/*.do"/>
-            <bean class="com.common.interceptor.randr.RequestAndResponseInterceptor"></bean>
-        </mvc:interceptor>
 
     </mvc:interceptors>
 

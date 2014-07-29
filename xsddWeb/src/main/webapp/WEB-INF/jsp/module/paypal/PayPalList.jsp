@@ -12,7 +12,7 @@
 <html>
 <head>
     <title></title>
-    <script>
+    <script type="text/javascript">
         function addPayPal(){
             $.dialog({title: '新增付款选项',
                 content: 'url:/xsddWeb/addPayPal.do',
@@ -28,11 +28,31 @@
                 width:500
             });
         }
+
+        $(document).ready(function(){
+            $("#paypallisttable").initTable({
+                url:path + "/ajax/loadPayPalList.do",
+                columnData:[
+                    {title:"状态",name:"statusName",width:"8%",align:"left"},
+                    {title:"操作",name:"option1",width:"8%",align:"left",format:function(json){return "ghghg";}}
+                ],
+                selectDataNow:false,
+                isrowClick:false,
+                showIndex:true
+            });
+            $("#paypallisttable").selectDataAfterSetParm({"bedDetailVO.deptId":"", "isTrue":0});
+        });
+
+
+
     </script>
 </head>
 <body>
 <div style="text-align: right;">
     <input type="button" name="addPayPal" value="新增" onclick="addPayPal();">
+</div>
+<div id="paypallisttable">
+
 </div>
 <div>
     <table width="100%">
