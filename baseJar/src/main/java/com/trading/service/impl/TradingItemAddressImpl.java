@@ -4,6 +4,7 @@ import com.base.database.customtrading.mapper.ItemAddressMapper;
 import com.base.database.trading.mapper.TradingItemAddressMapper;
 import com.base.database.trading.model.TradingItemAddress;
 import com.base.domains.querypojos.ItemAddressQuery;
+import com.base.mybatis.page.Page;
 import com.base.utils.common.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -44,7 +45,14 @@ public class TradingItemAddressImpl implements com.trading.service.ITradingItemA
     }
 
     @Override
+    public List<ItemAddressQuery> selectByItemAddressQuery(Map map,Page page){
+        return this.itemAddressMapper.selectByItemAddressList(map,page);
+    }
+    @Override
     public List<ItemAddressQuery> selectByItemAddressQuery(Map map){
-        return this.itemAddressMapper.selectByItemAddressList(map);
+        Page page=new Page();
+        page.setPageSize(100);
+        page.setCurrentPage(1);
+        return this.itemAddressMapper.selectByItemAddressList(map,page);
     }
 }

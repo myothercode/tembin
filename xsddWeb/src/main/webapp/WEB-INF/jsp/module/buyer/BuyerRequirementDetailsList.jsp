@@ -7,7 +7,6 @@
 --%>
 
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@include file= "/WEB-INF/jsp/commonImport.jsp" %>
 <html>
 <head>
@@ -29,13 +28,37 @@
             });
         }
 
+        $(document).ready(function(){
+            $("#buyerRequireTable").initTable({
+                url:path + "/ajax/loadBuyerRequirementDetailsList.do",
+                columnData:[
+                    {title:"名称",name:"name",width:"8%",align:"left"},
+                    {title:"站点",name:"siteName",width:"8%",align:"left"},
+                    {title:"所有买家购买",name:"buyerFlag",width:"8%",align:"left"},
+                    {title:"操作",name:"option1",width:"8%",align:"left",format:makeOption1}
+                ],
+                selectDataNow:false,
+                isrowClick:false,
+                showIndex:true
+            });
+            $("#buyerRequireTable").selectDataAfterSetParm({"bedDetailVO.deptId":"", "isTrue":0});
+        });
+        /**组装操作选项*/
+        function makeOption1(json){
+            var htm="<a target=\"_blank\" href=\"javascript:void(0)\" onclick=\"alert('"+json.name+"');\">编辑</a>";
+            return htm;
+        }
+
     </script>
 </head>
 <body>
 <div style="text-align: right;">
     <input type="button" name="add" value="新增" onclick="addBuyer()">
 </div>
-<div>
+<div id="buyerRequireTable">
+
+</div>
+<%--<div>
     <table width="100%">
         <tr>
             <td>名称</td>
@@ -52,6 +75,6 @@
             </tr>
         </c:forEach>
     </table>
-</div>
+</div>--%>
 </body>
 </html>

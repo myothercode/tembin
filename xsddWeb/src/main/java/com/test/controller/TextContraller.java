@@ -18,11 +18,11 @@ import com.trading.service.ITradingDataDictionary;
 import net.sf.ehcache.Cache;
 import net.sf.ehcache.CacheManager;
 import org.apache.log4j.Logger;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
@@ -48,14 +48,17 @@ public class TextContraller extends BaseAction {
     private ITradingDataDictionary tradingDataDictionary;
 
 
-    @RequestMapping("/test")
-    public ModelAndView test(HttpServletRequest request,HttpServletResponse response,ModelMap modelMap){
+    @RequestMapping("/test.do")
+    public ModelAndView test(HttpServletRequest request,HttpServletResponse response,
+                             @ModelAttribute( "initSomeParmMap" )ModelMap modelMap){
        // Map map = new HashMap();
-        modelMap.put("ccc","caixuhhh");
+        SessionVO sessionVO = SessionCacheSupport.getSessionVO();
+        modelMap.put("ccc",sessionVO.getUserName());
         return forword("test",modelMap);
     }
     @RequestMapping("/login.do")
     public ModelAndView login(LoginVO loginVO,HttpServletRequest request,HttpServletResponse response,ModelMap modelMap){
+
         Asserts.assertTrue(!ObjectUtils.isLogicalNull(loginVO.getLoginId()),"登信息为空");
         SessionVO sessionVO = userInfoService.getUserInfo(loginVO);
         Asserts.assertTrue(!ObjectUtils.isLogicalNull(sessionVO),"帐号或者密码不正确!");
@@ -65,9 +68,10 @@ public class TextContraller extends BaseAction {
         sessionVO.setSessionID(request.getSession().getId());
         SessionCacheSupport.put(sessionVO);
 
-        modelMap.put("ccc",sessionVO.getUserName());
+        return redirect("test.do");
+        //modelMap.put("ccc",sessionVO.getUserName());
 
-        return forword("test",modelMap);
+        //return forword("test",modelMap);
     }
 
     @RequestMapping("/test1.do")
@@ -77,7 +81,7 @@ public class TextContraller extends BaseAction {
         //List<TradingDataDictionary> x= tradingDataDictionary.selectDictionaryByType("site");
         List<TradingDataDictionary> x = DataDictionarySupport.getTradingDataDictionaryByType(DataDictionarySupport.DATA_DICT_SITE);
         List<PublicDataDict> x1=DataDictionarySupport.getPublicDataDictionaryByType("category");
-        List<PublicUserConfig> x2=DataDictionarySupport.getPublicUserConfigByType("d",9L);
+        List<PublicUserConfig> x2=DataDictionarySupport.getPublicUserConfigByType("ebayaccount",c.getId());
 
 
         ApplicationContext xc= ApplicationContextUtil.getContext();
@@ -106,6 +110,15 @@ public class TextContraller extends BaseAction {
         request.getSession().setAttribute("vvv","eee");
         //testService.serviceTest();
         testService.testReturnPolicy();
+
+        AjaxSupport.sendSuccessText("啊", "dfd");
+    }
+    @RequestMapping("/xxlogin.do")
+    @ResponseBody
+    public void xxlogin(HttpServletRequest request) throws Exception {
+        request.getSession().setAttribute("vvv","eee");
+        //testService.serviceTest();
+       // testService.testReturnPolicy();
 
         AjaxSupport.sendSuccessText("啊", "dfd");
     }

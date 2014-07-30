@@ -12,17 +12,17 @@
 <head>
     <title></title>
     <script>
-        function adddiscountpriceinfo(){
-            $.dialog({title: '新增折扣选项',
-                content: 'url:/xsddWeb/addDiscountPriceInfo.do',
+        function addshippingDetails(){
+            $.dialog({title: '新增运送选项',
+                content: 'url:/xsddWeb/addshippingDetails.do',
                 icon: 'succeed',
-                width:400
+                width:1000
             });
         }
 
-        function editdiscountpriceinfo(id){
-            $.dialog({title: '编辑折扣选项',
-                content: 'url:/xsddWeb/editDiscountPriceInfo.do?id='+id,
+        function editshippingDetails(id){
+            $.dialog({title: '编辑运送选项',
+                content: 'url:/xsddWeb/editshippingDetails.do?id='+id,
                 icon: 'succeed',
                 width:500
             });
@@ -31,7 +31,7 @@
 </head>
 <body>
 <div style="text-align: right;">
-    <input type="button" name="add" value="新增" onclick="adddiscountpriceinfo()">
+    <input type="button" name="add" value="新增" onclick="addshippingDetails()">
 </div>
 <div>
     <table width="100%">

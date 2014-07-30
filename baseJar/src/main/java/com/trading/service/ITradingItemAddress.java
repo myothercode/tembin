@@ -2,6 +2,7 @@ package com.trading.service;
 
 import com.base.database.trading.model.TradingItemAddress;
 import com.base.domains.querypojos.ItemAddressQuery;
+import com.base.mybatis.page.Page;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
@@ -14,6 +15,8 @@ public interface ITradingItemAddress {
     void saveItemAddress(TradingItemAddress tradingItemAddress);
 
     TradingItemAddress toDAOPojo(String name, String address, Long countryId, String postalcode) throws Exception;
+
+    List<ItemAddressQuery> selectByItemAddressQuery(Map map,Page page);
 
     List<ItemAddressQuery> selectByItemAddressQuery(Map map);
 }

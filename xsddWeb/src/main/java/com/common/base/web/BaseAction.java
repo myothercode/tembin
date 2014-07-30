@@ -2,8 +2,10 @@ package com.common.base.web;
 
 import com.common.base.utils.EditorSupportUtils;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
+import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.servlet.ModelAndView;
 
 import java.text.SimpleDateFormat;
@@ -14,6 +16,13 @@ import java.util.Map;
  * Created by wula on 2014/6/22.
  */
 public class BaseAction {
+
+    @ModelAttribute( "initSomeParmMap" )
+    public ModelMap initSomeParm(){
+        ModelMap map=new ModelMap();
+        map.put("nowDateTime",new Date());
+        return map;
+    }
 
     /**初始化时设置一些参数的转换*/
     @InitBinder
@@ -31,5 +40,17 @@ public class BaseAction {
         //设置逻辑视图名，视图解析器会根据该名字解析到具体的视图页面
         mv.setViewName("hello");*/
         return new ModelAndView(viewName,context);
+    }
+
+    public ModelAndView redirect(String url){
+        return new ModelAndView("redirect:"+url);
+        /*如果需要addFlashAttribute传参数的话
+        @RequestMapping(value="addcustomer", method=RequestMethod.POST)
+        public String addCustomer(@ModelAttribute("customer") Customer customer,
+        final RedirectAttributes redirectAttributes) {
+            redirectAttributes.addFlashAttribute("customer", customer);
+            redirectAttributes.addFlashAttribute("message","Added successfully.");
+            return "redirect:showcustomer.html";
+        }*/
     }
 }

@@ -3,6 +3,7 @@ package com.base.database.customtrading.mapper;
 import com.base.database.trading.model.TradingBuyerRequirementDetails;
 import com.base.database.trading.model.TradingBuyerRequirementDetailsExample;
 import com.base.domains.querypojos.BuyerRequirementDetailsQuery;
+import com.base.mybatis.page.Page;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
@@ -14,6 +15,6 @@ public interface BuyerRequirementDetailsMapper {
      * @param
      * @return
      */
-    List<BuyerRequirementDetailsQuery> selectByBuyer(Map map);
+    List<BuyerRequirementDetailsQuery> selectByBuyer(Map map,Page page);
 
 }

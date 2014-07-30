@@ -7,7 +7,6 @@
 --%>
 
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@include file= "/WEB-INF/jsp/commonImport.jsp" %>
 <html>
 <head>
@@ -33,8 +32,11 @@
             $("#paypallisttable").initTable({
                 url:path + "/ajax/loadPayPalList.do",
                 columnData:[
-                    {title:"状态",name:"payPalName",width:"8%",align:"left"},
-                    {title:"操作",name:"option1",width:"8%",align:"left",format:function(json){return "ghghg";}}
+                    {title:"名称",name:"payName",width:"8%",align:"left"},
+                    {title:"站点",name:"siteName",width:"8%",align:"left"},
+                    {title:"paypal账号",name:"payPalName",width:"8%",align:"left"},
+                    {title:"描述",name:"paymentinstructions",width:"8%",align:"left"},
+                    {title:"操作",name:"option1",width:"8%",align:"left",format:makeOption1}
                 ],
                 selectDataNow:false,
                 isrowClick:false,
@@ -42,8 +44,11 @@
             });
             $("#paypallisttable").selectDataAfterSetParm({"bedDetailVO.deptId":"", "isTrue":0});
         });
-
-
+/**组装操作选项*/
+function makeOption1(json){
+var htm="<a target=\"_blank\" href=\"javascript:void(0)\" onclick=\"editPayPal('"+json.id+"');\">编辑</a>";
+    return htm;
+}
 
     </script>
 </head>
@@ -55,7 +60,7 @@
 
 </div>
 <div>
-    <table width="100%">
+    <%--<table width="100%">
         <tr>
             <td>名称</td>
             <td>站点</td>
@@ -76,7 +81,7 @@
                 </td>
             </tr>
         </c:forEach>
-    </table>
+    </table>--%>
 </div>
 </body>
 </html>

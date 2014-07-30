@@ -9,7 +9,9 @@ import com.base.database.publicd.model.PublicUserConfigExample;
 import com.base.database.trading.mapper.TradingDataDictionaryMapper;
 import com.base.database.trading.model.TradingDataDictionary;
 import com.base.database.trading.model.TradingDataDictionaryExample;
+import com.base.domains.SessionVO;
 import com.base.utils.cache.DataDictionarySupport;
+import com.base.utils.cache.SessionCacheSupport;
 import com.base.utils.common.DictCollectionsUtil;
 import com.base.utils.common.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -84,7 +86,7 @@ public class TradingDataDictionaryImpl implements com.trading.service.ITradingDa
     @Override
     /**根据类型和用户id查询userDataDict*/
     public List<PublicUserConfig> selectUserConfigDataDictByType(String type, Long userId){
-        List<PublicUserConfig> ts=queryPublicUserConfigAll();
+        List<PublicUserConfig> ts=queryPublicUserConfigAll(userId);
         List<PublicUserConfig> n= DictCollectionsUtil.dataCollectionFilterByType(ts, type,userId);
         return n;
     }
@@ -108,7 +110,8 @@ public class TradingDataDictionaryImpl implements com.trading.service.ITradingDa
     @Override
     /**根据ID查询userConfig*/
     public PublicUserConfig selectUserConfigByID(Long id){
-        List<PublicUserConfig> ts=queryPublicUserConfigAll();
+        SessionVO sessionVO= SessionCacheSupport.getSessionVO();
+        List<PublicUserConfig> ts=queryPublicUserConfigAll(sessionVO.getId());
         PublicUserConfig n= DictCollectionsUtil.dataCollectionFilterByID(ts, id);
         return n;
     }
@@ -137,14 +140,15 @@ public class TradingDataDictionaryImpl implements com.trading.service.ITradingDa
         }
         return tradingDataDictionaries;
     }
-    /**查询所有的userConfig数据字典数据*/
-    private List<PublicUserConfig> queryPublicUserConfigAll(){
+    /**查询指定用户id的userConfig数据字典数据*/
+    private List<PublicUserConfig> queryPublicUserConfigAll(Long userID){
         /**检查缓存里面是否已经有数据*/
-        List<PublicUserConfig> tradingDataDictionaries=DataDictionarySupport.getPublicUserConfig();
+        List<PublicUserConfig> tradingDataDictionaries=DataDictionarySupport.getPublicUserConfig(userID);
         if(ObjectUtils.isLogicalNull(tradingDataDictionaries)){
             PublicUserConfigExample tradingDataDictionaryExample =new PublicUserConfigExample();
+            PublicUserConfigExample.Criteria tc = tradingDataDictionaryExample.createCriteria().andUserIdEqualTo(userID);
             tradingDataDictionaries = this.publicUserConfigMapper.selectByExample(tradingDataDictionaryExample);
-            DataDictionarySupport.put(tradingDataDictionaries);
+            DataDictionarySupport.put(tradingDataDictionaries,userID.toString());
         }
         return tradingDataDictionaries;
     }

@@ -2,15 +2,22 @@ package com.module.controller;
 
 import com.base.database.trading.model.TradingDataDictionary;
 import com.base.database.trading.model.TradingItemAddress;
+import com.base.domains.CommonParmVO;
+import com.base.domains.querypojos.BuyerRequirementDetailsQuery;
 import com.base.domains.querypojos.ItemAddressQuery;
+import com.base.mybatis.page.Page;
+import com.base.mybatis.page.PageJsonBean;
 import com.base.utils.common.ObjectUtils;
+import com.common.base.utils.ajax.AjaxSupport;
 import com.common.base.web.BaseAction;
 import com.trading.service.ITradingDataDictionary;
 import com.trading.service.ITradingItemAddress;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
@@ -30,13 +37,41 @@ public class ItemAddressController  extends BaseAction {
     @Autowired
     private ITradingDataDictionary iTradingDataDictionary;
 
+    /**
+     * 查询列表页面跳转
+     * @param request
+     * @param response
+     * @param modelMap
+     * @return
+     */
     @RequestMapping("/ItemAddressList.do")
-    public ModelAndView itemAddressList(HttpServletRequest request,HttpServletResponse response,ModelMap modelMap){
-        List<ItemAddressQuery> li = this.iTradingItemAddress.selectByItemAddressQuery(null);
-        modelMap.put("li",li);
+    public ModelAndView itemAddressList(HttpServletRequest request,HttpServletResponse response,@ModelAttribute( "initSomeParmMap" )ModelMap modelMap){
+        /*List<ItemAddressQuery> li = this.iTradingItemAddress.selectByItemAddressQuery(null);
+        modelMap.put("li",li);*/
         return forword("module/itemaddr/ItemAddressList",modelMap);
     }
+    @RequestMapping("/ajax/loadItemAddressList.do")
+    @ResponseBody
+    public void loadItemAddressList(CommonParmVO commonParmVO){
+        Map m = new HashMap();
+        /**分页组装*/
+        PageJsonBean jsonBean=commonParmVO.getJsonBean();
+        Page page=jsonBean.toPage();
+        List<ItemAddressQuery> li = this.iTradingItemAddress.selectByItemAddressQuery(null,page);
+        jsonBean.setList(li);
+        jsonBean.setTotal((int)page.getTotalCount());
+        AjaxSupport.sendSuccessText("", jsonBean);
+    }
 
+    /**
+     * 保存数据
+     * @param name
+     * @param request
+     * @param response
+     * @param modelMap
+     * @return
+     * @throws Exception
+     */
     @RequestMapping("/saveItemAddress.do")
     public ModelAndView saveItemAddress(String name, HttpServletRequest request,HttpServletResponse response,ModelMap modelMap) throws Exception {
         //String name = request.getParameter("name");
@@ -60,6 +95,13 @@ public class ItemAddressController  extends BaseAction {
         return forword("module/itemaddr/ItemAddressList",modelMap);
     }
 
+    /**
+     * 新增界面跳转
+     * @param request
+     * @param response
+     * @param modelMap
+     * @return
+     */
     @RequestMapping("/addItemAddress.do")
     public ModelAndView addItemAddress(HttpServletRequest request,HttpServletResponse response,ModelMap modelMap){
         List<TradingDataDictionary> lidata = this.iTradingDataDictionary.selectDictionaryByType("country");
@@ -67,6 +109,13 @@ public class ItemAddressController  extends BaseAction {
         return forword("module/itemaddr/addItemAddress",modelMap);
     }
 
+    /**
+     * 编辑页面跳转
+     * @param request
+     * @param response
+     * @param modelMap
+     * @return
+     */
     @RequestMapping("/editItemAddress.do")
     public ModelAndView editItemAddress(HttpServletRequest request,HttpServletResponse response,ModelMap modelMap){
         List<TradingDataDictionary> lidata = this.iTradingDataDictionary.selectDictionaryByType("country");

@@ -3,10 +3,15 @@ package com.module.controller;
 import com.base.database.trading.model.TradingBuyerRequirementDetails;
 import com.base.database.trading.model.TradingDataDictionary;
 import com.base.database.trading.model.TradingItemAddress;
+import com.base.domains.CommonParmVO;
 import com.base.domains.querypojos.BuyerRequirementDetailsQuery;
 import com.base.domains.querypojos.ItemAddressQuery;
+import com.base.domains.querypojos.PaypalQuery;
+import com.base.mybatis.page.Page;
+import com.base.mybatis.page.PageJsonBean;
 import com.base.utils.common.ObjectUtils;
 import com.base.xmlpojo.trading.addproduct.*;
+import com.common.base.utils.ajax.AjaxSupport;
 import com.common.base.web.BaseAction;
 import com.trading.service.ITradingBuyerRequirementDetails;
 import com.trading.service.ITradingDataDictionary;
@@ -15,7 +20,9 @@ import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
@@ -36,15 +43,41 @@ public class BuyerRequirementDetailsController extends BaseAction {
     private ITradingDataDictionary iTradingDataDictionary;
 
 
-
+    /**
+     * 查询列表界面跳转
+     * @param request
+     * @param response
+     * @param modelMap
+     * @return
+     */
     @RequestMapping("/BuyerRequirementDetailsList.do")
-    public ModelAndView buyerRequirementDetails(HttpServletRequest request,HttpServletResponse response,ModelMap modelMap){
-        Map m = new HashMap();
+    public ModelAndView buyerRequirementDetails(HttpServletRequest request,HttpServletResponse response,
+                                                @ModelAttribute( "initSomeParmMap" )ModelMap modelMap){
+        /*Map m = new HashMap();
         List<BuyerRequirementDetailsQuery> li = this.iTradingBuyerRequirementDetails.selectTradingBuyerRequirementDetailsByList(m);
-        modelMap.put("li",li);
+        modelMap.put("li",li);*/
         return forword("module/buyer/BuyerRequirementDetailsList",modelMap);
     }
+    @RequestMapping("/ajax/loadBuyerRequirementDetailsList.do")
+    @ResponseBody
+    public void loadBuyerRequirementDetailsList(HttpServletRequest request,HttpServletResponse response,ModelMap modelMap,CommonParmVO commonParmVO){
+        Map m = new HashMap();
+        /**分页组装*/
+        PageJsonBean jsonBean=commonParmVO.getJsonBean();
+        Page page=jsonBean.toPage();
+        List<BuyerRequirementDetailsQuery> li = this.iTradingBuyerRequirementDetails.selectTradingBuyerRequirementDetailsByList(m,page);
+        jsonBean.setList(li);
+        jsonBean.setTotal((int)page.getTotalCount());
+        AjaxSupport.sendSuccessText("", jsonBean);
+    }
 
+    /**
+     * 新增界面跳转
+     * @param request
+     * @param response
+     * @param modelMap
+     * @return
+     */
     @RequestMapping("/addBuyer.do")
     public ModelAndView addBuyer(HttpServletRequest request,HttpServletResponse response,ModelMap modelMap){
         List<TradingDataDictionary> lidata = this.iTradingDataDictionary.selectDictionaryByType("site");
@@ -52,6 +85,14 @@ public class BuyerRequirementDetailsController extends BaseAction {
         return forword("module/buyer/addBuyer",modelMap);
     }
 
+    /**
+     * 保存数据
+     * @param request
+     * @param response
+     * @param modelMap
+     * @return
+     * @throws Exception
+     */
     @RequestMapping("/saveBuyer.do")
     public ModelAndView saveBuyer(HttpServletRequest request,HttpServletResponse response,ModelMap modelMap) throws Exception {
         String buyName = request.getParameter("buyName");
@@ -139,7 +180,4 @@ public class BuyerRequirementDetailsController extends BaseAction {
         this.iTradingBuyerRequirementDetails.saveBuyerRequirementDetails(tbrds);
         return forword("module/buyer/addBuyer",modelMap);
     }
-
-
-
 }

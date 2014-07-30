@@ -9,7 +9,7 @@
 
 <script type="text/javascript">
     var data={'loginId':'cdfg'}
-    var urll=path+"/xxlogin.do";
+    var urll=path+"/test1.do";
    $().invoke(
            urll,
            data,

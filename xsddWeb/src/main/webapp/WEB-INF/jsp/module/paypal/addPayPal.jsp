@@ -42,10 +42,10 @@
             <select name="paypal">
                 <c:forEach items="${paypalList}" var="pay">
                     <c:if test="${paypal.paypal==pay.id}">
-                        <option value="${pay.id}" selected="selected">${pay.name}</option>
+                        <option value="${pay.id}" selected="selected">${pay.configName}</option>
                     </c:if>
                     <c:if test="${paypal.paypal!=pay.id}">
-                        <option value="${pay.id}">${pay.name}</option>
+                        <option value="${pay.id}">${pay.configName}</option>
                     </c:if>
                 </c:forEach>
             </select>

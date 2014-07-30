@@ -35,18 +35,24 @@
 
     <mvc:interceptors>
 
-        <bean class="com.common.interceptor.exception.ExceptionInterceptor"></bean>
-        <mvc:interceptor>
-            <mvc:mapping path="/**"/>
-            <!--<mvc:mapping path="/ajax/*.do"/>-->
-            <bean class="com.common.interceptor.randr.SessionVOInterceptor" />
-        </mvc:interceptor>
         <mvc:interceptor>
             <mvc:mapping path="/**"/>
             <!--<mvc:mapping path="/ajax/*.do"/>-->
             <!--<mvc:exclude-mapping path="/loginpage/**"/>-->
             <bean class="com.common.interceptor.randr.RequestAndResponseInterceptor"></bean>
         </mvc:interceptor>
+        <bean class="com.common.interceptor.exception.ExceptionInterceptor"></bean>
+        <mvc:interceptor>
+            <mvc:mapping path="/**"/>
+            <!--<mvc:mapping path="/ajax/*.do"/>-->
+            <bean class="com.common.interceptor.randr.SessionVOInterceptor" />
+        </mvc:interceptor>
+
+        <!--<mvc:interceptor>
+            <mvc:mapping path="/*.do"/>
+            <bean class="com.common.interceptor.randr.AuthorityInterceptor" />
+        </mvc:interceptor>-->
+
         <!--<mvc:interceptor>
             <mvc:mapping path="/*.do"/>
             <bean class="com.common.interceptor.randr.AuthorityInterceptor" />

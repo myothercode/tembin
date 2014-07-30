@@ -17,7 +17,7 @@ import java.util.UUID;
 
 /**
  * 退货政策
- * Created by cz on 2014/7/22.
+ * Created by lq on 2014/7/29.
  */
 @Service
 public class TradingReturnpolicyImpl implements com.trading.service.ITradingReturnpolicy {

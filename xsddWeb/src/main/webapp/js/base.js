@@ -36,9 +36,22 @@ var Base={
     $.fn.invoke = function (url, param, fun, config) {
         config = $.extend({}, $.fn.invoke.defaultConfig, config);
         param = param || {};
+        //判断是方法数组还是单独的方法
         if(!Base.isArray(fun)) {
             fun = [fun];
         }
+        //追加参数
+        if(Base.isArray(param)) {
+            param.push({name: "_random", value: Math.random()}, {name: "AjaxMode", value: "ajaxFlag"});
+        } else if(typeof param == "object") {
+            param["_random"] = Math.random();
+            param["AjaxMode"] = "ajaxFlag";
+        } else if(Base.isString(param)) {
+            if(param.length && param.charAt(param.length - 1) != '&')
+                param += "&";
+            param += "_random=" + Math.random() + "&AjaxMode=ajaxFlag";
+        }
+
 
         var self = this;
         $.ajax({
@@ -54,6 +67,11 @@ var Base={
                         var re = eval("(" + responseText + ")");
 
                         if(re["bool"] === false) {
+                            if(re["message"]=='sessionStatusFalse'){//如果是session过期错误
+                                alert("登陆已超时!");
+                                top.location=path+'/login.jsp';
+                                return;
+                            }
                             fun[1] ? fun[1].apply(self, [re["message"], re["result"]]) : (alert(re["message"]));
                             return;
                         }else {
@@ -62,15 +80,20 @@ var Base={
                         return;
 
                     }else{
-                        alert("数据格式不对")
+                        alert("数据格式不对!"+responseText)
                     }
 
 
-                    }else if(status == "error"){
+                }else if(status == "error"){
                     var responseText = res.responseText;
-                    var re = eval("(" + responseText + ")");
-                    fun[1] ? fun[1].apply(self, [re["message"], re["result"]]) : (alert(re["message"]));
-                    return;
+                    if(jsonFormat.test(responseText)) {
+                        var re = eval("(" + responseText + ")");
+                        fun[1] ? fun[1].apply(self, [re["message"], re["result"]]) : (alert(re["message"]));
+                        return;
+                    }else{
+                        Base.handleException(res)
+                    }
+
                 }
             }
         });

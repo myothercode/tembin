@@ -6,6 +6,7 @@ import com.base.database.trading.model.TradingBuyerRequirementDetails;
 import com.base.database.trading.model.TradingBuyerRequirementDetailsExample;
 import com.base.database.trading.model.TradingDataDictionaryExample;
 import com.base.domains.querypojos.BuyerRequirementDetailsQuery;
+import com.base.mybatis.page.Page;
 import com.base.utils.common.ConvertPOJOUtil;
 import com.base.utils.common.ObjectUtils;
 import com.base.xmlpojo.trading.addproduct.BuyerRequirementDetails;
@@ -52,8 +53,8 @@ public class TradingBuyerRequirementDetailsImpl implements com.trading.service.I
     }
 
     @Override
-    public List<BuyerRequirementDetailsQuery> selectTradingBuyerRequirementDetailsByList(Map m){
-        return this.buyerRequirementDetailsMapper.selectByBuyer(m);
+    public List<BuyerRequirementDetailsQuery> selectTradingBuyerRequirementDetailsByList(Map m,Page page){
+        return this.buyerRequirementDetailsMapper.selectByBuyer(m,page);
     }
 
 }

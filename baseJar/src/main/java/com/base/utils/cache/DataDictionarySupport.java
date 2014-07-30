@@ -5,13 +5,13 @@ import com.base.database.publicd.model.PublicUserConfig;
 import com.base.database.trading.model.TradingDataDictionary;
 import com.base.utils.applicationcontext.ApplicationContextUtil;
 import com.base.utils.common.ObjectUtils;
+import com.google.common.base.Predicate;
+import com.google.common.collect.Collections2;
 import com.trading.service.ITradingDataDictionary;
 import net.sf.ehcache.Cache;
 import net.sf.ehcache.Element;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by Administrtor on 2014/7/24.
@@ -19,6 +19,8 @@ import java.util.Map;
 public class DataDictionarySupport extends CacheBaseSupport{
     /**站点字典*/
     public static final String DATA_DICT_SITE ="site";//数据字典站点数据
+
+    public static final String DATA_DICT_DELTA ="delta";//地区
 
     public static final String PUBLIC_DATA_DICT_PAYPAL = "paypal";
 
@@ -61,28 +63,50 @@ public class DataDictionarySupport extends CacheBaseSupport{
         return (List<PublicDataDict>) element.getObjectValue();
     }
     /**获取userConfig数据字典*/
-    public static List<PublicUserConfig> getPublicUserConfig(){
+    public static List<PublicUserConfig> getPublicUserConfig(Long userID){
+        if(userID==null || userID==0){return null;}
         Cache cache = cacheManager.getCache(DICT_CACHE_NAME);
-        Element element=cache.get(PUBLIC_USER_CONFIG);
+        Element element=cache.get(PUBLIC_USER_CONFIG+userID.toString());
         if(element==null){return null;}
         return (List<PublicUserConfig>) element.getObjectValue();
     }
     /**将数据集合放入缓存*/
-    public static<T> void put(List<T> t){
+    public static<T> void put(List<T> t,String... name){
         if (ObjectUtils.isLogicalNull(t)){return;}
         String cacheElementName=dictNameMap.get(t.get(0).getClass());
         Cache cache = cacheManager.getCache(DICT_CACHE_NAME);
-        Element element = new Element(cacheElementName,t);
-        cache.put(element);
+        if(name!=null && name.length>0){
+            Element element = new Element(cacheElementName+name[0],t);
+            cache.put(element);
+        }else {
+            Element element = new Element(cacheElementName,t);
+            cache.put(element);
+        }
+
     }
 
     /**TradingDataDictionary字典表查询,用类型作为条件*/
     public static List<TradingDataDictionary> getTradingDataDictionaryByType(String type){
         ITradingDataDictionary dictionary = (ITradingDataDictionary) ApplicationContextUtil.getBean(ITradingDataDictionary.class);
         List<TradingDataDictionary> tradingDataDictionaries = dictionary.selectDictionaryByType(type);
-
         return tradingDataDictionaries;
     }
+    /**TradingDataDictionary字典表查询,用类型个parentid作为条件*/
+    public static List<TradingDataDictionary> getTradingDataDictionaryByType(String type,final Long parentID){
+        ITradingDataDictionary dictionary = (ITradingDataDictionary) ApplicationContextUtil.getBean(ITradingDataDictionary.class);
+        List<TradingDataDictionary> tradingDataDictionaries = dictionary.selectDictionaryByType(type);
+        //再根据parentID来筛选
+        Collection<TradingDataDictionary> x= Collections2.filter(tradingDataDictionaries, new Predicate<TradingDataDictionary>() {
+            @Override
+            public boolean apply(TradingDataDictionary tradingDataDictionary) {
+                return parentID==tradingDataDictionary.getParentId() || parentID.equals(tradingDataDictionary.getParentId());
+            }
+        });
+        TradingDataDictionary[] tt = x.toArray(new TradingDataDictionary[]{});
+
+        return Arrays.asList(tt);
+    }
+
     /**TradingDataDictionary通过id去找*/
     public static TradingDataDictionary getTradingDataDictionaryByID(Long id){
         ITradingDataDictionary dictionary = (ITradingDataDictionary) ApplicationContextUtil.getBean(ITradingDataDictionary.class);

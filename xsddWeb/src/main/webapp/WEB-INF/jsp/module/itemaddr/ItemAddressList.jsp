@@ -7,7 +7,6 @@
 --%>
 
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@include file= "/WEB-INF/jsp/commonImport.jsp" %>
 <html>
 <head>
@@ -28,13 +27,39 @@
                 width:500
             });
         }
+
+        $(document).ready(function(){
+            $("#ItemAddressListTable").initTable({
+                url:path + "/ajax/loadItemAddressList.do",
+                columnData:[
+                    {title:"名称",name:"name",width:"8%",align:"left"},
+                    {title:"地址",name:"address",width:"8%",align:"left"},
+                    {title:"国家",name:"countryName",width:"8%",align:"left"},
+                    {title:"邮编",name:"postalcode",width:"8%",align:"left"},
+                    {title:"操作",name:"option1",width:"8%",align:"left",format:makeOption1}
+                ],
+                selectDataNow:false,
+                isrowClick:false,
+                showIndex:true
+            });
+            $("#ItemAddressListTable").selectDataAfterSetParm({"bedDetailVO.deptId":"", "isTrue":0});
+        });
+        /**组装操作选项*/
+        function makeOption1(json){
+            var htm="<a target=\"_blank\" href=\"javascript:void(0)\" onclick=\"editItemAddress('"+json.id+"');\">编辑</a>";
+            return htm;
+        }
+
     </script>
 </head>
 <body>
 <div style="text-align: right;">
     <input type="button" name="add" value="新增" onclick="addItemAddress()">
 </div>
-<div>
+
+<div id="ItemAddressListTable"></div>
+
+<%--<div>
     <table width="100%">
         <tr>
             <td>名称</td>
@@ -57,6 +82,6 @@
             </tr>
         </c:forEach>
     </table>
-</div>
+</div>--%>
 </body>
 </html>
