@@ -1,16 +1,18 @@
 package com.trading.service.impl;
 
+import com.base.database.customtrading.mapper.ReturnpolicyMapper;
 import com.base.database.trading.mapper.TradingReturnpolicyMapper;
 import com.base.database.trading.model.TradingReturnpolicy;
+import com.base.domains.querypojos.ReturnpolicyQuery;
 import com.base.utils.common.ConvertPOJOUtil;
 import com.base.xmlpojo.trading.addproduct.ReturnPolicy;
-import com.thoughtworks.xstream.converters.basic.UUIDConverter;
-import org.apache.commons.lang.time.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.Date;
+import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -23,10 +25,16 @@ public class TradingReturnpolicyImpl implements com.trading.service.ITradingRetu
     @Autowired
     private TradingReturnpolicyMapper tradingReturnpolicyMapper;
 
-
+    @Autowired
+    private ReturnpolicyMapper returnpolicyMapper;
     @Override
     public void saveTradingReturnpolicy(TradingReturnpolicy tradingReturnpolicy){
-        this.tradingReturnpolicyMapper.insert(tradingReturnpolicy);
+        if(tradingReturnpolicy.getId()==null){
+            this.tradingReturnpolicyMapper.insert(tradingReturnpolicy);
+        }else{
+            tradingReturnpolicy.setUuid(null);
+            this.tradingReturnpolicyMapper.updateByPrimaryKeySelective(tradingReturnpolicy);
+        }
     }
 
     /**
@@ -66,6 +74,10 @@ public class TradingReturnpolicyImpl implements com.trading.service.ITradingRetu
         tr.setEan(pojo.getEAN());*/
 
         return tr;
+    }
+    @Override
+    public List<ReturnpolicyQuery> selectByReturnpolicyList(Map map){
+        return this.returnpolicyMapper.selectByReturnpolicyList(map);
     }
 
 }

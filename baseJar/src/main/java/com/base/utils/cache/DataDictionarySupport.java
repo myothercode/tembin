@@ -7,9 +7,7 @@ import com.base.utils.applicationcontext.ApplicationContextUtil;
 import com.base.utils.common.ObjectUtils;
 import com.trading.service.ITradingDataDictionary;
 import net.sf.ehcache.Cache;
-import net.sf.ehcache.CacheManager;
 import net.sf.ehcache.Element;
-import org.springframework.context.ApplicationContext;
 
 import java.util.HashMap;
 import java.util.List;
@@ -21,7 +19,10 @@ import java.util.Map;
 public class DataDictionarySupport extends CacheBaseSupport{
     /**站点字典*/
     public static final String DATA_DICT_SITE ="site";//数据字典站点数据
-    public static final String DATA_DICT_PAYPAL = "paypal";
+
+    public static final String PUBLIC_DATA_DICT_PAYPAL = "paypal";
+
+    public static final String PUBLIC_DATA_DICT_EBAYACCOUNT = "ebayaccount";
 
     public static final String DICT_CACHE_NAME = "dataDictionaryCache";//数据字典所在的cache名
 
@@ -35,6 +36,10 @@ public class DataDictionarySupport extends CacheBaseSupport{
         dictNameMap.put(PublicDataDict.class,PUBLIC_DATA_DICTIONARY);
         dictNameMap.put(PublicUserConfig.class,PUBLIC_USER_CONFIG);
     }
+    public static final String RETURNS_ACCEPTED_OPTION = "ReturnsAcceptedOption";//数据字典在cache中的名称
+    public static final String RETURNS_WITHIN_OPTION = "ReturnsWithinOption";//数据字典在cache中的名称
+    public static final String REFUND_OPTION = "RefundOption";//数据字典在cache中的名称
+    public static final String SHIPPING_COST_PAID = "ShippingCostPaidByOption";//数据字典在cache中的名称
     /*private static CacheManager cacheManager;
     static {
         ApplicationContext x= ApplicationContextUtil.getContext();
