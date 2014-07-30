@@ -1,33 +1,4 @@
-/**
- * 杨洪全 2012-11-12
- *
- $("#table1").initTable({
- 		url:path + "/getGroupDmKs.action",
-  		columnData:[
-  		            {title:"科室代码",name:"ksDm",width:"25%"},
-  		            {title:"科室名称",name:"ksmc",width:"25%",format:function(json){return json.ksmc+"1";},align:"center",click:function(json){alert(json.ksmc);}},
-  		            {title:"拼音简码",name:"pym",width:"25%",format:function(json){return json.pym+"2";},align:"left",click:function(json){alert(json.pym);}},
-  		            {title:"五笔码",name:"wbm",width:"25%",format:function(json){return json.wbm+"3";},click:function(json){alert(json.wbm);}}
-  		           ],
-  		selectDataNow:true,
-  		isrowClick:false,	
-  		showIndex:true//是否显示序号
-  	});
 
- *     $("#table2").initTable({
- * 		url:path + "/getGroupDmKs.action",
- * 		columnData:[
- * 		            {title:"科室代码",name:"ksDm",width:"25%",align:"right"},
- * 		            {title:"科室名称",name:"ksmc",width:"25%",format:function(json){return json.ksmc+"1";},align:"center",click:function(json){alert(json.ksmc);}},
- * 		            {title:"拼音简码",name:"pym",width:"25%",format:function(json){return json.pym+"2";},align:"center",click:function(json){alert(json.pym);}},
- * 		            {title:"五笔码",name:"wbm",width:"25%",format:function(json){return json.wbm+"3";},align:"center",click:function(json){alert(json.wbm);}}
- * 		           ],
- * 		selectDataNow:true,
- * 		rowClickMethod:function(json){
- * 			alert(json.id);
- * 		}
- * 	});
- */
 ;
 (function ($) {
 	//初始化table
