@@ -22,6 +22,8 @@ public class DataDictionarySupport extends CacheBaseSupport{
 
     public static final String DATA_DICT_DELTA ="delta";//地区
 
+    public static final String DATA_DICT_COUNTRY ="country";//国家
+
     public static final String PUBLIC_DATA_DICT_PAYPAL = "paypal";
 
     public static final String PUBLIC_DATA_DICT_EBAYACCOUNT = "ebayaccount";

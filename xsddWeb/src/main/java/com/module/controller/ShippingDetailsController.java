@@ -14,6 +14,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -63,10 +64,32 @@ public class ShippingDetailsController extends BaseAction{
 
     @RequestMapping("/locationList.do")
     public ModelAndView locationList(HttpServletRequest request,HttpServletResponse response,ModelMap modelMap){
-
         List<TradingDataDictionary> lidata = DataDictionarySupport.getTradingDataDictionaryByType(DataDictionarySupport.DATA_DICT_DELTA);
-        modelMap.put("lidata",lidata);
+        List<TradingDataDictionary> li1 = new ArrayList();
+        List<TradingDataDictionary> li2 = new ArrayList();
+        List<TradingDataDictionary> li3 = new ArrayList();
+        for(TradingDataDictionary tdd : lidata){
+            if(tdd.getName1().equals("Additional Locations")){
+                li3.add(tdd);
+            }else if(tdd.getName1().equals("Domestic")){
+                li1.add(tdd);
+            }else if(tdd.getName1().equals("International")){
+                li2.add(tdd);
+            }
+        }
+        modelMap.put("li1",li1);
+        modelMap.put("li2",li2);
+        modelMap.put("li3",li3);
         return forword("module/shipping/locationList",modelMap);
     }
+
+    @RequestMapping("/countryList.do")
+    public ModelAndView countryList(HttpServletRequest request,HttpServletResponse response,ModelMap modelMap){
+        String parentid = request.getParameter("parentid");
+        List<TradingDataDictionary> lidata = DataDictionarySupport.getTradingDataDictionaryByType(DataDictionarySupport.DATA_DICT_COUNTRY,Long.parseLong(parentid));
+        modelMap.put("lidata",lidata);
+        return forword("module/shipping/countryList",modelMap);
+    }
+
 
 }
