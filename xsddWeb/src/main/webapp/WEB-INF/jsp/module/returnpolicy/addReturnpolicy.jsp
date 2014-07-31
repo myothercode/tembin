@@ -6,15 +6,32 @@
   To change this template use File | Settings | File Templates.
 --%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<script type="text/javascript" src="<c:url value="/js/jquery/jquery-1.9.0.min.js" />"></script>
+<%@include file= "/WEB-INF/jsp/commonImport.jsp" %>
 <html>
 <head>
     <title></title>
 </head>
+
+<script type="text/javascript">
+    function submitForm(){
+        var url=path+"/ajax/saveReturnpolicy.do";
+        var data=$("#returnPolicyForm").serialize();
+        $().invoke(url,data,
+                [function(m,r){
+                    alert(r)
+                    Base.token();
+                },
+                    function(m,r){
+                        alert(r);
+                        Base.token();
+                    }]
+        );
+    }
+</script>
+
 <c:set value="${Returnpolicy}" var="Returnpolicy" />
 <body>
-<form action="/xsddWeb/saveReturnpolicy.do" method="post">
+<form id="returnPolicyForm">
     <table>
         <tr>
             <td>名称:</td>
@@ -40,7 +57,7 @@
         <tr>
         <td>退货政策:</td>
         <td>
-            <select name="ReturnsAcceptedOption">
+            <select name="returnsacceptedoption">
                 <c:forEach items="${acceptList}" var="accept">
                     <c:if test="${Returnpolicy.returnsacceptedoption==accept.id}">
                         <option value="${accept.id}" selected="selected">${accept.name}</option>
@@ -55,7 +72,7 @@
         <tr>
             <td>退货天数:</td>
             <td>
-                <select name="ReturnsWithinOption">
+                <select name="returnswithinoption">
                     <c:forEach items="${withinList}" var="within">
                         <c:if test="${Returnpolicy.returnswithinoption==within.id}">
                             <option value="${within.id}" selected="selected">${within.name}</option>
@@ -70,7 +87,7 @@
         <tr>
             <td>退款方式:</td>
             <td>
-                <select name="RefundOption">
+                <select name="refundoption">
                     <c:forEach items="${refundList}" var="pay">
                         <c:if test="${Returnpolicy.refundoption==pay.id}">
                             <option value="${pay.id}" selected="selected">${pay.name}</option>
@@ -85,7 +102,7 @@
         <tr>
             <td>退货运费由谁承担:</td>
             <td>
-                <select name="ShippingCostPaidByOption">
+                <select name="shippingcostpaidbyoption">
                     <c:forEach items="${costPaidList}" var="pay">
                         <c:if test="${Returnpolicy.shippingcostpaidbyoption==pay.id}">
                             <option value="${pay.id}" selected="selected">${pay.name}</option>
@@ -99,8 +116,8 @@
         </tr>
         <td>付款说明:</td>
         <td>
-            <textarea name="Returnpolicy_desc" cols="30" rows="5">${Returnpolicy.description}</textarea>
-            <div><input type="submit" value="确定" /></div>
+            <textarea name="description" cols="30" rows="5">${Returnpolicy.description}</textarea>
+            <div><input type="button" onclick="submitForm()" value="确定" /></div>
         </td>
         </tr>
     </table>

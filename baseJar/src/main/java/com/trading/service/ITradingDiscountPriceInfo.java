@@ -2,9 +2,9 @@ package com.trading.service;
 
 import com.base.database.trading.model.TradingDiscountpriceinfo;
 import com.base.domains.querypojos.DiscountpriceinfoQuery;
+import com.base.mybatis.page.Page;
 import com.base.xmlpojo.trading.addproduct.DiscountPriceInfo;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import java.util.Map;
 
@@ -17,4 +17,6 @@ public interface ITradingDiscountPriceInfo {
     TradingDiscountpriceinfo toDAOPojo(DiscountPriceInfo discountPriceInfo) throws Exception;
 
     List<DiscountpriceinfoQuery> selectByDiscountpriceinfo(Map map);
+
+    List<DiscountpriceinfoQuery> selectByDiscountpriceinfo(Map map, Page page);
 }

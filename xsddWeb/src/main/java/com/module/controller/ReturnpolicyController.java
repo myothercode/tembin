@@ -1,6 +1,12 @@
 package com.module.controller;
 
+import com.base.domains.CommonParmVO;
+import com.base.domains.querypojos.ItemAddressQuery;
 import com.base.domains.querypojos.ReturnpolicyQuery;
+import com.base.mybatis.page.Page;
+import com.base.mybatis.page.PageJsonBean;
+import com.base.utils.annotations.AvoidDuplicateSubmission;
+import com.common.base.utils.ajax.AjaxSupport;
 import com.common.base.web.BaseAction;
 import com.trading.service.ITradingReturnpolicy;
 import com.base.database.trading.model.TradingDataDictionary;
@@ -10,7 +16,9 @@ import com.base.utils.common.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
@@ -21,6 +29,7 @@ import java.util.Map;
 
 /**
  * Created by lq on 2014/7/29.
+ * 退货政策
  */
 @Controller
 public class ReturnpolicyController extends BaseAction{
@@ -29,15 +38,31 @@ public class ReturnpolicyController extends BaseAction{
     private ITradingReturnpolicy iTradingReturnpolicy;
 
     @RequestMapping("/ReturnpolicyList.do")
-    public ModelAndView ReturnpolicyList(HttpServletRequest request,HttpServletResponse response,ModelMap modelMap){
-        Map m = new HashMap();
+    public ModelAndView ReturnpolicyList(HttpServletRequest request,HttpServletResponse response,
+                                         @ModelAttribute( "initSomeParmMap" )ModelMap modelMap){
+        /*Map m = new HashMap();
         List<ReturnpolicyQuery> Returnpolicyli = this.iTradingReturnpolicy.selectByReturnpolicyList(m);
-        modelMap.put("Returnpolicyli",Returnpolicyli);
+        modelMap.put("Returnpolicyli",Returnpolicyli);*/
         return forword("module/returnpolicy/ReturnpolicyList",modelMap);
+    }
+    /**获取list数据的ajax方法*/
+    @RequestMapping("/ajax/loadReturnpolicyList.do")
+    @ResponseBody
+    public void loadReturnpolicyList(CommonParmVO commonParmVO){
+        Map m = new HashMap();
+        /**分页组装*/
+        PageJsonBean jsonBean=commonParmVO.getJsonBean();
+        Page page=jsonBean.toPage();
+        List<ReturnpolicyQuery> Returnpolicyli = this.iTradingReturnpolicy.selectByReturnpolicyList(m, page);
+        jsonBean.setList(Returnpolicyli);
+        jsonBean.setTotal((int)page.getTotalCount());
+        AjaxSupport.sendSuccessText("", jsonBean);
     }
 
     @RequestMapping("/addReturnpolicy.do")
-    public ModelAndView addReturnpolicy(HttpServletRequest request,HttpServletResponse response,ModelMap modelMap){
+    @AvoidDuplicateSubmission(needSaveToken = true)
+    public ModelAndView addReturnpolicy(HttpServletRequest request,HttpServletResponse response,
+                                        @ModelAttribute( "initSomeParmMap" )ModelMap modelMap){
         List<TradingDataDictionary> lidata = DataDictionarySupport.getTradingDataDictionaryByType(DataDictionarySupport.DATA_DICT_SITE);
         modelMap.put("siteList",lidata);
 
@@ -57,7 +82,9 @@ public class ReturnpolicyController extends BaseAction{
     }
 
     @RequestMapping("/editReturnpolicy.do")
-    public ModelAndView editReturnpolicy(HttpServletRequest request,HttpServletResponse response,ModelMap modelMap){
+    @AvoidDuplicateSubmission(needSaveToken = true)
+    public ModelAndView editReturnpolicy(HttpServletRequest request,HttpServletResponse response,
+                                         @ModelAttribute( "initSomeParmMap" )ModelMap modelMap){
         List<TradingDataDictionary> lidata = DataDictionarySupport.getTradingDataDictionaryByType(DataDictionarySupport.DATA_DICT_SITE);
         modelMap.put("siteList",lidata);
 
@@ -79,30 +106,19 @@ public class ReturnpolicyController extends BaseAction{
         return forword("module/returnpolicy/addReturnpolicy",modelMap);
     }
 
-    @RequestMapping("/saveReturnpolicy.do")
-    public ModelAndView saveReturnpolicy(HttpServletRequest request,HttpServletResponse response,ModelMap modelMap) throws Exception {
-        String name = request.getParameter("name");
-        String site = request.getParameter("site");
-        String ReturnsAcceptedOption = request.getParameter("ReturnsAcceptedOption");
-        String ReturnsWithinOption = request.getParameter("ReturnsWithinOption");
-        String RefundOption=request.getParameter("RefundOption");
-        String ShippingCostPaidByOption=request.getParameter("ShippingCostPaidByOption");
-        String Returnpolicy_desc=request.getParameter("Returnpolicy_desc");
-        String id = request.getParameter("id");
+    @RequestMapping("/ajax/saveReturnpolicy.do")
+    @AvoidDuplicateSubmission(needRemoveToken = true)
+    @ResponseBody
+    public void saveReturnpolicy(HttpServletRequest request,HttpServletResponse response,
+                                         ModelMap modelMap,
+                                         TradingReturnpolicy tradingReturnpolicy) throws Exception {
 
-        TradingReturnpolicy tp = new TradingReturnpolicy();
-        if(!ObjectUtils.isLogicalNull(id)){
-            tp.setId(Long.parseLong(id));
+        ObjectUtils.toPojo(tradingReturnpolicy);
+        if(ObjectUtils.isLogicalNull(tradingReturnpolicy.getId())){
+            tradingReturnpolicy.setId(null);
         }
-        tp.setName(name);
-        tp.setSite(site);
-        tp.setReturnsacceptedoption(ReturnsAcceptedOption);
-        tp.setReturnswithinoption(ReturnsWithinOption);
-        tp.setRefundoption(RefundOption);
-        tp.setShippingcostpaidbyoption(ShippingCostPaidByOption);
-        tp.setDescription(Returnpolicy_desc);
-        ObjectUtils.toPojo(tp);
-        this.iTradingReturnpolicy.saveTradingReturnpolicy(tp);
-        return forword("module/returnpolicy/addReturnpolicy",modelMap);
+
+        this.iTradingReturnpolicy.saveTradingReturnpolicy(tradingReturnpolicy);
+        AjaxSupport.sendSuccessText("","操作成功!");
     }
 }

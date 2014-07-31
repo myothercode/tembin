@@ -7,6 +7,7 @@
 --%>
 
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@include file= "/WEB-INF/jsp/commonImport.jsp" %>
 <html>
 <head>
@@ -27,13 +28,37 @@
                 width:500
             });
         }
+        $(document).ready(function(){
+            $("#discountPriceInfoListTable").initTable({
+                url:path + "/ajax/loadDiscountPriceInfoList.do",
+                columnData:[
+                    {title:"名称",name:"name",width:"8%",align:"left"},
+                    {title:"账户名称",name:"ebayName",width:"8%",align:"left"},
+                    {title:"开始时间",name:"disStarttime",width:"8%",align:"left"},
+                    {title:"结束时间",name:"disEndtime",width:"8%",align:"left"},
+                    {title:"降价",name:"madeforoutletcomparisonprice",width:"8%",align:"left"},
+                    {title:"是否免运费",name:"isShippingfee",width:"8%",align:"left"},
+                    {title:"操作",name:"option1",width:"8%",align:"left",format:makeOption1}
+                ],
+                selectDataNow:false,
+                isrowClick:false,
+                showIndex:true
+            });
+            $("#discountPriceInfoListTable").selectDataAfterSetParm({"bedDetailVO.deptId":"", "isTrue":0});
+        });
+        /**组装操作选项*/
+        function makeOption1(json){
+            var htm="<a target=\"_blank\" href=\"javascript:void(0)\" onclick=\"editdiscountpriceinfo('"+json.id+"');\">编辑</a>";
+            return htm;
+        }
     </script>
 </head>
 <body>
 <div style="text-align: right;">
     <input type="button" name="add" value="新增" onclick="adddiscountpriceinfo()">
 </div>
-<div>
+<div id="discountPriceInfoListTable"></div>
+<%--<div>
     <table width="100%">
         <tr>
             <td>名称</td>
@@ -75,6 +100,6 @@
             </tr>
         </c:forEach>
     </table>
-</div>
+</div>--%>
 </body>
 </html>

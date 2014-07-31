@@ -40,6 +40,9 @@
     <result column="shipping_name" jdbcType="VARCHAR" property="shippingName" />
     <result column="ebay_account" jdbcType="VARCHAR" property="ebayAccount" />
     <result column="if_describe" jdbcType="VARCHAR" property="ifDescribe" />
+    <result column="site" jdbcType="VARCHAR" property="site" />
+    <result column="count_type" jdbcType="VARCHAR" property="countType" />
+    <result column="Inter_count_type" jdbcType="VARCHAR" property="interCountType" />
   </resultMap>
   <sql id="Example_Where_Clause">
     <!--
@@ -118,7 +121,8 @@
     International_InsuranceOption, InternationalPromotionalShippingDiscount, InternationalShippingDiscountProfileID, 
     PaymentInstructions, PromotionalShippingDiscount, DomesticRateTable, InternationalRateTable, 
     SalesTaxPercent, SalesTaxState, ShippingIncludedInTax, ShippingDiscountProfileID, 
-    ShippingType, create_user, create_time, uuid, shipping_name, ebay_account, if_describe
+    ShippingType, create_user, create_time, uuid, shipping_name, ebay_account, if_describe, 
+    site, count_type, Inter_count_type
   </sql>
   <select id="selectByExample" parameterType="com.base.database.trading.model.TradingShippingdetailsExample" resultMap="BaseResultMap">
     <!--
@@ -184,7 +188,8 @@
       SalesTaxState, ShippingIncludedInTax, ShippingDiscountProfileID, 
       ShippingType, create_user, create_time, 
       uuid, shipping_name, ebay_account, 
-      if_describe)
+      if_describe, site, count_type, 
+      Inter_count_type)
     values (#{id,jdbcType=BIGINT}, #{measurementunit,jdbcType=VARCHAR}, #{originatingpostalcode,jdbcType=VARCHAR}, 
       #{packagedepth,jdbcType=DOUBLE}, #{packagelength,jdbcType=DOUBLE}, #{packagewidth,jdbcType=DOUBLE}, 
       #{packaginghandlingcosts,jdbcType=DOUBLE}, #{shippingirregular,jdbcType=VARCHAR}, 
@@ -198,7 +203,8 @@
       #{salestaxstate,jdbcType=VARCHAR}, #{shippingincludedintax,jdbcType=VARCHAR}, #{shippingdiscountprofileid,jdbcType=VARCHAR}, 
       #{shippingtype,jdbcType=VARCHAR}, #{createUser,jdbcType=BIGINT}, #{createTime,jdbcType=TIMESTAMP}, 
       #{uuid,jdbcType=VARCHAR}, #{shippingName,jdbcType=VARCHAR}, #{ebayAccount,jdbcType=VARCHAR}, 
-      #{ifDescribe,jdbcType=VARCHAR})
+      #{ifDescribe,jdbcType=VARCHAR}, #{site,jdbcType=VARCHAR}, #{countType,jdbcType=VARCHAR}, 
+      #{interCountType,jdbcType=VARCHAR})
       <selectKey resultType="long" keyProperty="id" order="AFTER">
           SELECT LAST_INSERT_ID()
       </selectKey>
@@ -312,6 +318,15 @@
       <if test="ifDescribe != null">
         if_describe,
       </if>
+      <if test="site != null">
+        site,
+      </if>
+      <if test="countType != null">
+        count_type,
+      </if>
+      <if test="interCountType != null">
+        Inter_count_type,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
       <if test="id != null">
@@ -415,6 +430,15 @@
       </if>
       <if test="ifDescribe != null">
         #{ifDescribe,jdbcType=VARCHAR},
+      </if>
+      <if test="site != null">
+        #{site,jdbcType=VARCHAR},
+      </if>
+      <if test="countType != null">
+        #{countType,jdbcType=VARCHAR},
+      </if>
+      <if test="interCountType != null">
+        #{interCountType,jdbcType=VARCHAR},
       </if>
     </trim>
       <selectKey resultType="long" keyProperty="id" order="AFTER">
@@ -540,6 +564,15 @@
       <if test="record.ifDescribe != null">
         if_describe = #{record.ifDescribe,jdbcType=VARCHAR},
       </if>
+      <if test="record.site != null">
+        site = #{record.site,jdbcType=VARCHAR},
+      </if>
+      <if test="record.countType != null">
+        count_type = #{record.countType,jdbcType=VARCHAR},
+      </if>
+      <if test="record.interCountType != null">
+        Inter_count_type = #{record.interCountType,jdbcType=VARCHAR},
+      </if>
     </set>
     <if test="_parameter != null">
       <include refid="Update_By_Example_Where_Clause" />
@@ -584,7 +617,10 @@
       uuid = #{record.uuid,jdbcType=VARCHAR},
       shipping_name = #{record.shippingName,jdbcType=VARCHAR},
       ebay_account = #{record.ebayAccount,jdbcType=VARCHAR},
-      if_describe = #{record.ifDescribe,jdbcType=VARCHAR}
+      if_describe = #{record.ifDescribe,jdbcType=VARCHAR},
+      site = #{record.site,jdbcType=VARCHAR},
+      count_type = #{record.countType,jdbcType=VARCHAR},
+      Inter_count_type = #{record.interCountType,jdbcType=VARCHAR}
     <if test="_parameter != null">
       <include refid="Update_By_Example_Where_Clause" />
     </if>
@@ -695,6 +731,15 @@
       <if test="ifDescribe != null">
         if_describe = #{ifDescribe,jdbcType=VARCHAR},
       </if>
+      <if test="site != null">
+        site = #{site,jdbcType=VARCHAR},
+      </if>
+      <if test="countType != null">
+        count_type = #{countType,jdbcType=VARCHAR},
+      </if>
+      <if test="interCountType != null">
+        Inter_count_type = #{interCountType,jdbcType=VARCHAR},
+      </if>
     </set>
     where id = #{id,jdbcType=BIGINT}
   </update>
@@ -736,7 +781,10 @@
       uuid = #{uuid,jdbcType=VARCHAR},
       shipping_name = #{shippingName,jdbcType=VARCHAR},
       ebay_account = #{ebayAccount,jdbcType=VARCHAR},
-      if_describe = #{ifDescribe,jdbcType=VARCHAR}
+      if_describe = #{ifDescribe,jdbcType=VARCHAR},
+      site = #{site,jdbcType=VARCHAR},
+      count_type = #{countType,jdbcType=VARCHAR},
+      Inter_count_type = #{interCountType,jdbcType=VARCHAR}
     where id = #{id,jdbcType=BIGINT}
   </update>
 </mapper>

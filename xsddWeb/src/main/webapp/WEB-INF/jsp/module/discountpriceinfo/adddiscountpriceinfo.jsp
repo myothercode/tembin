@@ -58,7 +58,7 @@
 </head>
 <body>
 
-<form action="/xsddWeb/saveDiscountPriceInfo.do">
+<form action="/xsddWeb/saveDiscountPriceInfo.do" method="post">
     <table>
         <tr>
             <td>名称</td>

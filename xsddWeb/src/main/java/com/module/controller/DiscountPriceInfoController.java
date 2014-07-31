@@ -2,20 +2,23 @@ package com.module.controller;
 
 import com.base.database.publicd.model.PublicUserConfig;
 import com.base.database.trading.model.TradingDiscountpriceinfo;
-import com.base.database.trading.model.TradingItemAddress;
+import com.base.domains.CommonParmVO;
 import com.base.domains.SessionVO;
 import com.base.domains.querypojos.DiscountpriceinfoQuery;
-import com.base.domains.querypojos.PaypalQuery;
+import com.base.mybatis.page.Page;
+import com.base.mybatis.page.PageJsonBean;
 import com.base.utils.cache.DataDictionarySupport;
 import com.base.utils.cache.SessionCacheSupport;
 import com.base.utils.common.DateUtils;
 import com.base.utils.common.ObjectUtils;
+import com.common.base.utils.ajax.AjaxSupport;
 import com.common.base.web.BaseAction;
 import com.trading.service.ITradingDiscountPriceInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
@@ -42,13 +45,26 @@ public class DiscountPriceInfoController extends BaseAction {
      */
     @RequestMapping("/discountPriceInfoList.do")
     public ModelAndView discountPriceInfoList(HttpServletRequest request,HttpServletResponse response,ModelMap modelMap){
-        SessionVO c= SessionCacheSupport.getSessionVO();
+       /* SessionVO c= SessionCacheSupport.getSessionVO();
         Map m = new HashMap();
         m.put("userid",c.getId());
         List<DiscountpriceinfoQuery> disli = this.iTradingDiscountPriceInfo.selectByDiscountpriceinfo(m);
-        modelMap.put("disli",disli);
-
+        modelMap.put("disli",disli);*/
         return forword("module/discountpriceinfo/discountpriceinfoList",modelMap);
+    }
+
+    /**获取list数据的ajax方法*/
+    @RequestMapping("/ajax/loadDiscountPriceInfoList.do")
+    @ResponseBody
+    public void loadDiscountPriceInfoList(CommonParmVO commonParmVO){
+        Map m = new HashMap();
+        /**分页组装*/
+        PageJsonBean jsonBean=commonParmVO.getJsonBean();
+        Page page=jsonBean.toPage();
+        List<DiscountpriceinfoQuery> Discountpriceinfo = this.iTradingDiscountPriceInfo.selectByDiscountpriceinfo(m,page);
+        jsonBean.setList(Discountpriceinfo);
+        jsonBean.setTotal((int)page.getTotalCount());
+        AjaxSupport.sendSuccessText("", jsonBean);
     }
 
     /**
@@ -99,7 +115,6 @@ public class DiscountPriceInfoController extends BaseAction {
      */
     @RequestMapping("/saveDiscountPriceInfo.do")
     public ModelAndView saveDiscountPriceInfo( HttpServletRequest request,HttpServletResponse response,ModelMap modelMap) throws Exception {
-
         String name = request.getParameter("name");
         String ebayAccount = request.getParameter("ebayAccount");
         String disStarttime = request.getParameter("disStarttime");

@@ -2440,6 +2440,216 @@ public class TradingShippingdetailsExample {
             addCriterion("if_describe not between", value1, value2, "ifDescribe");
             return (Criteria) this;
         }
+
+        public Criteria andSiteIsNull() {
+            addCriterion("site is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andSiteIsNotNull() {
+            addCriterion("site is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andSiteEqualTo(String value) {
+            addCriterion("site =", value, "site");
+            return (Criteria) this;
+        }
+
+        public Criteria andSiteNotEqualTo(String value) {
+            addCriterion("site <>", value, "site");
+            return (Criteria) this;
+        }
+
+        public Criteria andSiteGreaterThan(String value) {
+            addCriterion("site >", value, "site");
+            return (Criteria) this;
+        }
+
+        public Criteria andSiteGreaterThanOrEqualTo(String value) {
+            addCriterion("site >=", value, "site");
+            return (Criteria) this;
+        }
+
+        public Criteria andSiteLessThan(String value) {
+            addCriterion("site <", value, "site");
+            return (Criteria) this;
+        }
+
+        public Criteria andSiteLessThanOrEqualTo(String value) {
+            addCriterion("site <=", value, "site");
+            return (Criteria) this;
+        }
+
+        public Criteria andSiteLike(String value) {
+            addCriterion("site like", value, "site");
+            return (Criteria) this;
+        }
+
+        public Criteria andSiteNotLike(String value) {
+            addCriterion("site not like", value, "site");
+            return (Criteria) this;
+        }
+
+        public Criteria andSiteIn(List<String> values) {
+            addCriterion("site in", values, "site");
+            return (Criteria) this;
+        }
+
+        public Criteria andSiteNotIn(List<String> values) {
+            addCriterion("site not in", values, "site");
+            return (Criteria) this;
+        }
+
+        public Criteria andSiteBetween(String value1, String value2) {
+            addCriterion("site between", value1, value2, "site");
+            return (Criteria) this;
+        }
+
+        public Criteria andSiteNotBetween(String value1, String value2) {
+            addCriterion("site not between", value1, value2, "site");
+            return (Criteria) this;
+        }
+
+        public Criteria andCountTypeIsNull() {
+            addCriterion("count_type is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andCountTypeIsNotNull() {
+            addCriterion("count_type is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andCountTypeEqualTo(String value) {
+            addCriterion("count_type =", value, "countType");
+            return (Criteria) this;
+        }
+
+        public Criteria andCountTypeNotEqualTo(String value) {
+            addCriterion("count_type <>", value, "countType");
+            return (Criteria) this;
+        }
+
+        public Criteria andCountTypeGreaterThan(String value) {
+            addCriterion("count_type >", value, "countType");
+            return (Criteria) this;
+        }
+
+        public Criteria andCountTypeGreaterThanOrEqualTo(String value) {
+            addCriterion("count_type >=", value, "countType");
+            return (Criteria) this;
+        }
+
+        public Criteria andCountTypeLessThan(String value) {
+            addCriterion("count_type <", value, "countType");
+            return (Criteria) this;
+        }
+
+        public Criteria andCountTypeLessThanOrEqualTo(String value) {
+            addCriterion("count_type <=", value, "countType");
+            return (Criteria) this;
+        }
+
+        public Criteria andCountTypeLike(String value) {
+            addCriterion("count_type like", value, "countType");
+            return (Criteria) this;
+        }
+
+        public Criteria andCountTypeNotLike(String value) {
+            addCriterion("count_type not like", value, "countType");
+            return (Criteria) this;
+        }
+
+        public Criteria andCountTypeIn(List<String> values) {
+            addCriterion("count_type in", values, "countType");
+            return (Criteria) this;
+        }
+
+        public Criteria andCountTypeNotIn(List<String> values) {
+            addCriterion("count_type not in", values, "countType");
+            return (Criteria) this;
+        }
+
+        public Criteria andCountTypeBetween(String value1, String value2) {
+            addCriterion("count_type between", value1, value2, "countType");
+            return (Criteria) this;
+        }
+
+        public Criteria andCountTypeNotBetween(String value1, String value2) {
+            addCriterion("count_type not between", value1, value2, "countType");
+            return (Criteria) this;
+        }
+
+        public Criteria andInterCountTypeIsNull() {
+            addCriterion("Inter_count_type is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andInterCountTypeIsNotNull() {
+            addCriterion("Inter_count_type is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andInterCountTypeEqualTo(String value) {
+            addCriterion("Inter_count_type =", value, "interCountType");
+            return (Criteria) this;
+        }
+
+        public Criteria andInterCountTypeNotEqualTo(String value) {
+            addCriterion("Inter_count_type <>", value, "interCountType");
+            return (Criteria) this;
+        }
+
+        public Criteria andInterCountTypeGreaterThan(String value) {
+            addCriterion("Inter_count_type >", value, "interCountType");
+            return (Criteria) this;
+        }
+
+        public Criteria andInterCountTypeGreaterThanOrEqualTo(String value) {
+            addCriterion("Inter_count_type >=", value, "interCountType");
+            return (Criteria) this;
+        }
+
+        public Criteria andInterCountTypeLessThan(String value) {
+            addCriterion("Inter_count_type <", value, "interCountType");
+            return (Criteria) this;
+        }
+
+        public Criteria andInterCountTypeLessThanOrEqualTo(String value) {
+            addCriterion("Inter_count_type <=", value, "interCountType");
+            return (Criteria) this;
+        }
+
+        public Criteria andInterCountTypeLike(String value) {
+            addCriterion("Inter_count_type like", value, "interCountType");
+            return (Criteria) this;
+        }
+
+        public Criteria andInterCountTypeNotLike(String value) {
+            addCriterion("Inter_count_type not like", value, "interCountType");
+            return (Criteria) this;
+        }
+
+        public Criteria andInterCountTypeIn(List<String> values) {
+            addCriterion("Inter_count_type in", values, "interCountType");
+            return (Criteria) this;
+        }
+
+        public Criteria andInterCountTypeNotIn(List<String> values) {
+            addCriterion("Inter_count_type not in", values, "interCountType");
+            return (Criteria) this;
+        }
+
+        public Criteria andInterCountTypeBetween(String value1, String value2) {
+            addCriterion("Inter_count_type between", value1, value2, "interCountType");
+            return (Criteria) this;
+        }
+
+        public Criteria andInterCountTypeNotBetween(String value1, String value2) {
+            addCriterion("Inter_count_type not between", value1, value2, "interCountType");
+            return (Criteria) this;
+        }
     }
 
     /**

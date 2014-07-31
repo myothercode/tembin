@@ -46,10 +46,21 @@ public class ObjectUtils {
 		return false;
 	}
 
+    /**获取一个实体类所有的字段，包括被继承的*/
+    public static  <T> Field[] getAllFieldInClassAndExtend(T t){
+        Field[] fields = t.getClass().getDeclaredFields();//得到本类的字段
+        GetExtendFieldsClass g=new GetExtendFieldsClass();
+        g.getExtendClassFields(t.getClass());
+        Field[] ga=g.get();
+
+        Field[] fields1=MyArrayUtil.concatAllArr(fields,ga);
+        return fields1;
+
+    }
 
     /**为指定对象塞入固定值*/
     public static<T> void toPojo(T t) throws Exception {
-        Field[] fs= t.getClass().getDeclaredFields();
+        Field[] fs= getAllFieldInClassAndExtend(t);
         for (Field f:fs){
             String name = f.getName();
             if (name.equalsIgnoreCase("uuid")){

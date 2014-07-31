@@ -4,6 +4,7 @@ import com.base.database.customtrading.mapper.ReturnpolicyMapper;
 import com.base.database.trading.mapper.TradingReturnpolicyMapper;
 import com.base.database.trading.model.TradingReturnpolicy;
 import com.base.domains.querypojos.ReturnpolicyQuery;
+import com.base.mybatis.page.Page;
 import com.base.utils.common.ConvertPOJOUtil;
 import com.base.xmlpojo.trading.addproduct.ReturnPolicy;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -76,8 +77,16 @@ public class TradingReturnpolicyImpl implements com.trading.service.ITradingRetu
         return tr;
     }
     @Override
+    public List<ReturnpolicyQuery> selectByReturnpolicyList(Map map,Page page){
+        return this.returnpolicyMapper.selectByReturnpolicyList(map,page);
+    }
+
+    @Override
     public List<ReturnpolicyQuery> selectByReturnpolicyList(Map map){
-        return this.returnpolicyMapper.selectByReturnpolicyList(map);
+        Page page=new Page();
+        page.setPageSize(10);
+        page.setPageSize(1);
+        return this.returnpolicyMapper.selectByReturnpolicyList(map,page);
     }
 
 }

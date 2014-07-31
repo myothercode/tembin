@@ -13,7 +13,7 @@
     <script>
         //用于国内运输选项
         var tables = "";
-        tables +=' <table>';
+        tables +=' <table name="moreTable">';
         tables +=' <tr> ';
         tables +=' <td colspan="2">第一运输</td> ';
         tables +=' </tr> ';
@@ -21,32 +21,57 @@
         tables +=' <td align="right"  width="200">运输方式</td> ';
         tables +=' <td> ';
         tables +=' <select name="ShippingService"> ';
+        tables +=' <optgroup label="Economy services">';
+        <c:forEach var="li1" items="${li1}">
+            tables +=' <option value="${li1.id}">${li1.name}</option>';
+        </c:forEach>
+        tables +=' </optgroup>';
+        tables +=' <optgroup label="Expedited services">';
+        <c:forEach var="li2" items="${li2}">
+        tables +=' <option value="${li2.id}">${li2.name}</option>';
+        </c:forEach>
+        tables +=' </optgroup>';
+        tables +=' <optgroup label="One-day services">';
+        <c:forEach var="li3" items="${li3}">
+        tables +=' <option value="${li3.id}">${li3.name}</option>';
+        </c:forEach>
+        tables +=' </optgroup>';
+        tables +=' <optgroup label="Other services">';
+        <c:forEach var="li4" items="${li4}">
+        tables +=' <option value="${li4.id}">${li4.name}</option>';
+        </c:forEach>
+        tables +=' </optgroup>';
+        tables +=' <optgroup label="Standard services">';
+        <c:forEach var="li5" items="${li5}">
+        tables +=' <option value="${li5.id}">${li5.name}</option>';
+        </c:forEach>
+        tables +=' </optgroup>';
         tables +=' </select> ';
         tables +=' </td> ';
         tables +=' </tr> ';
         tables +=' <tr> ';
         tables +=' <td align="right">运费</td> ';
         tables +=' <td> ';
-        tables +=' <input type="text" name="ShippingServiceCost" value=""> ';
-        tables +=' <input type="checkbox" name="isFee"> 免费 ';
+        tables +=' <input type="text" name="ShippingServiceCost.value" value=""> ';
+        tables +=' <input type="checkbox" name="FreeShipping" value="1"> 免费 ';
         tables +=' </td> ';
         tables +=' </tr> ';
         tables +=' <tr> ';
         tables +=' <td align="right">额外每件加收</td> ';
         tables +=' <td> ';
-        tables +=' <input type="text" name="ShippingServiceAdditionalCost" value=""> ';
+        tables +=' <input type="text" name="ShippingServiceAdditionalCost.value" value=""> ';
         tables +=' </td> ';
         tables +=' </tr> ';
         tables +=' <tr> ';
         tables +=' <td align="right">AK,HI,PR 额外收费</td> ';
         tables +=' <td> ';
-        tables +=' <input type="text" name="ShippingSurcharge" value=""> ';
+        tables +=' <input type="text" name="ShippingSurcharge.value" value=""> ';
         tables +=' </td> ';
         tables +=' </tr> ';
         tables +=' </table> ';
         //用于国际运输选项
         var intertable = "";
-        intertable +=' <table>';
+        intertable +=' <table name="interMoreTable">';
         intertable +=' <tr> ';
         intertable +=' <td colspan="2">第一运输</td> ';
         intertable +=' </tr> ';
@@ -60,14 +85,14 @@
         intertable +=' <tr> ';
         intertable +=' <td align="right">运费</td> ';
         intertable +=' <td> ';
-        intertable +=' <input type="text" name="ShippingServiceCostInter" value=""> ';
-        intertable +=' <input type="checkbox" name="isFee"> 免费 ';
+        intertable +=' <input type="text" name="ShippingServiceCost.value" value=""> ';
+        //intertable +=' <input type="checkbox" name="isFee"> 免费 ';
         intertable +=' </td> ';
         intertable +=' </tr> ';
         intertable +=' <tr> ';
         intertable +=' <td align="right">额外每件加收</td> ';
         intertable +=' <td> ';
-        intertable +=' <input type="text" name="ShippingServiceAdditionalCostInter" value=""> ';
+        intertable +=' <input type="text" name="ShippingServiceAdditionalCost.value" value=""> ';
         intertable +=' </td> ';
         intertable +=' </tr> ';
         intertable +=' <tr> ';
@@ -129,6 +154,13 @@
                 $("#delinter").show();
             }
         }
+        //删除国际运输选项
+        function deleteShippingDetialInter(obj){
+            $(obj).parent().parent().find("table").last().remove();
+            if($(obj).parent().parent().find("table").length<2){
+                $("#delinter").hide();
+            }
+        }
         //
         function selectType(obj){
             if($(obj).val()=="2"){
@@ -138,9 +170,10 @@
             }
         }
         //
+        var par="";
         function createNoLocationList(){
             var api = frameElement.api, W = api.opener;
-            $.dialog({title: '不运送地选项',
+            par = $.dialog({title: '不运送地选项',
                 content: 'url:/xsddWeb/locationList.do',
                 icon: 'succeed',
                 width:800,
@@ -149,11 +182,55 @@
                 zIndex:2000
             });
         }
+        function saveData() {
+            var moreTable  = $("table[name='moreTable']").each(function(i,d){
+                $(d).find("select,input").each(function(ii,dd){
+                    var name_= $(dd).prop("name");
+                    var t="ShippingServiceOptions["+i+"].";
+                    $(dd).prop("name",t+name_);
+                });
+            });
+
+             var interMoreTables = $("table[name='interMoreTable']").each(function(i,d){
+                 $(d).find("select,input[type='text']").each(function(ii,dd){
+                     var name_= $(dd).prop("name");
+                     var t="InternationalShippingServiceOption["+i+"].";
+                     $(dd).prop("name",t+name_);
+                 });
+                 $(d).find("input[type='checkbox'][name='ShipToLocation']:checked").each(function(ii,dd){
+                     var name_= $(dd).prop("name");
+                     var t="InternationalShippingServiceOption["+i+"].ShipToLocation["+ii+"]";
+                     $(dd).prop("name",t);
+                 });
+
+             });
+            var data = $('#form').serialize();
+            var urll = "/xsddWeb/saveShippingDetails.do";
+            $().invoke(
+                    urll,
+                    data,
+                    [function (m, r) {
+                        alert(r + "ssssss");
+                    },
+                        function (m, r) {
+                            alert(r + "cccccc");
+                        }]
+            )
+        }
+        function selectShippingType(obj){
+            if($("#interCountType").val()=="1"||$("#countType").val()=="1"){
+                $("#countTitle").show();
+                $("#countMessage").show();
+            }else{
+                $("#countTitle").hide();
+                $("#countMessage").hide();
+            }
+        }
     </script>
 </head>
 <c:set value="${shipping}" var="shipping"/>
 <body>
-<form action="/xsddWeb/saveshippingDetails.do">
+<form id="form">
     <table width="100%">
         <tr>
             <td colspan="2">
@@ -165,7 +242,7 @@
             <td align="right" width="200">名称</td>
             <td>
                 <input type="hidden" name="id" id="id" value="${shipping.id}">
-                <input type="text" name="name" id="name" value="${shipping.payName}"></td>
+                <input type="text" name="shippingName" id="shippingName" value="${shipping.shippingName}"></td>
         </tr>
         <tr>
             <td align="right">ebay账号</td>
@@ -186,6 +263,7 @@
             <td align="right">站点</td>
             <td>
                 <select name="site">
+
                     <c:forEach items="${siteList}" var="sites">
                         <c:if test="${shipping.site==sites.id}">
                             <option value="${sites.id}" selected="selected">${sites.name}</option>
@@ -201,7 +279,7 @@
         </tr>
         <td align="right">国内运输类型</td>
         <td>
-            <select name="sippingtype">
+            <select name="countType" id="countType" onchange="selectShippingType(this)">
                 <option value="0">标准</option>
                 <option value="1">计算</option>
             </select>
@@ -211,7 +289,7 @@
         <tr>
             <td align="right">国际运输类型</td>
             <td>
-                <select name="intershippingtype">
+                <select name="interCountType" id="interCountType"  onchange="selectShippingType(this)">
                     <option value="0">标准</option>
                     <option value="1">计算</option>
                 </select>
@@ -221,6 +299,62 @@
             <td align="right"><input type="checkbox" name="ifDescribe" value="1"></td>
             <td>
                 运输条款已在刊登描述中
+            </td>
+        </tr>
+        <tr id="countTitle" style="display: none;">
+            <td colspan="2">
+                <br/>
+                计算
+                <hr/>
+            </td>
+        </tr>
+        <tr id="countMessage" style="display: none;">
+            <td colspan="2">
+                <table>
+                    <tr>
+                        <td width="200" align="right">邮编</td>
+                        <td><input type="text" name="OriginatingPostalCode" id="OriginatingPostalCode"></td>
+                    </tr>
+                    <tr>
+                        <td align="right">测量单位</td>
+                        <td>
+                            <select name="MeasurementUnit">
+                                <option value="0">English</option>
+                            </select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td align="right">
+                            尺寸规格
+                        </td>
+                        <td>
+                            深度<input type="text" size="8" name="PackageDepth" id="PackageDepth">inch
+                            长度<input type="text" size="8" name="PackageLength" id="PackageLength">inch
+                            宽度<input type="text" size="8" name="PackageWidth" id="PackageWidth">inch
+                        </td>
+                    </tr>
+                    <tr>
+                        <td align="right">
+                            估量重量
+                        </td>
+                        <td>
+                            <input type="text" size="8" name="WeightMajor" id="WeightMajor">lbs
+                            <input type="text" size="8" name="WeightMinor" id="WeightMinor">oz
+                        </td>
+                    </tr>
+                    <tr>
+                        <td align="right">包裹大小</td>
+                        <td>
+                            <select name="ShippingPackage">
+                                <option selected="selected" value="">-- 选择 --</option>
+                                <c:forEach items="${lipackage}" var="lipackage">
+                                    <option value="${lipackage.value}">${lipackage.name}</option>
+                                </c:forEach>
+                            </select>
+                            <input type="checkbox" name="ShippingIrregular" id="ShippingIrregular"> 不规则形状
+                        </td>
+                    </tr>
+                </table>
             </td>
         </tr>
         <tr>
@@ -286,10 +420,16 @@
         </tr>
         <tr>
             <td colspan="2">
+                <span id="notLocationName"></span>
+                <input type="hidden" name="notLocationValue" id="notLocationValue">
+                <br/>
                 <a href="javascript:void(0)" onclick="createNoLocationList()" style="display: none;" id="createNoLocationList">创建不运送地区列表</a>
             </td>
         </tr>
     </table>
+    <div>
+        <input type="button" value="确定" onclick="saveData()">
+    </div>
 </form>
 </body>
 </html>

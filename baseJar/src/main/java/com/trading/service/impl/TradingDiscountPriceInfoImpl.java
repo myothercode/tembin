@@ -4,13 +4,13 @@ import com.base.database.customtrading.mapper.DiscountpriceinfoMapper;
 import com.base.database.trading.mapper.TradingDiscountpriceinfoMapper;
 import com.base.database.trading.model.TradingDiscountpriceinfo;
 import com.base.domains.querypojos.DiscountpriceinfoQuery;
+import com.base.mybatis.page.Page;
 import com.base.utils.common.ConvertPOJOUtil;
 import com.base.utils.common.ObjectUtils;
 import com.base.xmlpojo.trading.addproduct.DiscountPriceInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import java.util.Map;
 
@@ -42,7 +42,16 @@ public class TradingDiscountPriceInfoImpl implements com.trading.service.ITradin
     }
 
     @Override
-    public List<DiscountpriceinfoQuery> selectByDiscountpriceinfo(Map map){
-        return this.discountpriceinfoMapper.selectByDiscountpriceinfoList(map);
+    public List<DiscountpriceinfoQuery> selectByDiscountpriceinfo(Map map,Page page){
+        return this.discountpriceinfoMapper.selectByDiscountpriceinfoList(map,page);
     }
+
+    @Override
+    public List<DiscountpriceinfoQuery> selectByDiscountpriceinfo(Map map){
+        Page page=new Page();
+        page.setPageSize(10);
+        page.setPageSize(1);
+        return this.discountpriceinfoMapper.selectByDiscountpriceinfoList(map,page);
+    }
+
 }

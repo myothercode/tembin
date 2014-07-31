@@ -18,12 +18,18 @@
 <script typr="text/javascript" src=<c:url value ="/js/lhgdialog/lhgdialog.min.js" /> ></script>
 <script typr="text/javascript" src=<c:url value ="/js/My97DatePicker/WdatePicker.js" /> ></script>
 <script typr="text/javascript" src=<c:url value ="/js/table/jquery.table.js" /> ></script>
-
+<%--<link rel="stylesheet" type="text/css" href="<c:url value ="/js/umeditor/themes/default/css/umeditor.css" />"/>
+&lt;%&ndash; <link href="/js/umeditor/themes/default/css/umeditor.css" type="text/css" rel="stylesheet">&ndash;%&gt;
+<script type="text/javascript" src="/js/umeditor/third-party/jquery.min.js"></script>
+<script type="text/javascript" charset="utf-8" src="/js/umeditor/umeditor.config.js"></script>
+<script type="text/javascript" charset="utf-8" src="/js/umeditor/umeditor.min.js"></script>
+<script type="text/javascript" src="/js/umeditor/lang/zh-cn/zh-cn.js"></script>--%>
 <%
     String rootPath = request.getContextPath();
+    String _token = (String) request.getSession().getAttribute("_token")==null?"":(String) request.getSession().getAttribute("_token");
 %>
 <script type="text/javascript">
     var path = window["path"] = '<%=rootPath%>';
     var nowDateTime="<fmt:formatDate value="${nowDateTime}" pattern="yyyy-MM-dd HH:mm:ss"/>";
+    var _token="<%=_token%>";
 </script>
-

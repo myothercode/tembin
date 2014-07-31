@@ -18,6 +18,12 @@ var Base={
     isUndefined: function (object) {
         return typeof object == "undefined";
     },
+    token: function (async) {
+        async = async === undefined ? true : async;
+        $().invoke(path+"/ajax/getToken.do", {}, function (message, re) {
+            _token=re;
+        }, {"async": async});
+    },
     handleException: function (exception) {
         var errorDivJquery = $("#_errorDiv");
         if(!errorDivJquery.length) {
@@ -43,13 +49,22 @@ var Base={
         //追加参数
         if(Base.isArray(param)) {
             param.push({name: "_random", value: Math.random()}, {name: "AjaxMode", value: "ajaxFlag"});
+            if(_token!=null && _token!=''){
+                param.push({name:"_token",value:_token});
+            }
         } else if(typeof param == "object") {
             param["_random"] = Math.random();
             param["AjaxMode"] = "ajaxFlag";
+            if(_token!=null && _token!=''){
+                param["_token"] = _token;
+            }
         } else if(Base.isString(param)) {
             if(param.length && param.charAt(param.length - 1) != '&')
                 param += "&";
             param += "_random=" + Math.random() + "&AjaxMode=ajaxFlag";
+            if(_token!=null && _token!=''){
+                param+="&_token="+_token;
+            }
         }
 
 
@@ -104,3 +119,6 @@ var Base={
 
 
 })(jQuery);
+
+
+

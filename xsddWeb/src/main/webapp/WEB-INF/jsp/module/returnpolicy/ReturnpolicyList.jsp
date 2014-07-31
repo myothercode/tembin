@@ -14,18 +14,42 @@
     <title></title>
     <script>
         function addReturnpolicy(){
-            $.dialog({title: '新增付款选项',
+            $.dialog({title: '新增退款选项',
                 content: 'url:/xsddWeb/addReturnpolicy.do',
                 icon: 'succeed',
                 width:500
             });
         }
         function editReturnpolicy(id){
-            $.dialog({title: '编辑付款选项',
+            $.dialog({title: '编辑退款选项',
                 content: 'url:/xsddWeb/editReturnpolicy.do?id='+id,
                 icon: 'succeed',
                 width:500
             });
+        }
+
+        $(document).ready(function(){
+            $("#returnPolicyListTable").initTable({
+                url:path + "/ajax/loadReturnpolicyList.do?",
+                columnData:[
+                    {title:"名称",name:"name",width:"8%",align:"left"},
+                    {title:"站点",name:"siteName",width:"8%",align:"left"},
+                    {title:"退货政策",name:"returnsAcceptedOptionName",width:"8%",align:"left"},
+                    {title:"退货天数",name:"returnsWithinOptionName",width:"8%",align:"left"},
+                    {title:"退款方式",name:"refundOptionName",width:"8%",align:"left"},
+                    {title:"退货运费由谁负担",name:"shippingCostPaidByOptionName",width:"8%",align:"left"},
+                    {title:"操作",name:"option1",width:"8%",align:"left",format:makeOption1}
+                ],
+                selectDataNow:false,
+                isrowClick:false,
+                showIndex:true
+            });
+            $("#returnPolicyListTable").selectDataAfterSetParm({"bedDetailVO.deptId":"", "isTrue":0});
+        });
+        /**组装操作选项*/
+        function makeOption1(json){
+            var htm="<a target=\"_blank\" href=\"javascript:void(0)\" onclick=\"editReturnpolicy('"+json.id+"');\">编辑</a>";
+            return htm;
         }
     </script>
 </head>
@@ -33,7 +57,8 @@
 <div style="text-align: right;">
     <input type="button" name="addReturnpolicy" value="新增" onclick="addReturnpolicy();">
 </div>
-<div>
+<div id="returnPolicyListTable"></div>
+<%--<div>
     <table width="100%">
         <tr>
             <td>名称</td>
@@ -59,6 +84,6 @@
             </tr>
         </c:forEach>
     </table>
-</div>
+</div>--%>
 </body>
 </html>

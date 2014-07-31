@@ -22,6 +22,8 @@
                 $("#form").attr("action", "/xsddWeb/ReturnpolicyList.do");
             }else if ($(obj).attr("name")=="discountPriceInfo"){
                 $("#form").attr("action", "/xsddWeb/discountPriceInfoList.do");
+            }else if ($(obj).attr("name")=="descriptionDetails"){
+                $("#form").attr("action", "/xsddWeb/DescriptionDetailsList.do");
             }else if ($(obj).attr("name")=="shipping"){
                 $("#form").attr("action", "/xsddWeb/shippingDetailsList.do");
             }
@@ -38,7 +40,7 @@
         <div><input type="button" value="退还选项" name="returnpolicy" onclick="submitForm(this)"/></div>
         <div><input type="button" value="折扣" name="discountPriceInfo" onclick="submitForm(this)"/></div>
         <div><input type="button" value="运输选项" name="shipping" onclick="submitForm(this)"/></div>
+        <div><input type="button" value="卖家描述" name="descriptionDetails" onclick="submitForm(this)"/></div>
 </form>
 </body>
-
 </html>
