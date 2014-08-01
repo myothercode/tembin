@@ -13,19 +13,22 @@
 <head>
     <title></title>
     <script>
+        var discountPriceInfo;
         function adddiscountpriceinfo(){
-            $.dialog({title: '新增折扣选项',
+            discountPriceInfo= $.dialog({title: '新增折扣选项',
                 content: 'url:/xsddWeb/addDiscountPriceInfo.do',
                 icon: 'succeed',
-                width:400
+                width:400,
+                lock:true
             });
         }
 
         function editdiscountpriceinfo(id){
-            $.dialog({title: '编辑折扣选项',
+            discountPriceInfo= $.dialog({title: '编辑折扣选项',
                 content: 'url:/xsddWeb/editDiscountPriceInfo.do?id='+id,
                 icon: 'succeed',
-                width:500
+                width:500,
+                lock:true
             });
         }
         $(document).ready(function(){
@@ -44,8 +47,11 @@
                 isrowClick:false,
                 showIndex:true
             });
-            $("#discountPriceInfoListTable").selectDataAfterSetParm({"bedDetailVO.deptId":"", "isTrue":0});
+            refreshTable();
         });
+        function refreshTable() {
+            $("#discountPriceInfoListTable").selectDataAfterSetParm({"bedDetailVO.deptId": "", "isTrue": 0});
+        }
         /**组装操作选项*/
         function makeOption1(json){
             var htm="<a target=\"_blank\" href=\"javascript:void(0)\" onclick=\"editdiscountpriceinfo('"+json.id+"');\">编辑</a>";

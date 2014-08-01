@@ -13,17 +13,11 @@
 
 <link rel="stylesheet" type="text/css" href="<c:url value ="/css/basecss/base.css" />"/>
 <script type="text/javascript" src=<c:url value ="/js/jquery/jquery-1.9.0.min.js" /> ></script>
-<script typr="text/javascript" src=<c:url value ="/js/base.js" /> ></script>
-<script typr="text/javascript" src=<c:url value ="/js/util.js" /> ></script>
-<script typr="text/javascript" src=<c:url value ="/js/lhgdialog/lhgdialog.min.js" /> ></script>
-<script typr="text/javascript" src=<c:url value ="/js/My97DatePicker/WdatePicker.js" /> ></script>
-<script typr="text/javascript" src=<c:url value ="/js/table/jquery.table.js" /> ></script>
-<%--<link rel="stylesheet" type="text/css" href="<c:url value ="/js/umeditor/themes/default/css/umeditor.css" />"/>
-&lt;%&ndash; <link href="/js/umeditor/themes/default/css/umeditor.css" type="text/css" rel="stylesheet">&ndash;%&gt;
-<script type="text/javascript" src="/js/umeditor/third-party/jquery.min.js"></script>
-<script type="text/javascript" charset="utf-8" src="/js/umeditor/umeditor.config.js"></script>
-<script type="text/javascript" charset="utf-8" src="/js/umeditor/umeditor.min.js"></script>
-<script type="text/javascript" src="/js/umeditor/lang/zh-cn/zh-cn.js"></script>--%>
+<script type="text/javascript" src=<c:url value ="/js/base.js" /> ></script>
+<script type="text/javascript" src=<c:url value ="/js/util.js" /> ></script>
+<script type="text/javascript" src=<c:url value ="/js/lhgdialog/lhgdialog.min.js" /> ></script>
+<script type="text/javascript" src=<c:url value ="/js/My97DatePicker/WdatePicker.js" /> ></script>
+<script type="text/javascript" src=<c:url value ="/js/table/jquery.table.js" /> ></script>
 <%
     String rootPath = request.getContextPath();
     String _token = (String) request.getSession().getAttribute("_token")==null?"":(String) request.getSession().getAttribute("_token");

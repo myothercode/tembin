@@ -7,14 +7,33 @@
 --%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<script type="text/javascript" src="<c:url value="/js/jquery/jquery-1.9.0.min.js" />"></script>
+<%@include file= "/WEB-INF/jsp/commonImport.jsp" %>
 <html>
 <head>
     <title></title>
+    <script>
+        var api = frameElement.api, W = api.opener;
+        function submitCommit(){
+            var url=path+"/ajax/savePayPal.do";
+            var data=$("#payPalForm").serialize();
+            $().invoke(url,data,
+                    [function(m,r){
+                        alert(r)
+                        Base.token();
+                        W.refreshTable();
+                        W.payPal.close();
+                    },
+                        function(m,r){
+                            alert(r);
+                            Base.token();
+                        }]
+            );
+        }
+    </script>
 </head>
 <c:set value="${paypal}" var="paypal" />
 <body>
-<form action="/xsddWeb/savePayPal.do">
+<form id="payPalForm">
     <table>
         <tr>
             <td>名称:</td>
@@ -55,7 +74,7 @@
         <td>付款说明:</td>
         <td>
             <textarea name="paypal_desc" cols="30" rows="5">${paypal.paymentinstructions}</textarea>
-            <div><input type="submit" value="确定"/></div>
+            <div><input type="button" value="确定" onclick="submitCommit();"/></div>
         </td>
         </tr>
     </table>

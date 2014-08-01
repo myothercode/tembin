@@ -5,13 +5,16 @@ import com.base.domains.CommonParmVO;
 import com.base.domains.querypojos.DescriptionDetailsWithBLOBsQuery;
 import com.base.mybatis.page.Page;
 import com.base.mybatis.page.PageJsonBean;
+import com.base.utils.annotations.AvoidDuplicateSubmission;
 import com.base.utils.common.ObjectUtils;
 import com.common.base.utils.ajax.AjaxSupport;
 import com.common.base.web.BaseAction;
 import com.trading.service.ITradingDescriptionDetails;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
@@ -54,12 +57,14 @@ public class DescriptionDetailsController extends BaseAction{
     }
 
     @RequestMapping("/addDescriptionDetails.do")
-    public ModelAndView addDescriptionDetails(HttpServletRequest request,HttpServletResponse response,ModelMap modelMap){
+    @AvoidDuplicateSubmission(needSaveToken = true)
+    public ModelAndView addDescriptionDetails(HttpServletRequest request,HttpServletResponse response,@ModelAttribute( "initSomeParmMap" )ModelMap modelMap){
         return forword("module/descriptiondetails/adddescriptiondetails",modelMap);
     }
 
     @RequestMapping("/editDescriptionDetails.do")
-    public ModelAndView editDescriptionDetails(HttpServletRequest request,HttpServletResponse response,ModelMap modelMap){
+    @AvoidDuplicateSubmission(needSaveToken = true)
+    public ModelAndView editDescriptionDetails(HttpServletRequest request,HttpServletResponse response,@ModelAttribute( "initSomeParmMap" )ModelMap modelMap){
         Map m = new HashMap();
         m.put("id",request.getParameter("id"));
         List<DescriptionDetailsWithBLOBsQuery> DescriptionDetailsli = this.iTradingDescriptionDetails.selectByDescriptionDetailsList(m);
@@ -67,8 +72,10 @@ public class DescriptionDetailsController extends BaseAction{
         return forword("module/descriptiondetails/adddescriptiondetails",modelMap);
     }
 
-    @RequestMapping("/saveDescriptionDetails.do")
-    public ModelAndView saveDescriptionDetails(HttpServletRequest request,HttpServletResponse response,ModelMap modelMap) throws Exception {
+    @RequestMapping("/ajax/saveDescriptionDetails.do")
+    @AvoidDuplicateSubmission(needRemoveToken = true)
+    @ResponseBody
+    public void saveDescriptionDetails(HttpServletRequest request,HttpServletResponse response,ModelMap modelMap) throws Exception {
         String name = request.getParameter("name");
         String id = request.getParameter("id");
         String payment=request.getParameter("Payment");
@@ -86,8 +93,7 @@ public class DescriptionDetailsController extends BaseAction{
         tp.setShippingInfo(shipping);
         tp.setGuaranteeInfo(guarantee);
         tp.setFeedbackInfo(feedback);
-        ObjectUtils.toPojo(tp);
         this.iTradingDescriptionDetails.saveDescriptionDetails(tp);
-        return forword("module/descriptiondetails/adddescriptiondetails",modelMap);
+        AjaxSupport.sendSuccessText("","操作成功!");
     }
 }

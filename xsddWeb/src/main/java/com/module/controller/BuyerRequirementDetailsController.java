@@ -2,21 +2,17 @@ package com.module.controller;
 
 import com.base.database.trading.model.TradingBuyerRequirementDetails;
 import com.base.database.trading.model.TradingDataDictionary;
-import com.base.database.trading.model.TradingItemAddress;
 import com.base.domains.CommonParmVO;
 import com.base.domains.querypojos.BuyerRequirementDetailsQuery;
-import com.base.domains.querypojos.ItemAddressQuery;
-import com.base.domains.querypojos.PaypalQuery;
 import com.base.mybatis.page.Page;
 import com.base.mybatis.page.PageJsonBean;
+import com.base.utils.annotations.AvoidDuplicateSubmission;
 import com.base.utils.common.ObjectUtils;
 import com.base.xmlpojo.trading.addproduct.*;
 import com.common.base.utils.ajax.AjaxSupport;
 import com.common.base.web.BaseAction;
 import com.trading.service.ITradingBuyerRequirementDetails;
 import com.trading.service.ITradingDataDictionary;
-import com.trading.service.ITradingItemAddress;
-import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -79,9 +75,29 @@ public class BuyerRequirementDetailsController extends BaseAction {
      * @return
      */
     @RequestMapping("/addBuyer.do")
-    public ModelAndView addBuyer(HttpServletRequest request,HttpServletResponse response,ModelMap modelMap){
+    @AvoidDuplicateSubmission(needSaveToken = true)
+    public ModelAndView addBuyer(HttpServletRequest request,HttpServletResponse response,@ModelAttribute( "initSomeParmMap" )ModelMap modelMap){
         List<TradingDataDictionary> lidata = this.iTradingDataDictionary.selectDictionaryByType("site");
         modelMap.put("siteList",lidata);
+        return forword("module/buyer/addBuyer",modelMap);
+    }
+
+    /**
+    * 编辑界面跳转
+    * @param request
+    * @param response
+    * @param modelMap
+    * @return
+    */
+    @RequestMapping("/editBuyer.do")
+    @AvoidDuplicateSubmission(needSaveToken = true)
+    public ModelAndView editBuyer(HttpServletRequest request,HttpServletResponse response,@ModelAttribute( "initSomeParmMap" )ModelMap modelMap){
+        List<TradingDataDictionary> lidata = this.iTradingDataDictionary.selectDictionaryByType("site");
+        modelMap.put("siteList",lidata);
+        Map m=new HashMap();
+        m.put("id",request.getParameter("id"));
+        List<BuyerRequirementDetailsQuery> buyerRequires=this.iTradingBuyerRequirementDetails.selectTradingBuyerRequirementDetailsByList(m);
+        modelMap.put("buyerRequires",buyerRequires.get(0));
         return forword("module/buyer/addBuyer",modelMap);
     }
 
@@ -93,8 +109,10 @@ public class BuyerRequirementDetailsController extends BaseAction {
      * @return
      * @throws Exception
      */
-    @RequestMapping("/saveBuyer.do")
-    public ModelAndView saveBuyer(HttpServletRequest request,HttpServletResponse response,ModelMap modelMap) throws Exception {
+    @RequestMapping("/ajax/saveBuyer.do")
+    @AvoidDuplicateSubmission(needRemoveToken = true)
+    @ResponseBody
+    public void saveBuyer(HttpServletRequest request,HttpServletResponse response,ModelMap modelMap) throws Exception {
         String buyName = request.getParameter("buyName");
         String site = request.getParameter("site");
         String buyer_flag = request.getParameter("buyer_flag");
@@ -171,13 +189,13 @@ public class BuyerRequirementDetailsController extends BaseAction {
             }
         }
         tbrds.setSiteCode(Integer.parseInt(site));
-        if(id!=null){
+        if(!ObjectUtils.isLogicalNull(id)){
             tbrds.setId(Long.parseLong(id));
         }
         //List<TradingDataDictionary> lidata = this.iTradingDataDictionary.s
        // tbrds.setSiteValue(lidata.get(0).getValue());
 
         this.iTradingBuyerRequirementDetails.saveBuyerRequirementDetails(tbrds);
-        return forword("module/buyer/addBuyer",modelMap);
+        AjaxSupport.sendSuccessText("","操作成功!");
     }
 }

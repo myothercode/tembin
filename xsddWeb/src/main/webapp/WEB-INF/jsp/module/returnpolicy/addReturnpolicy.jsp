@@ -13,15 +13,20 @@
 </head>
 
 <script type="text/javascript">
+    var api = frameElement.api, W = api.opener;
     function submitForm(){
         var url=path+"/ajax/saveReturnpolicy.do";
         var data=$("#returnPolicyForm").serialize();
         $().invoke(url,data,
                 [function(m,r){
-                    alert(r)
+                    console.debug(arguments);
+                    alert(r);
                     Base.token();
+                    W.refreshTable();
+                    W.returnPolicy.close();
                 },
                     function(m,r){
+                        console.debug(arguments);
                         alert(r);
                         Base.token();
                     }]

@@ -7,6 +7,7 @@ import com.base.domains.SessionVO;
 import com.base.domains.querypojos.DiscountpriceinfoQuery;
 import com.base.mybatis.page.Page;
 import com.base.mybatis.page.PageJsonBean;
+import com.base.utils.annotations.AvoidDuplicateSubmission;
 import com.base.utils.cache.DataDictionarySupport;
 import com.base.utils.cache.SessionCacheSupport;
 import com.base.utils.common.DateUtils;
@@ -17,6 +18,7 @@ import com.trading.service.ITradingDiscountPriceInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
@@ -75,7 +77,8 @@ public class DiscountPriceInfoController extends BaseAction {
      * @return
      */
     @RequestMapping("/addDiscountPriceInfo.do")
-    public ModelAndView addDiscountPriceInfo(HttpServletRequest request,HttpServletResponse response,ModelMap modelMap){
+    @AvoidDuplicateSubmission(needSaveToken = true)
+    public ModelAndView addDiscountPriceInfo(HttpServletRequest request,HttpServletResponse response,@ModelAttribute( "initSomeParmMap" )ModelMap modelMap){
         SessionVO c= SessionCacheSupport.getSessionVO();
         List<PublicUserConfig> userLi= DataDictionarySupport.getPublicUserConfigByType(DataDictionarySupport.PUBLIC_DATA_DICT_EBAYACCOUNT, c.getId());
         modelMap.put("userli",userLi);
@@ -90,7 +93,8 @@ public class DiscountPriceInfoController extends BaseAction {
      * @return
      */
     @RequestMapping("/editDiscountPriceInfo.do")
-    public ModelAndView editDiscountPriceInfo(HttpServletRequest request,HttpServletResponse response,ModelMap modelMap){
+    @AvoidDuplicateSubmission(needSaveToken = true)
+    public ModelAndView editDiscountPriceInfo(HttpServletRequest request,HttpServletResponse response,@ModelAttribute( "initSomeParmMap" )ModelMap modelMap){
         String id = request.getParameter("id");
 
         SessionVO c= SessionCacheSupport.getSessionVO();
@@ -113,8 +117,10 @@ public class DiscountPriceInfoController extends BaseAction {
      * @return
      * @throws Exception
      */
-    @RequestMapping("/saveDiscountPriceInfo.do")
-    public ModelAndView saveDiscountPriceInfo( HttpServletRequest request,HttpServletResponse response,ModelMap modelMap) throws Exception {
+    @RequestMapping("/ajax/saveDiscountPriceInfo.do")
+    @AvoidDuplicateSubmission(needRemoveToken = true)
+    @ResponseBody
+    public void saveDiscountPriceInfo( HttpServletRequest request,HttpServletResponse response,ModelMap modelMap) throws Exception {
         String name = request.getParameter("name");
         String ebayAccount = request.getParameter("ebayAccount");
         String disStarttime = request.getParameter("disStarttime");
@@ -127,7 +133,7 @@ public class DiscountPriceInfoController extends BaseAction {
 
 
         TradingDiscountpriceinfo tdpi = new TradingDiscountpriceinfo();
-        ObjectUtils.toPojo(tdpi);
+        ObjectUtils.toInitPojoForInsert(tdpi);
         if(!ObjectUtils.isLogicalNull(id)){
             tdpi.setId(Long.parseLong(id));
         }
@@ -144,7 +150,6 @@ public class DiscountPriceInfoController extends BaseAction {
         }
         tdpi.setMinimumadvertisedpriceexposure("DuringCheckout");
         this.iTradingDiscountPriceInfo.saveDiscountpriceinfo(tdpi);
-
-        return forword("module/discountpriceinfo/discountpriceinfoList",modelMap);
+        AjaxSupport.sendSuccessText("","操作成功!");
     }
 }

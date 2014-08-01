@@ -3,10 +3,10 @@ package com.module.controller;
 import com.base.database.trading.model.TradingDataDictionary;
 import com.base.database.trading.model.TradingItemAddress;
 import com.base.domains.CommonParmVO;
-import com.base.domains.querypojos.BuyerRequirementDetailsQuery;
 import com.base.domains.querypojos.ItemAddressQuery;
 import com.base.mybatis.page.Page;
 import com.base.mybatis.page.PageJsonBean;
+import com.base.utils.annotations.AvoidDuplicateSubmission;
 import com.base.utils.common.ObjectUtils;
 import com.common.base.utils.ajax.AjaxSupport;
 import com.common.base.web.BaseAction;
@@ -72,8 +72,10 @@ public class ItemAddressController  extends BaseAction {
      * @return
      * @throws Exception
      */
-    @RequestMapping("/saveItemAddress.do")
-    public ModelAndView saveItemAddress(String name, HttpServletRequest request,HttpServletResponse response,ModelMap modelMap) throws Exception {
+    @RequestMapping("/ajax/saveItemAddress.do")
+    @AvoidDuplicateSubmission(needRemoveToken = true)
+    @ResponseBody
+    public void saveItemAddress(String name, HttpServletRequest request,HttpServletResponse response,ModelMap modelMap) throws Exception {
         //String name = request.getParameter("name");
         String address = request.getParameter("address");
         String countryList = request.getParameter("countryList");
@@ -81,7 +83,7 @@ public class ItemAddressController  extends BaseAction {
         String id = request.getParameter("id");
 
         TradingItemAddress tia = new TradingItemAddress();
-        ObjectUtils.toPojo(tia);
+        ObjectUtils.toInitPojoForInsert(tia);
         if(!ObjectUtils.isLogicalNull(id)){
             tia.setId(Long.parseLong(id));
         }
@@ -89,10 +91,8 @@ public class ItemAddressController  extends BaseAction {
         tia.setAddress(address);
         tia.setPostalcode(postalCode);
         tia.setCountryId(Long.parseLong(countryList));
-        ObjectUtils.toPojo(tia);
         this.iTradingItemAddress.saveItemAddress(tia);
-
-        return forword("module/itemaddr/ItemAddressList",modelMap);
+        AjaxSupport.sendSuccessText("","操作成功!");
     }
 
     /**
@@ -103,7 +103,8 @@ public class ItemAddressController  extends BaseAction {
      * @return
      */
     @RequestMapping("/addItemAddress.do")
-    public ModelAndView addItemAddress(HttpServletRequest request,HttpServletResponse response,ModelMap modelMap){
+    @AvoidDuplicateSubmission(needSaveToken = true)
+    public ModelAndView addItemAddress(HttpServletRequest request,HttpServletResponse response,@ModelAttribute( "initSomeParmMap")ModelMap modelMap){
         List<TradingDataDictionary> lidata = this.iTradingDataDictionary.selectDictionaryByType("country");
         modelMap.put("countryList",lidata);
         return forword("module/itemaddr/addItemAddress",modelMap);
@@ -117,7 +118,8 @@ public class ItemAddressController  extends BaseAction {
      * @return
      */
     @RequestMapping("/editItemAddress.do")
-    public ModelAndView editItemAddress(HttpServletRequest request,HttpServletResponse response,ModelMap modelMap){
+    @AvoidDuplicateSubmission(needSaveToken = true)
+    public ModelAndView editItemAddress(HttpServletRequest request,HttpServletResponse response,@ModelAttribute( "initSomeParmMap" )ModelMap modelMap){
         List<TradingDataDictionary> lidata = this.iTradingDataDictionary.selectDictionaryByType("country");
         modelMap.put("countryList",lidata);
         Map map = new HashMap();

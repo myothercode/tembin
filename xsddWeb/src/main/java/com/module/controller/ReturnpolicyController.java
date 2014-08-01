@@ -1,18 +1,17 @@
 package com.module.controller;
 
+import com.base.database.trading.model.TradingDataDictionary;
+import com.base.database.trading.model.TradingReturnpolicy;
 import com.base.domains.CommonParmVO;
-import com.base.domains.querypojos.ItemAddressQuery;
 import com.base.domains.querypojos.ReturnpolicyQuery;
 import com.base.mybatis.page.Page;
 import com.base.mybatis.page.PageJsonBean;
 import com.base.utils.annotations.AvoidDuplicateSubmission;
+import com.base.utils.cache.DataDictionarySupport;
+import com.base.utils.common.ObjectUtils;
 import com.common.base.utils.ajax.AjaxSupport;
 import com.common.base.web.BaseAction;
 import com.trading.service.ITradingReturnpolicy;
-import com.base.database.trading.model.TradingDataDictionary;
-import com.base.utils.cache.DataDictionarySupport;
-import com.base.database.trading.model.TradingReturnpolicy;
-import com.base.utils.common.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -113,11 +112,9 @@ public class ReturnpolicyController extends BaseAction{
                                          ModelMap modelMap,
                                          TradingReturnpolicy tradingReturnpolicy) throws Exception {
 
-        ObjectUtils.toPojo(tradingReturnpolicy);
         if(ObjectUtils.isLogicalNull(tradingReturnpolicy.getId())){
             tradingReturnpolicy.setId(null);
         }
-
         this.iTradingReturnpolicy.saveTradingReturnpolicy(tradingReturnpolicy);
         AjaxSupport.sendSuccessText("","操作成功!");
     }

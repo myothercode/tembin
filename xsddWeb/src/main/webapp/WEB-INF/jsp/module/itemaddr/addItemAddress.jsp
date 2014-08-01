@@ -11,10 +11,29 @@
 <html>
 <head>
     <title></title>
+    <script>
+        var api = frameElement.api, W = api.opener;
+        function submitCommit(){
+            var url=path+"/ajax/saveItemAddress.do";
+            var data=$("#itemAddressForm").serialize();
+            $().invoke(url,data,
+                    [function(m,r){
+                        alert(r);
+                        Base.token();
+                        W.refreshTable();
+                        W.itemAddressList.close();
+                    },
+                        function(m,r){
+                            alert(r);
+                            Base.token();
+                        }]
+            );
+        }
+    </script>
 </head>
 <c:set value="${itemAddress}" var="item" />
 <body>
-<form action="/xsddWeb/saveItemAddress.do" method="post">
+<form id="itemAddressForm">
     <table>
         <tr>
             <td>名称:</td>
@@ -47,7 +66,7 @@
         </tr>
     </table>
     <div>
-        <div><input type="submit" value="确定"/></div>
+        <div><input type="button" value="确定" onclick="submitCommit();"/></div>
     </div>
 </form>
 </body>

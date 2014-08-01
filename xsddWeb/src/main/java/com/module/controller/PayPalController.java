@@ -8,6 +8,7 @@ import com.base.domains.CommonParmVO;
 import com.base.domains.querypojos.PaypalQuery;
 import com.base.mybatis.page.Page;
 import com.base.mybatis.page.PageJsonBean;
+import com.base.utils.annotations.AvoidDuplicateSubmission;
 import com.base.utils.cache.DataDictionarySupport;
 import com.base.utils.cache.SessionCacheSupport;
 import com.base.utils.common.ObjectUtils;
@@ -18,6 +19,7 @@ import com.trading.service.ITradingPayPal;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
@@ -79,7 +81,8 @@ public class PayPalController extends BaseAction{
      * @return
      */
     @RequestMapping("/addPayPal.do")
-    public ModelAndView addPayPal(HttpServletRequest request,HttpServletResponse response,ModelMap modelMap){
+    @AvoidDuplicateSubmission(needSaveToken = true)
+    public ModelAndView addPayPal(HttpServletRequest request,HttpServletResponse response,@ModelAttribute( "initSomeParmMap" )ModelMap modelMap){
         List<TradingDataDictionary> lidata = DataDictionarySupport.getTradingDataDictionaryByType(DataDictionarySupport.DATA_DICT_SITE);
 
         modelMap.put("siteList",lidata);
@@ -98,7 +101,8 @@ public class PayPalController extends BaseAction{
      * @return
      */
     @RequestMapping("/editPayPal.do")
-    public ModelAndView editPayPal(HttpServletRequest request,HttpServletResponse response,ModelMap modelMap){
+    @AvoidDuplicateSubmission(needSaveToken = true)
+    public ModelAndView editPayPal(HttpServletRequest request,HttpServletResponse response,@ModelAttribute( "initSomeParmMap" )ModelMap modelMap){
         SessionVO c= SessionCacheSupport.getSessionVO();
         List<TradingDataDictionary> lidata = DataDictionarySupport.getTradingDataDictionaryByType(DataDictionarySupport.DATA_DICT_SITE);
         modelMap.put("siteList",lidata);
@@ -119,8 +123,10 @@ public class PayPalController extends BaseAction{
      * @return
      * @throws Exception
      */
-    @RequestMapping("/savePayPal.do")
-    public ModelAndView savePayPal(HttpServletRequest request,HttpServletResponse response,ModelMap modelMap) throws Exception {
+    @RequestMapping("/ajax/savePayPal.do")
+    @AvoidDuplicateSubmission(needRemoveToken = true)
+    @ResponseBody
+    public void savePayPal(HttpServletRequest request,HttpServletResponse response,ModelMap modelMap) throws Exception {
         String name = request.getParameter("name");
         String site = request.getParameter("site");
         String paypal = request.getParameter("paypal");
@@ -135,8 +141,7 @@ public class PayPalController extends BaseAction{
         tp.setPaypal(paypal);
         tp.setSite(site);
         tp.setPaymentinstructions(paypalDesc);
-        ObjectUtils.toPojo(tp);
         this.iTradingPayPal.savePaypal(tp);
-        return forword("module/paypal/addPayPal",modelMap);
+        AjaxSupport.sendSuccessText("","操作成功!");
     }
 }

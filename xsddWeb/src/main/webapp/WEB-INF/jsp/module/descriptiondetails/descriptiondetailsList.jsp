@@ -13,18 +13,21 @@
 <head>
     <title></title>
     <script>
+        var descDiag;
         function addDescriptionDetails(){
-            $.dialog({title: '新增卖家描述',
+            descDiag=$.dialog({title: '新增卖家描述',
                 content: 'url:/xsddWeb/addDescriptionDetails.do',
                 icon: 'succeed',
-                width:1025
+                width:1025,
+                lock:true
             });
         }
         function editDescriptionDetails(id){
-            $.dialog({title: '编辑卖家描述',
+            descDiag= $.dialog({title: '编辑卖家描述',
                 content: 'url:/xsddWeb/editDescriptionDetails.do?id='+id,
                 icon: 'succeed',
-                width:1025
+                width:1025,
+                lock:true
             });
         }
         $(document).ready(function(){
@@ -43,8 +46,11 @@
                 isrowClick:false,
                 showIndex:true
             });
-            $("#descriptionDetailsListTable").selectDataAfterSetParm({"bedDetailVO.deptId":"", "isTrue":0});
+            refreshTable();
         });
+        function refreshTable(){
+            $("#descriptionDetailsListTable").selectDataAfterSetParm({"bedDetailVO.deptId":"", "isTrue":0});
+        }
         /**组装操作选项*/
         function makeOption1(json){
             var htm="<a target=\"_blank\" href=\"javascript:void(0)\" onclick=\"editDescriptionDetails('"+json.id+"');\">编辑</a>";

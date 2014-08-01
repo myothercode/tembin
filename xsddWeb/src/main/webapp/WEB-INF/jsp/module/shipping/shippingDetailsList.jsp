@@ -12,8 +12,9 @@
 <head>
     <title></title>
     <script>
+        var returnShipping ="";
         function addshippingDetails(){
-            $.dialog({title: '新增运送选项',
+            returnShipping=$.dialog({title: '新增运送选项',
                 content: 'url:/xsddWeb/addshippingDetails.do',
                 icon: 'succeed',
                 width:1000
@@ -21,11 +22,35 @@
         }
 
         function editshippingDetails(id){
-            $.dialog({title: '编辑运送选项',
+            returnShipping=$.dialog({title: '编辑运送选项',
                 content: 'url:/xsddWeb/editshippingDetails.do?id='+id,
                 icon: 'succeed',
-                width:500
+                width:1000
             });
+        }
+        $(document).ready(function(){
+            $("#shippingDetailsList").initTable({
+                url:path + "/ajax/shippingDetailsList.do",
+                columnData:[
+                    {title:"名称",name:"shippingName",width:"8%",align:"left"},
+                    {title:"站点",name:"siteName",width:"8%",align:"left"},
+                    {title:"ebay账号",name:"ebayName",width:"8%",align:"left"},
+                    {title:"操作",name:"option1",width:"8%",align:"left",format:makeOption1}
+                ],
+                selectDataNow:false,
+                isrowClick:false,
+                showIndex:true
+            });
+            refreshTable();
+        });
+
+        function refreshTable(){
+            $("#shippingDetailsList").selectDataAfterSetParm({"bedDetailVO.deptId":"", "isTrue":0});
+        }
+        /**组装操作选项*/
+        function makeOption1(json){
+            var htm="<a target=\"_blank\" href=\"javascript:void(0)\" onclick=\"editshippingDetails('"+json.id+"');\">编辑</a>";
+            return htm;
         }
     </script>
 </head>
@@ -33,48 +58,8 @@
 <div style="text-align: right;">
     <input type="button" name="add" value="新增" onclick="addshippingDetails()">
 </div>
-<div>
-    <table width="100%">
-        <tr>
-            <td>名称</td>
-            <td>账户名称</td>
-            <td>开始时间</td>
-            <td>结束时间</td>
-            <td>折扣</td>
-            <td>降价</td>
-            <td>是否免运费</td>
-            <td>操作</td>
-        </tr>
-        <c:forEach items="${disli}" var="li">
-            <tr>
-                <td>${li.name}</td>
-                <td>
-                    ${li.ebayName}
-                </td>
-                <td>
-                    <fmt:formatDate value="${li.disStarttime}" pattern="yyyy-MM-dd HH:mm"/>
-                </td>
-                <td>
-                    <fmt:formatDate value="${li.disStarttime}" pattern="yyyy-MM-dd HH:mm"/>
-                </td>
-                <td>
-                        ${li.madeforoutletcomparisonprice}
-                </td>
-                <td>${li.minimumadvertisedprice}</td>
-                <td>
-                    <c:if test="${li.isShippingfee=='1'}">
-                        <c:out value="是"/>
-                    </c:if>
-                    <c:if test="${li.isShippingfee!='1'}">
-                        <c:out value="否"/>
-                    </c:if>
-                </td>
-                <td>
-                    <a target="_blank" href="javascript:void(0)" onclick="editdiscountpriceinfo('${li.id}')">编辑</a>
-                </td>
-            </tr>
-        </c:forEach>
-    </table>
+<div id="shippingDetailsList">
+
 </div>
 </body>
 </html>

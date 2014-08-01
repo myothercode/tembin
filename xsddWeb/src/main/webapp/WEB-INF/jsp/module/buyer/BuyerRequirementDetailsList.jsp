@@ -12,19 +12,22 @@
 <head>
     <title></title>
     <script>
+        var buyerRequire;
         function addBuyer(){
-            $.dialog({title: '新增买家要求',
+            buyerRequire=$.dialog({title: '新增买家要求',
                 content: 'url:/xsddWeb/addBuyer.do',
                 icon: 'succeed',
-                width:500
+                width:500,
+                lock:true
             });
         }
 
-        function editBuyer(){
-            $.dialog({title: '编辑买家要求',
-                content: 'url:/xsddWeb/editBuyer.do',
+        function editBuyer(id){
+            buyerRequire=$.dialog({title: '编辑买家要求',
+                content: 'url:/xsddWeb/editBuyer.do?id='+id,
                 icon: 'succeed',
-                width:500
+                width:500,
+                lock:true
             });
         }
 
@@ -41,11 +44,14 @@
                 isrowClick:false,
                 showIndex:true
             });
-            $("#buyerRequireTable").selectDataAfterSetParm({"bedDetailVO.deptId":"", "isTrue":0});
+            refreshTable();
         });
+        function refreshTable(){
+            $("#buyerRequireTable").selectDataAfterSetParm({"bedDetailVO.deptId":"", "isTrue":0});
+        }
         /**组装操作选项*/
         function makeOption1(json){
-            var htm="<a target=\"_blank\" href=\"javascript:void(0)\" onclick=\"alert('"+json.name+"');\">编辑</a>";
+            var htm="<a target=\"_blank\" href=\"javascript:void(0)\" onclick=\"editBuyer('"+json.id+"');\">编辑</a>";
             return htm;
         }
 

@@ -12,19 +12,22 @@
 <head>
     <title></title>
     <script>
+        var itemAddressList;
         function addItemAddress(){
-            $.dialog({title: '新增物品所在地',
+            itemAddressList=$.dialog({title: '新增物品所在地',
                 content: 'url:/xsddWeb/addItemAddress.do',
                 icon: 'succeed',
-                width:500
+                width:500,
+                lock:true
             });
         }
 
         function editItemAddress(id){
-            $.dialog({title: '编辑物品所在地',
+            itemAddressList=$.dialog({title: '编辑物品所在地',
                 content: 'url:/xsddWeb/editItemAddress.do?id='+id,
                 icon: 'succeed',
-                width:500
+                width:500,
+                lock:true
             });
         }
 
@@ -42,8 +45,11 @@
                 isrowClick:false,
                 showIndex:true
             });
-            $("#ItemAddressListTable").selectDataAfterSetParm({"bedDetailVO.deptId":"", "isTrue":0});
+            refreshTable();
         });
+        function refreshTable(){
+            $("#ItemAddressListTable").selectDataAfterSetParm({"bedDetailVO.deptId":"", "isTrue":0});
+        }
         /**组装操作选项*/
         function makeOption1(json){
             var htm="<a target=\"_blank\" href=\"javascript:void(0)\" onclick=\"editItemAddress('"+json.id+"');\">编辑</a>";

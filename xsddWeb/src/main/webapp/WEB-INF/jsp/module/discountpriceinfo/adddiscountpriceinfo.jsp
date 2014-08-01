@@ -54,11 +54,28 @@
             }
 
         });
+        var api = frameElement.api, W = api.opener;
+        function submitCommit(){
+            var url=path+"/ajax/saveDiscountPriceInfo.do";
+            var data=$("#discountPriceInfoForm").serialize();
+            $().invoke(url,data,
+                    [function(m,r){
+                        alert(r);
+                        Base.token();
+                        W.refreshTable();
+                        W.discountPriceInfo.close();
+                    },
+                        function(m,r){
+                            alert(r);
+                            Base.token();
+                        }]
+            );
+        }
     </script>
 </head>
 <body>
 
-<form action="/xsddWeb/saveDiscountPriceInfo.do" method="post">
+<form id="discountPriceInfoForm">
     <table>
         <tr>
             <td>名称</td>
@@ -111,7 +128,7 @@
             </td>
         </tr>
         <div>
-            <input type="submit" value="确定">
+            <input type="button" value="保存" onclick="submitCommit();"/>
         </div>
     </table>
 </form>

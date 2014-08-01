@@ -12,19 +12,22 @@
 <head>
     <title></title>
     <script type="text/javascript">
+        var payPal;
         function addPayPal(){
-            $.dialog({title: '新增付款选项',
+            payPal=$.dialog({title: '新增付款选项',
                 content: 'url:/xsddWeb/addPayPal.do',
                 icon: 'succeed',
-                width:500
+                width:500,
+                lock:true
             });
         }
 
         function editPayPal(id){
-            $.dialog({title: '编辑付款选项',
+            payPal=$.dialog({title: '编辑付款选项',
                 content: 'url:/xsddWeb/editPayPal.do?id='+id,
                 icon: 'succeed',
-                width:500
+                width:500,
+                lock:true
             });
         }
 
@@ -42,8 +45,11 @@
                 isrowClick:false,
                 showIndex:true
             });
-            $("#paypallisttable").selectDataAfterSetParm({"bedDetailVO.deptId":"", "isTrue":0});
+            refreshTable();
         });
+        function  refreshTable(){
+            $("#paypallisttable").selectDataAfterSetParm({"bedDetailVO.deptId":"", "isTrue":0});
+        }
 /**组装操作选项*/
 function makeOption1(json){
 var htm="<a target=\"_blank\" href=\"javascript:void(0)\" onclick=\"editPayPal('"+json.id+"');\">编辑</a>";

@@ -7,7 +7,7 @@
 --%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<script type="text/javascript" src="<c:url value="/js/jquery/jquery-1.9.0.min.js" />"></script>
+<%@include file= "/WEB-INF/jsp/commonImport.jsp" %>
 <html>
 <head>
     <title></title>
@@ -19,15 +19,32 @@
                 $(obj).parent().find("select").attr("disabled",true);
             }
         }
-
+        var api = frameElement.api, W = api.opener;
+        function submitCommit(){
+            var url=path+"/ajax/saveBuyer.do";
+            var data=$("#buyerRequireForm").serialize();
+            $().invoke(url,data,
+                    [function(m,r){
+                        alert(r);
+                        Base.token();
+                        W.refreshTable();
+                        W.buyerRequire.close();
+                    },
+                        function(m,r){
+                            alert(r);
+                            Base.token();
+                        }]
+            );
+        }
     </script>
 </head>
 <body>
-    <form action="/xsddWeb/saveBuyer.do">
+    <form id="buyerRequireForm">
+        <input type="hidden" name="id" value="${buyerRequires.id}"/>
         <table>
             <tr>
                 <td>名称:</td>
-                <td><input type="text" name="buyName" id="buyName"></td>
+                <td><input type="text" name="buyName" id="buyName" value="${buyerRequires.name}"></td>
             </tr>
             <tr>
                 <td>站点:</td>
@@ -100,7 +117,7 @@
                             <option value="0">0</option>
                         </select></div>
                     </div>
-                    <div><input type="submit" value="确定"/></div>
+                    <div><input type="button" value="确定" onclick="submitCommit();"/></div>
                 </td>
             </tr>
         </table>
