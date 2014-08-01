@@ -9,4 +9,6 @@ public interface ITradingAttrMores {
     void saveAttrMores(TradingAttrMores tradingAttrMores);
 
     TradingAttrMores toDAOPojo(String attrValue, String value) throws Exception;
+
+    void deleteByParentId(Long id);
 }

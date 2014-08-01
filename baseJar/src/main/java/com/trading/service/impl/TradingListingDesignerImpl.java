@@ -24,7 +24,7 @@ public class TradingListingDesignerImpl implements com.trading.service.ITradingL
     @Override
     public TradingListingdesigner toDAOPojo(ListingDesigner ld) throws Exception {
         TradingListingdesigner pojo = new TradingListingdesigner();
-        ObjectUtils.toPojo(pojo);
+        ObjectUtils.toInitPojoForInsert(pojo);
         ConvertPOJOUtil.convert(pojo,ld);
         return pojo;
     }

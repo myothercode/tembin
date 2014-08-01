@@ -11,7 +11,7 @@ import java.util.Map;
  * Created by Administrtor on 2014/7/23.
  */
 public interface ITradingDescriptionDetails {
-    void saveDescriptionDetails(TradingDescriptionDetailsWithBLOBs pojo);
+    void saveDescriptionDetails(TradingDescriptionDetailsWithBLOBs pojo) throws Exception;
 
     TradingDescriptionDetailsWithBLOBs toDAOPojo(String payInfo, String shippingInfo, String contactInfo, String guaranteeInfo, String feedbackInfo) throws  Exception;
 

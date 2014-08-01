@@ -22,7 +22,7 @@ public class TradingPublicLevelAttrImpl implements com.trading.service.ITradingP
     @Override
     public TradingPublicLevelAttr toDAOPojo(String name, String value) throws Exception {
         TradingPublicLevelAttr pojo = new TradingPublicLevelAttr();
-        ObjectUtils.toPojo(pojo);
+        ObjectUtils.toInitPojoForInsert(pojo);
         pojo.setValue(value);
         pojo.setName(name);
         return pojo;

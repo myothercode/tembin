@@ -11,7 +11,7 @@ import java.util.Map;
  * Created by Administrtor on 2014/7/22.
  */
 public interface ITradingReturnpolicy {
-    void saveTradingReturnpolicy(TradingReturnpolicy tradingReturnpolicy);
+    void saveTradingReturnpolicy(TradingReturnpolicy tradingReturnpolicy) throws Exception;
 
     TradingReturnpolicy toDAOPojo(ReturnPolicy pojo) throws Exception;
 

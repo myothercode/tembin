@@ -23,7 +23,7 @@ public class TradingVATDetailsImpl implements com.trading.service.ITradingVATDet
     @Override
     public TradingVatdetails toDAOPojo(VATDetails vat) throws Exception {
         TradingVatdetails pojo = new TradingVatdetails();
-        ObjectUtils.toPojo(pojo);
+        ObjectUtils.toInitPojoForInsert(pojo);
         ConvertPOJOUtil.convert(pojo,vat);
         return pojo;
     }

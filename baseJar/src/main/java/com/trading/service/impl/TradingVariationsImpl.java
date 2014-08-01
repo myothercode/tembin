@@ -2,7 +2,6 @@ package com.trading.service.impl;
 
 import com.base.database.trading.mapper.TradingVariationsMapper;
 import com.base.database.trading.model.TradingVariations;
-import com.base.utils.common.ConvertPOJOUtil;
 import com.base.utils.common.ObjectUtils;
 import com.base.xmlpojo.trading.addproduct.Variations;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +21,7 @@ public class TradingVariationsImpl {
 
     public TradingVariations toDAOPojo(Variations var) throws Exception {
         TradingVariations pojo = new TradingVariations();
-        ObjectUtils.toPojo(pojo);
+        ObjectUtils.toInitPojoForInsert(pojo);
         return pojo;
     }
 }

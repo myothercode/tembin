@@ -10,4 +10,6 @@ public interface ITradingInternationalShippingServiceOption {
     void saveInternationalShippingServiceOption(TradingInternationalshippingserviceoption pojo);
 
     TradingInternationalshippingserviceoption toDAOPojo(InternationalShippingServiceOption isso) throws Exception;
+
+    void deleteByParentId(Long id);
 }

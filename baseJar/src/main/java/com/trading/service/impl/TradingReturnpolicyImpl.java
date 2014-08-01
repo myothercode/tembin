@@ -6,34 +6,38 @@ import com.base.database.trading.model.TradingReturnpolicy;
 import com.base.domains.querypojos.ReturnpolicyQuery;
 import com.base.mybatis.page.Page;
 import com.base.utils.common.ConvertPOJOUtil;
+import com.base.utils.common.ObjectUtils;
+import com.base.utils.exception.Asserts;
 import com.base.xmlpojo.trading.addproduct.ReturnPolicy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.lang.reflect.InvocationTargetException;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 /**
  * 退货政策
  * Created by lq on 2014/7/29.
  */
 @Service
+@Transactional(rollbackFor = Exception.class)
 public class TradingReturnpolicyImpl implements com.trading.service.ITradingReturnpolicy {
-
     @Autowired
     private TradingReturnpolicyMapper tradingReturnpolicyMapper;
 
     @Autowired
     private ReturnpolicyMapper returnpolicyMapper;
     @Override
-    public void saveTradingReturnpolicy(TradingReturnpolicy tradingReturnpolicy){
+    public void saveTradingReturnpolicy(TradingReturnpolicy tradingReturnpolicy) throws Exception {
         if(tradingReturnpolicy.getId()==null){
+            ObjectUtils.toInitPojoForInsert(tradingReturnpolicy);
             this.tradingReturnpolicyMapper.insert(tradingReturnpolicy);
         }else{
-            tradingReturnpolicy.setUuid(null);
+            TradingReturnpolicy t=tradingReturnpolicyMapper.selectByPrimaryKey(tradingReturnpolicy.getId());
+            Asserts.assertTrue(t != null && t.getCreateUser() != null, "没有找到记录或者记录创建者为空");
+            ObjectUtils.valiUpdate(t.getCreateUser(),TradingReturnpolicyMapper.class,tradingReturnpolicy.getId());
             this.tradingReturnpolicyMapper.updateByPrimaryKeySelective(tradingReturnpolicy);
         }
     }
@@ -46,11 +50,6 @@ public class TradingReturnpolicyImpl implements com.trading.service.ITradingRetu
     @Override
     public TradingReturnpolicy toDAOPojo(ReturnPolicy pojo) throws Exception {
         TradingReturnpolicy tr = new TradingReturnpolicy();
-        //公共属性值
-        //tr.setId(123l);
-        tr.setCreateUser(123l);
-        tr.setCreateTime(new Date());
-        tr.setUuid(UUID.randomUUID().toString().replace("-",""));
 
         try {
             ConvertPOJOUtil.convert(tr,pojo);

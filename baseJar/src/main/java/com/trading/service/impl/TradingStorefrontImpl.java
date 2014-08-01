@@ -24,7 +24,7 @@ public class TradingStorefrontImpl implements com.trading.service.ITradingStoref
     @Override
     public TradingStorefront toDAOPojo(Storefront sf) throws Exception {
         TradingStorefront pojo = new TradingStorefront();
-        ObjectUtils.toPojo(pojo);
+        ObjectUtils.toInitPojoForInsert(pojo);
         ConvertPOJOUtil.convert(pojo,sf);
         return pojo;
     }

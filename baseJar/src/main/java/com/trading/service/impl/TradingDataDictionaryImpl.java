@@ -40,7 +40,7 @@ public class TradingDataDictionaryImpl implements com.trading.service.ITradingDa
     @Override
     public TradingDataDictionary toDAOPojo(String value, String name, String type, String value1, String name1) throws Exception {
         TradingDataDictionary pojo = new TradingDataDictionary();
-        ObjectUtils.toPojo(pojo);
+        ObjectUtils.toInitPojoForInsert(pojo);
         pojo.setValue(value);
         pojo.setValue1(value1);
         pojo.setName(name);

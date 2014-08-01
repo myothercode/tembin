@@ -12,7 +12,7 @@ import java.util.Map;
  * Created by Administrtor on 2014/7/23.
  */
 public interface ITradingItemAddress {
-    void saveItemAddress(TradingItemAddress tradingItemAddress);
+    void saveItemAddress(TradingItemAddress tradingItemAddress) throws Exception;
 
     TradingItemAddress toDAOPojo(String name, String address, Long countryId, String postalcode) throws Exception;
 

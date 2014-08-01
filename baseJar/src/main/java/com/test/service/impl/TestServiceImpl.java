@@ -45,18 +45,19 @@ public class TestServiceImpl implements TestService {
     public void serviceTest(){
         Map map=new HashMap();
         map.put("id","1");
-        map.put("StringV","xxx");
+        map.put("StringV","caixuxxxxx");
         Page page=new Page();
         page.setCurrentPage(2);
         page.setPageSize(3);
-        List<String> strings = testMapper.queryTest(map,page);
+        //List<String> strings = testMapper.queryTest(map,page);
+        testMapper.updateTest(map);
 
 
         TradingPictures tradingPictures=new TradingPictures();
         tradingPictures.setCreateTime(new Date());
         tradingPictures.setUuid("hhh");
         tradingPictures.setVariationspecificname("pp");
-        tradingPicturesMapper.insertSelective(tradingPictures);
+        //tradingPicturesMapper.insertSelective(tradingPictures);
 
         //testMapper.updateTest(map);
         //Asserts.assertTrue(false,"错误");

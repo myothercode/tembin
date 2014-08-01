@@ -6,10 +6,10 @@ import com.base.database.trading.model.TradingPaypal;
 import com.base.domains.querypojos.PaypalQuery;
 import com.base.mybatis.page.Page;
 import com.base.utils.common.ObjectUtils;
+import com.base.utils.exception.Asserts;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import java.util.Map;
 
@@ -27,10 +27,14 @@ public class TradingPayPalImpl implements com.trading.service.ITradingPayPal {
 
 
     @Override
-    public void savePaypal(TradingPaypal tradingPaypal){
+    public void savePaypal(TradingPaypal tradingPaypal) throws Exception {
         if(tradingPaypal.getId()==null){
+            ObjectUtils.toInitPojoForInsert(tradingPaypal);
             this.tradingPaypalMapper.insertSelective(tradingPaypal);
         }else{
+            TradingPaypal t=tradingPaypalMapper.selectByPrimaryKey(tradingPaypal.getId());
+            Asserts.assertTrue(t != null && t.getCreateUser() != null, "没有找到记录或者记录创建者为空");
+            ObjectUtils.valiUpdate(t.getCreateUser(),TradingPaypalMapper.class,tradingPaypal.getId());
             this.tradingPaypalMapper.updateByPrimaryKey(tradingPaypal);
         }
 
@@ -38,7 +42,7 @@ public class TradingPayPalImpl implements com.trading.service.ITradingPayPal {
     @Override
     public TradingPaypal toDAOPojo(String payName, String site, String paypal, String paymentinstructions) throws Exception {
         TradingPaypal pojo = new TradingPaypal();
-        ObjectUtils.toPojo(pojo);
+        ObjectUtils.toInitPojoForInsert(pojo);
         pojo.setPayName(payName);
         pojo.setSite(site);
         pojo.setPaypal(paypal);

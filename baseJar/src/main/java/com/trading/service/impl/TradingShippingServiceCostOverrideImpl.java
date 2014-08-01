@@ -24,7 +24,7 @@ public class TradingShippingServiceCostOverrideImpl implements com.trading.servi
     @Override
     public TradingShippingservicecostoverride toDAOPojo(ShippingServiceCostOverride ssco) throws Exception {
         TradingShippingservicecostoverride pojo = new TradingShippingservicecostoverride();
-        ObjectUtils.toPojo(pojo);
+        ObjectUtils.toInitPojoForInsert(pojo);
         ConvertPOJOUtil.convert(pojo,ssco);
         return pojo;
     }

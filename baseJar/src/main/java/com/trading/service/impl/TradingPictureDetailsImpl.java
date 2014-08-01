@@ -24,7 +24,7 @@ public class TradingPictureDetailsImpl implements com.trading.service.ITradingPi
     @Override
     public TradingPicturedetails toDAOPojo(PictureDetails pd) throws Exception {
         TradingPicturedetails pojo = new TradingPicturedetails();
-        ObjectUtils.toPojo(pojo);
+        ObjectUtils.toInitPojoForInsert(pojo);
         ConvertPOJOUtil.convert(pojo,pd);
         return pojo;
     }

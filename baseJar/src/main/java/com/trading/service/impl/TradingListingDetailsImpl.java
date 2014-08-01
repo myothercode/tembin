@@ -25,7 +25,7 @@ public class TradingListingDetailsImpl implements com.trading.service.ITradingLi
     @Override
     public TradingListingdetails toDAOPojo(ListingDetails listingDetails) throws Exception {
         TradingListingdetails pojo = new TradingListingdetails();
-        ObjectUtils.toPojo(pojo);
+        ObjectUtils.toInitPojoForInsert(pojo);
         ConvertPOJOUtil.convert(pojo,listingDetails);
         return pojo;
     }

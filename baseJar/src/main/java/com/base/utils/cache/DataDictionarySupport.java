@@ -24,7 +24,9 @@ public class DataDictionarySupport extends CacheBaseSupport{
 
     public static final String DATA_DICT_COUNTRY ="country";//国家
 
-    public static final String DATA_DICT_SHIPPING_TYPE ="domestic transportation";//国家
+    public static final String DATA_DICT_SHIPPING_TYPE ="domestic transportation";//国内运输方式
+
+    public static final String DATA_DICT_SHIPPINGINTER_TYPE ="International transport";//国际运输方式
 
     public static final String DATA_DICT_SHIPPINGPACKAGE ="ShippingPackage";//包裹大小
 

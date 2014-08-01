@@ -4,7 +4,9 @@ package com.base.utils.common;
 
 
 import com.base.database.trading.model.TradingCharity;
+import com.base.domains.SessionVO;
 import com.base.utils.cache.SessionCacheSupport;
+import com.base.utils.exception.Asserts;
 import org.apache.commons.beanutils.PropertyUtils;
 
 import java.lang.reflect.Array;
@@ -58,8 +60,8 @@ public class ObjectUtils {
 
     }
 
-    /**为指定对象塞入固定值*/
-    public static<T> void toPojo(T t) throws Exception {
+    /**insert的时候为指定对象塞入基本信息值*/
+    public static<T> void toInitPojoForInsert(T t) throws Exception {
         Field[] fs= getAllFieldInClassAndExtend(t);
         for (Field f:fs){
             String name = f.getName();
@@ -75,6 +77,12 @@ public class ObjectUtils {
         }
     }
 
+    /**验证当前用户是否与想要修改的记录创建者一致*/
+    public static boolean valiUpdate(long createUserID,Class c,long itemID){
+        SessionVO sessionVO = SessionCacheSupport.getSessionVO();
+        Asserts.assertTrue(createUserID == sessionVO.getId(),"您没有权限修改");
+        return true;
+    }
 
 
 }

@@ -12,7 +12,7 @@ import java.util.Map;
  * Created by Administrtor on 2014/7/23.
  */
 public interface ITradingPayPal {
-    void savePaypal(TradingPaypal tradingPaypal);
+    void savePaypal(TradingPaypal tradingPaypal) throws Exception;
 
     TradingPaypal toDAOPojo(String payName, String site, String paypal, String paymentinstructions) throws Exception;
 

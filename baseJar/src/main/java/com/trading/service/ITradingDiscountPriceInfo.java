@@ -12,7 +12,7 @@ import java.util.Map;
  * Created by Administrtor on 2014/7/23.
  */
 public interface ITradingDiscountPriceInfo {
-    void saveDiscountpriceinfo(TradingDiscountpriceinfo pojo);
+    void saveDiscountpriceinfo(TradingDiscountpriceinfo pojo) throws Exception;
 
     TradingDiscountpriceinfo toDAOPojo(DiscountPriceInfo discountPriceInfo) throws Exception;
 

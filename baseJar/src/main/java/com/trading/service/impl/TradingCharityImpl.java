@@ -23,7 +23,7 @@ public class TradingCharityImpl implements com.trading.service.ITradingCharity {
     @Override
     public TradingCharity toDAOPojo(Charity charity) throws Exception {
         TradingCharity pojo = new TradingCharity();
-        ObjectUtils.toPojo(pojo);
+        ObjectUtils.toInitPojoForInsert(pojo);
         ConvertPOJOUtil.convert(pojo,charity);
         return pojo;
     }

@@ -23,7 +23,7 @@ public class TradingShippingPackageDetailsImpl implements com.trading.service.IT
     @Override
     public TradingShippingpackagedetails toDAOPojo(ShippingPackageDetails spd) throws Exception {
         TradingShippingpackagedetails pojo = new TradingShippingpackagedetails();
-        ObjectUtils.toPojo(pojo);
+        ObjectUtils.toInitPojoForInsert(pojo);
         ConvertPOJOUtil.convert(pojo,spd);
         return pojo;
     }

@@ -3,12 +3,15 @@ package com.trading.service.impl;
 import com.base.database.customtrading.mapper.DescriptionDetailsMapper;
 import com.base.database.trading.mapper.TradingDescriptionDetailsMapper;
 import com.base.database.trading.model.TradingDescriptionDetailsWithBLOBs;
+import com.base.domains.SessionVO;
 import com.base.domains.querypojos.DescriptionDetailsWithBLOBsQuery;
 import com.base.mybatis.page.Page;
+import com.base.utils.cache.SessionCacheSupport;
 import com.base.utils.common.ObjectUtils;
+import com.base.utils.exception.Asserts;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
+import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Map;
 
@@ -17,6 +20,7 @@ import java.util.Map;
  * Created by cz on 2014/7/23.
  */
 @Service
+@Transactional(rollbackFor = Exception.class)
 public class TradingDescriptionDetailsImpl implements com.trading.service.ITradingDescriptionDetails {
     @Autowired
     private TradingDescriptionDetailsMapper tradingDescriptionDetailsMapper;
@@ -25,10 +29,15 @@ public class TradingDescriptionDetailsImpl implements com.trading.service.ITradi
     private DescriptionDetailsMapper DescriptionDetailsMapper;
 
     @Override
-    public void saveDescriptionDetails(TradingDescriptionDetailsWithBLOBs pojo){
+    public void saveDescriptionDetails(TradingDescriptionDetailsWithBLOBs pojo) throws Exception {
         if(pojo.getId()==null){
+            ObjectUtils.toInitPojoForInsert(pojo);
             this.tradingDescriptionDetailsMapper.insert(pojo);
         }else{
+            TradingDescriptionDetailsWithBLOBs t=tradingDescriptionDetailsMapper.selectByPrimaryKey(pojo.getId());
+            Asserts.assertTrue(t != null && t.getCreateUser() != null, "没有找到记录或者记录创建者为空");
+            ObjectUtils.valiUpdate(t.getCreateUser(),TradingDescriptionDetailsMapper.class,pojo.getId());
+
             this.tradingDescriptionDetailsMapper.updateByPrimaryKeySelective(pojo);
         }
     }
@@ -40,7 +49,7 @@ public class TradingDescriptionDetailsImpl implements com.trading.service.ITradi
         pojo.setContactInfo(contactInfo);
         pojo.setGuaranteeInfo(guaranteeInfo);
         pojo.setFeedbackInfo(feedbackInfo);
-        ObjectUtils.toPojo(pojo);
+        ObjectUtils.toInitPojoForInsert(pojo);
         return pojo;
     }
 
@@ -53,6 +62,7 @@ public class TradingDescriptionDetailsImpl implements com.trading.service.ITradi
     public List<DescriptionDetailsWithBLOBsQuery> selectByDescriptionDetailsList(Map map) {
         Page page=new Page();
         page.setPageSize(10);
+        page.setCurrentPage(1);
         return this.DescriptionDetailsMapper.selectByDescriptionDetailsList(map,page);
     }
 }

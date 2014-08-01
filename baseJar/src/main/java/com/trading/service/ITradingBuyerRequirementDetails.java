@@ -5,7 +5,6 @@ import com.base.domains.querypojos.BuyerRequirementDetailsQuery;
 import com.base.mybatis.page.Page;
 import com.base.xmlpojo.trading.addproduct.BuyerRequirementDetails;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import java.util.Map;
 
@@ -18,4 +17,6 @@ public interface ITradingBuyerRequirementDetails {
     TradingBuyerRequirementDetails toDAOPojo(BuyerRequirementDetails buyerRequirementDetails) throws Exception;
 
     List<BuyerRequirementDetailsQuery> selectTradingBuyerRequirementDetailsByList(Map m,Page page);
+
+    List<BuyerRequirementDetailsQuery> selectTradingBuyerRequirementDetailsByList(Map m);
 }

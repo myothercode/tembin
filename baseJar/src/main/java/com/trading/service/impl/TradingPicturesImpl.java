@@ -24,7 +24,7 @@ public class TradingPicturesImpl implements com.trading.service.ITradingPictures
     @Override
     public TradingPictures toDAOPojo(Pictures pic) throws Exception {
         TradingPictures pojo = new TradingPictures();
-        ObjectUtils.toPojo(pojo);
+        ObjectUtils.toInitPojoForInsert(pojo);
         ConvertPOJOUtil.convert(pojo,pic);
         return pojo;
     }

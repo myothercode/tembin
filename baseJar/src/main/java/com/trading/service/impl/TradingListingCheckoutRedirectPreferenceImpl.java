@@ -24,7 +24,7 @@ public class TradingListingCheckoutRedirectPreferenceImpl implements com.trading
     @Override
     public  TradingListingcheckoutredirectpreference toDAOPojo(ListingCheckoutRedirectPreference lcrp) throws Exception {
         TradingListingcheckoutredirectpreference pojo = new TradingListingcheckoutredirectpreference();
-        ObjectUtils.toPojo(pojo);
+        ObjectUtils.toInitPojoForInsert(pojo);
         ConvertPOJOUtil.convert(pojo,lcrp);
         return pojo;
     }

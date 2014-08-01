@@ -4,7 +4,6 @@ import com.base.database.trading.mapper.TradingItemMapper;
 import com.base.database.trading.model.TradingItem;
 import com.base.utils.common.ConvertPOJOUtil;
 import com.base.utils.common.ObjectUtils;
-import com.base.xmlpojo.trading.addproduct.Charity;
 import com.base.xmlpojo.trading.addproduct.Item;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -27,7 +26,7 @@ public class TradingItemImpl implements com.trading.service.ITradingItem {
     @Override
     public TradingItem toDAOPojo(Item item) throws Exception {
         TradingItem pojo = new TradingItem();
-        ObjectUtils.toPojo(pojo);
+        ObjectUtils.toInitPojoForInsert(pojo);
         ConvertPOJOUtil.convert(pojo, item);
         ConvertPOJOUtil.convert(pojo, item.getBestOfferDetails());
         ConvertPOJOUtil.convert(pojo, item.getPrimaryCategory());

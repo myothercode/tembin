@@ -22,7 +22,7 @@ public class TradingVariationImpl {
 
     public TradingVariation toDAOPojo(Variation var) throws Exception {
         TradingVariation pojo = new TradingVariation();
-        ObjectUtils.toPojo(pojo);
+        ObjectUtils.toInitPojoForInsert(pojo);
         ConvertPOJOUtil.convert(pojo,var);
         ConvertPOJOUtil.convert(pojo,var.getDiscountPriceInfo());
         return pojo;

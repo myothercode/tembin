@@ -10,4 +10,6 @@ public interface ITradingShippingServiceOptions {
     void saveShippingServiceOptions(TradingShippingserviceoptions pojo);
 
     TradingShippingserviceoptions toDAOPojo(ShippingServiceOptions sso) throws Exception;
+
+    void deleteByParentId(Long id);
 }
