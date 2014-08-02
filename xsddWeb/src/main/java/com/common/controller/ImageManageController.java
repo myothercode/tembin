@@ -2,8 +2,10 @@ package com.common.controller;
 
 import com.base.utils.imageManage.service.ImageService;
 import org.apache.http.HttpResponse;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -21,7 +23,10 @@ import java.io.InputStream;
  * 图片管理
  */
 @Controller
+//@Scope(value = "prototype")
 public class ImageManageController {
+    static Logger logger = Logger.getLogger(ImageManageController.class);
+
     @Autowired
     private ImageService imageService;
 /*    @RequestMapping("/upLoadImage.do")
@@ -35,6 +40,7 @@ public class ImageManageController {
 public void getImageStream(@RequestParam("path") String path,HttpServletResponse response) throws Exception{
     String firstPath = imageService.getImageDir();
     InputStream input=new FileInputStream(new File(firstPath+path));
+//    InputStream input=new FileInputStream(new File(path));
     response.setContentType("image/jpeg");
     ServletOutputStream output=  response.getOutputStream();
     int count=0;

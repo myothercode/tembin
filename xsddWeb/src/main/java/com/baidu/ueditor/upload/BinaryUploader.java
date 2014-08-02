@@ -74,7 +74,7 @@ public class BinaryUploader {
 			savePath = PathFormat.parse(savePath, originFileName);
 
 			//String physicalPath = (String) conf.get("rootPath") + savePath;
-            //获取存放文件的路径
+            //todo 获取存放文件的路径
             ImageService imageService= (ImageService) ApplicationContextUtil.getBean(ImageService.class);
 
             String p= imageService.getImageDir();

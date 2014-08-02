@@ -19,6 +19,7 @@ public class FileManager {
 	private String rootPath = null;
 	private String[] allowFiles = null;
 	private int count = 0;
+    private String action=null;
 	
 	public FileManager ( Map<String, Object> conf ) {
 
@@ -26,6 +27,7 @@ public class FileManager {
 		this.dir = this.rootPath + (String)conf.get( "dir" );
 		this.allowFiles = this.getAllowFiles( conf.get("allowFiles") );
 		this.count = (Integer)conf.get( "count" );
+        this.action=conf.get("action")==null?null:(String)conf.get("action");
 		
 	}
 	
@@ -48,7 +50,12 @@ public class FileManager {
 			state = new MultiState( true );
 		} else {
 			Object[] fileList = Arrays.copyOfRange( list.toArray(), index, index + this.count );
-			state = this.getState( fileList );
+            if ("listImage".equalsIgnoreCase(this.action)) {
+                state = this.getStateWithNoRootPath(fileList);
+            } else {
+                state = this.getState(fileList);
+            }
+
 		}
 		
 		state.putInfo( "start", index );
@@ -74,10 +81,27 @@ public class FileManager {
 			fileState.putInfo( "url", PathFormat.format( this.getPath( file ) ) );
 			state.addState( fileState );
 		}
-		
 		return state;
-		
 	}
+/**todo 地址是不带rootpath的*/
+    private State getStateWithNoRootPath ( Object[] files ) {
+
+        MultiState state = new MultiState( true );
+        BaseState fileState = null;
+
+        File file = null;
+
+        for ( Object obj : files ) {
+            if ( obj == null ) {
+                break;
+            }
+            file = (File)obj;
+            fileState = new BaseState( true );
+            fileState.putInfo( "url", PathFormat.format( this.getPath( file ) ).replace(this.rootPath,"") );
+            state.addState( fileState );
+        }
+        return state;
+    }
 	
 	private String getPath ( File file ) {
 		

@@ -4107,6 +4107,76 @@ public class TradingItemExample {
             addCriterion("ebay_account not between", value1, value2, "ebayAccount");
             return (Criteria) this;
         }
+
+        public Criteria andItemNameIsNull() {
+            addCriterion("item_name is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andItemNameIsNotNull() {
+            addCriterion("item_name is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andItemNameEqualTo(String value) {
+            addCriterion("item_name =", value, "itemName");
+            return (Criteria) this;
+        }
+
+        public Criteria andItemNameNotEqualTo(String value) {
+            addCriterion("item_name <>", value, "itemName");
+            return (Criteria) this;
+        }
+
+        public Criteria andItemNameGreaterThan(String value) {
+            addCriterion("item_name >", value, "itemName");
+            return (Criteria) this;
+        }
+
+        public Criteria andItemNameGreaterThanOrEqualTo(String value) {
+            addCriterion("item_name >=", value, "itemName");
+            return (Criteria) this;
+        }
+
+        public Criteria andItemNameLessThan(String value) {
+            addCriterion("item_name <", value, "itemName");
+            return (Criteria) this;
+        }
+
+        public Criteria andItemNameLessThanOrEqualTo(String value) {
+            addCriterion("item_name <=", value, "itemName");
+            return (Criteria) this;
+        }
+
+        public Criteria andItemNameLike(String value) {
+            addCriterion("item_name like", value, "itemName");
+            return (Criteria) this;
+        }
+
+        public Criteria andItemNameNotLike(String value) {
+            addCriterion("item_name not like", value, "itemName");
+            return (Criteria) this;
+        }
+
+        public Criteria andItemNameIn(List<String> values) {
+            addCriterion("item_name in", values, "itemName");
+            return (Criteria) this;
+        }
+
+        public Criteria andItemNameNotIn(List<String> values) {
+            addCriterion("item_name not in", values, "itemName");
+            return (Criteria) this;
+        }
+
+        public Criteria andItemNameBetween(String value1, String value2) {
+            addCriterion("item_name between", value1, value2, "itemName");
+            return (Criteria) this;
+        }
+
+        public Criteria andItemNameNotBetween(String value1, String value2) {
+            addCriterion("item_name not between", value1, value2, "itemName");
+            return (Criteria) this;
+        }
     }
 
     /**

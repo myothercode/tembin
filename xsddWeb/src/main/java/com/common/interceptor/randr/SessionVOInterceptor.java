@@ -48,7 +48,10 @@ public class SessionVOInterceptor extends HandlerInterceptorAdapter {
                 || StringUtils.isEmpty(sessionVO.getLoginId())
                 ||StringUtils.isEmpty(sessionVO.getSessionID())
                 || !sessionVO.getSessionID().equalsIgnoreCase(request.getSession().getId())){
-            logger.warn(sessionVO.getLoginId()+"session里面有,缓存里面没有登录信息，重新登录");
+            if(sessionVO!=null){
+                logger.warn(sessionVO.getLoginId()+"session里面有,缓存里面没有登录信息，重新登录");
+            }
+
             session.removeAttribute(SessionCacheSupport.USERLOGINID);
             session.invalidate();
             redirectLogin(request, response);

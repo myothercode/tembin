@@ -286,7 +286,6 @@
                      var t="InternationalShippingServiceOption["+i+"].ShipToLocation["+ii+"]";
                      $(dd).prop("name",t);
                  });
-
              });
             var data = $('#form').serialize();
             var urll = "/xsddWeb/saveShippingDetails.do";

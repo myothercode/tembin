@@ -11,6 +11,8 @@ import com.baidu.ueditor.define.State;
 import com.baidu.ueditor.hunter.FileManager;
 import com.baidu.ueditor.hunter.ImageHunter;
 import com.baidu.ueditor.upload.Uploader;
+import com.base.utils.applicationcontext.ApplicationContextUtil;
+import com.base.utils.imageManage.service.ImageService;
 
 public class ActionEnter {
 	
@@ -18,13 +20,16 @@ public class ActionEnter {
 	
 	private String rootPath = null;
 	private String contextPath = null;
-	
+
 	private String actionType = null;
 	
 	private ConfigManager configManager = null;
 
 	public ActionEnter ( HttpServletRequest request, String rootPath ) {
-		
+        /**todo 重置rootpath*/
+        /*ImageService imageService= (ImageService) ApplicationContextUtil.getBean(ImageService.class);
+        String p= imageService.getImageDir();*/
+
 		this.request = request;
 		this.rootPath = rootPath;
 		this.actionType = request.getParameter( "action" );
@@ -74,6 +79,12 @@ public class ActionEnter {
 				
 			case ActionMap.UPLOAD_IMAGE:
 			case ActionMap.UPLOAD_SCRAWL:
+                conf = this.configManager.getConfig( actionCode );
+                ImageService imageService= (ImageService) ApplicationContextUtil.getBean(ImageService.class);
+                String p= imageService.getImageDir();
+                conf.put("rootPath",p);
+                state = new Uploader( request, conf ).doExec();
+                break;
 			case ActionMap.UPLOAD_VIDEO:
 			case ActionMap.UPLOAD_FILE:
 				conf = this.configManager.getConfig( actionCode );
@@ -86,7 +97,16 @@ public class ActionEnter {
 				state = new ImageHunter( conf ).capture( list );
 				break;
 				
-			case ActionMap.LIST_IMAGE:
+			case ActionMap.LIST_IMAGE:/*todo 设置列举图片列表的目录地址*/
+                conf = configManager.getConfig( actionCode );
+                conf.remove("rootPath");
+                ImageService imageService1= (ImageService) ApplicationContextUtil.getBean(ImageService.class);
+                String p1= imageService1.getImageDir();
+                conf.put("rootPath",p1);
+                conf.put("action","listImage");
+                int starti = this.getStartIndex();
+                state = new FileManager( conf ).listFile( starti );
+                break;
 			case ActionMap.LIST_FILE:
 				conf = configManager.getConfig( actionCode );
 				int start = this.getStartIndex();

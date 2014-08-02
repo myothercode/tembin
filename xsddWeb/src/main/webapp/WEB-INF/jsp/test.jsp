@@ -26,6 +26,8 @@
                 $("#form").attr("action", "/xsddWeb/DescriptionDetailsList.do");
             }else if ($(obj).attr("name")=="shipping"){
                 $("#form").attr("action", "/xsddWeb/shippingDetailsList.do");
+            }else if ($(obj).attr("name")=="itemList"){
+                $("#form").attr("action", "/xsddWeb/itemList.do");
             }
             $("#form").submit();
         }
@@ -41,6 +43,7 @@
         <div><input type="button" value="折扣" name="discountPriceInfo" onclick="submitForm(this)"/></div>
         <div><input type="button" value="运输选项" name="shipping" onclick="submitForm(this)"/></div>
         <div><input type="button" value="卖家描述" name="descriptionDetails" onclick="submitForm(this)"/></div>
+        <div><input type="button" value="商品列表" name="itemList" onclick="submitForm(this)"/></div>
 </form>
 </body>
 </html>

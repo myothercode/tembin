@@ -12,9 +12,13 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.net.ftp.FTP;
+import org.apache.commons.net.ftp.FTPClient;
+import org.apache.log4j.Logger;
 
 public class StorageManager {
 	public static final int BUFFER_SIZE = 8192;
+    static Logger logger = Logger.getLogger(StorageManager.class);
 
 	public StorageManager() {
 	}
@@ -120,6 +124,10 @@ public class StorageManager {
 	}
 
 	private static State saveTmpFile(File tmpFile, String path) {
+
+
+
+
 		State state = null;
 		File targetFile = new File(path);
 
@@ -152,4 +160,30 @@ public class StorageManager {
 
 		return new BaseState(true);
 	}
+
+
+    private static State ftpUploadFile(File file){
+       // http://www.open-open.com/lib/view/open1384090071946.html
+
+        FTPClient ftpClient = new FTPClient();
+        try {
+            ftpClient.connect("192.168.0.241",21);
+            ftpClient.login("user1", "user1");
+            ftpClient.enterLocalPassiveMode();
+            ftpClient.setFileType(FTP.BINARY_FILE_TYPE);
+            String fileName = new String(file.getName().getBytes("utf-8"),"iso-8859-1");
+        } catch (IOException e) {
+            logger.error("ftp出错"+e.getMessage(),e);
+        } finally {
+            try {
+                ftpClient.disconnect();
+            } catch (Exception e) {
+                logger.error(e.getMessage(),e);
+            }
+
+        }
+
+return null;
+    }
+
 }
