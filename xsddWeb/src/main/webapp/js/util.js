@@ -247,14 +247,19 @@ function pageParam(div) {
 	return {"page.pageSize": div.attr("pageSize"), "page.currentPage": div.attr("currentPage")};
 }
 
-//全局事件绑定注册
+
+$(function () {
+    /*jQuery('input').attr('data-prompt-position','topRight');
+    jQuery('input').attr('promptPosition','topRight');*/
+});
+/*//全局事件绑定注册
 $(function () {
     var document$ = $(document);
 
     //时间控件
-    document$.on("focus", "input.date", function () {
+    *//*document$.on("focus", "input.date", function () {
         window["WdatePicker"] && (window["WdatePicker"]());
-    });
+    });*//*
 
     //分页链接
     document$.on("click", "a[page='true']", function () {
@@ -268,6 +273,6 @@ $(function () {
             window["clickPage"](pageSize, currentPage, this);
         }
     });
-});
+});*/
 
 

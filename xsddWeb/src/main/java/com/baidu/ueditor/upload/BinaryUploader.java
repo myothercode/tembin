@@ -77,8 +77,9 @@ public class BinaryUploader {
             //todo 获取存放文件的路径
             ImageService imageService= (ImageService) ApplicationContextUtil.getBean(ImageService.class);
 
-            String p= imageService.getImageDir();
-            String physicalPath = p + savePath;
+            String p= imageService.getImageUserDir();
+            //String physicalPath = p + savePath;
+            String physicalPath = p+"/"+request.getParameter("_sku")+savePath;
 
 			InputStream is = fileStream.openStream();
 			State storageState = StorageManager.saveFileByInputStream(is,

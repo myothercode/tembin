@@ -61,6 +61,9 @@
     var um2 = UE.getEditor('myEditor2');
     var um3 = UE.getEditor('myEditor3');
     var um4 =UE.getEditor('myEditor4');
+
+    _sku="dddd";
+
 </script>
 <script type="text/javascript">
     var api = frameElement.api, W = api.opener;

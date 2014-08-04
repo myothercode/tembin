@@ -359,6 +359,13 @@
                 return;
             }
 
+            if(_sku!=null){
+                actionUrl=actionUrl+"&_sku="+_sku;
+            }else{
+                alert("缺少sku!");
+                return;
+            }
+
             uploader = _this.uploader = WebUploader.create({
                 pick: {
                     id: '#filePickerReady',

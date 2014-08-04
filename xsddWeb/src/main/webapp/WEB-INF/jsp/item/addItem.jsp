@@ -10,21 +10,34 @@
 <html>
 <head>
     <title></title>
-    <script>
-        function saveData(objs) {
+    <link rel="stylesheet" type="text/css" href="<c:url value ="/js/jquery-easyui/themes/default/easyui.css" />"/>
+    <link rel="stylesheet" type="text/css" href="<c:url value ="/js/jquery-easyui/themes/icon.css" />"/>
+    <script type="text/javascript" src=<c:url value ="/js/ueditor/ueditor.config.js" /> ></script>
+    <script type="text/javascript" src=<c:url value ="/js/ueditor/ueditor.all.min.js" /> ></script>
+    <script type="text/javascript" src=<c:url value ="/js/ueditor/lang/zh-cn/zh-cn.js" /> ></script>
+    <script type="text/javascript" src=<c:url value ="/js/jquery-easyui/jquery.easyui.min.js" /> ></script>
 
+    <script>
+        var myDescription=null;
+        $(document).ready(function() {
+            $("#form").validationEngine();
+            myDescription = UE.getEditor('myDescription');
+        });
+        function saveData(objs) {
+            if(!$("#form").validationEngine("validate")){
+                return;
+            }
             var nameList = $("input[type='text'][name='name']").each(function(i,d){
                 var name_= $(d).prop("name");
                 var t="ItemSpecifics.NameValueList["+i+"].";
                 $(d).prop("name",t+name_);
             });
-
             var valueList = $("input[type='text'][name='value']").each(function(i,d){
                 var name_= $(d).prop("name");
                 var t="ItemSpecifics.NameValueList["+i+"].";
                 $(d).prop("name",t+name_);
             });
-
+            $("#Description").val(myDescription.getContent());
             var data = $('#form').serialize();
             var urll = "/xsddWeb/saveItem.do";
             $(objs).attr("disabled",true);
@@ -49,12 +62,10 @@
             var trStr='<tr><td><input type="text" name="name" value="'+obj1+'"></td><td><input type="text" name="value" value="'+obj2+'"></td></tr>';
             return trStr;
         }
-
         function addAttrTr(name,value){
             var trStr='<tr><td>'+name+'</td><td><input type="text" name="'+name+'" value="'+value+'"></td></tr>';
             return trStr;
         }
-
         /**
         *添加自定义属性
          */
@@ -67,8 +78,6 @@
         function addAttr(name){
             $("#trValue").after().append(addAttrTr(name,''));
         }
-
-
    </script>
 </head>
 <c:set var="item" value="${item}"/>
@@ -83,12 +92,12 @@
         </tr>
         <tr>
             <td width="200" align="right">名称</td>
-            <td><input type="text" name="itemName" id="itemName"></td>
+            <td><input type="text" class="validate[required]" name="itemName" id="itemName" ></td>
         </tr>
         <tr>
             <td align="right">ebay账户</td>
             <td>
-                <select name="ebayAccount">
+                <select name="ebayAccount" class="validate[required]" >
                     <c:forEach items="${ebayList}" var="ebay">
                         <option value="${ebay.id}">${ebay.configName}</option>
                     </c:forEach>
@@ -184,11 +193,22 @@
         </tr>
         <tr>
             <td colspan="2">
+                描述
+                <hr/>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2">
+                <input type="hidden" name="Description" id="Description">
+                <script id="myDescription" type="text/plain" style="width:975px;height:300px;"></script>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2">
                 <input type="button" value="确定" onclick="saveData(this)">
             </td>
         </tr>
     </table>
-
 </form>
 </body>
 </html>

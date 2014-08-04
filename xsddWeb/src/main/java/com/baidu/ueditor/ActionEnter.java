@@ -12,6 +12,7 @@ import com.baidu.ueditor.hunter.FileManager;
 import com.baidu.ueditor.hunter.ImageHunter;
 import com.baidu.ueditor.upload.Uploader;
 import com.base.utils.applicationcontext.ApplicationContextUtil;
+import com.base.utils.applicationcontext.RequestResponseContext;
 import com.base.utils.imageManage.service.ImageService;
 
 public class ActionEnter {
@@ -29,13 +30,14 @@ public class ActionEnter {
         /**todo 重置rootpath*/
         /*ImageService imageService= (ImageService) ApplicationContextUtil.getBean(ImageService.class);
         String p= imageService.getImageDir();*/
+        RequestResponseContext.setRequest(request);
 
 		this.request = request;
 		this.rootPath = rootPath;
 		this.actionType = request.getParameter( "action" );
 		this.contextPath = request.getContextPath();
 		this.configManager = ConfigManager.getInstance( this.rootPath, this.contextPath, request.getRequestURI() );
-		
+		String x=request.getParameter("_sku");
 	}
 	
 	public String exec () {

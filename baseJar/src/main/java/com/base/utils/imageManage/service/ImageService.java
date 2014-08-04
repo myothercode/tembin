@@ -5,4 +5,6 @@ package com.base.utils.imageManage.service;
  */
 public interface ImageService {
     String getImageDir();
+
+    String getImageUserDir();
 }

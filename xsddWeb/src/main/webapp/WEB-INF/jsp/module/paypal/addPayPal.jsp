@@ -14,9 +14,13 @@
     <script>
         var api = frameElement.api, W = api.opener;
         function submitCommit(){
+            if(!jQuery("#payPalForm").validationEngine("validate"))
+            {
+                return;
+            }
             var url=path+"/ajax/savePayPal.do";
             var data=$("#payPalForm").serialize();
-            $().invoke(url,data,
+            /*$().invoke(url,data,
                     [function(m,r){
                         alert(r)
                         Base.token();
@@ -27,19 +31,24 @@
                             alert(r);
                             Base.token();
                         }]
-            );
+            );*/
         }
+        $(document).ready(function() {
+            jQuery("#payPalForm").validationEngine();
+        });
     </script>
 </head>
 <c:set value="${paypal}" var="paypal" />
 <body>
 <form id="payPalForm">
+    <br/>
+    <br/>
     <table>
         <tr>
             <td>名称:</td>
             <td>
                 <input type="hidden" name="id" id="id" value="${paypal.id}">
-                <input type="text" name="name" id="name" value="${paypal.payName}"></td>
+                <input type="text" name="name" id="name" value="${paypal.payName}" class="validate[required]" ></td>
         </tr>
         <tr>
             <td>站点:</td>
