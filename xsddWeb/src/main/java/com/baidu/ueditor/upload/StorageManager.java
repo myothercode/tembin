@@ -4,16 +4,15 @@ import com.baidu.ueditor.define.AppInfo;
 import com.baidu.ueditor.define.BaseState;
 import com.baidu.ueditor.define.State;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 
+import com.base.utils.applicationcontext.ApplicationContextUtil;
+import com.base.utils.imageManage.service.ImageService;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.net.ftp.FTP;
 import org.apache.commons.net.ftp.FTPClient;
+import org.apache.commons.net.ftp.FTPFile;
+import org.apache.commons.net.ftp.FTPReply;
 import org.apache.log4j.Logger;
 
 public class StorageManager {
@@ -73,11 +72,19 @@ public class StorageManager {
 				return new BaseState(false, AppInfo.MAX_SIZE);
 			}
 
-			state = saveTmpFile(tmpFile, path);
+			//state = saveTmpFile(tmpFile, path); //todo 保存文件的方式，是存本地还是上传ftp
+            state=ftpUploadFile(tmpFile,path);
+            if (state.isSuccess()){
+                ImageService imageService= (ImageService) ApplicationContextUtil.getBean(ImageService.class);
+                saveTmpFile(tmpFile, imageService.getImageDir()+"/"+path);
+            }else {
+                tmpFile.delete();
+            }
 
-			if (!state.isSuccess()) {
-				tmpFile.delete();
-			}
+
+			//if (!state.isSuccess()) {
+			//	tmpFile.delete();
+			//}
 
 			return state;
 			
@@ -104,12 +111,13 @@ public class StorageManager {
 			}
 			bos.flush();
 			bos.close();
-
-			state = saveTmpFile(tmpFile, path);
-
-			if (!state.isSuccess()) {
-				tmpFile.delete();
-			}
+            ImageService imageService= (ImageService) ApplicationContextUtil.getBean(ImageService.class);
+			state = saveTmpFile(tmpFile, imageService.getImageDir()+"/"+path);
+            state=ftpUploadFile(tmpFile, path);
+            tmpFile.delete();
+			//if (!state.isSuccess()) {
+			//	tmpFile.delete();
+			//}
 
 			return state;
 		} catch (IOException e) {
@@ -125,9 +133,6 @@ public class StorageManager {
 
 	private static State saveTmpFile(File tmpFile, String path) {
 
-
-
-
 		State state = null;
 		File targetFile = new File(path);
 
@@ -135,10 +140,12 @@ public class StorageManager {
 			return new BaseState(false, AppInfo.PERMISSION_DENIED);
 		}
 		try {
-			FileUtils.moveFile(tmpFile, targetFile);
+			FileUtils.copyFile(tmpFile, targetFile);
 		} catch (IOException e) {
 			return new BaseState(false, AppInfo.IO_ERROR);
-		}
+		}finally {
+            tmpFile.delete();
+        }
 
 		state = new BaseState(true);
 		state.putInfo( "size", targetFile.length() );
@@ -162,20 +169,43 @@ public class StorageManager {
 	}
 
 
-    private static State ftpUploadFile(File file){
+    /**ftp上传文件*/
+    private static State ftpUploadFile(File file,String path){
        // http://www.open-open.com/lib/view/open1384090071946.html
+        //ftpClient.makeDirectory(new String(pathName.getBytes("UTF-8"),"iso-8859-1"));创建目录
+        State state = null;
 
         FTPClient ftpClient = new FTPClient();
         try {
             ftpClient.connect("192.168.0.241",21);
-            ftpClient.login("user1", "user1");
-            ftpClient.enterLocalPassiveMode();
+            ftpClient.login("caixu", "123456");
             ftpClient.setFileType(FTP.BINARY_FILE_TYPE);
+            ftpClient.enterLocalPassiveMode();
+            ftpClient.setControlEncoding("UTF-8");
+            ftpClient.setUseEPSVwithIPv4( true );//java7在windows上的一个bug
+
+            int reply;//检查登陆结果
+            reply=ftpClient.getReplyCode();
+            if(!FTPReply.isPositiveCompletion(reply)){
+                logger.error("ftp登陆失败!登陆结果是"+reply);
+                ftpClient.disconnect();
+            }
+            // 转移工作目录至指定目录下
+            boolean change = ftpClient.changeWorkingDirectory("/");
+           // String[] x= ftpClient.listNames();
             String fileName = new String(file.getName().getBytes("utf-8"),"iso-8859-1");
-        } catch (IOException e) {
+          boolean  result = ftpClient.storeFile(fileName+".jpg", new FileInputStream(file));
+            if (result) {
+                logger.info("ftp上传成功!");
+            }
+
+        } catch (Exception e) {
             logger.error("ftp出错"+e.getMessage(),e);
+            file.delete();
+            return new BaseState(false, AppInfo.IO_ERROR);
         } finally {
             try {
+                ftpClient.logout();
                 ftpClient.disconnect();
             } catch (Exception e) {
                 logger.error(e.getMessage(),e);
@@ -183,7 +213,10 @@ public class StorageManager {
 
         }
 
-return null;
+        state = new BaseState(true);
+        state.putInfo( "size", file.length() );
+        state.putInfo( "title", file.getName() );
+        return state;
     }
 
 }
