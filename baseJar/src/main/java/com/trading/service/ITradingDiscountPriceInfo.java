@@ -19,4 +19,6 @@ public interface ITradingDiscountPriceInfo {
     List<DiscountpriceinfoQuery> selectByDiscountpriceinfo(Map map);
 
     List<DiscountpriceinfoQuery> selectByDiscountpriceinfo(Map map, Page page);
+
+    TradingDiscountpriceinfo selectById(Long id);
 }

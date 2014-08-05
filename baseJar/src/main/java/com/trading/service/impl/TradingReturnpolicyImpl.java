@@ -88,4 +88,8 @@ public class TradingReturnpolicyImpl implements com.trading.service.ITradingRetu
         return this.returnpolicyMapper.selectByReturnpolicyList(map,page);
     }
 
+    @Override
+    public TradingReturnpolicy selectById(Long id){
+        return this.tradingReturnpolicyMapper.selectByPrimaryKey(id);
+    }
 }

@@ -19,4 +19,6 @@ public interface ITradingItemAddress {
     List<ItemAddressQuery> selectByItemAddressQuery(Map map,Page page);
 
     List<ItemAddressQuery> selectByItemAddressQuery(Map map);
+
+    TradingItemAddress selectById(Long id);
 }

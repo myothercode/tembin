@@ -37,7 +37,6 @@ public class ActionEnter {
 		this.actionType = request.getParameter( "action" );
 		this.contextPath = request.getContextPath();
 		this.configManager = ConfigManager.getInstance( this.rootPath, this.contextPath, request.getRequestURI() );
-		String x=request.getParameter("_sku");
 	}
 	
 	public String exec () {
@@ -84,7 +83,9 @@ public class ActionEnter {
                 conf = this.configManager.getConfig( actionCode );
                 ImageService imageService= (ImageService) ApplicationContextUtil.getBean(ImageService.class);
                 String p= imageService.getImageDir();
+                String userLoginID1=imageService.getImageUserDir();
                 conf.put("rootPath",p);
+                conf.put("dir","/"+userLoginID1+"/"+request.getParameter("_sku"));//图片相对路径
                 state = new Uploader( request, conf ).doExec();
                 break;
 			case ActionMap.UPLOAD_VIDEO:
@@ -104,7 +105,9 @@ public class ActionEnter {
                 conf.remove("rootPath");
                 ImageService imageService1= (ImageService) ApplicationContextUtil.getBean(ImageService.class);
                 String p1= imageService1.getImageDir();
-                conf.put("rootPath",p1);
+                String userLoginID=imageService1.getImageUserDir();
+                conf.put("rootPath",p1);//在本地存放的目录
+                conf.put("dir","/"+userLoginID+"/"+request.getParameter("_sku"));//图片相对路径
                 conf.put("action","listImage");
                 int starti = this.getStartIndex();
                 state = new FileManager( conf ).listFile( starti );

@@ -19,4 +19,6 @@ public interface ITradingPayPal {
     List<PaypalQuery> selectByPayPalList(Map map,Page page);
 
     PaypalQuery selectByPayPal(Map map);
+
+    TradingPaypal selectById(Long id);
 }

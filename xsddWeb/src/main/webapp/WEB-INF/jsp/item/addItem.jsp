@@ -20,9 +20,139 @@
     <script>
         var myDescription=null;
         $(document).ready(function() {
+            //加载买家要求
+            $("#buyer").initTable({
+                url:path + "/ajax/loadBuyerRequirementDetailsList.do",
+                columnData:[
+                    {title:"选择",name:"option1",width:"8%",align:"left",format:returnBuyer},
+                    {title:"名称",name:"name",width:"8%",align:"left"},
+                    {title:"站点",name:"siteName",width:"8%",align:"left"},
+                    {title:"所有买家购买",name:"buyerFlag",width:"8%",align:"left"}
+                ],
+                selectDataNow:true,
+                isrowClick:false,
+                showIndex:false
+            });
+
+            //加载折扣信息
+            $("#discountpriceinfo").initTable({
+                url:path + "/ajax/loadDiscountPriceInfoList.do",
+                columnData:[
+                    {title:"选项",name:"option1",width:"8%",align:"left",format:returnDiscountpriceinfo},
+                    {title:"名称",name:"name",width:"8%",align:"left"},
+                    {title:"账户名称",name:"ebayName",width:"8%",align:"left"},
+                    {title:"开始时间",name:"disStarttime",width:"8%",align:"left"},
+                    {title:"结束时间",name:"disEndtime",width:"8%",align:"left"},
+                    {title:"降价",name:"madeforoutletcomparisonprice",width:"8%",align:"left"},
+                    {title:"是否免运费",name:"isShippingfee",width:"8%",align:"left"}
+                ],
+                selectDataNow:true,
+                isrowClick:false,
+                showIndex:false
+            });
+
+            //物品所在地
+            $("#itemLocation").initTable({
+                url:path + "/ajax/loadItemAddressList.do",
+                columnData:[
+                    {title:"选项",name:"option1",width:"8%",align:"left",format:returnItemLocation},
+                    {title:"名称",name:"name",width:"8%",align:"left"},
+                    {title:"地址",name:"address",width:"8%",align:"left"},
+                    {title:"国家",name:"countryName",width:"8%",align:"left"},
+                    {title:"邮编",name:"postalcode",width:"8%",align:"left"}
+                ],
+                selectDataNow:true,
+                isrowClick:false,
+                showIndex:false
+            });
+            //付款选项
+            $("#pay").initTable({
+                url:path + "/ajax/loadPayPalList.do",
+                columnData:[
+                    {title:"选项",name:"option1",width:"8%",align:"left",format:returnPay},
+                    {title:"名称",name:"payName",width:"8%",align:"left"},
+                    {title:"站点",name:"siteName",width:"8%",align:"left"},
+                    {title:"paypal账号",name:"payPalName",width:"8%",align:"left"},
+                    {title:"描述",name:"paymentinstructions",width:"8%",align:"left"}
+
+                ],
+                selectDataNow:true,
+                isrowClick:false,
+                showIndex:false
+            });
+
+            //退货选项
+            $("#returnpolicy").initTable({
+                url:path + "/ajax/loadReturnpolicyList.do",
+                columnData:[
+                    {title:"选项",name:"option1",width:"8%",align:"left",format:returnReturnpolicy},
+                    {title:"名称",name:"name",width:"8%",align:"left"},
+                    {title:"站点",name:"siteName",width:"8%",align:"left"},
+                    {title:"退货政策",name:"returnsAcceptedOptionName",width:"8%",align:"left"},
+                    {title:"退货天数",name:"returnsWithinOptionName",width:"8%",align:"left"},
+                    {title:"退款方式",name:"refundOptionName",width:"8%",align:"left"},
+                    {title:"退货运费由谁负担",name:"shippingCostPaidByOptionName",width:"8%",align:"left"}
+
+                ],
+                selectDataNow:true,
+                isrowClick:false,
+                showIndex:false
+            });
+            //运输选项
+            $("#shippingDeails").initTable({
+                url:path + "/ajax/loadShippingDetailsList.do",
+                columnData:[
+                    {title:"选项",name:"option1",width:"8%",align:"left",format:returnShippingDeails},
+                    {title:"名称",name:"shippingName",width:"8%",align:"left"},
+                    {title:"站点",name:"siteName",width:"8%",align:"left"},
+                    {title:"ebay账号",name:"ebayName",width:"8%",align:"left"}
+
+                ],
+                selectDataNow:true,
+                isrowClick:false,
+                showIndex:false
+            });
+
             $("#form").validationEngine();
             myDescription = UE.getEditor('myDescription');
         });
+
+        /**返回买家要求单选框*/
+        function returnBuyer(json){
+            var htm="<input type=\"radio\" name=\"buyerId\" value="+json.id+">";
+            return htm;
+        }
+
+        /**返回折扣信息单选框*/
+        function returnDiscountpriceinfo(json){
+            var htm="<input type=\"radio\" name=\"discountpriceinfoId\" value="+json.id+">";
+            return htm;
+        }
+
+        /**返回物品所在地信息单选框*/
+        function returnItemLocation(json){
+            var htm="<input type=\"radio\" name=\"itemLocationId\" value="+json.id+">";
+            return htm;
+        }
+        /**返回付款选项信息单选框*/
+        function returnPay(json){
+            var htm="<input type=\"radio\" name=\"payId\" value="+json.id+">";
+            return htm;
+        }
+
+
+        /**返回退货项信息单选框*/
+        function returnReturnpolicy(json){
+            var htm="<input type=\"radio\" name=\"returnpolicyId\" value="+json.id+">";
+            return htm;
+        }
+
+        /**返回运输选项信息单选框*/
+        function returnShippingDeails(json){
+            var htm="<input type=\"radio\" name=\"shippingDeailsId\" value="+json.id+">";
+            return htm;
+        }
+
         function saveData(objs) {
             if(!$("#form").validationEngine("validate")){
                 return;
@@ -124,12 +254,12 @@
         </tr>
         <tr>
             <td align="right">SKU</td>
-            <td><input type="text" name="SKU" id="SKU"></td>
+            <td><input type="text" name="SKU" id="SKU"  class="validate[required]"></td>
         </tr>
         <tr>
             <td align="right" style="vertical-align: top;">物品标题</td>
             <td>
-                标题<input type="text" name="Title" id="Title" value="">
+                标题<input type="text" name="Title" id="Title"  class="validate[required]" value="" >
                 <br/>
                 子标题<input type="text" name="SubTitle" id="SubTitle" value="">
             </td>
@@ -203,6 +333,81 @@
                 <script id="myDescription" type="text/plain" style="width:975px;height:300px;"></script>
             </td>
         </tr>
+
+        <tr>
+            <td colspan="2">
+                买家要求
+                <hr/>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2">
+                <div  id="buyer">
+
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2">
+                折扣信息
+                <hr/>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2">
+                <div  id="discountpriceinfo">
+
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2">
+                物品所在地
+                <hr/>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2">
+                <div  id="itemLocation">
+
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2">
+                付款选项
+                <hr/>
+            </td>
+        </tr>
+        <td colspan="2">
+            <div  id="pay">
+
+            </div>
+        </td>
+        <tr>
+            <td colspan="2">
+                退货选项
+                <hr/>
+            </td>
+        </tr>
+        <td colspan="2">
+            <div  id="returnpolicy">
+
+            </div>
+        </td>
+
+        <tr>
+            <td colspan="2">
+                运输选项
+                <hr/>
+            </td>
+        </tr>
+        <td colspan="2">
+            <div  id="shippingDeails">
+
+            </div>
+        </td>
+
         <tr>
             <td colspan="2">
                 <input type="button" value="确定" onclick="saveData(this)">
@@ -210,5 +415,6 @@
         </tr>
     </table>
 </form>
+
 </body>
 </html>

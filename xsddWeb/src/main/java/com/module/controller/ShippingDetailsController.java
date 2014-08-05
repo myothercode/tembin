@@ -55,9 +55,9 @@ public class ShippingDetailsController extends BaseAction{
      * @param commonParmVO
      * @return
      */
-    @RequestMapping("/ajax/shippingDetailsList.do")
+    @RequestMapping("/ajax/loadShippingDetailsList.do")
     @ResponseBody
-    public void shippingDetailsList(ModelMap modelMap,CommonParmVO commonParmVO){
+    public void loadShippingDetailsList(ModelMap modelMap,CommonParmVO commonParmVO){
         SessionVO c= SessionCacheSupport.getSessionVO();
         Map m = new HashMap();
         m.put("userid",c.getId());

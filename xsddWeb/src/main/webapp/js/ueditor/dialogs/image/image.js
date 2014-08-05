@@ -777,6 +777,7 @@
             var i, data, list = [],
                 align = getAlign(),
                 prefix = editor.getOpt('imageUrlPrefix');
+
             for (i = 0; i < this.imageList.length; i++) {
                 data = this.imageList[i];
                 list.push({
@@ -864,6 +865,13 @@
                 this.isLoadingData = true;
                 var url = editor.getActionUrl(editor.getOpt('imageManagerActionName')),
                     isJsonp = utils.isCrossDomainUrl(url);
+                /**获取在线图片列表时增加参数*/
+                if(_sku!=null){
+                    url=url+"&_sku="+_sku;
+                }else{
+                    alert("缺少sku!");
+                    return;
+                }
                 ajax.request(url, {
                     'timeout': 100000,
                     'dataType': isJsonp ? 'jsonp':'',
@@ -915,8 +923,13 @@
                         }
                     })(img));
                     img.width = 113;
-                    img.setAttribute('src', urlPrefix + list[i].url + ((urlPrefix+list[i].url.indexOf('?')) == -1 ? '?noCache=':'&noCache=') + (+new Date()).toString(36) );
-                    img.setAttribute('_src', urlPrefix + list[i].url);
+                    var urll=urlPrefix + list[i].url;
+
+                    if(urll!=null){
+                        urll=urll.replace("@",":")
+                    }
+                    img.setAttribute('src', urll + ((urll.indexOf('?')) == -1 ? '?noCache=':'&noCache=') + (+new Date()).toString(36) );
+                    img.setAttribute('_src', urll);
                     domUtils.addClass(icon, 'icon');
 
                     item.appendChild(img);

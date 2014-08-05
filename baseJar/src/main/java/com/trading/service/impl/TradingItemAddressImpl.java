@@ -59,4 +59,9 @@ public class TradingItemAddressImpl implements com.trading.service.ITradingItemA
         page.setCurrentPage(1);
         return this.itemAddressMapper.selectByItemAddressList(map,page);
     }
+
+    @Override
+    public TradingItemAddress selectById(Long id){
+        return this.tradingItemAddressMapper.selectByPrimaryKey(id);
+    }
 }

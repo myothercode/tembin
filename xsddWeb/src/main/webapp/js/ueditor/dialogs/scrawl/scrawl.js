@@ -662,6 +662,13 @@ function exec(scrawlObj) {
             var actionUrl = editor.getActionUrl(editor.getOpt('scrawlActionName')),
                 params = utils.serializeParam(editor.queryCommandValue('serverparam')) || '',
                 url = utils.formatUrl(actionUrl + (actionUrl.indexOf('?') == -1 ? '?':'&') + params);
+            /*增加sku参数*/
+            if(_sku!=null){
+                url=url+(url.indexOf('?') == -1 ? '?':'&')+"_sku="+_sku
+            }else{
+                alert("缺少sku!");
+                return;
+            }
             ajax.request(url, options);
         }
     } else {

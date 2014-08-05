@@ -14,7 +14,7 @@
     <link rel="stylesheet" type="text/css" href="<c:url value ="/js/jquery-easyui/themes/default/easyui.css" />"/>
     <link rel="stylesheet" type="text/css" href="<c:url value ="/js/jquery-easyui/themes/icon.css" />"/>
     <script type="text/javascript" src=<c:url value ="/js/ueditor/ueditor.config.js" /> ></script>
-    <script type="text/javascript" src=<c:url value ="/js/ueditor/ueditor.all.min.js" /> ></script>
+    <script type="text/javascript" src=<c:url value ="/js/ueditor/ueditor.all.js" /> ></script>
     <script type="text/javascript" src=<c:url value ="/js/ueditor/lang/zh-cn/zh-cn.js" /> ></script>
     <script type="text/javascript" src=<c:url value ="/js/jquery-easyui/jquery.easyui.min.js" /> ></script>
     <style type="text/css">
@@ -78,9 +78,9 @@
         $().invoke(url,data,
                 [function(m,r){
                     alert(r);
+                    W.descDiag.close();
                     Base.token();
                     W.refreshTable();
-                    W.descDiag.close();
                 },
                     function(m,r){
                         alert(r);

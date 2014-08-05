@@ -1,6 +1,7 @@
 package com.base.xmlpojo.trading.addproduct;
 
 import com.base.xmlpojo.trading.addproduct.attrclass.StartPrice;
+import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamImplicit;
 
 import java.util.Date;
@@ -10,6 +11,7 @@ import java.util.List;
  * 商品信息
  * Created by cz on 2014/7/17.
  */
+@XStreamAlias("Item")
 public class Item {
     /**
      * 应用数据

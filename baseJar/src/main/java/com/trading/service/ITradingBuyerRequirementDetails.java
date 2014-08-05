@@ -19,4 +19,6 @@ public interface ITradingBuyerRequirementDetails {
     List<BuyerRequirementDetailsQuery> selectTradingBuyerRequirementDetailsByList(Map m,Page page);
 
     List<BuyerRequirementDetailsQuery> selectTradingBuyerRequirementDetailsByList(Map m);
+
+    TradingBuyerRequirementDetails selectById(Long id);
 }

@@ -22,8 +22,8 @@
                     console.debug(arguments);
                     alert(r);
                     Base.token();
-                    W.refreshTable();
                     W.returnPolicy.close();
+                    W.refreshTable();
                 },
                     function(m,r){
                         console.debug(arguments);

@@ -19,14 +19,19 @@ public class TradingItemImpl implements com.trading.service.ITradingItem {
     private TradingItemMapper tradingItemMapper;
 
     @Override
-    public void saveTradingItem(TradingItem pojo){
-        this.tradingItemMapper.insertSelective(pojo);
+    public void saveTradingItem(TradingItem pojo) throws Exception {
+        if(pojo.getId()==null){
+            ObjectUtils.toInitPojoForInsert(pojo);
+            this.tradingItemMapper.insertSelective(pojo);
+        }else{
+            this.tradingItemMapper.updateByPrimaryKeySelective(pojo);
+        }
+
     }
 
     @Override
     public TradingItem toDAOPojo(Item item) throws Exception {
         TradingItem pojo = new TradingItem();
-        ObjectUtils.toInitPojoForInsert(pojo);
         ConvertPOJOUtil.convert(pojo, item);
         ConvertPOJOUtil.convert(pojo, item.getBestOfferDetails());
         ConvertPOJOUtil.convert(pojo, item.getPrimaryCategory());

@@ -14,6 +14,7 @@ public final class AppInfo {
 	public static final int PARSE_REQUEST_ERROR = 6;
 	public static final int NOTFOUND_UPLOAD_DATA = 7;
 	public static final int NOT_ALLOW_FILE_TYPE = 8;
+    public static final int FTP_LOGIN_FAILED = 9;
 	
 	public static final int INVALID_ACTION = 101;
 	public static final int CONFIG_ERROR = 102;
@@ -67,6 +68,7 @@ public final class AppInfo {
 		
 		// callback参数名不合法
 		put( AppInfo.ILLEGAL, "Callback\u53C2\u6570\u540D\u4E0D\u5408\u6CD5" );
+        put(AppInfo.FTP_LOGIN_FAILED,"ftp登陆失败");
 		
 	}};
 	

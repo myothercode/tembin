@@ -61,4 +61,8 @@ public class TradingDiscountPriceInfoImpl implements com.trading.service.ITradin
         return this.discountpriceinfoMapper.selectByDiscountpriceinfoList(map,page);
     }
 
+    @Override
+    public TradingDiscountpriceinfo selectById(Long id){
+        return this.tradingDiscountpriceinfoMapper.selectByPrimaryKey(id);
+    }
 }

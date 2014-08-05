@@ -30,7 +30,7 @@
         }
         $(document).ready(function(){
             $("#shippingDetailsList").initTable({
-                url:path + "/ajax/shippingDetailsList.do",
+                url:path + "/ajax/loadShippingDetailsList.do",
                 columnData:[
                     {title:"名称",name:"shippingName",width:"8%",align:"left"},
                     {title:"站点",name:"siteName",width:"8%",align:"left"},

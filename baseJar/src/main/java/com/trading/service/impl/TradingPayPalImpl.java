@@ -63,4 +63,9 @@ public class TradingPayPalImpl implements com.trading.service.ITradingPayPal {
         return this.paypalMapper.selectByPayPalList(map,page).get(0);
     }
 
+    @Override
+    public TradingPaypal selectById(Long id){
+        return this.tradingPaypalMapper.selectByPrimaryKey(id);
+    }
+
 }

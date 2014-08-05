@@ -13,7 +13,7 @@
 <head>
     <title></title>
     <script>
-        var descDiag;
+        var descDiag="";
         function addDescriptionDetails(){
             descDiag=$.dialog({title: '新增卖家描述',
                 content: 'url:/xsddWeb/addDescriptionDetails.do',

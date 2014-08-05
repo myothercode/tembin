@@ -18,4 +18,6 @@ public interface ITradingReturnpolicy {
     List<ReturnpolicyQuery> selectByReturnpolicyList(Map map, Page page);
 
     List<ReturnpolicyQuery> selectByReturnpolicyList(Map map);
+
+    TradingReturnpolicy selectById(Long id);
 }

@@ -65,4 +65,9 @@ public class TradingBuyerRequirementDetailsImpl implements com.trading.service.I
         page.setCurrentPage(1);
         return this.buyerRequirementDetailsMapper.selectByBuyer(m,page);
     }
+
+    @Override
+    public TradingBuyerRequirementDetails selectById(Long id){
+        return this.tradingBuyerRequirementDetailsMapper.selectByPrimaryKey(id);
+    }
 }

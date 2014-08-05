@@ -5,10 +5,13 @@ import com.baidu.ueditor.define.BaseState;
 import com.baidu.ueditor.define.State;
 
 import java.io.*;
+import java.util.Map;
 
 import com.base.utils.applicationcontext.ApplicationContextUtil;
 import com.base.utils.imageManage.service.ImageService;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.net.ftp.FTP;
 import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPFile;
@@ -23,13 +26,18 @@ public class StorageManager {
 	}
 
 	public static State saveBinaryFile(byte[] data, String path) {
-		File file = new File(path);
+		//File file = getTmpFile();
+        String[] skuandfname= StringUtils.split(path,"/");
+        ArrayUtils.reverse(skuandfname);
+        File tfileDir = FileUtils.getTempDirectory();
+        File file = new File(tfileDir,skuandfname[0]);
 
 		State state = valid(file);
 
 		if (!state.isSuccess()) {
 			return state;
 		}
+
 
 		try {
 			BufferedOutputStream bos = new BufferedOutputStream(
@@ -40,10 +48,10 @@ public class StorageManager {
 		} catch (IOException ioe) {
 			return new BaseState(false, AppInfo.IO_ERROR);
 		}
-
-		state = new BaseState(true, file.getAbsolutePath());
+        state = ftpUploadFile(file,path);
+		/*state = new BaseState(true, file.getAbsolutePath());
 		state.putInfo( "size", data.length );
-		state.putInfo( "title", file.getName() );
+		state.putInfo( "title", file.getName() );*/
 		return state;
 	}
 
@@ -74,17 +82,12 @@ public class StorageManager {
 
 			//state = saveTmpFile(tmpFile, path); //todo 保存文件的方式，是存本地还是上传ftp
             state=ftpUploadFile(tmpFile,path);
-            if (state.isSuccess()){
-                ImageService imageService= (ImageService) ApplicationContextUtil.getBean(ImageService.class);
+            ImageService imageService= (ImageService) ApplicationContextUtil.getBean(ImageService.class);
+            if (state.isSuccess() && imageService.getISBackLocal()){
                 saveTmpFile(tmpFile, imageService.getImageDir()+"/"+path);
             }else {
                 tmpFile.delete();
             }
-
-
-			//if (!state.isSuccess()) {
-			//	tmpFile.delete();
-			//}
 
 			return state;
 			
@@ -111,13 +114,13 @@ public class StorageManager {
 			}
 			bos.flush();
 			bos.close();
+            state=ftpUploadFile(tmpFile,path);
             ImageService imageService= (ImageService) ApplicationContextUtil.getBean(ImageService.class);
-			state = saveTmpFile(tmpFile, imageService.getImageDir()+"/"+path);
-            state=ftpUploadFile(tmpFile, path);
-            tmpFile.delete();
-			//if (!state.isSuccess()) {
-			//	tmpFile.delete();
-			//}
+            if (state.isSuccess() && imageService.getISBackLocal()){
+                saveTmpFile(tmpFile, imageService.getImageDir()+"/"+path);
+            }else {
+                tmpFile.delete();
+            }
 
 			return state;
 		} catch (IOException e) {
@@ -132,7 +135,6 @@ public class StorageManager {
 	}
 
 	private static State saveTmpFile(File tmpFile, String path) {
-
 		State state = null;
 		File targetFile = new File(path);
 
@@ -174,11 +176,18 @@ public class StorageManager {
        // http://www.open-open.com/lib/view/open1384090071946.html
         //ftpClient.makeDirectory(new String(pathName.getBytes("UTF-8"),"iso-8859-1"));创建目录
         State state = null;
+        String[] skuandfname= StringUtils.split(path,"/");
+        ArrayUtils.reverse(skuandfname);
+        String skuName=skuandfname[1];
+        String fileName=skuandfname[0];
+        String userName=skuandfname[2];
 
         FTPClient ftpClient = new FTPClient();
         try {
-            ftpClient.connect("192.168.0.241",21);
-            ftpClient.login("caixu", "123456");
+            ImageService imageService1= (ImageService) ApplicationContextUtil.getBean(ImageService.class);
+            Map<String,String> map=imageService1.getFTPINfo();
+            ftpClient.connect(map.get("ftpIP"),Integer.parseInt(map.get("ftpPort")));
+            ftpClient.login(map.get("ftpUserName"), map.get("ftpPassword"));
             ftpClient.setFileType(FTP.BINARY_FILE_TYPE);
             ftpClient.enterLocalPassiveMode();
             ftpClient.setControlEncoding("UTF-8");
@@ -189,12 +198,29 @@ public class StorageManager {
             if(!FTPReply.isPositiveCompletion(reply)){
                 logger.error("ftp登陆失败!登陆结果是"+reply);
                 ftpClient.disconnect();
+                return new BaseState(false, AppInfo.FTP_LOGIN_FAILED);
             }
             // 转移工作目录至指定目录下
-            boolean change = ftpClient.changeWorkingDirectory("/");
+            boolean change = ftpClient.changeWorkingDirectory(userName);
+            if(!change){
+                boolean cdSku = ftpClient.makeDirectory(userName);
+                if(!cdSku){
+                    logger.error("在ftp上创建用户目录失败!"+userName);
+                    return new BaseState(false, AppInfo.FAILED_CREATE_FILE);
+                }
+            }
+            boolean skudir = ftpClient.changeWorkingDirectory(skuName);
+            if(!skudir){
+                boolean cdSku = ftpClient.makeDirectory(skuName);
+                if(!cdSku){
+                    logger.error("在ftp上创建sku目录失败"+userName+":"+skuName);
+                    return new BaseState(false, AppInfo.FAILED_CREATE_FILE);
+                }
+            }
+           ftpClient.changeWorkingDirectory(skuName);
            // String[] x= ftpClient.listNames();
-            String fileName = new String(file.getName().getBytes("utf-8"),"iso-8859-1");
-          boolean  result = ftpClient.storeFile(fileName+".jpg", new FileInputStream(file));
+           // String fileName = new String(file.getName().getBytes("utf-8"),"iso-8859-1");
+          boolean  result = ftpClient.storeFile(fileName, new FileInputStream(file));
             if (result) {
                 logger.info("ftp上传成功!");
             }

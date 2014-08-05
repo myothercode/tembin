@@ -64,6 +64,5 @@
     <input type="button" name="addReturnpolicy" value="新增" onclick="addReturnpolicy();">
 </div>
 <div id="returnPolicyListTable"></div>
-
 </body>
 </html>
