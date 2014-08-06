@@ -62,7 +62,7 @@
     var um3 = UE.getEditor('myEditor3');
     var um4 =UE.getEditor('myEditor4');
 
-    _sku="dddd";
+    _sku="systemImage";
 
 </script>
 <script type="text/javascript">

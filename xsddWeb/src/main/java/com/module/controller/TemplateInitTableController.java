@@ -109,12 +109,14 @@ public class TemplateInitTableController extends BaseAction{
         String id=request.getParameter("id");
         String templatehtml=request.getParameter("templateHtml");
         String tLevel=request.getParameter("level");
+        String templateName=request.getParameter("templateName");
         tradingTemplateInitTable tm=new tradingTemplateInitTable();
         if(!ObjectUtils.isLogicalNull(id)){
             tm.setId(Long.parseLong(id));
         }
         tm.setTemplateHtml(templatehtml);
         tm.setTLevel(tLevel);
+        tm.setTemplateName(templateName);
         iTradingTemplateInitTable.saveTemplateInitTable(tm);
         AjaxSupport.sendSuccessText("message", "操作成功！");
     }

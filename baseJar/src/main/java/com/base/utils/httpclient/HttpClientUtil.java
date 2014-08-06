@@ -1,6 +1,7 @@
 package com.base.utils.httpclient;
 
 import com.mysql.jdbc.ExceptionInterceptor;
+import org.apache.http.Header;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpVersion;
 import org.apache.http.NameValuePair;
@@ -31,6 +32,8 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+
 import org.apache.log4j.*;
 
 public class HttpClientUtil {
@@ -160,16 +163,30 @@ public class HttpClientUtil {
 	}
 
 	public static String post(HttpClient httpClient, String url, String content) throws Exception {
-		return post(httpClient, url, content, "utf-8");
+		return post(httpClient, url, content, "utf-8",null);
 	}
 
-	public static String post(HttpClient httpClient, String url, String content, String encode)
+	public static String post(HttpClient httpClient, String url, String content, String encode,List<Header> header)
 			throws Exception {
 		String ret = "";
 		try {
 			HttpPost httppost = new HttpPost(url.replaceAll("&amp;", "&")
 					.replaceAll("\\s*$", ""));
 			httppost.addHeader("User-Agent", USER_AGENT);
+
+            /*测试数据*/
+            /*httppost.addHeader("X-EBAY-API-COMPATIBILITY-LEVEL","879");
+            httppost.addHeader("X-EBAY-API-DEV-NAME","bbafa7e7-2f98-4783-9c34-f403faeb007f");
+            httppost.addHeader("X-EBAY-API-APP-NAME","chengdul-5b82-4a84-a496-6a2c75e4e0d5");
+            httppost.addHeader("X-EBAY-API-CERT-NAME","724f4467-9280-437c-a998-f5bcfee67ce5");
+            httppost.addHeader("X-EBAY-API-SITEID","0");
+            httppost.addHeader("X-EBAY-API-CALL-NAME","GeteBayOfficialTime");*/
+            if(header!=null && !header.isEmpty()){
+                for (Header h : header){
+                    httppost.addHeader(h);
+                }
+            }
+
 			if (content == null) {
 				List<NameValuePair> nvps = new ArrayList<NameValuePair>();
 				httppost.setEntity(new UrlEncodedFormEntity(nvps, encode));

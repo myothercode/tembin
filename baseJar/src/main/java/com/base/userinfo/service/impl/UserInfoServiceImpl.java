@@ -1,9 +1,12 @@
 package com.base.userinfo.service.impl;
 
+import com.base.database.trading.mapper.UsercontrollerDevAccountMapper;
+import com.base.database.trading.model.UsercontrollerDevAccount;
 import com.base.domains.LoginVO;
 import com.base.domains.PermissionVO;
 import com.base.domains.RoleVO;
 import com.base.domains.SessionVO;
+import com.base.domains.userinfo.UsercontrollerDevAccountExtend;
 import com.base.userinfo.mapper.UserInfoServiceMapper;
 import com.base.utils.common.EncryptionUtil;
 import com.base.utils.common.ObjectUtils;
@@ -22,6 +25,8 @@ import java.util.Map;
 public class UserInfoServiceImpl implements com.base.userinfo.service.UserInfoService {
     @Autowired
     private UserInfoServiceMapper userInfoServiceMapper;//查询用户信息
+    @Autowired
+    private UsercontrollerDevAccountMapper usercontrollerDevAccountMapper;//查询开发帐号信息
 
     @Override
     public SessionVO getUserInfo(LoginVO loginVO){
@@ -41,5 +46,12 @@ public class UserInfoServiceImpl implements com.base.userinfo.service.UserInfoSe
             sessionVO.setPermissions(permissions);
         }
        return sessionVO;
+    }
+
+    @Override
+    /**获取开发者帐号的信息*/
+    public UsercontrollerDevAccountExtend getDevInfo( Long id ) throws Exception {
+        UsercontrollerDevAccount x= usercontrollerDevAccountMapper.selectByPrimaryKey(id);
+        return x.toExtend();
     }
 }

@@ -42,6 +42,7 @@
             $("#templateInitTableListTable").initTable({
                 url:path + "/ajax/loadTemplateInitTableList.do?",
                 columnData:[
+                    {title:"模板名字",name:"templateName",width:"8%",align:"left"},
                     {title:"tLevel",name:"level",width:"8%",align:"left",format:makeOption2},
                     {title:"操作",name:"option1",width:"8%",align:"left",format:makeOption1}
                 ],

@@ -59,7 +59,8 @@
                     <option value="0">预设</option>
                 </c:if>
             </select>
-        </c:if>
+        </c:if><br/>
+        模板名字:<input type="text" name="templateName" value="${TemplateInitTable.templateName}"/>
     </form>
         <script id="myEditor" type="text/plain" style="width:975px;height:400px;">${TemplateInitTable.templateHtml}</script>
     <input type="button" value="保存" onclick="submitCommit();"/>
