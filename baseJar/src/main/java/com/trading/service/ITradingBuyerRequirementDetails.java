@@ -21,4 +21,6 @@ public interface ITradingBuyerRequirementDetails {
     List<BuyerRequirementDetailsQuery> selectTradingBuyerRequirementDetailsByList(Map m);
 
     TradingBuyerRequirementDetails selectById(Long id);
+
+    BuyerRequirementDetails toXmlPojo(Long id);
 }

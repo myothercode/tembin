@@ -9,7 +9,7 @@ import com.base.mybatis.page.Page;
 import com.base.utils.common.ConvertPOJOUtil;
 import com.base.utils.common.ObjectUtils;
 import com.base.utils.exception.Asserts;
-import com.base.xmlpojo.trading.addproduct.BuyerRequirementDetails;
+import com.base.xmlpojo.trading.addproduct.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -69,5 +69,54 @@ public class TradingBuyerRequirementDetailsImpl implements com.trading.service.I
     @Override
     public TradingBuyerRequirementDetails selectById(Long id){
         return this.tradingBuyerRequirementDetailsMapper.selectByPrimaryKey(id);
+    }
+    @Override
+    public BuyerRequirementDetails toXmlPojo(Long id){
+        BuyerRequirementDetails brd = null;
+        TradingBuyerRequirementDetails tbrd = this.selectById(id);
+        if(tbrd!=null){
+            brd = new BuyerRequirementDetails();
+            if(tbrd.getPolicyPeriod()!=null&&tbrd.getPolicyCount()!=null){
+                MaximumBuyerPolicyViolations mbpv = new MaximumBuyerPolicyViolations();
+                mbpv.setPeriod(tbrd.getPolicyPeriod());
+                mbpv.setCount(tbrd.getPolicyCount().intValue());
+                brd.setMaximumBuyerPolicyViolations(mbpv);
+            }
+            if(tbrd.getUnpaidPeriod()!=null&&tbrd.getUnpaidCount()!=null){
+                MaximumUnpaidItemStrikesInfo muisi = new MaximumUnpaidItemStrikesInfo();
+                muisi.setCount(tbrd.getUnpaidCount().intValue());
+                muisi.setPeriod(tbrd.getUnpaidPeriod());
+                brd.setMaximumUnpaidItemStrikesInfo(muisi);
+            }
+            if(tbrd.getVerifiedFlag()!=null&&tbrd.getVerifiedFeedbackscore()!=null){
+                VerifiedUserRequirements vur = new VerifiedUserRequirements();
+                vur.setVerifiedUser( false);
+                vur.setMinimumFeedbackScore(tbrd.getFeedbackscore().intValue());
+                brd.setVerifiedUserRequirements(vur);
+            }
+            MaximumItemRequirements mir = new MaximumItemRequirements();
+            if(tbrd.getMaximumitemcount()!=null) {
+                mir.setMaximumItemCount(tbrd.getMaximumitemcount().intValue());
+            }
+            if(tbrd.getFeedbackscore()!=null) {
+                mir.setMinimumFeedbackScore(tbrd.getFeedbackscore().intValue());
+            }
+            if(tbrd.getMaximumitemcount()!=null&&tbrd.getFeedbackscore()!=null){
+                brd.setMaximumItemRequirements(mir);
+            }
+            if(tbrd.getLinkedpaypalaccount()!=null){
+                brd.setLinkedPayPalAccount(tbrd.getLinkedpaypalaccount().equals("1")?true:false);
+            }
+            if(tbrd.getShiptoregistrationcountry()!=null){
+                brd.setShipToRegistrationCountry(tbrd.getShiptoregistrationcountry().equals("1")?true:false);
+            }
+            if(tbrd.getZerofeedbackscore()!=null){
+                brd.setZeroFeedbackScore(tbrd.getZerofeedbackscore().equals("1")?true:false);
+            }
+            if(tbrd.getMinimumfeedbackscore()!=null){
+                brd.setMinimumFeedbackScore(tbrd.getMinimumfeedbackscore().intValue());
+            }
+        }
+        return brd;
     }
 }

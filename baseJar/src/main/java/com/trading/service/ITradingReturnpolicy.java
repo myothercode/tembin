@@ -20,4 +20,6 @@ public interface ITradingReturnpolicy {
     List<ReturnpolicyQuery> selectByReturnpolicyList(Map map);
 
     TradingReturnpolicy selectById(Long id);
+
+    ReturnPolicy toXmlPojo(Long id) throws Exception;
 }

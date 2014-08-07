@@ -236,6 +236,7 @@ public class UsercontrollerDevAccount {
         usd.setApiDevName(this.getApiDevName());
         usd.setRunname(this.getRunname());
         usd.setDevUser(this.getDevUser());
+        usd.setApiAppName(this.getApiAppName());
         usd.setId(this.getId());
         return usd;
     }

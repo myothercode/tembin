@@ -28,4 +28,6 @@ public interface ITradingShippingDetails {
     List<TradingInternationalshippingserviceoption> selectByInternationalshippingserviceoption(Long id);
 
     void saveAllData(TradingShippingdetails tradingShippingdetails, ShippingDetails shippingDetails, String noLocations) throws Exception;
+
+    ShippingDetails toXmlPojo(Long id) throws Exception;
 }

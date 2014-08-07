@@ -137,23 +137,18 @@ public class BuyerRequirementDetailsController extends BaseAction {
             }
             if(MinimumFeedbackScore!=null){
                 brd.setMinimumFeedbackScore(Integer.parseInt(MinimumFeedbackScore));
-
-                VerifiedUserRequirements vur = new VerifiedUserRequirements();
-                vur.setVerifiedUser(true);
-                vur.setMinimumFeedbackScore(Integer.parseInt(MinimumFeedbackScore));
-                brd.setVerifiedUserRequirements(vur);
             }
             brd.setZeroFeedbackScore(false);
             if(Policy_count!=null&&Policy_period!=null){
                 MaximumBuyerPolicyViolations mbpv = new MaximumBuyerPolicyViolations();
                 mbpv.setCount(Integer.parseInt(Policy_count));
-                mbpv.setPeriod(Policy_period+"_DAY");
+                mbpv.setPeriod("Days_"+Policy_period);
                 brd.setMaximumBuyerPolicyViolations(mbpv);
             }
             if(Unpaid_count!=null&&Unpaid_period!=null){
                 MaximumUnpaidItemStrikesInfo muis = new MaximumUnpaidItemStrikesInfo();
                 muis.setCount(Integer.parseInt(Unpaid_count));
-                muis.setPeriod(Unpaid_period+"_Day");
+                muis.setPeriod("Days_"+Unpaid_period);
                 brd.setMaximumUnpaidItemStrikesInfo(muis);
             }
             if(MaximumItemCount!=null||FeedbackScore!=null){
@@ -163,6 +158,11 @@ public class BuyerRequirementDetailsController extends BaseAction {
                 }
                 if(FeedbackScore!=null) {
                     mir.setMinimumFeedbackScore(Integer.parseInt(FeedbackScore));
+
+                    VerifiedUserRequirements vur = new VerifiedUserRequirements();
+                    vur.setVerifiedUser(true);
+                    vur.setMinimumFeedbackScore(Integer.parseInt(FeedbackScore));
+                    brd.setVerifiedUserRequirements(vur);
                 }
                 brd.setMaximumItemRequirements(mir);
             }

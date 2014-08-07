@@ -8,6 +8,25 @@ import com.base.mybatis.page.PageJsonBean;
  */
 public class CommonParmVO {
     private Long id;
+    private String strV1;
+    private String strV2;
+
+
+    public String getStrV2() {
+        return strV2;
+    }
+
+    public void setStrV2(String strV2) {
+        this.strV2 = strV2;
+    }
+
+    public String getStrV1() {
+        return strV1;
+    }
+
+    public void setStrV1(String strV1) {
+        this.strV1 = strV1;
+    }
 
     private PageJsonBean jsonBean;
 

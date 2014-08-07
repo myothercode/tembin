@@ -11093,6 +11093,15 @@ UE.commands['insertimage'] = {
         if (!opt.length) {
             return;
         }
+
+        /**调用外部方法*/
+        try{
+            if(addPictrueUrl && typeof(addPictrueUrl)=='function'){
+                addPictrueUrl(opt);
+            }
+        }catch (e){}
+
+
         var me = this,
             range = me.selection.getRange(),
             img = range.getClosedNode();
@@ -11137,6 +11146,8 @@ UE.commands['insertimage'] = {
 
             } else {
                 for (var i = 0; ci = opt[i++];) {
+                    if(ci.src!=null){ci.src=ci.src.replace("@",":")}
+                    if(ci._src!=null){ci._src=ci._src.replace("@",":")}
                     str = '<p ' + (ci['floatStyle'] == 'center' ? 'style="text-align: center" ' : '') + '><img src="' + ci.src + '" ' +
                         (ci.width ? 'width="' + ci.width + '" ' : '') + (ci._src ? ' _src="' + ci._src + '" ' : '') +
                         (ci.height ? ' height="' + ci.height + '" ' : '') +

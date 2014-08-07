@@ -126,7 +126,7 @@ public class ShippingDetailsController extends BaseAction{
         List<TradingDataDictionary> liinter = DataDictionarySupport.getTradingDataDictionaryByType(DataDictionarySupport.DATA_DICT_SHIPPINGINTER_TYPE);
         List<TradingDataDictionary> inter1 = new ArrayList();
         List<TradingDataDictionary> inter2 = new ArrayList();
-        for(TradingDataDictionary tdd:litype){
+        for(TradingDataDictionary tdd:liinter){
             if(tdd.getName1().equals("Expedited services")){
                 inter1.add(tdd);
             }else if(tdd.getName1().equals("Other services")){

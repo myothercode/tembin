@@ -19,14 +19,12 @@
         var data=$("#returnPolicyForm").serialize();
         $().invoke(url,data,
                 [function(m,r){
-                    console.debug(arguments);
                     alert(r);
                     Base.token();
                     W.returnPolicy.close();
                     W.refreshTable();
                 },
                     function(m,r){
-                        console.debug(arguments);
                         alert(r);
                         Base.token();
                     }]

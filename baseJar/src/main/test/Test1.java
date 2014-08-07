@@ -25,8 +25,8 @@ public class Test1 {
             "</RequesterCredentials>" +
             "</GeteBayOfficialTimeRequest>​";
     HttpClient client = HttpClientUtil.getHttpsClient();
-    String res = HttpClientUtil.post(client, "https://api.sandbox.ebay.com/ws/api.dll", x,"gb2312");
-    System.out.println(res);
+   // String res = HttpClientUtil.post(client, "https://api.sandbox.ebay.com/ws/api.dll", x,"gb2312");
+    //System.out.println(res);
     }
 
 }

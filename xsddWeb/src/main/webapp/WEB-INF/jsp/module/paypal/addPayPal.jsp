@@ -20,7 +20,7 @@
             }
             var url=path+"/ajax/savePayPal.do";
             var data=$("#payPalForm").serialize();
-            /*$().invoke(url,data,
+            $().invoke(url,data,
                     [function(m,r){
                         alert(r)
                         Base.token();
@@ -31,7 +31,7 @@
                             alert(r);
                             Base.token();
                         }]
-            );*/
+            );
         }
         $(document).ready(function() {
             jQuery("#payPalForm").validationEngine();

@@ -92,4 +92,14 @@ public class TradingReturnpolicyImpl implements com.trading.service.ITradingRetu
     public TradingReturnpolicy selectById(Long id){
         return this.tradingReturnpolicyMapper.selectByPrimaryKey(id);
     }
+
+    @Override
+    public ReturnPolicy toXmlPojo(Long id) throws Exception {
+        ReturnPolicy rp = new ReturnPolicy();
+        TradingReturnpolicy trp = this.selectById(id);
+        if(trp==null)
+            return null;
+        ConvertPOJOUtil.convert(rp,trp);
+        return rp;
+    }
 }

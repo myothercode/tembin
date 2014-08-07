@@ -232,6 +232,9 @@
         #{ebayToken,jdbcType=LONGVARCHAR},
       </if>
     </trim>
+      <selectKey resultType="long" keyProperty="id" order="AFTER">
+          SELECT LAST_INSERT_ID()
+      </selectKey>
   </insert>
   <select id="countByExample" parameterType="com.base.database.trading.model.UsercontrollerEbayAccountExample" resultType="java.lang.Integer" >
     <!--

@@ -13,12 +13,22 @@
     <link rel="stylesheet" type="text/css" href="<c:url value ="/js/jquery-easyui/themes/default/easyui.css" />"/>
     <link rel="stylesheet" type="text/css" href="<c:url value ="/js/jquery-easyui/themes/icon.css" />"/>
     <script type="text/javascript" src=<c:url value ="/js/ueditor/ueditor.config.js" /> ></script>
-    <script type="text/javascript" src=<c:url value ="/js/ueditor/ueditor.all.min.js" /> ></script>
+    <script type="text/javascript" src=<c:url value ="/js/ueditor/ueditor.all.js" /> ></script>
     <script type="text/javascript" src=<c:url value ="/js/ueditor/lang/zh-cn/zh-cn.js" /> ></script>
     <script type="text/javascript" src=<c:url value ="/js/jquery-easyui/jquery.easyui.min.js" /> ></script>
 
     <script>
+        var _sku="ZBQ13212";
         var myDescription=null;
+        //当选择图片后生成图片地址
+        function addPictrueUrl(obj){
+            var str='';
+            for(var i=0;i<obj.length;i++){
+                str='<input type="hidden" name="PictureDetails.PictureURL['+i+']" value="'+obj[0].src.replace("@",":")+'">';
+                $("#picture").append(str);
+            }
+        }
+
         $(document).ready(function() {
             //加载买家要求
             $("#buyer").initTable({
@@ -192,27 +202,34 @@
             var trStr='<tr><td><input type="text" name="name" value="'+obj1+'"></td><td><input type="text" name="value" value="'+obj2+'"></td></tr>';
             return trStr;
         }
-        function addAttrTr(name,value){
-            var trStr='<tr><td>'+name+'</td><td><input type="text" name="'+name+'" value="'+value+'"></td></tr>';
+        function addAttrTr(showName,name,value){
+            var trStr='<tr><td>'+showName+'</td><td><input type="text" name="'+name+'" value="'+value+'"></td></tr>';
             return trStr;
         }
         /**
         *添加自定义属性
          */
         function addValue(){
-            $("#trValue").after().append(addValueTr('',''));
+            $("#trValue").after().append(addValueTr('','',''));
         }
         /**
         *添加定固定属性
          */
-        function addAttr(name){
-            $("#trValue").after().append(addAttrTr(name,''));
+        function addAttr(showName,name){
+            $("#trValue").after().append(addAttrTr(showName,name,''));
+        }
+
+        function onShow(obj){
+            _sku=obj.value;
         }
    </script>
 </head>
 <c:set var="item" value="${item}"/>
 <body>
 <form id="form">
+    <div id="picture">
+
+    </div>
     <table width="100%">
         <tr>
             <td colspan="2">
@@ -247,14 +264,14 @@
         <tr>
             <td align="right">刊登类型</td>
             <td>
-                <input type="radio" name="listingType" value="0" disabled>拍买
-                <input type="radio" name="listingType" value="1" checked>固价
+                <input type="radio" name="listingType" value="Auction" disabled>拍买
+                <input type="radio" name="listingType" value="FixedPriceItem" checked>固价
                 <input type="radio" name="listingType" value="2">多属性
             </td>
         </tr>
         <tr>
             <td align="right">SKU</td>
-            <td><input type="text" name="SKU" id="SKU"  class="validate[required]"></td>
+            <td><input type="text" name="sku" id="sku"  class="validate[required]" onblur="onShow(this)"></td>
         </tr>
         <tr>
             <td align="right" style="vertical-align: top;">物品标题</td>
@@ -273,7 +290,7 @@
         <tr>
             <td align="right">第一分类</td>
             <td>
-                <input type="text" name="PrimaryCategory.categoryID" title="PrimaryCategory.categoryID" value="">
+                <input type="text" name="PrimaryCategory.categoryID" class="validate[required]" title="PrimaryCategory.categoryID" value="">
             </td>
         </tr>
         <tr>
@@ -291,6 +308,12 @@
         <tr>
             <td align="right" style="vertical-align: top;">自定义物品属性</td>
             <td>
+                <div>
+                    商品价格：<input type="text" name="StartPrice.value" class="validate[required]"/>
+                    <br/>
+                    商品数量：<input type="text" name="Quantity" value="1" class="validate[required]"/>
+                </div>
+                <div>
                 <table>
                     <tr>
                         <td align="center">名称</td>
@@ -301,11 +324,12 @@
                     </tr>
                 </table>
                 <a href="javascript:void(0);" onclick="addValue();">添加自定义属性</a>
-                <a href="javascript:void(0);" onclick="addAttr('ProductListingDetails.BrandMPN.MPN');">添加MPN</a>
-                <a href="javascript:void(0);" onclick="addAttr('ProductListingDetails.BrandMPN.Brand');">添加Brand</a>
+                <a href="javascript:void(0);" onclick="addAttr('MPN','ProductListingDetails.BrandMPN.MPN');">添加MPN</a>
+                <a href="javascript:void(0);" onclick="addAttr('Brand','ProductListingDetails.BrandMPN.Brand');">添加Brand</a>
                 <%--<a href="javascript:void(0);" onclick="addValue();">添加Type</a>
                 <a href="javascript:void(0);" onclick="addValue();">添加Compatible Brand</a>
                 <a href="javascript:void(0);" onclick="addValue();">添加Country/Region of Manufacture</a>--%>
+                </div>
             </td>
         </tr>
         <tr>

@@ -19,6 +19,32 @@
                 width:1000
             });
         }
+
+        $(document).ready(function(){
+            $("#itemTable").initTable({
+                url:path + "/ajax/loadItemList.do",
+                columnData:[
+                    {title:"商品名称",name:"itemName",width:"8%",align:"left"},
+                    {title:"站点",name:"siteName",width:"8%",align:"left"},
+                    {title:"标题",name:"title",width:"8%",align:"left"},
+                    {title:"数量",name:"quantity",width:"8%",align:"left"},
+                    {title:"SKU",name:"sku",width:"8%",align:"left"},
+                    {title:"操作",name:"option1",width:"8%",align:"left",format:makeOption1}
+                ],
+                selectDataNow:false,
+                isrowClick:false,
+                showIndex:true
+            });
+            refreshTable();
+        });
+        /**组装操作选项*/
+        function makeOption1(json){
+            var htm="<a target=\"_blank\" href=\"javascript:void(0)\" onclick=\"editPayPal('"+json.id+"');\">编辑</a>";
+            return htm;
+        }
+        function  refreshTable(){
+            $("#itemTable").selectDataAfterSetParm({"bedDetailVO.deptId":"", "isTrue":0});
+        }
     </script>
 </head>
 <body>

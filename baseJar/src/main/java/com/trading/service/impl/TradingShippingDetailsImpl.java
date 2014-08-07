@@ -10,6 +10,7 @@ import com.base.mybatis.page.Page;
 import com.base.utils.common.ConvertPOJOUtil;
 import com.base.utils.common.ObjectUtils;
 import com.base.utils.exception.Asserts;
+import com.base.utils.xmlutils.PojoXmlUtil;
 import com.base.xmlpojo.trading.addproduct.InternationalShippingServiceOption;
 import com.base.xmlpojo.trading.addproduct.ShippingDetails;
 import com.base.xmlpojo.trading.addproduct.ShippingServiceOptions;
@@ -20,6 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -152,7 +154,7 @@ public class TradingShippingDetailsImpl implements com.trading.service.ITradingS
                 tiss.setParentUuid(tradingShippingdetails.getUuid());
                 this.iTradingInternationalShippingServiceOption.saveInternationalShippingServiceOption(tiss);
                 List<String> toli = isso.getShipToLocation();
-                this.iTradingAttrMores.deleteByParentId(tiss.getId());
+                this.iTradingAttrMores.deleteByParentId("ShipToLocation",tiss.getId());
                 if(toli!=null&&toli.size()>0){
                     for(String str:toli){
                         TradingAttrMores tam = this.iTradingAttrMores.toDAOPojo("ShipToLocation",str);
@@ -163,7 +165,7 @@ public class TradingShippingDetailsImpl implements com.trading.service.ITradingS
                 }
             }
         }
-        this.iTradingAttrMores.deleteByParentId(tradingShippingdetails.getId());
+        this.iTradingAttrMores.deleteByParentId("ExcludeShipToLocation",tradingShippingdetails.getId());
         //保存不运输到的地方
         if(!ObjectUtils.isLogicalNull(noLocations)){
             String noLocation[] =noLocations.split(",");
@@ -174,6 +176,29 @@ public class TradingShippingDetailsImpl implements com.trading.service.ITradingS
                 this.iTradingAttrMores.saveAttrMores(tam);
             }
         }
+    }
+
+    @Override
+    public ShippingDetails toXmlPojo(Long id) throws Exception {
+        ShippingDetails sd = new ShippingDetails();
+        TradingShippingdetails tsd = this.selectById(id);
+        if(tsd==null)
+            return null;
+        ConvertPOJOUtil.convert(sd,tsd);
+       // ConvertPOJOUtil.convert(sd.getCalculatedShippingRate(),tsd);
+        List<TradingAttrMores> litam = this.iTradingAttrMores.selectByParnetid(tsd.getId(),"ExcludeShipToLocation");
+        List<String> listr = new ArrayList();
+        for(TradingAttrMores tam:litam){
+            listr.add(tam.getValue());
+        }
+        if(listr.size()>0){
+            sd.setExcludeShipToLocation(listr);
+        }
+        //ConvertPOJOUtil.convert(sd.getInsuranceDetails(),tsd);
+        sd.setInternationalShippingServiceOption(this.iTradingInternationalShippingServiceOption.toXmlPojo(tsd.getId()));
+        sd.setShippingServiceOptions(this.iTradingShippingServiceOptions.toXmlPojo(tsd.getId()));
+        System.out.println(PojoXmlUtil.pojoToXml(sd));
+        return sd;
     }
 
 }

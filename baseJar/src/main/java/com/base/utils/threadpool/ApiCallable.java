@@ -27,8 +27,7 @@ public class ApiCallable implements Callable {
         HttpClient httpClient= HttpClientUtil.getHttpsClient();
         List<Header> headers = ApiHeader.getApiHeader(devAccountExtend);
         String res= HttpClientUtil.post(httpClient,url,xml,enCode,headers);
-        System.out.println(res);
-        return "success";
+        return res;
     }
 
     public ApiCallable(UsercontrollerDevAccountExtend dev,String xml,String url){

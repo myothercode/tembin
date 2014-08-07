@@ -4177,6 +4177,146 @@ public class TradingItemExample {
             addCriterion("item_name not between", value1, value2, "itemName");
             return (Criteria) this;
         }
+
+        public Criteria andIsFlagIsNull() {
+            addCriterion("is_flag is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andIsFlagIsNotNull() {
+            addCriterion("is_flag is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andIsFlagEqualTo(String value) {
+            addCriterion("is_flag =", value, "isFlag");
+            return (Criteria) this;
+        }
+
+        public Criteria andIsFlagNotEqualTo(String value) {
+            addCriterion("is_flag <>", value, "isFlag");
+            return (Criteria) this;
+        }
+
+        public Criteria andIsFlagGreaterThan(String value) {
+            addCriterion("is_flag >", value, "isFlag");
+            return (Criteria) this;
+        }
+
+        public Criteria andIsFlagGreaterThanOrEqualTo(String value) {
+            addCriterion("is_flag >=", value, "isFlag");
+            return (Criteria) this;
+        }
+
+        public Criteria andIsFlagLessThan(String value) {
+            addCriterion("is_flag <", value, "isFlag");
+            return (Criteria) this;
+        }
+
+        public Criteria andIsFlagLessThanOrEqualTo(String value) {
+            addCriterion("is_flag <=", value, "isFlag");
+            return (Criteria) this;
+        }
+
+        public Criteria andIsFlagLike(String value) {
+            addCriterion("is_flag like", value, "isFlag");
+            return (Criteria) this;
+        }
+
+        public Criteria andIsFlagNotLike(String value) {
+            addCriterion("is_flag not like", value, "isFlag");
+            return (Criteria) this;
+        }
+
+        public Criteria andIsFlagIn(List<String> values) {
+            addCriterion("is_flag in", values, "isFlag");
+            return (Criteria) this;
+        }
+
+        public Criteria andIsFlagNotIn(List<String> values) {
+            addCriterion("is_flag not in", values, "isFlag");
+            return (Criteria) this;
+        }
+
+        public Criteria andIsFlagBetween(String value1, String value2) {
+            addCriterion("is_flag between", value1, value2, "isFlag");
+            return (Criteria) this;
+        }
+
+        public Criteria andIsFlagNotBetween(String value1, String value2) {
+            addCriterion("is_flag not between", value1, value2, "isFlag");
+            return (Criteria) this;
+        }
+
+        public Criteria andItemIdIsNull() {
+            addCriterion("item_id is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andItemIdIsNotNull() {
+            addCriterion("item_id is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andItemIdEqualTo(String value) {
+            addCriterion("item_id =", value, "itemId");
+            return (Criteria) this;
+        }
+
+        public Criteria andItemIdNotEqualTo(String value) {
+            addCriterion("item_id <>", value, "itemId");
+            return (Criteria) this;
+        }
+
+        public Criteria andItemIdGreaterThan(String value) {
+            addCriterion("item_id >", value, "itemId");
+            return (Criteria) this;
+        }
+
+        public Criteria andItemIdGreaterThanOrEqualTo(String value) {
+            addCriterion("item_id >=", value, "itemId");
+            return (Criteria) this;
+        }
+
+        public Criteria andItemIdLessThan(String value) {
+            addCriterion("item_id <", value, "itemId");
+            return (Criteria) this;
+        }
+
+        public Criteria andItemIdLessThanOrEqualTo(String value) {
+            addCriterion("item_id <=", value, "itemId");
+            return (Criteria) this;
+        }
+
+        public Criteria andItemIdLike(String value) {
+            addCriterion("item_id like", value, "itemId");
+            return (Criteria) this;
+        }
+
+        public Criteria andItemIdNotLike(String value) {
+            addCriterion("item_id not like", value, "itemId");
+            return (Criteria) this;
+        }
+
+        public Criteria andItemIdIn(List<String> values) {
+            addCriterion("item_id in", values, "itemId");
+            return (Criteria) this;
+        }
+
+        public Criteria andItemIdNotIn(List<String> values) {
+            addCriterion("item_id not in", values, "itemId");
+            return (Criteria) this;
+        }
+
+        public Criteria andItemIdBetween(String value1, String value2) {
+            addCriterion("item_id between", value1, value2, "itemId");
+            return (Criteria) this;
+        }
+
+        public Criteria andItemIdNotBetween(String value1, String value2) {
+            addCriterion("item_id not between", value1, value2, "itemId");
+            return (Criteria) this;
+        }
     }
 
     /**

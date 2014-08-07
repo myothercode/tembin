@@ -17,14 +17,18 @@ public class TradingPictureDetailsImpl implements com.trading.service.ITradingPi
     private TradingPicturedetailsMapper tpm;
 
     @Override
-    public void savePictureDetails(TradingPicturedetails tp){
-        this.tpm.insert(tp);
+    public void savePictureDetails(TradingPicturedetails tp) throws Exception {
+        if(tp.getId()==null){
+            ObjectUtils.toInitPojoForInsert(tp);
+            this.tpm.insert(tp);
+        }else{
+            this.tpm.updateByPrimaryKeySelective(tp);
+        }
     }
 
     @Override
     public TradingPicturedetails toDAOPojo(PictureDetails pd) throws Exception {
         TradingPicturedetails pojo = new TradingPicturedetails();
-        ObjectUtils.toInitPojoForInsert(pojo);
         ConvertPOJOUtil.convert(pojo,pd);
         return pojo;
     }

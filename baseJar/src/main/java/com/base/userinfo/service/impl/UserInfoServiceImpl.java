@@ -1,11 +1,13 @@
 package com.base.userinfo.service.impl;
 
 import com.base.database.trading.mapper.UsercontrollerDevAccountMapper;
+import com.base.database.trading.mapper.UsercontrollerEbayAccountMapper;
+import com.base.database.trading.mapper.UsercontrollerEbayDevMapper;
 import com.base.database.trading.model.UsercontrollerDevAccount;
-import com.base.domains.LoginVO;
-import com.base.domains.PermissionVO;
-import com.base.domains.RoleVO;
-import com.base.domains.SessionVO;
+import com.base.database.trading.model.UsercontrollerEbayAccount;
+import com.base.database.trading.model.UsercontrollerEbayDev;
+import com.base.database.trading.model.UsercontrollerEbayDevExample;
+import com.base.domains.*;
 import com.base.domains.userinfo.UsercontrollerDevAccountExtend;
 import com.base.userinfo.mapper.UserInfoServiceMapper;
 import com.base.utils.common.EncryptionUtil;
@@ -27,6 +29,10 @@ public class UserInfoServiceImpl implements com.base.userinfo.service.UserInfoSe
     private UserInfoServiceMapper userInfoServiceMapper;//查询用户信息
     @Autowired
     private UsercontrollerDevAccountMapper usercontrollerDevAccountMapper;//查询开发帐号信息
+    @Autowired
+    private UsercontrollerEbayAccountMapper usercontrollerEbayAccountMapper;
+    @Autowired
+    private UsercontrollerEbayDevMapper UsercontrollerEbayDevMapper;
 
     @Override
     public SessionVO getUserInfo(LoginVO loginVO){
@@ -53,5 +59,17 @@ public class UserInfoServiceImpl implements com.base.userinfo.service.UserInfoSe
     public UsercontrollerDevAccountExtend getDevInfo( Long id ) throws Exception {
         UsercontrollerDevAccount x= usercontrollerDevAccountMapper.selectByPrimaryKey(id);
         return x.toExtend();
+    }
+
+    @Override
+    /**保存绑定帐号过后的token*/
+    public void saveToken(UsercontrollerEbayAccount ebayAccount, CommonParmVO commonParmVO) throws Exception {
+        usercontrollerEbayAccountMapper.insertSelective(ebayAccount);
+        UsercontrollerEbayDev ebayDev = new UsercontrollerEbayDev();
+        ObjectUtils.toInitPojoForInsert(ebayDev);
+        ebayDev.setDevAccountId(commonParmVO.getId());
+        ebayDev.setEbayAccountId(ebayAccount.getId());
+
+        UsercontrollerEbayDevMapper.insertSelective(ebayDev);
     }
 }

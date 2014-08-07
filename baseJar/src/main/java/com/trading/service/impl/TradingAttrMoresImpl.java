@@ -8,6 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 /**
  * Created by cz on 2014/7/24.
  */
@@ -36,9 +38,22 @@ public class TradingAttrMoresImpl implements com.trading.service.ITradingAttrMor
      * @param id
      */
     @Override
-    public void deleteByParentId(Long id){
+    public void deleteByParentId(String attrValue,Long id){
         TradingAttrMoresExample tame = new TradingAttrMoresExample();
-        tame.createCriteria().andParentIdEqualTo(id);
+        tame.createCriteria().andParentIdEqualTo(id).andAttrValueEqualTo(attrValue);
         this.tradingAttrMoresMapper.deleteByExample(tame);
+    }
+
+    /**
+     *
+     * @param id
+     * @return
+     */
+    @Override
+    public List<TradingAttrMores> selectByParnetid(Long id,String attrValue){
+        TradingAttrMoresExample tame = new TradingAttrMoresExample();
+        tame.createCriteria().andParentIdEqualTo(id).andAttrValueEqualTo(attrValue);
+        List<TradingAttrMores> litam = this.tradingAttrMoresMapper.selectByExample(tame);
+        return litam;
     }
 }
