@@ -8,6 +8,7 @@ import com.base.database.trading.model.TradingPicturedetails;
 import com.base.database.trading.model.TradingPublicLevelAttr;
 import com.base.domains.querypojos.ItemQuery;
 import com.base.mybatis.page.Page;
+import com.base.utils.cache.DataDictionarySupport;
 import com.base.utils.common.ConvertPOJOUtil;
 import com.base.utils.common.ObjectUtils;
 import com.base.xmlpojo.trading.addproduct.Item;
@@ -68,6 +69,14 @@ public class TradingItemImpl implements com.trading.service.ITradingItem {
     @Override
     public void saveItem(Item item, TradingItem tradingItem) throws Exception {
         //保存商品信息到数据库中
+
+        tradingItem.setConditionid(item.getConditionID().longValue());
+        tradingItem.setCategoryid(item.getPrimaryCategory().getCategoryID());
+        tradingItem.setCurrency(DataDictionarySupport.getTradingDataDictionaryByID(Long.parseLong(item.getSite())).getValue1());
+        tradingItem.setListingtype(item.getListingType());
+        if(item.getStartPrice()!=null&&!"".equals(item.getStartPrice())){
+            tradingItem.setStartprice(item.getStartPrice().getValue());
+        }
         this.saveTradingItem(tradingItem);
         //保存图片信息
         PictureDetails picd = item.getPictureDetails();
@@ -109,5 +118,10 @@ public class TradingItemImpl implements com.trading.service.ITradingItem {
     @Override
     public List<ItemQuery> selectByItemList(Map map,Page page){
         return this.itemMapper.selectByItemList(map,page);
+    }
+
+    @Override
+    public TradingItem selectById(Long id){
+        return this.tradingItemMapper.selectByPrimaryKey(id);
     }
 }

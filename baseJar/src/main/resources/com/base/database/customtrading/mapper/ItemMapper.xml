@@ -65,6 +65,8 @@
     <result column="shipping_deails_id" jdbcType="BIGINT" property="shippingDeailsId" />
     <result column="ebay_account" jdbcType="VARCHAR" property="ebayAccount" />
     <result column="item_name" jdbcType="VARCHAR" property="itemName" />
+    <result column="is_flag" jdbcType="VARCHAR" property="isFlag" />
+    <result column="item_id" jdbcType="VARCHAR" property="itemId" />
     <result column="site_name" jdbcType="VARCHAR" property="siteName" />
   </resultMap>
     <select id="selectByItemList" resultMap="BaseResultMap" parameterType="map">

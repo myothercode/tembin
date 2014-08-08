@@ -13,10 +13,12 @@
     <script type="text/javascript">
         var tokenPageUrl="${tokenPageUrl}";
         var sessid;
+        var tokenParm;
 
         /**打开*/
         function getBindParm(){
-            var devAccountID=1;
+            var devAccountID=$('#devSelect').val();
+            if(devAccountID==null || devAccountID ==0){alert('请选择开发帐号');return;}
             var url=path+"/user/apiGetSessionID.do";
             var data={id:devAccountID};
             $().invoke(
@@ -26,15 +28,18 @@
                         Base.token();
                         var rr= $.parseJSON(r)
                         sessid=rr.sessionid;
-                        var tokenParm="?SignIn&RuName="+rr.runName+"&SessID="+rr.sessionid;
+                        runName=rr.runName;
+                        tokenParm="?SignIn&RuName="+rr.runName+"&SessID="+rr.sessionid;
                         window.open(tokenPageUrl+tokenParm);
                     },function(m,r){Base.token();alert(r)}],
                     {async:false}
             );
         }
 
+        /**获取token*/
         function fetchToken(){
-            var devAccountID=1;
+            var devAccountID=$('#devSelect').val();
+            if(devAccountID==null || devAccountID ==0){alert('请选择开发帐号');return;}
             var url=path+"/user/apiFetchToken.do";
             var name=$('#bm').val();
             var data={strV1:sessid,id:devAccountID};
@@ -50,10 +55,41 @@
 
         }
 
+        /**重新打开页面*/
+        function reOpenPage(){
+            window.open(tokenPageUrl+tokenParm);
+        }
+
+        /**组装选择开发帐号的*/
+        function getAllDevSelect(){
+            var url=path+"/user/queryAllDev.do";
+            var data={};
+            $().invoke(
+                    url,
+                    data,
+                    [function(m,r){
+                        for(var i in r){
+                             var op="<option value='"+ r[i].id+"'>"+ r[i].devUser+"</option>";
+                            $('#devSelect').append(op);
+                        }
+                    }]
+            );
+        }
+
+        $(document).ready(function(){
+            getAllDevSelect();
+        });
+
 
     </script>
 </head>
 <body>
+
+选择要绑定的开发帐号
+<select id="devSelect">
+    <option value="">请选择</option>
+</select>
+
 <button onclick="getBindParm()">账户授权</button>
 帐号别名
 <input type="text" id="bm" />

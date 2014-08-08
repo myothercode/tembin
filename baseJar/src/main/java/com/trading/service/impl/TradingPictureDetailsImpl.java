@@ -2,11 +2,14 @@ package com.trading.service.impl;
 
 import com.base.database.trading.mapper.TradingPicturedetailsMapper;
 import com.base.database.trading.model.TradingPicturedetails;
+import com.base.database.trading.model.TradingPicturedetailsExample;
 import com.base.utils.common.ConvertPOJOUtil;
 import com.base.utils.common.ObjectUtils;
 import com.base.xmlpojo.trading.addproduct.PictureDetails;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 /**
  * Created by cz on 2014/7/24.
@@ -31,5 +34,12 @@ public class TradingPictureDetailsImpl implements com.trading.service.ITradingPi
         TradingPicturedetails pojo = new TradingPicturedetails();
         ConvertPOJOUtil.convert(pojo,pd);
         return pojo;
+    }
+
+    @Override
+    public List<TradingPicturedetails> selectByParentId(Long id){
+        TradingPicturedetailsExample tpe = new TradingPicturedetailsExample();
+        tpe.createCriteria().andParentIdEqualTo(id);
+        return this.tpm.selectByExample(tpe);
     }
 }

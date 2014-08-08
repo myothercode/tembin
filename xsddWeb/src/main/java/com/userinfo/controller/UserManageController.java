@@ -1,10 +1,11 @@
 package com.userinfo.controller;
 
+import com.base.database.trading.model.UsercontrollerDevAccount;
 import com.base.database.trading.model.UsercontrollerEbayAccount;
-import com.base.database.trading.model.UsercontrollerEbayDev;
 import com.base.domains.CommonParmVO;
 import com.base.domains.SessionVO;
 import com.base.domains.userinfo.UsercontrollerDevAccountExtend;
+import com.base.domains.userinfo.UsercontrollerEbayAccountExtend;
 import com.base.sampleapixml.APINameStatic;
 import com.base.sampleapixml.BindAccountAPI;
 import com.base.userinfo.service.UserInfoService;
@@ -13,32 +14,23 @@ import com.base.utils.cache.SessionCacheSupport;
 import com.base.utils.common.ObjectUtils;
 import com.base.utils.exception.Asserts;
 import com.base.utils.threadpool.AddApiTask;
-import com.base.utils.threadpool.ApiCallable;
-import com.base.utils.threadpool.TaskPool;
 import com.base.utils.xmlutils.SamplePaseXml;
 import com.common.base.utils.ajax.AjaxSupport;
 import com.common.base.web.BaseAction;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
-import org.dom4j.Document;
-import org.dom4j.DocumentHelper;
-import org.dom4j.Element;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
-import org.springframework.util.concurrent.ListenableFutureCallback;
-import org.springframework.util.concurrent.ListenableFutureTask;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
+import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
 /**
  * Created by Administrtor on 2014/8/6.
@@ -47,6 +39,7 @@ import java.util.concurrent.TimeoutException;
 @Controller
 @RequestMapping("user")
 @Scope("prototype")
+//@SessionAttributes({"ebaySessionID","runName"})
 public class UserManageController extends BaseAction {
     static Logger logger = Logger.getLogger(UserManageController.class);
     @Value("${EBAY.API.URL}")
@@ -68,7 +61,7 @@ public class UserManageController extends BaseAction {
     @AvoidDuplicateSubmission(needRemoveToken = true)
     @ResponseBody
     /**绑定账号的时候获取sessionid*/
-    public void apiGetSessionID(CommonParmVO commonParmVO) throws Exception{
+    public void apiGetSessionID(CommonParmVO commonParmVO,@ModelAttribute( "initSomeParmMap" )ModelMap modelMap) throws Exception{
         Asserts.assertTrue(commonParmVO.getId()!=null,"参数获取失败！");
         UsercontrollerDevAccountExtend d = userInfoService.getDevInfo(commonParmVO.getId());
         d.setApiSiteid("0");
@@ -87,6 +80,8 @@ public class UserManageController extends BaseAction {
         String ack = SamplePaseXml.getVFromXmlString(res,"Ack");
         if("Success".equalsIgnoreCase(ack)){
             String sessionid=SamplePaseXml.getVFromXmlString(res,"SessionID");
+            //modelMap.addAttribute("ebaySessionID",sessionid);
+            //modelMap.addAttribute("runName",d.getRunname());
             AjaxSupport.sendSuccessText("success","{\"runName\":\""+d.getRunname()+"\",\"sessionid\":\""+sessionid+"\"}");
         }else {
             String errors=SamplePaseXml.getVFromXmlString(res,"Errors");
@@ -133,5 +128,25 @@ public class UserManageController extends BaseAction {
         }
 
     }
+
+
+    @RequestMapping("queryEbaysForCurrUser")
+    @ResponseBody
+    /**取得当前系统帐号对应的ebay帐号信息*/
+    public void queryEbaysForCurrUser(){
+        List<UsercontrollerEbayAccountExtend> ebayAccountExtendList= userInfoService.getEbayAccountForCurrUser();
+        AjaxSupport.sendSuccessText("",ebayAccountExtendList);
+        return;
+    }
+
+    @RequestMapping("queryAllDev")
+    @ResponseBody
+    /**获取所有的开发者帐号列表*/
+    public void queryAllDev(){
+        List<UsercontrollerDevAccount> devAccounts=userInfoService.queryAllDevAccount();
+        AjaxSupport.sendSuccessText("",devAccounts);
+        return;
+    }
+
 
 }

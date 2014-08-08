@@ -31,7 +31,7 @@ public class TradingMessageGetmymessageImpl implements com.trading.service.ITrad
     public void saveMessageGetmymessage(TradingMessageGetmymessage MessageGetmymessage) throws Exception {
         if(MessageGetmymessage.getId()==null){
             ObjectUtils.toInitPojoForInsert(MessageGetmymessage);
-            this.TradingMessageGetmymessageMapper.insertSelective(MessageGetmymessage);
+            this.TradingMessageGetmymessageMapper.insert(MessageGetmymessage);
         }else{
             TradingMessageGetmymessage t=TradingMessageGetmymessageMapper.selectByPrimaryKey(MessageGetmymessage.getId());
             Asserts.assertTrue(t != null && t.getCreateUser() != null, "没有找到记录或者记录创建者为空");

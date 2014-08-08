@@ -3,13 +3,14 @@ package com.base.userinfo.service.impl;
 import com.base.database.trading.mapper.UsercontrollerDevAccountMapper;
 import com.base.database.trading.mapper.UsercontrollerEbayAccountMapper;
 import com.base.database.trading.mapper.UsercontrollerEbayDevMapper;
-import com.base.database.trading.model.UsercontrollerDevAccount;
-import com.base.database.trading.model.UsercontrollerEbayAccount;
-import com.base.database.trading.model.UsercontrollerEbayDev;
-import com.base.database.trading.model.UsercontrollerEbayDevExample;
+import com.base.database.trading.model.*;
+import com.base.database.userinfo.mapper.UsercontrollerUserMapper;
+import com.base.database.userinfo.model.UsercontrollerUser;
 import com.base.domains.*;
 import com.base.domains.userinfo.UsercontrollerDevAccountExtend;
+import com.base.domains.userinfo.UsercontrollerEbayAccountExtend;
 import com.base.userinfo.mapper.UserInfoServiceMapper;
+import com.base.utils.cache.SessionCacheSupport;
 import com.base.utils.common.EncryptionUtil;
 import com.base.utils.common.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,6 +34,8 @@ public class UserInfoServiceImpl implements com.base.userinfo.service.UserInfoSe
     private UsercontrollerEbayAccountMapper usercontrollerEbayAccountMapper;
     @Autowired
     private UsercontrollerEbayDevMapper UsercontrollerEbayDevMapper;
+    @Autowired
+    private UsercontrollerUserMapper userMapper;
 
     @Override
     public SessionVO getUserInfo(LoginVO loginVO){
@@ -57,6 +60,11 @@ public class UserInfoServiceImpl implements com.base.userinfo.service.UserInfoSe
     @Override
     /**获取开发者帐号的信息*/
     public UsercontrollerDevAccountExtend getDevInfo( Long id ) throws Exception {
+        if(id==null || id==0L){//如果为空，那么就去取账户设置的默认dev
+            SessionVO sessionVO = SessionCacheSupport.getSessionVO();
+            UsercontrollerUser user=userMapper.selectByPrimaryKey(((Long)sessionVO.getId()).intValue());
+            id=user.getDefaultDevAccount();
+        }
         UsercontrollerDevAccount x= usercontrollerDevAccountMapper.selectByPrimaryKey(id);
         return x.toExtend();
     }
@@ -69,7 +77,45 @@ public class UserInfoServiceImpl implements com.base.userinfo.service.UserInfoSe
         ObjectUtils.toInitPojoForInsert(ebayDev);
         ebayDev.setDevAccountId(commonParmVO.getId());
         ebayDev.setEbayAccountId(ebayAccount.getId());
-
         UsercontrollerEbayDevMapper.insertSelective(ebayDev);
+    }
+
+    @Override
+    /**查询当前系统账户绑定了哪些ebay账户*/
+    public List<UsercontrollerEbayAccountExtend> getEbayAccountForCurrUser(){
+        SessionVO sessionVO = SessionCacheSupport.getSessionVO();
+        List<UsercontrollerEbayAccountExtend> ebayAccounts=userInfoServiceMapper.queryEbayAccountForUser(sessionVO.getId());
+        return ebayAccounts;
+    }
+
+    @Override
+    /**根据ebay帐号id 查询token*/
+    public String getTokenByEbayID(Long ebayID){
+        boolean b=ebayIsBindDev(ebayID);
+        if(!b){return "1";}//返回1，代表当前ebay帐号没绑定当前设定的默认开发帐号
+
+        UsercontrollerEbayAccount ebayAccount = userInfoServiceMapper.getTokenByEbayID(ebayID);
+        return ebayAccount.getEbayToken();
+    }
+
+    @Override
+    /**判断ebay账户是否绑定了默认的开发帐号*/
+    public boolean ebayIsBindDev(Long ebayID){
+        SessionVO sessionVO = SessionCacheSupport.getSessionVO();
+        UsercontrollerUser user=userMapper.selectByPrimaryKey(((Long)sessionVO.getId()).intValue());
+        Long defaultDevID=user.getDefaultDevAccount();//当前用户的默认绑定dev帐号
+
+        Map map = new HashMap();
+        map.put("ebayID",ebayID);
+        map.put("devID",defaultDevID);
+        int r=userInfoServiceMapper.ebayIsBindDev(map);
+        return r>0?true:false;
+    }
+
+
+    @Override
+    /**查询所有的开发帐号*/
+    public List<UsercontrollerDevAccount> queryAllDevAccount(){
+        return userInfoServiceMapper.queryAllDevAccount();
     }
 }

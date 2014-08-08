@@ -26,4 +26,28 @@
     </select>
 
 
+    <select id="queryEbayAccountForUser" parameterType="java.lang.Long" resultType="com.base.domains.userinfo.UsercontrollerEbayAccountExtend">
+        select ebay.id id, ebay.user_id userId, ebay.ebay_name ebayName, ebay.paypal_account_id paypalAccountId, ebay.create_user createUser, ebay.create_time createTime, ebay.uuid uuid,
+        paypal.paypal_account paypalName
+        from usercontroller_ebay_account ebay
+        left join usercontroller_paypal_account paypal on ebay.paypal_account_id =  paypal.id
+        and ebay.user_id=#{userID}
+    </select>
+    
+    
+    <resultMap id="ebayToken" type="com.base.database.trading.model.UsercontrollerEbayAccount">
+        <result column="ebay_token" jdbcType="LONGVARCHAR" property="ebayToken" />
+    </resultMap>
+    <select id="getTokenByEbayID" parameterType="java.lang.Long" resultMap="ebayToken">
+        select e.ebay_token from usercontroller_ebay_account e where e.id = #{id}
+    </select>
+    
+    <select id="ebayIsBindDev" parameterType="map" resultType="int">
+        select count(1) from usercontroller_ebay_dev ed where ed.ebay_account_id = #{ebayID} and ed.dev_account_id=#{devID}
+    </select>
+
+    <select id="queryAllDevAccount" resultType="com.base.database.trading.model.UsercontrollerDevAccount">
+        select dev.id ,dev.dev_user devUser from Usercontroller_Dev_Account dev
+    </select>
+
 </mapper>

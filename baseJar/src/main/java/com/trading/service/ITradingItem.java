@@ -19,4 +19,6 @@ public interface ITradingItem {
     void saveItem(Item item, TradingItem tradingItem) throws Exception;
 
     List<ItemQuery> selectByItemList(Map map, Page page);
+
+    TradingItem selectById(Long id);
 }

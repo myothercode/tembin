@@ -385,6 +385,66 @@ public class UsercontrollerEbayAccountExample {
             return (Criteria) this;
         }
 
+        public Criteria andPaypalAccountIdIsNull() {
+            addCriterion("paypal_account_id is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andPaypalAccountIdIsNotNull() {
+            addCriterion("paypal_account_id is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andPaypalAccountIdEqualTo(Long value) {
+            addCriterion("paypal_account_id =", value, "paypalAccountId");
+            return (Criteria) this;
+        }
+
+        public Criteria andPaypalAccountIdNotEqualTo(Long value) {
+            addCriterion("paypal_account_id <>", value, "paypalAccountId");
+            return (Criteria) this;
+        }
+
+        public Criteria andPaypalAccountIdGreaterThan(Long value) {
+            addCriterion("paypal_account_id >", value, "paypalAccountId");
+            return (Criteria) this;
+        }
+
+        public Criteria andPaypalAccountIdGreaterThanOrEqualTo(Long value) {
+            addCriterion("paypal_account_id >=", value, "paypalAccountId");
+            return (Criteria) this;
+        }
+
+        public Criteria andPaypalAccountIdLessThan(Long value) {
+            addCriterion("paypal_account_id <", value, "paypalAccountId");
+            return (Criteria) this;
+        }
+
+        public Criteria andPaypalAccountIdLessThanOrEqualTo(Long value) {
+            addCriterion("paypal_account_id <=", value, "paypalAccountId");
+            return (Criteria) this;
+        }
+
+        public Criteria andPaypalAccountIdIn(List<Long> values) {
+            addCriterion("paypal_account_id in", values, "paypalAccountId");
+            return (Criteria) this;
+        }
+
+        public Criteria andPaypalAccountIdNotIn(List<Long> values) {
+            addCriterion("paypal_account_id not in", values, "paypalAccountId");
+            return (Criteria) this;
+        }
+
+        public Criteria andPaypalAccountIdBetween(Long value1, Long value2) {
+            addCriterion("paypal_account_id between", value1, value2, "paypalAccountId");
+            return (Criteria) this;
+        }
+
+        public Criteria andPaypalAccountIdNotBetween(Long value1, Long value2) {
+            addCriterion("paypal_account_id not between", value1, value2, "paypalAccountId");
+            return (Criteria) this;
+        }
+
         public Criteria andCreateUserIsNull() {
             addCriterion("create_user is null");
             return (Criteria) this;

@@ -12,28 +12,21 @@
     <title></title>
     <script>
         function submitForm(obj){
-            if($(obj).attr("name")=="buyerId"){
-                $("#form").attr("action","/xsddWeb/BuyerRequirementDetailsList.do");
-            }else if ($(obj).attr("name")=="itemAddr"){
-                $("#form").attr("action","/xsddWeb/ItemAddressList.do");
-            }else if ($(obj).attr("name")=="payPal"){
-                $("#form").attr("action","/xsddWeb/PayPalList.do");
-            }else if ($(obj).attr("name")=="returnpolicy") {
-                $("#form").attr("action", "/xsddWeb/ReturnpolicyList.do");
-            }else if ($(obj).attr("name")=="discountPriceInfo"){
-                $("#form").attr("action", "/xsddWeb/discountPriceInfoList.do");
-            }else if ($(obj).attr("name")=="descriptionDetails"){
-                $("#form").attr("action", "/xsddWeb/DescriptionDetailsList.do");
-            }else if ($(obj).attr("name")=="shipping"){
-                $("#form").attr("action", "/xsddWeb/shippingDetailsList.do");
-            }else if ($(obj).attr("name")=="itemList"){
-                $("#form").attr("action", "/xsddWeb/itemList.do");
-            }else if ($(obj).attr("name")=="templateinittable"){
-                $("#form").attr("action", "/xsddWeb/TemplateInitTableList.do");
-            }else if ($(obj).attr("name")=="messagegetmymessage"){
-                $("#form").attr("action", "/xsddWeb/MessageGetmymessageList.do");
-            }
-            $("#form").submit();
+            var name=$(obj).attr("name");
+            var map=new Map();
+            map.put("buyerId","/xsddWeb/BuyerRequirementDetailsList.do");
+            map.put("itemAddr","/xsddWeb/ItemAddressList.do");
+            map.put("payPal","/xsddWeb/PayPalList.do");
+            map.put("returnpolicy","/xsddWeb/ReturnpolicyList.do");
+            map.put("discountPriceInfo","/xsddWeb/discountPriceInfoList.do");
+            map.put("descriptionDetails","/xsddWeb/DescriptionDetailsList.do");
+            map.put("itemList","/xsddWeb/itemList.do");
+            map.put("templateinittable","/xsddWeb/TemplateInitTableList.do");
+            map.put("messagegetmymessage","/xsddWeb/MessageGetmymessageList.do");
+            map.put("bindEbayAccount",path+"/user/bindEbayAccount.do");
+
+            top.location=map.get(name);
+
         }
     </script>
 </head>
@@ -50,6 +43,7 @@
         <div><input type="button" value="商品列表" name="itemList" onclick="submitForm(this)"/></div>
         <div><input type="button" value="模板" name="templateinittable" onclick="submitForm(this)"/></div>
         <div><input type="button" value="接受消息" name="messagegetmymessage" onclick="submitForm(this)"/></div>
+        <div><input type="button" value="绑定ebay帐号" name="bindEbayAccount" onclick="submitForm(this)"/></div>
 </form>
 </body>
 </html>

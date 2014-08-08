@@ -15,6 +15,9 @@
         var MessageGetmymessage;
 
         $(document).ready(function(){
+            alert(111);
+            getBindParm();
+            alert(123);
             $("#MessageGetmymessageListTable").initTable({
                 url:path + "/ajax/loadMessageGetmymessageList.do?",
                 columnData:[
@@ -40,7 +43,23 @@
                 height:500
             });
         }
-
+        function getBindParm(){
+            var devAccountID=1;
+            var url=path+"/apiGetMyMessagesRequest.do";
+            var data={id:devAccountID};
+            $().invoke(
+                    url,
+                    data,
+                    [function(m,r){
+                        Base.token();
+                        var rr= $.parseJSON(r)
+                        sessid=rr.sessionid;
+                        var tokenParm="?SignIn&RuName="+rr.runName+"&SessID="+rr.sessionid;
+                        window.open(tokenPageUrl+tokenParm);
+                    },function(m,r){Base.token();alert(r)}],
+                    {async:false}
+            );
+        }
     </script>
 </head>
 <body>

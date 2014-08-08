@@ -49,7 +49,13 @@ public class TradingPublicLevelAttrImpl implements com.trading.service.ITradingP
     @Override
     public List<TradingPublicLevelAttr> selectByParentId(String name, Long id){
         TradingPublicLevelAttrExample tpae = new TradingPublicLevelAttrExample();
-        tpae.createCriteria().andParentIdEqualTo(id).andNameEqualTo(name);
+        TradingPublicLevelAttrExample.Criteria cr = tpae.createCriteria();
+        if(id!=null){
+            cr.andParentIdEqualTo(id);
+        }
+        if(name!=null){
+            cr.andNameEqualTo(name);
+        }
         return this.tplam.selectByExample(tpae);
     }
 }

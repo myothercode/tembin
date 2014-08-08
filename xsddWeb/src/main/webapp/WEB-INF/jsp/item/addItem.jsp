@@ -125,6 +125,37 @@
 
             $("#form").validationEngine();
             myDescription = UE.getEditor('myDescription');
+
+            var payid = '${item.payId}';
+            var buyid = '${item.buyerId}'
+            var discountpriceinfoId = '${item.discountpriceinfoId}';
+            var itemLocationId = '${item.itemLocationId}';
+            var returnpolicyId = '${item.returnpolicyId}';
+            var shippingDeailsId = '${item.shippingDeailsId}';
+            $("input[name='buyerId'][value='"+buyid+"']").attr("checked","checked");
+            $("input[name='payId'][value='"+payid+"']").attr("checked","checked");
+            $("input[name='discountpriceinfoId'][value='"+discountpriceinfoId+"']").attr("checked","checked");
+            $("input[name='itemLocationId'][value='"+itemLocationId+"']").attr("checked","checked");
+            $("input[name='returnpolicyId'][value='"+returnpolicyId+"']").attr("checked","checked");
+            $("input[name='shippingDeailsId'][value='"+shippingDeailsId+"']").attr("checked","checked");
+            <c:forEach items="${lipa}" var="pa">
+                $("#trValue").after().append(addValueTr('${pa.name}','${pa.value}'));
+            </c:forEach>
+            $("#picture").append("");
+            <c:forEach items="${lipic}" var="pic" varStatus="status">
+            str='<input type="hidden" name="PictureDetails.PictureURL[${status.index}]" value="${pic.value}">';
+            $("#picture").append(str);
+            </c:forEach>
+
+            var site = '${item.site}';
+            $("select[name='site']").find("option[value='"+site+"']").attr("selected",true);
+            var ebayaccount = '${item.ebayAccount}';
+            $("select[name='ebayAccount']").find("option[value='"+ebayaccount+"']").attr("selected",true);
+            var ConditionID = '${item.conditionid}';
+            $("select[name='ConditionID']").find("option[value='"+ConditionID+"']").attr("selected",true);
+            var listingType = '${item.listingtype}';
+            $("input[name='listingType'][value='"+listingType+"']").attr("checked",true);
+            changeRadio(listingType);
         });
 
         /**返回买家要求单选框*/
@@ -163,7 +194,8 @@
             return htm;
         }
 
-        function saveData(objs) {
+        function saveData(objs,name) {
+            $("#dataMouth").val(name);
             if(!$("#form").validationEngine("validate")){
                 return;
             }
@@ -210,7 +242,7 @@
         *添加自定义属性
          */
         function addValue(){
-            $("#trValue").after().append(addValueTr('','',''));
+            $("#trValue").after().append(addValueTr('',''));
         }
         /**
         *添加定固定属性
@@ -222,11 +254,65 @@
         function onShow(obj){
             _sku=obj.value;
         }
+        //选择刊登 类型，判断显示
+        function  changeRadio(obj){
+            if(obj=="2"){
+                $("#oneAttr").hide();
+                $("#twoAttr").show();
+            }else if(obj=="FixedPriceItem"){
+                $("#oneAttr").show();
+                $("#twoAttr").hide();
+            }
+        }
+        //点击添回SKU输入项
+        function addInputSKU(obj){
+            var len = $(obj).parent().parent().find("table").find("tr").find("td").length/$(obj).parent().parent().find("table").find("tr").length-4;
+            $(obj).parent().parent().find("table").append(addTr(len));
+        }
+        //添加一行数据，用于填写
+        function addTr(len){
+            var str ="";
+            str +="<tr>";
+            str +="<td><input type='text' name='sku_'></td>";
+            str +="<td><input type='text' name='sku_number'></td>";
+            str +="<td><input type='text' name='sku_price'></td>";
+            for(var i = 0;i < len ;i++){
+                str +="<td><input type='text' name='attr_Name' size='10' ></td>";
+            }
+            str +="<td name='del'><a href='javascript:void(0)' onclick='removeCloums(this)'>删除</a></td>";
+            str +="</tr>";
+            return str;
+        }
+        //添加属性列
+        function addMoreAttr(obj){
+            $(obj).parent().parent().find("table").find("tr").each(function(i,d){
+                $(d).find("td").each(function(ii,dd){
+                    if($(dd).attr("name")=="del"){
+                        if(i==0){
+                            $(dd).before("<td><a href='javascript:void(0)' onclick='removeCols(this)'>移除</a><input type='text' size='8' name='attr_Name'></td>");
+                        }else{
+                            $(dd).before("<td><input type='text' size='10' name='attr_Value'></td>");
+                        }
+                    }
+                });
+            });
+        }
+        //删除多属性中的SKU输入项
+        function removeCloums(obj){
+            $(obj).parent().parent().remove()
+        }
+        //移除属性值
+        function removeCols(obj){
+            $("#moreAttrs tr th:eq("+($(obj.parentNode)[0].cellIndex+1)+")").remove();
+            $("#moreAttrs tr td:nth-child("+($(obj.parentNode)[0].cellIndex+1)+")").remove();
+        }
    </script>
 </head>
 <c:set var="item" value="${item}"/>
 <body>
 <form id="form">
+    <input type="hidden" name="id" id="id" value="${item.id}">
+    <input type="hidden" name="dataMouth" id="dataMouth" value="">
     <div id="picture">
 
     </div>
@@ -239,7 +325,7 @@
         </tr>
         <tr>
             <td width="200" align="right">名称</td>
-            <td><input type="text" class="validate[required]" name="itemName" id="itemName" ></td>
+            <td><input type="text" class="validate[required]" name="itemName" id="itemName" value="${item.itemName}"></td>
         </tr>
         <tr>
             <td align="right">ebay账户</td>
@@ -265,20 +351,20 @@
             <td align="right">刊登类型</td>
             <td>
                 <input type="radio" name="listingType" value="Auction" disabled>拍买
-                <input type="radio" name="listingType" value="FixedPriceItem" checked>固价
-                <input type="radio" name="listingType" value="2">多属性
+                <input type="radio" name="listingType" value="FixedPriceItem" onchange="changeRadio('FixedPriceItem')">固价
+                <input type="radio" name="listingType" value="2" onchange="changeRadio('2')">多属性
             </td>
         </tr>
         <tr>
             <td align="right">SKU</td>
-            <td><input type="text" name="sku" id="sku"  class="validate[required]" onblur="onShow(this)"></td>
+            <td><input type="text" name="sku" id="sku"  class="validate[required]" onblur="onShow(this)" value="${item.sku}"></td>
         </tr>
         <tr>
             <td align="right" style="vertical-align: top;">物品标题</td>
             <td>
-                标题<input type="text" name="Title" id="Title"  class="validate[required]" value="" >
+                标题<input type="text" name="Title" id="Title"  class="validate[required]" value="${item.title}"  >
                 <br/>
-                子标题<input type="text" name="SubTitle" id="SubTitle" value="">
+                子标题<input type="text" name="SubTitle" id="SubTitle" value="${item.subtitle}">
             </td>
         </tr>
         <tr>
@@ -290,13 +376,13 @@
         <tr>
             <td align="right">第一分类</td>
             <td>
-                <input type="text" name="PrimaryCategory.categoryID" class="validate[required]" title="PrimaryCategory.categoryID" value="">
+                <input type="text" name="PrimaryCategory.categoryID" class="validate[required]" title="PrimaryCategory.categoryID" class="validate[required]" value="${item.categoryid}">
             </td>
         </tr>
         <tr>
             <td align="right">第二分类</td>
             <td>
-                <input type="text" name="SecondaryCategory.CategoryID" title="SecondaryCategory.CategoryID" value="">
+                <input type="text" name="SecondaryCategory.CategoryID" title="SecondaryCategory.CategoryID" value="${item.secondaryCategoryid}">
             </td>
         </tr>
         <tr>
@@ -305,13 +391,47 @@
                 <hr/>
             </td>
         </tr>
+        <tr id="twoAttr" style="display: none;">
+            <td colspan="2">
+                <div >
+                    <table>
+                        <tr>
+                            <td width="200" align="right" style="vertical-align: top;">多属性</td>
+                            <td>
+                                <div>
+                                    <table width="100%" id="moreAttrs">
+                                        <tr>
+                                            <td>Sub SKU</td>
+                                            <td>数量</td>
+                                            <td>价格</td>
+                                            <td name="del">操作</td>
+                                        </tr>
+                                    </table>
+                                </div>
+                                <div>
+                                    <a href="javascript:void(0)" onclick="addInputSKU(this)">添加SKU项</a> &nbsp;&nbsp;&nbsp;&nbsp;<a href="javascript:void(0)"  onclick="addMoreAttr(this)">添加属性</a>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td width="200" align="right" style="vertical-align: top;">多属性图片</td>
+                            <td>
+                                <div>
+
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </td>
+        </tr>
         <tr>
             <td align="right" style="vertical-align: top;">自定义物品属性</td>
             <td>
-                <div>
-                    商品价格：<input type="text" name="StartPrice.value" class="validate[required]"/>
+                <div id="oneAttr"  style="display: none;">
+                    商品价格：<input type="text" name="StartPrice.value" class="validate[required]" value="${item.startprice}"/>
                     <br/>
-                    商品数量：<input type="text" name="Quantity" value="1" class="validate[required]"/>
+                    商品数量：<input type="text" name="Quantity" value="${item.quantity}" class="validate[required]"/>
                 </div>
                 <div>
                 <table>
@@ -354,7 +474,7 @@
         <tr>
             <td colspan="2">
                 <input type="hidden" name="Description" id="Description">
-                <script id="myDescription" type="text/plain" style="width:975px;height:300px;"></script>
+                <script id="myDescription" type="text/plain" style="width:975px;height:300px;">${item.description}</script>
             </td>
         </tr>
 
@@ -434,7 +554,8 @@
 
         <tr>
             <td colspan="2">
-                <input type="button" value="确定" onclick="saveData(this)">
+                <input type="button" value="保存数据" onclick="saveData(this,'save')">
+                <input type="button" value="保存并刊登" onclick="saveData(this,'all')">
             </td>
         </tr>
     </table>

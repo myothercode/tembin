@@ -37,14 +37,23 @@
 </head>
 <body>
 <form id="sendMessageForm">
-    标题:<input type="text" name="sendHeader" style="width: 300px;"/>
-    <br/>
-    内容:<textarea name="content" style="width: 700px;height:200px;"></textarea>
-<hr/>
-    <div style="text-align: right">
-        <input type="button" value="取消" onclick="cancelButton();"/>|
-        <input type="button" value="确定" onclick="submitCommit();"/>
-    </div>
+    <table>
+        <tr>
+            <td> 标题:</td>
+            <td><input type="text" name="sendHeader" style="width: 300px;"/></td>
+        </tr>
+        <tr>
+            <td>内容:</td>
+            <td><textarea name="content" style="width: 700px;height:200px;"></textarea></td>
+        </tr>
+        <tr>
+            <td></td>
+            <td>
+                <input type="button" value="取消" onclick="cancelButton();"/>|
+                <input type="button" value="确定" onclick="submitCommit();"/>
+            </td>
+        </tr>
+    </table>
 </form>
 </body>
 </html>

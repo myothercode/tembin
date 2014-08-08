@@ -13,8 +13,16 @@
     <script>
         var returnItem ="";
         function addItem(){
-            returnItem=$.dialog({title: '新增运送选项',
+            returnItem=$.dialog({title: '新增商品',
                 content: 'url:/xsddWeb/addItem.do',
+                icon: 'succeed',
+                width:1000
+            });
+        }
+
+        function editItem(id){
+            returnItem=$.dialog({title: '编辑商品',
+                content: 'url:/xsddWeb/editItem.do?id='+id,
                 icon: 'succeed',
                 width:1000
             });
@@ -29,6 +37,7 @@
                     {title:"标题",name:"title",width:"8%",align:"left"},
                     {title:"数量",name:"quantity",width:"8%",align:"left"},
                     {title:"SKU",name:"sku",width:"8%",align:"left"},
+                    {title:"刊登状态",name:"isFlag",width:"8%",align:"left"},
                     {title:"操作",name:"option1",width:"8%",align:"left",format:makeOption1}
                 ],
                 selectDataNow:false,
@@ -39,7 +48,7 @@
         });
         /**组装操作选项*/
         function makeOption1(json){
-            var htm="<a target=\"_blank\" href=\"javascript:void(0)\" onclick=\"editPayPal('"+json.id+"');\">编辑</a>";
+            var htm="<a target=\"_blank\" href=\"javascript:void(0)\" onclick=\"editItem('"+json.id+"');\">编辑</a>";
             return htm;
         }
         function  refreshTable(){

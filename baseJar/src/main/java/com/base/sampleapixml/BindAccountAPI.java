@@ -1,5 +1,7 @@
 package com.base.sampleapixml;
 
+import java.util.Map;
+
 /**
  * Created by Administrtor on 2014/8/7.
  * 一些简单的api直接拼接字符串
@@ -31,6 +33,23 @@ public class BindAccountAPI {
                 "<FetchTokenRequest xmlns=\"urn:ebay:apis:eBLBaseComponents\">" +
                 "  <SessionID>"+sessionID+"</SessionID>" +
                 "</FetchTokenRequest>​";
+        return xml;
+    }
+    public static String getGetMyMessages(Map map){
+        String xml="<?xml version=\"1.0\" encoding=\"utf-8\"?>" +
+                "<GetMyMessagesRequest xmlns=\"urn:ebay:apis:eBLBaseComponents\">" +
+                "<RequesterCredentials>" +
+                "<eBayAuthToken>"+map.get("token")+"</eBayAuthToken>" +
+                "</RequesterCredentials>" +
+                "<DetailLevel EnumType=\"DetailLevelCodeType\">"+map.get("detail")+"</DetailLevel>" +
+                "<StartTime>"+map.get("startTime")+"</StartTime>" +
+                "<EndTime>"+map.get("endTime")+"</EndTime>" +
+                "<Pagination>" +
+                "<EntriesPerPage>"+map.get("page")+"</EntriesPerPage>" +
+                "<PageNumber>"+map.get("number")+"</PageNumber>" +
+                "</Pagination>" +
+                /*"<Version>879</Version>" +*/
+                "</GetMyMessagesRequest>​​";
         return xml;
     }
 }

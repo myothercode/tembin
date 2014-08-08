@@ -14,4 +14,8 @@ public class APINameStatic {
      * 添加固价商品
      */
     public static final String AddFixedPriceItem = "AddFixedPriceItem";
+    /**
+     * 获取接受消息
+     */
+    public static final String GetMyMessages = "GetMyMessages";
 }

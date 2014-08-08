@@ -1225,52 +1225,62 @@ public class TradingMessageGetmymessageExample {
             return (Criteria) this;
         }
 
-        public Criteria andRepliedEqualTo(Integer value) {
+        public Criteria andRepliedEqualTo(String value) {
             addCriterion("replied =", value, "replied");
             return (Criteria) this;
         }
 
-        public Criteria andRepliedNotEqualTo(Integer value) {
+        public Criteria andRepliedNotEqualTo(String value) {
             addCriterion("replied <>", value, "replied");
             return (Criteria) this;
         }
 
-        public Criteria andRepliedGreaterThan(Integer value) {
+        public Criteria andRepliedGreaterThan(String value) {
             addCriterion("replied >", value, "replied");
             return (Criteria) this;
         }
 
-        public Criteria andRepliedGreaterThanOrEqualTo(Integer value) {
+        public Criteria andRepliedGreaterThanOrEqualTo(String value) {
             addCriterion("replied >=", value, "replied");
             return (Criteria) this;
         }
 
-        public Criteria andRepliedLessThan(Integer value) {
+        public Criteria andRepliedLessThan(String value) {
             addCriterion("replied <", value, "replied");
             return (Criteria) this;
         }
 
-        public Criteria andRepliedLessThanOrEqualTo(Integer value) {
+        public Criteria andRepliedLessThanOrEqualTo(String value) {
             addCriterion("replied <=", value, "replied");
             return (Criteria) this;
         }
 
-        public Criteria andRepliedIn(List<Integer> values) {
+        public Criteria andRepliedLike(String value) {
+            addCriterion("replied like", value, "replied");
+            return (Criteria) this;
+        }
+
+        public Criteria andRepliedNotLike(String value) {
+            addCriterion("replied not like", value, "replied");
+            return (Criteria) this;
+        }
+
+        public Criteria andRepliedIn(List<String> values) {
             addCriterion("replied in", values, "replied");
             return (Criteria) this;
         }
 
-        public Criteria andRepliedNotIn(List<Integer> values) {
+        public Criteria andRepliedNotIn(List<String> values) {
             addCriterion("replied not in", values, "replied");
             return (Criteria) this;
         }
 
-        public Criteria andRepliedBetween(Integer value1, Integer value2) {
+        public Criteria andRepliedBetween(String value1, String value2) {
             addCriterion("replied between", value1, value2, "replied");
             return (Criteria) this;
         }
 
-        public Criteria andRepliedNotBetween(Integer value1, Integer value2) {
+        public Criteria andRepliedNotBetween(String value1, String value2) {
             addCriterion("replied not between", value1, value2, "replied");
             return (Criteria) this;
         }

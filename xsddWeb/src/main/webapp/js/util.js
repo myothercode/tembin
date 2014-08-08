@@ -239,40 +239,116 @@ function processNumberInput(input) {
 
 
 
-//对指定区域内的分页取相应参数
-function pageParam(div) {
-	div = div.hasClass("page") ? div : div.find("div.page");
-	if(!div.length)
-		return {};
-	return {"page.pageSize": div.attr("pageSize"), "page.currentPage": div.attr("currentPage")};
+/**
+ * Map类
+ * 实现了类似于Java语言中的Map接口的常用方法
+ */
+function Map(){
+
+    //key集
+    this.keys = new Array();
+
+    //value集
+    this.values = new Array();
+
+    //添加key-value进Map
+    this.put = function(key, value){
+        if(key == null || key == undefined)
+            return;
+        var length = this.size();
+        for(var i = 0 ; i < length ; i ++ ) {
+            //如果keys数组中有相同的记录，则不保存重复记录
+            if(this.keys[i] == key)
+                return;
+        }
+        this.keys.push(key);
+        this.values.push(value);
+    };
+
+    //获取指定key的value
+    this.get = function(key){
+        var length = this.size();
+        for(var i = 0 ; i < length ; i ++ ) {
+            if(this.keys[i] == key) {
+                return this.values[i];
+            } else {
+                continue;
+            }
+            return null;
+        }
+    };
+
+    //移除指定key所对应的map
+    this.remove = function(key) {
+        var length = this.size();
+        for(var i = 0 ; i < length ; i ++ ) {
+            if(this.keys[i] == key) {
+                while(i < length - 1) {
+                    this.keys[i] = this.keys[i+1];
+                    this.values[i] = this.values[i+1];
+                    i ++ ;
+                }
+                //处理最后一个元素
+                this.keys.pop();
+                this.values.pop();
+                break;
+            }
+        }
+    };
+
+    //是否包含指定的key
+    this.containsKey = function(key) {
+        var length = this.size();
+        for(var i = 0 ; i < length ; i ++ ) {
+            if(this.keys[i] == key) {
+                return true;
+            }
+        }
+        return false;
+    };
+
+    //是否包含指定的value
+    this.containsValue = function(value) {
+        var length = this.size();
+        for(var i = 0 ; i < length ; i ++ ) {
+            if(this.values[i] == value) {
+                return true;
+            }
+        }
+        return false;
+    };
+
+    //包含记录总数
+    this.size = function() {
+        return this.keys.length;
+    };
+
+    //是否为空
+    this.isEmpty = function() {
+        return this.size() == 0 ? true : false;
+    };
+
+    //清空Map
+    this.clear = function() {
+        this.keys = new Array();
+        this.values = new Array();
+    };
+
+    //将map转成json字符串，格式：{"key1":"value","key2":"value2"}
+    this.toString = function() {
+        var length = this.size();
+        var str = "{";
+        for(var i = 0 ; i < length ; i ++ ) {
+            str = str +"\""+ this.keys[i] + "\":\"" + this.values[i]+"\"";
+            if(i != length-1)
+                str += ",";
+        }
+        str +="}";
+        return str;
+    };
 }
 
 
-$(function () {
-    /*jQuery('input').attr('data-prompt-position','topRight');
-    jQuery('input').attr('promptPosition','topRight');*/
-});
-/*//全局事件绑定注册
-$(function () {
-    var document$ = $(document);
 
-    //时间控件
-    *//*document$.on("focus", "input.date", function () {
-        window["WdatePicker"] && (window["WdatePicker"]());
-    });*//*
-
-    //分页链接
-    document$.on("click", "a[page='true']", function () {
-        if(window["clickPage"]) {
-            var self = $(this);
-            var pageDiv = $(self.parents("div.page")[0]);
-            var currentPage = self.attr("currentPage");
-            if(currentPage == 0)
-                return;
-            var pageSize = pageDiv.attr("pageSize");
-            window["clickPage"](pageSize, currentPage, this);
-        }
-    });
-});*/
 
 
