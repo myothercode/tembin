@@ -123,4 +123,10 @@ public class TextContraller extends BaseAction {
         AjaxSupport.sendSuccessText("啊", "dfd");
     }
 
+    @RequestMapping("sometest.do")
+    public ModelAndView sometest(ModelMap modelMap){
+        return forword("sometest",modelMap);
+
+    }
+
 }
