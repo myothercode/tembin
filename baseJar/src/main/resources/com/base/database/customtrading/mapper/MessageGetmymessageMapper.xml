@@ -31,34 +31,26 @@
   </resultMap>
 
     <select id="selectByMessageGetmymessageList" resultMap="BaseResultMap" parameterType="map">
-        select MessageGetmymessage.*,ebay.ebay_name ebay_account_name from trading_message_getmymessage MessageGetmymessage
-        left join usercontroller_ebay_account ebay on MessageGetmymessage.ebay_account_id=ebay.id where 1=1
+        select MessageGetmymessage.* from trading_message_getmymessage MessageGetmymessage
+        /*left join usercontroller_ebay_account ebay on MessageGetmymessage.ebay_account_id=ebay.ebay_name*/ where 1=1
         <if test="id!=null">
             and MessageGetmymessage.id = #{id}
         </if>
     </select>
     <select id="selectMessageGetmymessageByGroupList" resultMap="BaseResultMap" parameterType="map">
-        select MessageGetmymessage.*,ebay.ebay_name ebay_account_name,count(*) countNum from trading_message_getmymessage MessageGetmymessage
-        left join usercontroller_ebay_account ebay on MessageGetmymessage.ebay_account_id=ebay.id where 1=1
-        <if test="sendtoname!=null">
-            and MessageGetmymessage.sendToName=#{sendtoname}
-        </if>
+        select MessageGetmymessage.*,count(*) countNum from trading_message_getmymessage MessageGetmymessage
+        /*left join usercontroller_ebay_account ebay on MessageGetmymessage.ebay_account_id=ebay.id*/ where 1=1
         <if test="id!=null">
             and MessageGetmymessage.id = #{id}
         </if>
-        group by MessageGetmymessage.ebay_account_id
+        group by MessageGetmymessage.messageID
     </select>
     <select id="selectMessageGetmymessageBySender" resultMap="BaseResultMap" parameterType="map">
-        select MessageGetmymessage.*,ebay.ebay_name ebay_account_name from trading_message_getmymessage MessageGetmymessage
-        left join usercontroller_ebay_account ebay on MessageGetmymessage.ebay_account_id=ebay.id where 1=1
-        <if test="ebayAccountId!=null">
-            and MessageGetmymessage.ebay_account_id=#{ebayAccountId}
+        select MessageGetmymessage.* from trading_message_getmymessage MessageGetmymessage
+       /* left join usercontroller_ebay_account ebay on MessageGetmymessage.ebay_account_id=ebay.id*/ where 1=1
+        <if test="messageID!=null">
+            and MessageGetmymessage.messageID = #{messageID}
         </if>
-        <if test="sendtoname!=null">
-            and MessageGetmymessage.sendToName=#{sendtoname}
-        </if>
-        <if test="id!=null">
-            and MessageGetmymessage.id = #{id}
-        </if>
+        order by MessageGetmymessage.receiveDate
     </select>
 </mapper>

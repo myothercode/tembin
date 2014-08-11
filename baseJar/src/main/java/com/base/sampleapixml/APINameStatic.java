@@ -18,4 +18,9 @@ public class APINameStatic {
      * 获取接受消息
      */
     public static final String GetMyMessages = "GetMyMessages";
+
+    /**
+     * 回复消息
+     */
+    public static final String AddMemberMessageRTQ = "AddMemberMessageRTQ";
 }

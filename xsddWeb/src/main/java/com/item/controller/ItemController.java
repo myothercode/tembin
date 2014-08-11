@@ -17,6 +17,7 @@ import com.base.utils.cache.DataDictionarySupport;
 import com.base.utils.cache.SessionCacheSupport;
 import com.base.utils.common.ConvertPOJOUtil;
 import com.base.utils.common.ObjectUtils;
+import com.base.utils.exception.Asserts;
 import com.base.utils.threadpool.AddApiTask;
 import com.base.utils.threadpool.ApiCallable;
 import com.base.utils.threadpool.TaskPool;
@@ -209,7 +210,7 @@ public class ItemController extends BaseAction{
             item.setDispatchTimeMax(0);
 
 
-
+            Asserts.assertTrue(false, "错误");
 
 
             AddFixedPriceItemRequest addItem = new AddFixedPriceItemRequest();

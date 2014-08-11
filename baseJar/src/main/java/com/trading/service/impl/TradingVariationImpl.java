@@ -12,17 +12,23 @@ import org.springframework.stereotype.Service;
  * Created by cz on 2014/7/24.
  */
 @Service
-public class TradingVariationImpl {
+public class TradingVariationImpl implements com.trading.service.ITradingVariation {
     @Autowired
     private TradingVariationMapper tvm;
 
-    public void saveVariation(TradingVariation pojo){
-        this.tvm.insert(pojo);
-    }
+    @Override
+    public void saveVariation(TradingVariation pojo) throws Exception {
+        if(pojo.getId()==null){
+            ObjectUtils.toInitPojoForInsert(pojo);
+            this.tvm.insert(pojo);
+        }else{
+            this.tvm.updateByPrimaryKeySelective(pojo);
+        }
 
+    }
+    @Override
     public TradingVariation toDAOPojo(Variation var) throws Exception {
         TradingVariation pojo = new TradingVariation();
-        ObjectUtils.toInitPojoForInsert(pojo);
         ConvertPOJOUtil.convert(pojo,var);
         ConvertPOJOUtil.convert(pojo,var.getDiscountPriceInfo());
         return pojo;

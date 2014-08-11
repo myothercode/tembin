@@ -15,46 +15,40 @@
     <link rel="stylesheet" type="text/css" href="<c:url value ="/js/jquery-easyui/themes/default/easyui.css" />"/>
     <link rel="stylesheet" type="text/css" href="<c:url value ="/js/jquery-easyui/themes/icon.css" />"/>
     <script type="text/javascript" src=<c:url value ="/js/jquery-easyui/jquery.easyui.min.js" /> ></script>
-    <script type="text/javascript">
-        var sentmessage;
-        function sendMessage(){
-            sentmessage= $.dialog({title: '发送消息',
-                content: 'url:/xsddWeb/sendMessageGetmymessage.do',
-                icon: 'succeed',
-                width:800,
-                height:300,
-                lock:true
-            });
-        }
-        W = api.opener;
-        function closeMessage(){
-            W.MessageGetmymessage.close();
-        }
-    </script>
+
 </head>
 <body>
 
     <c:forEach items="${messages}" var="message">
-        <c:if test="${message.read==1}">
             <div  class="easyui-panel" title="subject:${message.subject}"
                   style="width:1000px;height:150px;padding:10px;background:#fafafa;"
                >
-                ${message.sendtoname},您好!<br/>
+                ${message.sendtoname},您好! &nbsp; &nbsp;  ${message.receivedate}<br/>
                 &nbsp; &nbsp;${message.textHtml}
             </div>
-        </c:if>
-        <c:if test="${message.read==0}">
-            <div  class="easyui-panel" title="subject:${message.subject}"
-                  style="width:1000px;height:150px;padding:10px;background:#fafafa;"
-                    >
-                    ${message.sendtoname},您好!<br/>
-                &nbsp; &nbsp;${message.textHtml}
-            </div>
-        </c:if>
     </c:forEach>
-        <div style="text-align: right">
+      <div style="text-align: right">
             <input type="button" value="回复" onclick="sendMessage();" />
       </div>
-
+    <script type="text/javascript">
+        var sentmessage;
+        function sendMessage() {
+            sentmessage = $.dialog({title: '发送消息',
+                content: 'url:/xsddWeb/sendMessageGetmymessage.do?messageid=${messages[0].messageid}',
+                icon: 'succeed',
+                width: 800,
+                height: 300,
+                lock: true
+            });
+        }
+        $(document).ready(function(){
+            var api = frameElement.api, W = api.opener;
+            W.refreshTable();
+        });
+        /* W = api.opener;
+         function closeMessage(){
+         W.MessageGetmymessage.close();
+         }*/
+    </script>
 </body>
 </html>

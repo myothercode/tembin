@@ -1,5 +1,7 @@
 package com.base.sampleapixml;
 
+import com.base.database.trading.model.TradingMessageAddmembermessage;
+
 import java.util.Map;
 
 /**
@@ -44,12 +46,40 @@ public class BindAccountAPI {
                 "<DetailLevel EnumType=\"DetailLevelCodeType\">"+map.get("detail")+"</DetailLevel>" +
                 "<StartTime>"+map.get("startTime")+"</StartTime>" +
                 "<EndTime>"+map.get("endTime")+"</EndTime>" +
-                "<Pagination>" +
-                "<EntriesPerPage>"+map.get("page")+"</EntriesPerPage>" +
-                "<PageNumber>"+map.get("number")+"</PageNumber>" +
-                "</Pagination>" +
-                /*"<Version>879</Version>" +*/
                 "</GetMyMessagesRequest>​​";
+        return xml;
+    }
+    public static String getAddMemberMessageRTQ(TradingMessageAddmembermessage addmessage,String token){
+        String xml="<?xml version=\"1.0\" encoding=\"utf-8\"?>" +
+                "<AddMemberMessageRTQRequest xmlns=\"urn:ebay:apis:eBLBaseComponents\">" +
+                "<RequesterCredentials>" +
+                "<eBayAuthToken>"+token+"</eBayAuthToken>" +
+                "</RequesterCredentials>" +
+                "<MemberMessage ComplexType=\"MemberMessageType\">" +
+                "<EmailCopyToSender>"+addmessage.getEmailcopytosender()+"</EmailCopyToSender>" +
+                "<DisplayToPublic>"+addmessage.getDisplaytopublic()+"</DisplayToPublic>" +
+                "<RecipientID>"+addmessage.getRecipientid()+"</RecipientID>" +
+                "<Body>"+addmessage.getBody()+"</Body>" +
+                "<ParentMessageID>"+addmessage.getParentmessageid()+"</ParentMessageID>" +
+                "</MemberMessage>" +
+                "<ItemID>"+addmessage.getItemid()+"</ItemID>" +
+                "<MessageID>"+addmessage.getMessageid()+"</MessageID>" +
+                /*"<Version>879</Version>" +*/
+                "</AddMemberMessageRTQRequest>​";
+        return xml;
+    }
+    public static String getGetMyMessagesByReturnHeader(String messageID,String token){
+        String xml="<?xml version=\"1.0\" encoding=\"utf-8\"?> " +
+                "<GetMyMessagesRequest xmlns=\"urn:ebay:apis:eBLBaseComponents\"> " +
+                "<Version>467</Version> " +
+                "<DetailLevel>ReturnMessages</DetailLevel>" +
+                "<RequesterCredentials>" +
+                "<eBayAuthToken>"+token+"</eBayAuthToken>" +
+                "</RequesterCredentials>" +
+                "<MessageIDs>" +
+                "<MessageID>"+messageID+"</MessageID>" +
+                "</MessageIDs>" +
+                "</GetMyMessagesRequest> ";
         return xml;
     }
 }

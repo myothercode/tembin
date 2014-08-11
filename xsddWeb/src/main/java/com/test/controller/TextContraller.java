@@ -17,6 +17,7 @@ import com.test.service.TestService;
 import com.trading.service.ITradingDataDictionary;
 import net.sf.ehcache.Cache;
 import net.sf.ehcache.CacheManager;
+import org.apache.commons.lang.ArrayUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -67,7 +68,6 @@ public class TextContraller extends BaseAction {
         SessionCacheSupport.remove(sessionVO.getLoginId());
         sessionVO.setSessionID(request.getSession().getId());
         SessionCacheSupport.put(sessionVO);
-
         return redirect("test.do");
         //modelMap.put("ccc",sessionVO.getUserName());
 

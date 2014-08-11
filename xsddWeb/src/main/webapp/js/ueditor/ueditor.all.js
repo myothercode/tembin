@@ -11088,19 +11088,10 @@ UE.commands['imagefloat'] = {
 
 UE.commands['insertimage'] = {
     execCommand:function (cmd, opt) {
-
         opt = utils.isArray(opt) ? opt : [opt];
         if (!opt.length) {
             return;
         }
-
-        /**调用外部方法*/
-        try{
-            if(addPictrueUrl && typeof(addPictrueUrl)=='function'){
-                addPictrueUrl(opt);
-            }
-        }catch (e){}
-
 
         var me = this,
             range = me.selection.getRange(),

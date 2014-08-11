@@ -91,7 +91,7 @@
 	$.fn.analysis = function () {
 		var option = this.data("option");
 		var tableData = option.allData;
-		var table = $("<table></table>").attr("width", "100%").attr("border", "0").attr("cellspacing",
+		var table = $("<table name = 'myTablePlug'></table>").attr("width", "100%").attr("border", "0").attr("cellspacing",
 				"0").attr("cellpadding", "0").attr("class", option.tableCss);
 		var headTr = $("<tr></tr>");
 		if(option.showIndex) {

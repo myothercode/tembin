@@ -48,6 +48,7 @@ public class FileManager {
 
         if ("listImage".equalsIgnoreCase(this.action)) {
             List<String> fs = this.getListFromeFTP();
+            if(fs==null){return new BaseState( false, AppInfo.NOT_EXIST );}
             size=fs.size();
             if ( index < 0 || index > fs.size() ) {
                 state = new MultiState( true );
@@ -141,6 +142,7 @@ public class FileManager {
                 return null;
             }
             boolean change = ftpClient.changeWorkingDirectory(ftpDirPath);
+            if(!change){return  null;}
             String[] ns=ftpClient.listNames();
             if(ns==null || ns.length==0){
                 return null;

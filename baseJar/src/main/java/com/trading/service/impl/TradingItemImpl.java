@@ -2,22 +2,16 @@ package com.trading.service.impl;
 
 import com.base.database.customtrading.mapper.ItemMapper;
 import com.base.database.trading.mapper.TradingItemMapper;
-import com.base.database.trading.model.TradingAttrMores;
-import com.base.database.trading.model.TradingItem;
-import com.base.database.trading.model.TradingPicturedetails;
-import com.base.database.trading.model.TradingPublicLevelAttr;
+import com.base.database.trading.model.*;
 import com.base.domains.querypojos.ItemQuery;
 import com.base.mybatis.page.Page;
 import com.base.utils.cache.DataDictionarySupport;
 import com.base.utils.common.ConvertPOJOUtil;
+import com.base.utils.common.MyCollectionsUtil;
 import com.base.utils.common.ObjectUtils;
-import com.base.xmlpojo.trading.addproduct.Item;
-import com.base.xmlpojo.trading.addproduct.ItemSpecifics;
-import com.base.xmlpojo.trading.addproduct.NameValueList;
-import com.base.xmlpojo.trading.addproduct.PictureDetails;
-import com.trading.service.ITradingAttrMores;
-import com.trading.service.ITradingPictureDetails;
-import com.trading.service.ITradingPublicLevelAttr;
+import com.base.xmlpojo.trading.addproduct.*;
+import com.trading.service.*;
+import org.apache.commons.lang.ArrayUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -42,6 +36,10 @@ public class TradingItemImpl implements com.trading.service.ITradingItem {
     private ITradingPublicLevelAttr iTradingPublicLevelAttr;
     @Autowired
     private ItemMapper itemMapper;
+    @Autowired
+    private ITradingVariations iTradingVariations;
+    @Autowired
+    private ITradingVariation iTradingVariation;
 
     @Override
     public void saveTradingItem(TradingItem pojo) throws Exception {
@@ -77,7 +75,83 @@ public class TradingItemImpl implements com.trading.service.ITradingItem {
         if(item.getStartPrice()!=null&&!"".equals(item.getStartPrice())){
             tradingItem.setStartprice(item.getStartPrice().getValue());
         }
+
+
         this.saveTradingItem(tradingItem);
+
+        //保存多属性信息
+        if(item.getVariations()!=null){
+            TradingVariations tv = new TradingVariations();
+            tv.setParentId(tradingItem.getId());
+            tv.setParentUuid(tradingItem.getUuid());
+            this.iTradingVariations.saveVariations(tv);
+            List<Variation> livt = item.getVariations().getVariation();
+            for(int i = 0 ; i<livt.size();i++){
+                Variation vtion = livt.get(i);
+                TradingVariation tvtion = this.iTradingVariation.toDAOPojo(vtion);
+                tvtion.setParentId(tv.getId());
+                tvtion.setParentUuid(tv.getUuid());
+                tvtion.setStartprice(vtion.getStartPrice().getValue());
+
+                this.iTradingVariation.saveVariation(tvtion);
+
+                this.iTradingPublicLevelAttr.deleteByParentID("VariationSpecifics",tvtion.getId());
+
+                TradingPublicLevelAttr tpla = this.iTradingPublicLevelAttr.toDAOPojo("VariationSpecifics",null);
+                tpla.setParentId(tvtion.getId());
+                tpla.setParentUuid(tvtion.getUuid());
+                this.iTradingPublicLevelAttr.savePublicLevelAttr(tpla);
+
+                List<NameValueList> linvls = item.getVariations().getVariationSpecificsSet().getNameValueList();
+                this.iTradingPublicLevelAttr.deleteByParentID(null,tpla.getId());
+                if(linvls!=null&&linvls.size()>0){
+                    for(NameValueList vs : linvls){
+                        TradingPublicLevelAttr tpl = this.iTradingPublicLevelAttr.toDAOPojo(vs.getName(),vs.getValue().get(i+1));
+                        tpl.setParentUuid(tpla.getUuid());
+                        tpl.setParentId(tpla.getId());
+                        this.iTradingPublicLevelAttr.savePublicLevelAttr(tpl);
+                    }
+                }
+            }
+
+            if(item.getVariations().getVariationSpecificsSet()!=null){
+                this.iTradingPublicLevelAttr.deleteByParentID("VariationSpecificsSet",tv.getId());
+                TradingPublicLevelAttr tpla = this.iTradingPublicLevelAttr.toDAOPojo("VariationSpecificsSet",null);
+                tpla.setParentId(tv.getId());
+                tpla.setParentUuid(tv.getUuid());
+                this.iTradingPublicLevelAttr.savePublicLevelAttr(tpla);
+
+                this.iTradingPublicLevelAttr.deleteByParentID("NameValueList",tpla.getId());
+                List<NameValueList> liset = item.getVariations().getVariationSpecificsSet().getNameValueList();
+                for(int i = 0; i<liset.size();i++){
+                    NameValueList nvl = liset.get(i);
+                    TradingPublicLevelAttr tplas = this.iTradingPublicLevelAttr.toDAOPojo("NameValueList",null);
+                    tplas.setParentId(tpla.getId());
+                    tplas.setParentUuid(tpla.getUuid());
+                    this.iTradingPublicLevelAttr.savePublicLevelAttr(tplas);
+
+                    this.iTradingAttrMores.deleteByParentId("Name",tplas.getId());
+                    TradingAttrMores tam = this.iTradingAttrMores.toDAOPojo("Name",nvl.getName());
+                    tam.setParentId(tplas.getId());
+                    tam.setParentUuid(tplas.getUuid());
+                    this.iTradingAttrMores.saveAttrMores(tam);
+
+                    this.iTradingAttrMores.deleteByParentId("Value",tplas.getId());
+                    List<String> listr = nvl.getValue();
+                    listr = MyCollectionsUtil.listUnique(listr);
+                    for(String str: listr){
+                        if(str!=null&&!"".equals(str)){
+                            TradingAttrMores tams = this.iTradingAttrMores.toDAOPojo("Value",str);
+                            tams.setParentId(tplas.getId());
+                            tams.setParentUuid(tplas.getUuid());
+                            this.iTradingAttrMores.saveAttrMores(tams);
+                        }
+                    }
+                }
+            }
+        }
+
+
         //保存图片信息
         PictureDetails picd = item.getPictureDetails();
         if(picd!=null){
@@ -88,6 +162,7 @@ public class TradingItemImpl implements com.trading.service.ITradingItem {
 
             this.iTradingAttrMores.deleteByParentId("PictureURL",tpicd.getId());
             List<String> lipic = item.getPictureDetails().getPictureURL();
+            lipic = MyCollectionsUtil.listUnique(lipic);
             for(String str:lipic){
                 TradingAttrMores tam = this.iTradingAttrMores.toDAOPojo("PictureURL",str);
                 tam.setParentId(tpicd.getId());

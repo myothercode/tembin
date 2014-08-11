@@ -616,4 +616,19 @@ public class DateUtils {
 		calendar.set(Calendar.SECOND, second);
 		return calendar.getTime();
 	}
+
+    /**获取指定日期几天后的日期 23:59:59*/
+    public static Date addDays(Date date , int add){
+        Date d=date==null?new Date():date;
+        Calendar calendar = getCalendar(d);
+        calendar.add(Calendar.DATE,add);
+        return turnToDateEnd(calendar.getTime());
+    }
+    /**获取指定日期几天前的日期 00:00:00*/
+    public static Date subDays(Date date , int add){
+        Date d=date==null?new Date():date;
+        Calendar calendar = getCalendar(d);
+        calendar.add(Calendar.DATE,0-add);
+        return turnToDateStart(calendar.getTime());
+    }
 }

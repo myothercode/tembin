@@ -1524,6 +1524,76 @@ public class TradingMessageGetmymessageExample {
             addCriterion("login_account_id not between", value1, value2, "loginAccountId");
             return (Criteria) this;
         }
+
+        public Criteria andSendinguseridIsNull() {
+            addCriterion("sendingUserID is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andSendinguseridIsNotNull() {
+            addCriterion("sendingUserID is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andSendinguseridEqualTo(String value) {
+            addCriterion("sendingUserID =", value, "sendinguserid");
+            return (Criteria) this;
+        }
+
+        public Criteria andSendinguseridNotEqualTo(String value) {
+            addCriterion("sendingUserID <>", value, "sendinguserid");
+            return (Criteria) this;
+        }
+
+        public Criteria andSendinguseridGreaterThan(String value) {
+            addCriterion("sendingUserID >", value, "sendinguserid");
+            return (Criteria) this;
+        }
+
+        public Criteria andSendinguseridGreaterThanOrEqualTo(String value) {
+            addCriterion("sendingUserID >=", value, "sendinguserid");
+            return (Criteria) this;
+        }
+
+        public Criteria andSendinguseridLessThan(String value) {
+            addCriterion("sendingUserID <", value, "sendinguserid");
+            return (Criteria) this;
+        }
+
+        public Criteria andSendinguseridLessThanOrEqualTo(String value) {
+            addCriterion("sendingUserID <=", value, "sendinguserid");
+            return (Criteria) this;
+        }
+
+        public Criteria andSendinguseridLike(String value) {
+            addCriterion("sendingUserID like", value, "sendinguserid");
+            return (Criteria) this;
+        }
+
+        public Criteria andSendinguseridNotLike(String value) {
+            addCriterion("sendingUserID not like", value, "sendinguserid");
+            return (Criteria) this;
+        }
+
+        public Criteria andSendinguseridIn(List<String> values) {
+            addCriterion("sendingUserID in", values, "sendinguserid");
+            return (Criteria) this;
+        }
+
+        public Criteria andSendinguseridNotIn(List<String> values) {
+            addCriterion("sendingUserID not in", values, "sendinguserid");
+            return (Criteria) this;
+        }
+
+        public Criteria andSendinguseridBetween(String value1, String value2) {
+            addCriterion("sendingUserID between", value1, value2, "sendinguserid");
+            return (Criteria) this;
+        }
+
+        public Criteria andSendinguseridNotBetween(String value1, String value2) {
+            addCriterion("sendingUserID not between", value1, value2, "sendinguserid");
+            return (Criteria) this;
+        }
     }
 
     /**

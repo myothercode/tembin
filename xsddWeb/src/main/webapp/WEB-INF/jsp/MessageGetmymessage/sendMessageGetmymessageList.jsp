@@ -37,14 +37,36 @@
 </head>
 <body>
 <form id="sendMessageForm">
+    <input type="hidden" value="${message.messageid}" name="messageid"/>
     <table>
         <tr>
             <td> 标题:</td>
-            <td><input type="text" name="sendHeader" style="width: 300px;"/></td>
+            <td><input type="text" name="sendHeader" style="width: 300px;" value="${message.subject}"></td>
         </tr>
+        <
         <tr>
             <td>内容:</td>
             <td><textarea name="content" style="width: 700px;height:200px;"></textarea></td>
+        </tr>
+        <tr>
+            <td>是否复制邮件地址给发送方:</td>
+            <td>
+                <select name="emailCopyToSender">
+                    <option value="true">是</option>
+                    <option value="false">否</option>
+                </select>
+            </td>
+
+        </tr>
+        <tr>
+            <td>是否公开显示发送的消息:</td>
+            <td>
+                <select name="displayToPublic">
+                    <option value="true">是</option>
+                    <option value="false">否</option>
+                </select>
+            </td>
+
         </tr>
         <tr>
             <td></td>

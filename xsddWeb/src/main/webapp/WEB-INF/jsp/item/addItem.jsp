@@ -209,6 +209,25 @@
                 var t="ItemSpecifics.NameValueList["+i+"].";
                 $(d).prop("name",t+name_);
             });
+
+            $("input[type='text'][name='attr_Name']").each(function(i,d){
+                var t="Variations.VariationSpecificsSet.NameValueList["+i+"].Name";
+                $(d).prop("name",t);
+            });
+            var len = $("#moreAttrs").find("tr").find("td").length/$("#moreAttrs").find("tr").length-4;
+            for(var j=0;j<len ;j++){
+                $("#moreAttrs tr td:nth-child("+(j+4)+")").each(function (i,d) {
+                    $(d).find("input[name='attr_Value']").each(function(ii,dd){
+                        $(dd).prop("name","Variations.VariationSpecificsSet.NameValueList["+j+"].Value["+i+"]");
+                    });
+                });
+            }
+            $("#moreAttrs tr:gt(0)").each(function(i,d){
+                $(d).find("input[name='SKU'],input[name='StartPrice.value'],input[name='Quantity']").each(function(ii,dd){
+                    var name_ = $(dd).prop("name");
+                    $(dd).prop("name","Variations.Variation["+i+"]."+name_);
+                });
+            });
             $("#Description").val(myDescription.getContent());
             var data = $('#form').serialize();
             var urll = "/xsddWeb/saveItem.do";
@@ -273,11 +292,11 @@
         function addTr(len){
             var str ="";
             str +="<tr>";
-            str +="<td><input type='text' name='sku_'></td>";
-            str +="<td><input type='text' name='sku_number'></td>";
-            str +="<td><input type='text' name='sku_price'></td>";
+            str +="<td><input type='text' name='SKU'></td>";
+            str +="<td><input type='text' name='Quantity'></td>";
+            str +="<td><input type='text' name='StartPrice.value'></td>";
             for(var i = 0;i < len ;i++){
-                str +="<td><input type='text' name='attr_Name' size='10' ></td>";
+                str +="<td><input type='text' name='attr_Value'  onblur='addb(this)' size='10' ></td>";
             }
             str +="<td name='del'><a href='javascript:void(0)' onclick='removeCloums(this)'>删除</a></td>";
             str +="</tr>";
@@ -289,9 +308,9 @@
                 $(d).find("td").each(function(ii,dd){
                     if($(dd).attr("name")=="del"){
                         if(i==0){
-                            $(dd).before("<td><a href='javascript:void(0)' onclick='removeCols(this)'>移除</a><input type='text' size='8' name='attr_Name'></td>");
+                            $(dd).before("<td><a href='javascript:void(0)' onclick='removeCols(this)'>移除</a><input type='text' size='8' name='attr_Name' onblur='addc(this)'></td>");
                         }else{
-                            $(dd).before("<td><input type='text' size='10' name='attr_Value'></td>");
+                            $(dd).before("<td><input type='text' size='10' name='attr_Value' onblur='addb(this)'></td>");
                         }
                     }
                 });
@@ -299,13 +318,78 @@
         }
         //删除多属性中的SKU输入项
         function removeCloums(obj){
-            $(obj).parent().parent().remove()
+            $(obj).parent().parent().remove();
+            var attrValue = new Map();
+            $("#picMore").html("");
+            $("#moreAttrs tr td:nth-child(4)").each(function (i,d) {
+                if($(d).find("input[name='attr_Value']").val()!=undefined&&$(d).find("input[name='attr_Value']").val()!=""){
+                    attrValue.put($(d).find("input[name='attr_Value']").val(),$(d).find("input[name='attr_Value']").val());
+                }
+            });
+            for(var i = 0;i<attrValue.keys.length;i++){
+                $("#picMore").append(addPic(attrName,attrValue.get(attrValue.keys[i])));
+            }
         }
         //移除属性值
         function removeCols(obj){
             $("#moreAttrs tr th:eq("+($(obj.parentNode)[0].cellIndex+1)+")").remove();
             $("#moreAttrs tr td:nth-child("+($(obj.parentNode)[0].cellIndex+1)+")").remove();
+
+            var attrValue = new Map();
+            $("#picMore").html("");
+            $("#moreAttrs tr td:nth-child(4)").each(function (i,d) {
+                if($(d).find("input[name='attr_Value']").val()!=undefined&&$(d).find("input[name='attr_Value']").val()!=""){
+                    attrValue.put($(d).find("input[name='attr_Value']").val(),$(d).find("input[name='attr_Value']").val());
+                }
+            });
+            for(var i = 0;i<attrValue.keys.length;i++){
+                $("#picMore").append(addPic(attrName,attrValue.get(attrValue.keys[i])));
+            }
+
         }
+        var attrName = new Map();
+        //当输入属性名称时调用的方法
+        function addc(obj){
+            if($(obj.parentNode)[0].cellIndex==3) {
+                attrName = obj.value;
+            }
+
+            var attrValue = new Map();
+            if($(obj.parentNode)[0].cellIndex==3){
+                $("#moreAttrs tr td:nth-child(4)").each(function (i,d) {
+                    if($(d).find("input[name='attr_Value']").val()!=undefined&&$(d).find("input[name='attr_Value']").val()!=""){
+                        attrValue.put($(d).find("input[name='attr_Value']").val(),$(d).find("input[name='attr_Value']").val());
+                    }
+                });
+                $("#picMore").html("");
+                for(var i = 0;i<attrValue.keys.length;i++){
+                    $("#picMore").append(addPic(attrName,attrValue.get(attrValue.keys[i])));
+                }
+            }
+        }
+        //当输入属性值时调用的方法
+        function addb(obj){
+            var attrValue = new Map();
+            if($(obj.parentNode)[0].cellIndex==3){
+                $("#moreAttrs tr td:nth-child(4)").each(function (i,d) {
+                    if($(d).find("input[name='attr_Value']").val()!=undefined&&$(d).find("input[name='attr_Value']").val()!=""){
+                        attrValue.put($(d).find("input[name='attr_Value']").val(),$(d).find("input[name='attr_Value']").val());
+                    }
+                });
+                $("#picMore").html("");
+                for(var i = 0;i<attrValue.keys.length;i++){
+                    $("#picMore").append(addPic(attrName,attrValue.get(attrValue.keys[i])));
+                }
+            }
+        }
+        function addPic(attrName,attrValue){
+            var str = "";
+            str += "<div><div>"+attrName+":"+attrValue+"</div>";
+            str += "<div><a href='javascript:void(0)'>选择图片</a></div>";
+            str += "</div>";
+            return str;
+        }
+
    </script>
 </head>
 <c:set var="item" value="${item}"/>
@@ -415,10 +499,8 @@
                         </tr>
                         <tr>
                             <td width="200" align="right" style="vertical-align: top;">多属性图片</td>
-                            <td>
-                                <div>
+                            <td id="picMore">
 
-                                </div>
                             </td>
                         </tr>
                     </table>

@@ -9,8 +9,8 @@
     <id column="id" jdbcType="BIGINT" property="id" />
     <result column="itemID" jdbcType="VARCHAR" property="itemid" />
     <result column="messageID" jdbcType="VARCHAR" property="messageid" />
-    <result column="emailCopyToSender" jdbcType="INTEGER" property="emailcopytosender" />
-    <result column="displayToPublic" jdbcType="INTEGER" property="displaytopublic" />
+    <result column="emailCopyToSender" jdbcType="VARCHAR" property="emailcopytosender" />
+    <result column="displayToPublic" jdbcType="VARCHAR" property="displaytopublic" />
     <result column="recipientID" jdbcType="VARCHAR" property="recipientid" />
     <result column="parentMessageID" jdbcType="VARCHAR" property="parentmessageid" />
     <result column="create_user" jdbcType="BIGINT" property="createUser" />
@@ -182,7 +182,7 @@
       parentMessageID, create_user, create_time, 
       body)
     values (#{id,jdbcType=BIGINT}, #{itemid,jdbcType=VARCHAR}, #{messageid,jdbcType=VARCHAR}, 
-      #{emailcopytosender,jdbcType=INTEGER}, #{displaytopublic,jdbcType=INTEGER}, #{recipientid,jdbcType=VARCHAR}, 
+      #{emailcopytosender,jdbcType=VARCHAR}, #{displaytopublic,jdbcType=VARCHAR}, #{recipientid,jdbcType=VARCHAR}, 
       #{parentmessageid,jdbcType=VARCHAR}, #{createUser,jdbcType=BIGINT}, #{createTime,jdbcType=TIMESTAMP}, 
       #{body,jdbcType=LONGVARCHAR})
   </insert>
@@ -235,10 +235,10 @@
         #{messageid,jdbcType=VARCHAR},
       </if>
       <if test="emailcopytosender != null">
-        #{emailcopytosender,jdbcType=INTEGER},
+        #{emailcopytosender,jdbcType=VARCHAR},
       </if>
       <if test="displaytopublic != null">
-        #{displaytopublic,jdbcType=INTEGER},
+        #{displaytopublic,jdbcType=VARCHAR},
       </if>
       <if test="recipientid != null">
         #{recipientid,jdbcType=VARCHAR},
@@ -284,10 +284,10 @@
         messageID = #{record.messageid,jdbcType=VARCHAR},
       </if>
       <if test="record.emailcopytosender != null">
-        emailCopyToSender = #{record.emailcopytosender,jdbcType=INTEGER},
+        emailCopyToSender = #{record.emailcopytosender,jdbcType=VARCHAR},
       </if>
       <if test="record.displaytopublic != null">
-        displayToPublic = #{record.displaytopublic,jdbcType=INTEGER},
+        displayToPublic = #{record.displaytopublic,jdbcType=VARCHAR},
       </if>
       <if test="record.recipientid != null">
         recipientID = #{record.recipientid,jdbcType=VARCHAR},
@@ -318,8 +318,8 @@
     set id = #{record.id,jdbcType=BIGINT},
       itemID = #{record.itemid,jdbcType=VARCHAR},
       messageID = #{record.messageid,jdbcType=VARCHAR},
-      emailCopyToSender = #{record.emailcopytosender,jdbcType=INTEGER},
-      displayToPublic = #{record.displaytopublic,jdbcType=INTEGER},
+      emailCopyToSender = #{record.emailcopytosender,jdbcType=VARCHAR},
+      displayToPublic = #{record.displaytopublic,jdbcType=VARCHAR},
       recipientID = #{record.recipientid,jdbcType=VARCHAR},
       parentMessageID = #{record.parentmessageid,jdbcType=VARCHAR},
       create_user = #{record.createUser,jdbcType=BIGINT},
@@ -338,8 +338,8 @@
     set id = #{record.id,jdbcType=BIGINT},
       itemID = #{record.itemid,jdbcType=VARCHAR},
       messageID = #{record.messageid,jdbcType=VARCHAR},
-      emailCopyToSender = #{record.emailcopytosender,jdbcType=INTEGER},
-      displayToPublic = #{record.displaytopublic,jdbcType=INTEGER},
+      emailCopyToSender = #{record.emailcopytosender,jdbcType=VARCHAR},
+      displayToPublic = #{record.displaytopublic,jdbcType=VARCHAR},
       recipientID = #{record.recipientid,jdbcType=VARCHAR},
       parentMessageID = #{record.parentmessageid,jdbcType=VARCHAR},
       create_user = #{record.createUser,jdbcType=BIGINT},
@@ -362,10 +362,10 @@
         messageID = #{messageid,jdbcType=VARCHAR},
       </if>
       <if test="emailcopytosender != null">
-        emailCopyToSender = #{emailcopytosender,jdbcType=INTEGER},
+        emailCopyToSender = #{emailcopytosender,jdbcType=VARCHAR},
       </if>
       <if test="displaytopublic != null">
-        displayToPublic = #{displaytopublic,jdbcType=INTEGER},
+        displayToPublic = #{displaytopublic,jdbcType=VARCHAR},
       </if>
       <if test="recipientid != null">
         recipientID = #{recipientid,jdbcType=VARCHAR},
@@ -393,8 +393,8 @@
     update trading_message_addmembermessage
     set itemID = #{itemid,jdbcType=VARCHAR},
       messageID = #{messageid,jdbcType=VARCHAR},
-      emailCopyToSender = #{emailcopytosender,jdbcType=INTEGER},
-      displayToPublic = #{displaytopublic,jdbcType=INTEGER},
+      emailCopyToSender = #{emailcopytosender,jdbcType=VARCHAR},
+      displayToPublic = #{displaytopublic,jdbcType=VARCHAR},
       recipientID = #{recipientid,jdbcType=VARCHAR},
       parentMessageID = #{parentmessageid,jdbcType=VARCHAR},
       create_user = #{createUser,jdbcType=BIGINT},
@@ -410,8 +410,8 @@
     update trading_message_addmembermessage
     set itemID = #{itemid,jdbcType=VARCHAR},
       messageID = #{messageid,jdbcType=VARCHAR},
-      emailCopyToSender = #{emailcopytosender,jdbcType=INTEGER},
-      displayToPublic = #{displaytopublic,jdbcType=INTEGER},
+      emailCopyToSender = #{emailcopytosender,jdbcType=VARCHAR},
+      displayToPublic = #{displaytopublic,jdbcType=VARCHAR},
       recipientID = #{recipientid,jdbcType=VARCHAR},
       parentMessageID = #{parentmessageid,jdbcType=VARCHAR},
       create_user = #{createUser,jdbcType=BIGINT},

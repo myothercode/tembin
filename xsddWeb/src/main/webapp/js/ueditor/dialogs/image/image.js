@@ -104,6 +104,14 @@
             }
 
             if(list) {
+                /**调用外部方法*/
+                try{
+                    if(parent.afterUploadCallback){
+                        var f=parent.afterUploadCallback['imgURLS'];
+                        f(list);
+                        return;
+                    }
+                }catch (e){}
                 editor.execCommand('insertimage', list);
                 remote && editor.fireEvent("catchRemoteImage");
             }

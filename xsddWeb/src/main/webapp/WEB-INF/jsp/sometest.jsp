@@ -12,8 +12,10 @@
 <script type="text/javascript" src=<c:url value ="/js/ueditor/ueditor.all.js" /> ></script>
 <script type="text/javascript" src=<c:url value ="/js/ueditor/lang/zh-cn/zh-cn.js" /> ></script>
 <script type="text/javascript" src=<c:url value ="/js/table/jquery.tablednd.js" /> ></script>
+<script type="text/javascript" src=<c:url value ="/js/ueditor/dialogs/image/imageextend.js" /> ></script>
 <script type="text/javascript">
-    $(document).ready(function(){
+    var _sku="fffff";
+    /*$(document).ready(function(){
         $("#descriptionDetailsListTable").initTable({
             url:path + "/ajax/loadDescriptionDetailsList.do",
             columnData:[
@@ -29,58 +31,27 @@
             showIndex:true
         });
         refreshTable();
-    });
+    });*/
     function refreshTable(){
-        $("#descriptionDetailsListTable").selectDataAfterSetParm({"bedDetailVO.deptId":"", "isTrue":0});
+        $("#descriptionDetailsListTable").selectDataAfterSetParm({});
     }
     function setDruag(){
-        $(".tab_ZY").tableDnD();
+       // alert($.fn.returnIMGURLs)
+        //$(".tab_ZY").tableDnD();
     }
+function addPictrueUrl(opt){
+    alert(opt.length)
+}
 
-    /*(function($) {
-        var image = {
-            editor: null,
-            init: function(editorid, keyid) {
-                var _editor = this.getEditor(editorid);
-                _editor.ready(function() {
-                    _editor.setDisabled();
-                    _editor.hide();
-                    _editor.addListener('beforeInsertImage', function(t, args) {
-                        $("#" + keyid).val(args[0].src);
-                    });
-                });
-            },
-            getEditor: function(editorid) {
-                this.editor = UE.getEditor(editorid);
-                return this.editor;
-            },
-            show: function(id) {
-                var _editor = this.editor;
-                //注意这里只需要获取编辑器，无需渲染，如果强行渲染，在IE下可能会不兼容（切记）
-                //和网上一些朋友的代码不同之处就在这里
-                $("#" + id).click(function() {
-                    var image = _editor.getDialog("insertimage");
-                    image.render();
-                    image.open();
-                });
-            },
-            render: function(editorid) {
-                var _editor = this.getEditor(editorid);
-                _editor.render();
-            }
-        };
-        $(function() {
-            image.init("myeditor", "upload");
-            image.show("image");
-        });
-    })(jQuery);*/
 
-   /* var editor = UE.getEditor('myeditor', {
-        imageUrl: "{:U(GROUP_NAME.'/Cases/upload/')}",
-        imagePath: "__ROOT__/Uploads/",
-        imageManagerUrl: "{:U(GROUP_NAME.'/cases/imagesManager/')}",
-        imageManagerPath: "__ROOT__/",
-    });*/
+    $(document).ready(function(){
+        $().image_editor.init("myeditor");
+        $().image_editor.show("image");
+    });
+
+
+
+var afterUploadCallback={"imgURLS":addPictrueUrl}
 
 </script>
 <head>

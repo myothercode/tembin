@@ -405,52 +405,62 @@ public class TradingMessageAddmembermessageExample {
             return (Criteria) this;
         }
 
-        public Criteria andEmailcopytosenderEqualTo(Integer value) {
+        public Criteria andEmailcopytosenderEqualTo(String value) {
             addCriterion("emailCopyToSender =", value, "emailcopytosender");
             return (Criteria) this;
         }
 
-        public Criteria andEmailcopytosenderNotEqualTo(Integer value) {
+        public Criteria andEmailcopytosenderNotEqualTo(String value) {
             addCriterion("emailCopyToSender <>", value, "emailcopytosender");
             return (Criteria) this;
         }
 
-        public Criteria andEmailcopytosenderGreaterThan(Integer value) {
+        public Criteria andEmailcopytosenderGreaterThan(String value) {
             addCriterion("emailCopyToSender >", value, "emailcopytosender");
             return (Criteria) this;
         }
 
-        public Criteria andEmailcopytosenderGreaterThanOrEqualTo(Integer value) {
+        public Criteria andEmailcopytosenderGreaterThanOrEqualTo(String value) {
             addCriterion("emailCopyToSender >=", value, "emailcopytosender");
             return (Criteria) this;
         }
 
-        public Criteria andEmailcopytosenderLessThan(Integer value) {
+        public Criteria andEmailcopytosenderLessThan(String value) {
             addCriterion("emailCopyToSender <", value, "emailcopytosender");
             return (Criteria) this;
         }
 
-        public Criteria andEmailcopytosenderLessThanOrEqualTo(Integer value) {
+        public Criteria andEmailcopytosenderLessThanOrEqualTo(String value) {
             addCriterion("emailCopyToSender <=", value, "emailcopytosender");
             return (Criteria) this;
         }
 
-        public Criteria andEmailcopytosenderIn(List<Integer> values) {
+        public Criteria andEmailcopytosenderLike(String value) {
+            addCriterion("emailCopyToSender like", value, "emailcopytosender");
+            return (Criteria) this;
+        }
+
+        public Criteria andEmailcopytosenderNotLike(String value) {
+            addCriterion("emailCopyToSender not like", value, "emailcopytosender");
+            return (Criteria) this;
+        }
+
+        public Criteria andEmailcopytosenderIn(List<String> values) {
             addCriterion("emailCopyToSender in", values, "emailcopytosender");
             return (Criteria) this;
         }
 
-        public Criteria andEmailcopytosenderNotIn(List<Integer> values) {
+        public Criteria andEmailcopytosenderNotIn(List<String> values) {
             addCriterion("emailCopyToSender not in", values, "emailcopytosender");
             return (Criteria) this;
         }
 
-        public Criteria andEmailcopytosenderBetween(Integer value1, Integer value2) {
+        public Criteria andEmailcopytosenderBetween(String value1, String value2) {
             addCriterion("emailCopyToSender between", value1, value2, "emailcopytosender");
             return (Criteria) this;
         }
 
-        public Criteria andEmailcopytosenderNotBetween(Integer value1, Integer value2) {
+        public Criteria andEmailcopytosenderNotBetween(String value1, String value2) {
             addCriterion("emailCopyToSender not between", value1, value2, "emailcopytosender");
             return (Criteria) this;
         }
@@ -465,52 +475,62 @@ public class TradingMessageAddmembermessageExample {
             return (Criteria) this;
         }
 
-        public Criteria andDisplaytopublicEqualTo(Integer value) {
+        public Criteria andDisplaytopublicEqualTo(String value) {
             addCriterion("displayToPublic =", value, "displaytopublic");
             return (Criteria) this;
         }
 
-        public Criteria andDisplaytopublicNotEqualTo(Integer value) {
+        public Criteria andDisplaytopublicNotEqualTo(String value) {
             addCriterion("displayToPublic <>", value, "displaytopublic");
             return (Criteria) this;
         }
 
-        public Criteria andDisplaytopublicGreaterThan(Integer value) {
+        public Criteria andDisplaytopublicGreaterThan(String value) {
             addCriterion("displayToPublic >", value, "displaytopublic");
             return (Criteria) this;
         }
 
-        public Criteria andDisplaytopublicGreaterThanOrEqualTo(Integer value) {
+        public Criteria andDisplaytopublicGreaterThanOrEqualTo(String value) {
             addCriterion("displayToPublic >=", value, "displaytopublic");
             return (Criteria) this;
         }
 
-        public Criteria andDisplaytopublicLessThan(Integer value) {
+        public Criteria andDisplaytopublicLessThan(String value) {
             addCriterion("displayToPublic <", value, "displaytopublic");
             return (Criteria) this;
         }
 
-        public Criteria andDisplaytopublicLessThanOrEqualTo(Integer value) {
+        public Criteria andDisplaytopublicLessThanOrEqualTo(String value) {
             addCriterion("displayToPublic <=", value, "displaytopublic");
             return (Criteria) this;
         }
 
-        public Criteria andDisplaytopublicIn(List<Integer> values) {
+        public Criteria andDisplaytopublicLike(String value) {
+            addCriterion("displayToPublic like", value, "displaytopublic");
+            return (Criteria) this;
+        }
+
+        public Criteria andDisplaytopublicNotLike(String value) {
+            addCriterion("displayToPublic not like", value, "displaytopublic");
+            return (Criteria) this;
+        }
+
+        public Criteria andDisplaytopublicIn(List<String> values) {
             addCriterion("displayToPublic in", values, "displaytopublic");
             return (Criteria) this;
         }
 
-        public Criteria andDisplaytopublicNotIn(List<Integer> values) {
+        public Criteria andDisplaytopublicNotIn(List<String> values) {
             addCriterion("displayToPublic not in", values, "displaytopublic");
             return (Criteria) this;
         }
 
-        public Criteria andDisplaytopublicBetween(Integer value1, Integer value2) {
+        public Criteria andDisplaytopublicBetween(String value1, String value2) {
             addCriterion("displayToPublic between", value1, value2, "displaytopublic");
             return (Criteria) this;
         }
 
-        public Criteria andDisplaytopublicNotBetween(Integer value1, Integer value2) {
+        public Criteria andDisplaytopublicNotBetween(String value1, String value2) {
             addCriterion("displayToPublic not between", value1, value2, "displaytopublic");
             return (Criteria) this;
         }
