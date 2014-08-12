@@ -27,7 +27,7 @@
 
 
     <select id="queryEbayAccountForUser" parameterType="java.lang.Long" resultType="com.base.domains.userinfo.UsercontrollerEbayAccountExtend">
-        select ebay.id id, ebay.user_id userId, ebay.ebay_name ebayName, ebay.paypal_account_id paypalAccountId, ebay.create_user createUser, ebay.create_time createTime, ebay.uuid uuid,
+        select ebay.id id, ebay.user_id userId, ebay.ebay_name ebayName, ebay.paypal_account_id paypalAccountId, ebay.create_user createUser, ebay.create_time createTime, ebay.uuid uuid,ebay.ebay_token ebayToken,
         paypal.paypal_account paypalName
         from usercontroller_ebay_account ebay
         left join usercontroller_paypal_account paypal on ebay.paypal_account_id =  paypal.id

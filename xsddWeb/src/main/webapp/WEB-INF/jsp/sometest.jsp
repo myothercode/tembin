@@ -8,12 +8,13 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@include file= "/WEB-INF/jsp/commonImport.jsp" %>
 <html>
-<script type="text/javascript" src=<c:url value ="/js/ueditor/ueditor.config.js" /> ></script>
+<script type="text/javascript" src=<c:url value ="/js/batchAjaxUtil.js" /> ></script>
+<%--<script type="text/javascript" src=<c:url value ="/js/ueditor/ueditor.config.js" /> ></script>
 <script type="text/javascript" src=<c:url value ="/js/ueditor/ueditor.all.js" /> ></script>
 <script type="text/javascript" src=<c:url value ="/js/ueditor/lang/zh-cn/zh-cn.js" /> ></script>
 <script type="text/javascript" src=<c:url value ="/js/table/jquery.tablednd.js" /> ></script>
-<script type="text/javascript" src=<c:url value ="/js/ueditor/dialogs/image/imageextend.js" /> ></script>
-<script type="text/javascript">
+<script type="text/javascript" src=<c:url value ="/js/ueditor/dialogs/image/imageextend.js" /> ></script>--%>
+<%--<script type="text/javascript">
     var _sku="fffff";
     /*$(document).ready(function(){
         $("#descriptionDetailsListTable").initTable({
@@ -53,7 +54,7 @@ function addPictrueUrl(opt){
 
 var afterUploadCallback={"imgURLS":addPictrueUrl}
 
-</script>
+</script>--%>
 <head>
     <title></title>
 </head>

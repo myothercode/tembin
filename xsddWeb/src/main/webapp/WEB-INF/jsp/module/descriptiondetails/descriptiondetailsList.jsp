@@ -43,7 +43,7 @@
                     {title:"操作",name:"option1",width:"8%",align:"left",format:makeOption1}
                 ],
                 selectDataNow:false,
-                isrowClick:false,
+                isrowClick:true,
                 showIndex:true
             });
             refreshTable();

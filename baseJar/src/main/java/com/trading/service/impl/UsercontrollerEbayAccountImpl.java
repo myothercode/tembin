@@ -27,4 +27,5 @@ public class UsercontrollerEbayAccountImpl implements com.trading.service.IUserc
         List<UsercontrollerEbayAccount> lists= usercontrollerEbayAccountMapper.selectByExample(useraccount);
         return lists;
     }
+
 }

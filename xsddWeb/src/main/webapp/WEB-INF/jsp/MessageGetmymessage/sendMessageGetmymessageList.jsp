@@ -18,7 +18,7 @@
             W.sentmessage.close();
         }
         function submitCommit(){
-            var url=path+"/ajax/saveMessageGetmymessage.do";
+            var url=path+"/message/ajax/saveMessageGetmymessage.do";
             var data=$("#sendMessageForm").serialize();
             $().invoke(url,data,
                     [function(m,r){

@@ -40,7 +40,8 @@ public class TradingItemImpl implements com.trading.service.ITradingItem {
     private ITradingVariations iTradingVariations;
     @Autowired
     private ITradingVariation iTradingVariation;
-
+    @Autowired
+    private ITradingPictures iTradingPictures;
     @Override
     public void saveTradingItem(TradingItem pojo) throws Exception {
         if(pojo.getId()==null){
@@ -67,6 +68,8 @@ public class TradingItemImpl implements com.trading.service.ITradingItem {
     @Override
     public void saveItem(Item item, TradingItem tradingItem) throws Exception {
         //保存商品信息到数据库中
+
+        item.getVariations().getPictures().setVariationSpecificName(item.getVariations().getVariationSpecificsSet().getNameValueList().get(0).getName());
 
         tradingItem.setConditionid(item.getConditionID().longValue());
         tradingItem.setCategoryid(item.getPrimaryCategory().getCategoryID());
@@ -106,7 +109,7 @@ public class TradingItemImpl implements com.trading.service.ITradingItem {
                 this.iTradingPublicLevelAttr.deleteByParentID(null,tpla.getId());
                 if(linvls!=null&&linvls.size()>0){
                     for(NameValueList vs : linvls){
-                        TradingPublicLevelAttr tpl = this.iTradingPublicLevelAttr.toDAOPojo(vs.getName(),vs.getValue().get(i+1));
+                        TradingPublicLevelAttr tpl = this.iTradingPublicLevelAttr.toDAOPojo(vs.getName(),vs.getValue().get(i));
                         tpl.setParentUuid(tpla.getUuid());
                         tpl.setParentId(tpla.getId());
                         this.iTradingPublicLevelAttr.savePublicLevelAttr(tpl);
@@ -142,6 +145,43 @@ public class TradingItemImpl implements com.trading.service.ITradingItem {
                     for(String str: listr){
                         if(str!=null&&!"".equals(str)){
                             TradingAttrMores tams = this.iTradingAttrMores.toDAOPojo("Value",str);
+                            tams.setParentId(tplas.getId());
+                            tams.setParentUuid(tplas.getUuid());
+                            this.iTradingAttrMores.saveAttrMores(tams);
+                        }
+                    }
+                }
+            }
+
+            //保存多属必图片信息
+            Pictures pictrue = item.getVariations().getPictures();
+            if(pictrue!=null){
+                TradingPictures tp = this.iTradingPictures.toDAOPojo(pictrue);
+
+                this.iTradingPictures.savePictures(tp);
+
+                List<VariationSpecificPictureSet> vspsli = pictrue.getVariationSpecificPictureSet();
+                this.iTradingPublicLevelAttr.deleteByParentID("VariationSpecificPictureSet",tp.getId());
+                for(VariationSpecificPictureSet vsps:vspsli){
+                    TradingPublicLevelAttr tplas = this.iTradingPublicLevelAttr.toDAOPojo("VariationSpecificPictureSet",null);
+                    tplas.setParentId(tp.getId());
+                    tplas.setParentUuid(tp.getUuid());
+                    this.iTradingPublicLevelAttr.savePublicLevelAttr(tplas);
+
+                    this.iTradingPublicLevelAttr.deleteByParentID("VariationSpecificValue",tp.getId());
+
+                    TradingPublicLevelAttr tpname = this.iTradingPublicLevelAttr.toDAOPojo("VariationSpecificPictureSet",null);
+                    tpname.setParentId(tplas.getId());
+                    tpname.setParentUuid(tplas.getUuid());
+                    this.iTradingPublicLevelAttr.savePublicLevelAttr(tpname);
+
+                    this.iTradingAttrMores.deleteByParentId("PictureURL",tplas.getId());
+
+                    List<String> listr = vsps.getPictureURL();
+                    listr = MyCollectionsUtil.listUnique(listr);
+                    for(String str: listr){
+                        if(str!=null&&!"".equals(str)){
+                            TradingAttrMores tams = this.iTradingAttrMores.toDAOPojo("PictureURL",str);
                             tams.setParentId(tplas.getId());
                             tams.setParentUuid(tplas.getUuid());
                             this.iTradingAttrMores.saveAttrMores(tams);

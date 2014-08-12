@@ -47,19 +47,17 @@ import java.util.*;
  * Created by Administrtor on 2014/8/6.
  */
 @Controller
+@RequestMapping("message")
 public class GetmymessageController extends BaseAction{
 
     static Logger logger = Logger.getLogger(GetmymessageController.class);
     @Autowired
     private ITradingMessageGetmymessage iTradingMessageGetmymessage;
-
-    @Autowired
-    private IUsercontrollerEbayAccount iUsercontrollerEbayAccount;
-
     @Autowired
     private ITradingMessageAddmembermessage iTradingMessageAddmembermessage;
     @Autowired
     private UserInfoService userInfoService;
+
 
     @Value("${EBAY.API.URL}")
     private String apiUrl;
@@ -78,13 +76,14 @@ public class GetmymessageController extends BaseAction{
     /**获取list数据的ajax方法*/
     @RequestMapping("/ajax/loadMessageGetmymessageList.do")
     @ResponseBody
-    public void loadMessageGetmymessageList(CommonParmVO commonParmVO,HttpServletRequest request) throws Exception {
+    public void loadMessageGetmymessageList(CommonParmVO commonParmVO) throws Exception {
         Map m = new HashMap();
         /**分页组装*/
         PageJsonBean jsonBean=commonParmVO.getJsonBean();
         Page page=jsonBean.toPage();
+        List<UsercontrollerEbayAccountExtend> ebays=userInfoService.getEbayAccountForCurrUser();
+        m.put("ebays",ebays);
         List<MessageGetmymessageQuery> lists= this.iTradingMessageGetmymessage.selectMessageGetmymessageByGroupList(m,page);
-
         jsonBean.setList(lists);
         jsonBean.setTotal((int)page.getTotalCount());
         AjaxSupport.sendSuccessText("", jsonBean);
@@ -102,12 +101,15 @@ public class GetmymessageController extends BaseAction{
     @AvoidDuplicateSubmission(needSaveToken = true)
     public ModelAndView viewTemplateInitTable(HttpServletRequest request,HttpServletResponse response,@ModelAttribute( "initSomeParmMap" )ModelMap modelMap) throws Exception {
         String messageID=request.getParameter("messageID");
+        UsercontrollerDevAccountExtend dev= (UsercontrollerDevAccountExtend) request.getSession().getAttribute("dveId");
+        List<UsercontrollerEbayAccountExtend> ebays = userInfoService.getEbayAccountForCurrUser();
         Map m=new HashMap();
         m.put("messageID",messageID);
+        m.put("ebays",ebays);
         List<MessageGetmymessageQuery> messages=iTradingMessageGetmymessage.selectMessageGetmymessageBySender(m);
         for(MessageGetmymessageQuery message:messages){
             if("false".equals(message.getRead())){
-                String content=getContent(message.getMessageid());
+                String content=getContent(message.getMessageid(),message.getEbayAccountId(),dev);
                 message.setTextHtml(content);
                 message.setRead("true");
                 iTradingMessageGetmymessage.saveMessageGetmymessage(message);
@@ -121,6 +123,7 @@ public class GetmymessageController extends BaseAction{
 
     @RequestMapping("/sendMessageGetmymessage.do")
     @AvoidDuplicateSubmission(needSaveToken = true)
+    /**初始化回复消息页面*/
     public ModelAndView sendMessageGetmymessage(HttpServletRequest request,HttpServletResponse response,@ModelAttribute( "initSomeParmMap" )ModelMap modelMap){
         String messageID=request.getParameter("messageid");
         Map m=new HashMap();
@@ -133,12 +136,14 @@ public class GetmymessageController extends BaseAction{
     @RequestMapping("/ajax/saveMessageGetmymessage.do")
     @AvoidDuplicateSubmission(needRemoveToken = true)
     @ResponseBody
+    /**回复消息*/
     public void saveMessageGetmymessage(HttpServletRequest request,HttpServletResponse response,ModelMap modelMap) throws Exception {
         String messageid=request.getParameter("messageid");
         String sendHeader=request.getParameter("sendHeader");
         String content= request.getParameter("content");
         String emailCopyToSender=request.getParameter("emailCopyToSender");
         String displayToPublic=request.getParameter("displayToPublic");
+        UsercontrollerDevAccountExtend dev= (UsercontrollerDevAccountExtend) request.getSession().getAttribute("dveId");
         Map m=new HashMap();
         m.put("messageID",messageid);
         List<MessageGetmymessageQuery> messages=iTradingMessageGetmymessage.selectMessageGetmymessageBySender(m);
@@ -151,7 +156,7 @@ public class GetmymessageController extends BaseAction{
         tm.setParentmessageid(message.getExternalmessageid());
         tm.setEmailcopytosender(emailCopyToSender);
         tm.setDisplaytopublic(displayToPublic);
-        Map<String,String> map= apiAddmembermessage(tm);
+        Map<String,String> map= apiAddmembermessage(tm,message.getEbayAccountId(),dev);
         String flag=map.get("msg");
         if(!"true".equals(flag)){
             AjaxSupport.sendSuccessText("fail", map.get("par"));
@@ -161,36 +166,48 @@ public class GetmymessageController extends BaseAction{
         }
     }
 
-    @RequestMapping("apiGetMyMessagesRequest")
+    @RequestMapping("/GetmymessageEbay.do")
+    @AvoidDuplicateSubmission(needSaveToken = true)
+    @ResponseBody
+    public ModelAndView GetmymessageEbay(@ModelAttribute( "initSomeParmMap" )ModelMap modelMap){
+      /*  Asserts.assertTrue(commonParmVO.getId() != null, "参数获取失败！");*/
+        List<UsercontrollerEbayAccountExtend> ebays = userInfoService.getEbayAccountForCurrUser();
+        modelMap.put("ebays",ebays);
+        return forword("MessageGetmymessage/GetmymessageEbay",modelMap);
+    }
+
+    @RequestMapping("/apiGetMyMessagesRequest")
     @AvoidDuplicateSubmission(needRemoveToken = true)
     @ResponseBody
     /**获取接受信息总数*/
-    public void apiGetMyMessagesRequest(CommonParmVO commonParmVO) throws Exception {
+    public void apiGetMyMessagesRequest(CommonParmVO commonParmVO,HttpServletRequest request) throws Exception {
         Asserts.assertTrue(commonParmVO.getId() != null, "参数获取失败！");
-        UsercontrollerDevAccountExtend d = userInfoService.getDevInfo(commonParmVO.getId());//开发者帐号id
-       /* UsercontrollerDevAccountExtend d=new UsercontrollerDevAccountExtend();
+        String ebayId=request.getParameter("ebayId");
+        Long ebay=Long.valueOf(ebayId);
+        UsercontrollerDevAccountExtend d = userInfoService.getDevInfo(null);//开发者帐号id
+      /*  UsercontrollerDevAccountExtend d=new UsercontrollerDevAccountExtend();
         d.setApiDevName("5d70d647-b1e2-4c7c-a034-b343d58ca425");
         d.setApiAppName("sandpoin-23af-4f47-a304-242ffed6ff5b");
         d.setApiCertName("165cae7e-4264-4244-adff-e11c3aea204e");
         d.setApiCompatibilityLevel("881");*/
         d.setApiSiteid("0");
         d.setApiCallName(APINameStatic.GetMyMessages);
+        request.getSession().setAttribute("dveId", d);
         Map map=new HashMap();
         Date startTime2= com.base.utils.common.DateUtils.subDays(new Date(),8);
         Date endTime= DateUtils.addDays(startTime2,9);
         Date end1= com.base.utils.common.DateUtils.turnToDateEnd(endTime);
         String start=DateToString(startTime2);
         String end=DateToString(end1);
-        List<UsercontrollerEbayAccountExtend> ebays=userInfoService.getEbayAccountForCurrUser();
-        for(UsercontrollerEbayAccountExtend ebay:ebays) {
-            map.put("token", ebay.getEbayToken());
-/*map.put("token","AgAAAA**AQAAAA**aAAAAA**CLSRUQ**nY+sHZ2PrBmdj6wVnY+sEZ2PrA2dj6AFlYCjDJGCqA+dj6x9nY+seQ**FdYBAA**AAMAAA**w2sMbwlQ7TBHWxj9EsVedHQRI3+lonY9MDfiyayQbnFkjEanjL/yMCpS/D2B9xHRzRx+ppxWZkRPgeAKJvNotPLLrVTuEzOl5M7pi6Tw8+pzcmIEsOh7HQO78JlyFlvLc/ruE6/hG0E/HO1UX76YBwxp00N9f1NNUpo5u36D/TYsx5O2jXFTKkCOHwz6RW9vtN6TU39aLm+JQme2+NfFFXnbX8MHzoUiX7Sty0R88ZpX5wLp8ZdgXCEc5zZDQziYB1MSXF9hsmby5wKbxFF+OvW/zKADThk1gprgAgnEOucyoao+cUMHopLlYgMbjnLzdCXP5F9z+fkYTnKF6AEl5eHBpcKQGbPzswnKebRoBVw+bI2I1C/iq+PvBUyndFAexjrvlDQbEKr6qb6AWRVTTfkW2ce6a0ixRuCTq35zEpWpfAqkSKo+X23d/Q4V8R30rDXotOWDZL6o408cMO+UQ17uVA2arA1JNkYfc/AZ0T0z7ze5o/yp93jJPlDgi05Ut4fpCAMZw3X85GxrTlbEtawWgoyUbmMuv4f6QHZLZAerOaJA8DRJkzkzjJJ025bp1HvAECOc4ggdv0cofu4q96shssgNYYZJUPM+q4+0fnGK0pxQTNY9SV6vSaVCVoTZJo6vefW7OiHX2/eLoPKFuUfsKXXEv9OY71gD1xzYg/rpCMAqCTq1dKqqyT1R5fxANnoRX7vwkq+7jkCj2fAfKTnHi9mSuBFsilKLmnsqqWy3IGShMgdxiQwBEk6IWi9C");*/
+        String token=userInfoService.getTokenByEbayID(ebay);
+            map.put("token", token);
             map.put("detail", "ReturnHeaders");
             map.put("startTime", start);
             map.put("endTime", end);
             String xml = BindAccountAPI.getGetMyMessages(map);//获取接受消息
             AddApiTask addApiTask = new AddApiTask();
-            Map<String, String> resMap = addApiTask.exec(d, xml, "https://api.ebay.com/ws/api.dll");
+          /*  Map<String, String> resMap = addApiTask.exec(d, xml, "https://api.ebay.com/ws/api.dll");*/
+            Map<String, String> resMap = addApiTask.exec(d, xml, apiUrl);
             String r1 = resMap.get("stat");
             String res = resMap.get("message");
             if ("fail".equalsIgnoreCase(r1)) {
@@ -201,14 +218,13 @@ public class GetmymessageController extends BaseAction{
             if ("Success".equalsIgnoreCase(ack)) {
                 SessionVO sessionVO = SessionCacheSupport.getSessionVO();
                 List<Element> messages = getMessages(res);
-                addDatabase(messages);//保存到数据库
+                addDatabase(messages,commonParmVO.getId(),ebay);//保存到数据库
+                AjaxSupport.sendSuccessText("success", "同步成功！");
             } else {
                 String errors = SamplePaseXml.getVFromXmlString(res, "Errors");
                 logger.error("获取apisessionid失败!" + errors);
                 AjaxSupport.sendFailText("fail", "获取必要的参数失败！请稍后重试");
             }
-        }
-        AjaxSupport.sendSuccessText("success", "绑定成功！");
     }
     public  List<Element> getMessages(String xml) throws Exception {
         Document document= DocumentHelper.parseText(xml);
@@ -222,7 +238,7 @@ public class GetmymessageController extends BaseAction{
         }
         return list;
     }
-    public void addDatabase(List<Element> messages) throws Exception {
+    public void addDatabase(List<Element> messages,Long accountId,Long ebay) throws Exception {
         for(Element message:messages){
             TradingMessageGetmymessage ms=new TradingMessageGetmymessage();
             ms.setSender(saveDatabase(message,"Sender"));
@@ -242,9 +258,11 @@ public class GetmymessageController extends BaseAction{
             String ExpirationDate1=saveDatabase(message,"ExpirationDate");
             String ExpirationDate=ExpirationDate1.substring(0,10)+" "+ExpirationDate1.substring(11,19);
             ms.setExpirationdate(StringToDate(ExpirationDate));
-            ms.setResponseenabled(saveDatabase1(message,"ResponseEnabled"));
-            ms.setResponseurl(saveDatabase1(message,"ResponseURL"));
-            ms.setFolderid(saveDatabase1(message,"FolderID"));
+            ms.setResponseenabled(saveDatabase1(message, "ResponseEnabled"));
+            ms.setResponseurl(saveDatabase1(message, "ResponseURL"));
+            ms.setFolderid(saveDatabase1(message, "FolderID"));
+            ms.setLoginAccountId(accountId);
+            ms.setEbayAccountId(ebay);
             iTradingMessageGetmymessage.saveMessageGetmymessage(ms);
         }
 
@@ -280,18 +298,12 @@ public class GetmymessageController extends BaseAction{
         String d=startTime.substring(0,10)+"T"+startTime.substring(11)+".000Z";
         return d;
     }
-    public Map<String,String> apiAddmembermessage(TradingMessageAddmembermessage addmessage) throws Exception {
-        UsercontrollerDevAccountExtend d = new UsercontrollerDevAccountExtend();//开发者帐号id
-        d.setApiDevName("5d70d647-b1e2-4c7c-a034-b343d58ca425");
-        d.setApiAppName("sandpoin-23af-4f47-a304-242ffed6ff5b");
-        d.setApiCertName("165cae7e-4264-4244-adff-e11c3aea204e");
-        d.setApiCompatibilityLevel("881");
-        d.setApiSiteid("0");
-        d.setApiCallName(APINameStatic.AddMemberMessageRTQ);
-        String token="AgAAAA**AQAAAA**aAAAAA**CLSRUQ**nY+sHZ2PrBmdj6wVnY+sEZ2PrA2dj6AFlYCjDJGCqA+dj6x9nY+seQ**FdYBAA**AAMAAA**w2sMbwlQ7TBHWxj9EsVedHQRI3+lonY9MDfiyayQbnFkjEanjL/yMCpS/D2B9xHRzRx+ppxWZkRPgeAKJvNotPLLrVTuEzOl5M7pi6Tw8+pzcmIEsOh7HQO78JlyFlvLc/ruE6/hG0E/HO1UX76YBwxp00N9f1NNUpo5u36D/TYsx5O2jXFTKkCOHwz6RW9vtN6TU39aLm+JQme2+NfFFXnbX8MHzoUiX7Sty0R88ZpX5wLp8ZdgXCEc5zZDQziYB1MSXF9hsmby5wKbxFF+OvW/zKADThk1gprgAgnEOucyoao+cUMHopLlYgMbjnLzdCXP5F9z+fkYTnKF6AEl5eHBpcKQGbPzswnKebRoBVw+bI2I1C/iq+PvBUyndFAexjrvlDQbEKr6qb6AWRVTTfkW2ce6a0ixRuCTq35zEpWpfAqkSKo+X23d/Q4V8R30rDXotOWDZL6o408cMO+UQ17uVA2arA1JNkYfc/AZ0T0z7ze5o/yp93jJPlDgi05Ut4fpCAMZw3X85GxrTlbEtawWgoyUbmMuv4f6QHZLZAerOaJA8DRJkzkzjJJ025bp1HvAECOc4ggdv0cofu4q96shssgNYYZJUPM+q4+0fnGK0pxQTNY9SV6vSaVCVoTZJo6vefW7OiHX2/eLoPKFuUfsKXXEv9OY71gD1xzYg/rpCMAqCTq1dKqqyT1R5fxANnoRX7vwkq+7jkCj2fAfKTnHi9mSuBFsilKLmnsqqWy3IGShMgdxiQwBEk6IWi9C";
-        String xml= BindAccountAPI.getAddMemberMessageRTQ(addmessage,token);
+    public Map<String,String> apiAddmembermessage(TradingMessageAddmembermessage addmessage,Long ebayId,UsercontrollerDevAccountExtend dev) throws Exception {
+        dev.setApiCallName(APINameStatic.AddMemberMessageRTQ);
+        String xml= BindAccountAPI.getAddMemberMessageRTQ(addmessage,userInfoService.getTokenByEbayID(ebayId));
         AddApiTask addApiTask = new AddApiTask();
-        Map<String, String> resMap= addApiTask.exec(d, xml, "https://api.ebay.com/ws/api.dll");
+       /* Map<String, String> resMap= addApiTask.exec(dev, xml, "https://api.ebay.com/ws/api.dll");*/
+        Map<String, String> resMap= addApiTask.exec(dev, xml, apiUrl);
         String r1=resMap.get("stat");
         String res=resMap.get("message");
         Map map=new HashMap();
@@ -301,10 +313,6 @@ public class GetmymessageController extends BaseAction{
         }
         String ack = SamplePaseXml.getVFromXmlString(res, "Ack");
         if("Success".equalsIgnoreCase(ack)){
-            /*SessionVO sessionVO= SessionCacheSupport.getSessionVO();
-            List<Element> messages=getMessages(res);
-            addDatabase(messages);//保存到数据库
-            AjaxSupport.sendSuccessText("success","绑定成功！");*/
             map.put("msg","true");
             map.put("par","发送成功");
         }else {
@@ -313,18 +321,12 @@ public class GetmymessageController extends BaseAction{
         }
         return map;
     }
-    public String getContent(String messageID) throws Exception {
-        UsercontrollerDevAccountExtend d = new UsercontrollerDevAccountExtend();//开发者帐号id
-        d.setApiDevName("5d70d647-b1e2-4c7c-a034-b343d58ca425");
-        d.setApiAppName("sandpoin-23af-4f47-a304-242ffed6ff5b");
-        d.setApiCertName("165cae7e-4264-4244-adff-e11c3aea204e");
-        d.setApiCompatibilityLevel("881");
-        d.setApiSiteid("0");
-        d.setApiCallName(APINameStatic.GetMyMessages);
-        String token="AgAAAA**AQAAAA**aAAAAA**CLSRUQ**nY+sHZ2PrBmdj6wVnY+sEZ2PrA2dj6AFlYCjDJGCqA+dj6x9nY+seQ**FdYBAA**AAMAAA**w2sMbwlQ7TBHWxj9EsVedHQRI3+lonY9MDfiyayQbnFkjEanjL/yMCpS/D2B9xHRzRx+ppxWZkRPgeAKJvNotPLLrVTuEzOl5M7pi6Tw8+pzcmIEsOh7HQO78JlyFlvLc/ruE6/hG0E/HO1UX76YBwxp00N9f1NNUpo5u36D/TYsx5O2jXFTKkCOHwz6RW9vtN6TU39aLm+JQme2+NfFFXnbX8MHzoUiX7Sty0R88ZpX5wLp8ZdgXCEc5zZDQziYB1MSXF9hsmby5wKbxFF+OvW/zKADThk1gprgAgnEOucyoao+cUMHopLlYgMbjnLzdCXP5F9z+fkYTnKF6AEl5eHBpcKQGbPzswnKebRoBVw+bI2I1C/iq+PvBUyndFAexjrvlDQbEKr6qb6AWRVTTfkW2ce6a0ixRuCTq35zEpWpfAqkSKo+X23d/Q4V8R30rDXotOWDZL6o408cMO+UQ17uVA2arA1JNkYfc/AZ0T0z7ze5o/yp93jJPlDgi05Ut4fpCAMZw3X85GxrTlbEtawWgoyUbmMuv4f6QHZLZAerOaJA8DRJkzkzjJJ025bp1HvAECOc4ggdv0cofu4q96shssgNYYZJUPM+q4+0fnGK0pxQTNY9SV6vSaVCVoTZJo6vefW7OiHX2/eLoPKFuUfsKXXEv9OY71gD1xzYg/rpCMAqCTq1dKqqyT1R5fxANnoRX7vwkq+7jkCj2fAfKTnHi9mSuBFsilKLmnsqqWy3IGShMgdxiQwBEk6IWi9C";
-        String xml= BindAccountAPI.getGetMyMessagesByReturnHeader(messageID,token);//获取接受消息
+    public String getContent(String messageID,Long ebayId,UsercontrollerDevAccountExtend dev) throws Exception {
+        dev.setApiCallName(APINameStatic.GetMyMessages);
+        String xml= BindAccountAPI.getGetMyMessagesByReturnHeader(messageID,userInfoService.getTokenByEbayID(ebayId));//获取接受消息
         AddApiTask addApiTask = new AddApiTask();
-        Map<String, String> resMap= addApiTask.exec(d, xml, "https://api.ebay.com/ws/api.dll");
+        /*Map<String, String> resMap= addApiTask.exec(dev, xml, "https://api.ebay.com/ws/api.dll");*/
+        Map<String, String> resMap= addApiTask.exec(dev, xml, apiUrl);
         String r1=resMap.get("stat");
         String res=resMap.get("message");
         if("fail".equalsIgnoreCase(r1)){

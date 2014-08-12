@@ -16,7 +16,7 @@
 
         $(document).ready(function(){
             $("#MessageGetmymessageListTable").initTable({
-                url:path + "/ajax/loadMessageGetmymessageList.do?",
+                url:path + "/message/ajax/loadMessageGetmymessageList.do?",
                 columnData:[
                     {title:"状态",name:"read",width:"8%",align:"left",format:makeOption2,click:makeOption1},
                     {title:"发送的ebay账号",name:"sender",width:"8%",align:"left",click:makeOption1},
@@ -34,8 +34,9 @@
         }
         /**查看消息*/
         function makeOption1(json){
+            var url=path+"/message/viewMessageGetmymessage.do";
             MessageGetmymessage=$.dialog({title: '查看消息',
-                content: 'url:/xsddWeb/viewMessageGetmymessage.do?messageID='+json.messageid,
+                content: 'url:'+url+'?messageID='+json.messageid,
                 icon: 'succeed',
                 width:1025,
                 height:500
@@ -49,28 +50,18 @@
             }
         }
         function getBindParm(){
-            var devAccountID=1;
-            var url=path+"/apiGetMyMessagesRequest.do";
-            var data={id:devAccountID};
-            $().invoke(
-                    url,
-                    data,
-                    [function(m,r){
-                        alert("保存成功");
-                        Base.token();
-                        var rr= $.parseJSON(r)
-                        sessid=rr.sessionid;
-                        var tokenParm="?SignIn&RuName="+rr.runName+"&SessID="+rr.sessionid;
-                        window.open(tokenPageUrl+tokenParm);
-                    },function(m,r){Base.token();alert(r)}],
-                    {async:false}
-            );
-            refreshTable();
+            var url=path+"/message/GetmymessageEbay.do"
+            MessageGetmymessage=$.dialog({title: '同步需要的ebay账号',
+                content: 'url:'+url,
+                icon: 'succeed',
+                width:1025,
+                lock:true
+            });
         }
     </script>
 </head>
 <body>
 <div id="MessageGetmymessageListTable" ></div>
-<input type="button" value="同步" onclick="getBindParm();"/>
+<input type="button" value="同步数据" onclick="getBindParm();"/>
 </body>
 </html>

@@ -18,23 +18,19 @@
 
 </head>
 <body>
-
-    <c:forEach items="${messages}" var="message">
-            <div  class="easyui-panel" title="subject:${message.subject}"
-                  style="width:1000px;height:150px;padding:10px;background:#fafafa;"
-               >
-                ${message.sendtoname},您好! &nbsp; &nbsp;  ${message.receivedate}<br/>
-                &nbsp; &nbsp;${message.textHtml}
-            </div>
-    </c:forEach>
       <div style="text-align: right">
-            <input type="button" value="回复" onclick="sendMessage();" />
+            <input type="button" value="系统回复" onclick="sendMessage();" />
       </div>
+    <c:forEach items="${messages}" var="message">
+        ${message.textHtml}
+    </c:forEach>
     <script type="text/javascript">
         var sentmessage;
         function sendMessage() {
+            var api = frameElement.api, W = api.opener;
+            var url=path+"/message/sendMessageGetmymessage.do"
             sentmessage = $.dialog({title: '发送消息',
-                content: 'url:/xsddWeb/sendMessageGetmymessage.do?messageid=${messages[0].messageid}',
+                content: 'url:'+url+'?messageid=${messages[0].messageid}',
                 icon: 'succeed',
                 width: 800,
                 height: 300,

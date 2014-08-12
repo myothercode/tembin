@@ -104,7 +104,6 @@ public class UserInfoServiceImpl implements com.base.userinfo.service.UserInfoSe
         SessionVO sessionVO = SessionCacheSupport.getSessionVO();
         UsercontrollerUser user=userMapper.selectByPrimaryKey(((Long)sessionVO.getId()).intValue());
         Long defaultDevID=user.getDefaultDevAccount();//当前用户的默认绑定dev帐号
-
         Map map = new HashMap();
         map.put("ebayID",ebayID);
         map.put("devID",defaultDevID);

@@ -43,6 +43,12 @@
         <if test="id!=null">
             and MessageGetmymessage.id = #{id}
         </if>
+        <if test="ebays!=null">
+            and MessageGetmymessage.ebay_account_id in
+            <foreach collection="ebays" item="ebay" index="index" open="(" separator="," close=")">
+                #{ebay.id}
+            </foreach>
+        </if>
         group by MessageGetmymessage.messageID
     </select>
     <select id="selectMessageGetmymessageBySender" resultMap="BaseResultMap" parameterType="map">

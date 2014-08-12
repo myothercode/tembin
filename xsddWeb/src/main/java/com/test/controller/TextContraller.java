@@ -25,6 +25,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -106,12 +107,12 @@ public class TextContraller extends BaseAction {
 
     @RequestMapping("/test2.do")
     @ResponseBody
-    public void test2(HttpServletRequest request) throws Exception {
-        request.getSession().setAttribute("vvv","eee");
+    public void test2(HttpServletRequest request,@RequestParam("tt")String tt) throws Exception {
+        //request.getSession().setAttribute("vvv","eee");
         //testService.serviceTest();
-        testService.testReturnPolicy();
-
-        AjaxSupport.sendSuccessText("啊", "dfd");
+       // testService.testReturnPolicy();
+//userInfoService.ebayIsBindDev(6L);
+        AjaxSupport.sendSuccessText("啊", tt);
     }
     @RequestMapping("/xxlogin.do")
     @ResponseBody

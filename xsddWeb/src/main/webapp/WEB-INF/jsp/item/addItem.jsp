@@ -16,6 +16,7 @@
     <script type="text/javascript" src=<c:url value ="/js/ueditor/ueditor.all.js" /> ></script>
     <script type="text/javascript" src=<c:url value ="/js/ueditor/lang/zh-cn/zh-cn.js" /> ></script>
     <script type="text/javascript" src=<c:url value ="/js/jquery-easyui/jquery.easyui.min.js" /> ></script>
+    <script type="text/javascript" src=<c:url value ="/js/ueditor/dialogs/image/imageextend.js" /> ></script>
 
     <script>
         var _sku="ZBQ13212";
@@ -156,6 +157,31 @@
             var listingType = '${item.listingtype}';
             $("input[name='listingType'][value='"+listingType+"']").attr("checked",true);
             changeRadio(listingType);
+
+
+            //多属性
+            <c:forEach items="${liv}" var="liv" varStatus="status">
+                var str ="";
+                str +="<tr>";
+                str +="<td><input type='text' name='SKU' value='${liv.sku}'></td>";
+                str +="<td><input type='text' name='Quantity' value='${liv.quantity}'></td>";
+                str +="<td><input type='text' name='StartPrice.value' value=${liv.startprice}></td>";
+                <c:forEach items="${liv.tradingPublicLevelAttr}" var="ta">
+                    str +="<td><input type='text' name='attr_Value'  onblur='addb(this)' size='10' value='${ta.value}'></td>";
+                </c:forEach>
+                str +="<td name='del'><a href='javascript:void(0)' onclick='removeCloums(this)'>删除</a></td>";
+                str +="</tr>";
+                $("#moreAttrs").append(str);
+            </c:forEach>
+            <c:forEach items="${clso}" var="lis" varStatus="status">
+                $("#moreAttrs tr:eq(0)").find("td").each(function (i,d){
+                    if($(d).attr("name")=="del"){
+                        $(d).before("<td><a href='javascript:void(0)' onclick='removeCols(this)'>移除</a><input type='text' size='8' value='${lis.value}' name='attr_Name' onblur='addc(this)'></td>");
+                    }
+                });
+            </c:forEach>
+
+
         });
 
         /**返回买家要求单选框*/
@@ -199,6 +225,19 @@
             if(!$("#form").validationEngine("validate")){
                 return;
             }
+            var pciValue = new Map();
+            $("#moreAttrs tr td:nth-child(4)").each(function (i,d) {
+                if($(d).find("input[name='attr_Value']").val()!=undefined&&$(d).find("input[name='attr_Value']").val()!=""){
+                    pciValue.put($(d).find("input[name='attr_Value']").val(),$(d).find("input[name='attr_Value']").val());
+                }
+            });
+            for(var i=0;i<pciValue.keys.length;i++){
+                $("input[type='hidden'][name='"+pciValue.keys[i]+"']").each(function(ii,dd){
+                    $(dd).prop("name","Variations.Pictures.VariationSpecificPictureSet["+i+"].PictureURL["+ii+"]");
+                });
+                $("input[type='hidden'][name='VariationSpecificValue_"+pciValue.keys[i]+"']").prop("name","Variations.Pictures.VariationSpecificPictureSet["+i+"].VariationSpecificValue");
+            }
+
             var nameList = $("input[type='text'][name='name']").each(function(i,d){
                 var name_= $(d).prop("name");
                 var t="ItemSpecifics.NameValueList["+i+"].";
@@ -216,7 +255,7 @@
             });
             var len = $("#moreAttrs").find("tr").find("td").length/$("#moreAttrs").find("tr").length-4;
             for(var j=0;j<len ;j++){
-                $("#moreAttrs tr td:nth-child("+(j+4)+")").each(function (i,d) {
+                $("#moreAttrs tr:gt(0) td:nth-child("+(j+4)+")").each(function (i,d) {
                     $(d).find("input[name='attr_Value']").each(function(ii,dd){
                         $(dd).prop("name","Variations.VariationSpecificsSet.NameValueList["+j+"].Value["+i+"]");
                     });
@@ -228,6 +267,9 @@
                     $(dd).prop("name","Variations.Variation["+i+"]."+name_);
                 });
             });
+
+
+
             $("#Description").val(myDescription.getContent());
             var data = $('#form').serialize();
             var urll = "/xsddWeb/saveItem.do";
@@ -292,7 +334,7 @@
         function addTr(len){
             var str ="";
             str +="<tr>";
-            str +="<td><input type='text' name='SKU'></td>";
+            str +="<td><input type='text' name='SKU' ></td>";
             str +="<td><input type='text' name='Quantity'></td>";
             str +="<td><input type='text' name='StartPrice.value'></td>";
             for(var i = 0;i < len ;i++){
@@ -320,13 +362,26 @@
         function removeCloums(obj){
             $(obj).parent().parent().remove();
             var attrValue = new Map();
-            $("#picMore").html("");
             $("#moreAttrs tr td:nth-child(4)").each(function (i,d) {
                 if($(d).find("input[name='attr_Value']").val()!=undefined&&$(d).find("input[name='attr_Value']").val()!=""){
                     attrValue.put($(d).find("input[name='attr_Value']").val(),$(d).find("input[name='attr_Value']").val());
                 }
             });
+            var dicMap = new Map()
             for(var i = 0;i<attrValue.keys.length;i++){
+                var url = $("input[name='"+attrValue.get(attrValue.keys[i])+"']");
+                var dics = new Map();
+                for(var j = 0;j<url.length;j++){
+                    dics.put(j,$(url[j]).val());
+                }
+                dicMap.put(attrValue.get(attrValue.keys[i]),dics);
+            }
+            $("#picMore").html("");
+            for(var i = 0;i<attrValue.keys.length;i++){
+                var m = dicMap.get(attrValue.get(attrValue.keys[i]));
+                for(var j = 0;j< m.keys.length;j++){
+                    $('#'+attrValue.get(attrValue.keys[i])).before("<input type='hidden' name='"+attrValue.get(attrValue.keys[i])+"' value='"+ m.get(j)+"'><img src='"+m.get(j)+"' height='50' width='50' />");
+                }
                 $("#picMore").append(addPic(attrName,attrValue.get(attrValue.keys[i])));
             }
         }
@@ -336,14 +391,28 @@
             $("#moreAttrs tr td:nth-child("+($(obj.parentNode)[0].cellIndex+1)+")").remove();
 
             var attrValue = new Map();
-            $("#picMore").html("");
             $("#moreAttrs tr td:nth-child(4)").each(function (i,d) {
                 if($(d).find("input[name='attr_Value']").val()!=undefined&&$(d).find("input[name='attr_Value']").val()!=""){
                     attrValue.put($(d).find("input[name='attr_Value']").val(),$(d).find("input[name='attr_Value']").val());
                 }
             });
+            var dicMap = new Map()
             for(var i = 0;i<attrValue.keys.length;i++){
+                var url = $("input[name='"+attrValue.get(attrValue.keys[i])+"']");
+                var dics = new Map();
+                for(var j = 0;j<url.length;j++){
+                    dics.put(j,$(url[j]).val());
+                }
+                dicMap.put(attrValue.get(attrValue.keys[i]),dics);
+            }
+            $("#picMore").html("");
+            for(var i = 0;i<attrValue.keys.length;i++){
+
                 $("#picMore").append(addPic(attrName,attrValue.get(attrValue.keys[i])));
+                var m = dicMap.get(attrValue.get(attrValue.keys[i]));
+                for(var j = 0;j< m.keys.length;j++){
+                    $('#'+attrValue.get(attrValue.keys[i])).before("<input type='hidden' name='"+attrValue.get(attrValue.keys[i])+"' value='"+ m.get(j)+"'><img src='"+m.get(j)+"' height='50' width='50' />");
+                }
             }
 
         }
@@ -376,19 +445,47 @@
                         attrValue.put($(d).find("input[name='attr_Value']").val(),$(d).find("input[name='attr_Value']").val());
                     }
                 });
+                var dicMap = new Map()
+                for(var i = 0;i<attrValue.keys.length;i++){
+                    var url = $("input[name='"+attrValue.get(attrValue.keys[i])+"']");
+                    var dics = new Map();
+                    for(var j = 0;j<url.length;j++){
+                        dics.put(j,$(url[j]).val());
+                    }
+                    dicMap.put(attrValue.get(attrValue.keys[i]),dics);
+                }
                 $("#picMore").html("");
                 for(var i = 0;i<attrValue.keys.length;i++){
+                    //alert($("input[name='"+attrValue.get(attrValue.keys[i])+"']").length);
                     $("#picMore").append(addPic(attrName,attrValue.get(attrValue.keys[i])));
+                    var m = dicMap.get(attrValue.get(attrValue.keys[i]));
+                    for(var j = 0;j< m.keys.length;j++){
+                        $('#'+attrValue.get(attrValue.keys[i])).before("<input type='hidden' name='"+attrValue.get(attrValue.keys[i])+"' value='"+ m.get(j)+"'><img src='"+m.get(j)+"' height='50' width='50' />");
+                    }
+                    $().image_editor.init(attrName+"."+attrValue.get(attrValue.keys[i])); //编辑器的实例id
+                    $().image_editor.show(attrValue.get(attrValue.keys[i])); //上传图片的按钮id
                 }
             }
         }
         function addPic(attrName,attrValue){
             var str = "";
-            str += "<div><div>"+attrName+":"+attrValue+"</div>";
-            str += "<div><a href='javascript:void(0)'>选择图片</a></div>";
+            str += "<div><div>"+attrName+":"+attrValue+"</div><script type=text/plain id='"+attrName+"."+attrValue+"' />";
+            str += "<div><a href='javascript:void(0)' id="+attrValue+" onClick='selectPic(this)'>选择图片</a></div>";
             str += "</div>";
             return str;
         }
+        var afterUploadCallback={"imgURLS":addPictrueUrl};
+        var sss;
+        function selectPic(a){
+            sss= a.id;
+        }
+        function addPictrueUrl(urls){
+            $('#'+sss).before("<input type='hidden' name='VariationSpecificValue_"+sss+"' value='"+sss+"'>");
+            for(var i = 0 ;i < urls.length ; i++){
+                $('#'+sss).before("<input type='hidden' name='"+sss+"' value='"+urls[i].src.replace("@",":")+"'><img src='"+urls[i].src.replace("@",":")+"' height='50' width='50' />");
+            }
+        }
+
 
    </script>
 </head>

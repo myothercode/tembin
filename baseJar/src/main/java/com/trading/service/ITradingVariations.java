@@ -10,4 +10,6 @@ public interface ITradingVariations {
     void saveVariations(TradingVariations pojo) throws Exception;
 
     TradingVariations toDAOPojo(Variations var) throws Exception;
+
+    TradingVariations selectByParentId(Long id);
 }

@@ -17,14 +17,19 @@ public class TradingPicturesImpl implements com.trading.service.ITradingPictures
     private TradingPicturesMapper tradingPicturesMapper;
 
     @Override
-    public void savePictures(TradingPictures tp){
-        this.tradingPicturesMapper.insert(tp);
+    public void savePictures(TradingPictures tp) throws Exception {
+        if(tp.getId()==null){
+            ObjectUtils.toInitPojoForInsert(tp);
+            this.tradingPicturesMapper.insert(tp);
+        }else{
+            this.tradingPicturesMapper.updateByPrimaryKeySelective(tp);
+        }
+
     }
 
     @Override
     public TradingPictures toDAOPojo(Pictures pic) throws Exception {
         TradingPictures pojo = new TradingPictures();
-        ObjectUtils.toInitPojoForInsert(pojo);
         ConvertPOJOUtil.convert(pojo,pic);
         return pojo;
     }

@@ -7,7 +7,7 @@ import com.base.xmlpojo.trading.addproduct.Pictures;
  * Created by Administrtor on 2014/7/24.
  */
 public interface ITradingPictures {
-    void savePictures(TradingPictures tp);
+    void savePictures(TradingPictures tp) throws Exception;
 
     TradingPictures toDAOPojo(Pictures pic) throws Exception;
 }

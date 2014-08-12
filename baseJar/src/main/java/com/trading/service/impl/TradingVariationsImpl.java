@@ -2,6 +2,7 @@ package com.trading.service.impl;
 
 import com.base.database.trading.mapper.TradingVariationsMapper;
 import com.base.database.trading.model.TradingVariations;
+import com.base.database.trading.model.TradingVariationsExample;
 import com.base.utils.common.ObjectUtils;
 import com.base.xmlpojo.trading.addproduct.Variations;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,5 +31,12 @@ public class TradingVariationsImpl implements com.trading.service.ITradingVariat
     public TradingVariations toDAOPojo(Variations var) throws Exception {
         TradingVariations pojo = new TradingVariations();
         return pojo;
+    }
+
+    @Override
+    public TradingVariations selectByParentId(Long id){
+        TradingVariationsExample tve = new TradingVariationsExample();
+        tve.createCriteria().andParentIdEqualTo(id);
+        return this.tvm.selectByExample(tve).get(0);
     }
 }

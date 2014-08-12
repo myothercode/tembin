@@ -6,6 +6,7 @@ import com.base.domains.CommonParmVO;
 import com.base.domains.SessionVO;
 import com.base.domains.querypojos.ItemQuery;
 import com.base.domains.querypojos.PaypalQuery;
+import com.base.domains.querypojos.VariationQuery;
 import com.base.domains.userinfo.UsercontrollerDevAccountExtend;
 import com.base.mybatis.page.Page;
 import com.base.mybatis.page.PageJsonBean;
@@ -74,9 +75,14 @@ public class ItemController extends BaseAction{
     private String apiUrl;
     @Autowired
     private ITradingPublicLevelAttr iTradingPublicLevelAttr;
-
+    @Autowired
+    private ITradingVariation iTradingVariation;
     @Autowired
     private UserInfoService userInfoService;
+    @Autowired
+    private ITradingVariations iTradingVariations;
+
+
     /**
      * 商品展示列表
      * @param request
@@ -119,7 +125,7 @@ public class ItemController extends BaseAction{
 
     @RequestMapping("/editItem.do")
     @AvoidDuplicateSubmission(needSaveToken = true)
-    public ModelAndView editItem(HttpServletRequest request,HttpServletResponse response,ModelMap modelMap){
+    public ModelAndView editItem(HttpServletRequest request,HttpServletResponse response,ModelMap modelMap) throws Exception {
         String id = request.getParameter("id");
         List<TradingDataDictionary> lidata = DataDictionarySupport.getTradingDataDictionaryByType(DataDictionarySupport.DATA_DICT_SITE);
         modelMap.put("siteList",lidata);
@@ -146,6 +152,28 @@ public class ItemController extends BaseAction{
             List<TradingPublicLevelAttr> lipa = this.iTradingPublicLevelAttr.selectByParentId(null,tpla.getId());
             modelMap.put("lipa",lipa);
         }
+
+        Map m = new HashMap();
+        m.put("userid",c.getId());
+        List<VariationQuery> liv = this.iTradingVariation.selectByParentId(m);
+        if(liv!=null&&liv.size()>0){
+            for(VariationQuery iv : liv){
+                List<TradingPublicLevelAttr> litpa= this.iTradingPublicLevelAttr.selectByParentId("VariationSpecifics",iv.getId());
+                for(TradingPublicLevelAttr tap : litpa){
+                    iv.setTradingPublicLevelAttr(this.iTradingPublicLevelAttr.selectByParentId(null,tap.getId()));
+                }
+            }
+            modelMap.put("liv",liv);
+        }
+        TradingVariations tvs = this.iTradingVariations.selectByParentId(ti.getId());
+        TradingPublicLevelAttr tpla = this.iTradingPublicLevelAttr.selectByParentId("VariationSpecificsSet",tvs.getId()).get(0);
+        List<TradingPublicLevelAttr> litpa= this.iTradingPublicLevelAttr.selectByParentId("NameValueList",tpla.getId());
+        List li = new ArrayList();
+        for(TradingPublicLevelAttr tp :litpa){
+            li.add(this.iTradingAttrMores.selectByParnetid(tp.getId(),"Name").get(0));
+        }
+        modelMap.put("clso",li);
+
         return forword("item/addItem",modelMap);
     }
 
@@ -208,9 +236,33 @@ public class ItemController extends BaseAction{
             item.setPaymentMethods(limo);
             item.setListingDuration("GTC");
             item.setDispatchTimeMax(0);
+            if(item.getVariations()!=null) {
+                List<Variation> livt = item.getVariations().getVariation();
+                for(int i = 0 ; i<livt.size();i++){
+                    Variation vtion = livt.get(i);
+                    List<VariationSpecifics> livar = new ArrayList();
+                    VariationSpecifics vsf = new VariationSpecifics();
+                    List<NameValueList> linvls = item.getVariations().getVariationSpecificsSet().getNameValueList();
+                    if(linvls!=null&&linvls.size()>0){
+                        List<NameValueList> linameList = new ArrayList();
+                        for(NameValueList vs : linvls){
+                            NameValueList nvl = new NameValueList();
+                            nvl.setName(vs.getName());
+                            List li = new ArrayList();
+                            li.add(vs.getValue().get(i));
+                            nvl.setValue(li);
+                            linameList.add(nvl);
+                        }
+                        vsf.setNameValueList(linameList);
+                    }
+                    livar.add(vsf);
+                    vtion.setVariationSpecifics(livar);
+                }
+                item.getVariations().setVariation(livt);
+                item.getVariations().getPictures().setVariationSpecificName(item.getVariations().getVariationSpecificsSet().getNameValueList().get(0).getName());
+            }
 
 
-            Asserts.assertTrue(false, "错误");
 
 
             AddFixedPriceItemRequest addItem = new AddFixedPriceItemRequest();
@@ -224,9 +276,10 @@ public class ItemController extends BaseAction{
 
             String xml= PojoXmlUtil.pojoToXml(addItem);
             xml="<?xml version=\"1.0\" encoding=\"utf-8\"?>"+xml;
-
             System.out.println(xml);
 
+
+            Asserts.assertTrue(false, "错误");
             UsercontrollerDevAccountExtend d = userInfoService.getDevInfo(1L);
             d.setApiSiteid(DataDictionarySupport.getTradingDataDictionaryByID(Long.parseLong(tradingItem.getSite())).getName1());
             d.setApiCallName(APINameStatic.AddFixedPriceItem);
