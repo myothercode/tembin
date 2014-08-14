@@ -38,6 +38,10 @@ public interface ITradingDataDictionary {
     /**根据parentID查询publicDataDictionary*/
     List<PublicDataDict> selectPublicDictionaryByParentID(Long id,String itemType);
 
+
+    /**根据parentID和itemlevel查询publicDataDictionary*/
+    List<PublicDataDict> selectPublicDictionaryByItemLevel(Long id, String itemLevel, String itemType);
+
     /**根据ID查询userConfig*/
     PublicUserConfig selectUserConfigByID(Long id);
 

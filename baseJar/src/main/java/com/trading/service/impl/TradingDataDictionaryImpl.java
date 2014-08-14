@@ -124,6 +124,13 @@ public class TradingDataDictionaryImpl implements com.trading.service.ITradingDa
         return n;
     }
     @Override
+    /**根据parentID和itemlevel查询publicDataDictionary*/
+    public List<PublicDataDict> selectPublicDictionaryByItemLevel(Long id , String itemLevel,String itemType){
+        List<PublicDataDict> ts=queryPublicDictAll();
+        List<PublicDataDict> n= DictCollectionsUtil.dataPublicDataCollectionsFilterByItemLevel(ts, id,itemLevel,itemType);
+        return n;
+    }
+    @Override
     /**根据ID查询userConfig*/
     public PublicUserConfig selectUserConfigByID(Long id){
         SessionVO sessionVO= SessionCacheSupport.getSessionVO();

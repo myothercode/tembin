@@ -7,6 +7,7 @@ import com.google.common.base.Predicate;
 import com.google.common.collect.Collections2;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMultiset;
+import org.apache.commons.lang.StringUtils;
 
 import java.util.*;
 
@@ -17,6 +18,14 @@ import java.util.*;
 public class DictCollectionsUtil {
     /**publisc表的itemtype*/
     public static final String categorySpecifics="categorySpecifics";
+    /**商品类别*/
+    public static final String category="category";
+
+    /**菜单级别*/
+    public static final String ITEM_LEVEL_ONE="1";
+    public static final String ITEM_LEVEL_TWO="2";
+    public static final String ITEM_LEVEL_THREE="3";
+    public static final String ITEM_LEVEL_FOUR="4";
 
     public static final Map<Object,Integer> dictNameMap=new HashMap<Object, Integer>();
     static {
@@ -78,6 +87,10 @@ public class DictCollectionsUtil {
     public static<T> List<T> dataPublicDataCollectionsFilterByParentID(List<T> tList,Long type,String itemType){
         if(ObjectUtils.isLogicalNull(tList)){return null;}
         return (List<T>)dataPublicCollectionsFilterByParentID((List<PublicDataDict>)tList,type,itemType);
+    }
+    public static<T> List<T> dataPublicDataCollectionsFilterByItemLevel(List<T> tList,Long type,String itemlevel,String itemType){
+        if(ObjectUtils.isLogicalNull(tList)){return null;}
+        return (List<T>)dataPublicCollectionsFilterByItemLevel((List<PublicDataDict>)tList,type,itemlevel,itemType);
     }
 
     /**根据字典中的类型筛选出指定条件的list<TradingDataDictionary>对象*/
@@ -142,7 +155,7 @@ public class DictCollectionsUtil {
         return Arrays.asList(tt);
     }
 
-    /**根据字典中的parentID筛选出指定条件的<publicDataDictionary>对象*/
+    /**根据字典中的parentID和itemtype筛选出指定条件的<publicDataDictionary>对象*/
     public static List<PublicDataDict> dataPublicCollectionsFilterByParentID(List<PublicDataDict> ts,final Long id,final String itemType){
         Collection<PublicDataDict> x= Collections2.filter(ts, new Predicate<PublicDataDict>() {
             @Override
@@ -154,6 +167,35 @@ public class DictCollectionsUtil {
         });
         PublicDataDict[] tt = x.toArray(new PublicDataDict[]{});
         return Arrays.asList(tt);
+
+    }
+    /**根据字典中的parentID和itemlevel筛选出指定条件的<publicDataDictionary>对象*/
+    public static List<PublicDataDict> dataPublicCollectionsFilterByItemLevel(List<PublicDataDict> ts,final Long id,final String itemLevel,final String itemType){
+        Collection<PublicDataDict> x= Collections2.filter(ts, new Predicate<PublicDataDict>() {
+            @Override
+            public boolean apply(PublicDataDict tradingDataDictionary) {
+
+                if(id==null || id==0L){
+                    return (itemType.equalsIgnoreCase(tradingDataDictionary.getItemType())
+                            && itemLevel.equalsIgnoreCase(tradingDataDictionary.getItemLevel()));
+                }
+                else  if(StringUtils.isEmpty(itemLevel)||"0".equalsIgnoreCase(itemLevel)){
+                    return itemType.equalsIgnoreCase(tradingDataDictionary.getItemType())
+                            && (id==Long.parseLong(tradingDataDictionary.getItemParentId())
+                            ||id.equals(Long.parseLong(tradingDataDictionary.getItemParentId())));
+                }
+                else {
+                    return (id==Long.parseLong(tradingDataDictionary.getItemParentId())
+                            ||id.equals(Long.parseLong(tradingDataDictionary.getItemParentId())))
+                            && itemLevel.equalsIgnoreCase(tradingDataDictionary.getItemLevel())
+                            && itemType.equalsIgnoreCase(tradingDataDictionary.getItemType());
+                }
+
+            }
+        });
+        PublicDataDict[] tt = x.toArray(new PublicDataDict[]{});
+        return Arrays.asList(tt);
+
     }
 
     /**根据字典中的ID筛选出指定条件的<publicDataDictionary>对象*/

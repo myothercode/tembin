@@ -151,6 +151,12 @@ public class DataDictionarySupport extends CacheBaseSupport{
         List<PublicDataDict> tradingDataDictionaries = dictionary.selectPublicDictionaryByParentID(id,itemType);
         return tradingDataDictionaries;
     }
+    /**PublicDataDict通过parentid和level去找*/
+    public static List<PublicDataDict> getPublicDataDictionaryByItemLevel(Long id ,String itemLevel,String itemType){
+        ITradingDataDictionary dictionary = (ITradingDataDictionary) ApplicationContextUtil.getBean(ITradingDataDictionary.class);
+        List<PublicDataDict> tradingDataDictionaries = dictionary.selectPublicDictionaryByItemLevel(id,itemLevel,itemType);
+        return tradingDataDictionaries;
+    }
     /**PublicUserConfig字典表查询,用类型作为条件*/
     public static List<PublicUserConfig> getPublicUserConfigByType(String type,Long userId){
         ITradingDataDictionary dictionary = (ITradingDataDictionary) ApplicationContextUtil.getBean(ITradingDataDictionary.class);

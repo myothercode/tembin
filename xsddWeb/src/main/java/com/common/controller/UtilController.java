@@ -15,6 +15,7 @@ import com.base.utils.exception.Asserts;
 import com.base.utils.threadpool.AddApiTask;
 import com.common.base.utils.ajax.AjaxSupport;
 import com.trading.service.ITradingDataDictionary;
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -60,9 +61,9 @@ public class UtilController {
     /**用于获取商品类别的属性*/
     @RequestMapping("/ajax/getCategorySpecifics.do")
     @ResponseBody
-    public void getCategorySpecifics(String categoryID,HttpServletRequest request) throws Exception {
+    public void getCategorySpecifics(String parentCategoryID,HttpServletRequest request) throws Exception {
 
-        List<PublicDataDict> publicDataDictList = DataDictionarySupport.getPublicDataDictionaryByParentID(Long.valueOf(categoryID),
+        List<PublicDataDict> publicDataDictList = DataDictionarySupport.getPublicDataDictionaryByParentID(Long.valueOf(parentCategoryID),
                 DictCollectionsUtil.categorySpecifics);
         if(publicDataDictList!=null && publicDataDictList.size()>0){
             AjaxSupport.sendSuccessText("",publicDataDictList);
@@ -76,7 +77,7 @@ public class UtilController {
         List<UsercontrollerEbayAccountExtend> ebays = userInfoService.getEbayAccountForCurrUser();
         Long ebayID=ebays.get(0).getId();
         String token = userInfoService.getTokenByEbayID(ebayID);
-        String xml=CategoryAPI.getCategorySpecificsRequest(token,categoryID);
+        String xml=CategoryAPI.getCategorySpecificsRequest(token,parentCategoryID);
 
         AddApiTask addApiTask = new AddApiTask();
         Map<String, String> resMap = addApiTask.exec(d, xml, apiUrl);
@@ -88,10 +89,32 @@ public class UtilController {
         }
         List<PublicDataDict> publicDataDictList1 = tradingDataDictionary.addPublicData(res);
 
-        DataDictionarySupport.removePublicDictCache();
+       // DataDictionarySupport.removePublicDictCache();
 
         AjaxSupport.sendSuccessText("",publicDataDictList1);
         return;
+    }
+
+    /**获取类别目录菜单
+     * 如果两个参数都不传，那么返回一级菜单
+     * 如果只传parentid，那么返回对应的parent菜单
+     * */
+    @RequestMapping("/ajax/getCategoryMenu.do")
+    @ResponseBody
+    public void getCategoryMenu(String parentID,String level){
+        List<PublicDataDict> publicDataDictList;
+        if(StringUtils.isEmpty(level)){
+            level="0";
+        }
+        if(StringUtils.isEmpty(parentID)){
+            parentID="0";
+            level = DictCollectionsUtil.ITEM_LEVEL_ONE;
+        }
+        publicDataDictList = DataDictionarySupport.getPublicDataDictionaryByItemLevel(Long.valueOf(parentID),level,DictCollectionsUtil.category);
+
+        AjaxSupport.sendSuccessText("",publicDataDictList);
+        return;
+
     }
 
 
