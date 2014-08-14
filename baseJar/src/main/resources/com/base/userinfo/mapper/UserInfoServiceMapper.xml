@@ -19,7 +19,7 @@
     <select id="querySessionVOInfo" parameterType="com.base.domains.LoginVO" resultType="com.base.domains.SessionVO">
         select u.user_id id,u.user_login_id loginId,
         u.user_name userName,u.user_org_id orgId,org.org_name orgName,
-        u.user_parent_id parentId,u.`status`
+        u.user_parent_id parentId,u.`status`,u.default_dev_account defaultDevID
          from usercontroller_user u
         INNER JOIN usercontroller_org org on org.org_id=u.user_org_id
         where u.user_login_id = #{loginId}   and u.user_password=#{enpassword}

@@ -13,6 +13,7 @@ import com.base.userinfo.mapper.UserInfoServiceMapper;
 import com.base.utils.cache.SessionCacheSupport;
 import com.base.utils.common.EncryptionUtil;
 import com.base.utils.common.ObjectUtils;
+import com.base.utils.exception.Asserts;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -62,8 +63,10 @@ public class UserInfoServiceImpl implements com.base.userinfo.service.UserInfoSe
     public UsercontrollerDevAccountExtend getDevInfo( Long id ) throws Exception {
         if(id==null || id==0L){//如果为空，那么就去取账户设置的默认dev
             SessionVO sessionVO = SessionCacheSupport.getSessionVO();
-            UsercontrollerUser user=userMapper.selectByPrimaryKey(((Long)sessionVO.getId()).intValue());
-            id=user.getDefaultDevAccount();
+            //UsercontrollerUser user=userMapper.selectByPrimaryKey(((Long)sessionVO.getId()).intValue());
+            Asserts.assertTrue(sessionVO.getDefaultDevID()!=null,"未设置默认开发帐号");
+            id= Long.valueOf(sessionVO.getDefaultDevID());
+            //id=user.getDefaultDevAccount();
         }
         UsercontrollerDevAccount x= usercontrollerDevAccountMapper.selectByPrimaryKey(id);
         return x.toExtend();

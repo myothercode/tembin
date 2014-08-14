@@ -23,4 +23,10 @@ public class APINameStatic {
      * 回复消息
      */
     public static final String AddMemberMessageRTQ = "AddMemberMessageRTQ";
+
+    /**获取商品类别属性*/
+   public static final String GetCategorySpecifics="GetCategorySpecifics";
+
+    /** 获取订单*/
+    public static final String GetOrders = "GetOrders";
 }

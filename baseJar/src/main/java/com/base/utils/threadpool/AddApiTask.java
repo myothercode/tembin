@@ -36,7 +36,7 @@ public class AddApiTask {
         TaskPool.threadPoolTaskExecutor.submit(task);
         String res= null;
         try {
-            res = task.get(20, TimeUnit.SECONDS);
+            res = task.get(100, TimeUnit.SECONDS);
         } catch (Exception e) {
             map.put("stat","fail");
             map.put("message",e.getMessage()+"调用"+d.getApiCallName()+"失败");

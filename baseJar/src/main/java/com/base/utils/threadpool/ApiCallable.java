@@ -25,7 +25,14 @@ public class ApiCallable implements Callable {
     public Object call() throws Exception {
         if(xml==null || url==null || devAccountExtend ==null){return null;}
         HttpClient httpClient= HttpClientUtil.getHttpsClient();
-        List<Header> headers = ApiHeader.getApiHeader(devAccountExtend);
+
+        List<Header> headers=null;
+        if(ApiHeader.DISPUTE_API_HEADER.equalsIgnoreCase(devAccountExtend.getHeaderType())){
+            headers=ApiHeader.getDisputeApiHeader(devAccountExtend);
+        }else {
+            headers = ApiHeader.getApiHeader(devAccountExtend);
+        }
+
         String res= HttpClientUtil.post(httpClient,url,xml,enCode,headers);
         return res;
     }

@@ -66,7 +66,7 @@ public class TradingShippingServiceOptionsImpl implements com.trading.service.IT
                 sso.setShippingService(DataDictionarySupport.getTradingDataDictionaryByID(Long.parseLong(sso.getShippingService())).getValue());
                 sso.setShippingServiceCost(new ShippingServiceCost("USD",tsso.getShippingservicecost()));
                 sso.setShippingServiceAdditionalCost(new ShippingServiceAdditionalCost("USD",tsso.getShippingserviceadditionalcost()));
-                if(tsso.getShippingsurcharge()!=null){
+                if(tsso.getShippingsurcharge()!=null&&tsso.getShippingsurcharge()!=0){
                     sso.setShippingSurcharge(new ShippingSurcharge("USD",tsso.getShippingsurcharge()));
                 }
                 lisso.add(sso);

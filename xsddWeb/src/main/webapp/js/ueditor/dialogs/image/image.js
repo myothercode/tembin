@@ -106,9 +106,10 @@
             if(list) {
                 /**调用外部方法*/
                 try{
-                    if(parent.afterUploadCallback){
+                    if(parent.afterUploadCallback && parent.afterUploadCallback!=null){
                         var f=parent.afterUploadCallback['imgURLS'];
                         f(list);
+                        parent.afterUploadCallback=null;
                         return;
                     }
                 }catch (e){}

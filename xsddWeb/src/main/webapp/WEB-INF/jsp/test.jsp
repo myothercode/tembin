@@ -24,6 +24,7 @@
             map.put("templateinittable","/xsddWeb/TemplateInitTableList.do");
             map.put("messagegetmymessage","/xsddWeb/MessageGetmymessageList.do");
             map.put("bindEbayAccount",path+"/user/bindEbayAccount.do");
+            map.put("shipping",path+"/shippingDetailsList.do");
             top.location=map.get(name);
 
         }

@@ -10,7 +10,7 @@ function batchPost(params) {
         alert('请求参数不能为空');
         return;
     }
-    if($.isArray(params)){
+    if(!$.isArray(params)){
         params=[params];
     }
     for (var i in params) {

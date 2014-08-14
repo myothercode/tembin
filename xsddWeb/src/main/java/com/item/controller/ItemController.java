@@ -17,6 +17,7 @@ import com.base.utils.annotations.AvoidDuplicateSubmission;
 import com.base.utils.cache.DataDictionarySupport;
 import com.base.utils.cache.SessionCacheSupport;
 import com.base.utils.common.ConvertPOJOUtil;
+import com.base.utils.common.MyCollectionsUtil;
 import com.base.utils.common.ObjectUtils;
 import com.base.utils.exception.Asserts;
 import com.base.utils.threadpool.AddApiTask;
@@ -82,6 +83,8 @@ public class ItemController extends BaseAction{
     @Autowired
     private ITradingVariations iTradingVariations;
 
+    @Autowired
+    private ITradingPictures iTradingPictures;
 
     /**
      * 商品展示列表
@@ -153,26 +156,57 @@ public class ItemController extends BaseAction{
             modelMap.put("lipa",lipa);
         }
 
-        Map m = new HashMap();
-        m.put("userid",c.getId());
-        List<VariationQuery> liv = this.iTradingVariation.selectByParentId(m);
-        if(liv!=null&&liv.size()>0){
-            for(VariationQuery iv : liv){
-                List<TradingPublicLevelAttr> litpa= this.iTradingPublicLevelAttr.selectByParentId("VariationSpecifics",iv.getId());
-                for(TradingPublicLevelAttr tap : litpa){
-                    iv.setTradingPublicLevelAttr(this.iTradingPublicLevelAttr.selectByParentId(null,tap.getId()));
-                }
-            }
-            modelMap.put("liv",liv);
-        }
+
         TradingVariations tvs = this.iTradingVariations.selectByParentId(ti.getId());
-        TradingPublicLevelAttr tpla = this.iTradingPublicLevelAttr.selectByParentId("VariationSpecificsSet",tvs.getId()).get(0);
-        List<TradingPublicLevelAttr> litpa= this.iTradingPublicLevelAttr.selectByParentId("NameValueList",tpla.getId());
-        List li = new ArrayList();
-        for(TradingPublicLevelAttr tp :litpa){
-            li.add(this.iTradingAttrMores.selectByParnetid(tp.getId(),"Name").get(0));
+        if(tvs!=null){
+            Map m = new HashMap();
+            m.put("userid",c.getId());
+            m.put("parentid",tvs.getId());
+            List<VariationQuery> liv = this.iTradingVariation.selectByParentId(m);
+            if(liv!=null&&liv.size()>0){
+                for(VariationQuery iv : liv){
+                    List<TradingPublicLevelAttr> litpa= this.iTradingPublicLevelAttr.selectByParentId("VariationSpecifics",iv.getId());
+                    for(TradingPublicLevelAttr tap : litpa){
+                        iv.setTradingPublicLevelAttr(this.iTradingPublicLevelAttr.selectByParentId(null,tap.getId()));
+                    }
+                }
+                modelMap.put("liv",liv);
+            }
+            TradingPublicLevelAttr tpla = this.iTradingPublicLevelAttr.selectByParentId("VariationSpecificsSet",tvs.getId()).get(0);
+            List<TradingPublicLevelAttr> litpa= this.iTradingPublicLevelAttr.selectByParentId("NameValueList",tpla.getId());
+            List li = new ArrayList();
+            for(TradingPublicLevelAttr tp :litpa){
+                li.add(this.iTradingAttrMores.selectByParnetid(tp.getId(),"Name").get(0));
+            }
+            modelMap.put("clso",li);
+
+            TradingPictures tpes = this.iTradingPictures.selectParnetId(tvs.getId());
+
+            List<TradingPublicLevelAttr> livsps = this.iTradingPublicLevelAttr.selectByParentId("VariationSpecificPictureSet",tpes.getId());
+            List lipics = new ArrayList();
+            for(int i = 0;i < livsps.size() ;i++){
+                Map ms = new HashMap();
+                TradingPublicLevelAttr tpa = livsps.get(i);
+                List<TradingPublicLevelAttr> livspsss = this.iTradingPublicLevelAttr.selectByParentId("VariationSpecificValue",tpa.getId());
+                List<TradingAttrMores> litam = this.iTradingAttrMores.selectByParnetid(tpa.getId(),"PictureURL");
+                ms.put("litam",litam);
+                ms.put("tamname",livspsss.get(0).getValue());
+                lipics.add(ms);
+            }
+            if(lipics.size()>0){
+                modelMap.put("lipics",lipics);
+            }
+
         }
-        modelMap.put("clso",li);
+        List<TradingPicturedetails> lipd = this.iTradingPictureDetails.selectByParentId(Long.parseLong(id));
+        for(TradingPicturedetails pd : lipd){
+            List<TradingAttrMores> litam = this.iTradingAttrMores.selectByParnetid(pd.getId(),"PictureURL");
+            modelMap.put("litam",litam);
+        }
+
+
+
+
 
         return forword("item/addItem",modelMap);
     }
@@ -260,9 +294,20 @@ public class ItemController extends BaseAction{
                 }
                 item.getVariations().setVariation(livt);
                 item.getVariations().getPictures().setVariationSpecificName(item.getVariations().getVariationSpecificsSet().getNameValueList().get(0).getName());
+                if(item.getStartPrice().getValue()==0){
+                    item.setStartPrice(null);
+                }
+
+                List<NameValueList>  linvl= item.getVariations().getVariationSpecificsSet().getNameValueList();
+                for(NameValueList nvlst : linvl){
+                    List<String> listr = nvlst.getValue();
+                    listr = MyCollectionsUtil.listUnique(listr);
+                    nvlst.setValue(listr);
+                }
+                item.getVariations().getVariationSpecificsSet().setNameValueList(linvl);
             }
 
-
+            item.setListingType(item.getListingType().equals("2")?"FixedPriceItem":item.getListingType());
 
 
             AddFixedPriceItemRequest addItem = new AddFixedPriceItemRequest();
@@ -279,7 +324,7 @@ public class ItemController extends BaseAction{
             System.out.println(xml);
 
 
-            Asserts.assertTrue(false, "错误");
+            //Asserts.assertTrue(false, "错误");
             UsercontrollerDevAccountExtend d = userInfoService.getDevInfo(1L);
             d.setApiSiteid(DataDictionarySupport.getTradingDataDictionaryByID(Long.parseLong(tradingItem.getSite())).getName1());
             d.setApiCallName(APINameStatic.AddFixedPriceItem);
@@ -294,10 +339,10 @@ public class ItemController extends BaseAction{
                 return;
             }
             String ack = SamplePaseXml.getVFromXmlString(res,"Ack");
-            if("Success".equalsIgnoreCase(ack)){
+            if("Success".equalsIgnoreCase(ack)||"Warning".equalsIgnoreCase(ack)){
                 String itemId= SamplePaseXml.getVFromXmlString(res, "ItemID");
                 tradingItem.setItemId(itemId);
-                tradingItem.setIsFlag(ack);
+                tradingItem.setIsFlag("Success");
                 this.iTradingItem.saveTradingItem(tradingItem);
                 AjaxSupport.sendSuccessText("message", "操作成功！");
             }else {

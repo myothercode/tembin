@@ -2,8 +2,6 @@ package com.base.utils.httpclient;
 
 import com.base.domains.userinfo.UsercontrollerDevAccountExtend;
 import org.apache.http.Header;
-import org.apache.http.HeaderElement;
-import org.apache.http.ParseException;
 import org.apache.http.message.BasicHeader;
 
 import java.util.ArrayList;
@@ -13,6 +11,10 @@ import java.util.List;
  * Created by Administrtor on 2014/8/6.
  */
 public class ApiHeader {
+
+    public static final String DISPUTE_API_HEADER = "DisputeApiHeader";
+
+    /**返回普通api的header*/
     public static List<Header> getApiHeader(UsercontrollerDevAccountExtend devAccountExtend){
         List<Header> headers = new ArrayList<org.apache.http.Header>();
         headers.add(new BasicHeader("X-EBAY-API-COMPATIBILITY-LEVEL",devAccountExtend.getApiCompatibilityLevel()));
@@ -22,5 +24,18 @@ public class ApiHeader {
         headers.add(new BasicHeader("X-EBAY-API-SITEID",devAccountExtend.getApiSiteid()));
         headers.add(new BasicHeader("X-EBAY-API-CALL-NAME",devAccountExtend.getApiCallName()));
         return headers;
+    }
+
+    /**返回纠纷请求的header*/
+    public static List<Header> getDisputeApiHeader(UsercontrollerDevAccountExtend devAccountExtend){
+        List<Header> headers = new ArrayList<org.apache.http.Header>();
+        headers.add(new BasicHeader("X-EBAY-SOA-OPERATION-NAME",devAccountExtend.getSoaOperationName()));
+        headers.add(new BasicHeader("X-EBAY-SOA-SECURITY-TOKEN ",devAccountExtend.getSoaSecurityToken()));
+        headers.add(new BasicHeader("X-EBAY-SOA-REQUEST-DATA-FORMAT",devAccountExtend.getSoaRequestDataFormat()));
+        headers.add(new BasicHeader("X-EBAY-SOA-SERVICE-NAME",devAccountExtend.getSoaServiceName()));
+        headers.add(new BasicHeader("X-EBAY-SOA-SERVICE-VERSION",devAccountExtend.getSoaServiceVersion()));
+        headers.add(new BasicHeader("X-EBAY-SOA-GLOBAL-ID",devAccountExtend.getSoaGlobalId()));
+        return headers;
+
     }
 }

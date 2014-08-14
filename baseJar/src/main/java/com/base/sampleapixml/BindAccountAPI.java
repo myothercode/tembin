@@ -82,4 +82,30 @@ public class BindAccountAPI {
                 "</GetMyMessagesRequest> ";
         return xml;
     }
+    public static String getUserCases(){
+        String xml="<?xml version=\"1.0\" encoding=\"utf-8\"?>" +
+                "<getUserCasesRequest xmlns=http://www.ebay.com/marketplace/resolution/v1/services>" +
+                "<creationDateRangeFilter>" +
+                "<fromDate>2014-08-12T00:00:00.Z</fromDate>" +
+                "<toDate>2014-08-07T00:00:00.Z</toDate>" +
+                "</creationDateRangeFilter>" +
+                "<paginationInput>" +
+                "<pageNumber>1</pageNumber>" +
+                "<entriesPerPage>10</entriesPerPage>" +
+                "</paginationInput>" +
+                "</getUserCasesRequest>";
+        return xml;
+    }
+    public static String getGetOrders(Map<String,String> map){
+        String xml="<?xml version=\"1.0\" encoding=\"utf-8\"?>" +
+                "<GetOrdersRequest xmlns=\"urn:ebay:apis:eBLBaseComponents\">" +
+                "  <RequesterCredentials>" +
+                "    <eBayAuthToken>"+map.get("token")+"</eBayAuthToken>" +
+                "  </RequesterCredentials>" +
+                "  <CreateTimeFrom>"+map.get("fromTime")+"</CreateTimeFrom>" +
+                "  <CreateTimeTo>"+map.get("toTime")+"</CreateTimeTo>" +
+                "  <OrderRole>Seller</OrderRole>" +
+                "</GetOrdersRequest>";
+        return xml;
+    }
 }

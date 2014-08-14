@@ -31,5 +31,8 @@
         <if test="userid!=null">
             and tion.create_user = #{userid}
         </if>
+        <if test="parentid!=null">
+            and tion.parent_id = #{parentid}
+        </if>
     </select>
 </mapper>

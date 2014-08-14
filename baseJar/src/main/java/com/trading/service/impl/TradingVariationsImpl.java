@@ -8,6 +8,8 @@ import com.base.xmlpojo.trading.addproduct.Variations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 /**
  * Created by cz on 2014/7/24.
  */
@@ -37,6 +39,9 @@ public class TradingVariationsImpl implements com.trading.service.ITradingVariat
     public TradingVariations selectByParentId(Long id){
         TradingVariationsExample tve = new TradingVariationsExample();
         tve.createCriteria().andParentIdEqualTo(id);
-        return this.tvm.selectByExample(tve).get(0);
+        List<TradingVariations> litv = this.tvm.selectByExample(tve);
+        if(litv.size()==0)
+            return null;
+        return litv.get(litv.size()-1);
     }
 }

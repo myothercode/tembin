@@ -70,6 +70,11 @@ public class DataDictionarySupport extends CacheBaseSupport{
         if(element==null){return null;}
         return (List<PublicDataDict>) element.getObjectValue();
     }
+    /**移除publish数据字典*/
+    public static void removePublicDictCache(){
+        Cache cache = cacheManager.getCache(DICT_CACHE_NAME);
+        cache.remove(PUBLIC_DATA_DICTIONARY);
+    }
     /**获取userConfig数据字典*/
     public static List<PublicUserConfig> getPublicUserConfig(Long userID){
         if(userID==null || userID==0){return null;}
@@ -129,9 +134,21 @@ public class DataDictionarySupport extends CacheBaseSupport{
         return tradingDataDictionaries;
     }
     /**PublicDataDict通过id去找*/
-    public static PublicDataDict getPublicDataDictionaryByID(Long id){
+    public static List<PublicDataDict> getPublicDataDictionaryByID(Long id){
         ITradingDataDictionary dictionary = (ITradingDataDictionary) ApplicationContextUtil.getBean(ITradingDataDictionary.class);
-        PublicDataDict tradingDataDictionaries = dictionary.selectPublicDictionaryByID(id);
+        List<PublicDataDict> tradingDataDictionaries = dictionary.selectPublicDictionaryByID(id);
+        return tradingDataDictionaries;
+    }
+    /**PublicDataDict通过itemid去找*/
+    public static List<PublicDataDict> getPublicDataDictionaryByitemID(Long id){
+        ITradingDataDictionary dictionary = (ITradingDataDictionary) ApplicationContextUtil.getBean(ITradingDataDictionary.class);
+        List<PublicDataDict> tradingDataDictionaries = dictionary.selectPublicDictionaryByItemID(id);
+        return tradingDataDictionaries;
+    }
+    /**PublicDataDict通过parentid和type去找*/
+    public static List<PublicDataDict> getPublicDataDictionaryByParentID(Long id ,String itemType){
+        ITradingDataDictionary dictionary = (ITradingDataDictionary) ApplicationContextUtil.getBean(ITradingDataDictionary.class);
+        List<PublicDataDict> tradingDataDictionaries = dictionary.selectPublicDictionaryByParentID(id,itemType);
         return tradingDataDictionaries;
     }
     /**PublicUserConfig字典表查询,用类型作为条件*/

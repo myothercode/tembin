@@ -15,7 +15,7 @@ public class StartPrice {
 
     }
 
-    public StartPrice(String currencyID,double value){
+    public StartPrice(String currencyID,Double value){
         this.currencyID = currencyID;
         this.value = value;
     }
@@ -27,7 +27,7 @@ public class StartPrice {
     /**
      * 设置值
      */
-    private double value;
+    private Double value;
 
     public String getCurrencyID() {
         return currencyID;
@@ -37,7 +37,7 @@ public class StartPrice {
         this.currencyID = currencyID;
     }
 
-    public double getValue() {
+    public Double getValue() {
         return value;
     }
 

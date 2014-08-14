@@ -44,7 +44,7 @@ public class UserManageController extends BaseAction {
     static Logger logger = Logger.getLogger(UserManageController.class);
     @Value("${EBAY.API.URL}")
     private String apiUrl;
-    @Value("${USER.TOKEN.SNADBOX.URL}")
+    @Value("${USER.TOKEN.PRO.URL}")
     private String tokenPageUrl;
     @Autowired
     private UserInfoService userInfoService;
@@ -63,7 +63,7 @@ public class UserManageController extends BaseAction {
     /**绑定账号的时候获取sessionid*/
     public void apiGetSessionID(CommonParmVO commonParmVO,@ModelAttribute( "initSomeParmMap" )ModelMap modelMap) throws Exception{
         Asserts.assertTrue(commonParmVO.getId()!=null,"参数获取失败！");
-        UsercontrollerDevAccountExtend d = userInfoService.getDevInfo(commonParmVO.getId());
+        UsercontrollerDevAccountExtend d = userInfoService.getDevInfo(null);
         d.setApiSiteid("0");
         d.setApiCallName(APINameStatic.GetSessionID);
         String xml= BindAccountAPI.getSessionID(d.getRunname());

@@ -106,7 +106,8 @@ var Base={
                         fun[1] ? fun[1].apply(self, [re["message"], re["result"]]) : (alert(re["message"]));
                         return;
                     }else{
-                        Base.handleException(res)
+                        Base.handleException(res);
+                        fun[1] ? fun[1].apply(self, ["error", "出现错误了！"]) : (alert("出现错误了！"));
                     }
 
                 }
@@ -115,7 +116,7 @@ var Base={
         return this;
     };
     //默认参数，异步，且以对象模式进行ajax访问
-    $.fn.invoke.defaultConfig = {type: "POST", dataType: "html", async: true, ajaxMode: "object"};
+    $.fn.invoke.defaultConfig = {type: "POST", dataType: "html", async: true, ajaxMode: "ajaxFlag"};
 
 
 })(jQuery);

@@ -30,8 +30,17 @@ public interface ITradingDataDictionary {
     TradingDataDictionary selectDictionaryByID(Long id);
 
     /**根据ID查询publicDataDictionary*/
-    PublicDataDict selectPublicDictionaryByID(Long id);
+    List<PublicDataDict> selectPublicDictionaryByID(Long id);
+
+    /**根据itemID查询publicDataDictionary*/
+    List<PublicDataDict> selectPublicDictionaryByItemID(Long id);
+
+    /**根据parentID查询publicDataDictionary*/
+    List<PublicDataDict> selectPublicDictionaryByParentID(Long id,String itemType);
 
     /**根据ID查询userConfig*/
     PublicUserConfig selectUserConfigByID(Long id);
+
+    /**添加类别属性信息*/
+    List<PublicDataDict> addPublicData(String xml) throws Exception;
 }

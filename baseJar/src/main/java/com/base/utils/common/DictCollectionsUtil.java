@@ -15,6 +15,9 @@ import java.util.*;
  * 数据字典的集合处理类
  */
 public class DictCollectionsUtil {
+    /**publisc表的itemtype*/
+    public static final String categorySpecifics="categorySpecifics";
+
     public static final Map<Object,Integer> dictNameMap=new HashMap<Object, Integer>();
     static {
         dictNameMap.put(TradingDataDictionary.class,1);//trading字典表对应的缓存名称
@@ -64,6 +67,18 @@ public class DictCollectionsUtil {
 
         }
     }
+    public static<T> List<T> dataPublicDataCollectionsFilterByID(List<T> tList,Long type){
+        if(ObjectUtils.isLogicalNull(tList)){return null;}
+        return (List<T>)dataPublicCollectionsFilterByID((List<PublicDataDict>)tList,type);
+    }
+    public static<T> List<T> dataPublicDataCollectionsFilterByItemID(List<T> tList,Long type){
+        if(ObjectUtils.isLogicalNull(tList)){return null;}
+        return (List<T>)dataPublicCollectionsFilterByItemID((List<PublicDataDict>)tList,type);
+    }
+    public static<T> List<T> dataPublicDataCollectionsFilterByParentID(List<T> tList,Long type,String itemType){
+        if(ObjectUtils.isLogicalNull(tList)){return null;}
+        return (List<T>)dataPublicCollectionsFilterByParentID((List<PublicDataDict>)tList,type,itemType);
+    }
 
     /**根据字典中的类型筛选出指定条件的list<TradingDataDictionary>对象*/
     public static List<TradingDataDictionary> dataTradingCollectionFilterByType(List<TradingDataDictionary> ts,final String type){
@@ -90,12 +105,51 @@ public class DictCollectionsUtil {
     }
 
     /*=========================*/
+
     /**根据字典中的类型筛选出指定条件的list<publicDataDictionary>对象*/
-    public static List<PublicDataDict> dataPublicCollectionFilterByType(List<PublicDataDict> ts,final String type){
+    public static PublicDataDict dataPublicCollectionFilterByType(List<PublicDataDict> ts,final String type){
         Collection<PublicDataDict> x= Collections2.filter(ts, new Predicate<PublicDataDict>() {
             @Override
             public boolean apply(PublicDataDict tradingDataDictionary) {
                 return type.equalsIgnoreCase(tradingDataDictionary.getItemType());
+            }
+        });
+        PublicDataDict[] tt = x.toArray(new PublicDataDict[]{});
+        return Arrays.asList(tt).get(0);
+    }
+
+    /**根据字典中的ID筛选出指定条件的<publicDataDictionary>对象*/
+    public static List<PublicDataDict> dataPublicCollectionsFilterByID(List<PublicDataDict> ts,final Long id){
+        Collection<PublicDataDict> x= Collections2.filter(ts, new Predicate<PublicDataDict>() {
+            @Override
+            public boolean apply(PublicDataDict tradingDataDictionary) {
+                return id==tradingDataDictionary.getId()||id.equals(tradingDataDictionary.getId());
+            }
+        });
+        PublicDataDict[] tt = x.toArray(new PublicDataDict[]{});
+        return Arrays.asList(tt);
+    }
+
+    /**根据字典中的itemID筛选出指定条件的<publicDataDictionary>对象*/
+    public static List<PublicDataDict> dataPublicCollectionsFilterByItemID(List<PublicDataDict> ts,final Long id){
+        Collection<PublicDataDict> x= Collections2.filter(ts, new Predicate<PublicDataDict>() {
+            @Override
+            public boolean apply(PublicDataDict tradingDataDictionary) {
+                return id==Long.parseLong(tradingDataDictionary.getItemId())||id.equals(Long.parseLong(tradingDataDictionary.getItemParentId()));
+            }
+        });
+        PublicDataDict[] tt = x.toArray(new PublicDataDict[]{});
+        return Arrays.asList(tt);
+    }
+
+    /**根据字典中的parentID筛选出指定条件的<publicDataDictionary>对象*/
+    public static List<PublicDataDict> dataPublicCollectionsFilterByParentID(List<PublicDataDict> ts,final Long id,final String itemType){
+        Collection<PublicDataDict> x= Collections2.filter(ts, new Predicate<PublicDataDict>() {
+            @Override
+            public boolean apply(PublicDataDict tradingDataDictionary) {
+                return (id==Long.parseLong(tradingDataDictionary.getItemParentId())
+                        ||id.equals(Long.parseLong(tradingDataDictionary.getItemParentId())))
+                        && itemType.equalsIgnoreCase(tradingDataDictionary.getItemType());
             }
         });
         PublicDataDict[] tt = x.toArray(new PublicDataDict[]{});

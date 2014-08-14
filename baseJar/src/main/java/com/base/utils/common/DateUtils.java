@@ -631,4 +631,23 @@ public class DateUtils {
         calendar.add(Calendar.DATE,0-add);
         return turnToDateStart(calendar.getTime());
     }
+    public static String DateToString(Date date) throws ParseException {
+        SimpleDateFormat f = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+        String startTime=f.format(date);
+        String d=startTime.substring(0,10)+"T"+startTime.substring(11)+".000Z";
+        return d;
+    }
+    public static Date returnDate(String date){
+        Date date1=null;
+        if(!"".equals(date)&&date!=null){
+            int year= Integer.parseInt(date.substring(0,4));
+            int month= Integer.parseInt(date.substring(5,7));
+            int dayOfMonth=Integer.parseInt(date.substring(8,10));
+            int hour=Integer.parseInt(date.substring(11,13));
+            int minute=Integer.parseInt(date.substring(14,16));
+            int second=Integer.parseInt(date.substring(17,19));
+            date1= DateUtils.buildDateTime(year,month,dayOfMonth,hour,minute,second);
+        }
+        return date1;
+    }
 }

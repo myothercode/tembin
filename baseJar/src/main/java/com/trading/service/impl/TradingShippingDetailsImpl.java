@@ -158,7 +158,7 @@ public class TradingShippingDetailsImpl implements com.trading.service.ITradingS
                 if(toli!=null&&toli.size()>0){
                     for(String str:toli){
                         TradingAttrMores tam = this.iTradingAttrMores.toDAOPojo("ShipToLocation",str);
-                        tam.setParentId(tiss.getParentId());
+                        tam.setParentId(tiss.getId());
                         tam.setParentUuid(tiss.getUuid());
                         this.iTradingAttrMores.saveAttrMores(tam);
                     }

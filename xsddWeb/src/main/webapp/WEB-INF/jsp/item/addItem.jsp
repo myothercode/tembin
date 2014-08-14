@@ -21,16 +21,12 @@
     <script>
         var _sku="ZBQ13212";
         var myDescription=null;
-        //当选择图片后生成图片地址
-        function addPictrueUrl(obj){
-            var str='';
-            for(var i=0;i<obj.length;i++){
-                str='<input type="hidden" name="PictureDetails.PictureURL['+i+']" value="'+obj[0].src.replace("@",":")+'">';
-                $("#picture").append(str);
-            }
-        }
+
 
         $(document).ready(function() {
+            $().image_editor.init("picUrls"); //编辑器的实例id
+            $().image_editor.show("apicUrls"); //上传图片的按钮id
+
             //加载买家要求
             $("#buyer").initTable({
                 url:path + "/ajax/loadBuyerRequirementDetailsList.do",
@@ -182,6 +178,44 @@
             </c:forEach>
 
 
+
+            var attrValue = new Map();
+            $("#moreAttrs tr td:nth-child(4)").each(function (i,d) {
+                if($(d).find("input[name='attr_Value']").val()!=undefined&&$(d).find("input[name='attr_Value']").val()!=""){
+                    attrValue.put($(d).find("input[name='attr_Value']").val(),$(d).find("input[name='attr_Value']").val());
+                }
+            });
+            /*var dicMap = new Map()
+            for(var i = 0;i<attrValue.keys.length;i++){
+                var url = $("input[name='"+attrValue.get(attrValue.keys[i])+"']");
+                var dics = new Map();
+                for(var j = 0;j<url.length;j++){
+                    dics.put(j,$(url[j]).val());
+                }
+                dicMap.put(attrValue.get(attrValue.keys[i]),dics);
+            }*/
+            $("#picMore").html("");
+            for(var i = 0;i<attrValue.keys.length;i++){
+                /*var m = dicMap.get(attrValue.get(attrValue.keys[i]));
+                for(var j = 0;j< m.keys.length;j++){
+                    $('#'+attrValue.get(attrValue.keys[i])).before("<input type='hidden' name='"+attrValue.get(attrValue.keys[i])+"' value='"+ m.get(j)+"'><img src='"+m.get(j)+"' height='50' width='50' />");
+                }*/
+                $("#picMore").append(addPic($("#moreAttrs tr:eq(0) td:eq(3)").find("input").val(),attrValue.get(attrValue.keys[i])));
+                //$().image_editor.init($("#moreAttrs tr:eq(0) td:eq(3)").find("input").val()+"."+attrValue.get(attrValue.keys[i])); //编辑器的实例id
+                $().image_editor.show(attrValue.get(attrValue.keys[i])); //上传图片的按钮id
+            }
+            var str='';
+            <c:forEach items="${litam}" var="tam" varStatus="status">
+                str = '<span><img src="${tam.value}" height="50" width="50" /><a href="javascript:void(0)" onclick="removeThis(this)">移除</a></span>';
+                $("#picture").append(str);
+            </c:forEach>
+            <c:forEach items="${lipics}" var="pics">
+                $("#${pics.tamname}").before("<input type='hidden' name='VariationSpecificValue_${pics.tamname}' value='${pics.tamname}'>");
+                <c:forEach items="${pics.litam}" var="pi">
+                    $("#${pics.tamname}").before("<span><input type='hidden' name='${pics.tamname}' value='${pi.value}'><img src='${pi.value}' height='50' width='50' /> <a href='javascritp:void(0)' onclick='removeThis(this)'>移除</a></span>");
+                </c:forEach>
+            </c:forEach>
+
         });
 
         /**返回买家要求单选框*/
@@ -320,9 +354,15 @@
             if(obj=="2"){
                 $("#oneAttr").hide();
                 $("#twoAttr").show();
+                $("#Auction").hide();
             }else if(obj=="FixedPriceItem"){
                 $("#oneAttr").show();
                 $("#twoAttr").hide();
+                $("#Auction").hide();
+            }else if(obj=="Auction"){
+                $("#oneAttr").show();
+                $("#twoAttr").hide();
+                $("#Auction").show();
             }
         }
         //点击添回SKU输入项
@@ -462,7 +502,7 @@
                     for(var j = 0;j< m.keys.length;j++){
                         $('#'+attrValue.get(attrValue.keys[i])).before("<input type='hidden' name='"+attrValue.get(attrValue.keys[i])+"' value='"+ m.get(j)+"'><img src='"+m.get(j)+"' height='50' width='50' />");
                     }
-                    $().image_editor.init(attrName+"."+attrValue.get(attrValue.keys[i])); //编辑器的实例id
+                    //$().image_editor.init(attrName+"."+attrValue.get(attrValue.keys[i])); //编辑器的实例id
                     $().image_editor.show(attrValue.get(attrValue.keys[i])); //上传图片的按钮id
                 }
             }
@@ -474,19 +514,33 @@
             str += "</div>";
             return str;
         }
-        var afterUploadCallback={"imgURLS":addPictrueUrl};
+
+        var afterUploadCallback=null;
         var sss;
+        //当选择图片后生成图片地址
         function selectPic(a){
+            afterUploadCallback = {"imgURLS":addPictrueUrl};
             sss= a.id;
         }
+
         function addPictrueUrl(urls){
-            $('#'+sss).before("<input type='hidden' name='VariationSpecificValue_"+sss+"' value='"+sss+"'>");
-            for(var i = 0 ;i < urls.length ; i++){
-                $('#'+sss).before("<input type='hidden' name='"+sss+"' value='"+urls[i].src.replace("@",":")+"'><img src='"+urls[i].src.replace("@",":")+"' height='50' width='50' />");
+
+            if(sss=="apicUrls"){//商品图片
+                var str='';
+                for(var i=0;i<urls.length;i++){
+                    str='<span><input type="hidden" name="PictureDetails.PictureURL['+i+']" value="'+urls[i].src+'"><img src=' + urls[i].src.replace("@", ":") + ' height="50" width="50" /><a href="javascript:void(0)" onclick="removeThis(this)">移除</a></span>';
+                    $("#picture").append(str);
+                }
+            }else {//多属性图片
+                $('#' + sss).before("<input type='hidden' name='VariationSpecificValue_" + sss + "' value='" + sss + "'>");
+                for (var i = 0; i < urls.length; i++) {
+                    $('#' + sss).before("<span><input type='hidden' name='" + sss + "' value='" + urls[i].src + "'><img src='" + urls[i].src.replace("@", ":") + "' height='50' width='50' /> <a href='javascritp:void(0)' onclick='removeThis(this)'>移除</a></span>");
+                }
             }
         }
-
-
+        function removeThis(obj){
+            $(obj).parent().remove();
+        }
    </script>
 </head>
 <c:set var="item" value="${item}"/>
@@ -494,9 +548,7 @@
 <form id="form">
     <input type="hidden" name="id" id="id" value="${item.id}">
     <input type="hidden" name="dataMouth" id="dataMouth" value="">
-    <div id="picture">
 
-    </div>
     <table width="100%">
         <tr>
             <td colspan="2">
@@ -531,7 +583,7 @@
         <tr>
             <td align="right">刊登类型</td>
             <td>
-                <input type="radio" name="listingType" value="Auction" disabled>拍买
+                <input type="radio" name="listingType" value="Auction" onchange="changeRadio('Auction')">拍买
                 <input type="radio" name="listingType" value="FixedPriceItem" onchange="changeRadio('FixedPriceItem')">固价
                 <input type="radio" name="listingType" value="2" onchange="changeRadio('2')">多属性
             </td>
@@ -564,6 +616,75 @@
             <td align="right">第二分类</td>
             <td>
                 <input type="text" name="SecondaryCategory.CategoryID" title="SecondaryCategory.CategoryID" value="${item.secondaryCategoryid}">
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2">
+                商品图片
+                <hr/>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2">
+                <div>
+                    <div id="picture"></div>
+                    <script type=text/plain id='picUrls'></script>
+                    <div><a href="javascript:void(0)" id="apicUrls" onclick="selectPic(this)">选择图片</a></div>
+                </div>
+            </td>
+        </tr>
+        <tr id="Auction" style="display: none;">
+            <td colspan="2">
+                <table width="100%">
+                    <tr>
+                        <td colspan="2">
+                            拍买
+                            <hr/>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td width="200" align="right">私人拍买：</td>
+                        <td><input type="checkbox" name="PrivateListing">不向公众显示买家的名称</td>
+                    </tr>
+                    <tr>
+                        <td width="200" align="right">刊登天数：</td>
+                        <td>
+                            <select name="ListingDuration">
+                                <option value="1">1</option>
+                                <option value="2">2</option>
+                                <option value="3">3</option>
+                                <option value="5">5</option>
+                                <option value="10">10</option>
+                            </select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td width="200" align="right">保留价：</td>
+                        <td>
+                            <input type="text" name="ReservePrice">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td width="200" align="right">一口价：</td>
+                        <td>
+                            <input type="text" name="BuyItNowPrice">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td width="200" align="right">
+
+                        </td>
+                        <td>
+                            <select name="ListingFlag">
+                                <option value="0">单独物品</option>
+                                <option value="1">批量物品</option>
+                            </select>
+                            销售比基数<input type="text" name="ListingScale">
+                            <br/>
+                            <input type="checkbox" name="SecondFlag">二次交易机会
+                        </td>
+                    </tr>
+                </table>
             </td>
         </tr>
         <tr>
@@ -608,7 +729,7 @@
             <td align="right" style="vertical-align: top;">自定义物品属性</td>
             <td>
                 <div id="oneAttr"  style="display: none;">
-                    商品价格：<input type="text" name="StartPrice.value" class="validate[required]" value="${item.startprice}"/>
+                    商品价格：<input type="text" name="StartPrice.value" class="validate[required]" value="${item.startprice==null?'0':item.startprice}"/>
                     <br/>
                     商品数量：<input type="text" name="Quantity" value="${item.quantity}" class="validate[required]"/>
                 </div>

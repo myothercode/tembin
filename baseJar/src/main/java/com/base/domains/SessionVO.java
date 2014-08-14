@@ -17,7 +17,16 @@ public class SessionVO {
     private List<PermissionVO> permissions;//权限url列表
     private String status;//账户状态
     private String sessionID;//
+    private String defaultDevID;//
 
+
+    public String getDefaultDevID() {
+        return defaultDevID;
+    }
+
+    public void setDefaultDevID(String defaultDevID) {
+        this.defaultDevID = defaultDevID;
+    }
 
     public String getSessionID() {
         return sessionID;

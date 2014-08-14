@@ -14,9 +14,11 @@ import com.base.utils.cache.DataDictionarySupport;
 import com.base.utils.cache.SessionCacheSupport;
 import com.base.utils.common.DictCollectionsUtil;
 import com.base.utils.common.ObjectUtils;
+import com.base.utils.xmlutils.SamplePaseXml;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -102,9 +104,23 @@ public class TradingDataDictionaryImpl implements com.trading.service.ITradingDa
     }
     @Override
     /**根据ID查询publicDataDictionary*/
-    public PublicDataDict selectPublicDictionaryByID(Long id){
+    public List<PublicDataDict> selectPublicDictionaryByID(Long id){
         List<PublicDataDict> ts=queryPublicDictAll();
-        PublicDataDict n= DictCollectionsUtil.dataCollectionFilterByID(ts, id);
+        List<PublicDataDict> n= DictCollectionsUtil.dataPublicDataCollectionsFilterByID(ts, id);
+        return n;
+    }
+    @Override
+    /**根据itemID查询publicDataDictionary*/
+    public List<PublicDataDict> selectPublicDictionaryByItemID(Long id){
+        List<PublicDataDict> ts=queryPublicDictAll();
+        List<PublicDataDict> n= DictCollectionsUtil.dataPublicDataCollectionsFilterByItemID(ts, id);
+        return n;
+    }
+    @Override
+    /**根据parentID查询publicDataDictionary*/
+    public List<PublicDataDict> selectPublicDictionaryByParentID(Long id , String itemType){
+        List<PublicDataDict> ts=queryPublicDictAll();
+        List<PublicDataDict> n= DictCollectionsUtil.dataPublicDataCollectionsFilterByParentID(ts, id,itemType);
         return n;
     }
     @Override
@@ -115,6 +131,19 @@ public class TradingDataDictionaryImpl implements com.trading.service.ITradingDa
         PublicUserConfig n= DictCollectionsUtil.dataCollectionFilterByID(ts, id);
         return n;
     }
+
+    @Override
+    /**添加类别属性信息，并返回解析完毕的集合*/
+    public List<PublicDataDict> addPublicData(String xml) throws Exception {
+        List<PublicDataDict> publicDataDictList = SamplePaseXml.getListForPublicDataDict(xml);
+        if(publicDataDictList.isEmpty()){return new ArrayList<PublicDataDict>();}
+        for (PublicDataDict publicDataDict : publicDataDictList){
+            publicDataDictMapper.insertSelective(publicDataDict);
+        }
+        return publicDataDictList;
+    }
+
+
 
     //@Override
     //@Cacheable(value ="dataDictionaryCache")
