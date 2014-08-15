@@ -82,7 +82,8 @@ public class ItemController extends BaseAction{
     private UserInfoService userInfoService;
     @Autowired
     private ITradingVariations iTradingVariations;
-
+    @Autowired
+    private ITradingAddItem iTradingAddItem;
     @Autowired
     private ITradingPictures iTradingPictures;
 
@@ -204,8 +205,10 @@ public class ItemController extends BaseAction{
             modelMap.put("litam",litam);
         }
 
-
-
+        TradingAddItem tai = this.iTradingAddItem.selectParentId(Long.parseLong(id));
+        if(tai!=null){
+            modelMap.put("tai",tai);
+        }
 
 
         return forword("item/addItem",modelMap);
@@ -239,19 +242,26 @@ public class ItemController extends BaseAction{
 
             //组装刑登xml
             //组装买家要求
-            BuyerRequirementDetails brd = this.iTradingBuyerRequirementDetails.toXmlPojo(tradingItem.getBuyerId());
-            item.setBuyerRequirementDetails(brd);
+            if(tbuyer!=null) {
+                BuyerRequirementDetails brd = this.iTradingBuyerRequirementDetails.toXmlPojo(tradingItem.getBuyerId());
+                item.setBuyerRequirementDetails(brd);
+            }
             //组装退货政策
-            ReturnPolicy rp = this.iTradingReturnpolicy.toXmlPojo(tradingItem.getReturnpolicyId());
-            item.setReturnPolicy(rp);
+            if(treturn!=null) {
+                ReturnPolicy rp = this.iTradingReturnpolicy.toXmlPojo(tradingItem.getReturnpolicyId());
+                item.setReturnPolicy(rp);
+                item.getReturnPolicy().setReturnsAcceptedOption(DataDictionarySupport.getTradingDataDictionaryByID(Long.parseLong(item.getReturnPolicy().getReturnsAcceptedOption())).getValue());
+                item.getReturnPolicy().setReturnsWithinOption(DataDictionarySupport.getTradingDataDictionaryByID(Long.parseLong(item.getReturnPolicy().getReturnsWithinOption())).getValue());
+                item.getReturnPolicy().setRefundOption(DataDictionarySupport.getTradingDataDictionaryByID(Long.parseLong(item.getReturnPolicy().getRefundOption())).getValue());
+                item.getReturnPolicy().setShippingCostPaidByOption(DataDictionarySupport.getTradingDataDictionaryByID(Long.parseLong(item.getReturnPolicy().getShippingCostPaidByOption())).getValue());
+            }
+            //运输详情
+            if(tshipping!=null) {
+                ShippingDetails sd = this.iTradingShippingDetails.toXmlPojo(tradingItem.getShippingDeailsId());
+                item.setShippingDetails(sd);
+            }
 
-            ShippingDetails sd = this.iTradingShippingDetails.toXmlPojo(tradingItem.getShippingDeailsId());
-            item.setShippingDetails(sd);
 
-            item.getReturnPolicy().setReturnsAcceptedOption(DataDictionarySupport.getTradingDataDictionaryByID(Long.parseLong(item.getReturnPolicy().getReturnsAcceptedOption())).getValue());
-            item.getReturnPolicy().setReturnsWithinOption(DataDictionarySupport.getTradingDataDictionaryByID(Long.parseLong(item.getReturnPolicy().getReturnsWithinOption())).getValue());
-            item.getReturnPolicy().setRefundOption(DataDictionarySupport.getTradingDataDictionaryByID(Long.parseLong(item.getReturnPolicy().getRefundOption())).getValue());
-            item.getReturnPolicy().setShippingCostPaidByOption(DataDictionarySupport.getTradingDataDictionaryByID(Long.parseLong(item.getReturnPolicy().getShippingCostPaidByOption())).getValue());
 
 
             if(request.getParameter("SecondaryCategory.CategoryID")==null||"".equals(request.getParameter("SecondaryCategory.CategoryID"))){
@@ -264,11 +274,17 @@ public class ItemController extends BaseAction{
             item.setPostalCode(tia.getPostalcode());
 
             TradingPaypal tp = this.iTradingPayPal.selectById(tradingItem.getPayId());
-            item.setPayPalEmailAddress(DataDictionarySupport.getPublicUserConfigByID(Long.parseLong(tp.getPaypal())).getConfigValue());
+            if(tp!=null) {
+                item.setPayPalEmailAddress(DataDictionarySupport.getPublicUserConfigByID(Long.parseLong(tp.getPaypal())).getConfigValue());
+            }
             List<String> limo = new ArrayList();
             limo.add("PayPal");
             item.setPaymentMethods(limo);
-            item.setListingDuration("GTC");
+            if(item.getListingType().equals("Chinese")) {
+                item.setListingDuration(item.getListingDuration() == null ? "GTC" : item.getListingDuration());
+            }else{
+                item.setListingDuration("GTC");
+            }
             item.setDispatchTimeMax(0);
             if(item.getVariations()!=null) {
                 List<Variation> livt = item.getVariations().getVariation();
@@ -309,25 +325,40 @@ public class ItemController extends BaseAction{
 
             item.setListingType(item.getListingType().equals("2")?"FixedPriceItem":item.getListingType());
 
+            String xml="";
+            if(item.getListingType().equals("Chinese")){
+                AddItemRequest addItem = new AddItemRequest();
+                addItem.setXmlns("urn:ebay:apis:eBLBaseComponents");
+                addItem.setErrorLanguage("en_US");
+                addItem.setWarningLevel("High");
+                RequesterCredentials rc = new RequesterCredentials();
+                rc.seteBayAuthToken("AgAAAA**AQAAAA**aAAAAA**wV1JUQ**nY+sHZ2PrBmdj6wVnY+sEZ2PrA2dj6wFk4GhCpGGoA+dj6x9nY+seQ**cx0CAA**AAMAAA**2kuzIn+bBej1QDsDFfI2N74mj8psZYNYrtgX97fzWSGXO7EjvdlE9leu9HCY1bR9wdrzlAE7AKcT9Oz5BDNZbNQLS+uoifmNUM47lSqxWeYTQS2GtMK25LPYhxY+OQp6UVZ8lUh6Oqr91ub03emzufuZHo+6KSNJfNXMtOBVaB7PDeBQyNWoFBO0/LYiS5ql6HXB7vCj0W+K/iT4t3aPs5KlXAXjewM/Sa+nUDtjT9SseqrKrxdZx5fkAePeSrBs229tdCrkTtE0n+ZE9ppwJjElZpu7yfQL44McNa16KBxYYO0PnX7ENg2yMxf3H4aji0BEfB41lrC1LwhmNSebJGrJXRQVS9jmZyDqYiBdn1t536va/LPTP8kc3GZ7hnZRJuhMxoGGgx4ev5Hip0L7dk6cAPKHIkHUIjfA5pwVHEJZpvea+7uvwAh5pj9U7r6rmB9FXH2G9l+F5SytYlIXsDjwNtrEN53k5HrM0vhnGdd7pUwvyu7Nu4U5aPkZQZjTr6OrTWioDsZZwEz+pf0scw0IYweMhicCqMTNbvkJsj2cikX49C6XSAcoUyrGtGa11vFChrifmq74dPZmUEtT1hDtwL1Ix3VPyZcJtTukKljxa0W0IwIe676X5HmiGhvk5qPPUImkXcZdQUK1gMdZmw0seMl5xmFG33kKVSD9H0p0JAEF4lOcDvjADQZtwLXY3qIhvYcKdOrIffrUAURnJRYnrB/MixizWvw252xBn9tmxpm68O3KsGBzcUwEB0Su");
+                addItem.setRequesterCredentials(rc);
+                addItem.setItem(item);
+                xml = PojoXmlUtil.pojoToXml(addItem);
+                xml = "<?xml version=\"1.0\" encoding=\"utf-8\"?>"+xml;
+            }else{
+                AddFixedPriceItemRequest addItem = new AddFixedPriceItemRequest();
+                addItem.setXmlns("urn:ebay:apis:eBLBaseComponents");
+                addItem.setErrorLanguage("en_US");
+                addItem.setWarningLevel("High");
+                RequesterCredentials rc = new RequesterCredentials();
+                rc.seteBayAuthToken("AgAAAA**AQAAAA**aAAAAA**wV1JUQ**nY+sHZ2PrBmdj6wVnY+sEZ2PrA2dj6wFk4GhCpGGoA+dj6x9nY+seQ**cx0CAA**AAMAAA**2kuzIn+bBej1QDsDFfI2N74mj8psZYNYrtgX97fzWSGXO7EjvdlE9leu9HCY1bR9wdrzlAE7AKcT9Oz5BDNZbNQLS+uoifmNUM47lSqxWeYTQS2GtMK25LPYhxY+OQp6UVZ8lUh6Oqr91ub03emzufuZHo+6KSNJfNXMtOBVaB7PDeBQyNWoFBO0/LYiS5ql6HXB7vCj0W+K/iT4t3aPs5KlXAXjewM/Sa+nUDtjT9SseqrKrxdZx5fkAePeSrBs229tdCrkTtE0n+ZE9ppwJjElZpu7yfQL44McNa16KBxYYO0PnX7ENg2yMxf3H4aji0BEfB41lrC1LwhmNSebJGrJXRQVS9jmZyDqYiBdn1t536va/LPTP8kc3GZ7hnZRJuhMxoGGgx4ev5Hip0L7dk6cAPKHIkHUIjfA5pwVHEJZpvea+7uvwAh5pj9U7r6rmB9FXH2G9l+F5SytYlIXsDjwNtrEN53k5HrM0vhnGdd7pUwvyu7Nu4U5aPkZQZjTr6OrTWioDsZZwEz+pf0scw0IYweMhicCqMTNbvkJsj2cikX49C6XSAcoUyrGtGa11vFChrifmq74dPZmUEtT1hDtwL1Ix3VPyZcJtTukKljxa0W0IwIe676X5HmiGhvk5qPPUImkXcZdQUK1gMdZmw0seMl5xmFG33kKVSD9H0p0JAEF4lOcDvjADQZtwLXY3qIhvYcKdOrIffrUAURnJRYnrB/MixizWvw252xBn9tmxpm68O3KsGBzcUwEB0Su");
+                addItem.setRequesterCredentials(rc);
+                addItem.setItem(item);
+                xml = PojoXmlUtil.pojoToXml(addItem);
+                xml = "<?xml version=\"1.0\" encoding=\"utf-8\"?>"+xml;
 
-            AddFixedPriceItemRequest addItem = new AddFixedPriceItemRequest();
-            addItem.setXmlns("urn:ebay:apis:eBLBaseComponents");
-            addItem.setErrorLanguage("en_US");
-            addItem.setWarningLevel("High");
-            RequesterCredentials rc = new RequesterCredentials();
-            rc.seteBayAuthToken("AgAAAA**AQAAAA**aAAAAA**wV1JUQ**nY+sHZ2PrBmdj6wVnY+sEZ2PrA2dj6wFk4GhCpGGoA+dj6x9nY+seQ**cx0CAA**AAMAAA**2kuzIn+bBej1QDsDFfI2N74mj8psZYNYrtgX97fzWSGXO7EjvdlE9leu9HCY1bR9wdrzlAE7AKcT9Oz5BDNZbNQLS+uoifmNUM47lSqxWeYTQS2GtMK25LPYhxY+OQp6UVZ8lUh6Oqr91ub03emzufuZHo+6KSNJfNXMtOBVaB7PDeBQyNWoFBO0/LYiS5ql6HXB7vCj0W+K/iT4t3aPs5KlXAXjewM/Sa+nUDtjT9SseqrKrxdZx5fkAePeSrBs229tdCrkTtE0n+ZE9ppwJjElZpu7yfQL44McNa16KBxYYO0PnX7ENg2yMxf3H4aji0BEfB41lrC1LwhmNSebJGrJXRQVS9jmZyDqYiBdn1t536va/LPTP8kc3GZ7hnZRJuhMxoGGgx4ev5Hip0L7dk6cAPKHIkHUIjfA5pwVHEJZpvea+7uvwAh5pj9U7r6rmB9FXH2G9l+F5SytYlIXsDjwNtrEN53k5HrM0vhnGdd7pUwvyu7Nu4U5aPkZQZjTr6OrTWioDsZZwEz+pf0scw0IYweMhicCqMTNbvkJsj2cikX49C6XSAcoUyrGtGa11vFChrifmq74dPZmUEtT1hDtwL1Ix3VPyZcJtTukKljxa0W0IwIe676X5HmiGhvk5qPPUImkXcZdQUK1gMdZmw0seMl5xmFG33kKVSD9H0p0JAEF4lOcDvjADQZtwLXY3qIhvYcKdOrIffrUAURnJRYnrB/MixizWvw252xBn9tmxpm68O3KsGBzcUwEB0Su");
-            addItem.setRequesterCredentials(rc);
-            addItem.setItem(item);
-
-            String xml= PojoXmlUtil.pojoToXml(addItem);
-            xml="<?xml version=\"1.0\" encoding=\"utf-8\"?>"+xml;
+            }
             System.out.println(xml);
-
-
             //Asserts.assertTrue(false, "错误");
             UsercontrollerDevAccountExtend d = userInfoService.getDevInfo(1L);
             d.setApiSiteid(DataDictionarySupport.getTradingDataDictionaryByID(Long.parseLong(tradingItem.getSite())).getName1());
-            d.setApiCallName(APINameStatic.AddFixedPriceItem);
+            if(item.getListingType().equals("Chinese")){
+                d.setApiCallName(APINameStatic.AddItem);
+            }else {
+                d.setApiCallName(APINameStatic.AddFixedPriceItem);
+            }
             //String xml= BindAccountAPI.getSessionID(d.getRunname());
 
             AddApiTask addApiTask = new AddApiTask();

@@ -8,12 +8,22 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@include file= "/WEB-INF/jsp/commonImport.jsp" %>
 <html>
-<script type="text/javascript" src=<c:url value ="/js/batchAjaxUtil.js" /> ></script>
+<script type="text/javascript" src=<c:url value ="/js/item/addItem.js" /> ></script>
+<script type="text/javascript">
+
+    $(document).ready(function(){
+        getCategorySpecificsData("11555","attList","afterClickAttr","attTable");
+    });
+
+
+
+</script>
+<%--<script type="text/javascript" src=<c:url value ="/js/batchAjaxUtil.js" /> ></script>
 <script type="text/javascript" src=<c:url value ="/js/ueditor/ueditor.config.js" /> ></script>
 <script type="text/javascript" src=<c:url value ="/js/ueditor/ueditor.all.js" /> ></script>
 <script type="text/javascript" src=<c:url value ="/js/ueditor/lang/zh-cn/zh-cn.js" /> ></script>
 <script type="text/javascript" src=<c:url value ="/js/table/jquery.tablednd.js" /> ></script>
-<script type="text/javascript" src=<c:url value ="/js/ueditor/dialogs/image/imageextend.js" /> ></script>
+<script type="text/javascript" src=<c:url value ="/js/ueditor/dialogs/image/imageextend.js" /> ></script>--%>
 
 <%--<script type="text/javascript">
     var _sku="fffff";
@@ -61,13 +71,21 @@ var afterUploadCallback={"imgURLS":addPictrueUrl}
 </head>
 <body>
 
-<input id="upload" name='upload' type="text" style='width: 300px' value=""/>
+<div id="attList"></div>
+<table id="attTable">
+    <tr>
+        <th>属性名</th>
+        <th>属性值</th>
+        <th>操作</th>
+    </tr>
+</table>
+<%--<input id="upload" name='upload' type="text" style='width: 300px' value=""/>
 <script type="text/plain" id="myeditor"></script>
 <input type="button" id='image' value='上传图片'/>
 
 
 <div id="descriptionDetailsListTable"></div>
-<button onclick="setDruag()">设置拖拽</button>
-
+<button onclick="setDruag()">设置拖拽</button>--%>
+<button onclick=asyCombox2InputData()>kkkk</button>
 </body>
 </html>

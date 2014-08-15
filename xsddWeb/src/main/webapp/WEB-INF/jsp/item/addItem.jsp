@@ -10,14 +10,11 @@
 <html>
 <head>
     <title></title>
-    <link rel="stylesheet" type="text/css" href="<c:url value ="/js/jquery-easyui/themes/default/easyui.css" />"/>
-    <link rel="stylesheet" type="text/css" href="<c:url value ="/js/jquery-easyui/themes/icon.css" />"/>
     <script type="text/javascript" src=<c:url value ="/js/ueditor/ueditor.config.js" /> ></script>
     <script type="text/javascript" src=<c:url value ="/js/ueditor/ueditor.all.js" /> ></script>
     <script type="text/javascript" src=<c:url value ="/js/ueditor/lang/zh-cn/zh-cn.js" /> ></script>
-    <script type="text/javascript" src=<c:url value ="/js/jquery-easyui/jquery.easyui.min.js" /> ></script>
     <script type="text/javascript" src=<c:url value ="/js/ueditor/dialogs/image/imageextend.js" /> ></script>
-
+    <script type="text/javascript" src=<c:url value ="/js/item/addItem.js" /> ></script>
     <script>
         var _sku="ZBQ13212";
         var myDescription=null;
@@ -28,6 +25,7 @@
             $().image_editor.show("apicUrls"); //上传图片的按钮id
 
             //加载买家要求
+            _invokeGetData_type=null;
             $("#buyer").initTable({
                 url:path + "/ajax/loadBuyerRequirementDetailsList.do",
                 columnData:[
@@ -326,8 +324,11 @@
             )
         }
         function addValueTr(obj1,obj2){
-            var trStr='<tr><td><input type="text" name="name" value="'+obj1+'"></td><td><input type="text" name="value" value="'+obj2+'"></td></tr>';
+            var trStr='<tr><td><input type="text" name="name" value="'+obj1+'"></td><td><input type="text" name="value" value="'+obj2+'"></td><td><a href="javascript:void(0)" onclick="removeROW(this)">移除</a></td></tr>';
             return trStr;
+        }
+        function removeROW(obj){
+            $(obj).parent().parent().remove();
         }
         function addAttrTr(showName,name,value){
             var trStr='<tr><td>'+showName+'</td><td><input type="text" name="'+name+'" value="'+value+'"></td></tr>';
@@ -337,7 +338,7 @@
         *添加自定义属性
          */
         function addValue(){
-            $("#trValue").after().append(addValueTr('',''));
+            $("#attTable").append(addValueTr('',''));
         }
         /**
         *添加定固定属性
@@ -541,6 +542,11 @@
         function removeThis(obj){
             $(obj).parent().remove();
         }
+
+        //当输入分类，
+        function addTypeAttr(obj){
+            getCategorySpecificsData(obj.value,"typeAttrs","afterClickAttr","attTable");
+        }
    </script>
 </head>
 <c:set var="item" value="${item}"/>
@@ -583,7 +589,7 @@
         <tr>
             <td align="right">刊登类型</td>
             <td>
-                <input type="radio" name="listingType" value="Auction" onchange="changeRadio('Auction')">拍买
+                <input type="radio" name="listingType" value="Chinese" onchange="changeRadio('Auction')">拍买
                 <input type="radio" name="listingType" value="FixedPriceItem" onchange="changeRadio('FixedPriceItem')">固价
                 <input type="radio" name="listingType" value="2" onchange="changeRadio('2')">多属性
             </td>
@@ -609,7 +615,7 @@
         <tr>
             <td align="right">第一分类</td>
             <td>
-                <input type="text" name="PrimaryCategory.categoryID" class="validate[required]" title="PrimaryCategory.categoryID" class="validate[required]" value="${item.categoryid}">
+                <input type="text" name="PrimaryCategory.categoryID" onblur="addTypeAttr(this)" class="validate[required]" title="PrimaryCategory.categoryID" class="validate[required]" value="${item.categoryid}">
             </td>
         </tr>
         <tr>
@@ -650,11 +656,11 @@
                         <td width="200" align="right">刊登天数：</td>
                         <td>
                             <select name="ListingDuration">
-                                <option value="1">1</option>
-                                <option value="2">2</option>
-                                <option value="3">3</option>
-                                <option value="5">5</option>
-                                <option value="10">10</option>
+                                <option value="Days_1">1</option>
+                                <option value="Days_2">2</option>
+                                <option value="Days_3">3</option>
+                                <option value="Days_5">5</option>
+                                <option value="Days_10">10</option>
                             </select>
                         </td>
                     </tr>
@@ -734,18 +740,20 @@
                     商品数量：<input type="text" name="Quantity" value="${item.quantity}" class="validate[required]"/>
                 </div>
                 <div>
-                <table>
+                <table id="attTable">
                     <tr>
                         <td align="center">名称</td>
                         <td align="center">值</td>
+                        <td align="center">操作</td>
                     </tr>
                     <tr>
-                        <td colspan="2" id="trValue"></td>
+                        <td colspan="3" id="trValue"></td>
                     </tr>
                 </table>
                 <a href="javascript:void(0);" onclick="addValue();">添加自定义属性</a>
-                <a href="javascript:void(0);" onclick="addAttr('MPN','ProductListingDetails.BrandMPN.MPN');">添加MPN</a>
-                <a href="javascript:void(0);" onclick="addAttr('Brand','ProductListingDetails.BrandMPN.Brand');">添加Brand</a>
+                <div id="typeAttrs"></div>
+                <%--<a href="javascript:void(0);" onclick="addAttr('MPN','ProductListingDetails.BrandMPN.MPN');">添加MPN</a>
+                <a href="javascript:void(0);" onclick="addAttr('Brand','ProductListingDetails.BrandMPN.Brand');">添加Brand</a>--%>
                 <%--<a href="javascript:void(0);" onclick="addValue();">添加Type</a>
                 <a href="javascript:void(0);" onclick="addValue();">添加Compatible Brand</a>
                 <a href="javascript:void(0);" onclick="addValue();">添加Country/Region of Manufacture</a>--%>

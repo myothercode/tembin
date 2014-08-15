@@ -247,7 +247,27 @@ public class Item {
 
 
     private String VRM;
+    //保留价
+    private Double ReservePrice;
+    //一口价
+    private Double BuyItNowPrice;
 
+
+    public Double getReservePrice() {
+        return ReservePrice;
+    }
+
+    public void setReservePrice(Double reservePrice) {
+        ReservePrice = reservePrice;
+    }
+
+    public Double getBuyItNowPrice() {
+        return BuyItNowPrice;
+    }
+
+    public void setBuyItNowPrice(Double buyItNowPrice) {
+        BuyItNowPrice = buyItNowPrice;
+    }
 
     public String getApplicationData() {
         return ApplicationData;

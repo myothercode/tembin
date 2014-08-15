@@ -14,6 +14,11 @@ public class APINameStatic {
      * 添加固价商品
      */
     public static final String AddFixedPriceItem = "AddFixedPriceItem";
+
+    /**
+     * 拍买商品用
+     */
+    public static final String AddItem = "AddItem";
     /**
      * 获取接受消息
      */

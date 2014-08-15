@@ -62,7 +62,7 @@ public class UtilController {
     @RequestMapping("/ajax/getCategorySpecifics.do")
     @ResponseBody
     public void getCategorySpecifics(String parentCategoryID,HttpServletRequest request) throws Exception {
-
+        Asserts.assertTrue(StringUtils.isNotEmpty(parentCategoryID),"目录id不能为空");
         List<PublicDataDict> publicDataDictList = DataDictionarySupport.getPublicDataDictionaryByParentID(Long.valueOf(parentCategoryID),
                 DictCollectionsUtil.categorySpecifics);
         if(publicDataDictList!=null && publicDataDictList.size()>0){

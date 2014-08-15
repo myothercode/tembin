@@ -78,6 +78,10 @@ var Base={
             complete: function (res, status) {
                 if(status == "success" || status == "notmodified") {
                     var responseText = res.responseText;
+                    if(typeof(_invokeGetData_type)!="undefined" && _invokeGetData_type=='string'){
+                        fun[0].apply(self, ["stringData", responseText]);
+                        return;
+                    }
                     if(jsonFormat.test(responseText)) {
                         var re = eval("(" + responseText + ")");
 

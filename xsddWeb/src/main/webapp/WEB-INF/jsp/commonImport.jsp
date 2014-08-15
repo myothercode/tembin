@@ -13,6 +13,8 @@
 
 <link rel="stylesheet" type="text/css" href="<c:url value ="/css/basecss/base.css" />"/>
 <link rel="stylesheet" type="text/css" href="<c:url value ="/js/validation/validationEngine.jquery.css" />"/>
+<link rel="stylesheet" type="text/css" href="<c:url value ="/js/jquery-easyui/themes/default/easyui.css" />"/>
+<link rel="stylesheet" type="text/css" href="<c:url value ="/js/jquery-easyui/themes/icon.css" />"/>
 <script type="text/javascript" src=<c:url value ="/js/jquery/jquery-1.9.0.min.js" /> ></script>
 <script type="text/javascript" src=<c:url value ="/js/base.js" /> ></script>
 <script type="text/javascript" src=<c:url value ="/js/util.js" /> ></script>
@@ -21,6 +23,7 @@
 <script type="text/javascript" src=<c:url value ="/js/table/jquery.table.js" /> ></script>
 <script type="text/javascript" src=<c:url value ="/js/validation/jquery.validationEngine.js" /> ></script>
 <script type="text/javascript" src=<c:url value ="/js/validation/jquery.validationEngine-zh_CN.js" /> ></script>
+<script type="text/javascript" src=<c:url value ="/js/jquery-easyui/jquery.easyui.min.js" /> ></script>
 
 <%
     String rootPath = request.getContextPath();

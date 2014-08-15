@@ -7,6 +7,8 @@ import com.base.utils.common.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 /**
  * Created by Administrtor on 2014/8/14.
  */
@@ -29,7 +31,12 @@ public class TradingAddItemImpl implements com.trading.service.ITradingAddItem {
     public TradingAddItem selectParentId(Long id){
         TradingAddItemExample tae = new TradingAddItemExample();
         tae.createCriteria().andParentIdEqualTo(id);
-        return this.tradingAddItemMapper.selectByExample(tae).get(0);
+        List<TradingAddItem> li = this.tradingAddItemMapper.selectByExample(tae);
+        if(li==null||li.size()==0){
+            return null;
+        }else{
+            return li.get(0);
+        }
     }
 
 }

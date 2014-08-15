@@ -349,6 +349,23 @@ function Map(){
 }
 
 
+/**数组去重*/
+function arrDistinct(ar){
+    var m,n=[],o= {};
+    for (var i=0;(m= ar[i])!==undefined;i++)
+        if (!o[m]){n.push(m);o[m]=true;}
+    return n.sort(function(a,b){return a-b});;
+
+}
+
+/**去掉字符串中的特殊符号*/
+function replaceTSFH(_text){
+    //var c=b.replace(/[&\|\\\*^%$#@\-]/g,"");去掉指定符号
+    //return this.replace(//s/g, '');去掉空格
+    return _text.replace(/[^\u4e00-\u9fa5\w]/ig,"");
+}
+
+
 
 
 
