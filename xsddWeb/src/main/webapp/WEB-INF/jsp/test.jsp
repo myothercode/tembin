@@ -22,11 +22,27 @@
             map.put("descriptionDetails","/xsddWeb/DescriptionDetailsList.do");
             map.put("itemList","/xsddWeb/itemList.do");
             map.put("templateinittable","/xsddWeb/TemplateInitTableList.do");
-            map.put("messagegetmymessage","/xsddWeb/MessageGetmymessageList.do");
+            map.put("messagegetmymessage",path+"/message/MessageGetmymessageList.do");
             map.put("bindEbayAccount",path+"/user/bindEbayAccount.do");
             map.put("shipping",path+"/shippingDetailsList.do");
+            map.put("orders",path+"/order/getOrdersList.do");
+            map.put("orderItem",path+"/orderItem/orderItemList.do");
             top.location=map.get(name);
 
+        }
+        function abcd(obj){
+            var urll=path+"/ajax/saveFeedBackAll.do";
+            $().invoke(
+                    urll,
+                    {},
+                    [function(m,r){
+                        alert(r)
+                    },
+                        function(m,r){
+                            alert(r)
+                        }]
+
+            );
         }
     </script>
 </head>
@@ -44,6 +60,9 @@
         <div><input type="button" value="模板" name="templateinittable" onclick="submitForm(this)"/></div>
         <div><input type="button" value="接受消息" name="messagegetmymessage" onclick="submitForm(this)"/></div>
         <div><input type="button" value="绑定ebay帐号" name="bindEbayAccount" onclick="submitForm(this)"/></div>
+        <div><input type="button" value="订单管理" name="orders" onclick="submitForm(this)"/></div>
+        <div><input type="button" value="订单商品" name="orderItem" onclick="submitForm(this)"/></div>
+        <div><input type="button" value="获取商品反馋嘴" name="abcds" onclick="abcd(this)"/></div>
 </form>
 </body>
 </html>

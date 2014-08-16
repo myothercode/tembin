@@ -2,9 +2,8 @@ package com.base.database.trading.mapper;
 
 import com.base.database.trading.model.TradingOrderGetOrders;
 import com.base.database.trading.model.TradingOrderGetOrdersExample;
-import org.apache.ibatis.annotations.Param;
-
 import java.util.List;
+import org.apache.ibatis.annotations.Param;
 
 public interface TradingOrderGetOrdersMapper {
     /**

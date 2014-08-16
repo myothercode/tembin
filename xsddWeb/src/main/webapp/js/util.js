@@ -365,6 +365,24 @@ function replaceTSFH(_text){
     return _text.replace(/[^\u4e00-\u9fa5\w]/ig,"");
 }
 
+/**得到字符串中的字母*/
+function strGetNotNum(text){
+    return text.replace(/[^a-zA-Z]/ig,"");
+}
+
+/**得到字符串中的数字*/
+function strGetNum(text){
+    return text.replace(/[^0-9]/ig,"")       ;
+}
+
+/**截取字符串后几位*/
+function subRight(str,i){
+    if(strIsEmpty(str) || i==0){
+        return "";
+    }
+    return str.slice(str.length - i,str.length)
+}
+
 
 
 

@@ -108,4 +108,15 @@ public class BindAccountAPI {
                 "</GetOrdersRequest>";
         return xml;
     }
+    public static String getGetOrderItem(Map<String,String> map){
+        String xml="<?xml version=\"1.0\" encoding=\"utf-8\"?>" +
+                "<GetItemRequest xmlns=\"urn:ebay:apis:eBLBaseComponents\">" +
+                "  <RequesterCredentials>" +
+                "    <eBayAuthToken>"+map.get("token")+"</eBayAuthToken>" +
+                "  </RequesterCredentials>" +
+                "  <ItemID>"+map.get("Itemid")+"</ItemID>" +
+                "  <IncludeItemSpecifics>true</IncludeItemSpecifics>" +
+                "</GetItemRequest>";
+        return xml;
+    }
 }

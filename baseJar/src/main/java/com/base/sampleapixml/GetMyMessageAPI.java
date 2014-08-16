@@ -34,55 +34,33 @@ public class GetMyMessageAPI {
     }
     public static TradingMessageGetmymessage addDatabase(Element message,Long accountId,Long ebay) throws Exception {
        /* for(Element message:messages){*/
-            TradingMessageGetmymessage ms=new TradingMessageGetmymessage();
-            ms.setSender(saveDatabase(message,"Sender"));
-            ms.setRecipientuserid(saveDatabase(message, "RecipientUserID"));
-            ms.setSendtoname(saveDatabase(message, "SendToName"));
-            ms.setSubject(saveDatabase(message, "Subject"));
-            ms.setMessageid(saveDatabase(message, "MessageID"));
-            ms.setExternalmessageid(saveDatabase(message, "ExternalMessageID"));
-            ms.setFlagged(saveDatabase(message, "Flagged"));
-            ms.setRead(saveDatabase(message, "Read"));
-            ms.setItemid(saveDatabase(message, "ItemID"));
-            ms.setReplied(saveDatabase(message, "Replied"));
-            String ReceiveDate=saveDatabase(message,"ReceiveDate");
-            Date date=DateUtils.returnDate(ReceiveDate);
-            if(date!=null){
-                ms.setReceivedate(date);
-            }
-            String ExpirationDate=saveDatabase(message,"ExpirationDate");
-            Date date1=DateUtils.returnDate(ExpirationDate);
-           if(date1!=null){
-               ms.setExpirationdate(date1);
-           }
-            ms.setResponseenabled(saveDatabase1(message, "ResponseEnabled"));
-            ms.setResponseurl(saveDatabase1(message, "ResponseURL"));
-            ms.setFolderid(saveDatabase1(message, "FolderID"));
-            ms.setLoginAccountId(accountId);
-            ms.setEbayAccountId(ebay);
-           return ms;
-        /*}*/
-
-    }
-    public static String saveDatabase(Element message,String nodename){
-        Element element=message.element(nodename);
-        if(element==null){
-            return null;
+        TradingMessageGetmymessage ms=new TradingMessageGetmymessage();
+        ms.setSender(SamplePaseXml.getSpecifyElementText(message,"Sender"));
+        ms.setRecipientuserid(SamplePaseXml.getSpecifyElementText(message,"RecipientUserID"));
+        ms.setSendtoname(SamplePaseXml.getSpecifyElementText(message,"SendToName"));
+        ms.setSubject(SamplePaseXml.getSpecifyElementText(message,"Subject"));
+        ms.setMessageid(SamplePaseXml.getSpecifyElementText(message,"MessageID"));
+        ms.setExternalmessageid(SamplePaseXml.getSpecifyElementText(message,"ExternalMessageID"));
+        ms.setFlagged(SamplePaseXml.getSpecifyElementText(message,"Flagged"));
+        ms.setRead(SamplePaseXml.getSpecifyElementText(message,"Read"));
+        ms.setItemid(SamplePaseXml.getSpecifyElementText(message,"ItemID"));
+        ms.setReplied(SamplePaseXml.getSpecifyElementText(message,"Replied"));
+        String ReceiveDate=SamplePaseXml.getSpecifyElementText(message,"ReceiveDate");
+        Date date=DateUtils.returnDate(ReceiveDate);
+        if(date!=null){
+            ms.setReceivedate(date);
         }
-        return element.getTextTrim();
-    }
-    public static String saveDatabase1(Element message,String nodename){
-        Element ResponseDetails=message.element("ResponseDetails");
-        Element Folder=message.element("Folder");
-        Element node= Folder.element(nodename);
-        Element node1= ResponseDetails.element(nodename);
-        if(node!=null){
-            return node.getTextTrim();
+        String ExpirationDate=SamplePaseXml.getSpecifyElementText(message,"ExpirationDate");
+        Date date1=DateUtils.returnDate(ExpirationDate);
+        if(date1!=null){
+            ms.setExpirationdate(date1);
         }
-        if(node1!=null){
-            return node1.getTextTrim();
-        }
-        return null;
+        ms.setResponseenabled(SamplePaseXml.getSpecifyElementText(message,"ResponseDetails","ResponseEnabled"));
+        ms.setResponseenabled(SamplePaseXml.getSpecifyElementText(message,"ResponseDetails","ResponseURL"));
+        ms.setResponseenabled(SamplePaseXml.getSpecifyElementText(message,"Folder","FolderID"));
+        ms.setLoginAccountId(accountId);
+        ms.setEbayAccountId(ebay);
+        return ms;
     }
     public static Map<String,String> apiAddmembermessage(Map<String,Object> m) throws Exception {
         UsercontrollerDevAccountExtend dev= (UsercontrollerDevAccountExtend) m.get("devAccount");

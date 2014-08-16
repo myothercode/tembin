@@ -14,14 +14,19 @@ import com.base.utils.common.UUIDUtil;
 import com.base.utils.exception.Asserts;
 import com.base.utils.threadpool.AddApiTask;
 import com.common.base.utils.ajax.AjaxSupport;
+import com.common.base.web.BaseAction;
 import com.trading.service.ITradingDataDictionary;
+import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
@@ -33,7 +38,7 @@ import java.util.Map;
  */
 
 @Controller
-public class UtilController {
+public class UtilController extends BaseAction{
     static Logger logger = Logger.getLogger(UtilController.class);
     @Value("${EBAY.API.URL}")
     private String apiUrl;
@@ -58,6 +63,7 @@ public class UtilController {
         AjaxSupport.sendSuccessText("_token",t);
     }
 
+    /**商品类别相关开始==========================================================*/
     /**用于获取商品类别的属性*/
     @RequestMapping("/ajax/getCategorySpecifics.do")
     @ResponseBody
@@ -102,20 +108,28 @@ public class UtilController {
     @RequestMapping("/ajax/getCategoryMenu.do")
     @ResponseBody
     public void getCategoryMenu(String parentID,String level){
-        List<PublicDataDict> publicDataDictList;
+        List<PublicDataDict> publicDataDictList=null;
         if(StringUtils.isEmpty(level)){
-            level="0";
+            level=DictCollectionsUtil.ITEM_LEVEL_ONE;
         }
-        if(StringUtils.isEmpty(parentID)){
+        if(StringUtils.isEmpty(parentID) || "0".equals(parentID)){
             parentID="0";
             level = DictCollectionsUtil.ITEM_LEVEL_ONE;
+            publicDataDictList = DataDictionarySupport.getPublicDataDictionaryByItemLevel(Long.valueOf(parentID),level,DictCollectionsUtil.category);
+        }else {
+            publicDataDictList = DataDictionarySupport.getPublicDataDictionaryByParentID(Long.valueOf(parentID),DictCollectionsUtil.category);
         }
-        publicDataDictList = DataDictionarySupport.getPublicDataDictionaryByItemLevel(Long.valueOf(parentID),level,DictCollectionsUtil.category);
+
 
         AjaxSupport.sendSuccessText("",publicDataDictList);
         return;
 
     }
-
+    /**商品目录选择页面初始化*/
+    @RequestMapping("category/initSelectCategoryPage.do")
+    public ModelAndView initSelectCategoryPage(@ModelAttribute( "initSomeParmMap" )ModelMap modelMap){
+        return forword("/commonPage/category/popSelectCategoryPage",modelMap);
+    }
+/**商品类别相关结束==========================================================*/
 
 }

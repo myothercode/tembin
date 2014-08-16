@@ -1,8 +1,12 @@
 package com.base.utils.xmlutils;
 
 import com.base.database.publicd.model.PublicDataDict;
+import com.base.database.trading.model.TradingFeedBackDetail;
+import com.base.utils.common.DateUtils;
 import com.base.utils.common.DictCollectionsUtil;
+import org.apache.commons.lang.StringEscapeUtils;
 import org.dom4j.Document;
+import org.dom4j.DocumentException;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 
@@ -23,6 +27,40 @@ public class SamplePaseXml {
         Element e =  rootElt.element(nodeName);
         if(e==null){return null;}
         return e.getTextTrim();
+    }
+
+    /**
+     * 得到反馈信息列表
+     * @param xml
+     * @return
+     * @throws DocumentException
+     */
+    public static List<TradingFeedBackDetail> getFeedBackListElement(String xml) throws DocumentException {
+        List<TradingFeedBackDetail> lifb = new ArrayList();
+        Document document= DocumentHelper.parseText(xml);
+        Element rootElt = document.getRootElement();
+        Element recommend = rootElt.element("FeedbackDetailArray");
+        Iterator<Element> iter = recommend.elementIterator("FeedbackDetail");
+        while (iter.hasNext()){
+            Element element = iter.next();
+            TradingFeedBackDetail tfbd = new TradingFeedBackDetail();
+            tfbd.setCommentinguser(element.elementText("CommentingUser"));
+            tfbd.setCommentinguserscore(Long.parseLong(element.elementText("CommentingUserScore")));
+            tfbd.setCommenttext(StringEscapeUtils.escapeXml(element.element("CommentText").getStringValue()));
+            tfbd.setCommenttime(DateUtils.returnDate(element.elementText("CommentTime")));
+            tfbd.setCommenttype(element.elementText("CommentType"));
+            tfbd.setItemid(element.elementText("ItemID"));
+            tfbd.setRole(element.elementText("Role"));
+            tfbd.setFeedbackid(element.elementText("FeedbackID"));
+            tfbd.setTransactionid(element.elementText("TransactionID"));
+            tfbd.setOrderlineitemid(element.elementText("OrderLineItemID"));
+            tfbd.setItemtitle(element.elementText("ItemTitle"));
+            if(element.elementText("ItemPrice")!=null) {
+                tfbd.setItemprice(Double.parseDouble(element.elementText("ItemPrice")));
+            }
+            lifb.add(tfbd);
+        }
+        return lifb;
     }
 
     /**将商品目录属性api返回的xml解析为List<PublicDataDict>*/

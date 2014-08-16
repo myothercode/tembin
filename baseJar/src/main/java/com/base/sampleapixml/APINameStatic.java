@@ -19,6 +19,11 @@ public class APINameStatic {
      * 拍买商品用
      */
     public static final String AddItem = "AddItem";
+
+    /**
+     * 买家对卖家反馈信息
+     */
+    public static final String GetFeedbackRequest = "GetFeedback";
     /**
      * 获取接受消息
      */
@@ -30,8 +35,11 @@ public class APINameStatic {
     public static final String AddMemberMessageRTQ = "AddMemberMessageRTQ";
 
     /**获取商品类别属性*/
-   public static final String GetCategorySpecifics="GetCategorySpecifics";
+    public static final String GetCategorySpecifics="GetCategorySpecifics";
+    /**
 
-    /** 获取订单*/
+     *获取订单
+     **/
     public static final String GetOrders = "GetOrders";
 }
+

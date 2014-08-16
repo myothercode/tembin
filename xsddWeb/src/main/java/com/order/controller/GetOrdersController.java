@@ -9,6 +9,7 @@ import com.base.mybatis.page.Page;
 import com.base.mybatis.page.PageJsonBean;
 import com.base.sampleapixml.APINameStatic;
 import com.base.sampleapixml.BindAccountAPI;
+import com.base.sampleapixml.GetOrderItemAPI;
 import com.base.sampleapixml.GetOrdersAPI;
 import com.base.userinfo.service.UserInfoService;
 import com.base.utils.annotations.AvoidDuplicateSubmission;
@@ -18,6 +19,8 @@ import com.base.utils.xmlutils.SamplePaseXml;
 import com.common.base.utils.ajax.AjaxSupport;
 import com.common.base.web.BaseAction;
 import com.trading.service.ITradingOrderGetOrders;
+import com.trading.service.ITradingOrderShippingDetails;
+import com.trading.service.ITradingOrderShippingServiceOptions;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -30,7 +33,10 @@ import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.*;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Created by Administrtor on 2014/8/13.
@@ -45,13 +51,17 @@ public class GetOrdersController extends BaseAction {
 
     @Autowired
     private ITradingOrderGetOrders iTradingOrderGetOrders;
+    @Autowired
+    private ITradingOrderShippingDetails iTradingOrderShippingDetails;
+    @Autowired
+    private ITradingOrderShippingServiceOptions iTradingOrderShippingServiceOptions;
 
     @Value("${EBAY.API.URL}")
     private String apiUrl;
 
     @RequestMapping("/getOrdersList.do")
     public ModelAndView OrdersList(HttpServletRequest request,HttpServletResponse response,ModelMap modelMap){
-        return forword("/orders/getOrdersList",modelMap);
+        return forword("/orders/order/getOrdersList",modelMap);
     }
     /**获取list数据的ajax方法*/
     @RequestMapping("/ajax/loadOrdersList.do")
@@ -79,7 +89,7 @@ public class GetOrdersController extends BaseAction {
     public ModelAndView GetOrder(@ModelAttribute( "initSomeParmMap" )ModelMap modelMap){
         List<UsercontrollerEbayAccountExtend> ebays = userInfoService.getEbayAccountForCurrUser();
         modelMap.put("ebays",ebays);
-        return forword("orders/synOrders",modelMap);
+        return forword("orders/order/synOrders",modelMap);
     }
 
     /**
@@ -91,7 +101,7 @@ public class GetOrdersController extends BaseAction {
         String orderid=request.getParameter("orderid");
         List<TradingOrderGetOrders> lists=iTradingOrderGetOrders.selectOrderGetOrdersByOrderId(orderid);
         modelMap.put("lists",lists);
-        return forword("orders/viewOrderGetOrders",modelMap);
+        return forword("orders/order/viewOrderGetOrders",modelMap);
     }
     @RequestMapping("/apiGetOrdersRequest.do")
     @AvoidDuplicateSubmission(needRemoveToken = true)
@@ -127,7 +137,31 @@ public class GetOrdersController extends BaseAction {
         String ack = SamplePaseXml.getVFromXmlString(res, "Ack");
         if ("Success".equalsIgnoreCase(ack)) {
             List<TradingOrderGetOrders> orders=GetOrdersAPI.parseXMLAndSave(res);
+           /* TradingOrderShippingDetails sd=(TradingOrderShippingDetails)ordermap.get(GetOrdersAPI.ShippingDetails);
+             orders=(List<TradingOrderGetOrders>)ordermap.get(GetOrdersAPI.OrderList);
+            List<TradingOrderShippingServiceOptions> options=(List<TradingOrderShippingServiceOptions>)ordermap.get(GetOrdersAPI.OptionList);
+            iTradingOrderShippingDetails.saveOrderShippingDetails(sd);
+            for(TradingOrderShippingServiceOptions option:options){
+                option.setShippingdetailsId(sd.getId());
+                iTradingOrderShippingServiceOptions.saveOrderShippingServiceOptions(option);
+            }*/
             for(TradingOrderGetOrders order:orders){
+                List<TradingOrderGetOrders> ls=iTradingOrderGetOrders.selectOrderGetOrdersByOrderId(order.getOrderid());
+                if(ls.size()>0){
+                    order.setId(ls.get(0).getId());
+                }
+                /* order.setShippingdetailsId(sd.getId());*/
+                Map<String,String> itemresmap=GetOrderItemAPI.apiGetOrderItem(d,token,apiUrl,order.getItemid());
+                String itemr1 = resMap.get("stat");
+                String itemres = resMap.get("message");
+                if ("fail".equalsIgnoreCase(itemr1)) {
+                    AjaxSupport.sendFailText("fail", res);
+                    return;
+                }
+                String itemack = SamplePaseXml.getVFromXmlString(res, "Ack");
+                if ("Success".equalsIgnoreCase(itemack)) {
+                    GetOrderItemAPI.parseXMLAndSave(itemres);
+                }
                 iTradingOrderGetOrders.saveOrderGetOrders(order);
             }
             AjaxSupport.sendSuccessText("success", "同步成功！");

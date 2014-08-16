@@ -1,28 +1,29 @@
 package com.base.sampleapixml;
 
 import com.base.database.trading.model.TradingOrderGetOrders;
+import com.base.database.trading.model.TradingOrderShippingDetails;
 import com.base.utils.common.DateUtils;
 import com.base.utils.xmlutils.SamplePaseXml;
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 /**
  * Created by Administrtor on 2014/8/14.
  */
 public class GetOrdersAPI {
+
     public static List<TradingOrderGetOrders> parseXMLAndSave(String res) throws Exception {
         Document document= DocumentHelper.parseText(res);
         Element root=document.getRootElement();
         Element orderArray=root.element("OrderArray");
         List<TradingOrderGetOrders> lists=new ArrayList<TradingOrderGetOrders>();
+        Map<String,Object> map=new HashMap();
         if(orderArray!=null){
             Iterator<Element> iterator =orderArray.elementIterator("Order");
+            TradingOrderShippingDetails sd=new TradingOrderShippingDetails();
             while(iterator.hasNext()){
                 Element order=iterator.next();
                 Element transactionArray=order.element("TransactionArray");
@@ -49,15 +50,45 @@ public class GetOrdersAPI {
                     getorder.setPaymentmethod(SamplePaseXml.getSpecifyElementText(order,"CheckoutStatus","PaymentMethod"));
                     getorder.setStatus(SamplePaseXml.getSpecifyElementText(order,"CheckoutStatus","Status"));
                     getorder.setLastmodifiedtime(DateUtils.returnDate(SamplePaseXml.getSpecifyElementText(order,"CheckoutStatus","LastModifiedTime")));
-                    getorder.setSalestaxpercent(SamplePaseXml.getSpecifyElementText(order,"ShippingDetails","SalesTax","SalesTaxPercent"));
-                    getorder.setSalestaxamount(SamplePaseXml.getSpecifyElementText(order,"ShippingDetails","SalesTax","SalesTaxAmount"));
-                    getorder.setShippingincludedintax(SamplePaseXml.getSpecifyElementText(order,"ShippingDetails","SalesTax","ShippingIncludedInTax"));
-                    getorder.setSalestaxstate(SamplePaseXml.getSpecifyElementText(order,"ShippingDetails","SalesTax","SalesTaxState"));
-                    getorder.setShippingservice(SamplePaseXml.getSpecifyElementText(order,"ShippingDetails","ShippingServiceOptions","ShippingService"));
-                    getorder.setShippingservicepriority(SamplePaseXml.getSpecifyElementText(order,"ShippingDetails","ShippingServiceOptions","ShippingServicePriority"));
-                    getorder.setExpeditedservice(SamplePaseXml.getSpecifyElementText(order,"ShippingDetails","ShippingServiceOptions","ExpeditedService"));
-                    getorder.setSellingmanagersalesrecordnumber(SamplePaseXml.getSpecifyElementText(order,"ShippingDetails","SellingManagerSalesRecordNumber"));
-                    getorder.setGetitfast(SamplePaseXml.getSpecifyElementText(order,"ShippingDetails","GetItFast"));
+                   /* Element details=order.element("ShippingDetails");
+                    String percent=SamplePaseXml.getSpecifyElementText(details, "SalesTaxPercent");
+                    if(percent!=null){
+                        sd.setSalestaxpercent(Double.valueOf(percent));
+                    }
+                    sd.setSalestaxstate(SamplePaseXml.getSpecifyElementText(details, "SalesTaxState"));
+                    sd.setSalestaxamount(SamplePaseXml.getSpecifyElementText(details, "SalesTaxAmount"));
+                    String number=SamplePaseXml.getSpecifyElementText(details, "SellingManagerSalesRecordNumber");
+                    if(number!=null){
+                        sd.setSellingmanagersalesrecordnumber(Integer.valueOf(number));
+                    }
+                    sd.setGetitfast(SamplePaseXml.getSpecifyElementText(details, "GetItFast"));
+                    map.put(ShippingDetails,sd);*/
+                  /*  iTradingOrderShippingDetails.saveOrderShippingDetails(sd);*/
+                    /*Iterator options=details.elementIterator("ShippingServiceOptions");
+                    List<TradingOrderShippingServiceOptions> optionlist=new ArrayList<TradingOrderShippingServiceOptions>();
+                    while(options.hasNext()){
+                        Element option= (Element) options.next();
+                        TradingOrderShippingServiceOptions sso=new TradingOrderShippingServiceOptions();
+                        sso.setShippingservice(SamplePaseXml.getSpecifyElementText(option,"ShippingService"));
+                        String priority=SamplePaseXml.getSpecifyElementText(option, "ShippingServicePriority");
+                        if(priority!=null){
+                            sso.setShippingservicepriority(Integer.valueOf(priority));
+                        }
+                        sso.setExpeditedservice(SamplePaseXml.getSpecifyElementText(option,"ExpeditedService"));
+                        String max=SamplePaseXml.getSpecifyElementText(option, "ShippingTimeMax");
+                        String min=SamplePaseXml.getSpecifyElementText(option, "ShippingTimeMin");
+                        if(max!=null){
+                            sso.setShippingtimemax(Integer.valueOf(max));
+                        }
+                        if(min!=null){
+                            sso.setShippingtimemin(Integer.valueOf(min));
+                        }
+                       *//* sso.setShippingdetailsId(sd.getId());*//*
+                        optionlist.add(sso);
+                       *//* iTradingOrderShippingServiceOptions.saveOrderShippingServiceOptions(sso);*//*
+                    }*/
+                   /* map.put(OptionList,optionlist);*/
+                    /*getorder.setShippingdetailsId(sd.getId());*/
                     getorder.setName(SamplePaseXml.getSpecifyElementText(order,"ShippingAddress","Name"));
                     getorder.setStreet1(SamplePaseXml.getSpecifyElementText(order,"ShippingAddress","Street1"));
                     getorder.setStreet2(SamplePaseXml.getSpecifyElementText(order,"ShippingAddress","Street2"));
@@ -77,7 +108,10 @@ public class GetOrdersAPI {
                         getorder.setTransactionid(SamplePaseXml.getSpecifyElementText(transaction,"TransactionID"));
                         getorder.setTransactionprice(SamplePaseXml.getSpecifyElementText(transaction,"TransactionPrice"));
                         getorder.setBuyeremail(SamplePaseXml.getSpecifyElementText(transaction,"Buyer","Email"));
-                        getorder.setSellingmanagersalesrecordnumber(SamplePaseXml.getSpecifyElementText(transaction,"ShippingDetails","SellingManagerSalesRecordNumber"));
+                        String recordnumber=SamplePaseXml.getSpecifyElementText(transaction, "ShippingDetails", "SellingManagerSalesRecordNumber");
+                        if(recordnumber!=null){
+                            getorder.setSellingmanagersalesrecordnumber(Integer.valueOf(recordnumber));
+                        }
                         getorder.setItemid(SamplePaseXml.getSpecifyElementText(transaction,"Item","ItemID"));
                         lists.add(getorder);
                     }
@@ -85,6 +119,7 @@ public class GetOrdersAPI {
 
             }
         }
+       /* map.put(OrderList,lists);*/
         return lists;
     }
 }

@@ -225,7 +225,9 @@ public class GetmymessageController extends BaseAction{
             List<Element> messages =GetMyMessageAPI.getMessages(res);
             for(Element message:messages){
                 TradingMessageGetmymessage ms= GetMyMessageAPI.addDatabase(message, commonParmVO.getId(), ebay);//保存到数据库
-                iTradingMessageGetmymessage.saveMessageGetmymessage(ms);
+                if("false".equals(ms.getRead())){
+                    iTradingMessageGetmymessage.saveMessageGetmymessage(ms);
+                }
             }
             AjaxSupport.sendSuccessText("success", "同步成功！");
         } else {
@@ -234,133 +236,4 @@ public class GetmymessageController extends BaseAction{
             AjaxSupport.sendFailText("fail", "获取必要的参数失败！请稍后重试");
         }
     }
-    /*public  List<Element> getMessages(String xml) throws Exception {
-        Document document= DocumentHelper.parseText(xml);
-        Element root= document.getRootElement();
-        Element messages= root.element("Messages");
-        Iterator iterator=messages.elementIterator("Message");
-        List<Element> list=new ArrayList<Element>();
-        Map<String,Object> map=new HashMap<String, Object>();
-        while(iterator.hasNext()){
-            list.add((Element) iterator.next());
-        }
-        return list;
-    }
-    public void addDatabase(List<Element> messages,Long accountId,Long ebay) throws Exception {
-        for(Element message:messages){
-            TradingMessageGetmymessage ms=new TradingMessageGetmymessage();
-            ms.setSender(saveDatabase(message,"Sender"));
-            ms.setRecipientuserid(saveDatabase(message, "RecipientUserID"));
-            ms.setSendtoname(saveDatabase(message, "SendToName"));
-            ms.setSubject(saveDatabase(message, "Subject"));
-            ms.setMessageid(saveDatabase(message, "MessageID"));
-            ms.setExternalmessageid(saveDatabase(message, "ExternalMessageID"));
-            ms.setFlagged(saveDatabase(message, "Flagged"));
-            ms.setRead(saveDatabase(message, "Read"));
-            ms.setItemid(saveDatabase(message, "ItemID"));
-            ms.setReplied(saveDatabase(message, "Replied"));
-            String ReceiveDate1=saveDatabase(message,"ReceiveDate");
-            String ReceiveDate=ReceiveDate1.substring(0,10)+" "+ReceiveDate1.substring(11,19);
-            Date date=StringToDate(ReceiveDate);
-            ms.setReceivedate(date);
-            String ExpirationDate1=saveDatabase(message,"ExpirationDate");
-            String ExpirationDate=ExpirationDate1.substring(0,10)+" "+ExpirationDate1.substring(11,19);
-            ms.setExpirationdate(StringToDate(ExpirationDate));
-            ms.setResponseenabled(saveDatabase1(message, "ResponseEnabled"));
-            ms.setResponseurl(saveDatabase1(message, "ResponseURL"));
-            ms.setFolderid(saveDatabase1(message, "FolderID"));
-            ms.setLoginAccountId(accountId);
-            ms.setEbayAccountId(ebay);
-            iTradingMessageGetmymessage.saveMessageGetmymessage(ms);
-        }
-
-    }
-    public String saveDatabase(Element message,String nodename){
-        Element element=message.element(nodename);
-        if(element==null){
-            return null;
-        }
-        return element.getTextTrim();
-    }
-    public String saveDatabase1(Element message,String nodename){
-        Element ResponseDetails=message.element("ResponseDetails");
-        Element Folder=message.element("Folder");
-        Element node= Folder.element(nodename);
-        Element node1= ResponseDetails.element(nodename);
-        if(node!=null){
-             return node.getTextTrim();
-         }
-       if(node1!=null){
-           return node1.getTextTrim();
-       }
-        return null;
-    }
-    public Date StringToDate(String date) throws ParseException {
-        SimpleDateFormat f = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
-        Date d = f.parse(date);
-        return d;
-    }
-    public String DateToString(Date date) throws ParseException {
-        SimpleDateFormat f = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
-        String startTime=f.format(date);
-        String d=startTime.substring(0,10)+"T"+startTime.substring(11)+".000Z";
-        return d;
-    }
-    public Map<String,String> apiAddmembermessage(TradingMessageAddmembermessage addmessage,Long ebayId,UsercontrollerDevAccountExtend dev) throws Exception {
-        dev.setApiCallName(APINameStatic.AddMemberMessageRTQ);
-        String xml= BindAccountAPI.getAddMemberMessageRTQ(addmessage,userInfoService.getTokenByEbayID(ebayId));
-        AddApiTask addApiTask = new AddApiTask();
-       *//* Map<String, String> resMap= addApiTask.exec(dev, xml, "https://api.ebay.com/ws/api.dll");*//*
-        Map<String, String> resMap= addApiTask.exec(dev, xml, apiUrl);
-        String r1=resMap.get("stat");
-        String res=resMap.get("message");
-        Map map=new HashMap();
-        if("fail".equalsIgnoreCase(r1)){
-            map.put("msg","false");
-            map.put("par","发送失败");
-        }
-        String ack = SamplePaseXml.getVFromXmlString(res, "Ack");
-        if("Success".equalsIgnoreCase(ack)){
-            map.put("msg","true");
-            map.put("par","发送成功");
-        }else {
-            map.put("msg","false");
-            map.put("par","获取必要的参数失败！请稍后重试");
-        }
-        return map;
-    }
-    public String getContent(String messageID,Long ebayId,UsercontrollerDevAccountExtend dev) throws Exception {
-        dev.setApiCallName(APINameStatic.GetMyMessages);
-        String xml= BindAccountAPI.getGetMyMessagesByReturnHeader(messageID,userInfoService.getTokenByEbayID(ebayId));//获取接受消息
-        AddApiTask addApiTask = new AddApiTask();
-        *//*Map<String, String> resMap= addApiTask.exec(dev, xml, "https://api.ebay.com/ws/api.dll");*//*
-        Map<String, String> resMap= addApiTask.exec(dev, xml, apiUrl);
-        String r1=resMap.get("stat");
-        String res=resMap.get("message");
-        if("fail".equalsIgnoreCase(r1)){
-            return null;
-        }
-        String ack = SamplePaseXml.getVFromXmlString(res, "Ack");
-        if("Success".equalsIgnoreCase(ack)){
-            SessionVO sessionVO= SessionCacheSupport.getSessionVO();
-            String text=getText(res);
-            return text;
-        }
-        return null;
-    }
-    public String getText(String xml) throws DocumentException {
-        Document document= DocumentHelper.parseText(xml);
-        Element root= document.getRootElement();
-        Element messages= root.element("Messages");
-        Iterator iterator=messages.elementIterator("Message");
-        String text="";
-        while(iterator.hasNext()){
-            Element message= (Element) iterator.next();
-            Element Text=message.element("Text");
-            if(Text!=null){
-                text=Text.getTextTrim();
-            }
-        }
-        return text;
-    }*/
 }
