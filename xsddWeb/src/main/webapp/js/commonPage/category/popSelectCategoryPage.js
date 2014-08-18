@@ -101,8 +101,16 @@ function showMenuPath(){
             p+=(txt+" => ")
         }
     });
-    $('#menuPath').html(p);
+
+    $('#menuPath').html(p.substr(0, p.length-3));
     p='';
+}
+var api = frameElement.api, W = api.opener;
+//点击确定按扭
+function que(){
+    W.document.getElementById("PrimaryCategory.categoryID").value=_finalSelectedVal;
+    W.document.getElementById("PrimaryCategoryshow").innerHTML=$("#menuPath").text();
+    W.CategoryType.close();
 }
 
 

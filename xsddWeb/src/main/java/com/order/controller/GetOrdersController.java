@@ -1,6 +1,6 @@
 package com.order.controller;
 
-import com.base.database.trading.model.TradingOrderGetOrders;
+import com.base.database.trading.model.*;
 import com.base.domains.CommonParmVO;
 import com.base.domains.querypojos.OrderGetOrdersQuery;
 import com.base.domains.userinfo.UsercontrollerDevAccountExtend;
@@ -18,9 +18,7 @@ import com.base.utils.threadpool.AddApiTask;
 import com.base.utils.xmlutils.SamplePaseXml;
 import com.common.base.utils.ajax.AjaxSupport;
 import com.common.base.web.BaseAction;
-import com.trading.service.ITradingOrderGetOrders;
-import com.trading.service.ITradingOrderShippingDetails;
-import com.trading.service.ITradingOrderShippingServiceOptions;
+import com.trading.service.*;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -52,10 +50,25 @@ public class GetOrdersController extends BaseAction {
     @Autowired
     private ITradingOrderGetOrders iTradingOrderGetOrders;
     @Autowired
+    private ITradingOrderShippingServiceOptions iTradingOrderShippingServiceOptions;
+    @Autowired
+    private ITradingOrderGetItem iTradingOrderGetItem;
+    @Autowired
+    private ITradingOrderListingDetails iTradingOrderListingDetails;
+    @Autowired
+    private ITradingOrderSeller iTradingOrderSeller;
+    @Autowired
+    private ITradingOrderSellingStatus iTradingOrderSellingStatus;
+    @Autowired
     private ITradingOrderShippingDetails iTradingOrderShippingDetails;
     @Autowired
-    private ITradingOrderShippingServiceOptions iTradingOrderShippingServiceOptions;
-
+    private ITradingOrderPictureDetails iTradingOrderPictureDetails;
+    @Autowired
+    private ITradingOrderReturnpolicy iTradingOrderReturnpolicy;
+    @Autowired
+    private ITradingOrderSellerInformation iTradingOrderSellerInformation;
+    @Autowired
+    private  ITradingOrderCalculatedShippingRate iTradingOrderCalculatedShippingRate;
     @Value("${EBAY.API.URL}")
     private String apiUrl;
 
@@ -66,15 +79,37 @@ public class GetOrdersController extends BaseAction {
     /**获取list数据的ajax方法*/
     @RequestMapping("/ajax/loadOrdersList.do")
     @ResponseBody
-    public void loadOrdersList(CommonParmVO commonParmVO) throws Exception {
+    public void loadOrdersList(CommonParmVO commonParmVO,HttpServletRequest request) throws Exception {
+        String orderStatus=request.getParameter("orderStatus");
+        String starttime=request.getParameter("starttime");
+        String endtime=request.getParameter("endtime");
         Map m = new HashMap();
         /**分页组装*/
         PageJsonBean jsonBean=commonParmVO.getJsonBean();
         Page page=jsonBean.toPage();
         List<UsercontrollerEbayAccountExtend> ebays=userInfoService.getEbayAccountForCurrUser();
         Map map=new HashMap();
+        if(orderStatus==null||"All".equals(orderStatus)){
+            orderStatus=null;
+        }
         map.put("ebays",ebays);
+       /* map.put("orderStatus",orderStatus);*/
+        map.put("starttime",starttime);
+        map.put("endtime",endtime);
         List<OrderGetOrdersQuery> lists= this.iTradingOrderGetOrders.selectOrderGetOrdersByGroupList(map,page);
+        for(OrderGetOrdersQuery list:lists){
+            String itemid=list.getItemid();
+            List<TradingOrderGetItem> itemList= iTradingOrderGetItem.selectOrderGetItemByItemId(itemid);
+            if(itemList!=null&&itemList.size()>0){
+                Long pictureid=itemList.get(0).getPicturedetailsId();
+                List<TradingOrderPictureDetails> pictureDetailses=iTradingOrderPictureDetails.selectOrderGetItemById(pictureid);
+                if(pictureDetailses!=null&&pictureDetailses.size()>0){
+                    list.setPictrue(pictureDetailses.get(0).getPictureurl());
+                }
+            }
+            String url="http://www.sandbox.ebay.com/itm/"+list.getItemid();
+            list.setItemUrl(url);
+        }
         jsonBean.setList(lists);
         jsonBean.setTotal((int)page.getTotalCount());
         AjaxSupport.sendSuccessText("", jsonBean);
@@ -137,31 +172,96 @@ public class GetOrdersController extends BaseAction {
         String ack = SamplePaseXml.getVFromXmlString(res, "Ack");
         if ("Success".equalsIgnoreCase(ack)) {
             List<TradingOrderGetOrders> orders=GetOrdersAPI.parseXMLAndSave(res);
-           /* TradingOrderShippingDetails sd=(TradingOrderShippingDetails)ordermap.get(GetOrdersAPI.ShippingDetails);
-             orders=(List<TradingOrderGetOrders>)ordermap.get(GetOrdersAPI.OrderList);
-            List<TradingOrderShippingServiceOptions> options=(List<TradingOrderShippingServiceOptions>)ordermap.get(GetOrdersAPI.OptionList);
-            iTradingOrderShippingDetails.saveOrderShippingDetails(sd);
-            for(TradingOrderShippingServiceOptions option:options){
-                option.setShippingdetailsId(sd.getId());
-                iTradingOrderShippingServiceOptions.saveOrderShippingServiceOptions(option);
-            }*/
             for(TradingOrderGetOrders order:orders){
                 List<TradingOrderGetOrders> ls=iTradingOrderGetOrders.selectOrderGetOrdersByOrderId(order.getOrderid());
-                if(ls.size()>0){
+                if(ls!=null&&ls.size()>0){
                     order.setId(ls.get(0).getId());
                 }
                 /* order.setShippingdetailsId(sd.getId());*/
+                d.setApiCallName(APINameStatic.GetItem);
                 Map<String,String> itemresmap=GetOrderItemAPI.apiGetOrderItem(d,token,apiUrl,order.getItemid());
-                String itemr1 = resMap.get("stat");
-                String itemres = resMap.get("message");
+                String itemr1 = itemresmap.get("stat");
+                String itemres = itemresmap.get("message");
                 if ("fail".equalsIgnoreCase(itemr1)) {
-                    AjaxSupport.sendFailText("fail", res);
+                    AjaxSupport.sendFailText("fail", itemres);
                     return;
                 }
-                String itemack = SamplePaseXml.getVFromXmlString(res, "Ack");
+                String itemack = SamplePaseXml.getVFromXmlString(itemres, "Ack");
                 if ("Success".equalsIgnoreCase(itemack)) {
-                    GetOrderItemAPI.parseXMLAndSave(itemres);
+                    Map<String,Object> items=GetOrderItemAPI.parseXMLAndSave(itemres);
+                    TradingOrderGetItem item= (TradingOrderGetItem) items.get(GetOrderItemAPI.ORDER_ITEM);
+                    String ItemId=order.getItemid();
+                    List<TradingOrderGetItem> itemList=iTradingOrderGetItem.selectOrderGetItemByItemId(ItemId);
+                    TradingOrderListingDetails listingDetails= (TradingOrderListingDetails) items.get(GetOrderItemAPI.LISTING_DETAILS);
+                    TradingOrderSeller orderSeller= (TradingOrderSeller) items.get(GetOrderItemAPI.ORDER_SELLER);
+                    TradingOrderSellingStatus sellingStatus= (TradingOrderSellingStatus) items.get(GetOrderItemAPI.SELLING_STATUS);
+                    TradingOrderShippingDetails shippingDetails= (TradingOrderShippingDetails) items.get(GetOrderItemAPI.SHIPPING_DETAILS);
+                    TradingOrderPictureDetails pictureDetails= (TradingOrderPictureDetails) items.get(GetOrderItemAPI.PICTURE_DETAILS);
+                    TradingOrderReturnpolicy returnpolicy= (TradingOrderReturnpolicy) items.get(GetOrderItemAPI.RETURN_POLICY);
+                    TradingOrderSellerInformation sellerInformation= (TradingOrderSellerInformation) items.get(GetOrderItemAPI.SELLER_INFORMATION);
+                    TradingOrderCalculatedShippingRate shippingRate= (TradingOrderCalculatedShippingRate) items.get(GetOrderItemAPI.SHIPPING_RATE);
+                    List<TradingOrderShippingServiceOptions> serviceOptionses= (List<TradingOrderShippingServiceOptions>) items.get(GetOrderItemAPI.SERVICE_OPTIONS);
+                    if(itemList!=null&&itemList.size()>0){
+                        item.setId(itemList.get(0).getId());
+                        listingDetails.setId(itemList.get(0).getListingdetailsId());
+                        orderSeller.setId(itemList.get(0).getSellerId());
+                        sellingStatus.setId(itemList.get(0).getSellingstatusId());
+                        shippingDetails.setId(itemList.get(0).getShippingdetailsId());
+                        pictureDetails.setId(itemList.get(0).getPicturedetailsId());
+                        returnpolicy.setId(itemList.get(0).getOrderreturnpolicyId());
+                        List<TradingOrderSeller> sellerList=iTradingOrderSeller.selectOrderGetItemById(orderSeller.getId());
+                        if(sellerList!=null&&sellerList.size()>0){
+                            sellerInformation.setId(sellerList.get(0).getSellerinfoId());
+                        }
+                        List<TradingOrderShippingDetails> shippingDetailsList=iTradingOrderShippingDetails.selectOrderGetItemById(shippingDetails.getId());
+                        if(shippingDetailsList!=null&&shippingDetailsList.size()>0){
+                            shippingRate.setId(shippingDetailsList.get(0).getCalculatedshippingrateId());
+                        }
+                        iTradingOrderCalculatedShippingRate.saveOrderCalculatedShippingRate(shippingRate);
+                        shippingDetails.setCalculatedshippingrateId(shippingRate.getId());
+                        iTradingOrderShippingDetails.saveOrderShippingDetails(shippingDetails);
+                        iTradingOrderSellerInformation.saveOrderSellerInformation(sellerInformation);
+                        iTradingOrderListingDetails.saveOrderListingDetails(listingDetails);
+                        orderSeller.setSellerinfoId(sellerInformation.getId());
+                        iTradingOrderSeller.saveOrderSeller(orderSeller);
+                        iTradingOrderSellingStatus.saveOrderSellingStatus(sellingStatus);
+                        iTradingOrderPictureDetails.saveOrderPictureDetails(pictureDetails);
+                        iTradingOrderReturnpolicy.saveOrderReturnpolicy(returnpolicy);
+
+                    }else{
+                        iTradingOrderCalculatedShippingRate.saveOrderCalculatedShippingRate(shippingRate);
+                        iTradingOrderSellerInformation.saveOrderSellerInformation(sellerInformation);
+                        iTradingOrderListingDetails.saveOrderListingDetails(listingDetails);
+                        orderSeller.setSellerinfoId(sellerInformation.getId());
+                        iTradingOrderSeller.saveOrderSeller(orderSeller);
+                        iTradingOrderSellingStatus.saveOrderSellingStatus(sellingStatus);
+                        shippingDetails.setCalculatedshippingrateId(shippingRate.getId());
+                        iTradingOrderShippingDetails.saveOrderShippingDetails(shippingDetails);
+                        iTradingOrderPictureDetails.saveOrderPictureDetails(pictureDetails);
+                        iTradingOrderReturnpolicy.saveOrderReturnpolicy(returnpolicy);
+                        item.setListingdetailsId(listingDetails.getId());
+                        item.setSellerId(orderSeller.getId());
+                        item.setSellingstatusId(sellingStatus.getId());
+                        item.setShippingdetailsId(shippingDetails.getId());
+                        item.setPicturedetailsId(pictureDetails.getId());
+                        item.setOrderreturnpolicyId(returnpolicy.getId());
+                    }
+                    List<TradingOrderShippingServiceOptions> shippingServiceOptionses=iTradingOrderShippingServiceOptions.selectOrderGetItemByShippingDetailsId(shippingDetails.getId());
+                    for(TradingOrderShippingServiceOptions shippingServiceOptionse:shippingServiceOptionses){
+                        iTradingOrderShippingServiceOptions.deleteOrderShippingServiceOptions(shippingServiceOptionse);
+                    }
+                    for(TradingOrderShippingServiceOptions serviceOptionse:serviceOptionses){
+                        serviceOptionse.setShippingdetailsId(shippingDetails.getId());
+                        iTradingOrderShippingServiceOptions.saveOrderShippingServiceOptions(serviceOptionse);
+                    }
+                    order.setShippingdetailsId(shippingDetails.getId());
+                    iTradingOrderGetItem.saveOrderGetItem(item);
+                }else {
+                    String errors = SamplePaseXml.getVFromXmlString(res, "Errors");
+                    logger.error("获取apisessionid失败!" + errors);
+                    AjaxSupport.sendFailText("fail", "获取必要的参数失败！请稍后重试");
                 }
+
                 iTradingOrderGetOrders.saveOrderGetOrders(order);
             }
             AjaxSupport.sendSuccessText("success", "同步成功！");

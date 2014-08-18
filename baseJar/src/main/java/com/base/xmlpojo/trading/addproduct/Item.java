@@ -125,7 +125,7 @@ public class Item {
     //查看属性数组
     private String LookupAttributeArray;
 
-    //库存控制
+    //无货在线标志
     private Boolean OutOfStockControl;
 
     //付款方式

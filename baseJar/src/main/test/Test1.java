@@ -19,7 +19,7 @@ public class Test1 {
 
 @Test
     public void test1() throws Exception {
-    String x= StringEscapeUtils.escapeXml("«");
+    String x= StringEscapeUtils.escapeXml("<script src=\"http://ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.min.js\" type=\"text/javascript\"></script>");
     System.out.println(x);
     }
 

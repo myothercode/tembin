@@ -37,9 +37,17 @@ public class APINameStatic {
     /**获取商品类别属性*/
     public static final String GetCategorySpecifics="GetCategorySpecifics";
     /**
+     * 查询在线商品列表
+     */
+    public static final String ListingItemList = "GetSellerList";
+    /**
 
      *获取订单
      **/
     public static final String GetOrders = "GetOrders";
+    /**
+     * 获取订单商品
+     */
+    public static final  String GetItem="GetItem";
 }
 

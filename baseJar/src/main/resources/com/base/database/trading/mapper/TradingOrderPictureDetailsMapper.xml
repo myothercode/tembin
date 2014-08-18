@@ -150,6 +150,9 @@
       #{photodisplay,jdbcType=VARCHAR}, #{pictureurl,jdbcType=VARCHAR}, #{pictureurl1,jdbcType=VARCHAR}, 
       #{pictureurl2,jdbcType=VARCHAR}, #{createUser,jdbcType=BIGINT}, #{createTime,jdbcType=TIMESTAMP}, 
       #{uuid,jdbcType=VARCHAR})
+      <selectKey resultType="long" keyProperty="id" order="AFTER">
+          SELECT LAST_INSERT_ID()
+      </selectKey>
   </insert>
   <insert id="insertSelective" parameterType="com.base.database.trading.model.TradingOrderPictureDetails" >
     <!--
@@ -221,6 +224,9 @@
         #{uuid,jdbcType=VARCHAR},
       </if>
     </trim>
+      <selectKey resultType="long" keyProperty="id" order="AFTER">
+          SELECT LAST_INSERT_ID()
+      </selectKey>
   </insert>
   <select id="countByExample" parameterType="com.base.database.trading.model.TradingOrderPictureDetailsExample" resultType="java.lang.Integer" >
     <!--

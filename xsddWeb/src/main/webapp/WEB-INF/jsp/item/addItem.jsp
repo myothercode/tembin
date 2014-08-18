@@ -150,6 +150,8 @@
             $("select[name='ConditionID']").find("option[value='"+ConditionID+"']").attr("selected",true);
             var listingType = '${item.listingtype}';
             $("input[name='listingType'][value='"+listingType+"']").attr("checked",true);
+            var title = '${item.title}';
+            $("#incount").text(title.length);
             changeRadio(listingType);
 
 
@@ -214,6 +216,21 @@
                 </c:forEach>
             </c:forEach>
 
+            var privatelisting = '${tai.privatelisting}';
+            $("input[name='PrivateListing'][value='"+privatelisting+"']").attr("checked",true);
+            var listingduration = '${tai.listingduration}';
+            $("select[name='ListingDuration']").find("option[value='"+listingduration+"']").attr("selected",true);
+            //ReservePrice,BuyItNowPrice,ListingFlag,ListingScale,SecondFlag
+            var reserveprice = '${tai.reserveprice}';
+            var buyitnowprice  = '${tai.buyitnowprice}';
+            var listingscale = '${tai.listingscale}';
+            var listingflag = '${tai.listingflag}';
+            var secondflag = '${tai.secondflag}';
+            $("#ReservePrice").val(reserveprice);
+            $("#BuyItNowPrice").val(buyitnowprice);
+            $("#ListingScale").val(listingscale);
+            $("select[name='ListingFlag']").find("option[value='"+listingflag+"']").prop("selected",true);
+            $("input[name='SecondFlag'][value='"+secondflag+"']").prop("checked",true);
         });
 
         /**返回买家要求单选框*/
@@ -324,7 +341,7 @@
             )
         }
         function addValueTr(obj1,obj2){
-            var trStr='<tr><td><input type="text" name="name" value="'+obj1+'"></td><td><input type="text" name="value" value="'+obj2+'"></td><td><a href="javascript:void(0)" onclick="removeROW(this)">移除</a></td></tr>';
+            var trStr='<tr><td><input type="text" name="name"  class="validate[required]" value="'+obj1+'"></td><td><input type="text" name="value" class="validate[required]" value="'+obj2+'"></td><td><a href="javascript:void(0)" onclick="removeROW(this)">移除</a></td></tr>';
             return trStr;
         }
         function removeROW(obj){
@@ -360,7 +377,7 @@
                 $("#oneAttr").show();
                 $("#twoAttr").hide();
                 $("#Auction").hide();
-            }else if(obj=="Auction"){
+            }else if(obj=="Chinese"){
                 $("#oneAttr").show();
                 $("#twoAttr").hide();
                 $("#Auction").show();
@@ -375,9 +392,9 @@
         function addTr(len){
             var str ="";
             str +="<tr>";
-            str +="<td><input type='text' name='SKU' ></td>";
-            str +="<td><input type='text' name='Quantity'></td>";
-            str +="<td><input type='text' name='StartPrice.value'></td>";
+            str +="<td><input type='text' name='SKU'  class='validate[required]'></td>";
+            str +="<td><input type='text' name='Quantity' class='validate[required,custom[integer]]'></td>";
+            str +="<td><input type='text' name='StartPrice.value' class='validate[required,custom[number]]'></td>";
             for(var i = 0;i < len ;i++){
                 str +="<td><input type='text' name='attr_Value'  onblur='addb(this)' size='10' ></td>";
             }
@@ -547,6 +564,18 @@
         function addTypeAttr(obj){
             getCategorySpecificsData(obj.value,"typeAttrs","afterClickAttr","attTable");
         }
+        var CategoryType;
+        function selectType(){
+            CategoryType=$.dialog({title: '编辑买家要求',
+                content: 'url:'+path+'/category/initSelectCategoryPage.do',
+                icon: 'succeed',
+                width:650,
+                lock:true
+            });
+        }
+        function incount(obj){
+            $("#incount").text($(obj).val().length);
+        }
    </script>
 </head>
 <c:set var="item" value="${item}"/>
@@ -589,7 +618,7 @@
         <tr>
             <td align="right">刊登类型</td>
             <td>
-                <input type="radio" name="listingType" value="Chinese" onchange="changeRadio('Auction')">拍买
+                <input type="radio" name="listingType" value="Chinese" onchange="changeRadio('Chinese')">拍买
                 <input type="radio" name="listingType" value="FixedPriceItem" onchange="changeRadio('FixedPriceItem')">固价
                 <input type="radio" name="listingType" value="2" onchange="changeRadio('2')">多属性
             </td>
@@ -599,11 +628,15 @@
             <td><input type="text" name="sku" id="sku"  class="validate[required]" onblur="onShow(this)" value="${item.sku}"></td>
         </tr>
         <tr>
+            <td align="right"></td>
+            <td><input type="checkbox" name="OutOfStockControl" value="1">是否开启无货在线</td>
+        </tr>
+        <tr>
             <td align="right" style="vertical-align: top;">物品标题</td>
             <td>
-                标题<input type="text" name="Title" id="Title"  class="validate[required]" value="${item.title}"  >
+                标题<input type="text" name="Title" id="Title"  class="validate[required,maxSize[80]]" value="${item.title}" size="100" onkeyup="incount(this)"><span id="incount">0</span>/80
                 <br/>
-                子标题<input type="text" name="SubTitle" id="SubTitle" value="${item.subtitle}">
+                子标题<input type="text" name="SubTitle" id="SubTitle" value="${item.subtitle}" size="100">
             </td>
         </tr>
         <tr>
@@ -615,7 +648,11 @@
         <tr>
             <td align="right">第一分类</td>
             <td>
-                <input type="text" name="PrimaryCategory.categoryID" onblur="addTypeAttr(this)" class="validate[required]" title="PrimaryCategory.categoryID" class="validate[required]" value="${item.categoryid}">
+                <input type="text" id="PrimaryCategory.categoryID" name="PrimaryCategory.categoryID" onblur="addTypeAttr(this)" class="validate[required]" title="PrimaryCategory.categoryID" class="validate[required]" value="${item.categoryid}">
+                <a href="javascript:void(0)" onclick="selectType()">请选择</a>
+                <br/>
+                <div id="PrimaryCategoryshow">
+                </div>
             </td>
         </tr>
         <tr>
@@ -650,16 +687,16 @@
                     </tr>
                     <tr>
                         <td width="200" align="right">私人拍买：</td>
-                        <td><input type="checkbox" name="PrivateListing">不向公众显示买家的名称</td>
+                        <td><input type="checkbox" name="PrivateListing" value="on">不向公众显示买家的名称</td>
                     </tr>
                     <tr>
                         <td width="200" align="right">刊登天数：</td>
                         <td>
                             <select name="ListingDuration">
                                 <option value="Days_1">1</option>
-                                <option value="Days_2">2</option>
                                 <option value="Days_3">3</option>
                                 <option value="Days_5">5</option>
+                                <option value="Days_7">7</option>
                                 <option value="Days_10">10</option>
                             </select>
                         </td>
@@ -667,13 +704,13 @@
                     <tr>
                         <td width="200" align="right">保留价：</td>
                         <td>
-                            <input type="text" name="ReservePrice">
+                            <input type="text" name="ReservePrice" id="ReservePrice">
                         </td>
                     </tr>
                     <tr>
                         <td width="200" align="right">一口价：</td>
                         <td>
-                            <input type="text" name="BuyItNowPrice">
+                            <input type="text" name="BuyItNowPrice" id="BuyItNowPrice">
                         </td>
                     </tr>
                     <tr>
@@ -685,9 +722,9 @@
                                 <option value="0">单独物品</option>
                                 <option value="1">批量物品</option>
                             </select>
-                            销售比基数<input type="text" name="ListingScale">
+                            销售比基数<input type="text" name="ListingScale" id="ListingScale">
                             <br/>
-                            <input type="checkbox" name="SecondFlag">二次交易机会
+                            <input type="checkbox" name="SecondFlag" value="on">二次交易机会
                         </td>
                     </tr>
                 </table>

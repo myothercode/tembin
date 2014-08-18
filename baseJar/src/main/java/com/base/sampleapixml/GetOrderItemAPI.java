@@ -25,9 +25,9 @@ public class GetOrderItemAPI {
     public static String SERVICE_OPTIONS="serviceOptions";
     public static String PICTURE_DETAILS="picturedetails";
     public static String RETURN_POLICY="orderReturnpolicy";
-    public static String ITEM_SPECIFICS="itemSpecifics";
+/*    public static String ITEM_SPECIFICS="itemSpecifics";
     public static String VARIATION="variation";
-    public static String PICTURES="pictures";
+    public static String PICTURES="pictures";*/
 
     public static Map<String,String> apiGetOrderItem(UsercontrollerDevAccountExtend d,String token,String url,String Itemid){
         Map map=new HashMap();
@@ -50,15 +50,15 @@ public class GetOrderItemAPI {
         TradingOrderSellingStatus sellingStatus=new TradingOrderSellingStatus();
         TradingOrderShippingDetails shippingDetails=new TradingOrderShippingDetails();
         TradingOrderCalculatedShippingRate shippingRate=new TradingOrderCalculatedShippingRate();
-        /*TradingOrderShippingServiceOptions serviceOptions=new TradingOrderShippingServiceOptions();*/
+        /*TradingOrderShippingServiceOptions serviceOptions=new TradingOrderShippingServiceOptions();
+        TradingOrderItemSpecifics itemSpecifics=new TradingOrderItemSpecifics();
+        TradingOrderVariation variation=new TradingOrderVariation();*/
         TradingOrderPictureDetails picturedetails=new TradingOrderPictureDetails();
         TradingOrderReturnpolicy orderReturnpolicy=new TradingOrderReturnpolicy();
-        /*TradingOrderItemSpecifics itemSpecifics=new TradingOrderItemSpecifics();*/
-        TradingOrderVariation variation=new TradingOrderVariation();
-        TradingOrderPictures pictures=new TradingOrderPictures();
+        /*TradingOrderPictures pictures=new TradingOrderPictures();*/
         orderItem.setAutopay(SamplePaseXml.getSpecifyElementText(Item,"AutoPay"));
         orderItem.setBuyerprotection(SamplePaseXml.getSpecifyElementText(Item,"BuyerProtection"));
-        String nowprice=SamplePaseXml.getSpecifyElementText(Item, "BuyerProtection");
+        String nowprice=SamplePaseXml.getSpecifyElementText(Item, "BuyItNowPrice");
         if(nowprice!=null){
             orderItem.setBuyitnowprice(Double.valueOf(nowprice));
         }
@@ -312,8 +312,48 @@ public class GetOrderItemAPI {
         orderReturnpolicy.setShippingcostpaidbyoption(SamplePaseXml.getSpecifyElementText(Item,"ReturnPolicy","ShippingCostPaidByOption"));
         orderReturnpolicy.setShippingcostpaidby(SamplePaseXml.getSpecifyElementText(Item,"ReturnPolicy","ShippingCostPaidBy"));
         map.put(RETURN_POLICY,orderReturnpolicy);
+        /*Element ItemSpecifics=Item.element("ItemSpecifics");
+        Iterator Specifics=ItemSpecifics.elementIterator("NameValueList");
+        List<TradingOrderItemSpecifics> specificList=new ArrayList<TradingOrderItemSpecifics>();
+        while(Specifics.hasNext()){
+            Element specific= (Element) Specifics.next();
+            TradingOrderItemSpecifics itemSpecifics=new TradingOrderItemSpecifics();
+            itemSpecifics.setName(SamplePaseXml.getSpecifyElementText(specific,"Name"));
+            itemSpecifics.setValue(SamplePaseXml.getSpecifyElementText(specific,"Value"));
+            specificList.add(itemSpecifics);
+        }
+        map.put(ITEM_SPECIFICS,specificList);*/
+       /* Element Variations=Item.element("Variations");
+        Iterator Variation=Variations.elementIterator("Variation");
+        List<TradingOrderVariation> variationList=new ArrayList<TradingOrderVariation>();
+        while(Variation.hasNext()){
+            Element varEl= (Element) Variation.next();
+            TradingOrderVariation variation=new TradingOrderVariation();
+            variation.setSku(SamplePaseXml.getSpecifyElementText(varEl,"SKU"));
+            String StartPrice=SamplePaseXml.getSpecifyElementText(varEl, "StartPrice");
+            if(StartPrice!=null){
+                variation.setStartprice(Double.valueOf(StartPrice));
+            }
+            String Quantity=SamplePaseXml.getSpecifyElementText(varEl, "Quantity");
+            if(Quantity!=null){
+                variation.setQuantity(Integer.valueOf(Quantity));
+            }
+            String Quantitysold=SamplePaseXml.getSpecifyElementText(varEl, "SellingStatus", "QuantitySold");
+            if(Quantitysold!=null){
+                variation.setQuantitysold(Integer.valueOf(Quantitysold));
+            }
+        }
+        Iterator Pictures=Variations.elementIterator("Pictures");
+        List<TradingOrderPictures> pictrueList=new ArrayList<TradingOrderPictures>();
+        while(Pictures.hasNext()){
+            Element picturnEl= (Element) Pictures.next();
+            TradingOrderPictures pictures=new TradingOrderPictures();
+            pictures.setVariationspecificname(SamplePaseXml.getSpecifyElementText(picturnEl,"VariationSpecificName"));
+            pictures.setVariationspecificvalue(SamplePaseXml.getSpecifyElementText(picturnEl,"VariationSpecificValue"));
 
-        
+            pictures.setPictureurl(SamplePaseXml.getSpecifyElementText(picturnEl,"PictureURL"));
+        }
+        map.put(VARIATION,variationList);*/
        /* listingDetails.set(SamplePaseXml.getSpecifyElementText(Item,"ListingDetails","ViewItemURLForNaturalSearch"));*/
         return map;
     }

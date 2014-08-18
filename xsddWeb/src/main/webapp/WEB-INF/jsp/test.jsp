@@ -44,6 +44,21 @@
 
             );
         }
+
+        function testSize(obj){
+            var urll=path+"/ajax/getCountSize.do";
+            $().invoke(
+                    urll,
+                    {"itemid":"221270069427"},
+                    [function(m,r){
+                        alert(r)
+                    },
+                        function(m,r){
+                            alert(r)
+                        }]
+
+            );
+        }
     </script>
 </head>
 <body>
@@ -62,7 +77,9 @@
         <div><input type="button" value="绑定ebay帐号" name="bindEbayAccount" onclick="submitForm(this)"/></div>
         <div><input type="button" value="订单管理" name="orders" onclick="submitForm(this)"/></div>
         <div><input type="button" value="订单商品" name="orderItem" onclick="submitForm(this)"/></div>
-        <div><input type="button" value="获取商品反馋嘴" name="abcds" onclick="abcd(this)"/></div>
+        <div><input type="button" value="获取商品反反馈" name="abcds" onclick="abcd(this)"/></div>
+
+        <div><input type="button" value="获取商品反馈数量" name="abcds地" onclick="testSize(this)"/></div>
 </form>
 </body>
 </html>

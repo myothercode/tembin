@@ -57,6 +57,15 @@
   </resultMap>
     <select id="selectOrderGetOrdersByGroupList" resultMap="BaseResultMap" parameterType="map">
         select OrderGetOrders.*,count(*) countNum from trading_order_get_orders OrderGetOrders where 1=1
+        <if test="orderStatus!=null">
+            and OrderGetOrders.orderStatus = #{orderStatus}
+        </if>
+        <if test="starttime!=null">
+            and OrderGetOrders.lastModifiedTime>= #{starttime}
+        </if>
+        <if test="endtime!=null">
+            and OrderGetOrders.lastModifiedTime &lt; #{endtime}
+        </if>
         <if test="ebays!=null">
             and OrderGetOrders.sellerUserID in
             <foreach collection="ebays" item="ebay" index="index" open="(" separator="," close=")">

@@ -191,6 +191,9 @@
       #{returnsaccepted,jdbcType=VARCHAR}, #{shippingcostpaidbyoption,jdbcType=VARCHAR}, 
       #{shippingcostpaidby,jdbcType=VARCHAR}, #{createUser,jdbcType=BIGINT}, #{createTime,jdbcType=TIMESTAMP}, 
       #{uuid,jdbcType=VARCHAR}, #{description,jdbcType=LONGVARCHAR})
+      <selectKey resultType="long" keyProperty="id" order="AFTER">
+          SELECT LAST_INSERT_ID()
+      </selectKey>
   </insert>
   <insert id="insertSelective" parameterType="com.base.database.trading.model.TradingOrderReturnpolicy">
     <!--
@@ -280,6 +283,9 @@
         #{description,jdbcType=LONGVARCHAR},
       </if>
     </trim>
+      <selectKey resultType="long" keyProperty="id" order="AFTER">
+          SELECT LAST_INSERT_ID()
+      </selectKey>
   </insert>
   <select id="countByExample" parameterType="com.base.database.trading.model.TradingOrderReturnpolicyExample" resultType="java.lang.Integer">
     <!--

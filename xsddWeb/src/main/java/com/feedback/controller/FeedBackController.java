@@ -8,6 +8,7 @@ import com.base.userinfo.service.UserInfoService;
 import com.base.utils.cache.DataDictionarySupport;
 import com.base.utils.threadpool.AddApiTask;
 import com.base.utils.xmlutils.SamplePaseXml;
+import com.common.base.utils.ajax.AjaxResponse;
 import com.common.base.utils.ajax.AjaxSupport;
 import com.common.base.web.BaseAction;
 import com.trading.service.ITradingFeedBackDetail;
@@ -22,6 +23,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -47,6 +49,25 @@ public class FeedBackController extends BaseAction {
         AjaxSupport.sendSuccessText("message", "操作成功！");
     }
 
+    @RequestMapping("/ajax/getCountSize.do")
+    @ResponseBody
+    public void getCountSize(ModelMap modelMap,CommonParmVO commonParmVO,HttpServletRequest request,HttpServletResponse response) throws Exception {
+        if(request.getParameter("itemid")==null || "0".equals(request.getParameter("itemid"))){return;}
+        String x= (String) request.getParameter("jsonpCallback");
+        Map m = new HashMap();
+        m.put("itemid",request.getParameter("itemid"));
+        m.put("commentType","Positive");
+        int PositiveSize  = this.iTradingFeedBackDetail.selectByCount(m);
+        m.put("commentType","Neutral");
+        int NeutralSize  = this.iTradingFeedBackDetail.selectByCount(m);
+        m.put("commentType","Negative");
+        int NegativeSize  = this.iTradingFeedBackDetail.selectByCount(m);
+        String returnStr= "{\"PositiveSize\":\""+PositiveSize+"\",\"NeutralSize\":\""+NeutralSize+"\",\"NegativeSize\":\""+NegativeSize+"\"}";
+        //AjaxSupport.sendSuccessText("returnStr",returnStr);
+        AjaxResponse.sendText(response,"text/plain",x+"("+returnStr+")");
+
+    }
+
     public void pingDaoList(String commentType) throws Exception {
         String res = this.cosPostXml(commentType,1);
         Element el = SamplePaseXml.getApiElement(res,"PaginationResult");
@@ -57,7 +78,6 @@ public class FeedBackController extends BaseAction {
             for(int i = pages;i>0;i--){
                 res = this.cosPostXml(commentType,i);
                 List<TradingFeedBackDetail> litfb = SamplePaseXml.getFeedBackListElement(res);
-                System.out.println(":::::::::::::::::"+i);
                 this.iTradingFeedBackDetail.saveFeedBackDetail(litfb);
             }
         }

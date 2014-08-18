@@ -28,7 +28,7 @@ public class SessionVOInterceptor extends HandlerInterceptorAdapter {
     public boolean preHandle(HttpServletRequest request,HttpServletResponse response, Object handler) throws Exception {
         String currURL=request.getRequestURI();
         /**判断是否是登录页面*/
-        if (currURL.endsWith("login.do")){
+        if (currURL.endsWith("login.do") || currURL.endsWith("getCountSize.do")){
             return true;
         }
         /**判断是否有登录信息*/

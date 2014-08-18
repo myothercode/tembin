@@ -15,7 +15,10 @@
 <body>
 <div style="width: 600px">
 <div id="mainDiv"  style="width: 580px;height: 400px"></div>
-<div id="menuPath" style="float: left;width: 550px;overflow: hidden">123</div>
+<div id="menuPath" style="float: left;width: 550px;overflow: hidden"></div>
+</div>
+<div>
+    <input type="button" value="确定" onclick="que()">
 </div>
 </body>
 </html>

@@ -85,12 +85,15 @@ public class TradingItemImpl implements com.trading.service.ITradingItem {
         if(item.getStartPrice()!=null&&!"".equals(item.getStartPrice())){
             tradingItem.setStartprice(item.getStartPrice().getValue());
         }
+        if(item.getOutOfStockControl()!=null) {
+            tradingItem.setOutofstockcontrol(item.getOutOfStockControl() ? "1" : "0");
+        }
 
 
         this.saveTradingItem(tradingItem);
 
         HttpServletRequest request = RequestResponseContext.getRequest();
-        if(item.getListingType().equals("Auction")){//拍买商品保存数据
+        if(item.getListingType().equals("Chinese")){//拍买商品保存数据
             TradingAddItem tai = this.iTradingAddItem.selectParentId(tradingItem.getId());
             if(tai==null){
                 tai = new TradingAddItem();

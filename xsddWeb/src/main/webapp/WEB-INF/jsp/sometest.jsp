@@ -8,11 +8,12 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@include file= "/WEB-INF/jsp/commonImport.jsp" %>
 <html>
-<script type="text/javascript" src=<c:url value ="/js/item/addItem.js" />  />
+<%--<script type="text/javascript" src=<c:url value ="/js/item/addItem.js" />  />--%>
+<script type="text/javascript" src=<c:url value ="/js/item/showFeedBackNum.js" />
 <script type="text/javascript">
 
     $(document).ready(function(){
-        getCategorySpecificsData("11555","attList","afterClickAttr","attTable");
+        //getCategorySpecificsData("11555","attList","afterClickAttr","attTable");
     });
 
 
@@ -71,14 +72,14 @@ var afterUploadCallback={"imgURLS":addPictrueUrl}
 </head>
 <body>
 
-<div id="attList"></div>
+<%--<div id="attList"></div>
 <table id="attTable">
     <tr>
         <th>属性名</th>
         <th>属性值</th>
         <th>操作</th>
     </tr>
-</table>
+</table>--%>
 <%--<input id="upload" name='upload' type="text" style='width: 300px' value=""/>
 <script type="text/plain" id="myeditor"></script>
 <input type="button" id='image' value='上传图片'/>
@@ -86,6 +87,15 @@ var afterUploadCallback={"imgURLS":addPictrueUrl}
 
 <div id="descriptionDetailsListTable"></div>
 <button onclick="setDruag()">设置拖拽</button>--%>
-<button onclick=asyCombox2InputData()>kkkk</button>
+<%--<button onclick=asyCombox2InputData()>kkkk</button>--%>
+
+
+<table align="center" style="border-spacing: 0px;width:100%;"><tbody><tr><td>
+    <div id="EBdescription">
+    <!-- Begin Description -->
+    ddddddddddddddddddddddddddddddddddddddddddddd
+    <!-- End Description --></div></td></tr></tbody></table>
+
+
 </body>
 </html>

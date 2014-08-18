@@ -161,6 +161,9 @@
       #{endtime,jdbcType=TIMESTAMP}, #{viewitemurl,jdbcType=VARCHAR}, #{hasunansweredquestions,jdbcType=VARCHAR}, 
       #{haspublicmessages,jdbcType=VARCHAR}, #{expresslisting,jdbcType=VARCHAR}, #{createUser,jdbcType=BIGINT}, 
       #{createTime,jdbcType=TIMESTAMP}, #{uuid,jdbcType=VARCHAR})
+      <selectKey resultType="long" keyProperty="id" order="AFTER">
+          SELECT LAST_INSERT_ID()
+      </selectKey>
   </insert>
   <insert id="insertSelective" parameterType="com.base.database.trading.model.TradingOrderListingDetails">
     <!--
@@ -268,6 +271,9 @@
         #{uuid,jdbcType=VARCHAR},
       </if>
     </trim>
+      <selectKey resultType="long" keyProperty="id" order="AFTER">
+          SELECT LAST_INSERT_ID()
+      </selectKey>
   </insert>
   <select id="countByExample" parameterType="com.base.database.trading.model.TradingOrderListingDetailsExample" resultType="java.lang.Integer">
     <!--

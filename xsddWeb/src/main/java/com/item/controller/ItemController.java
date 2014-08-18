@@ -210,7 +210,6 @@ public class ItemController extends BaseAction{
             modelMap.put("tai",tai);
         }
 
-
         return forword("item/addItem",modelMap);
     }
 

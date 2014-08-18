@@ -175,6 +175,9 @@
       #{sellerinfoId,jdbcType=BIGINT}, #{motorsdealer,jdbcType=VARCHAR}, #{ebayunilateralemail,jdbcType=VARCHAR}, 
       #{createUser,jdbcType=BIGINT}, #{createTime,jdbcType=TIMESTAMP}, #{uuid,jdbcType=VARCHAR}
       )
+      <selectKey resultType="long" keyProperty="id" order="AFTER">
+          SELECT LAST_INSERT_ID()
+      </selectKey>
   </insert>
   <insert id="insertSelective" parameterType="com.base.database.trading.model.TradingOrderSeller" >
     <!--
@@ -324,6 +327,9 @@
         #{uuid,jdbcType=VARCHAR},
       </if>
     </trim>
+      <selectKey resultType="long" keyProperty="id" order="AFTER">
+          SELECT LAST_INSERT_ID()
+      </selectKey>
   </insert>
   <select id="countByExample" parameterType="com.base.database.trading.model.TradingOrderSellerExample" resultType="java.lang.Integer" >
     <!--
