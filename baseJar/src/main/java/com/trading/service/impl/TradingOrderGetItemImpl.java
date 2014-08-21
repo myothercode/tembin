@@ -43,7 +43,4 @@ public class TradingOrderGetItemImpl implements com.trading.service.ITradingOrde
         List<TradingOrderGetItem> lists=tradingOrderGetItemMapper.selectByExample(itemExample);
         return lists;
     }
-
-
-
 }

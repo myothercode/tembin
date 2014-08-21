@@ -15,6 +15,14 @@
     <script type="text/javascript" src=<c:url value ="/js/ueditor/lang/zh-cn/zh-cn.js" /> ></script>
     <script type="text/javascript" src=<c:url value ="/js/ueditor/dialogs/image/imageextend.js" /> ></script>
     <script type="text/javascript" src=<c:url value ="/js/item/addItem.js" /> ></script>
+
+    <link href=<c:url value ="/js/gridly/css/jquery.gridly.css"/> rel='stylesheet' type='text/css'>
+    <link href=<c:url value ="/js/gridly/css/sample.css"/> rel='stylesheet' type='text/css'>
+    <script src=<c:url value ="/js/gridly/js/jquery-ui.js"/> type='text/javascript'></script>
+    <script src=<c:url value ="/js/gridly/js/jquery.gridly.js"/> type='text/javascript'></script>
+    <script src=<c:url value ="/js/gridly/js/sample.js"/> type='text/javascript'></script>
+    <script src=<c:url value ="/js/gridly/js/rainbow.js"/> type='text/javascript'></script>
+
     <script>
         var _sku="ZBQ13212";
         var myDescription=null;
@@ -136,11 +144,7 @@
             <c:forEach items="${lipa}" var="pa">
                 $("#trValue").after().append(addValueTr('${pa.name}','${pa.value}'));
             </c:forEach>
-            $("#picture").append("");
-            <c:forEach items="${lipic}" var="pic" varStatus="status">
-            str='<input type="hidden" name="PictureDetails.PictureURL[${status.index}]" value="${pic.value}">';
-            $("#picture").append(str);
-            </c:forEach>
+
 
             var site = '${item.site}';
             $("select[name='site']").find("option[value='"+site+"']").attr("selected",true);
@@ -206,9 +210,13 @@
             }
             var str='';
             <c:forEach items="${litam}" var="tam" varStatus="status">
-                str = '<span><img src="${tam.value}" height="50" width="50" /><a href="javascript:void(0)" onclick="removeThis(this)">移除</a></span>';
+                str +="<div class='brick small'>";
+                str += '<span><input type="hidden" name="PictureDetails.PictureURL[${status.index}]" value="${tam.value}"><img src="${tam.value}" height="100%" width="100%" /></span>';
+                str +="<a class='delete' href='#'>&times;</a></div>";
                 $("#picture").append(str);
+                str="";
             </c:forEach>
+
             <c:forEach items="${lipics}" var="pics">
                 $("#${pics.tamname}").before("<input type='hidden' name='VariationSpecificValue_${pics.tamname}' value='${pics.tamname}'>");
                 <c:forEach items="${pics.litam}" var="pi">
@@ -231,6 +239,7 @@
             $("#ListingScale").val(listingscale);
             $("select[name='ListingFlag']").find("option[value='"+listingflag+"']").prop("selected",true);
             $("input[name='SecondFlag'][value='"+secondflag+"']").prop("checked",true);
+            initDraug();//初始化拖动图片
         });
 
         /**返回买家要求单选框*/
@@ -269,77 +278,7 @@
             return htm;
         }
 
-        function saveData(objs,name) {
-            $("#dataMouth").val(name);
-            if(!$("#form").validationEngine("validate")){
-                return;
-            }
-            var pciValue = new Map();
-            $("#moreAttrs tr td:nth-child(4)").each(function (i,d) {
-                if($(d).find("input[name='attr_Value']").val()!=undefined&&$(d).find("input[name='attr_Value']").val()!=""){
-                    pciValue.put($(d).find("input[name='attr_Value']").val(),$(d).find("input[name='attr_Value']").val());
-                }
-            });
-            for(var i=0;i<pciValue.keys.length;i++){
-                $("input[type='hidden'][name='"+pciValue.keys[i]+"']").each(function(ii,dd){
-                    $(dd).prop("name","Variations.Pictures.VariationSpecificPictureSet["+i+"].PictureURL["+ii+"]");
-                });
-                $("input[type='hidden'][name='VariationSpecificValue_"+pciValue.keys[i]+"']").prop("name","Variations.Pictures.VariationSpecificPictureSet["+i+"].VariationSpecificValue");
-            }
 
-            var nameList = $("input[type='text'][name='name']").each(function(i,d){
-                var name_= $(d).prop("name");
-                var t="ItemSpecifics.NameValueList["+i+"].";
-                $(d).prop("name",t+name_);
-            });
-            var valueList = $("input[type='text'][name='value']").each(function(i,d){
-                var name_= $(d).prop("name");
-                var t="ItemSpecifics.NameValueList["+i+"].";
-                $(d).prop("name",t+name_);
-            });
-
-            $("input[type='text'][name='attr_Name']").each(function(i,d){
-                var t="Variations.VariationSpecificsSet.NameValueList["+i+"].Name";
-                $(d).prop("name",t);
-            });
-            var len = $("#moreAttrs").find("tr").find("td").length/$("#moreAttrs").find("tr").length-4;
-            for(var j=0;j<len ;j++){
-                $("#moreAttrs tr:gt(0) td:nth-child("+(j+4)+")").each(function (i,d) {
-                    $(d).find("input[name='attr_Value']").each(function(ii,dd){
-                        $(dd).prop("name","Variations.VariationSpecificsSet.NameValueList["+j+"].Value["+i+"]");
-                    });
-                });
-            }
-            $("#moreAttrs tr:gt(0)").each(function(i,d){
-                $(d).find("input[name='SKU'],input[name='StartPrice.value'],input[name='Quantity']").each(function(ii,dd){
-                    var name_ = $(dd).prop("name");
-                    $(dd).prop("name","Variations.Variation["+i+"]."+name_);
-                });
-            });
-
-
-
-            $("#Description").val(myDescription.getContent());
-            var data = $('#form').serialize();
-            var urll = "/xsddWeb/saveItem.do";
-            $(objs).attr("disabled",true);
-            var api = frameElement.api, W = api.opener;
-            $().invoke(
-                    urll,
-                    data,
-                    [function (m, r) {
-                        Base.token();
-                        alert(r);
-                        $(objs).attr("disabled",false);
-                        W.refreshTable();
-                        W.returnItem.close();
-                    },
-                        function (m, r) {
-                            Base.token();
-                            $(objs).attr("disabled",false);
-                        }]
-            )
-        }
         function addValueTr(obj1,obj2){
             var trStr='<tr><td><input type="text" name="name"  class="validate[required]" value="'+obj1+'"></td><td><input type="text" name="value" class="validate[required]" value="'+obj2+'"></td><td><a href="javascript:void(0)" onclick="removeROW(this)">移除</a></td></tr>';
             return trStr;
@@ -542,12 +481,14 @@
         }
 
         function addPictrueUrl(urls){
-
             if(sss=="apicUrls"){//商品图片
                 var str='';
                 for(var i=0;i<urls.length;i++){
-                    str='<span><input type="hidden" name="PictureDetails.PictureURL['+i+']" value="'+urls[i].src+'"><img src=' + urls[i].src.replace("@", ":") + ' height="50" width="50" /><a href="javascript:void(0)" onclick="removeThis(this)">移除</a></span>';
+                    str+="<div class='brick small'>";
+                    str+='<span><input type="hidden" name="PictureDetails.PictureURL['+i+']" value="'+urls[i].src+'"><img src=' + urls[i].src.replace("@", ":") + ' height="100%" width="100%" /></span>'
+                    str+="<a class='delete' href='#'>&times;</a></div>";
                     $("#picture").append(str);
+                    str="";
                 }
             }else {//多属性图片
                 $('#' + sss).before("<input type='hidden' name='VariationSpecificValue_" + sss + "' value='" + sss + "'>");
@@ -555,6 +496,7 @@
                     $('#' + sss).before("<span><input type='hidden' name='" + sss + "' value='" + urls[i].src + "'><img src='" + urls[i].src.replace("@", ":") + "' height='50' width='50' /> <a href='javascritp:void(0)' onclick='removeThis(this)'>移除</a></span>");
                 }
             }
+            initDraug();//初始化拖动图片
         }
         function removeThis(obj){
             $(obj).parent().remove();
@@ -566,7 +508,7 @@
         }
         var CategoryType;
         function selectType(){
-            CategoryType=$.dialog({title: '编辑买家要求',
+            CategoryType=$.dialog({title: '选择商品分类',
                 content: 'url:'+path+'/category/initSelectCategoryPage.do',
                 icon: 'succeed',
                 width:650,
@@ -670,7 +612,10 @@
         <tr>
             <td colspan="2">
                 <div>
-                    <div id="picture"></div>
+                    <section class='example'>
+                    <div id="picture" class="gridly">
+                    </div>
+                    </section>
                     <script type=text/plain id='picUrls'></script>
                     <div><a href="javascript:void(0)" id="apicUrls" onclick="selectPic(this)">选择图片</a></div>
                 </div>

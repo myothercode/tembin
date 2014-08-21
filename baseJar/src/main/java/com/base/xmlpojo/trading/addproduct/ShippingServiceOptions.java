@@ -42,6 +42,7 @@ public class ShippingServiceOptions {
      */
     private ShippingSurcharge ShippingSurcharge;
 
+
     public Integer getShippingServicePriority() {
         return ShippingServicePriority;
     }

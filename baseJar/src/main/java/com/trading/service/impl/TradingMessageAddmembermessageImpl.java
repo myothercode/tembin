@@ -2,11 +2,14 @@ package com.trading.service.impl;
 
 import com.base.database.trading.mapper.TradingMessageAddmembermessageMapper;
 import com.base.database.trading.model.TradingMessageAddmembermessage;
+import com.base.database.trading.model.TradingMessageAddmembermessageExample;
 import com.base.utils.common.ObjectUtils;
 import com.base.utils.exception.Asserts;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 /**
  * 商品描述模块
@@ -32,6 +35,15 @@ public class TradingMessageAddmembermessageImpl implements com.trading.service.I
 
             this.TradingMessageAddmembermessageMapper.updateByPrimaryKeySelective(MessageAddmembermessage);
         }
+    }
+
+    @Override
+    public List<TradingMessageAddmembermessage> selectMessageGetmymessageByItemId(String itemid) {
+        TradingMessageAddmembermessageExample example=new TradingMessageAddmembermessageExample();
+        TradingMessageAddmembermessageExample.Criteria ce=example.createCriteria();
+        ce.andItemidEqualTo(itemid);
+        List<TradingMessageAddmembermessage> list=TradingMessageAddmembermessageMapper.selectByExample(example);
+        return list;
     }
 
 }

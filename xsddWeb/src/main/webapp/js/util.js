@@ -377,10 +377,26 @@ function strGetNum(text){
 
 /**截取字符串后几位*/
 function subRight(str,i){
-    if(strIsEmpty(str) || i==0){
+    if(str==null || i==0){
         return "";
     }
     return str.slice(str.length - i,str.length)
+}
+
+
+/**截取指定中括号之间的字符串，如 [ggg] */
+function getStrBetweenTwoChar(str){
+    return str.match(/\[[^\]]+\]/gi);
+}
+
+/**将指定元素内的指定name开头属性进行重新整合，如abcd[0]，将进行重新编号*/
+function domReIndex(objid,nameStart){
+    $('#'+objid).find("[name^="+nameStart+"]").each(function(i,d){
+        var name1=$(d).attr("name");//对象原来的名字
+        //alert($(d.parentNode.parentNode).css("left"))
+        var replaceStr=getStrBetweenTwoChar(name1);//需要替换的字符串
+        $(d).attr("name",name1.replace(replaceStr,"["+i+"]"));
+    });
 }
 
 

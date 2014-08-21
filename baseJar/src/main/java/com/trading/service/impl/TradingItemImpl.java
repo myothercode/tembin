@@ -207,13 +207,13 @@ public class TradingItemImpl implements com.trading.service.ITradingItem {
                         tpname.setParentUuid(tplas.getUuid());
                         this.iTradingPublicLevelAttr.savePublicLevelAttr(tpname);
 
-                        this.iTradingAttrMores.deleteByParentId("PictureURL",tplas.getId());
+                        this.iTradingAttrMores.deleteByParentId("MuAttrPictureURL",tplas.getId());
 
                         List<String> listr = vsps.getPictureURL();
                         listr = MyCollectionsUtil.listUnique(listr);
                         for(String str: listr){
                             if(str!=null&&!"".equals(str)){
-                                TradingAttrMores tams = this.iTradingAttrMores.toDAOPojo("PictureURL",str);
+                                TradingAttrMores tams = this.iTradingAttrMores.toDAOPojo("MuAttrPictureURL",str);
                                 tams.setParentId(tplas.getId());
                                 tams.setParentUuid(tplas.getUuid());
                                 this.iTradingAttrMores.saveAttrMores(tams);

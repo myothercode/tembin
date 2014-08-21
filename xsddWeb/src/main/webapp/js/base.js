@@ -67,7 +67,11 @@ var Base={
             }
         }
 
-
+if(url.indexOf("?")==-1){
+    url+="?math1="+Math.random();
+}else{
+    url+="&math1="+Math.random();
+}
         var self = this;
         $.ajax({
             url: url,

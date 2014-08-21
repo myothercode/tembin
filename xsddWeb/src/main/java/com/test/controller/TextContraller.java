@@ -58,6 +58,7 @@ public class TextContraller extends BaseAction {
         modelMap.put("ccc",sessionVO.getUserName());
         return forword("test",modelMap);
     }
+
     @RequestMapping("/login.do")
     public ModelAndView login(LoginVO loginVO,HttpServletRequest request,HttpServletResponse response,ModelMap modelMap){
 

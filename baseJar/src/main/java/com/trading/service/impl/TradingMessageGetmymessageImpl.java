@@ -3,6 +3,7 @@ package com.trading.service.impl;
 import com.base.database.customtrading.mapper.MessageGetmymessageMapper;
 import com.base.database.trading.mapper.TradingMessageGetmymessageMapper;
 import com.base.database.trading.model.TradingMessageGetmymessage;
+import com.base.database.trading.model.TradingMessageGetmymessageExample;
 import com.base.domains.querypojos.MessageGetmymessageQuery;
 import com.base.mybatis.page.Page;
 import com.base.utils.common.ObjectUtils;
@@ -62,5 +63,14 @@ public class TradingMessageGetmymessageImpl implements com.trading.service.ITrad
     @Override
     public List<MessageGetmymessageQuery> selectMessageGetmymessageBySender(Map map) {
         return MessageGetmymessageMapper.selectMessageGetmymessageBySender(map);
+    }
+
+    @Override
+    public List<TradingMessageGetmymessage> selectMessageGetmymessageByItemId(String itemid) {
+        TradingMessageGetmymessageExample example=new TradingMessageGetmymessageExample();
+        TradingMessageGetmymessageExample.Criteria cr=example.createCriteria();
+        cr.andItemidEqualTo(itemid);
+        List<TradingMessageGetmymessage> list=TradingMessageGetmymessageMapper.selectByExample(example);
+        return list;
     }
 }

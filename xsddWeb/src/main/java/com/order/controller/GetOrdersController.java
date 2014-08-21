@@ -19,6 +19,7 @@ import com.base.utils.xmlutils.SamplePaseXml;
 import com.common.base.utils.ajax.AjaxSupport;
 import com.common.base.web.BaseAction;
 import com.trading.service.*;
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -31,10 +32,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by Administrtor on 2014/8/13.
@@ -69,6 +67,10 @@ public class GetOrdersController extends BaseAction {
     private ITradingOrderSellerInformation iTradingOrderSellerInformation;
     @Autowired
     private  ITradingOrderCalculatedShippingRate iTradingOrderCalculatedShippingRate;
+    @Autowired
+    private  ITradingMessageGetmymessage iTradingMessageGetmymessage;
+    @Autowired
+    private  ITradingMessageAddmembermessage iTradingMessageAddmembermessage;
     @Value("${EBAY.API.URL}")
     private String apiUrl;
 
@@ -83,7 +85,6 @@ public class GetOrdersController extends BaseAction {
         String orderStatus=request.getParameter("orderStatus");
         String starttime=request.getParameter("starttime");
         String endtime=request.getParameter("endtime");
-        Map m = new HashMap();
         /**分页组装*/
         PageJsonBean jsonBean=commonParmVO.getJsonBean();
         Page page=jsonBean.toPage();
@@ -92,8 +93,14 @@ public class GetOrdersController extends BaseAction {
         if(orderStatus==null||"All".equals(orderStatus)){
             orderStatus=null;
         }
+        if(!StringUtils.isNotBlank(starttime)){
+            starttime=null;
+        }
+        if(!StringUtils.isNotBlank(endtime)){
+            endtime=null;
+        }
         map.put("ebays",ebays);
-       /* map.put("orderStatus",orderStatus);*/
+        map.put("orderStatus",orderStatus);
         map.put("starttime",starttime);
         map.put("endtime",endtime);
         List<OrderGetOrdersQuery> lists= this.iTradingOrderGetOrders.selectOrderGetOrdersByGroupList(map,page);
@@ -128,6 +135,37 @@ public class GetOrdersController extends BaseAction {
     }
 
     /**
+     * 发货时修改订单(运输)
+     */
+    @RequestMapping("/ajax/updateOrder.do")
+    @AvoidDuplicateSubmission(needRemoveToken = true)
+    @ResponseBody
+    public void updateOrder( HttpServletRequest request,HttpServletResponse response,ModelMap modelMap) throws Exception {
+        String orderid=request.getParameter("id");
+        String freight=request.getParameter("freight");
+        String shippedtime=request.getParameter("shippedtime");
+        Date shipptime=null;
+        if(StringUtils.isNotBlank(shippedtime)){
+            int year= Integer.parseInt(shippedtime.substring(0,4));
+            int month= Integer.parseInt(shippedtime.substring(5,7));
+            int day= Integer.parseInt(shippedtime.substring(8,10));
+            int hour= Integer.parseInt(shippedtime.substring(11,13));
+            int minite= Integer.parseInt(shippedtime.substring(14, 16));
+            int ss=0;
+            shipptime=DateUtils.buildDateTime(year,month,day,hour,minite,0);
+        }
+        List<TradingOrderGetOrders> orderList= iTradingOrderGetOrders.selectOrderGetOrdersByOrderId(orderid);
+        for(TradingOrderGetOrders order:orderList){
+            order.setShippedtime(shipptime);
+            if(StringUtils.isNotBlank(freight)){
+                order.setActualshippingcost(Double.valueOf(freight));
+            }
+            order.setOrderstatus("Shipped");
+            iTradingOrderGetOrders.saveOrderGetOrders(order);
+        }
+        AjaxSupport.sendSuccessText("","操作成功!");
+    }
+    /**
      * 查看订单详情
      */
     @RequestMapping("/viewOrderGetOrders.do")
@@ -135,9 +173,129 @@ public class GetOrdersController extends BaseAction {
     public ModelAndView viewTemplateInitTable(HttpServletRequest request,HttpServletResponse response,@ModelAttribute( "initSomeParmMap" )ModelMap modelMap) throws Exception {
         String orderid=request.getParameter("orderid");
         List<TradingOrderGetOrders> lists=iTradingOrderGetOrders.selectOrderGetOrdersByOrderId(orderid);
-        modelMap.put("lists",lists);
+        modelMap.put("order",lists.get(0));
+        modelMap.put("orderId",orderid);
+        List<TradingMessageGetmymessage> messages=new ArrayList<TradingMessageGetmymessage>();
+        List<TradingMessageAddmembermessage> addMessages=new ArrayList<TradingMessageAddmembermessage>();
+        for(TradingOrderGetOrders order:lists){
+            String itemid=order.getItemid();
+            List<TradingMessageGetmymessage> messageList=iTradingMessageGetmymessage.selectMessageGetmymessageByItemId(itemid);
+            List<TradingMessageAddmembermessage> addmessageList=iTradingMessageAddmembermessage.selectMessageGetmymessageByItemId(itemid);
+            messages.addAll(messageList);
+            addMessages.addAll(addmessageList);
+        }
+        modelMap.put("messages",messages);
+        modelMap.put("addMessage,",addMessages);
+        /*Map<String,String> map=new HashMap<String, String>();
+        map.put("orderStatus","Completed");
+        map.put("selleraccount",lists.get(0).getSelleruserid());
+        map.put("buyaccount",lists.get(0).getBuyeruserid());
+        List<OrderGetOrdersQuery> querys= this.iTradingOrderGetOrders.selectOrderGetOrdersByGroupList(map,page);*/
         return forword("orders/order/viewOrderGetOrders",modelMap);
     }
+    /*
+     *订单详情摘要交易信息,付款信息等
+     */
+    @RequestMapping("/viewOrderAbstractLeft.do")
+    @AvoidDuplicateSubmission(needSaveToken = true)
+    public ModelAndView viewOrderAbstractLeft(HttpServletRequest request,HttpServletResponse response,@ModelAttribute( "initSomeParmMap" )ModelMap modelMap) throws Exception {
+        String orderId=request.getParameter("orderId");
+        List<TradingOrderGetOrders> lists=iTradingOrderGetOrders.selectOrderGetOrdersByOrderId(orderId);
+        TradingOrderGetOrders order=lists.get(0);
+        /*List<TradingOrderShippingDetails> detailsList=iTradingOrderShippingDetails.selectOrderGetItemById(order.getShippingdetailsId());*/
+        List<TradingOrderShippingServiceOptions> serviceOptionList=iTradingOrderShippingServiceOptions.selectOrderGetItemByShippingDetailsId(order.getShippingdetailsId());
+        modelMap.put("order",order);
+        modelMap.put("options",serviceOptionList);
+        return forword("orders/order/viewOrderAbstractLeft",modelMap);
+    }
+    /*
+     *摘要里的订单地址
+     */
+    @RequestMapping("/viewOrderAbstractRight.do")
+    @AvoidDuplicateSubmission(needSaveToken = true)
+    public ModelAndView viewOrderAbstractRight(HttpServletRequest request,HttpServletResponse response,@ModelAttribute( "initSomeParmMap" )ModelMap modelMap) throws Exception {
+        String orderId=request.getParameter("orderId");
+        List<TradingOrderGetOrders> lists=iTradingOrderGetOrders.selectOrderGetOrdersByOrderId(orderId);
+        TradingOrderGetOrders order=lists.get(0);
+        modelMap.put("order",order);
+        return forword("orders/order/viewOrderAbstractRight",modelMap);
+    }
+    /*
+     *摘要里的最近的发送消息
+     */
+    @RequestMapping("/viewOrderAbstractDown.do")
+    @AvoidDuplicateSubmission(needSaveToken = true)
+    public ModelAndView viewOrderShipmentsHistory(HttpServletRequest request,HttpServletResponse response,@ModelAttribute( "initSomeParmMap" )ModelMap modelMap) throws Exception {
+        String orderId=request.getParameter("orderId");
+        List<TradingOrderGetOrders> lists=iTradingOrderGetOrders.selectOrderGetOrdersByOrderId(orderId);
+        TradingOrderGetOrders order=lists.get(0);
+        modelMap.put("order",order);
+        return forword("orders/order/viewOrderAbstractDown",modelMap);
+    }
+  /*  @RequestMapping("/viewOrderEbayMessage.do")
+    @AvoidDuplicateSubmission(needSaveToken = true)
+    public ModelAndView viewOrderEbayMessage(HttpServletRequest request,HttpServletResponse response,@ModelAttribute( "initSomeParmMap" )ModelMap modelMap) throws Exception {
+        String orderId=request.getParameter("orderId");
+        List<TradingOrderGetOrders> lists=iTradingOrderGetOrders.selectOrderGetOrdersByOrderId(orderId);
+        TradingOrderGetOrders order=lists.get(0);
+        modelMap.put("order",order);
+        return forword("orders/order/viewOrderAbstractDown",modelMap);
+    }*/
+    /*
+     *购买历史初始化
+     */
+    @RequestMapping("/viewOrderBuyHistory.do")
+    public ModelAndView viewOrderBuyHistory(HttpServletRequest request,HttpServletResponse response,ModelMap modelMap){
+        String orderId=request.getParameter("orderId");
+        modelMap.put("orderId",orderId);
+        return forword("/orders/order/viewOrderBuyHistory",modelMap);
+    }
+    /*
+     *购买历史信息
+     */
+    @RequestMapping("/ajax/loadBuyHistory.do")
+    @ResponseBody
+    public void loadBuyHistory(CommonParmVO commonParmVO,HttpServletRequest request) throws Exception {
+        String orderId=request.getParameter("orderId");
+        /**分页组装*/
+        PageJsonBean jsonBean=commonParmVO.getJsonBean();
+        Page page=jsonBean.toPage();
+        Map map=new HashMap();
+        List<TradingOrderGetOrders> orderList=iTradingOrderGetOrders.selectOrderGetOrdersByOrderId(orderId);
+        String selleraccount=null;
+        String buyaccount=null;
+        if(orderList!=null&&orderList.size()>0){
+            selleraccount=orderList.get(0).getSelleruserid();
+            buyaccount=orderList.get(0).getBuyeruserid();
+        }
+        List<String> statusList=new ArrayList<String>();
+        statusList.add("shipped");
+        statusList.add("Completed");
+        map.put("StatusList",statusList);
+        map.put("selleraccount",selleraccount);
+        map.put("buyaccount",buyaccount);
+        List<OrderGetOrdersQuery> lists= this.iTradingOrderGetOrders.selectOrderGetOrdersByGroupList(map,page);
+        for(OrderGetOrdersQuery list:lists){
+            String itemid=list.getItemid();
+            List<TradingOrderGetItem> itemList= iTradingOrderGetItem.selectOrderGetItemByItemId(itemid);
+            if(itemList!=null&&itemList.size()>0){
+                Long pictureid=itemList.get(0).getPicturedetailsId();
+                List<TradingOrderPictureDetails> pictureDetailses=iTradingOrderPictureDetails.selectOrderGetItemById(pictureid);
+                if(pictureDetailses!=null&&pictureDetailses.size()>0){
+                    list.setPictrue(pictureDetailses.get(0).getPictureurl());
+                }
+            }
+            String url="http://www.sandbox.ebay.com/itm/"+list.getItemid();
+            list.setItemUrl(url);
+        }
+        jsonBean.setList(lists);
+        jsonBean.setTotal((int)page.getTotalCount());
+        AjaxSupport.sendSuccessText("", jsonBean);
+    }
+
+    /*
+     *同步订单
+     */
     @RequestMapping("/apiGetOrdersRequest.do")
     @AvoidDuplicateSubmission(needRemoveToken = true)
     @ResponseBody

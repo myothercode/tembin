@@ -2,12 +2,14 @@ package com.trading.service;
 
 import com.base.database.trading.model.TradingMessageAddmembermessage;
 
+import java.util.List;
+
 /**
  * Created by Administrtor on 2014/8/05.
  */
 public interface ITradingMessageAddmembermessage {
     void saveMessageAddmembermessage(TradingMessageAddmembermessage MessageAddmembermessage) throws Exception;
-
+    List<TradingMessageAddmembermessage> selectMessageGetmymessageByItemId(String itemid);
     /*TradingMessageAddmembermessage toDAOPojo(String payInfo, String shippingInfo, String contactInfo, String guaranteeInfo, String feedbackInfo) throws  Exception;*/
 
    /* List<MessageGetmymessageQuery> selectByMessageGetmymessageList(Map map);

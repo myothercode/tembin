@@ -297,10 +297,11 @@ public class GetOrderItemAPI {
                 picturedetails.setPictureurl(lists.get(0));
             }else if(lists.size()==2){
                 picturedetails.setPictureurl1(lists.get(1));
-            }else if(lists.size()>2){
-                picturedetails.setPictureurl2(lists.get(lists.size()));
+            }else if(lists.size()==3){
+                picturedetails.setPictureurl2(lists.get(2));
             }
         }
+
         map.put(PICTURE_DETAILS,picturedetails);
         orderReturnpolicy.setRefundoption(SamplePaseXml.getSpecifyElementText(Item,"ReturnPolicy","RefundOption"));
         orderReturnpolicy.setRefund(SamplePaseXml.getSpecifyElementText(Item,"ReturnPolicy","Refund"));

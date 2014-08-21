@@ -865,6 +865,136 @@ public class TradingOrderGetOrdersExample {
             return (Criteria) this;
         }
 
+        public Criteria andSelectedshippingserviceIsNull() {
+            addCriterion("selectedShippingService is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andSelectedshippingserviceIsNotNull() {
+            addCriterion("selectedShippingService is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andSelectedshippingserviceEqualTo(String value) {
+            addCriterion("selectedShippingService =", value, "selectedshippingservice");
+            return (Criteria) this;
+        }
+
+        public Criteria andSelectedshippingserviceNotEqualTo(String value) {
+            addCriterion("selectedShippingService <>", value, "selectedshippingservice");
+            return (Criteria) this;
+        }
+
+        public Criteria andSelectedshippingserviceGreaterThan(String value) {
+            addCriterion("selectedShippingService >", value, "selectedshippingservice");
+            return (Criteria) this;
+        }
+
+        public Criteria andSelectedshippingserviceGreaterThanOrEqualTo(String value) {
+            addCriterion("selectedShippingService >=", value, "selectedshippingservice");
+            return (Criteria) this;
+        }
+
+        public Criteria andSelectedshippingserviceLessThan(String value) {
+            addCriterion("selectedShippingService <", value, "selectedshippingservice");
+            return (Criteria) this;
+        }
+
+        public Criteria andSelectedshippingserviceLessThanOrEqualTo(String value) {
+            addCriterion("selectedShippingService <=", value, "selectedshippingservice");
+            return (Criteria) this;
+        }
+
+        public Criteria andSelectedshippingserviceLike(String value) {
+            addCriterion("selectedShippingService like", value, "selectedshippingservice");
+            return (Criteria) this;
+        }
+
+        public Criteria andSelectedshippingserviceNotLike(String value) {
+            addCriterion("selectedShippingService not like", value, "selectedshippingservice");
+            return (Criteria) this;
+        }
+
+        public Criteria andSelectedshippingserviceIn(List<String> values) {
+            addCriterion("selectedShippingService in", values, "selectedshippingservice");
+            return (Criteria) this;
+        }
+
+        public Criteria andSelectedshippingserviceNotIn(List<String> values) {
+            addCriterion("selectedShippingService not in", values, "selectedshippingservice");
+            return (Criteria) this;
+        }
+
+        public Criteria andSelectedshippingserviceBetween(String value1, String value2) {
+            addCriterion("selectedShippingService between", value1, value2, "selectedshippingservice");
+            return (Criteria) this;
+        }
+
+        public Criteria andSelectedshippingserviceNotBetween(String value1, String value2) {
+            addCriterion("selectedShippingService not between", value1, value2, "selectedshippingservice");
+            return (Criteria) this;
+        }
+
+        public Criteria andSelectedshippingservicecostIsNull() {
+            addCriterion("selectedShippingServiceCost is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andSelectedshippingservicecostIsNotNull() {
+            addCriterion("selectedShippingServiceCost is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andSelectedshippingservicecostEqualTo(Double value) {
+            addCriterion("selectedShippingServiceCost =", value, "selectedshippingservicecost");
+            return (Criteria) this;
+        }
+
+        public Criteria andSelectedshippingservicecostNotEqualTo(Double value) {
+            addCriterion("selectedShippingServiceCost <>", value, "selectedshippingservicecost");
+            return (Criteria) this;
+        }
+
+        public Criteria andSelectedshippingservicecostGreaterThan(Double value) {
+            addCriterion("selectedShippingServiceCost >", value, "selectedshippingservicecost");
+            return (Criteria) this;
+        }
+
+        public Criteria andSelectedshippingservicecostGreaterThanOrEqualTo(Double value) {
+            addCriterion("selectedShippingServiceCost >=", value, "selectedshippingservicecost");
+            return (Criteria) this;
+        }
+
+        public Criteria andSelectedshippingservicecostLessThan(Double value) {
+            addCriterion("selectedShippingServiceCost <", value, "selectedshippingservicecost");
+            return (Criteria) this;
+        }
+
+        public Criteria andSelectedshippingservicecostLessThanOrEqualTo(Double value) {
+            addCriterion("selectedShippingServiceCost <=", value, "selectedshippingservicecost");
+            return (Criteria) this;
+        }
+
+        public Criteria andSelectedshippingservicecostIn(List<Double> values) {
+            addCriterion("selectedShippingServiceCost in", values, "selectedshippingservicecost");
+            return (Criteria) this;
+        }
+
+        public Criteria andSelectedshippingservicecostNotIn(List<Double> values) {
+            addCriterion("selectedShippingServiceCost not in", values, "selectedshippingservicecost");
+            return (Criteria) this;
+        }
+
+        public Criteria andSelectedshippingservicecostBetween(Double value1, Double value2) {
+            addCriterion("selectedShippingServiceCost between", value1, value2, "selectedshippingservicecost");
+            return (Criteria) this;
+        }
+
+        public Criteria andSelectedshippingservicecostNotBetween(Double value1, Double value2) {
+            addCriterion("selectedShippingServiceCost not between", value1, value2, "selectedshippingservicecost");
+            return (Criteria) this;
+        }
+
         public Criteria andCreatinguserroleIsNull() {
             addCriterion("creatingUserRole is null");
             return (Criteria) this;
@@ -2325,6 +2455,146 @@ public class TradingOrderGetOrdersExample {
             return (Criteria) this;
         }
 
+        public Criteria andSkuIsNull() {
+            addCriterion("sKU is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andSkuIsNotNull() {
+            addCriterion("sKU is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andSkuEqualTo(String value) {
+            addCriterion("sKU =", value, "sku");
+            return (Criteria) this;
+        }
+
+        public Criteria andSkuNotEqualTo(String value) {
+            addCriterion("sKU <>", value, "sku");
+            return (Criteria) this;
+        }
+
+        public Criteria andSkuGreaterThan(String value) {
+            addCriterion("sKU >", value, "sku");
+            return (Criteria) this;
+        }
+
+        public Criteria andSkuGreaterThanOrEqualTo(String value) {
+            addCriterion("sKU >=", value, "sku");
+            return (Criteria) this;
+        }
+
+        public Criteria andSkuLessThan(String value) {
+            addCriterion("sKU <", value, "sku");
+            return (Criteria) this;
+        }
+
+        public Criteria andSkuLessThanOrEqualTo(String value) {
+            addCriterion("sKU <=", value, "sku");
+            return (Criteria) this;
+        }
+
+        public Criteria andSkuLike(String value) {
+            addCriterion("sKU like", value, "sku");
+            return (Criteria) this;
+        }
+
+        public Criteria andSkuNotLike(String value) {
+            addCriterion("sKU not like", value, "sku");
+            return (Criteria) this;
+        }
+
+        public Criteria andSkuIn(List<String> values) {
+            addCriterion("sKU in", values, "sku");
+            return (Criteria) this;
+        }
+
+        public Criteria andSkuNotIn(List<String> values) {
+            addCriterion("sKU not in", values, "sku");
+            return (Criteria) this;
+        }
+
+        public Criteria andSkuBetween(String value1, String value2) {
+            addCriterion("sKU between", value1, value2, "sku");
+            return (Criteria) this;
+        }
+
+        public Criteria andSkuNotBetween(String value1, String value2) {
+            addCriterion("sKU not between", value1, value2, "sku");
+            return (Criteria) this;
+        }
+
+        public Criteria andTitleIsNull() {
+            addCriterion("title is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andTitleIsNotNull() {
+            addCriterion("title is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andTitleEqualTo(String value) {
+            addCriterion("title =", value, "title");
+            return (Criteria) this;
+        }
+
+        public Criteria andTitleNotEqualTo(String value) {
+            addCriterion("title <>", value, "title");
+            return (Criteria) this;
+        }
+
+        public Criteria andTitleGreaterThan(String value) {
+            addCriterion("title >", value, "title");
+            return (Criteria) this;
+        }
+
+        public Criteria andTitleGreaterThanOrEqualTo(String value) {
+            addCriterion("title >=", value, "title");
+            return (Criteria) this;
+        }
+
+        public Criteria andTitleLessThan(String value) {
+            addCriterion("title <", value, "title");
+            return (Criteria) this;
+        }
+
+        public Criteria andTitleLessThanOrEqualTo(String value) {
+            addCriterion("title <=", value, "title");
+            return (Criteria) this;
+        }
+
+        public Criteria andTitleLike(String value) {
+            addCriterion("title like", value, "title");
+            return (Criteria) this;
+        }
+
+        public Criteria andTitleNotLike(String value) {
+            addCriterion("title not like", value, "title");
+            return (Criteria) this;
+        }
+
+        public Criteria andTitleIn(List<String> values) {
+            addCriterion("title in", values, "title");
+            return (Criteria) this;
+        }
+
+        public Criteria andTitleNotIn(List<String> values) {
+            addCriterion("title not in", values, "title");
+            return (Criteria) this;
+        }
+
+        public Criteria andTitleBetween(String value1, String value2) {
+            addCriterion("title between", value1, value2, "title");
+            return (Criteria) this;
+        }
+
+        public Criteria andTitleNotBetween(String value1, String value2) {
+            addCriterion("title not between", value1, value2, "title");
+            return (Criteria) this;
+        }
+
         public Criteria andQuantitypurchasedIsNull() {
             addCriterion("quantityPurchased is null");
             return (Criteria) this;
@@ -2592,6 +2862,246 @@ public class TradingOrderGetOrdersExample {
 
         public Criteria andTransactionpriceNotBetween(String value1, String value2) {
             addCriterion("transactionPrice not between", value1, value2, "transactionprice");
+            return (Criteria) this;
+        }
+
+        public Criteria andPaidtimeIsNull() {
+            addCriterion("paidTime is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andPaidtimeIsNotNull() {
+            addCriterion("paidTime is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andPaidtimeEqualTo(Date value) {
+            addCriterion("paidTime =", value, "paidtime");
+            return (Criteria) this;
+        }
+
+        public Criteria andPaidtimeNotEqualTo(Date value) {
+            addCriterion("paidTime <>", value, "paidtime");
+            return (Criteria) this;
+        }
+
+        public Criteria andPaidtimeGreaterThan(Date value) {
+            addCriterion("paidTime >", value, "paidtime");
+            return (Criteria) this;
+        }
+
+        public Criteria andPaidtimeGreaterThanOrEqualTo(Date value) {
+            addCriterion("paidTime >=", value, "paidtime");
+            return (Criteria) this;
+        }
+
+        public Criteria andPaidtimeLessThan(Date value) {
+            addCriterion("paidTime <", value, "paidtime");
+            return (Criteria) this;
+        }
+
+        public Criteria andPaidtimeLessThanOrEqualTo(Date value) {
+            addCriterion("paidTime <=", value, "paidtime");
+            return (Criteria) this;
+        }
+
+        public Criteria andPaidtimeIn(List<Date> values) {
+            addCriterion("paidTime in", values, "paidtime");
+            return (Criteria) this;
+        }
+
+        public Criteria andPaidtimeNotIn(List<Date> values) {
+            addCriterion("paidTime not in", values, "paidtime");
+            return (Criteria) this;
+        }
+
+        public Criteria andPaidtimeBetween(Date value1, Date value2) {
+            addCriterion("paidTime between", value1, value2, "paidtime");
+            return (Criteria) this;
+        }
+
+        public Criteria andPaidtimeNotBetween(Date value1, Date value2) {
+            addCriterion("paidTime not between", value1, value2, "paidtime");
+            return (Criteria) this;
+        }
+
+        public Criteria andShippedtimeIsNull() {
+            addCriterion("shippedTime is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andShippedtimeIsNotNull() {
+            addCriterion("shippedTime is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andShippedtimeEqualTo(Date value) {
+            addCriterion("shippedTime =", value, "shippedtime");
+            return (Criteria) this;
+        }
+
+        public Criteria andShippedtimeNotEqualTo(Date value) {
+            addCriterion("shippedTime <>", value, "shippedtime");
+            return (Criteria) this;
+        }
+
+        public Criteria andShippedtimeGreaterThan(Date value) {
+            addCriterion("shippedTime >", value, "shippedtime");
+            return (Criteria) this;
+        }
+
+        public Criteria andShippedtimeGreaterThanOrEqualTo(Date value) {
+            addCriterion("shippedTime >=", value, "shippedtime");
+            return (Criteria) this;
+        }
+
+        public Criteria andShippedtimeLessThan(Date value) {
+            addCriterion("shippedTime <", value, "shippedtime");
+            return (Criteria) this;
+        }
+
+        public Criteria andShippedtimeLessThanOrEqualTo(Date value) {
+            addCriterion("shippedTime <=", value, "shippedtime");
+            return (Criteria) this;
+        }
+
+        public Criteria andShippedtimeIn(List<Date> values) {
+            addCriterion("shippedTime in", values, "shippedtime");
+            return (Criteria) this;
+        }
+
+        public Criteria andShippedtimeNotIn(List<Date> values) {
+            addCriterion("shippedTime not in", values, "shippedtime");
+            return (Criteria) this;
+        }
+
+        public Criteria andShippedtimeBetween(Date value1, Date value2) {
+            addCriterion("shippedTime between", value1, value2, "shippedtime");
+            return (Criteria) this;
+        }
+
+        public Criteria andShippedtimeNotBetween(Date value1, Date value2) {
+            addCriterion("shippedTime not between", value1, value2, "shippedtime");
+            return (Criteria) this;
+        }
+
+        public Criteria andActualshippingcostIsNull() {
+            addCriterion("actualShippingCost is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andActualshippingcostIsNotNull() {
+            addCriterion("actualShippingCost is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andActualshippingcostEqualTo(Double value) {
+            addCriterion("actualShippingCost =", value, "actualshippingcost");
+            return (Criteria) this;
+        }
+
+        public Criteria andActualshippingcostNotEqualTo(Double value) {
+            addCriterion("actualShippingCost <>", value, "actualshippingcost");
+            return (Criteria) this;
+        }
+
+        public Criteria andActualshippingcostGreaterThan(Double value) {
+            addCriterion("actualShippingCost >", value, "actualshippingcost");
+            return (Criteria) this;
+        }
+
+        public Criteria andActualshippingcostGreaterThanOrEqualTo(Double value) {
+            addCriterion("actualShippingCost >=", value, "actualshippingcost");
+            return (Criteria) this;
+        }
+
+        public Criteria andActualshippingcostLessThan(Double value) {
+            addCriterion("actualShippingCost <", value, "actualshippingcost");
+            return (Criteria) this;
+        }
+
+        public Criteria andActualshippingcostLessThanOrEqualTo(Double value) {
+            addCriterion("actualShippingCost <=", value, "actualshippingcost");
+            return (Criteria) this;
+        }
+
+        public Criteria andActualshippingcostIn(List<Double> values) {
+            addCriterion("actualShippingCost in", values, "actualshippingcost");
+            return (Criteria) this;
+        }
+
+        public Criteria andActualshippingcostNotIn(List<Double> values) {
+            addCriterion("actualShippingCost not in", values, "actualshippingcost");
+            return (Criteria) this;
+        }
+
+        public Criteria andActualshippingcostBetween(Double value1, Double value2) {
+            addCriterion("actualShippingCost between", value1, value2, "actualshippingcost");
+            return (Criteria) this;
+        }
+
+        public Criteria andActualshippingcostNotBetween(Double value1, Double value2) {
+            addCriterion("actualShippingCost not between", value1, value2, "actualshippingcost");
+            return (Criteria) this;
+        }
+
+        public Criteria andActualhandlingcostIsNull() {
+            addCriterion("actualHandlingCost is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andActualhandlingcostIsNotNull() {
+            addCriterion("actualHandlingCost is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andActualhandlingcostEqualTo(Double value) {
+            addCriterion("actualHandlingCost =", value, "actualhandlingcost");
+            return (Criteria) this;
+        }
+
+        public Criteria andActualhandlingcostNotEqualTo(Double value) {
+            addCriterion("actualHandlingCost <>", value, "actualhandlingcost");
+            return (Criteria) this;
+        }
+
+        public Criteria andActualhandlingcostGreaterThan(Double value) {
+            addCriterion("actualHandlingCost >", value, "actualhandlingcost");
+            return (Criteria) this;
+        }
+
+        public Criteria andActualhandlingcostGreaterThanOrEqualTo(Double value) {
+            addCriterion("actualHandlingCost >=", value, "actualhandlingcost");
+            return (Criteria) this;
+        }
+
+        public Criteria andActualhandlingcostLessThan(Double value) {
+            addCriterion("actualHandlingCost <", value, "actualhandlingcost");
+            return (Criteria) this;
+        }
+
+        public Criteria andActualhandlingcostLessThanOrEqualTo(Double value) {
+            addCriterion("actualHandlingCost <=", value, "actualhandlingcost");
+            return (Criteria) this;
+        }
+
+        public Criteria andActualhandlingcostIn(List<Double> values) {
+            addCriterion("actualHandlingCost in", values, "actualhandlingcost");
+            return (Criteria) this;
+        }
+
+        public Criteria andActualhandlingcostNotIn(List<Double> values) {
+            addCriterion("actualHandlingCost not in", values, "actualhandlingcost");
+            return (Criteria) this;
+        }
+
+        public Criteria andActualhandlingcostBetween(Double value1, Double value2) {
+            addCriterion("actualHandlingCost between", value1, value2, "actualhandlingcost");
+            return (Criteria) this;
+        }
+
+        public Criteria andActualhandlingcostNotBetween(Double value1, Double value2) {
+            addCriterion("actualHandlingCost not between", value1, value2, "actualhandlingcost");
             return (Criteria) this;
         }
 

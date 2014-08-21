@@ -55,7 +55,19 @@
         <mvc:interceptor>
             <mvc:mapping path="/**"/>
             <!--<mvc:mapping path="/ajax/*.do"/>-->
-            <bean class="com.common.interceptor.randr.SessionVOInterceptor" />
+            <bean class="com.common.interceptor.randr.SessionVOInterceptor" >
+            <!--<property name="allowUrls">
+                <list>
+                    &lt;!&ndash; 如果请求中包含以下路径，则不进行拦截 &ndash;&gt;
+                    <value>/login</value>
+                    <value>/js</value>
+                    <value>/css</value>
+                    <value>/image</value>
+                    <value>/images</value>
+                </list>
+                http://carterslam.iteye.com/blog/1980224
+            </property>-->
+            </bean>
         </mvc:interceptor>
 
         <!--<mvc:interceptor>

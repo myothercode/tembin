@@ -27,6 +27,7 @@
             map.put("shipping",path+"/shippingDetailsList.do");
             map.put("orders",path+"/order/getOrdersList.do");
             map.put("orderItem",path+"/orderItem/orderItemList.do");
+            map.put("listing",path+"/getListingItemList.do");
             top.location=map.get(name);
 
         }
@@ -80,6 +81,7 @@
         <div><input type="button" value="获取商品反反馈" name="abcds" onclick="abcd(this)"/></div>
 
         <div><input type="button" value="获取商品反馈数量" name="abcds地" onclick="testSize(this)"/></div>
+        <div><input type="button" value="在线商品管理" name="listing" onclick="submitForm(this)"/></div>
 </form>
 </body>
 </html>

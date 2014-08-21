@@ -2650,6 +2650,136 @@ public class TradingShippingdetailsExample {
             addCriterion("Inter_count_type not between", value1, value2, "interCountType");
             return (Criteria) this;
         }
+
+        public Criteria andGetitfastIsNull() {
+            addCriterion("GetItFast is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andGetitfastIsNotNull() {
+            addCriterion("GetItFast is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andGetitfastEqualTo(String value) {
+            addCriterion("GetItFast =", value, "getitfast");
+            return (Criteria) this;
+        }
+
+        public Criteria andGetitfastNotEqualTo(String value) {
+            addCriterion("GetItFast <>", value, "getitfast");
+            return (Criteria) this;
+        }
+
+        public Criteria andGetitfastGreaterThan(String value) {
+            addCriterion("GetItFast >", value, "getitfast");
+            return (Criteria) this;
+        }
+
+        public Criteria andGetitfastGreaterThanOrEqualTo(String value) {
+            addCriterion("GetItFast >=", value, "getitfast");
+            return (Criteria) this;
+        }
+
+        public Criteria andGetitfastLessThan(String value) {
+            addCriterion("GetItFast <", value, "getitfast");
+            return (Criteria) this;
+        }
+
+        public Criteria andGetitfastLessThanOrEqualTo(String value) {
+            addCriterion("GetItFast <=", value, "getitfast");
+            return (Criteria) this;
+        }
+
+        public Criteria andGetitfastLike(String value) {
+            addCriterion("GetItFast like", value, "getitfast");
+            return (Criteria) this;
+        }
+
+        public Criteria andGetitfastNotLike(String value) {
+            addCriterion("GetItFast not like", value, "getitfast");
+            return (Criteria) this;
+        }
+
+        public Criteria andGetitfastIn(List<String> values) {
+            addCriterion("GetItFast in", values, "getitfast");
+            return (Criteria) this;
+        }
+
+        public Criteria andGetitfastNotIn(List<String> values) {
+            addCriterion("GetItFast not in", values, "getitfast");
+            return (Criteria) this;
+        }
+
+        public Criteria andGetitfastBetween(String value1, String value2) {
+            addCriterion("GetItFast between", value1, value2, "getitfast");
+            return (Criteria) this;
+        }
+
+        public Criteria andGetitfastNotBetween(String value1, String value2) {
+            addCriterion("GetItFast not between", value1, value2, "getitfast");
+            return (Criteria) this;
+        }
+
+        public Criteria andDispatchtimemaxIsNull() {
+            addCriterion("DispatchTimeMax is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andDispatchtimemaxIsNotNull() {
+            addCriterion("DispatchTimeMax is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andDispatchtimemaxEqualTo(Long value) {
+            addCriterion("DispatchTimeMax =", value, "dispatchtimemax");
+            return (Criteria) this;
+        }
+
+        public Criteria andDispatchtimemaxNotEqualTo(Long value) {
+            addCriterion("DispatchTimeMax <>", value, "dispatchtimemax");
+            return (Criteria) this;
+        }
+
+        public Criteria andDispatchtimemaxGreaterThan(Long value) {
+            addCriterion("DispatchTimeMax >", value, "dispatchtimemax");
+            return (Criteria) this;
+        }
+
+        public Criteria andDispatchtimemaxGreaterThanOrEqualTo(Long value) {
+            addCriterion("DispatchTimeMax >=", value, "dispatchtimemax");
+            return (Criteria) this;
+        }
+
+        public Criteria andDispatchtimemaxLessThan(Long value) {
+            addCriterion("DispatchTimeMax <", value, "dispatchtimemax");
+            return (Criteria) this;
+        }
+
+        public Criteria andDispatchtimemaxLessThanOrEqualTo(Long value) {
+            addCriterion("DispatchTimeMax <=", value, "dispatchtimemax");
+            return (Criteria) this;
+        }
+
+        public Criteria andDispatchtimemaxIn(List<Long> values) {
+            addCriterion("DispatchTimeMax in", values, "dispatchtimemax");
+            return (Criteria) this;
+        }
+
+        public Criteria andDispatchtimemaxNotIn(List<Long> values) {
+            addCriterion("DispatchTimeMax not in", values, "dispatchtimemax");
+            return (Criteria) this;
+        }
+
+        public Criteria andDispatchtimemaxBetween(Long value1, Long value2) {
+            addCriterion("DispatchTimeMax between", value1, value2, "dispatchtimemax");
+            return (Criteria) this;
+        }
+
+        public Criteria andDispatchtimemaxNotBetween(Long value1, Long value2) {
+            addCriterion("DispatchTimeMax not between", value1, value2, "dispatchtimemax");
+            return (Criteria) this;
+        }
     }
 
     /**

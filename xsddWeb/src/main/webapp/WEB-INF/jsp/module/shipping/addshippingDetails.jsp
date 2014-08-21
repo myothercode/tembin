@@ -206,7 +206,7 @@
             }
             <c:if test="${litio!=null}">
                 <c:forEach var="obj" items="${litio}">
-                    $("#inter").append(createInterTables('${obj.shippingservice}','${obj.shippingservicecost}','${obj.shippingserviceadditionalcost}'));
+                    var ss = $("#inter").append(createInterTables('${obj.shippingservice}','${obj.shippingservicecost}','${obj.shippingserviceadditionalcost}'));
                 </c:forEach>
             </c:if>
 
@@ -455,11 +455,11 @@
         </tr>
         <tr>
             <td colspan="2">
-                <%--<table>
+                <table>
                     <tr>
                         <td align="right">处理时间</td>
                         <td>
-                            <select>
+                            <select name="DispatchTimeMax">
                                 <option value="0">0</option>
                                 <option value="1">1</option>
                                 <option value="2">2</option>
@@ -471,10 +471,10 @@
                                 <option value="20">20</option>
                                 <option value="30">30</option>
                             </select>
-                            工作日<input type="checkbox" name="isf">快速寄货
+                            工作日<input type="checkbox" name="GetItFast" value="1">快速寄货
                         </td>
                     </tr>
-                </table>--%>
+                </table>
                 <table id="shippingMore">
 
                 </table>

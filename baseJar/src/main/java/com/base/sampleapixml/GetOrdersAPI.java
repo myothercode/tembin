@@ -45,11 +45,22 @@ public class GetOrdersAPI {
                     String CreatedTime=SamplePaseXml.getSpecifyElementText(order,"CreatedTime");
                     Date time=DateUtils.returnDate(CreatedTime);
                     getorder.setCreatedtime(time);
+                    String paidtime=SamplePaseXml.getSpecifyElementText(order,"PaidTime");
+                    String shippedtime=SamplePaseXml.getSpecifyElementText(order,"ShippedTime");
+                    Date PaidTime=DateUtils.returnDate(paidtime);
+                    Date ShippedTime=DateUtils.returnDate(shippedtime);
+                    getorder.setPaidtime(PaidTime);
+                    getorder.setShippedtime(ShippedTime);
                     //-------------------获取第二层的---------------------------
                     getorder.setEbaypaymentstatus(SamplePaseXml.getSpecifyElementText(order,"CheckoutStatus","eBayPaymentStatus"));
                     getorder.setPaymentmethod(SamplePaseXml.getSpecifyElementText(order,"CheckoutStatus","PaymentMethod"));
                     getorder.setStatus(SamplePaseXml.getSpecifyElementText(order,"CheckoutStatus","Status"));
                     getorder.setLastmodifiedtime(DateUtils.returnDate(SamplePaseXml.getSpecifyElementText(order,"CheckoutStatus","LastModifiedTime")));
+                    getorder.setSelectedshippingservice(SamplePaseXml.getSpecifyElementText(order,"ShippingServiceSelected","ShippingService"));
+                    String selectdShippingServiceCost=SamplePaseXml.getSpecifyElementText(order,"ShippingServiceSelected","ShippingServiceCost");
+                    if(selectdShippingServiceCost!=null){
+                        getorder.setSelectedshippingservicecost(Double.valueOf(selectdShippingServiceCost));
+                    }
                    /* Element details=order.element("ShippingDetails");
                     String percent=SamplePaseXml.getSpecifyElementText(details, "SalesTaxPercent");
                     if(percent!=null){
@@ -113,6 +124,17 @@ public class GetOrdersAPI {
                             getorder.setSellingmanagersalesrecordnumber(Integer.valueOf(recordnumber));
                         }
                         getorder.setItemid(SamplePaseXml.getSpecifyElementText(transaction,"Item","ItemID"));
+                        getorder.setTitle(SamplePaseXml.getSpecifyElementText(transaction,"Item","Title"));
+                        String sku=SamplePaseXml.getSpecifyElementText(transaction,"Item","SKU");
+                        getorder.setSku(sku);
+                        String ActualShippingCost=SamplePaseXml.getSpecifyElementText(transaction,"ActualShippingCost");
+                        String ActualHandlingCost=SamplePaseXml.getSpecifyElementText(transaction,"ActualHandlingCost");
+                        if(ActualShippingCost!=null){
+                            getorder.setActualshippingcost(Double.valueOf(ActualShippingCost));
+                        }
+                        if(ActualHandlingCost!=null){
+                            getorder.setActualhandlingcost(Double.valueOf(ActualHandlingCost));
+                        }
                         lists.add(getorder);
                     }
                 }

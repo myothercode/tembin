@@ -11,4 +11,5 @@ public interface ITradingOrderGetItem {
 
     void saveOrderGetItem(TradingOrderGetItem OrderGetItem) throws Exception;
     List<TradingOrderGetItem> selectOrderGetItemByItemId(String ItemId);
+
 }

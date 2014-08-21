@@ -5,6 +5,10 @@ package com.base.sampleapixml;
  * API名称
  */
 public class APINameStatic {
+    /**
+     * 修改商品信息
+     */
+    public static final String ReviseItem = "ReviseItem";
     /**获取sessionID的api*/
     public static final String GetSessionID = "GetSessionID";
 

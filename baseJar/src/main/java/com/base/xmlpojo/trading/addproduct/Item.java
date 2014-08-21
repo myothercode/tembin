@@ -252,6 +252,15 @@ public class Item {
     //一口价
     private Double BuyItNowPrice;
 
+    private String ItemID;
+
+    public String getItemID() {
+        return ItemID;
+    }
+
+    public void setItemID(String itemID) {
+        ItemID = itemID;
+    }
 
     public Double getReservePrice() {
         return ReservePrice;

@@ -66,6 +66,18 @@
         <if test="endtime!=null">
             and OrderGetOrders.lastModifiedTime &lt; #{endtime}
         </if>
+        <if test="selleraccount!=null">
+            and OrderGetOrders.sellerUserID=#{selleraccount}
+        </if>
+        <if test="buyaccount!=null">
+            and OrderGetOrders.buyerUserID=#{buyaccount}
+        </if>
+        <if test="StatusList!=null">
+            and OrderGetOrders.orderStatus in
+            <foreach collection="StatusList" item="list" index="index" open="(" separator="," close=")">
+                #{list}
+            </foreach>
+        </if>
         <if test="ebays!=null">
             and OrderGetOrders.sellerUserID in
             <foreach collection="ebays" item="ebay" index="index" open="(" separator="," close=")">

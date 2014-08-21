@@ -105,3 +105,124 @@ function removeThisTr(a){
     $('#div'+baseId).show();
     $(tr).remove();
 }
+
+
+
+/**对商品图片div进行重新排序*/
+function reSortItemPic(){
+    var m=new Map();
+    $('#picture div').each(function(i,d){
+        var k=$(d).css("top");
+        if(m.containsKey(k)){
+            var kkArr= m.get(k);
+            kkArr.push(d);
+        }else{
+            var ka=new Array();
+            ka.push(d);
+            m.put(k,ka);
+        }
+    });
+    var ks=m.keys;
+    var domArr;
+    for(var i in ks){
+        var dArrKey=ks[i];
+        domArr = m.get(dArrKey);
+        domArr.sort(function(a,b){
+            var al=parseInt(strGetNum($(a).css("left"))) ;
+            var bl=parseInt(strGetNum($(b).css("left"))) ;
+            if(al>bl){
+                return 1;
+            }else if(al==bl){
+                return 0;
+            }else{
+                return -1;
+            }
+        });
+    }
+    $('#picture').empty();
+    for ( var ii in domArr){
+        $('#picture').append($(domArr[ii])[0].outerHTML);
+
+    }
+    initDraug();
+    domArr=null;
+    m.clear();
+}
+/**保存并提交*/
+function saveData(objs,name) {
+    asyCombox2InputData();//同步comebox的数值
+    reSortItemPic();//对经过排序的图片进行重新排列
+    domReIndex("picture","PictureDetails");//对重新排列后的元素进行重新索引
+
+    $("#dataMouth").val(name);
+    if(!$("#form").validationEngine("validate")){
+        return;
+    }
+    var pciValue = new Map();
+    $("#moreAttrs tr td:nth-child(4)").each(function (i,d) {
+        if($(d).find("input[name='attr_Value']").val()!=undefined&&$(d).find("input[name='attr_Value']").val()!=""){
+            pciValue.put($(d).find("input[name='attr_Value']").val(),$(d).find("input[name='attr_Value']").val());
+        }
+    });
+    for(var i=0;i<pciValue.keys.length;i++){
+        $("input[type='hidden'][name='"+pciValue.keys[i]+"']").each(function(ii,dd){
+            $(dd).prop("name","Variations.Pictures.VariationSpecificPictureSet["+i+"].PictureURL["+ii+"]");
+        });
+        $("input[type='hidden'][name='VariationSpecificValue_"+pciValue.keys[i]+"']").prop("name","Variations.Pictures.VariationSpecificPictureSet["+i+"].VariationSpecificValue");
+    }
+
+    var nameList = $("input[type='text'][name='name']").each(function(i,d){
+        var name_= $(d).prop("name");
+        var t="ItemSpecifics.NameValueList["+i+"].";
+        $(d).prop("name",t+name_);
+    });
+    var valueList = $("input[type='text'][name='value']").each(function(i,d){
+        var name_= $(d).prop("name");
+        var t="ItemSpecifics.NameValueList["+i+"].";
+        $(d).prop("name",t+name_);
+    });
+
+    $("input[type='text'][name='attr_Name']").each(function(i,d){
+        var t="Variations.VariationSpecificsSet.NameValueList["+i+"].Name";
+        $(d).prop("name",t);
+    });
+    var len = $("#moreAttrs").find("tr").find("td").length/$("#moreAttrs").find("tr").length-4;
+    for(var j=0;j<len ;j++){
+        $("#moreAttrs tr:gt(0) td:nth-child("+(j+4)+")").each(function (i,d) {
+            $(d).find("input[name='attr_Value']").each(function(ii,dd){
+                $(dd).prop("name","Variations.VariationSpecificsSet.NameValueList["+j+"].Value["+i+"]");
+            });
+        });
+    }
+    $("#moreAttrs tr:gt(0)").each(function(i,d){
+        $(d).find("input[name='SKU'],input[name='StartPrice.value'],input[name='Quantity']").each(function(ii,dd){
+            var name_ = $(dd).prop("name");
+            $(dd).prop("name","Variations.Variation["+i+"]."+name_);
+        });
+    });
+
+
+
+    $("#Description").val(myDescription.getContent());
+    var data = $('#form').serialize();
+    var urll = "/xsddWeb/saveItem.do";
+    $(objs).attr("disabled",true);
+    var api = frameElement.api, W = api.opener;
+    $().invoke(
+        urll,
+        data,
+        [function (m, r) {
+            //Base.token();
+            alert(r);
+            $(objs).attr("disabled",false);
+            W.refreshTable();
+            W.returnItem.close();
+        },
+            function (m, r) {
+                //Base.token();
+                alert(r)
+                $(objs).attr("disabled",false);
+            }]
+    )
+}
+

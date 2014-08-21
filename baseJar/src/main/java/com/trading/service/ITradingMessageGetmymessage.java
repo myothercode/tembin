@@ -22,4 +22,6 @@ public interface ITradingMessageGetmymessage {
     List<MessageGetmymessageQuery> selectMessageGetmymessageByGroupList(Map map, Page page);
 
     List<MessageGetmymessageQuery> selectMessageGetmymessageBySender(Map map);
+
+    List<TradingMessageGetmymessage> selectMessageGetmymessageByItemId(String itemid);
 }

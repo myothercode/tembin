@@ -45,7 +45,7 @@
             return htm;
         }
         function makeOption3(json){
-            var htm="<a target=\"_blank\" href=\"javascript:void(0)\" onclick=\"ebayurl('"+json.itemUrl+"');\">ebay商品详情</a>";
+            var htm="<a target=\"_blank\" href=\"javascript:void(0)\" onclick=\"ebayurl('"+json.itemUrl+"');\">"+json.title+"</a>";
             return htm;
         }
         function ebayurl(url){
@@ -81,7 +81,7 @@
                 content: 'url:'+url,
                 icon: 'succeed',
                 width:1050,
-                height:500,
+                height:1050,
                 lock:true
             });
         }
