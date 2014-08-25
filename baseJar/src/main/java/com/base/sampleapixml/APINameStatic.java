@@ -53,5 +53,17 @@ public class APINameStatic {
      * 获取订单商品
      */
     public static final  String GetItem="GetItem";
+    /**
+     * 卖家发送消息(订单中)
+     */
+    public static final  String AddMemberMessageAAQToPartner="AddMemberMessageAAQToPartner";
+    /*
+     *外部交易
+     */
+    public static final  String GetSellerTransactions="GetSellerTransactions";
+    /*
+     *GetAccount
+     */
+    public static final  String GetAccount="GetAccount";
 }
 

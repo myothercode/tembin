@@ -81,7 +81,10 @@
             $("#selectId").show();
             $("#showId").hide();
             $(obj).hide();
-            $("#showId tr").hide();
+            //$("#showId").hide();
+            $("#show1").show();
+            $("#show2").show();
+            $("#show3").show();
             $("#nextShow").val("下一步");
         }
         var api = frameElement.api, W = api.opener;
@@ -183,6 +186,9 @@
                     </c:forEach>
                 </c:forEach>
             </c:if>
+
+            var title = '${item.title}';
+            $("#incount").text(title.length);
         });
 
         function checkData(obj){
@@ -191,6 +197,18 @@
             }else{
                 $(obj).parent().find("select").attr("disabled",true);
             }
+        }
+        var CategoryType;
+        function selectType(){
+            CategoryType=$.dialog({title: '选择商品分类',
+                content: 'url:'+path+'/category/initSelectCategoryPage.do',
+                icon: 'succeed',
+                width:650,
+                lock:true
+            });
+        }
+        function incount(obj){
+            $("#incount").text($(obj).val().length);
         }
     </script>
 </head>
@@ -227,6 +245,42 @@
     </div>
     <div>
         <table id="showId" style="display: none;">
+            <tr id="show1">
+                <td colspan="2" width="80%">
+                    <br/>
+                    一般信息
+                    <hr/>
+                </td>
+            </tr>
+            <tr id="show2">
+                <td colspan="2">
+                    <table>
+                        <tr>
+                            <td align="right" style="width: 100px;">站点</td>
+                            <td>${item.site}</td>
+                        </tr>
+                        <tr>
+                            <td align="right" style="width: 100px;">货币</td>
+                            <td>${item.currency}</td>
+                        </tr>
+                        <tr>
+                            <td align="right" style="width: 100px;">ebay账户</td>
+                            <td>${item.seller.userID}</td>
+                        </tr>
+                        <tr>
+                            <td align="right" style="width: 100px;"></td>
+                            <td><input type="checkbox" name="isUpdateFlag" value="1">是否更新范本</td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+            <tr id="show3">
+                <td colspan="2" width="80%">
+                    <br/>
+                    需要修改信息
+                    <hr/>
+                </td>
+            </tr>
             <c:if test="${item.variations ==null}">
                 <tr id="StartPrice" style="display: none;">
                     <td>价格</td>
@@ -364,7 +418,10 @@
             </tr>
             <tr id="Title" style="display: none;">
                 <td>标题</td>
-                <td><input type="text" name="Title" size="100"  class="validate[required,maxSize[80]]" value="${item.title}"></td>
+                <td>
+                    <input type="text" name="Title" size="100"  onkeyup="incount(this)"  class="validate[required,maxSize[80]]" value="${item.title}">
+                    <span id="incount">0</span>/80
+                </td>
             </tr>
             <tr id="Buyer" style="display: none;">
                 <td>买家要求</td>
@@ -435,7 +492,13 @@
             </tr>
             <tr id="PrimaryCategory" style="display: none;">
                 <td>分类</td>
-                <td><input type="text" name="PrimaryCategory.CategoryId" value="${item.primaryCategory.categoryID}"></td>
+                <td>
+                    <input type="text" id="PrimaryCategory.categoryID" name="PrimaryCategory.CategoryId" value="${item.primaryCategory.categoryID}">
+                    <a href="javascript:void(0)" onclick="selectType()">请选择</a>
+                    <br/>
+                    <div id="PrimaryCategoryshow">
+                    </div>
+                </td>
             </tr>
             <tr id="ConditionID" style="display: none;">
                 <td>物品状况</td>

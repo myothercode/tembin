@@ -1,10 +1,13 @@
 package com.base.utils.threadpool;
 
 import com.base.domains.userinfo.UsercontrollerDevAccountExtend;
+import com.base.utils.applicationcontext.ApplicationContextUtil;
+import com.base.utils.cxfclient.CXFPostClient;
 import com.base.utils.httpclient.ApiHeader;
 import com.base.utils.httpclient.HttpClientUtil;
 import org.apache.http.Header;
 import org.apache.http.client.HttpClient;
+import org.apache.http.message.BasicHeader;
 import org.apache.log4j.Logger;
 
 import java.util.List;
@@ -24,16 +27,17 @@ public class ApiCallable implements Callable {
     @Override
     public Object call() throws Exception {
         if(xml==null || url==null || devAccountExtend ==null){return null;}
-        HttpClient httpClient= HttpClientUtil.getHttpsClient();
 
-        List<Header> headers=null;
+        List<BasicHeader> headers=null;
         if(ApiHeader.DISPUTE_API_HEADER.equalsIgnoreCase(devAccountExtend.getHeaderType())){
             headers=ApiHeader.getDisputeApiHeader(devAccountExtend);
         }else {
             headers = ApiHeader.getApiHeader(devAccountExtend);
         }
 
-        String res= HttpClientUtil.post(httpClient,url,xml,enCode,headers);
+        CXFPostClient cxfPostClient = (CXFPostClient) ApplicationContextUtil.getBean(CXFPostClient.class);
+        String res = cxfPostClient.sendPostAction(headers,url,xml);
+
         return res;
     }
 

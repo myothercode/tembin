@@ -51,6 +51,7 @@ public class GetOrdersAPI {
                     Date ShippedTime=DateUtils.returnDate(shippedtime);
                     getorder.setPaidtime(PaidTime);
                     getorder.setShippedtime(ShippedTime);
+                    getorder.setAmountpaid(SamplePaseXml.getSpecifyElementText(order,"AmountPaid"));
                     //-------------------获取第二层的---------------------------
                     getorder.setEbaypaymentstatus(SamplePaseXml.getSpecifyElementText(order,"CheckoutStatus","eBayPaymentStatus"));
                     getorder.setPaymentmethod(SamplePaseXml.getSpecifyElementText(order,"CheckoutStatus","PaymentMethod"));
@@ -135,6 +136,7 @@ public class GetOrdersAPI {
                         if(ActualHandlingCost!=null){
                             getorder.setActualhandlingcost(Double.valueOf(ActualHandlingCost));
                         }
+                        getorder.setShipmenttrackingnumber(SamplePaseXml.getSpecifyElementText(transaction,"ShippingDetails","ShipmentTrackingDetails","ShipmentTrackingNumber"));
                         lists.add(getorder);
                     }
                 }

@@ -53,21 +53,11 @@
         <tr><td>${order.buyeremail}</td></tr>
         <tr><td>------------------------------------------</td></tr>
         <tr><td>
-            <c:if test="${order.orderstatus=='Completed'}">
+            <c:if test="${order.status=='Complete'}">
                 已付款
             </c:if>
-            <c:if test="${order.orderstatus=='Shipped'}">
-                已发货
-            </c:if>
-            <c:if test="${order.orderstatus=='CancelPending'}">
-                取消挂起
-            </c:if>
-            <c:if test="${order.orderstatus!='Completed'}">
-                <c:if test="${order.orderstatus!='Shipped'}">
-                    <c:if test="${order.orderstatus!='CancelPending'}">
-                        未付款
-                    </c:if>
-                </c:if>
+            <c:if test="${order.status=='Incomplete'}">
+                未付款
             </c:if>
         </td></tr>
     </table>

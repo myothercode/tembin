@@ -15,5 +15,9 @@ public interface ITradingVariation {
 
     TradingVariation toDAOPojo(Variation var) throws Exception;
 
+    List<TradingVariation> selectByParentId(Long id);
+
+    void deleteParentId(Long id);
+
     List<VariationQuery> selectByParentId(Map m) throws Exception;
 }

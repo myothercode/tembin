@@ -26,6 +26,7 @@
     <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
     <result column="uuid" jdbcType="VARCHAR" property="uuid" />
     <result column="site_value" jdbcType="VARCHAR" property="siteValue" />
+    <result column="check_flag" jdbcType="VARCHAR" property="checkFlag" />
   </resultMap>
   <sql id="Example_Where_Clause">
     <!--
@@ -101,7 +102,7 @@
     id, name, site_code, buyer_flag, LinkedPayPalAccount, ShipToRegistrationCountry, 
     MinimumFeedbackScore, Policy_count, Policy_period, Unpaid_count, Unpaid_period, MaximumItemCount, 
     FeedbackScore, Verified_flag, Verified_FeedbackScore, ZeroFeedbackScore, create_user, 
-    create_time, uuid, site_value
+    create_time, uuid, site_value, check_flag
   </sql>
   <select id="selectByExample" parameterType="com.base.database.trading.model.TradingBuyerRequirementDetailsExample" resultMap="BaseResultMap">
     <!--
@@ -160,14 +161,16 @@
       Unpaid_count, Unpaid_period, MaximumItemCount, 
       FeedbackScore, Verified_flag, Verified_FeedbackScore, 
       ZeroFeedbackScore, create_user, create_time, 
-      uuid, site_value)
+      uuid, site_value, check_flag
+      )
     values (#{id,jdbcType=BIGINT}, #{name,jdbcType=VARCHAR}, #{siteCode,jdbcType=INTEGER}, 
       #{buyerFlag,jdbcType=VARCHAR}, #{linkedpaypalaccount,jdbcType=VARCHAR}, #{shiptoregistrationcountry,jdbcType=VARCHAR}, 
       #{minimumfeedbackscore,jdbcType=BIGINT}, #{policyCount,jdbcType=BIGINT}, #{policyPeriod,jdbcType=VARCHAR}, 
       #{unpaidCount,jdbcType=BIGINT}, #{unpaidPeriod,jdbcType=VARCHAR}, #{maximumitemcount,jdbcType=BIGINT}, 
       #{feedbackscore,jdbcType=BIGINT}, #{verifiedFlag,jdbcType=VARCHAR}, #{verifiedFeedbackscore,jdbcType=BIGINT}, 
       #{zerofeedbackscore,jdbcType=VARCHAR}, #{createUser,jdbcType=BIGINT}, #{createTime,jdbcType=TIMESTAMP}, 
-      #{uuid,jdbcType=VARCHAR}, #{siteValue,jdbcType=VARCHAR})
+      #{uuid,jdbcType=VARCHAR}, #{siteValue,jdbcType=VARCHAR}, #{checkFlag,jdbcType=VARCHAR}
+      )
       <selectKey resultType="long" keyProperty="id" order="AFTER">
           SELECT LAST_INSERT_ID()
       </selectKey>
@@ -239,6 +242,9 @@
       <if test="siteValue != null">
         site_value,
       </if>
+      <if test="checkFlag != null">
+        check_flag,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
       <if test="id != null">
@@ -300,6 +306,9 @@
       </if>
       <if test="siteValue != null">
         #{siteValue,jdbcType=VARCHAR},
+      </if>
+      <if test="checkFlag != null">
+        #{checkFlag,jdbcType=VARCHAR},
       </if>
     </trim>
       <selectKey resultType="long" keyProperty="id" order="AFTER">
@@ -383,6 +392,9 @@
       <if test="record.siteValue != null">
         site_value = #{record.siteValue,jdbcType=VARCHAR},
       </if>
+      <if test="record.checkFlag != null">
+        check_flag = #{record.checkFlag,jdbcType=VARCHAR},
+      </if>
     </set>
     <if test="_parameter != null">
       <include refid="Update_By_Example_Where_Clause" />
@@ -413,7 +425,8 @@
       create_user = #{record.createUser,jdbcType=BIGINT},
       create_time = #{record.createTime,jdbcType=TIMESTAMP},
       uuid = #{record.uuid,jdbcType=VARCHAR},
-      site_value = #{record.siteValue,jdbcType=VARCHAR}
+      site_value = #{record.siteValue,jdbcType=VARCHAR},
+      check_flag = #{record.checkFlag,jdbcType=VARCHAR}
     <if test="_parameter != null">
       <include refid="Update_By_Example_Where_Clause" />
     </if>
@@ -482,6 +495,9 @@
       <if test="siteValue != null">
         site_value = #{siteValue,jdbcType=VARCHAR},
       </if>
+      <if test="checkFlag != null">
+        check_flag = #{checkFlag,jdbcType=VARCHAR},
+      </if>
     </set>
     where id = #{id,jdbcType=BIGINT}
   </update>
@@ -509,7 +525,8 @@
       create_user = #{createUser,jdbcType=BIGINT},
       create_time = #{createTime,jdbcType=TIMESTAMP},
       uuid = #{uuid,jdbcType=VARCHAR},
-      site_value = #{siteValue,jdbcType=VARCHAR}
+      site_value = #{siteValue,jdbcType=VARCHAR},
+      check_flag = #{checkFlag,jdbcType=VARCHAR}
     where id = #{id,jdbcType=BIGINT}
   </update>
 </mapper>

@@ -253,6 +253,18 @@ public class Item {
     private Double BuyItNowPrice;
 
     private String ItemID;
+    /**
+     * 卖家信息
+     */
+    private Seller seller;
+
+    public Seller getSeller() {
+        return seller;
+    }
+
+    public void setSeller(Seller seller) {
+        this.seller = seller;
+    }
 
     public String getItemID() {
         return ItemID;

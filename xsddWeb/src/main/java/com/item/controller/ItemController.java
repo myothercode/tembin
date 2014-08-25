@@ -182,20 +182,21 @@ public class ItemController extends BaseAction{
             modelMap.put("clso",li);
 
             TradingPictures tpes = this.iTradingPictures.selectParnetId(tvs.getId());
-
-            List<TradingPublicLevelAttr> livsps = this.iTradingPublicLevelAttr.selectByParentId("VariationSpecificPictureSet",tpes.getId());
-            List lipics = new ArrayList();
-            for(int i = 0;i < livsps.size() ;i++){
-                Map ms = new HashMap();
-                TradingPublicLevelAttr tpa = livsps.get(i);
-                List<TradingPublicLevelAttr> livspsss = this.iTradingPublicLevelAttr.selectByParentId("VariationSpecificValue",tpa.getId());
-                List<TradingAttrMores> litam = this.iTradingAttrMores.selectByParnetid(tpa.getId(),"PictureURL");
-                ms.put("litam",litam);
-                ms.put("tamname",livspsss.get(0).getValue());
-                lipics.add(ms);
-            }
-            if(lipics.size()>0){
-                modelMap.put("lipics",lipics);
+            if(tpes!=null) {
+                List<TradingPublicLevelAttr> livsps = this.iTradingPublicLevelAttr.selectByParentId("VariationSpecificPictureSet", tpes.getId());
+                List lipics = new ArrayList();
+                for (int i = 0; i < livsps.size(); i++) {
+                    Map ms = new HashMap();
+                    TradingPublicLevelAttr tpa = livsps.get(i);
+                    List<TradingPublicLevelAttr> livspsss = this.iTradingPublicLevelAttr.selectByParentId("VariationSpecificValue", tpa.getId());
+                    List<TradingAttrMores> litam = this.iTradingAttrMores.selectByParnetid(tpa.getId(), "MuAttrPictureURL");
+                    ms.put("litam", litam);
+                    ms.put("tamname", livspsss.get(0).getValue());
+                    lipics.add(ms);
+                }
+                if (lipics.size() > 0) {
+                    modelMap.put("lipics", lipics);
+                }
             }
 
         }

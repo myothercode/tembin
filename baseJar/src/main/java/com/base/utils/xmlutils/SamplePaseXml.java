@@ -152,7 +152,12 @@ public class SamplePaseXml {
         }
         sd.setShippingType(elsd.elementText("ShippingType"));
         item.setShippingDetails(sd);
-
+        //卖家信息
+        Seller seller = new Seller();
+        Element elsel = element.element("Seller");
+        seller.setUserID(elsel.elementText("UserID"));
+        seller.setEmail(elsel.elementText("Email"));
+        item.setSeller(seller);
         //多属性
         Element vartions = element.element("Variations");
         if(vartions!=null){
@@ -402,6 +407,9 @@ public class SamplePaseXml {
         for(int i=0;i<length;i++){
             String node=nodes[i];
             if(i==(length-1)){
+                if(root==null){
+                    return null;
+                }
                 Element last=root.element(node);
                 if(last!=null){
                     text=last.getTextTrim();

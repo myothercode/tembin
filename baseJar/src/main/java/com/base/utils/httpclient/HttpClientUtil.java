@@ -20,6 +20,7 @@ import org.apache.http.conn.ssl.X509HostnameVerifier;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
+import org.apache.http.message.BasicHeader;
 import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.CoreConnectionPNames;
 import org.apache.http.params.HttpParams;
@@ -166,7 +167,7 @@ public class HttpClientUtil {
 		return post(httpClient, url, content, "utf-8",null);
 	}
 
-	public static String post(HttpClient httpClient, String url, String content, String encode,List<Header> header)
+	public static String post(HttpClient httpClient, String url, String content, String encode,List<BasicHeader> header)
 			throws Exception {
 		String ret = "";
 		try {

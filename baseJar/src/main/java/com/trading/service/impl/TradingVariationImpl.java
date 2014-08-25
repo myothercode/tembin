@@ -41,7 +41,18 @@ public class TradingVariationImpl implements com.trading.service.ITradingVariati
         ConvertPOJOUtil.convert(pojo,var.getDiscountPriceInfo());
         return pojo;
     }
-
+    @Override
+    public List<TradingVariation> selectByParentId(Long id){
+        TradingVariationExample tve = new TradingVariationExample();
+        tve.createCriteria().andParentIdEqualTo(id);
+        return this.tvm.selectByExample(tve);
+    }
+    @Override
+    public void deleteParentId(Long id){
+        TradingVariationExample tve = new TradingVariationExample();
+        tve.createCriteria().andParentIdEqualTo(id);
+        this.tvm.deleteByExample(tve);
+    }
     @Override
     public List<VariationQuery> selectByParentId(Map m) throws Exception {
         return this.variationMapper.selectByExample(m);

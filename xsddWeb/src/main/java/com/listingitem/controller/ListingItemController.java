@@ -23,7 +23,9 @@ import com.base.xmlpojo.trading.addproduct.ReviseItemRequest;
 import com.base.xmlpojo.trading.addproduct.ShippingDetails;
 import com.common.base.utils.ajax.AjaxSupport;
 import com.common.base.web.BaseAction;
+import com.trading.service.ITradingAddItem;
 import com.trading.service.ITradingDataDictionary;
+import com.trading.service.ITradingItem;
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
@@ -53,6 +55,8 @@ public class ListingItemController extends BaseAction {
     private ITradingDataDictionary iTradingDataDictionary;
     @Value("${EBAY.API.URL}")
     private String apiUrl;
+    @Autowired
+    private ITradingItem iTradingItem;
 
     @RequestMapping("/getListingItemList.do")
     public ModelAndView getListingItemList(HttpServletRequest request, HttpServletResponse response, ModelMap modelMap) throws Exception {
@@ -227,39 +231,46 @@ public class ListingItemController extends BaseAction {
     @ResponseBody
     public void saveListingItem(HttpServletRequest request,Item item,TradingItem tradingItem) throws Exception {
         String [] selectType = request.getParameterValues("selectType");
+        String isUpdateFlag = request.getParameter("isUpdateFlag");
+        if("1".equals(isUpdateFlag)){//需要更新范本
+            TradingItem tradingItem1=this.iTradingItem.selectByItemId(item.getItemID());
+            if(tradingItem1!=null){//更新数据库中的范本
+                this.iTradingItem.updateTradingItem(item,tradingItem1);
+            }
+        }
         Item ite = new Item();
         for(String str : selectType){
-           if(str.equals("StartPrice")){
+           if(str.equals("StartPrice")){//改价格
                ite.setStartPrice(item.getStartPrice());
-           }else if(str.equals("Quantity")){
+           }else if(str.equals("Quantity")){//改数量
                ite.setQuantity(item.getQuantity());
-           }else if(str.equals("PictureDetails")){
+           }else if(str.equals("PictureDetails")){//改图片
                ite.setPictureDetails(item.getPictureDetails());
-           }else if(str.equals("PayPal")){
+           }else if(str.equals("PayPal")){//改支付方式
                ite.setPayPalEmailAddress(item.getPayPalEmailAddress());
-           }else if(str.equals("ReturnPolicy")){
+           }else if(str.equals("ReturnPolicy")){//改退货政策
                ite.setReturnPolicy(item.getReturnPolicy());
-           }else if(str.equals("Title")){
+           }else if(str.equals("Title")){//改标题　
                ite.setTitle(item.getTitle());
-           }else if(str.equals("Buyer")){
+           }else if(str.equals("Buyer")){//改买家要求
                ite.setBuyerRequirementDetails(item.getBuyerRequirementDetails());
-           }else if(str.equals("SKU")){
+           }else if(str.equals("SKU")){//改ＳＫＵ
                ite.setSKU(item.getSKU());
-           }else if(str.equals("PrimaryCategory")){
+           }else if(str.equals("PrimaryCategory")){//改分类
                ite.setPrimaryCategory(item.getPrimaryCategory());
-           }else if(str.equals("ConditionID")){
+           }else if(str.equals("ConditionID")){//改商品状态
                ite.setConditionID(item.getConditionID());
-           }else if(str.equals("Location")){
+           }else if(str.equals("Location")){//改运输到的地址
                ite.setLocation(item.getLocation());
-           }else if(str.equals("DispatchTimeMax")){
+           }else if(str.equals("DispatchTimeMax")){//最快处理时间
                ite.setDispatchTimeMax(item.getDispatchTimeMax());
-           }else if(str.equals("PrivateListing")){
+           }else if(str.equals("PrivateListing")){//改是否允许私人买
                ite.setPrivateListing(item.getPrivateListing());
-           }else if(str.equals("ListingDuration")){
+           }else if(str.equals("ListingDuration")){//改刊登天数
                ite.setListingDuration(item.getListingDuration());
-           }else if(str.equals("Description")){
+           }else if(str.equals("Description")){//改商品描述
                ite.setDescription(item.getDescription());
-           }else if(str.equals("ShippingDetails")){
+           }else if(str.equals("ShippingDetails")){//改运输详情
                ShippingDetails sdf = item.getShippingDetails();
                String nottoLocation = request.getParameter("notLocationValue");
                if(!ObjectUtils.isLogicalNull(nottoLocation)){

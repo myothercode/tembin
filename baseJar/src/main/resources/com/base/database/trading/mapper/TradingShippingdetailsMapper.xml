@@ -45,6 +45,7 @@
     <result column="Inter_count_type" jdbcType="VARCHAR" property="interCountType" />
     <result column="GetItFast" jdbcType="VARCHAR" property="getitfast" />
     <result column="DispatchTimeMax" jdbcType="BIGINT" property="dispatchtimemax" />
+    <result column="check_flag" jdbcType="VARCHAR" property="checkFlag" />
   </resultMap>
   <sql id="Example_Where_Clause">
     <!--
@@ -124,7 +125,7 @@
     PaymentInstructions, PromotionalShippingDiscount, DomesticRateTable, InternationalRateTable, 
     SalesTaxPercent, SalesTaxState, ShippingIncludedInTax, ShippingDiscountProfileID, 
     ShippingType, create_user, create_time, uuid, shipping_name, ebay_account, if_describe, 
-    site, count_type, Inter_count_type, GetItFast, DispatchTimeMax
+    site, count_type, Inter_count_type, GetItFast, DispatchTimeMax, check_flag
   </sql>
   <select id="selectByExample" parameterType="com.base.database.trading.model.TradingShippingdetailsExample" resultMap="BaseResultMap">
     <!--
@@ -191,8 +192,8 @@
       ShippingType, create_user, create_time, 
       uuid, shipping_name, ebay_account, 
       if_describe, site, count_type, 
-      Inter_count_type, GetItFast, DispatchTimeMax
-      )
+      Inter_count_type, GetItFast, DispatchTimeMax, 
+      check_flag)
     values (#{id,jdbcType=BIGINT}, #{measurementunit,jdbcType=VARCHAR}, #{originatingpostalcode,jdbcType=VARCHAR}, 
       #{packagedepth,jdbcType=DOUBLE}, #{packagelength,jdbcType=DOUBLE}, #{packagewidth,jdbcType=DOUBLE}, 
       #{packaginghandlingcosts,jdbcType=DOUBLE}, #{shippingirregular,jdbcType=VARCHAR}, 
@@ -207,8 +208,8 @@
       #{shippingtype,jdbcType=VARCHAR}, #{createUser,jdbcType=BIGINT}, #{createTime,jdbcType=TIMESTAMP}, 
       #{uuid,jdbcType=VARCHAR}, #{shippingName,jdbcType=VARCHAR}, #{ebayAccount,jdbcType=VARCHAR}, 
       #{ifDescribe,jdbcType=VARCHAR}, #{site,jdbcType=VARCHAR}, #{countType,jdbcType=VARCHAR}, 
-      #{interCountType,jdbcType=VARCHAR}, #{getitfast,jdbcType=VARCHAR}, #{dispatchtimemax,jdbcType=BIGINT}
-      )
+      #{interCountType,jdbcType=VARCHAR}, #{getitfast,jdbcType=VARCHAR}, #{dispatchtimemax,jdbcType=BIGINT}, 
+      #{checkFlag,jdbcType=VARCHAR})
       <selectKey resultType="long" keyProperty="id" order="AFTER">
           SELECT LAST_INSERT_ID()
       </selectKey>
@@ -337,6 +338,9 @@
       <if test="dispatchtimemax != null">
         DispatchTimeMax,
       </if>
+      <if test="checkFlag != null">
+        check_flag,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
       <if test="id != null">
@@ -455,6 +459,9 @@
       </if>
       <if test="dispatchtimemax != null">
         #{dispatchtimemax,jdbcType=BIGINT},
+      </if>
+      <if test="checkFlag != null">
+        #{checkFlag,jdbcType=VARCHAR},
       </if>
     </trim>
       <selectKey resultType="long" keyProperty="id" order="AFTER">
@@ -595,6 +602,9 @@
       <if test="record.dispatchtimemax != null">
         DispatchTimeMax = #{record.dispatchtimemax,jdbcType=BIGINT},
       </if>
+      <if test="record.checkFlag != null">
+        check_flag = #{record.checkFlag,jdbcType=VARCHAR},
+      </if>
     </set>
     <if test="_parameter != null">
       <include refid="Update_By_Example_Where_Clause" />
@@ -644,7 +654,8 @@
       count_type = #{record.countType,jdbcType=VARCHAR},
       Inter_count_type = #{record.interCountType,jdbcType=VARCHAR},
       GetItFast = #{record.getitfast,jdbcType=VARCHAR},
-      DispatchTimeMax = #{record.dispatchtimemax,jdbcType=BIGINT}
+      DispatchTimeMax = #{record.dispatchtimemax,jdbcType=BIGINT},
+      check_flag = #{record.checkFlag,jdbcType=VARCHAR}
     <if test="_parameter != null">
       <include refid="Update_By_Example_Where_Clause" />
     </if>
@@ -770,6 +781,9 @@
       <if test="dispatchtimemax != null">
         DispatchTimeMax = #{dispatchtimemax,jdbcType=BIGINT},
       </if>
+      <if test="checkFlag != null">
+        check_flag = #{checkFlag,jdbcType=VARCHAR},
+      </if>
     </set>
     where id = #{id,jdbcType=BIGINT}
   </update>
@@ -816,7 +830,8 @@
       count_type = #{countType,jdbcType=VARCHAR},
       Inter_count_type = #{interCountType,jdbcType=VARCHAR},
       GetItFast = #{getitfast,jdbcType=VARCHAR},
-      DispatchTimeMax = #{dispatchtimemax,jdbcType=BIGINT}
+      DispatchTimeMax = #{dispatchtimemax,jdbcType=BIGINT},
+      check_flag = #{checkFlag,jdbcType=VARCHAR}
     where id = #{id,jdbcType=BIGINT}
   </update>
 </mapper>

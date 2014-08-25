@@ -30,7 +30,7 @@
     </tr>
     <tr>
         <td>售出时间:</td>
-        <td>${order.lastmodifiedtime}</td>
+        <td><fmt:formatDate value="${order.lastmodifiedtime}" pattern="yyyy-MM-dd HH:mm"/></td>
     </tr>
     <tr>
         <td>销售数量:</td>
@@ -54,10 +54,9 @@
                 ${order.selectedshippingservice}
             </td>
         </tr>
-
     <tr>
         <td>买家选择运输费用:</td>
-        <td>${order.actualshippingcost}</td>
+        <td>${order.selectedshippingservicecost}</td>
     </tr>
     <tr>
         <td>保险费:</td>
@@ -71,21 +70,11 @@
     <tr>
         <td>付款状态:</td>
         <td>
-            <c:if test="${order.orderstatus=='Completed'}">
-            已付款
+            <c:if test="${order.status=='Complete'}">
+                 已付款
             </c:if>
-            <c:if test="${order.orderstatus=='Shipped'}">
-                已发货
-            </c:if>
-            <c:if test="${order.orderstatus=='CancelPending'}">
-                取消挂起
-            </c:if>
-            <c:if test="${order.orderstatus!='Completed'}">
-                <c:if test="${order.orderstatus!='Shipped'}">
-                    <c:if test="${order.orderstatus!='CancelPending'}">
-                        未付款
-                    </c:if>
-                </c:if>
+            <c:if test="${order.status=='Incomplete'}">
+                  未付款
             </c:if>
         </td>
     </tr>
@@ -106,12 +95,12 @@ PayPal 付款:
         <td>净额</td>
     </tr>
     <c:if test="${order.orderstatus=='Completed'}">
-        <td></td>
-        <td>${order.paidtime}</td>
-        <td>${order.orderstatus}</td>
+        <td>${paypal}</td>
+        <td><fmt:formatDate value="${order.paidtime}" pattern="yyyy-MM-dd HH:mm"/></td>
+        <td>${order.status}</td>
         <td>${order.total}</td>
-        <td></td>
-        <td></td>
+        <td>-</td>
+        <td>-</td>
     </c:if>
 </table><br/>
 摘要
@@ -129,24 +118,15 @@ PayPal 付款:
     </tr>
     <tr>
         <td>USD</td>
-        <td>${order.transactionprice}</td>
+        <td>${order.amountpaid}</td>
         <td>-</td>
-        <td>-</td>
+        <td>${grossdetailamount}</td>
         <td>-</td>
         <td>-</td>
         <td>${order.actualhandlingcost}</td>
         <td>-</td>
     </tr>
-    <tr>
-        <td>USD</td>
-        <td>-</td>
-        <td>-</td>
-        <td>-</td>
-        <td>-</td>
-        <td>-</td>
-        <td>-</td>
-        <td>-</td>
-    </tr>
+
 
 </table>
 </body>

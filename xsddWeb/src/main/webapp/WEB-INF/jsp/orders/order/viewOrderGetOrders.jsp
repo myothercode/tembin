@@ -17,20 +17,28 @@
     <script type="text/javascript">
         var clone=null;
         var api = frameElement.api, W = api.opener;
+        var flag=false;
         $(document).ready(function(){
             $("#frameLeft").attr("src",path + "/order/viewOrderAbstractLeft.do?orderId=${orderId}");
             $("#frameRight").attr("src",path + "/order/viewOrderAbstractRight.do?orderId=${orderId}");
             $("#frameDown").attr("src",path + "/order/viewOrderAbstractDown.do?orderId=${orderId}");
             $("#frameBuyHistory").attr("src",path + "/order/viewOrderBuyHistory.do?orderId=${orderId}");
-           /* var returnAdressTable=$("#returnAdressTable");
-             clone=returnAdressTable.clone();
-             $("#returnAddress").removeChild(returnAdressTable);*/
 
         });
         function dialogClose(){
             W.OrderGetOrders.close();
         }
-        var flag=false;
+        var viewsendMessage;
+        function sendMessage(){
+            var url=path+'/order/initOrdersSendMessage.do?orderid=${order.orderid}';
+            viewsendMessage=$.dialog({title: '发送消息',
+                content: 'url:'+url,
+                icon: 'succeed',
+                width:800,
+                height:500,
+                lock:true
+            });
+        }
         function boxChange(){
             flag=!flag;
             if(flag){
@@ -45,7 +53,7 @@
             $().invoke(url,data,
                     [function(m,r){
                         alert(r);
-                        Base.token();
+                        Base.token;
                         W.refreshTable();
                     },
                         function(m,r){
@@ -55,35 +63,86 @@
             );
 
         }
-        /*var flag=fasle;
+        function saveReturnAddress(){
+            var returnContacts=$("#returnContacts").val();
+            var returnCompany=$("#returnCompany").val();
+            var returnCountry=$("#returnCountry").val();
+            var returnProvince=$("#returnProvince").val();
+            var returnCity=$("#returnCity").val();
+            var returnArea=$("#returnArea").val();
+            var returnStreet=$("#returnStreet").val();
+            var returnPostCode=$("#returnPostCode").val();
+            var returnPhone=$("#returnPhone").val();
+            var returnEmail=$("#returnEmail").val();
+            var url=path+"/order/ajax/saveReturnAddress.do";
+            var data={"returnAddress":"1","returnContacts":returnContacts,"returnCompany":returnCompany,
+                        "returnCountry":returnCountry,"returnProvince":returnProvince,"returnCity":returnCity,
+                        "returnArea":returnArea,"returnStreet":returnStreet,"returnPostCode":returnPostCode,
+                        "returnPhone":returnPhone,"returnEmail":returnEmail,"orderId":"${order.orderid}"};
+            $().invoke(url,data,
+                    [function(m,r){
+                        alert(r);
+                        Base.token();
+                    },
+                        function(m,r){
+                            alert(r);
+                            Base.token();
+                        }]
+            );
+            /*window.location.reload();*/
+        }
+        function saveReturnAddress1(){
+
+            var returnContacts=$("#returnContacts1").val();
+            var returnCompany=$("#returnCompany1").val();
+            var returnCountry=$("#returnCountry1").val();
+            var returnProvince=$("#returnProvince1").val();
+            var returnCity=$("#returnCity1").val();
+            var returnArea=$("#returnArea1").val();
+            var returnStreet=$("#returnStreet1").val();
+            var returnPostCode=$("#returnPostCode1").val();
+            var returnPhone=$("#returnPhone1").val();
+            var returnEmail=$("#returnEmail1").val();
+            var url=path+"/order/ajax/saveReturnAddress.do";
+            var data={"returnAddress":"2","returnContacts":returnContacts,"returnCompany":returnCompany,
+                "returnCountry":returnCountry,"returnProvince":returnProvince,"returnCity":returnCity,
+                "returnArea":returnArea,"returnStreet":returnStreet,"returnPostCode":returnPostCode,
+                "returnPhone":returnPhone,"returnEmail":returnEmail,"orderId":"${order.orderid}"};
+            $().invoke(url,data,
+                    [function(m,r){
+                        alert(r);
+                        Base.token();
+                    },
+                        function(m,r){
+                            alert(r);
+                            Base.token();
+                        }]
+            );
+           /* window.location.reload();*/
+        }
         function transportSelect(){
-         flag=!flag;
-         var returnAddress=$("#returnAddress");
-         console.debug(returnAddress);
-
-         var returnAddress1="<table><tr><td><b>寄件人地址:</b></td><td><input type='button' value='应用'/></td>" +
-         "<td><b>退货地址:</b></td><td><input type='button' value='应用'/></td></tr>" +
-         "<tr><td>联系人:</td><td><input type='text' /></td><td>联系人:</td><td><input type='text' /></td></tr>" +
-         "<tr><td>公司:</td><td><input type='text' /></td><td>公司:</td><td><input type='text' /></td></tr>" +
-         "<tr><td>国家:</td><td><input type='text' /></td><td>国家:</td><td><input type='text' /></td></tr>" +
-         "<tr><td>省:</td><td><input type='text' /></td>" +
-         "<td>省:</td><td><input type='text' /></td></tr>" +
-         "<tr><td>城市:</td><td><input type='text' /></td><td>城市:</td><td><input type='text' /></td></tr>" +
-         "<tr><td>区:</td><td><input type='text' /></td><td>区:</td><td><input type='text' /></td></tr>" +
-         "<tr><td>街道:</td><td><input type='text' /></td><td>街道:</td><td><input type='text' /></td></tr>" +
-         "<tr><td>邮编:</td><td><input type='text' /></td><td>邮编:</td><td><input type='text' /></td></tr>" +
-         "<tr><td>手机:</td><td><input type='text' /></td><td>手机:</td><td><input type='text' /></td></tr>" +
-         "<tr><td>电邮:</td><td><input type='text' /></td><td>电邮:</td><td><input type='text' /></td></tr></table>";
-         if(flag){
-         $(returnAddress).innerHTML=returnAddress1;
-         }else{
-         $(returnAddress).innerHTML="";
+             flag=!flag;
+             var returnAddress=s=window.document.getElementById("returnAddress");
+             console.debug(returnAddress);
+             var returnAddress1="<table><tr><td><b>寄件人地址:</b></td><td><input type='button' value='应用'onclick='saveReturnAddress();'/></td>" +
+             "<td><b>退货地址:</b></td><td><input  type='button' value='应用'onclick='saveReturnAddress1();'/></td></tr>" +
+             "<tr><td>联系人:</td><td><input value='${addresstype1.contacts}' id='returnContacts' type='text' name='returnContacts' /></td><td>联系人:</td><td><input value='${addresstype2.contacts}' id='returnContacts1' type='text' name='returnContacts1' /></td></tr>" +
+             "<tr><td>公司:</td><td><input value='${addresstype1.company}' id='returnCompany' type='text' name='returnCompany' /></td><td>公司:</td><td><input value='${addresstype2.company}' id='returnCompany1' type='text' name='returnCompany1' /></td></tr>" +
+             "<tr><td>国家:</td><td><input value='${addresstype1.country}' id='returnCountry' type='text' name='returnCountry' /></td><td>国家:</td><td><input value='${addresstype2.country}' id='returnCountry1' type='text' name='returnCountry1' /></td></tr>" +
+             "<tr><td>省:</td><td><input value='${addresstype1.province}' id='returnProvince' type='text' name='returnProvince' /></td>" +
+             "<td>省:</td><td><input value='${addresstype2.province}'  id='returnProvince1' type='text' name='returnProvince1' /></td></tr>" +
+             "<tr><td>城市:</td><td><input value='${addresstype1.city}' id='returnCity' type='text' name='returnCity' /></td><td>城市:</td><td><input value='${addresstype2.city}' id='returnCity1' type='text' name='returnCity1' /></td></tr>" +
+             "<tr><td>区:</td><td><input value='${addresstype1.area}' id='returnArea' type='text' name='returnArea' /></td><td>区:</td><td><input value='${addresstype2.area}' id='returnArea1' type='text' name='returnArea1' /></td></tr>" +
+             "<tr><td>街道:</td><td><input value='${addresstype1.street}' id='returnStreet' type='text' name='returnStreet' /></td><td>街道:</td><td><input value='${addresstype2.street}' id='returnStreet1' type='text' name='returnStreet1' /></td></tr>" +
+             "<tr><td>邮编:</td><td><input value='${addresstype1.postcode}' id='returnPostCode' type='text'name='returnPostCode' /></td><td>邮编:</td><td><input value='${addresstype2.postcode}' id='returnPostCode1' type='text' name='returnPostCode1' /></td></tr>" +
+             "<tr><td>手机:</td><td><input value='${addresstype1.phone}' id='returnPhone' type='text' name='returnPhone' /></td><td>手机:</td><td><input value='${addresstype2.phone}' id='returnPhone1' type='text' name='returnPhone1' /></td></tr>" +
+             "<tr><td>电邮:</td><td><input value='${addresstype1.email}' id='returnEmail' type='text' name='returnEmail' /></td><td>电邮:</td><td><input value='${addresstype2.email}' id='returnEmail1' type='text' name='returnEmail1' /></td></tr></table>";
+             if(flag){
+                 returnAddress.innerHTML=returnAddress1;
+             }else{
+                 returnAddress.innerHTML="";
+             }
          }
-         *//* if(){
-
-         }*//*
-         *//*var address="";*//*
-         }*/
     </script>
     <style>
         .table-a table{border:1px solid rgba(0, 0, 0, 0.23)
@@ -104,6 +163,10 @@
         </div>
         <div class="easyui-panel"  style="width:1000px" title="最近消息">
             <iframe id="frameDown"  frameborder="0" style="width: 976px;height: 200px;"></iframe>
+          <%--  &lt;%&ndash;${addMessage.body}&ndash;%&gt;
+            <c:forEach items="${addMessage}" var="addmessage">
+                ${addmessage.body}
+            </c:forEach>--%>
         </div>
     </div>
     <%-------------------------------------------------------------------------------------------%>
@@ -112,41 +175,7 @@
             <input type="hidden" name="id" value="${order.orderid}"/>
         <a href="javascipt:void()" onclick="transportSelect()">寄件人地址 \ 退货地址 \ 揽收地址</a>
         <div id="returnAddress">
-           <%-- <table id="returnAdressTable">
-                <tr><td><b>寄件人地址:</b></td><td><input type='button' value='应用'/></td>
-                    <td><b>退货地址:</b></td><td><input type='button' value='应用'/></td>
-                </tr>
-                <tr><td>联系人:</td><td><input type='text' /></td>
-                    <td>联系人:</td><td><input type='text' /></td>
-                </tr>
-                <tr><td>公司:</td><td><input type='text' /></td>
-                    <td>公司:</td><td><input type='text' /></td>
-                </tr>
-                <tr><td>国家:</td><td><input type='text' /></td>
-                    <td>国家:</td><td><input type='text' /></td>
-                </tr>
-                <tr><td>省:</td><td><input type='text' /></td>
-                    <td>省:</td><td><input type='text' /></td>
-                </tr>
-                <tr><td>城市:</td><td><input type='text' /></td>
-                    <td>城市:</td><td><input type='text' /></td>
-                </tr>
-                <tr><td>区:</td><td><input type='text' /></td>
-                    <td>区:</td><td><input type='text' /></td>
-                </tr>
-                <tr><td>街道:</td><td><input type='text' /></td>
-                    <td>街道:</td><td><input type='text' /></td>
-                </tr>
-                <tr><td>邮编:</td><td><input type='text' /></td>
-                    <td>邮编:</td><td><input type='text' /></td>
-                </tr>
-                <tr><td>手机:</td><td><input type='text' /></td>
-                    <td>手机:</td><td><input type='text' /></td>
-                </tr>
-                <tr><td>电邮:</td><td><input type='text' /></td>
-                    <td>电邮:</td><td><input type='text' /></td>
-                </tr>
-            </table>--%>
+
         </div>
         <hr  style="border:1px dashed #000000; ">
         <div>
@@ -271,7 +300,7 @@
                         </select>--%>
                     </td>
                     <td></td>
-                    <td></td>
+                    <td><input type="text" value="${order.shipmenttrackingnumber}"/></td>
                     <td></td></tr>
             </table>
         </div>
@@ -288,7 +317,7 @@
     </div>
     <%-------------------------------------------------------------------------------------------%>
     <div title="发货历史" style="padding:10px">
-        <c:if test="${order.orderstatus=='Shipped'}">
+        <c:if test="${order.orderstatus=='Shipped'||order.orderstatus=='Completed'}">
         <table border="1" cellspacing="0" cellpadding="0" style="width: 1000px;">
             <tr>
                 <td>订单号 / 源订单号</td>
@@ -322,24 +351,27 @@
                 <td>日期</td>
                 <td>动作</td>
             </tr>
-            <c:forEach items="${addMessage}" var="message">
+            <c:forEach items="${addMessage1}" var="addmessage1">
                  <tr>
 
                     <td>
-                        ${message.body}<br/>
+                        ${addmessage1.body}<br/>
                     </td>
                     <td>
-                        ${order.selleruserid}->${order.buyeruserid}
+                       ${addmessage1.sender}到${addmessage1.recipientid}
                     </td>
                     <td>
-                        ${order.itemid}
+                       ${addmessage1.itemid}
                     </td>
-                    <td>${message.createTime}</td>
+                    <td><fmt:formatDate value="${addmessage1.createTime}" pattern="yyyy-MM-dd HH:mm"/></td>
                     <td>-</td>
 
                  </tr>
             </c:forEach>
         </table>
+        <div style="text-align: right">
+            <input type="button" value="发送消息" onclick="sendMessage();"/>
+        </div>
         买家消息:<br/>
         <table style="width: 900px;">
             <tr>
@@ -349,11 +381,12 @@
                 <td>日期</td>
                 <td>动作</td>
             </tr>
-            <c:forEach items="${messages}" var="message">
+
+            <c:forEach items="${messages1}" var="messages2">
                 <tr>
 
                     <td>
-                        ${message.subject}<br/>
+                        ${messages2.subject}<br/>
                     </td>
                     <td>
                         ${order.buyeruserid}->${order.selleruserid}
@@ -361,7 +394,7 @@
                     <td>
                         ${order.itemid}
                     </td>
-                    <td>${message.receivedate}</td>
+                    <td>${messages2.receivedate}</td>
                     <td>-</td>
 
                 </tr>

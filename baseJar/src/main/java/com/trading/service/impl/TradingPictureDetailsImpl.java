@@ -36,7 +36,7 @@ public class TradingPictureDetailsImpl implements com.trading.service.ITradingPi
                     longs.add(tps.getId());
                 }
                 TradingAttrMoresExample ttt=new TradingAttrMoresExample();
-                ttt.createCriteria().andIdIn(longs).andAttrValueEqualTo("PictureURL");
+                ttt.createCriteria().andParentIdIn(longs).andAttrValueEqualTo("PictureURL");
                 attrMoresMapper.deleteByExample(ttt);
             }
             details.clear();

@@ -2,13 +2,12 @@ package com.trading.service.impl;
 
 import com.base.database.trading.mapper.TradingAttrMoresMapper;
 import com.base.database.trading.mapper.TradingPicturesMapper;
-import com.base.database.trading.model.TradingAttrMoresExample;
-import com.base.database.trading.model.TradingPicturedetails;
-import com.base.database.trading.model.TradingPictures;
-import com.base.database.trading.model.TradingPicturesExample;
+import com.base.database.trading.model.*;
 import com.base.utils.common.ConvertPOJOUtil;
 import com.base.utils.common.ObjectUtils;
 import com.base.xmlpojo.trading.addproduct.Pictures;
+import com.trading.service.ITradingAttrMores;
+import com.trading.service.ITradingPublicLevelAttr;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -24,21 +23,28 @@ public class TradingPicturesImpl implements com.trading.service.ITradingPictures
     private TradingPicturesMapper tradingPicturesMapper;
     @Autowired
     private TradingAttrMoresMapper attrMoresMapper;
+    @Autowired
+    private ITradingPublicLevelAttr iTradingPublicLevelAttr;
+    @Autowired
+    private ITradingAttrMores iTradingAttrMores;
 
     @Override
     public void savePictures(TradingPictures tp) throws Exception {
         if(tp.getId()==null){
             TradingPicturesExample picturesExample = new TradingPicturesExample();
-            picturesExample.createCriteria().andParentIdEqualTo(tp.getId());
+            picturesExample.createCriteria().andParentIdEqualTo(tp.getParentId());
             List<TradingPictures> tradingPictureses = tradingPicturesMapper.selectByExample(picturesExample);
             if(!ObjectUtils.isLogicalNull(tradingPictureses)){
                 List<Long> longs = new ArrayList<Long>();
                 for (TradingPictures tps : tradingPictureses){
+                    List<TradingPublicLevelAttr> litpla = this.iTradingPublicLevelAttr.selectByParentId("VariationSpecificPictureSet", tps.getId());
+                    for (TradingPublicLevelAttr tpa : litpla) {
+                        this.iTradingPublicLevelAttr.deleteByParentID("VariationSpecificValue",tpa.getId());
+                        this.iTradingAttrMores.deleteByParentId("MuAttrPictureURL",tpa.getId());
+                    }
+                    this.iTradingPublicLevelAttr.deleteByParentID("VariationSpecificPictureSet", tps.getId());
                     longs.add(tps.getId());
                 }
-                TradingAttrMoresExample ttt=new TradingAttrMoresExample();
-                ttt.createCriteria().andIdIn(longs).andAttrValueEqualTo("MuAttrPictureURL");
-                attrMoresMapper.deleteByExample(ttt);
             }
             picturesExample.clear();
             picturesExample.createCriteria().andParentIdEqualTo(tp.getParentId());
@@ -67,6 +73,11 @@ public class TradingPicturesImpl implements com.trading.service.ITradingPictures
     public TradingPictures selectParnetId(Long id){
         TradingPicturesExample tpe = new TradingPicturesExample();
         tpe.createCriteria().andParentIdEqualTo(id);
-        return this.tradingPicturesMapper.selectByExample(tpe).get(0);
+        List<TradingPictures> tp =this.tradingPicturesMapper.selectByExample(tpe);
+        if(tp==null||tp.size()==0){
+            return null;
+        }else{
+            return tp.get(0);
+        }
     }
 }

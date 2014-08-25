@@ -16,6 +16,24 @@
     <script type="text/javascript" src=<c:url value ="/js/ueditor/dialogs/image/imageextend.js" /> ></script>
     <script type="text/javascript" src=<c:url value ="/js/item/addItem.js" /> ></script>
 
+    <!-- bootstrap -->
+    <link href=<c:url value ="/css/bootstrap/bootstrap.css" /> rel="stylesheet">
+    <link href=<c:url value ="/css/bootstrap/bootstrap-overrides.css" /> type="text/css" rel="stylesheet">
+
+    <!-- global styles -->
+    <link rel="stylesheet" type="text/css" href=<c:url value ="/css/compiled/layout.css" />>
+    <link rel="stylesheet" type="text/css" href=<c:url value ="/css/compiled/elements.css" />>
+    <link rel="stylesheet" type="text/css" href=<c:url value ="/css/compiled/icons.css" />>
+
+    <!-- libraries -->
+    <link href=<c:url value ="/css/lib/font-awesome.css" /> type="text/css" rel="stylesheet" />
+
+    <!-- this page specific styles -->
+    <link rel="stylesheet" href=<c:url value ="/css/compiled/gallery.css" /> type="text/css" media="screen" />
+
+    <!-- open sans font -->
+
+
     <link href=<c:url value ="/js/gridly/css/jquery.gridly.css"/> rel='stylesheet' type='text/css'>
     <link href=<c:url value ="/js/gridly/css/sample.css"/> rel='stylesheet' type='text/css'>
     <script src=<c:url value ="/js/gridly/js/jquery-ui.js"/> type='text/javascript'></script>
@@ -24,11 +42,11 @@
     <script src=<c:url value ="/js/gridly/js/rainbow.js"/> type='text/javascript'></script>
 
     <script>
-        var _sku="ZBQ13212";
         var myDescription=null;
 
 
         $(document).ready(function() {
+            _sku = '${item.sku}';
             $().image_editor.init("picUrls"); //编辑器的实例id
             $().image_editor.show("apicUrls"); //上传图片的按钮id
 
@@ -163,11 +181,11 @@
             <c:forEach items="${liv}" var="liv" varStatus="status">
                 var str ="";
                 str +="<tr>";
-                str +="<td><input type='text' name='SKU' value='${liv.sku}'></td>";
-                str +="<td><input type='text' name='Quantity' value='${liv.quantity}'></td>";
-                str +="<td><input type='text' name='StartPrice.value' value=${liv.startprice}></td>";
+                str +="<td><input type='text' name='SKU' class='validate[required] form-control' value='${liv.sku}'></td>";
+                str +="<td><input type='text' name='Quantity' class='validate[required] form-control' value='${liv.quantity}'></td>";
+                str +="<td><input type='text' name='StartPrice.value' class='validate[required] form-control' value=${liv.startprice}></td>";
                 <c:forEach items="${liv.tradingPublicLevelAttr}" var="ta">
-                    str +="<td><input type='text' name='attr_Value'  onblur='addb(this)' size='10' value='${ta.value}'></td>";
+                    str +="<td><input type='text' name='attr_Value'  class='validate[required] form-control' onblur='addb(this)' size='10' value='${ta.value}'></td>";
                 </c:forEach>
                 str +="<td name='del'><a href='javascript:void(0)' onclick='removeCloums(this)'>删除</a></td>";
                 str +="</tr>";
@@ -280,7 +298,7 @@
 
 
         function addValueTr(obj1,obj2){
-            var trStr='<tr><td><input type="text" name="name"  class="validate[required]" value="'+obj1+'"></td><td><input type="text" name="value" class="validate[required]" value="'+obj2+'"></td><td><a href="javascript:void(0)" onclick="removeROW(this)">移除</a></td></tr>';
+            var trStr='<tr height="20px;"><td><input type="text" name="name"  class="validate[required] form-control" value="'+obj1+'"></td><td><input type="text" name="value" class="validate[required] form-control" value="'+obj2+'"></td><td><a href="javascript:void(0)" onclick="removeROW(this)">移除</a></td></tr>';
             return trStr;
         }
         function removeROW(obj){
@@ -331,11 +349,11 @@
         function addTr(len){
             var str ="";
             str +="<tr>";
-            str +="<td><input type='text' name='SKU'  class='validate[required]'></td>";
-            str +="<td><input type='text' name='Quantity' class='validate[required,custom[integer]]'></td>";
-            str +="<td><input type='text' name='StartPrice.value' class='validate[required,custom[number]]'></td>";
+            str +="<td><input type='text' name='SKU'  class='validate[required] form-control'></td>";
+            str +="<td><input type='text' name='Quantity' class='validate[required,custom[integer]] form-control'></td>";
+            str +="<td><input type='text' name='StartPrice.value' class='validate[required,custom[number]] form-control'></td>";
             for(var i = 0;i < len ;i++){
-                str +="<td><input type='text' name='attr_Value'  onblur='addb(this)' size='10' ></td>";
+                str +="<td><input type='text' name='attr_Value' class='validate[required] form-control' onblur='addb(this)' size='10' ></td>";
             }
             str +="<td name='del'><a href='javascript:void(0)' onclick='removeCloums(this)'>删除</a></td>";
             str +="</tr>";
@@ -347,9 +365,9 @@
                 $(d).find("td").each(function(ii,dd){
                     if($(dd).attr("name")=="del"){
                         if(i==0){
-                            $(dd).before("<td><a href='javascript:void(0)' onclick='removeCols(this)'>移除</a><input type='text' size='8' name='attr_Name' onblur='addc(this)'></td>");
+                            $(dd).before("<td><a href='javascript:void(0)' onclick='removeCols(this)'>移除</a><input type='text' size='8' class='validate[required] form-control' name='attr_Name' onblur='addc(this)'></td>");
                         }else{
-                            $(dd).before("<td><input type='text' size='10' name='attr_Value' onblur='addb(this)'></td>");
+                            $(dd).before("<td><input type='text' size='10' name='attr_Value' onblur='addb(this)' class='validate[required] form-control'></td>");
                         }
                     }
                 });
@@ -518,330 +536,245 @@
         function incount(obj){
             $("#incount").text($(obj).val().length);
         }
+
+        function setTab(obj){
+            $("div[name='showModel']").each(function(i,d){
+                $(d).hide();
+            });
+            $(obj).parent().find("dt").each(function(i,d){
+                $(d).removeClass("new_ic_1");
+            });
+            var name=$(obj).attr("name");
+            $(obj).addClass("new_ic_1");
+            $("#"+name).show();
+        }
    </script>
 </head>
 <c:set var="item" value="${item}"/>
 <body>
-<form id="form">
+<form id="form" class="new_user_form">
+<div class="here">当前位置：首页 > 刊登管理 > <b>刊登</b></div>
+<div class="a_bal"></div>
+<h3>刊登</h3>
+<div class="a_bal"></div>
+<div class="new">
+    <h1>一般信息</h1>
+    <li>
+        <dt>名称</dt>
+        <div class="new_left">
+            <input type="text" class="validate[required] form-control" style="width:300px;" name="itemName" id="itemName" value="${item.itemName}">
+        </div>
+    </li>
+    <li>
+        <dt>ebay账户</dt> <div class="ui-select dt5">
+        <select name="ebayAccount" class="validate[required]" >
+            <c:forEach items="${ebayList}" var="ebay">
+                <option value="${ebay.id}">${ebay.configName}</option>
+            </c:forEach>
+        </select>
+    </div>
+    </li>
+    <li>
+        <dt>站点</dt>
+        <div class="ui-select dt5">
+            <select name="site">
+                <c:forEach items="${siteList}" var="sites">
+                    <option value="${sites.id}">${sites.name}</option>
+                </c:forEach>
+            </select>
+        </div>
+    </li>
+    <li><dt>刊登类型</dt>
+        <em style="color:#48a5f3"><input type="radio" name="listingType" value="Chinese" onchange="changeRadio('Chinese')">拍买</em>
+        <em style="color:#48a5f3"><input type="radio" name="listingType" value="FixedPriceItem" onchange="changeRadio('FixedPriceItem')">固价</em>
+        <em style="color:#48a5f3"><input type="radio" name="listingType" value="2" onchange="changeRadio('2')">多属性</em>
+    </li>
+    <li>
+        <dt>SKU</dt> <div class="new_left">
+        <input type="text" name="sku" id="sku" style="width:300px;"  class="validate[required] form-control" onblur="onShow(this)" value="${item.sku}">
+    </div>
+    </li>
+    <li>
+        <dt>无货在线</dt>
+        <em style="color:#48a5f3"><input type="checkbox" name="OutOfStockControl" value="1">是否开启无货在线</em>
+    </li>
+    <li>
+        <dt>物品标题</dt> <div class="new_left">
+        <input type="text" name="Title" id="Title" style="width:600px;" class="validate[required,maxSize[80]] form-control" value="${item.title}" size="100" onkeyup="incount(this)"><span id="incount">0</span>/80
+    </div>
+    </li>
+    <li>
+        <dt>子标题</dt> <div class="new_left">
+        <input type="text" name="SubTitle" style="width:600px;" class="form-control" id="SubTitle" value="${item.subtitle}" size="100">
+    </div>
+    </li>
+    <h1>分类</h1>
+    <li style="background:#F7F7F7; padding-top:9px;">
+        <dt>第一分类</dt>
+        <div class="new_left">
+            <input type="text" id="PrimaryCategory.categoryID" style="width:300px;" name="PrimaryCategory.categoryID" onblur="addTypeAttr(this)" class="validate[required] form-control" title="PrimaryCategory.categoryID" class="validate[required]" value="${item.categoryid}">
+            <b class="new_button"><a data-toggle="modal"  href="javascript:void(0)" onclick="selectType()">选择分类</a></b>
+        </div>
+    </li>
+    <li id="PrimaryCategoryshow" style=" padding-left:80px;padding-top:9px;background:#F7F7F7"></li>
+    <div class="panel">
+        <li style="background:#F7F7F7; padding-top:9px;">
+            <dt>第二分类</dt>
+            <div class="new_left">
+                <input type="text"  style="width:300px;" class="form-control" name="SecondaryCategory.CategoryID" title="SecondaryCategory.CategoryID" value="${item.secondaryCategoryid}">
+            </div>
+        </li>
+        <li style=" padding-left:80px;padding-top:9px;background:#F7F7F7"></li>
+    </div>
+    <h1>商品图片</h1>
+    <div class="panel" style="display: block">
+        <section class='example'>
+            <div id="picture" class="gridly">
+            </div>
+        </section>
+        <script type=text/plain id='picUrls'></script>
+        <div><a href="javascript:void(0)" id="apicUrls" onclick="selectPic(this)">选择图片</a></div>
+    </div>
+    <div id="Auction" style="display: none;">
+        <h1>拍买</h1>
+        <li>
+            <dt>私人拍买</dt>
+            <em style="color:#48a5f3"><input type="checkbox" name="PrivateListing" value="on">不向公众显示买家的名称</em>
+        </li>
+        <li>
+            <dt>刊登天数</dt>
+            <div class="ui-select dt5">
+                <select name="ListingDuration">
+                    <option value="Days_1">1</option>
+                    <option value="Days_3">3</option>
+                    <option value="Days_5">5</option>
+                    <option value="Days_7">7</option>
+                    <option value="Days_10">10</option>
+                </select>
+            </div>
+        </li>
+        <li>
+            <dt>保留价</dt>
+            <div class="new_left">
+                <input type="text" name="ReservePrice" style="width:300px;" id="ReservePrice" class="form-control">
+            </div>
+        </li>
+        <li>
+            <dt>保留价</dt>
+            <div class="new_left">
+                <input type="text" name="BuyItNowPrice" style="width:300px;" id="BuyItNowPrice" class="form-control">
+            </div>
+        </li>
+        <li>
+            <dt>销售比基数</dt>
+            <div class="new_left">
+                <input type="text" name="ListingScale" id="ListingScale" class="form-control" style="width:100px;">
+            </div>
+            <em style="color:#48a5f3"><input type="checkbox" name="SecondFlag" value="on">二次交易机会</em>
+        </li>
+        <li>
+            <dt>是否单物品</dt>
+            <div  class="ui-select dt5">
+                <select name="ListingFlag">
+                    <option value="0">单独物品</option>
+                    <option value="1">批量物品</option>
+                </select>
+            </div>
+        </li>
+    </div>
+
+    <div id="twoAttr"  style="display: none;">
+        <h1>多属性</h1>
+            <li style="height: 100%;">
+            <dt>属性</dt>
+            <div>
+                <table width="80%" id="moreAttrs">
+                    <tr style="height: 32px;">
+                        <td>Sub SKU</td>
+                        <td>数量</td>
+                        <td>价格</td>
+                        <td name="del">操作</td>
+                    </tr>
+                </table>
+                <a href="javascript:void(0)" style="padding-left: 120px;" onclick="addInputSKU(this)">添加SKU项</a> &nbsp;&nbsp;&nbsp;&nbsp;<a href="javascript:void(0)"  onclick="addMoreAttr(this)">添加属性</a>
+            </div>
+            <div id="picMore">
+
+            </div>
+            </li>
+    </div>
+    <h1>自定义物品属性</h1>
+    <li>
+        <dt>商品价格</dt>
+        <div class="new_left">
+            <input type="text" name="StartPrice.value" style="width:300px;" class="validate[required] form-control" value="${item.startprice==null?'0':item.startprice}"/>
+        </div>
+    </li>
+    <li>
+        <dt>商品数量</dt>
+        <div class="new_left">
+            <input type="text" style="width:300px;" class="validate[required] form-control" name="Quantity" value="${item.quantity}"/>
+        </div>
+    </li>
+    <li style="height: 100%;">
+        <dt>属性</dt>
+        <div><table id="attTable">
+            <tr>
+                <td align="center">名称</td>
+                <td align="center">值</td>
+                <td align="center">操作</td>
+            </tr>
+            <tr>
+                <td colspan="3" id="trValue"></td>
+            </tr>
+        </table>
+            <a style="padding-left: 120px;" href="javascript:void(0);" onclick="addValue();">添加自定义属性</a>
+            <div id="typeAttrs"></div>
+        </div>
+    </li>
+    <li>
+        <dt>物品状况</dt>
+        <div class="ui-select dt5">
+            <select name="ConditionID">
+                <option selected="selected" value="1000">New</option>
+                <option value="1500">New other (see details)</option>
+                <option value="2000">Manufacturer refurbished</option>
+                <option value="2500">Seller refurbished</option>
+                <option value="3000">Used</option>
+                <option value="7000">For parts or not working</option>
+            </select>
+        </div>
+    </li>
+    <h1>商品描述</h1>
+    <li style="height: 100%;">
+        <dt>描述</dt>
+        <div class="new_left">
+            <input type="hidden" name="Description" id="Description">
+            <script id="myDescription" type="text/plain" style="width:875px;height:300px;">${item.description}</script>
+        </div>
+    </li>
+</div>
+<div class="new_tab">
+    <dt class=new_ic_1 name=pay onmouseover="setTab(this)">付款方式</dt>
+    <dt name=shippingDeails onmouseover="setTab(this)">运输选项</dt>
+    <dt name=itemLocation onmouseover="setTab(this)">物品所在地</dt>
+    <dt name=pay onmouseover="setTab(this)">付款方式</dt>
+    <dt name=buyer onmouseover="setTab(this)">买家要求</dt>
+    <dt name=returnpolicy onmouseover="setTab(this)">退货政策</dt>
+    <dt name=menu7 onmouseover="setTab(this)">折扣信息</dt>
+    <dt name=discountpriceinfo onmouseover="setTab(this)">卖家描述</dt>
+</div>
+
+<div  name="showModel" id="buyer" style="display: none;"></div>
+<div  name="showModel" id="discountpriceinfo" style="display: none;"></div>
+<div  name="showModel" id="itemLocation" style="display: none;"></div>
+<div  name="showModel" id="pay"></div>
+<div  name="showModel" id="returnpolicy" style="display: none;"></div>
+<div  name="showModel" id="shippingDeails" style="display: none;"></div>
+
     <input type="hidden" name="id" id="id" value="${item.id}">
     <input type="hidden" name="dataMouth" id="dataMouth" value="">
-
     <table width="100%">
-        <tr>
-            <td colspan="2">
-                一般信息
-                <hr/>
-            </td>
-        </tr>
-        <tr>
-            <td width="200" align="right">名称</td>
-            <td><input type="text" class="validate[required]" name="itemName" id="itemName" value="${item.itemName}"></td>
-        </tr>
-        <tr>
-            <td align="right">ebay账户</td>
-            <td>
-                <select name="ebayAccount" class="validate[required]" >
-                    <c:forEach items="${ebayList}" var="ebay">
-                        <option value="${ebay.id}">${ebay.configName}</option>
-                    </c:forEach>
-                </select>
-            </td>
-        </tr>
-        <tr>
-            <td align="right">站点</td>
-            <td>
-                <select name="site">
-                    <c:forEach items="${siteList}" var="sites">
-                        <option value="${sites.id}">${sites.name}</option>
-                    </c:forEach>
-                </select>
-            </td>
-        </tr>
-        <tr>
-            <td align="right">刊登类型</td>
-            <td>
-                <input type="radio" name="listingType" value="Chinese" onchange="changeRadio('Chinese')">拍买
-                <input type="radio" name="listingType" value="FixedPriceItem" onchange="changeRadio('FixedPriceItem')">固价
-                <input type="radio" name="listingType" value="2" onchange="changeRadio('2')">多属性
-            </td>
-        </tr>
-        <tr>
-            <td align="right">SKU</td>
-            <td><input type="text" name="sku" id="sku"  class="validate[required]" onblur="onShow(this)" value="${item.sku}"></td>
-        </tr>
-        <tr>
-            <td align="right"></td>
-            <td><input type="checkbox" name="OutOfStockControl" value="1">是否开启无货在线</td>
-        </tr>
-        <tr>
-            <td align="right" style="vertical-align: top;">物品标题</td>
-            <td>
-                标题<input type="text" name="Title" id="Title"  class="validate[required,maxSize[80]]" value="${item.title}" size="100" onkeyup="incount(this)"><span id="incount">0</span>/80
-                <br/>
-                子标题<input type="text" name="SubTitle" id="SubTitle" value="${item.subtitle}" size="100">
-            </td>
-        </tr>
-        <tr>
-            <td colspan="2">
-                分类
-                <hr/>
-            </td>
-        </tr>
-        <tr>
-            <td align="right">第一分类</td>
-            <td>
-                <input type="text" id="PrimaryCategory.categoryID" name="PrimaryCategory.categoryID" onblur="addTypeAttr(this)" class="validate[required]" title="PrimaryCategory.categoryID" class="validate[required]" value="${item.categoryid}">
-                <a href="javascript:void(0)" onclick="selectType()">请选择</a>
-                <br/>
-                <div id="PrimaryCategoryshow">
-                </div>
-            </td>
-        </tr>
-        <tr>
-            <td align="right">第二分类</td>
-            <td>
-                <input type="text" name="SecondaryCategory.CategoryID" title="SecondaryCategory.CategoryID" value="${item.secondaryCategoryid}">
-            </td>
-        </tr>
-        <tr>
-            <td colspan="2">
-                商品图片
-                <hr/>
-            </td>
-        </tr>
-        <tr>
-            <td colspan="2">
-                <div>
-                    <section class='example'>
-                    <div id="picture" class="gridly">
-                    </div>
-                    </section>
-                    <script type=text/plain id='picUrls'></script>
-                    <div><a href="javascript:void(0)" id="apicUrls" onclick="selectPic(this)">选择图片</a></div>
-                </div>
-            </td>
-        </tr>
-        <tr id="Auction" style="display: none;">
-            <td colspan="2">
-                <table width="100%">
-                    <tr>
-                        <td colspan="2">
-                            拍买
-                            <hr/>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td width="200" align="right">私人拍买：</td>
-                        <td><input type="checkbox" name="PrivateListing" value="on">不向公众显示买家的名称</td>
-                    </tr>
-                    <tr>
-                        <td width="200" align="right">刊登天数：</td>
-                        <td>
-                            <select name="ListingDuration">
-                                <option value="Days_1">1</option>
-                                <option value="Days_3">3</option>
-                                <option value="Days_5">5</option>
-                                <option value="Days_7">7</option>
-                                <option value="Days_10">10</option>
-                            </select>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td width="200" align="right">保留价：</td>
-                        <td>
-                            <input type="text" name="ReservePrice" id="ReservePrice">
-                        </td>
-                    </tr>
-                    <tr>
-                        <td width="200" align="right">一口价：</td>
-                        <td>
-                            <input type="text" name="BuyItNowPrice" id="BuyItNowPrice">
-                        </td>
-                    </tr>
-                    <tr>
-                        <td width="200" align="right">
-
-                        </td>
-                        <td>
-                            <select name="ListingFlag">
-                                <option value="0">单独物品</option>
-                                <option value="1">批量物品</option>
-                            </select>
-                            销售比基数<input type="text" name="ListingScale" id="ListingScale">
-                            <br/>
-                            <input type="checkbox" name="SecondFlag" value="on">二次交易机会
-                        </td>
-                    </tr>
-                </table>
-            </td>
-        </tr>
-        <tr>
-            <td colspan="2">
-                物品属性与状况
-                <hr/>
-            </td>
-        </tr>
-        <tr id="twoAttr" style="display: none;">
-            <td colspan="2">
-                <div >
-                    <table>
-                        <tr>
-                            <td width="200" align="right" style="vertical-align: top;">多属性</td>
-                            <td>
-                                <div>
-                                    <table width="100%" id="moreAttrs">
-                                        <tr>
-                                            <td>Sub SKU</td>
-                                            <td>数量</td>
-                                            <td>价格</td>
-                                            <td name="del">操作</td>
-                                        </tr>
-                                    </table>
-                                </div>
-                                <div>
-                                    <a href="javascript:void(0)" onclick="addInputSKU(this)">添加SKU项</a> &nbsp;&nbsp;&nbsp;&nbsp;<a href="javascript:void(0)"  onclick="addMoreAttr(this)">添加属性</a>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td width="200" align="right" style="vertical-align: top;">多属性图片</td>
-                            <td id="picMore">
-
-                            </td>
-                        </tr>
-                    </table>
-                </div>
-            </td>
-        </tr>
-        <tr>
-            <td align="right" style="vertical-align: top;">自定义物品属性</td>
-            <td>
-                <div id="oneAttr"  style="display: none;">
-                    商品价格：<input type="text" name="StartPrice.value" class="validate[required]" value="${item.startprice==null?'0':item.startprice}"/>
-                    <br/>
-                    商品数量：<input type="text" name="Quantity" value="${item.quantity}" class="validate[required]"/>
-                </div>
-                <div>
-                <table id="attTable">
-                    <tr>
-                        <td align="center">名称</td>
-                        <td align="center">值</td>
-                        <td align="center">操作</td>
-                    </tr>
-                    <tr>
-                        <td colspan="3" id="trValue"></td>
-                    </tr>
-                </table>
-                <a href="javascript:void(0);" onclick="addValue();">添加自定义属性</a>
-                <div id="typeAttrs"></div>
-                <%--<a href="javascript:void(0);" onclick="addAttr('MPN','ProductListingDetails.BrandMPN.MPN');">添加MPN</a>
-                <a href="javascript:void(0);" onclick="addAttr('Brand','ProductListingDetails.BrandMPN.Brand');">添加Brand</a>--%>
-                <%--<a href="javascript:void(0);" onclick="addValue();">添加Type</a>
-                <a href="javascript:void(0);" onclick="addValue();">添加Compatible Brand</a>
-                <a href="javascript:void(0);" onclick="addValue();">添加Country/Region of Manufacture</a>--%>
-                </div>
-            </td>
-        </tr>
-        <tr>
-            <td align="right">物品状况</td>
-            <td>
-                <select name="ConditionID">
-                    <option selected="selected" value="1000">New</option>
-                    <option value="1500">New other (see details)</option>
-                    <option value="2000">Manufacturer refurbished</option>
-                    <option value="2500">Seller refurbished</option>
-                    <option value="3000">Used</option>
-                    <option value="7000">For parts or not working</option>
-                </select>
-            </td>
-        </tr>
-        <tr>
-            <td colspan="2">
-                描述
-                <hr/>
-            </td>
-        </tr>
-        <tr>
-            <td colspan="2">
-                <input type="hidden" name="Description" id="Description">
-                <script id="myDescription" type="text/plain" style="width:975px;height:300px;">${item.description}</script>
-            </td>
-        </tr>
-
-        <tr>
-            <td colspan="2">
-                买家要求
-                <hr/>
-            </td>
-        </tr>
-        <tr>
-            <td colspan="2">
-                <div  id="buyer">
-
-                </div>
-            </td>
-        </tr>
-        <tr>
-            <td colspan="2">
-                折扣信息
-                <hr/>
-            </td>
-        </tr>
-        <tr>
-            <td colspan="2">
-                <div  id="discountpriceinfo">
-
-                </div>
-            </td>
-        </tr>
-        <tr>
-            <td colspan="2">
-                物品所在地
-                <hr/>
-            </td>
-        </tr>
-        <tr>
-            <td colspan="2">
-                <div  id="itemLocation">
-
-                </div>
-            </td>
-        </tr>
-        <tr>
-            <td colspan="2">
-                付款选项
-                <hr/>
-            </td>
-        </tr>
-        <td colspan="2">
-            <div  id="pay">
-
-            </div>
-        </td>
-        <tr>
-            <td colspan="2">
-                退货选项
-                <hr/>
-            </td>
-        </tr>
-        <td colspan="2">
-            <div  id="returnpolicy">
-
-            </div>
-        </td>
-
-        <tr>
-            <td colspan="2">
-                运输选项
-                <hr/>
-            </td>
-        </tr>
-        <td colspan="2">
-            <div  id="shippingDeails">
-
-            </div>
-        </td>
-
         <tr>
             <td colspan="2">
                 <input type="button" value="保存数据" onclick="saveData(this,'save')">

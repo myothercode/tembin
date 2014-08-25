@@ -22,6 +22,7 @@
     <result column="uuid" jdbcType="VARCHAR" property="uuid" />
     <result column="name" jdbcType="VARCHAR" property="name" />
     <result column="site" jdbcType="VARCHAR" property="site" />
+    <result column="check_flag" jdbcType="VARCHAR" property="checkFlag" />
   </resultMap>
   <resultMap extends="BaseResultMap" id="ResultMapWithBLOBs" type="com.base.database.trading.model.TradingReturnpolicy">
     <!--
@@ -103,7 +104,7 @@
     -->
     id, EAN, ExtendedHolidayReturns, RefundOption, RestockingFeeValueOption, ReturnsAcceptedOption, 
     ReturnsWithinOption, ShippingCostPaidByOption, WarrantyDurationOption, WarrantyOfferedOption, 
-    WarrantyTypeOption, create_user, create_time, uuid, name, site
+    WarrantyTypeOption, create_user, create_time, uuid, name, site, check_flag
   </sql>
   <sql id="Blob_Column_List">
     <!--
@@ -191,16 +192,16 @@
       ShippingCostPaidByOption, WarrantyDurationOption, 
       WarrantyOfferedOption, WarrantyTypeOption, 
       create_user, create_time, uuid, 
-      name, site, Description
-      )
+      name, site, check_flag, 
+      Description)
     values (#{id,jdbcType=BIGINT}, #{ean,jdbcType=VARCHAR}, #{extendedholidayreturns,jdbcType=VARCHAR}, 
       #{refundoption,jdbcType=VARCHAR}, #{restockingfeevalueoption,jdbcType=VARCHAR}, 
       #{returnsacceptedoption,jdbcType=VARCHAR}, #{returnswithinoption,jdbcType=VARCHAR}, 
       #{shippingcostpaidbyoption,jdbcType=VARCHAR}, #{warrantydurationoption,jdbcType=VARCHAR}, 
       #{warrantyofferedoption,jdbcType=VARCHAR}, #{warrantytypeoption,jdbcType=VARCHAR}, 
       #{createUser,jdbcType=BIGINT}, #{createTime,jdbcType=TIMESTAMP}, #{uuid,jdbcType=VARCHAR}, 
-      #{name,jdbcType=VARCHAR}, #{site,jdbcType=VARCHAR}, #{description,jdbcType=LONGVARCHAR}
-      )
+      #{name,jdbcType=VARCHAR}, #{site,jdbcType=VARCHAR}, #{checkFlag,jdbcType=VARCHAR}, 
+      #{description,jdbcType=LONGVARCHAR})
       <selectKey resultType="long" keyProperty="id" order="AFTER">
           SELECT LAST_INSERT_ID()
       </selectKey>
@@ -260,6 +261,9 @@
       <if test="site != null">
         site,
       </if>
+      <if test="checkFlag != null">
+        check_flag,
+      </if>
       <if test="description != null">
         Description,
       </if>
@@ -312,6 +316,9 @@
       </if>
       <if test="site != null">
         #{site,jdbcType=VARCHAR},
+      </if>
+      <if test="checkFlag != null">
+        #{checkFlag,jdbcType=VARCHAR},
       </if>
       <if test="description != null">
         #{description,jdbcType=LONGVARCHAR},
@@ -386,6 +393,9 @@
       <if test="record.site != null">
         site = #{record.site,jdbcType=VARCHAR},
       </if>
+      <if test="record.checkFlag != null">
+        check_flag = #{record.checkFlag,jdbcType=VARCHAR},
+      </if>
       <if test="record.description != null">
         Description = #{record.description,jdbcType=LONGVARCHAR},
       </if>
@@ -416,6 +426,7 @@
       uuid = #{record.uuid,jdbcType=VARCHAR},
       name = #{record.name,jdbcType=VARCHAR},
       site = #{record.site,jdbcType=VARCHAR},
+      check_flag = #{record.checkFlag,jdbcType=VARCHAR},
       Description = #{record.description,jdbcType=LONGVARCHAR}
     <if test="_parameter != null">
       <include refid="Update_By_Example_Where_Clause" />
@@ -442,7 +453,8 @@
       create_time = #{record.createTime,jdbcType=TIMESTAMP},
       uuid = #{record.uuid,jdbcType=VARCHAR},
       name = #{record.name,jdbcType=VARCHAR},
-      site = #{record.site,jdbcType=VARCHAR}
+      site = #{record.site,jdbcType=VARCHAR},
+      check_flag = #{record.checkFlag,jdbcType=VARCHAR}
     <if test="_parameter != null">
       <include refid="Update_By_Example_Where_Clause" />
     </if>
@@ -499,6 +511,9 @@
       <if test="site != null">
         site = #{site,jdbcType=VARCHAR},
       </if>
+      <if test="checkFlag != null">
+        check_flag = #{checkFlag,jdbcType=VARCHAR},
+      </if>
       <if test="description != null">
         Description = #{description,jdbcType=LONGVARCHAR},
       </if>
@@ -526,6 +541,7 @@
       uuid = #{uuid,jdbcType=VARCHAR},
       name = #{name,jdbcType=VARCHAR},
       site = #{site,jdbcType=VARCHAR},
+      check_flag = #{checkFlag,jdbcType=VARCHAR},
       Description = #{description,jdbcType=LONGVARCHAR}
     where id = #{id,jdbcType=BIGINT}
   </update>
@@ -549,7 +565,8 @@
       create_time = #{createTime,jdbcType=TIMESTAMP},
       uuid = #{uuid,jdbcType=VARCHAR},
       name = #{name,jdbcType=VARCHAR},
-      site = #{site,jdbcType=VARCHAR}
+      site = #{site,jdbcType=VARCHAR},
+      check_flag = #{checkFlag,jdbcType=VARCHAR}
     where id = #{id,jdbcType=BIGINT}
   </update>
 </mapper>

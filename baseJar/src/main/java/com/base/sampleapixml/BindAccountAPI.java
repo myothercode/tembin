@@ -119,4 +119,61 @@ public class BindAccountAPI {
                 "</GetItemRequest>";
         return xml;
     }
+    public static  String getAddMemberMessageAAQToPartner(Map<String, String> map){
+        String xml="<?xml version=\"1.0\" encoding=\"utf-8\"?>" +
+                "<AddMemberMessageAAQToPartnerRequest xmlns=\"urn:ebay:apis:eBLBaseComponents\">" +
+                "<RequesterCredentials>" +
+                "<eBayAuthToken>"+map.get("token")+"</eBayAuthToken>" +
+                "</RequesterCredentials>" +
+                "<ItemID>"+map.get("itemid")+"</ItemID>" +
+                "<MemberMessage>" +
+                "<Subject>"+map.get("subject")+"</Subject>" +
+                "<Body>"+map.get("body")+"</Body>" +
+                "<QuestionType>General</QuestionType>" +
+                "<RecipientID>"+map.get("buyeruserid")+"</RecipientID>" +
+                "</MemberMessage>" +
+                "</AddMemberMessageAAQToPartnerRequest>​";
+        return xml;
+    }
+    public static  String GetSellerTransactions(String token){
+        String xml="​<?xml version=\"1.0\" encoding=\"utf-8\"?>" +
+                "<GetSellerTransactionsRequest xmlns=\"urn:ebay:apis:eBLBaseComponents\">" +
+                "<RequesterCredentials>" +
+                "<eBayAuthToken>"+token+"</eBayAuthToken>" +
+                "</RequesterCredentials>" +
+                "<Pagination>" +
+                "<EntriesPerPage>100</EntriesPerPage>" +
+                "<PageNumber>1</PageNumber>" +
+                "</Pagination>" +
+                "<IncludeFinalValueFee>true</IncludeFinalValueFee>" +
+                "<IncludeContainingOrder>true</IncludeContainingOrder>" +
+                "<Platform>eBay</Platform>" +
+                "<NumberOfDays>7</NumberOfDays>" +
+                "<InventoryTrackingMethod>ItemID</InventoryTrackingMethod>" +
+                "<IncludeCodiceFiscale>true</IncludeCodiceFiscale>" +
+                "<DetailLevel>ReturnAll</DetailLevel>" +
+                "<Version>883</Version>" +
+                "</GetSellerTransactionsRequest>";
+        return xml;
+    }
+    /*
+     *getAccount
+     */
+    public static  String getGetAccount(Map map){
+        String xml="<?xml version=\"1.0\" encoding=\"utf-8\"?>" +
+                "<GetAccountRequest xmlns=\"urn:ebay:apis:eBLBaseComponents\">" +
+                "<RequesterCredentials>" +
+                "<eBayAuthToken>"+map.get("token")+"</eBayAuthToken>" +
+                "</RequesterCredentials>" +
+                "<Pagination>" +
+                "<EntriesPerPage>100</EntriesPerPage>" +
+                "<PageNumber>1</PageNumber>" +
+                "</Pagination>" +
+                "<BeginDate>"+map.get("fromTime")+"</BeginDate>" +
+                "<EndDate>"+map.get("toTime")+"</EndDate>" +
+                "<ItemID>"+map.get("Itemid")+"</ItemID>" +
+                "<Version>883</Version>" +
+                "</GetAccountRequest>";
+        return xml;
+    }
 }

@@ -7,10 +7,7 @@ import com.base.domains.userinfo.UsercontrollerDevAccountExtend;
 import com.base.domains.userinfo.UsercontrollerEbayAccountExtend;
 import com.base.mybatis.page.Page;
 import com.base.mybatis.page.PageJsonBean;
-import com.base.sampleapixml.APINameStatic;
-import com.base.sampleapixml.BindAccountAPI;
-import com.base.sampleapixml.GetOrderItemAPI;
-import com.base.sampleapixml.GetOrdersAPI;
+import com.base.sampleapixml.*;
 import com.base.userinfo.service.UserInfoService;
 import com.base.utils.annotations.AvoidDuplicateSubmission;
 import com.base.utils.common.DateUtils;
@@ -71,6 +68,14 @@ public class GetOrdersController extends BaseAction {
     private  ITradingMessageGetmymessage iTradingMessageGetmymessage;
     @Autowired
     private  ITradingMessageAddmembermessage iTradingMessageAddmembermessage;
+    @Autowired
+    private ITradingOrderSenderAddress iTradingOrderSenderAddress;
+    @Autowired
+    private  ITradingOrderAddMemberMessageAAQToPartner iTradingOrderAddMemberMessageAAQToPartner;
+    @Autowired
+    private  ITradingOrderGetAccount iTradingOrderGetAccount;
+    @Autowired
+    private  ITradingOrderGetSellerTransactions iTradingOrderGetSellerTransactions;
     @Value("${EBAY.API.URL}")
     private String apiUrl;
 
@@ -85,6 +90,7 @@ public class GetOrdersController extends BaseAction {
         String orderStatus=request.getParameter("orderStatus");
         String starttime=request.getParameter("starttime");
         String endtime=request.getParameter("endtime");
+        String status=request.getParameter("status");
         /**分页组装*/
         PageJsonBean jsonBean=commonParmVO.getJsonBean();
         Page page=jsonBean.toPage();
@@ -92,6 +98,9 @@ public class GetOrdersController extends BaseAction {
         Map map=new HashMap();
         if(orderStatus==null||"All".equals(orderStatus)){
             orderStatus=null;
+        }
+        if(status==null||"All".equals(status)){
+            status=null;
         }
         if(!StringUtils.isNotBlank(starttime)){
             starttime=null;
@@ -103,6 +112,7 @@ public class GetOrdersController extends BaseAction {
         map.put("orderStatus",orderStatus);
         map.put("starttime",starttime);
         map.put("endtime",endtime);
+        map.put("status",status);
         List<OrderGetOrdersQuery> lists= this.iTradingOrderGetOrders.selectOrderGetOrdersByGroupList(map,page);
         for(OrderGetOrdersQuery list:lists){
             String itemid=list.getItemid();
@@ -176,22 +186,78 @@ public class GetOrdersController extends BaseAction {
         modelMap.put("order",lists.get(0));
         modelMap.put("orderId",orderid);
         List<TradingMessageGetmymessage> messages=new ArrayList<TradingMessageGetmymessage>();
-        List<TradingMessageAddmembermessage> addMessages=new ArrayList<TradingMessageAddmembermessage>();
+        List<TradingOrderAddMemberMessageAAQToPartner> addMessages=new ArrayList<TradingOrderAddMemberMessageAAQToPartner>();
         for(TradingOrderGetOrders order:lists){
             String itemid=order.getItemid();
             List<TradingMessageGetmymessage> messageList=iTradingMessageGetmymessage.selectMessageGetmymessageByItemId(itemid);
-            List<TradingMessageAddmembermessage> addmessageList=iTradingMessageAddmembermessage.selectMessageGetmymessageByItemId(itemid);
+            List<TradingOrderAddMemberMessageAAQToPartner> addmessageList=iTradingOrderAddMemberMessageAAQToPartner.selectTradingOrderAddMemberMessageAAQToPartnerByItemId(itemid);
             messages.addAll(messageList);
             addMessages.addAll(addmessageList);
         }
-        modelMap.put("messages",messages);
-        modelMap.put("addMessage,",addMessages);
+        List<TradingOrderSenderAddress> senderAddresses=iTradingOrderSenderAddress.selectOrderSenderAddressByOrderId(orderid);
+        TradingOrderSenderAddress type1=new TradingOrderSenderAddress();
+        TradingOrderSenderAddress type2=new TradingOrderSenderAddress();
+        for(TradingOrderSenderAddress senderAddresse:senderAddresses){
+            if("1".equals(senderAddresse.getType())){
+                type1=senderAddresse;
+            }
+            if("2".equals(senderAddresse.getType())){
+                type2=senderAddresse;
+            }
+        }
+        modelMap.put("messages1", messages);
+        modelMap.put("addMessage1",addMessages);
+        modelMap.put("addresstype1",type1);
+        modelMap.put("addresstype2",type2);
         /*Map<String,String> map=new HashMap<String, String>();
         map.put("orderStatus","Completed");
         map.put("selleraccount",lists.get(0).getSelleruserid());
         map.put("buyaccount",lists.get(0).getBuyeruserid());
         List<OrderGetOrdersQuery> querys= this.iTradingOrderGetOrders.selectOrderGetOrdersByGroupList(map,page);*/
         return forword("orders/order/viewOrderGetOrders",modelMap);
+    }
+    /*
+     *保存寄件人地址/退货地址
+     */
+    @RequestMapping("/ajax/saveReturnAddress.do")
+    @AvoidDuplicateSubmission(needRemoveToken = true)
+    @ResponseBody
+    public void saveReturnAddress( HttpServletRequest request,HttpServletResponse response,ModelMap modelMap) throws Exception {
+        String returnAddress=request.getParameter("returnAddress");
+        String returnContacts=request.getParameter("returnContacts");
+        String returnCompany=request.getParameter("returnCompany");
+        String returnCountry=request.getParameter("returnCountry");
+        String returnProvince=request.getParameter("returnProvince");
+        String returnCity=request.getParameter("returnCity");
+        String returnArea=request.getParameter("returnArea");
+        String returnStreet=request.getParameter("returnStreet");
+        String returnPostCode=request.getParameter("returnPostCode");
+        String returnPhone=request.getParameter("returnPhone");
+        String returnEmail=request.getParameter("returnEmail");
+        String orderid=request.getParameter("orderId");
+        TradingOrderSenderAddress senderAddress=new TradingOrderSenderAddress();
+        senderAddress.setType(returnAddress);
+        senderAddress.setContacts(returnContacts);
+        senderAddress.setCompany(returnCompany);
+        senderAddress.setCountry(returnCountry);
+        senderAddress.setProvince(returnProvince);
+        senderAddress.setCity(returnCity);
+        senderAddress.setArea(returnArea);
+        senderAddress.setStreet(returnStreet);
+        senderAddress.setPostcode(returnPostCode);
+        senderAddress.setPhone(returnPhone);
+        senderAddress.setEmail(returnEmail);
+        senderAddress.setOrderid(orderid);
+        List<TradingOrderSenderAddress> senderAddressesList=iTradingOrderSenderAddress.selectOrderSenderAddressByOrderId(orderid);
+        if(senderAddressesList!=null&&senderAddressesList.size()>0) {
+            for (TradingOrderSenderAddress senderAddr : senderAddressesList) {
+                if (senderAddr.getType().equals(senderAddress.getType())) {
+                    senderAddress.setId(senderAddr.getId());
+                }
+            }
+        }
+        iTradingOrderSenderAddress.saveOrderSenderAddress(senderAddress);
+        AjaxSupport.sendSuccessText("","操作成功!");
     }
     /*
      *订单详情摘要交易信息,付款信息等
@@ -203,9 +269,23 @@ public class GetOrdersController extends BaseAction {
         List<TradingOrderGetOrders> lists=iTradingOrderGetOrders.selectOrderGetOrdersByOrderId(orderId);
         TradingOrderGetOrders order=lists.get(0);
         /*List<TradingOrderShippingDetails> detailsList=iTradingOrderShippingDetails.selectOrderGetItemById(order.getShippingdetailsId());*/
+/*
         List<TradingOrderShippingServiceOptions> serviceOptionList=iTradingOrderShippingServiceOptions.selectOrderGetItemByShippingDetailsId(order.getShippingdetailsId());
+*/
+        List<TradingOrderGetSellerTransactions> sellerTransactions=iTradingOrderGetSellerTransactions.selectTradingOrderGetSellerTransactionsByTransactionId(lists.get(0).getTransactionid());
+        String transactionid="";
+        if(sellerTransactions!=null&&sellerTransactions.size()>0){
+            transactionid=sellerTransactions.get(0).getExternaltransactionid();
+        }
+        List<TradingOrderGetAccount> accountlist=iTradingOrderGetAccount.selectTradingOrderGetAccountByTransactionId(lists.get(0).getTransactionid());
+        String grossdetailamount="";
+        if(accountlist!=null&&accountlist.size()>0){
+            grossdetailamount=accountlist.get(0).getGrossdetailamount();
+        }
+        modelMap.put("grossdetailamount",grossdetailamount);
+        modelMap.put("paypal",transactionid);
         modelMap.put("order",order);
-        modelMap.put("options",serviceOptionList);
+        /*modelMap.put("options",serviceOptionList);*/
         return forword("orders/order/viewOrderAbstractLeft",modelMap);
     }
     /*
@@ -228,11 +308,20 @@ public class GetOrdersController extends BaseAction {
     public ModelAndView viewOrderShipmentsHistory(HttpServletRequest request,HttpServletResponse response,@ModelAttribute( "initSomeParmMap" )ModelMap modelMap) throws Exception {
         String orderId=request.getParameter("orderId");
         List<TradingOrderGetOrders> lists=iTradingOrderGetOrders.selectOrderGetOrdersByOrderId(orderId);
-        TradingOrderGetOrders order=lists.get(0);
-        modelMap.put("order",order);
+        List<TradingOrderAddMemberMessageAAQToPartner> addMes=new ArrayList<TradingOrderAddMemberMessageAAQToPartner>();
+        for(TradingOrderGetOrders order:lists){
+            String itemid=order.getItemid();
+            List<TradingOrderAddMemberMessageAAQToPartner> addmessageList1=iTradingOrderAddMemberMessageAAQToPartner.selectTradingOrderAddMemberMessageAAQToPartnerByItemId(itemid);
+            addMes.addAll(addmessageList1);
+        }
+        TradingOrderAddMemberMessageAAQToPartner partner=new TradingOrderAddMemberMessageAAQToPartner();
+        if(addMes!=null&&addMes.size()>0){
+            partner= addMes.get(addMes.size()-1);
+        }
+        modelMap.put("addQMessage",partner);
         return forword("orders/order/viewOrderAbstractDown",modelMap);
     }
-  /*  @RequestMapping("/viewOrderEbayMessage.do")
+    /*@RequestMapping("/viewOrderEbayMessage.do")
     @AvoidDuplicateSubmission(needSaveToken = true)
     public ModelAndView viewOrderEbayMessage(HttpServletRequest request,HttpServletResponse response,@ModelAttribute( "initSomeParmMap" )ModelMap modelMap) throws Exception {
         String orderId=request.getParameter("orderId");
@@ -240,6 +329,7 @@ public class GetOrdersController extends BaseAction {
         TradingOrderGetOrders order=lists.get(0);
         modelMap.put("order",order);
         return forword("orders/order/viewOrderAbstractDown",modelMap);
+
     }*/
     /*
      *购买历史初始化
@@ -292,15 +382,77 @@ public class GetOrdersController extends BaseAction {
         jsonBean.setTotal((int)page.getTotalCount());
         AjaxSupport.sendSuccessText("", jsonBean);
     }
-
+    /*
+     *发送消息初始化
+     */
+    @RequestMapping("/initOrdersSendMessage.do")
+    public ModelAndView initOrdersSendMessage(HttpServletRequest request,HttpServletResponse response,ModelMap modelMap){
+        String orderid=request.getParameter("orderid");
+        List<TradingOrderGetOrders> list=iTradingOrderGetOrders.selectOrderGetOrdersByOrderId(orderid);
+        modelMap.put("itemid",list.get(0).getItemid());
+        modelMap.put("order",list.get(0));
+        return forword("/orders/order/orderSendMessage",modelMap);
+    }
+    /*
+     *订单中卖家发消息
+     */
+    @RequestMapping("/apiGetOrdersSendMessage.do")
+    @AvoidDuplicateSubmission(needRemoveToken = true)
+    @ResponseBody
+    public void apiGetOrdersSendMessage(CommonParmVO commonParmVO,HttpServletRequest request) throws Exception {
+        String body=request.getParameter("body");
+        String subject=request.getParameter("subject");
+        String itemid= request.getParameter("itemid");
+        String buyeruserid=request.getParameter("buyeruserid");
+        String sender=request.getParameter("selleruserid");
+        UsercontrollerDevAccountExtend d = userInfoService.getDevInfo(null);//开发者帐号id
+        d.setApiSiteid("0");
+        d.setApiCallName(APINameStatic.AddMemberMessageAAQToPartner);
+        Map map=new HashMap();
+        String ebayName=request.getParameter("selleruserid");
+        List<UsercontrollerEbayAccountExtend> dList= userInfoService.getEbayAccountForCurrUser();
+        String token=null;
+        for(UsercontrollerEbayAccountExtend list:dList){
+            if(StringUtils.isNotBlank(ebayName)&&ebayName.equals(list.getEbayName())){
+                token=list.getEbayToken();
+            }
+        }
+        map.put("token", token);
+        map.put("subject",subject);
+        map.put("body",body);
+        map.put("itemid",itemid);
+        map.put("buyeruserid",buyeruserid);
+        String xml = BindAccountAPI.getAddMemberMessageAAQToPartner(map);//获取接受消息
+        AddApiTask addApiTask = new AddApiTask();
+          /*  Map<String, String> resMap = addApiTask.exec(d, xml, "https://api.ebay.com/ws/api.dll");*/
+        Map<String, String> resMap = addApiTask.exec(d, xml, apiUrl);
+        String r1 = resMap.get("stat");
+        String res = resMap.get("message");
+        if ("fail".equalsIgnoreCase(r1)) {
+            AjaxSupport.sendFailText("fail", res);
+            return;
+        }
+        String ack = SamplePaseXml.getVFromXmlString(res, "Ack");
+        if ("Success".equalsIgnoreCase(ack)) {
+            TradingOrderAddMemberMessageAAQToPartner message1=new TradingOrderAddMemberMessageAAQToPartner();
+            message1.setBody(body);
+            message1.setItemid(itemid);
+            message1.setRecipientid(buyeruserid);
+            message1.setSubject(subject);
+            message1.setSender(sender);
+            iTradingOrderAddMemberMessageAAQToPartner.saveOrderAddMemberMessageAAQToPartner(message1);
+            AjaxSupport.sendSuccessText("success", "发送成功");
+        }else{
+            AjaxSupport.sendFailText("fail", "获取必要的参数失败！请稍后重试");
+        }
+    }
     /*
      *同步订单
      */
     @RequestMapping("/apiGetOrdersRequest.do")
     @AvoidDuplicateSubmission(needRemoveToken = true)
     @ResponseBody
-    /**获取接受信息总数*/
-    public void apiGetMyMessagesRequest(CommonParmVO commonParmVO,HttpServletRequest request) throws Exception {
+    public void apiGetOrdersRequest(CommonParmVO commonParmVO,HttpServletRequest request) throws Exception {
         String ebayId=request.getParameter("ebayId");
         Long ebay=Long.valueOf(ebayId);
         UsercontrollerDevAccountExtend d = userInfoService.getDevInfo(null);//开发者帐号id
@@ -336,6 +488,7 @@ public class GetOrdersController extends BaseAction {
                     order.setId(ls.get(0).getId());
                 }
                 /* order.setShippingdetailsId(sd.getId());*/
+                //------------同步订单商品-----------
                 d.setApiCallName(APINameStatic.GetItem);
                 Map<String,String> itemresmap=GetOrderItemAPI.apiGetOrderItem(d,token,apiUrl,order.getItemid());
                 String itemr1 = itemresmap.get("stat");
@@ -415,10 +568,53 @@ public class GetOrdersController extends BaseAction {
                     order.setShippingdetailsId(shippingDetails.getId());
                     iTradingOrderGetItem.saveOrderGetItem(item);
                 }else {
-                    String errors = SamplePaseXml.getVFromXmlString(res, "Errors");
+                    String errors = SamplePaseXml.getVFromXmlString(itemres, "Errors");
                     logger.error("获取apisessionid失败!" + errors);
                     AjaxSupport.sendFailText("fail", "获取必要的参数失败！请稍后重试");
                 }
+                //同步account-----
+                 /*  UsercontrollerDevAccountExtend ds=new UsercontrollerDevAccountExtend();
+                   ds.setApiDevName("5d70d647-b1e2-4c7c-a034-b343d58ca425");
+                   ds.setApiAppName("sandpoin-23af-4f47-a304-242ffed6ff5b");
+                   ds.setApiCertName("165cae7e-4264-4244-adff-e11c3aea204e");
+                   ds.setApiCompatibilityLevel("881");
+                   ds.setApiSiteid("0");*/
+                /* Map accountmap=new HashMap();
+                accountmap.put("token",token);
+                accountmap.put("Itemid",order.getItemid());
+                accountmap.put("fromTime", start);
+                accountmap.put("toTime", end);*/
+                d.setApiCallName(APINameStatic.GetAccount);
+                Map accountmap=new HashMap();
+                accountmap.put("token",token);
+                accountmap.put("Itemid",order.getItemid());
+                 accountmap.put("fromTime", start);
+                accountmap.put("toTime", end);
+                String accountxml = BindAccountAPI.getGetAccount(accountmap);
+                Map<String, String> accountresmap = addApiTask.exec(d, accountxml, apiUrl);
+                String accountr1 = accountresmap.get("stat");
+                String accountres = accountresmap.get("message");
+                if ("fail".equalsIgnoreCase(accountr1)) {
+                    AjaxSupport.sendFailText("fail", itemres);
+                    return;
+                }
+                String accountack = SamplePaseXml.getVFromXmlString(accountres, "Ack");
+                if ("Success".equalsIgnoreCase(accountack)) {
+                    List<TradingOrderGetAccount> accountList= GetAccountAPI.parseXMLAndSave(accountres);
+                    for(TradingOrderGetAccount acc:accountList){
+                        List<TradingOrderGetAccount> accountList1=iTradingOrderGetAccount.selectTradingOrderGetAccountByTransactionId(order.getTransactionid());
+                        if(accountList1!=null&&accountList1.size()>0){
+                            acc.setId(accountList1.get(0).getId());
+                        }
+                        iTradingOrderGetAccount.saveOrderGetAccount(acc);
+                    }
+
+                }else{
+                    String errors = SamplePaseXml.getVFromXmlString(accountres, "Errors");
+                    logger.error("获取apisessionid失败!" + errors);
+                    AjaxSupport.sendFailText("fail", "获取必要的参数失败！请稍后重试");
+                }
+                //----------------
 
                 iTradingOrderGetOrders.saveOrderGetOrders(order);
             }

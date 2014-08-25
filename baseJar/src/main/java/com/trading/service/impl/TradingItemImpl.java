@@ -1,25 +1,29 @@
 package com.trading.service.impl;
 
 import com.base.database.customtrading.mapper.ItemMapper;
+import com.base.database.publicd.model.PublicDataDict;
+import com.base.database.publicd.model.PublicUserConfig;
 import com.base.database.trading.mapper.TradingItemMapper;
 import com.base.database.trading.model.*;
+import com.base.domains.SessionVO;
 import com.base.domains.querypojos.ItemQuery;
 import com.base.mybatis.page.Page;
 import com.base.utils.applicationcontext.RequestResponseContext;
 import com.base.utils.cache.DataDictionarySupport;
+import com.base.utils.cache.SessionCacheSupport;
 import com.base.utils.common.ConvertPOJOUtil;
 import com.base.utils.common.MyCollectionsUtil;
 import com.base.utils.common.ObjectUtils;
 import com.base.xmlpojo.trading.addproduct.*;
+import com.google.common.base.Predicate;
+import com.google.common.collect.Collections2;
 import com.trading.service.*;
 import org.apache.commons.lang.ArrayUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * 商品信息
@@ -46,6 +50,18 @@ public class TradingItemImpl implements com.trading.service.ITradingItem {
     private ITradingPictures iTradingPictures;
     @Autowired
     private ITradingAddItem iTradingAddItem;
+    @Autowired
+    private ITradingPayPal iTradingPayPal;
+    @Autowired
+    private ITradingReturnpolicy iTradingReturnpolicy;
+    @Autowired
+    private ITradingBuyerRequirementDetails iTradingBuyerRequirementDetails;
+    @Autowired
+    private ITradingItemAddress iTradingItemAddress;
+    @Autowired
+    private ITradingShippingDetails iTradingShippingDetails;
+
+
     @Override
     public void saveTradingItem(TradingItem pojo) throws Exception {
         if(pojo.getId()==null){
@@ -115,9 +131,35 @@ public class TradingItemImpl implements com.trading.service.ITradingItem {
         }else if(item.getListingType().equals("2")){//多属性刊登保存数据
             //保存多属性信息
             if(item.getVariations()!=null){
+                //删除下面的所有字属性
+                TradingVariations tvs = this.iTradingVariations.selectByParentId(tradingItem.getId());
+                if(tvs!=null) {
+                    List<TradingVariation> dlitv = this.iTradingVariation.selectByParentId(tvs.getId());
+                    for (TradingVariation tv : dlitv) {
+                        List<TradingPublicLevelAttr> litpla = this.iTradingPublicLevelAttr.selectByParentId("VariationSpecifics", tv.getId());
+                        for (TradingPublicLevelAttr tpa : litpla) {
+                            this.iTradingPublicLevelAttr.deleteByParentID(null, tpa.getId());
+                        }
+                        this.iTradingPublicLevelAttr.deleteByParentID("VariationSpecifics", tv.getId());
+                    }
+                    this.iTradingVariation.deleteParentId(tvs.getId());
+
+                    List<TradingPublicLevelAttr> litpla = this.iTradingPublicLevelAttr.selectByParentId("VariationSpecificsSet", tvs.getId());
+                    for (TradingPublicLevelAttr tpa : litpla) {
+                        List<TradingPublicLevelAttr> li = this.iTradingPublicLevelAttr.selectByParentId("NameValueList", tpa.getId());
+                        for (TradingPublicLevelAttr l : li) {
+                            this.iTradingAttrMores.deleteByParentId("Name", l.getId());
+                            this.iTradingAttrMores.deleteByParentId("Value", l.getId());
+                        }
+                        this.iTradingPublicLevelAttr.deleteByParentID("NameValueList", tpa.getId());
+                    }
+                    this.iTradingPublicLevelAttr.deleteByParentID("VariationSpecificsSet", tvs.getId());
+                }
+
                 TradingVariations tv = new TradingVariations();
                 tv.setParentId(tradingItem.getId());
                 tv.setParentUuid(tradingItem.getUuid());
+
                 this.iTradingVariations.saveVariations(tv);
                 List<Variation> livt = item.getVariations().getVariation();
                 for(int i = 0 ; i<livt.size();i++){
@@ -249,6 +291,11 @@ public class TradingItemImpl implements com.trading.service.ITradingItem {
         if(item.getItemSpecifics()!=null){
             ItemSpecifics iscs = item.getItemSpecifics();
             List<NameValueList> linv = iscs.getNameValueList();
+            //删除下面的字属性
+            List<TradingPublicLevelAttr> litpla = this.iTradingPublicLevelAttr.selectByParentId("ItemSpecifics",tradingItem.getId());
+            for(TradingPublicLevelAttr tpa : litpla){
+                this.iTradingPublicLevelAttr.deleteByParentID(null,tpa.getId());
+            }
             this.iTradingPublicLevelAttr.deleteByParentID("ItemSpecifics",tradingItem.getId());
             TradingPublicLevelAttr tpla = this.iTradingPublicLevelAttr.toDAOPojo("ItemSpecifics",null);
             tpla.setParentId(tradingItem.getId());
@@ -257,7 +304,7 @@ public class TradingItemImpl implements com.trading.service.ITradingItem {
 
             this.iTradingPublicLevelAttr.deleteByParentID(null,tpla.getId());
             for(NameValueList nvl : linv){
-                TradingPublicLevelAttr tpl = this.iTradingPublicLevelAttr.toDAOPojo(nvl.getName(),nvl.getValue().toString());
+                TradingPublicLevelAttr tpl = this.iTradingPublicLevelAttr.toDAOPojo(nvl.getName(),nvl.getValue().get(0).toString());
                 tpl.setParentUuid(tpla.getUuid());
                 tpl.setParentId(tpla.getId());
                 this.iTradingPublicLevelAttr.savePublicLevelAttr(tpl);
@@ -273,5 +320,133 @@ public class TradingItemImpl implements com.trading.service.ITradingItem {
     @Override
     public TradingItem selectById(Long id){
         return this.tradingItemMapper.selectByPrimaryKey(id);
+    }
+
+    @Override
+    public TradingItem selectByItemId(String itemId){
+        TradingItemExample tie = new TradingItemExample();
+        tie.createCriteria().andItemIdEqualTo(itemId);
+        List<TradingItem> liti = this.tradingItemMapper.selectByExample(tie);
+        if(liti==null||liti.size()==0){
+            return null;
+        }else{
+            return liti.get(0);
+        }
+    }
+    @Override
+    public void updateTradingItem(Item item, TradingItem tradingItem) throws Exception {
+        HttpServletRequest request = RequestResponseContext.getRequest();
+        String [] selectType = request.getParameterValues("selectType");
+        SessionVO c= SessionCacheSupport.getSessionVO();
+        tradingItem = new TradingItem();
+        TradingItem tradingItem1=this.selectByItemId(item.getItemID());
+        for(String str : selectType){
+            if(str.equals("StartPrice")){//改价格
+                tradingItem.setStartprice(item.getStartPrice().getValue());
+            }else if(str.equals("Quantity")){//改数量
+                tradingItem.setQuantity(item.getQuantity().longValue());
+            }else if(str.equals("PictureDetails")){//改图片
+                PictureDetails picd = item.getPictureDetails();
+                if(picd!=null){
+                    TradingPicturedetails tpicd = this.iTradingPictureDetails.toDAOPojo(picd);
+                    tpicd.setParentId(tradingItem.getId());
+                    tpicd.setParentUuid(tradingItem.getUuid());
+                    tpicd.setCheckFlag("1");
+                    this.iTradingPictureDetails.savePictureDetails(tpicd);
+
+                    this.iTradingAttrMores.deleteByParentId("PictureURL",tpicd.getId());
+                    List<String> lipic = item.getPictureDetails().getPictureURL();
+                    lipic = MyCollectionsUtil.listUnique(lipic);
+                    for(int i =0;i<lipic.size();i++){
+                        TradingAttrMores tam = this.iTradingAttrMores.toDAOPojo("PictureURL",lipic.get(i));
+                        tam.setParentId(tpicd.getId());
+                        tam.setParentUuid(tpicd.getUuid());
+                        this.iTradingAttrMores.saveAttrMores(tam);
+                    }
+                }
+            }else if(str.equals("PayPal")){//改支付方式
+                final String jj=item.getPayPalEmailAddress();
+                TradingPaypal tp = this.iTradingPayPal.selectById(tradingItem1.getPayId());
+                if(tp!=null) {
+                    tp.setId(null);
+                    List<PublicUserConfig> paypalList = DataDictionarySupport.getPublicUserConfigByType(DataDictionarySupport.PUBLIC_DATA_DICT_PAYPAL, c.getId());
+                    Collection<PublicUserConfig> x = Collections2.filter(paypalList, new Predicate<PublicUserConfig>() {
+                        @Override
+                        public boolean apply(PublicUserConfig tradingDataDictionary) {
+                            return jj == tradingDataDictionary.getConfigValue();
+                        }
+                    });
+                    PublicUserConfig[] tt = x.toArray(new PublicUserConfig[]{});
+                    List<PublicUserConfig> li = Arrays.asList(tt);
+                    tp.setPaypal(li.get(0).getId().toString());
+                    tp.setCheckFlag("1");
+                    this.iTradingPayPal.savePaypal(tp);
+                    tradingItem.setPayId(tp.getId());
+                }
+            }else if(str.equals("ReturnPolicy")){//改退货政策
+                TradingReturnpolicy tr = this.iTradingReturnpolicy.selectById(tradingItem1.getReturnpolicyId());
+                if(tr!=null){
+                    tr.setId(null);
+                    ConvertPOJOUtil.convert(tr, item.getReturnPolicy());
+                    tr.setCheckFlag("1");
+                    this.iTradingReturnpolicy.saveTradingReturnpolicy(tr);
+                    tradingItem.setReturnpolicyId(tr.getId());
+                }
+            }else if(str.equals("Title")){//改标题　
+                tradingItem.setTitle(item.getTitle());
+            }else if(str.equals("Buyer")){//改买家要求
+                TradingBuyerRequirementDetails buy = this.iTradingBuyerRequirementDetails.selectById(tradingItem1.getBuyerId());
+                if(buy!=null){
+                    buy.setId(null);
+                    ConvertPOJOUtil.convert(buy, item.getBuyerRequirementDetails());
+                    buy.setCheckFlag("1");
+                    this.iTradingBuyerRequirementDetails.saveBuyerRequirementDetails(buy);
+                    tradingItem.setBuyerId(buy.getId());
+                }
+            }else if(str.equals("SKU")){//改ＳＫＵ
+                tradingItem.setSku(item.getSKU());
+            }else if(str.equals("PrimaryCategory")){//改分类
+                tradingItem.setCategoryid(item.getPrimaryCategory().getCategoryID());
+            }else if(str.equals("ConditionID")){//改商品状态
+                tradingItem.setConditionid(item.getConditionID().longValue());
+            }else if(str.equals("Location")){//物品所在地
+                TradingItemAddress addr = this.iTradingItemAddress.selectById(tradingItem1.getItemLocationId());
+                if(addr!=null){
+                    addr.setId(null);
+                    addr.setAddress(item.getLocation());
+                    addr.setPostalcode(item.getPostalCode());
+                    addr.setCheckFlag("1");
+                    List<TradingDataDictionary> li =  DataDictionarySupport.getTradingDataDictionaryByType(DataDictionarySupport.DATA_DICT_COUNTRY);
+                    TradingDataDictionary pd = null;
+                    for(TradingDataDictionary pdd : li ){
+                        if(pd.getValue().equals(item.getCountry())){
+                            pd = pdd;
+                            break;
+                        }
+                    }
+                    addr.setCountryId(pd.getId());
+                    addr.setName(item.getLocation());
+                    this.iTradingItemAddress.saveItemAddress(addr);
+                    tradingItem.setItemLocationId(addr.getId());
+                }
+            }else if(str.equals("DispatchTimeMax")){//最快处理时间
+                tradingItem.setDispatchtimemax(item.getDispatchTimeMax().longValue());
+            }else if(str.equals("PrivateListing")){//改是否允许私人买
+                tradingItem.setPrivatelisting(item.getPrivateListing()?"1":"0");
+            }else if(str.equals("ListingDuration")){//改刊登天数
+                tradingItem.setListingduration(item.getListingDuration());
+            }else if(str.equals("Description")){//改商品描述
+                tradingItem.setDescription(item.getDescription());
+            }else if(str.equals("ShippingDetails")){//改运输详情
+                TradingShippingdetails ts = this.iTradingShippingDetails.selectById(tradingItem1.getShippingDeailsId());
+                if(ts!=null){
+                    ts.setId(null);
+                    ts.setCheckFlag("1");
+                    this.iTradingShippingDetails.saveAllData(ts,item.getShippingDetails(),request.getParameter("notLocationValue"));
+                    tradingItem.setShippingDeailsId(ts.getId());
+                }
+            }
+        }
+        tradingItem.setId(tradingItem1.getId());
     }
 }

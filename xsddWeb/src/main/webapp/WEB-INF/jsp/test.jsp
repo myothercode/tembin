@@ -28,6 +28,7 @@
             map.put("orders",path+"/order/getOrdersList.do");
             map.put("orderItem",path+"/orderItem/orderItemList.do");
             map.put("listing",path+"/getListingItemList.do");
+            map.put("externalTransaction",path+"/sellertransactions/orderSellerTransactionsList.do");
             top.location=map.get(name);
 
         }
@@ -72,7 +73,7 @@
         <div><input type="button" value="折扣" name="discountPriceInfo" onclick="submitForm(this)"/></div>
         <div><input type="button" value="运输选项" name="shipping" onclick="submitForm(this)"/></div>
         <div><input type="button" value="卖家描述" name="descriptionDetails" onclick="submitForm(this)"/></div>
-        <div><input type="button" value="商品列表" name="itemList" onclick="submitForm(this)"/></div>
+        <div><input type="button" value="范本列表" name="itemList" onclick="submitForm(this)"/></div>
         <div><input type="button" value="模板" name="templateinittable" onclick="submitForm(this)"/></div>
         <div><input type="button" value="接受消息" name="messagegetmymessage" onclick="submitForm(this)"/></div>
         <div><input type="button" value="绑定ebay帐号" name="bindEbayAccount" onclick="submitForm(this)"/></div>
@@ -82,6 +83,7 @@
 
         <div><input type="button" value="获取商品反馈数量" name="abcds地" onclick="testSize(this)"/></div>
         <div><input type="button" value="在线商品管理" name="listing" onclick="submitForm(this)"/></div>
+        <div><input type="button" value="外部交易" name="externalTransaction" onclick="submitForm(this)"/></div>
 </form>
 </body>
 </html>

@@ -55,9 +55,10 @@
         function submitCommit(){
             var orderStatus=$("#orderStatus").val();
             var starttime=$("#starttime").val();
+            var status=$("#status").val();
             var endtime=$("#endtime").val();
             $("#OrderGetOrdersListTable").initTable({
-                url:path + "/order/ajax/loadOrdersList.do?orderStatus="+orderStatus+"&starttime="+starttime+"&endtime="+endtime,
+                url:path + "/order/ajax/loadOrdersList.do?orderStatus="+orderStatus+"&starttime="+starttime+"&endtime="+endtime+"&status="+status,
                 columnData:[
                     {title:"图片",name:"pictrue",width:"8%",align:"left",format:makeOption2},
                     {title:"OrderID",name:"orderid",width:"8%",align:"left"},
@@ -81,8 +82,7 @@
                 content: 'url:'+url,
                 icon: 'succeed',
                 width:1050,
-                height:1050,
-                lock:true
+                height:1050
             });
         }
         function getBindParm(){
@@ -105,6 +105,11 @@
             <option value="Inactive">Inactive</option>
             <option value="Shipped">Shipped</option>
         </select>
+付款状态:<select id="status">
+        <option value="All">All</option>
+         <option value="Complete">Complete</option>
+         <option value="Incomplete">Incomplete</option>
+    </select>
 &nbsp; 从<input id="starttime"  type="text" onfocus="WdatePicker({isShowWeek:true,dateFmt:'yyyy-MM-dd HH:mm'})"/>
 到<input id="endtime"  type="text" onfocus="WdatePicker({isShowWeek:true,dateFmt:'yyyy-MM-dd HH:mm'})"/>
 <input type="button"  value="查询" onclick="submitCommit();" style="right: 10px;"/>

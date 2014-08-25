@@ -16,6 +16,7 @@
 
 </head>
 <script  type="text/javascript">
+    _sku="_template";
     var ue =UE.getEditor('myEditor');
     var api = frameElement.api, W = api.opener;
     function submitCommit(){
@@ -25,13 +26,14 @@
         $().invoke(url,data,
                 [function(m,r){
                     alert(r);
-                    W.TemplateInitTable.close();
-                    Base.token();
                     W.refreshTable();
+                    W.TemplateInitTable.close();
+                    //Base.token();
+
                 },
                     function(m,r){
                         alert(r);
-                        Base.token();
+                       // Base.token();
                     }]
         );
     }

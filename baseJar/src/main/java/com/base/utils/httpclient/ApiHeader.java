@@ -5,7 +5,9 @@ import org.apache.http.Header;
 import org.apache.http.message.BasicHeader;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by Administrtor on 2014/8/6.
@@ -15,8 +17,8 @@ public class ApiHeader {
     public static final String DISPUTE_API_HEADER = "DisputeApiHeader";
 
     /**返回普通api的header*/
-    public static List<Header> getApiHeader(UsercontrollerDevAccountExtend devAccountExtend){
-        List<Header> headers = new ArrayList<org.apache.http.Header>();
+    public static List<BasicHeader> getApiHeader(UsercontrollerDevAccountExtend devAccountExtend){
+        List<BasicHeader> headers = new ArrayList<BasicHeader>();
         headers.add(new BasicHeader("X-EBAY-API-COMPATIBILITY-LEVEL",devAccountExtend.getApiCompatibilityLevel()));
         headers.add(new BasicHeader("X-EBAY-API-DEV-NAME",devAccountExtend.getApiDevName()));
         headers.add(new BasicHeader("X-EBAY-API-APP-NAME",devAccountExtend.getApiAppName()));
@@ -27,8 +29,8 @@ public class ApiHeader {
     }
 
     /**返回纠纷请求的header*/
-    public static List<Header> getDisputeApiHeader(UsercontrollerDevAccountExtend devAccountExtend){
-        List<Header> headers = new ArrayList<org.apache.http.Header>();
+    public static List<BasicHeader> getDisputeApiHeader(UsercontrollerDevAccountExtend devAccountExtend){
+        List<BasicHeader> headers = new ArrayList<BasicHeader>();
         headers.add(new BasicHeader("X-EBAY-SOA-OPERATION-NAME",devAccountExtend.getSoaOperationName()));
         headers.add(new BasicHeader("X-EBAY-SOA-SECURITY-TOKEN ",devAccountExtend.getSoaSecurityToken()));
         headers.add(new BasicHeader("X-EBAY-SOA-REQUEST-DATA-FORMAT",devAccountExtend.getSoaRequestDataFormat()));
@@ -36,6 +38,16 @@ public class ApiHeader {
         headers.add(new BasicHeader("X-EBAY-SOA-SERVICE-VERSION",devAccountExtend.getSoaServiceVersion()));
         headers.add(new BasicHeader("X-EBAY-SOA-GLOBAL-ID",devAccountExtend.getSoaGlobalId()));
         return headers;
+    }
+
+
+    /**header转为map*/
+    public static HashMap<String,String> header2Map(List<BasicHeader> basicHeaders){
+        HashMap<String,String> hashMap = new HashMap();
+        for (BasicHeader b:basicHeaders){
+            hashMap.put(b.getName(),b.getValue());
+        }
+        return hashMap;
 
     }
 }

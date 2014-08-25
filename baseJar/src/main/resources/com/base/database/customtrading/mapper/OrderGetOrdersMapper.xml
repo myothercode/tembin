@@ -60,6 +60,9 @@
         <if test="orderStatus!=null">
             and OrderGetOrders.orderStatus = #{orderStatus}
         </if>
+        <if test="status!=null">
+            and OrderGetOrders.status = #{status}
+        </if>
         <if test="starttime!=null">
             and OrderGetOrders.lastModifiedTime>= #{starttime}
         </if>

@@ -535,6 +535,76 @@ public class TradingOrderGetOrdersExample {
             return (Criteria) this;
         }
 
+        public Criteria andAmountpaidIsNull() {
+            addCriterion("amountPaid is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andAmountpaidIsNotNull() {
+            addCriterion("amountPaid is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andAmountpaidEqualTo(String value) {
+            addCriterion("amountPaid =", value, "amountpaid");
+            return (Criteria) this;
+        }
+
+        public Criteria andAmountpaidNotEqualTo(String value) {
+            addCriterion("amountPaid <>", value, "amountpaid");
+            return (Criteria) this;
+        }
+
+        public Criteria andAmountpaidGreaterThan(String value) {
+            addCriterion("amountPaid >", value, "amountpaid");
+            return (Criteria) this;
+        }
+
+        public Criteria andAmountpaidGreaterThanOrEqualTo(String value) {
+            addCriterion("amountPaid >=", value, "amountpaid");
+            return (Criteria) this;
+        }
+
+        public Criteria andAmountpaidLessThan(String value) {
+            addCriterion("amountPaid <", value, "amountpaid");
+            return (Criteria) this;
+        }
+
+        public Criteria andAmountpaidLessThanOrEqualTo(String value) {
+            addCriterion("amountPaid <=", value, "amountpaid");
+            return (Criteria) this;
+        }
+
+        public Criteria andAmountpaidLike(String value) {
+            addCriterion("amountPaid like", value, "amountpaid");
+            return (Criteria) this;
+        }
+
+        public Criteria andAmountpaidNotLike(String value) {
+            addCriterion("amountPaid not like", value, "amountpaid");
+            return (Criteria) this;
+        }
+
+        public Criteria andAmountpaidIn(List<String> values) {
+            addCriterion("amountPaid in", values, "amountpaid");
+            return (Criteria) this;
+        }
+
+        public Criteria andAmountpaidNotIn(List<String> values) {
+            addCriterion("amountPaid not in", values, "amountpaid");
+            return (Criteria) this;
+        }
+
+        public Criteria andAmountpaidBetween(String value1, String value2) {
+            addCriterion("amountPaid between", value1, value2, "amountpaid");
+            return (Criteria) this;
+        }
+
+        public Criteria andAmountpaidNotBetween(String value1, String value2) {
+            addCriterion("amountPaid not between", value1, value2, "amountpaid");
+            return (Criteria) this;
+        }
+
         public Criteria andEbaypaymentstatusIsNull() {
             addCriterion("ebayPaymentStatus is null");
             return (Criteria) this;
@@ -1962,6 +2032,76 @@ public class TradingOrderGetOrdersExample {
 
         public Criteria andAddressownerNotBetween(String value1, String value2) {
             addCriterion("addressOwner not between", value1, value2, "addressowner");
+            return (Criteria) this;
+        }
+
+        public Criteria andShipmenttrackingnumberIsNull() {
+            addCriterion("shipmentTrackingNumber is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andShipmenttrackingnumberIsNotNull() {
+            addCriterion("shipmentTrackingNumber is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andShipmenttrackingnumberEqualTo(String value) {
+            addCriterion("shipmentTrackingNumber =", value, "shipmenttrackingnumber");
+            return (Criteria) this;
+        }
+
+        public Criteria andShipmenttrackingnumberNotEqualTo(String value) {
+            addCriterion("shipmentTrackingNumber <>", value, "shipmenttrackingnumber");
+            return (Criteria) this;
+        }
+
+        public Criteria andShipmenttrackingnumberGreaterThan(String value) {
+            addCriterion("shipmentTrackingNumber >", value, "shipmenttrackingnumber");
+            return (Criteria) this;
+        }
+
+        public Criteria andShipmenttrackingnumberGreaterThanOrEqualTo(String value) {
+            addCriterion("shipmentTrackingNumber >=", value, "shipmenttrackingnumber");
+            return (Criteria) this;
+        }
+
+        public Criteria andShipmenttrackingnumberLessThan(String value) {
+            addCriterion("shipmentTrackingNumber <", value, "shipmenttrackingnumber");
+            return (Criteria) this;
+        }
+
+        public Criteria andShipmenttrackingnumberLessThanOrEqualTo(String value) {
+            addCriterion("shipmentTrackingNumber <=", value, "shipmenttrackingnumber");
+            return (Criteria) this;
+        }
+
+        public Criteria andShipmenttrackingnumberLike(String value) {
+            addCriterion("shipmentTrackingNumber like", value, "shipmenttrackingnumber");
+            return (Criteria) this;
+        }
+
+        public Criteria andShipmenttrackingnumberNotLike(String value) {
+            addCriterion("shipmentTrackingNumber not like", value, "shipmenttrackingnumber");
+            return (Criteria) this;
+        }
+
+        public Criteria andShipmenttrackingnumberIn(List<String> values) {
+            addCriterion("shipmentTrackingNumber in", values, "shipmenttrackingnumber");
+            return (Criteria) this;
+        }
+
+        public Criteria andShipmenttrackingnumberNotIn(List<String> values) {
+            addCriterion("shipmentTrackingNumber not in", values, "shipmenttrackingnumber");
+            return (Criteria) this;
+        }
+
+        public Criteria andShipmenttrackingnumberBetween(String value1, String value2) {
+            addCriterion("shipmentTrackingNumber between", value1, value2, "shipmenttrackingnumber");
+            return (Criteria) this;
+        }
+
+        public Criteria andShipmenttrackingnumberNotBetween(String value1, String value2) {
+            addCriterion("shipmentTrackingNumber not between", value1, value2, "shipmenttrackingnumber");
             return (Criteria) this;
         }
 

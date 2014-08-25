@@ -21,4 +21,8 @@ public interface ITradingItem {
     List<ItemQuery> selectByItemList(Map map, Page page);
 
     TradingItem selectById(Long id);
+
+    TradingItem selectByItemId(String itemId);
+
+    void updateTradingItem(Item item, TradingItem tradingItem) throws Exception;
 }
