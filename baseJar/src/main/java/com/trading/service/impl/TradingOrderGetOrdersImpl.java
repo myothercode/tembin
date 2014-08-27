@@ -55,5 +55,14 @@ public class TradingOrderGetOrdersImpl implements com.trading.service.ITradingOr
         return lists;
     }
 
+    @Override
+    public List<TradingOrderGetOrders> selectOrderGetOrdersByTransactionId(String TransactionId) {
+        TradingOrderGetOrdersExample or=new TradingOrderGetOrdersExample();
+        TradingOrderGetOrdersExample.Criteria cr=or.createCriteria();
+        cr.andTransactionidEqualTo(TransactionId);
+        List<TradingOrderGetOrders> lists=tradingOrderGetOrdersMapper.selectByExample(or);
+        return lists;
+    }
+
 
 }

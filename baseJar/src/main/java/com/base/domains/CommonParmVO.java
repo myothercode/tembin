@@ -10,7 +10,16 @@ public class CommonParmVO {
     private Long id;
     private String strV1;
     private String strV2;
+    private String strV3;
 
+
+    public String getStrV3() {
+        return strV3;
+    }
+
+    public void setStrV3(String strV3) {
+        this.strV3 = strV3;
+    }
 
     public String getStrV2() {
         return strV2;

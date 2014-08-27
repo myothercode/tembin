@@ -105,6 +105,10 @@ public class BindAccountAPI {
                 "  <CreateTimeFrom>"+map.get("fromTime")+"</CreateTimeFrom>" +
                 "  <CreateTimeTo>"+map.get("toTime")+"</CreateTimeTo>" +
                 "  <OrderRole>Seller</OrderRole>" +
+                "<Pagination>" +
+                "<EntriesPerPage>100</EntriesPerPage>" +
+                "<PageNumber>"+map.get("page")+"</PageNumber>" +
+                "</Pagination>"+
                 "</GetOrdersRequest>";
         return xml;
     }
@@ -172,7 +176,7 @@ public class BindAccountAPI {
                 "<BeginDate>"+map.get("fromTime")+"</BeginDate>" +
                 "<EndDate>"+map.get("toTime")+"</EndDate>" +
                 "<ItemID>"+map.get("Itemid")+"</ItemID>" +
-                "<Version>883</Version>" +
+              /*  "<Version>881</Version>" +*/
                 "</GetAccountRequest>";
         return xml;
     }

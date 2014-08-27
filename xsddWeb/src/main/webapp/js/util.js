@@ -372,7 +372,7 @@ function strGetNotNum(text){
 
 /**得到字符串中的数字*/
 function strGetNum(text){
-    return text.replace(/[^0-9]/ig,"")       ;
+    return text.replace(/[^0-9]/ig,"");
 }
 
 /**截取字符串后几位*/
@@ -383,10 +383,13 @@ function subRight(str,i){
     return str.slice(str.length - i,str.length)
 }
 
-
 /**截取指定中括号之间的字符串，如 [ggg] */
 function getStrBetweenTwoChar(str){
     return str.match(/\[[^\]]+\]/gi);
+}
+/**获取字符串中的大写字母*/
+function getUpperChar(str){
+    return str.replace(/[^A-Z]/g,"");
 }
 
 /**将指定元素内的指定name开头属性进行重新整合，如abcd[0]，将进行重新编号*/
@@ -397,6 +400,49 @@ function domReIndex(objid,nameStart){
         var replaceStr=getStrBetweenTwoChar(name1);//需要替换的字符串
         $(d).attr("name",name1.replace(replaceStr,"["+i+"]"));
     });
+}
+
+
+/**解析URL  var parse = parse_url(url1)  parse['pageNum'];  */
+function parse_url(url){ //定义函数
+    var pattern = /(\w+)=(\w+)/ig;//定义正则表达式
+    var parames = {};//定义数组
+    url.replace(pattern, function(a, b, c){parames[b] = c;});
+    return parames;//返回这个数组.
+
+}
+
+/*json对象转为字符串*/
+function jsonToString (obj){
+    var THIS = this;
+    switch(typeof(obj)){
+        case 'string':
+            return '"' + obj.replace(/(["\\])/g, '\\$1') + '"';
+        case 'array':
+            return '[' + obj.map(THIS.jsonToString).join(',') + ']';
+        case 'object':
+            if(obj instanceof Array){
+                var strArr = [];
+                var len = obj.length;
+                for(var i=0; i<len; i++){
+                    strArr.push(THIS.jsonToString(obj[i]));
+                }
+                return '[' + strArr.join(',') + ']';
+            }else if(obj==null){
+                return 'null';
+
+            }else{
+                var string = [];
+                for (var property in obj) string.push(THIS.jsonToString(property) + ':' + THIS.jsonToString(obj
+
+                    [property]));
+                return '{' + string.join(',') + '}';
+            }
+        case 'number':
+            return obj;
+        case false:
+            return obj;
+    }
 }
 
 

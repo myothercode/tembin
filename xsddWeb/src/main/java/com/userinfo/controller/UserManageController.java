@@ -119,6 +119,7 @@ public class UserManageController extends BaseAction {
             ebayAccount.setEbayToken(token);
             ebayAccount.setEbayName(commonParmVO.getStrV2());//ebay账户别名
             ebayAccount.setUserId(sessionVO.getId());
+            ebayAccount.setEbayNameCode(commonParmVO.getStrV3());//ebay账户简写代码
             userInfoService.saveToken(ebayAccount,commonParmVO);
             AjaxSupport.sendSuccessText("success","绑定成功！");
         }else {

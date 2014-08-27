@@ -255,6 +255,66 @@ public class TradingOrderAddMemberMessageAAQToPartnerExample {
             return (Criteria) this;
         }
 
+        public Criteria andMessagetypeIsNull() {
+            addCriterion("messagetype is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andMessagetypeIsNotNull() {
+            addCriterion("messagetype is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andMessagetypeEqualTo(Integer value) {
+            addCriterion("messagetype =", value, "messagetype");
+            return (Criteria) this;
+        }
+
+        public Criteria andMessagetypeNotEqualTo(Integer value) {
+            addCriterion("messagetype <>", value, "messagetype");
+            return (Criteria) this;
+        }
+
+        public Criteria andMessagetypeGreaterThan(Integer value) {
+            addCriterion("messagetype >", value, "messagetype");
+            return (Criteria) this;
+        }
+
+        public Criteria andMessagetypeGreaterThanOrEqualTo(Integer value) {
+            addCriterion("messagetype >=", value, "messagetype");
+            return (Criteria) this;
+        }
+
+        public Criteria andMessagetypeLessThan(Integer value) {
+            addCriterion("messagetype <", value, "messagetype");
+            return (Criteria) this;
+        }
+
+        public Criteria andMessagetypeLessThanOrEqualTo(Integer value) {
+            addCriterion("messagetype <=", value, "messagetype");
+            return (Criteria) this;
+        }
+
+        public Criteria andMessagetypeIn(List<Integer> values) {
+            addCriterion("messagetype in", values, "messagetype");
+            return (Criteria) this;
+        }
+
+        public Criteria andMessagetypeNotIn(List<Integer> values) {
+            addCriterion("messagetype not in", values, "messagetype");
+            return (Criteria) this;
+        }
+
+        public Criteria andMessagetypeBetween(Integer value1, Integer value2) {
+            addCriterion("messagetype between", value1, value2, "messagetype");
+            return (Criteria) this;
+        }
+
+        public Criteria andMessagetypeNotBetween(Integer value1, Integer value2) {
+            addCriterion("messagetype not between", value1, value2, "messagetype");
+            return (Criteria) this;
+        }
+
         public Criteria andSubjectIsNull() {
             addCriterion("subject is null");
             return (Criteria) this;
@@ -532,6 +592,136 @@ public class TradingOrderAddMemberMessageAAQToPartnerExample {
 
         public Criteria andRecipientidNotBetween(String value1, String value2) {
             addCriterion("recipientID not between", value1, value2, "recipientid");
+            return (Criteria) this;
+        }
+
+        public Criteria andMessageflagIsNull() {
+            addCriterion("messageflag is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andMessageflagIsNotNull() {
+            addCriterion("messageflag is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andMessageflagEqualTo(Integer value) {
+            addCriterion("messageflag =", value, "messageflag");
+            return (Criteria) this;
+        }
+
+        public Criteria andMessageflagNotEqualTo(Integer value) {
+            addCriterion("messageflag <>", value, "messageflag");
+            return (Criteria) this;
+        }
+
+        public Criteria andMessageflagGreaterThan(Integer value) {
+            addCriterion("messageflag >", value, "messageflag");
+            return (Criteria) this;
+        }
+
+        public Criteria andMessageflagGreaterThanOrEqualTo(Integer value) {
+            addCriterion("messageflag >=", value, "messageflag");
+            return (Criteria) this;
+        }
+
+        public Criteria andMessageflagLessThan(Integer value) {
+            addCriterion("messageflag <", value, "messageflag");
+            return (Criteria) this;
+        }
+
+        public Criteria andMessageflagLessThanOrEqualTo(Integer value) {
+            addCriterion("messageflag <=", value, "messageflag");
+            return (Criteria) this;
+        }
+
+        public Criteria andMessageflagIn(List<Integer> values) {
+            addCriterion("messageflag in", values, "messageflag");
+            return (Criteria) this;
+        }
+
+        public Criteria andMessageflagNotIn(List<Integer> values) {
+            addCriterion("messageflag not in", values, "messageflag");
+            return (Criteria) this;
+        }
+
+        public Criteria andMessageflagBetween(Integer value1, Integer value2) {
+            addCriterion("messageflag between", value1, value2, "messageflag");
+            return (Criteria) this;
+        }
+
+        public Criteria andMessageflagNotBetween(Integer value1, Integer value2) {
+            addCriterion("messageflag not between", value1, value2, "messageflag");
+            return (Criteria) this;
+        }
+
+        public Criteria andTransactionidIsNull() {
+            addCriterion("transactionId is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andTransactionidIsNotNull() {
+            addCriterion("transactionId is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andTransactionidEqualTo(String value) {
+            addCriterion("transactionId =", value, "transactionid");
+            return (Criteria) this;
+        }
+
+        public Criteria andTransactionidNotEqualTo(String value) {
+            addCriterion("transactionId <>", value, "transactionid");
+            return (Criteria) this;
+        }
+
+        public Criteria andTransactionidGreaterThan(String value) {
+            addCriterion("transactionId >", value, "transactionid");
+            return (Criteria) this;
+        }
+
+        public Criteria andTransactionidGreaterThanOrEqualTo(String value) {
+            addCriterion("transactionId >=", value, "transactionid");
+            return (Criteria) this;
+        }
+
+        public Criteria andTransactionidLessThan(String value) {
+            addCriterion("transactionId <", value, "transactionid");
+            return (Criteria) this;
+        }
+
+        public Criteria andTransactionidLessThanOrEqualTo(String value) {
+            addCriterion("transactionId <=", value, "transactionid");
+            return (Criteria) this;
+        }
+
+        public Criteria andTransactionidLike(String value) {
+            addCriterion("transactionId like", value, "transactionid");
+            return (Criteria) this;
+        }
+
+        public Criteria andTransactionidNotLike(String value) {
+            addCriterion("transactionId not like", value, "transactionid");
+            return (Criteria) this;
+        }
+
+        public Criteria andTransactionidIn(List<String> values) {
+            addCriterion("transactionId in", values, "transactionid");
+            return (Criteria) this;
+        }
+
+        public Criteria andTransactionidNotIn(List<String> values) {
+            addCriterion("transactionId not in", values, "transactionid");
+            return (Criteria) this;
+        }
+
+        public Criteria andTransactionidBetween(String value1, String value2) {
+            addCriterion("transactionId between", value1, value2, "transactionid");
+            return (Criteria) this;
+        }
+
+        public Criteria andTransactionidNotBetween(String value1, String value2) {
+            addCriterion("transactionId not between", value1, value2, "transactionid");
             return (Criteria) this;
         }
 

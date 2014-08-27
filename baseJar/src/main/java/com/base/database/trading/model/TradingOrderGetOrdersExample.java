@@ -2035,6 +2035,76 @@ public class TradingOrderGetOrdersExample {
             return (Criteria) this;
         }
 
+        public Criteria andShippingcarrierusedIsNull() {
+            addCriterion("shippingCarrierUsed is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andShippingcarrierusedIsNotNull() {
+            addCriterion("shippingCarrierUsed is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andShippingcarrierusedEqualTo(String value) {
+            addCriterion("shippingCarrierUsed =", value, "shippingcarrierused");
+            return (Criteria) this;
+        }
+
+        public Criteria andShippingcarrierusedNotEqualTo(String value) {
+            addCriterion("shippingCarrierUsed <>", value, "shippingcarrierused");
+            return (Criteria) this;
+        }
+
+        public Criteria andShippingcarrierusedGreaterThan(String value) {
+            addCriterion("shippingCarrierUsed >", value, "shippingcarrierused");
+            return (Criteria) this;
+        }
+
+        public Criteria andShippingcarrierusedGreaterThanOrEqualTo(String value) {
+            addCriterion("shippingCarrierUsed >=", value, "shippingcarrierused");
+            return (Criteria) this;
+        }
+
+        public Criteria andShippingcarrierusedLessThan(String value) {
+            addCriterion("shippingCarrierUsed <", value, "shippingcarrierused");
+            return (Criteria) this;
+        }
+
+        public Criteria andShippingcarrierusedLessThanOrEqualTo(String value) {
+            addCriterion("shippingCarrierUsed <=", value, "shippingcarrierused");
+            return (Criteria) this;
+        }
+
+        public Criteria andShippingcarrierusedLike(String value) {
+            addCriterion("shippingCarrierUsed like", value, "shippingcarrierused");
+            return (Criteria) this;
+        }
+
+        public Criteria andShippingcarrierusedNotLike(String value) {
+            addCriterion("shippingCarrierUsed not like", value, "shippingcarrierused");
+            return (Criteria) this;
+        }
+
+        public Criteria andShippingcarrierusedIn(List<String> values) {
+            addCriterion("shippingCarrierUsed in", values, "shippingcarrierused");
+            return (Criteria) this;
+        }
+
+        public Criteria andShippingcarrierusedNotIn(List<String> values) {
+            addCriterion("shippingCarrierUsed not in", values, "shippingcarrierused");
+            return (Criteria) this;
+        }
+
+        public Criteria andShippingcarrierusedBetween(String value1, String value2) {
+            addCriterion("shippingCarrierUsed between", value1, value2, "shippingcarrierused");
+            return (Criteria) this;
+        }
+
+        public Criteria andShippingcarrierusedNotBetween(String value1, String value2) {
+            addCriterion("shippingCarrierUsed not between", value1, value2, "shippingcarrierused");
+            return (Criteria) this;
+        }
+
         public Criteria andShipmenttrackingnumberIsNull() {
             addCriterion("shipmentTrackingNumber is null");
             return (Criteria) this;

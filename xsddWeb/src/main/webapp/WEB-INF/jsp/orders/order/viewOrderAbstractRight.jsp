@@ -15,11 +15,23 @@
         .table-a table{border:1px solid rgba(0, 0, 0, 0.23)
         }
     </style>
+    <script type="text/javascript">
+        function evaluateBuy(){
+            var url=path+'/order/sendEvaluateMessage.do?orderid=${order.orderid}';
+            OrderGetOrders=$.dialog({title: '评价',
+                content: 'url:'+url,
+                icon: 'succeed',
+                width:800,
+                height:500,
+                lock:true
+            });
+        }
+    </script>
 </head>
 <body>
 <div class="table-a">
     <table border="0" cellpadding="0" cellspacing="0" style="width: 390px;" >
-        <tr><td>来自卖家:☆给买家评价</td></tr>
+        <tr><td>来自卖家:☆<a href="void()" onclick="evaluateBuy();">给买家评价</a></td></tr>
         <tr><td>来自买家:☆</td></tr>
     </table>
 </div><br/>

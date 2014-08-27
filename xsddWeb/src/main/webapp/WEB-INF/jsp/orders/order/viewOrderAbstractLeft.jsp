@@ -42,7 +42,7 @@
     </tr>
     <tr>
         <td>成交费:</td>
-        <td></td>
+        <td>${grossdetailamount}</td>
     </tr>
     <tr>
         <td>SKU:</td>
@@ -94,10 +94,10 @@ PayPal 付款:
         <td>PayPal 费用</td>
         <td>净额</td>
     </tr>
-    <c:if test="${order.orderstatus=='Completed'}">
+    <c:if test="${order.status=='Complete'}">
         <td>${paypal}</td>
         <td><fmt:formatDate value="${order.paidtime}" pattern="yyyy-MM-dd HH:mm"/></td>
-        <td>${order.status}</td>
+        <td>${order.orderstatus}</td>
         <td>${order.total}</td>
         <td>-</td>
         <td>-</td>

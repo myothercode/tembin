@@ -19,9 +19,15 @@
         var api = frameElement.api, W = api.opener;
         var flag=false;
         $(document).ready(function(){
-            $("#frameLeft").attr("src",path + "/order/viewOrderAbstractLeft.do?orderId=${orderId}");
+          /*  var orders=${orders};
+            for(var i=0;i<orders.length;i++){
+                $("#frameLeft").attr("src",path + "/order/viewOrderAbstractLeft.do?orderId=${orderId}");
+                $("#frameRight").attr("src",path + "/order/viewOrderAbstractRight.do?orderId=${orderId}");
+                $("#frameDown").attr("src",path + "/order/viewOrderAbstractDown.do?orderId=${orderId}");
+            }*/
+    /*       *//* $("#frameLeft").attr("src",path + "/order/viewOrderAbstractLeft.do?orderId=${orderId}");
             $("#frameRight").attr("src",path + "/order/viewOrderAbstractRight.do?orderId=${orderId}");
-            $("#frameDown").attr("src",path + "/order/viewOrderAbstractDown.do?orderId=${orderId}");
+            $("#frameDown").attr("src",path + "/order/viewOrderAbstractDown.do?orderId=${orderId}");*/
             $("#frameBuyHistory").attr("src",path + "/order/viewOrderBuyHistory.do?orderId=${orderId}");
 
         });
@@ -29,6 +35,7 @@
             W.OrderGetOrders.close();
         }
         var viewsendMessage;
+        var viewsendMessage1= W.OrderGetOrders;
         function sendMessage(){
             var url=path+'/order/initOrdersSendMessage.do?orderid=${order.orderid}';
             viewsendMessage=$.dialog({title: '发送消息',
@@ -157,17 +164,19 @@
 <div class="easyui-tabs" border="0" style="width:1020px;">
 <%-------------------------------------------------------------------------------------------%>
     <div title="摘要" style="padding:10px" >
-        <div class="easyui-panel" style="width:1000px"  title="1|销售编号:|eBay销售编号:|${order.selleruserid}">
-            <iframe id="frameLeft" align="left"  frameborder="0" style="width: 558px;height: 690px;"></iframe>
-            <iframe id="frameRight" align="right"  frameborder="0" style="width: 418px;height:690px;"></iframe>
+        <c:forEach items="${orders}" var="orders1">
+        <div class="easyui-panel" style="width:1000px"  title="1|销售编号:|eBay销售编号:|${orders1.selleruserid}">
+            <iframe id="frameLeft" src="${rootpath}/order/viewOrderAbstractLeft.do?TransactionId=${orders1.transactionid}"  align="left"  frameborder="0" style="width: 558px;height: 690px;"></iframe>
+            <iframe id="frameRight" src="${rootpath}/order/viewOrderAbstractRight.do?TransactionId=${orders1.transactionid}"  align="right"  frameborder="0" style="width: 418px;height:690px;"></iframe>
         </div>
         <div class="easyui-panel"  style="width:1000px" title="最近消息">
-            <iframe id="frameDown"  frameborder="0" style="width: 976px;height: 200px;"></iframe>
+            <iframe id="frameDown" src="${rootpath}/order/viewOrderAbstractDown.do?TransactionId=${orders1.transactionid}"   frameborder="0" style="width: 976px;height: 200px;"></iframe>
           <%--  &lt;%&ndash;${addMessage.body}&ndash;%&gt;
             <c:forEach items="${addMessage}" var="addmessage">
                 ${addmessage.body}
             </c:forEach>--%>
         </div>
+        </c:forEach>
     </div>
     <%-------------------------------------------------------------------------------------------%>
     <div title="运输" style="padding:10px">
@@ -255,25 +264,25 @@
                     <td>价值 (美元)</td>
                     <td>原产地</td>
                     <td>动作</td></tr>
-                <tr><td>${order.itemid}<br/>
-                    </td>
-                    <td>${order.title}</td>
-                    <td>${order.quantitypurchased}</td>
-                    <td>重量(kg)</td>
-                    <td>${order.transactionprice}$</td>
-                    <td>原产地</td>
-                    <td>动作</td></tr>
-                <c:if test="${order.sku!=null}">
-                    <tr><td><input type="text" value="${order.sku}"/><br/>
-                    </td>
-                        <td><input type="text" value="${order.title}"/></td>
-                        <td><input type="text" value="${order.quantitypurchased}"/></td>
-                        <td><input type="text" value=""/></td>
-                        <td><input type="text" value="${order.transactionprice}"/></td>
-                        <td><input type="text" value=""/></td>
-                        <td><a href="void()">保存 SKU</a><br/><a href="void()">捆绑产品</a>
-                        </td></tr>
-                </c:if>
+                <c:forEach items="${orders}" var="orders1">
+                    <tr><td>${orders1.itemid}<br/>
+                        </td>
+                        <td>${orders1.title}</td>
+                        <td>${orders1.quantitypurchased}</td>
+                        <td>重量(kg)</td>
+                        <td>${orders1.transactionprice}$</td>
+                        <td>原产地</td></tr>
+                    <c:if test="${orders1.sku!=null}">
+                        <tr><td><input type="text" value="${orders1.sku}"/><br/>
+                        </td>
+                            <td><input type="text" value="${orders1.title}"/></td>
+                            <td><input type="text" value="${orders1.quantitypurchased}"/></td>
+                            <td><input type="text" value=""/></td>
+                            <td><input type="text" value="${orders1.transactionprice}"/></td>
+                            <td><input type="text" value=""/></td>
+                            </tr>
+                    </c:if>
+                </c:forEach>
             </table>
         </div><br/>
         <div>

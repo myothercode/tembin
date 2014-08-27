@@ -29,10 +29,17 @@ public class ImageServiceImpl implements com.base.utils.imageManage.service.Imag
     private String ftpPassword;
     @Value("${IS_BAKUP_LOCAL}")
     private String sfBackUp;//是否在本地备份
+    @Value("${IMAGE_URL_PREFIX}")
+    private String imageUrlPrefix;//图片访问的前缀，如果需要修改且与ueditor相关，请连同config.json一起修改
 
     @Override
     public String getImageDir(){
         return imageTempDir;
+    }
+    @Override
+    /**获取图片前缀*/
+    public String getImageUrlPrefix(){
+        return imageUrlPrefix;
     }
 
     @Override

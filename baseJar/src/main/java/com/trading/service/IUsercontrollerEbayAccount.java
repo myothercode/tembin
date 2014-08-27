@@ -9,4 +9,6 @@ import java.util.List;
  */
 public interface IUsercontrollerEbayAccount {
     List<UsercontrollerEbayAccount> selectUsercontrollerEbayAccountByUserId(Long serId);
+
+    UsercontrollerEbayAccount selectById(Long id);
 }

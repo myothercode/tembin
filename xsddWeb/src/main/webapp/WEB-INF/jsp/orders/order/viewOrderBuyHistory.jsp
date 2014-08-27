@@ -18,7 +18,7 @@
                 columnData:[
                     {title:"图片",name:"pictrue",width:"8%",align:"left",format:makeOption2},
                     {title:"OrderID",name:"orderid",width:"8%",align:"left"},
-                    {title:"付款状态",name:"orderstatus",width:"8%",align:"left"},
+                    {title:"订单状态",name:"orderstatus",width:"8%",align:"left"},
                     {title:"ebay商品详情",name:"itemUrl",width:"8%",align:"left",format:makeOption3},
                     {title:"买家",name:"buyeruserid",width:"8%",align:"left"},
                     {title:"卖家",name:"selleruserid",width:"8%",align:"left"},

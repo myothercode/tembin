@@ -4,6 +4,7 @@ import com.base.database.trading.model.TradingOrderGetOrders;
 import com.base.database.trading.model.TradingOrderShippingDetails;
 import com.base.utils.common.DateUtils;
 import com.base.utils.xmlutils.SamplePaseXml;
+import org.apache.commons.lang.StringEscapeUtils;
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
@@ -15,12 +16,14 @@ import java.util.*;
  */
 public class GetOrdersAPI {
 
-    public static List<TradingOrderGetOrders> parseXMLAndSave(String res) throws Exception {
+    public static Map<String,Object> parseXMLAndSave(String res) throws Exception {
         Document document= DocumentHelper.parseText(res);
         Element root=document.getRootElement();
         Element orderArray=root.element("OrderArray");
+        String totalPage=SamplePaseXml.getSpecifyElementText(root,"PaginationResult","TotalNumberOfPages");
         List<TradingOrderGetOrders> lists=new ArrayList<TradingOrderGetOrders>();
         Map<String,Object> map=new HashMap();
+        map.put("totalPage",totalPage);
         if(orderArray!=null){
             Iterator<Element> iterator =orderArray.elementIterator("Order");
             TradingOrderShippingDetails sd=new TradingOrderShippingDetails();
@@ -101,18 +104,18 @@ public class GetOrdersAPI {
                     }*/
                    /* map.put(OptionList,optionlist);*/
                     /*getorder.setShippingdetailsId(sd.getId());*/
-                    getorder.setName(SamplePaseXml.getSpecifyElementText(order,"ShippingAddress","Name"));
-                    getorder.setStreet1(SamplePaseXml.getSpecifyElementText(order,"ShippingAddress","Street1"));
-                    getorder.setStreet2(SamplePaseXml.getSpecifyElementText(order,"ShippingAddress","Street2"));
-                    getorder.setCityname(SamplePaseXml.getSpecifyElementText(order,"ShippingAddress","CityName"));
-                    getorder.setStateorprovince(SamplePaseXml.getSpecifyElementText(order,"ShippingAddress","StateOrProvince"));
-                    getorder.setCountry(SamplePaseXml.getSpecifyElementText(order,"ShippingAddress","Country"));
-                    getorder.setCountryname(SamplePaseXml.getSpecifyElementText(order,"ShippingAddress","CountryName"));
-                    getorder.setPhone(SamplePaseXml.getSpecifyElementText(order,"ShippingAddress","Phone"));
-                    getorder.setPostalcode(SamplePaseXml.getSpecifyElementText(order,"ShippingAddress","PostalCode"));
-                    getorder.setAddressid(SamplePaseXml.getSpecifyElementText(order,"ShippingAddress","AddressID"));
-                    getorder.setAddressowner(SamplePaseXml.getSpecifyElementText(order,"ShippingAddress","AddressOwner"));
-                    getorder.setExternaladdressid(SamplePaseXml.getSpecifyElementText(order,"ShippingAddress","ExternalAddressID"));
+                    getorder.setName(StringEscapeUtils.escapeXml(SamplePaseXml.getSpecifyElementText(order,"ShippingAddress","Name")));
+                    getorder.setStreet1(StringEscapeUtils.escapeXml(SamplePaseXml.getSpecifyElementText(order,"ShippingAddress","Street1")));
+                    getorder.setStreet2(StringEscapeUtils.escapeXml(SamplePaseXml.getSpecifyElementText(order,"ShippingAddress","Street2")));
+                    getorder.setCityname(StringEscapeUtils.escapeXml(SamplePaseXml.getSpecifyElementText(order,"ShippingAddress","CityName")) );
+                    getorder.setStateorprovince(StringEscapeUtils.escapeXml(SamplePaseXml.getSpecifyElementText(order,"ShippingAddress","StateOrProvince")));
+                    getorder.setCountry(StringEscapeUtils.escapeXml(SamplePaseXml.getSpecifyElementText(order,"ShippingAddress","Country")));
+                    getorder.setCountryname(StringEscapeUtils.escapeXml(SamplePaseXml.getSpecifyElementText(order,"ShippingAddress","CountryName")));
+                    getorder.setPhone(StringEscapeUtils.escapeXml(SamplePaseXml.getSpecifyElementText(order,"ShippingAddress","Phone")));
+                    getorder.setPostalcode(StringEscapeUtils.escapeXml(SamplePaseXml.getSpecifyElementText(order,"ShippingAddress","PostalCode")));
+                    getorder.setAddressid(StringEscapeUtils.escapeXml(SamplePaseXml.getSpecifyElementText(order,"ShippingAddress","AddressID")));
+                    getorder.setAddressowner(StringEscapeUtils.escapeXml(SamplePaseXml.getSpecifyElementText(order,"ShippingAddress","AddressOwner")));
+                    getorder.setExternaladdressid(StringEscapeUtils.escapeXml(SamplePaseXml.getSpecifyElementText(order,"ShippingAddress","ExternalAddressID")));
                     while(it.hasNext()){
                         //-------------------解析order下面的transaction----------------------------------
                         Element transaction=it.next();
@@ -137,13 +140,14 @@ public class GetOrdersAPI {
                             getorder.setActualhandlingcost(Double.valueOf(ActualHandlingCost));
                         }
                         getorder.setShipmenttrackingnumber(SamplePaseXml.getSpecifyElementText(transaction,"ShippingDetails","ShipmentTrackingDetails","ShipmentTrackingNumber"));
+                        getorder.setShippingcarrierused(SamplePaseXml.getSpecifyElementText(transaction,"ShippingDetails","ShipmentTrackingDetails","ShippingCarrierUsed"));
                         lists.add(getorder);
                     }
                 }
 
             }
         }
-       /* map.put(OrderList,lists);*/
-        return lists;
+        map.put("OrderList",lists);
+        return map;
     }
 }

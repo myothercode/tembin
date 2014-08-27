@@ -21,9 +21,9 @@ public class GetAccountAPI {
         Element root=document.getRootElement();
         Element AccountEntries=root.element("AccountEntries");
         if(AccountEntries!=null){
-            TradingOrderGetAccount getAccount=new TradingOrderGetAccount();
             Iterator iterator=AccountEntries.elementIterator("AccountEntry");
             while(iterator.hasNext()){
+                TradingOrderGetAccount getAccount=new TradingOrderGetAccount();
                 Element account= (Element) iterator.next();
                 getAccount.setAccountdetailsentrytype(SamplePaseXml.getSpecifyElementText(account,"AccountDetailsEntryType"));
                 getAccount.setDescription(SamplePaseXml.getSpecifyElementText(account,"Description"));

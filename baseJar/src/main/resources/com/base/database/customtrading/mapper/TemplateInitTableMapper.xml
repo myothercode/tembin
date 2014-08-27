@@ -13,6 +13,7 @@
       <result column="template_html" property="templateHtml" jdbcType="LONGVARCHAR" />
       <result column="t_level" property="tLevel" jdbcType="VARCHAR" />
       <result column="template_name" jdbcType="VARCHAR" property="templateName" />
+      <result column="template_view_url" jdbcType="VARCHAR" property="templateViewUrl" />
   </resultMap>
 
     <select id="selectByTemplateInitTableList" resultMap="BaseResultMap" parameterType="map">

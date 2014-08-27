@@ -17,4 +17,6 @@ public interface ITradingOrderGetOrders {
     List<OrderGetOrdersQuery> selectOrderGetOrdersByGroupList(Map map, Page page);
 
     List<TradingOrderGetOrders> selectOrderGetOrdersByOrderId(String orderId);
+
+    List<TradingOrderGetOrders> selectOrderGetOrdersByTransactionId(String TransactionId);
 }

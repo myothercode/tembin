@@ -5,7 +5,7 @@ import com.base.database.trading.model.TradingShippingdetails;
 /**
  * Created by Administrtor on 2014/8/1.
  */
-public class ShippingdetailsQuery  extends TradingShippingdetails{
+public class ShippingdetailsQuery  extends TradingShippingdetails {
 
     private String siteName;
 

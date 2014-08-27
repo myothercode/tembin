@@ -17,5 +17,7 @@ public interface ITradingDescriptionDetails {
 
     List<DescriptionDetailsWithBLOBsQuery> selectByDescriptionDetailsList(Map map);
 
+    TradingDescriptionDetailsWithBLOBs selectById(Long id);
+
     List<DescriptionDetailsWithBLOBsQuery> selectByDescriptionDetailsList(Map map,Page page);
 }

@@ -17,6 +17,7 @@
 
 			isrowClick: false,//是否是行单击(注:如果为true,columnData中的列单击将失效)
 			rowClickMethod: null,//行单击事件'
+            afterLoadTable:null,//table加载完成以后执行的方法
             isBindDataToTr:false,//是否将行数据绑定到tr，供加载列表后调用
 			selectDataNow: false,//是否立刻查询数据
 
@@ -61,6 +62,10 @@
 			}
 			this.setRowClass();//设置行样式
 		}
+        /**设置当table加载完成以后需要执行的方法*/
+        if(option.afterLoadTable!=null && $.isFunction(option.afterLoadTable)){
+            option['afterLoadTable']();
+        }
 	};
 
 	//加载数据

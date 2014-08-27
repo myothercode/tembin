@@ -86,6 +86,14 @@ public class ItemController extends BaseAction{
     private ITradingAddItem iTradingAddItem;
     @Autowired
     private ITradingPictures iTradingPictures;
+    @Autowired
+    private IUsercontrollerEbayAccount iUsercontrollerEbayAccount;
+    @Autowired
+    private ITradingTemplateInitTable iTradingTemplateInitTable;
+    @Autowired
+    private ITradingDescriptionDetails iTradingDescriptionDetails;
+    @Autowired
+    private ITradingTimerListing iTradingTimerListing;
 
     /**
      * 商品展示列表
@@ -121,7 +129,8 @@ public class ItemController extends BaseAction{
         modelMap.put("siteList",lidata);
 
         SessionVO c= SessionCacheSupport.getSessionVO();
-        List<PublicUserConfig> ebayList = DataDictionarySupport.getPublicUserConfigByType(DataDictionarySupport.PUBLIC_DATA_DICT_PAYPAL, c.getId());
+        //List<PublicUserConfig> ebayList = DataDictionarySupport.getPublicUserConfigByType(DataDictionarySupport.PUBLIC_DATA_DICT_PAYPAL, c.getId());
+        List<UsercontrollerEbayAccount> ebayList = this.iUsercontrollerEbayAccount.selectUsercontrollerEbayAccountByUserId(c.getId());
         modelMap.put("ebayList",ebayList);
 
         return forword("item/addItem",modelMap);
@@ -134,14 +143,19 @@ public class ItemController extends BaseAction{
         List<TradingDataDictionary> lidata = DataDictionarySupport.getTradingDataDictionaryByType(DataDictionarySupport.DATA_DICT_SITE);
         modelMap.put("siteList",lidata);
 
-        SessionVO c= SessionCacheSupport.getSessionVO();
-        List<PublicUserConfig> ebayList = DataDictionarySupport.getPublicUserConfigByType(DataDictionarySupport.PUBLIC_DATA_DICT_PAYPAL, c.getId());
-        modelMap.put("ebayList",ebayList);
+
         TradingItem ti = null;
         if(id!=null&&!"".equals(id)){
             ti = this.iTradingItem.selectById(Long.parseLong(id));
         }
         modelMap.put("item",ti);
+
+        SessionVO c= SessionCacheSupport.getSessionVO();
+        //List<PublicUserConfig> ebayList = DataDictionarySupport.getPublicUserConfigByType(DataDictionarySupport.PUBLIC_DATA_DICT_PAYPAL, c.getId());
+        UsercontrollerEbayAccount ebay = this.iUsercontrollerEbayAccount.selectById(Long.parseLong(ti.getEbayAccount().toString()));
+        List<UsercontrollerEbayAccount> ebayList = new ArrayList();
+        ebayList.add(ebay);
+        modelMap.put("ebayList",ebayList);
 
         List<TradingPicturedetails> litp = this.iTradingPictureDetails.selectByParentId(Long.parseLong(id));
         for(TradingPicturedetails tp : litp){
@@ -231,7 +245,7 @@ public class ItemController extends BaseAction{
             AjaxSupport.sendSuccessText("message", "操作成功！");
         }else{
             //保存商品信息到数据库中
-            this.iTradingItem.saveItem(item,tradingItem);
+            Map itemMap = this.iTradingItem.saveItem(item,tradingItem);
 
             TradingPaypal tpay = this.iTradingPayPal.selectById(tradingItem.getPayId());
             TradingItemAddress tadd = this.iTradingItemAddress.selectById(tradingItem.getItemLocationId());
@@ -260,9 +274,32 @@ public class ItemController extends BaseAction{
                 ShippingDetails sd = this.iTradingShippingDetails.toXmlPojo(tradingItem.getShippingDeailsId());
                 item.setShippingDetails(sd);
             }
+            String template = "";
+            if(tradingItem.getTemplateId()!=null){//如果选择了模板
+                TradingTemplateInitTable tttt = this.iTradingTemplateInitTable.selectById(tradingItem.getTemplateId());
+                template = tttt.getTemplateHtml();
+                template.replace("{ProductDetail}",item.getDescription());
+                if(tttt!=null&&tradingItem.getSellerItemInfoId()!=null){//如果选择了卖家描述
+                    TradingDescriptionDetailsWithBLOBs tdd = this.iTradingDescriptionDetails.selectById(tradingItem.getSellerItemInfoId());
+                    template.replace("{ShippingDetail}",tdd.getShippingInfo());
+                    template.replace("{SalesPolicy}",tdd.getFeedbackInfo());
+                    template.replace("{AboutUs}",tdd.getGuaranteeInfo());
+                    template.replace("{ContactUs}",tdd.getContactInfo());
+                    template.replace("{ProductDetail}",tdd.getPayInfo());
+                }
+            }else{//未选择模板，
+                template+=item.getDescription()+"</br>";
+                if(tradingItem.getSellerItemInfoId()!=null){//如果选择了卖家描述
+                    TradingDescriptionDetailsWithBLOBs tdd = this.iTradingDescriptionDetails.selectById(tradingItem.getSellerItemInfoId());
 
-
-
+                    template+=tdd.getShippingInfo()+"</br>";
+                    template+=tdd.getFeedbackInfo()+"</br>";
+                    template+=tdd.getGuaranteeInfo()+"</br>";
+                    template+=tdd.getContactInfo()+"</br>";
+                    template+=tdd.getPayInfo()+"</br>";
+                }
+            }
+            item.setDescription(template);
 
             if(request.getParameter("SecondaryCategory.CategoryID")==null||"".equals(request.getParameter("SecondaryCategory.CategoryID"))){
                 item.setSecondaryCategory(null);
@@ -326,62 +363,111 @@ public class ItemController extends BaseAction{
             item.setListingType(item.getListingType().equals("2")?"FixedPriceItem":item.getListingType());
 
             String xml="";
-            if(item.getListingType().equals("Chinese")){
-                AddItemRequest addItem = new AddItemRequest();
-                addItem.setXmlns("urn:ebay:apis:eBLBaseComponents");
-                addItem.setErrorLanguage("en_US");
-                addItem.setWarningLevel("High");
-                RequesterCredentials rc = new RequesterCredentials();
-                rc.seteBayAuthToken("AgAAAA**AQAAAA**aAAAAA**wV1JUQ**nY+sHZ2PrBmdj6wVnY+sEZ2PrA2dj6wFk4GhCpGGoA+dj6x9nY+seQ**cx0CAA**AAMAAA**2kuzIn+bBej1QDsDFfI2N74mj8psZYNYrtgX97fzWSGXO7EjvdlE9leu9HCY1bR9wdrzlAE7AKcT9Oz5BDNZbNQLS+uoifmNUM47lSqxWeYTQS2GtMK25LPYhxY+OQp6UVZ8lUh6Oqr91ub03emzufuZHo+6KSNJfNXMtOBVaB7PDeBQyNWoFBO0/LYiS5ql6HXB7vCj0W+K/iT4t3aPs5KlXAXjewM/Sa+nUDtjT9SseqrKrxdZx5fkAePeSrBs229tdCrkTtE0n+ZE9ppwJjElZpu7yfQL44McNa16KBxYYO0PnX7ENg2yMxf3H4aji0BEfB41lrC1LwhmNSebJGrJXRQVS9jmZyDqYiBdn1t536va/LPTP8kc3GZ7hnZRJuhMxoGGgx4ev5Hip0L7dk6cAPKHIkHUIjfA5pwVHEJZpvea+7uvwAh5pj9U7r6rmB9FXH2G9l+F5SytYlIXsDjwNtrEN53k5HrM0vhnGdd7pUwvyu7Nu4U5aPkZQZjTr6OrTWioDsZZwEz+pf0scw0IYweMhicCqMTNbvkJsj2cikX49C6XSAcoUyrGtGa11vFChrifmq74dPZmUEtT1hDtwL1Ix3VPyZcJtTukKljxa0W0IwIe676X5HmiGhvk5qPPUImkXcZdQUK1gMdZmw0seMl5xmFG33kKVSD9H0p0JAEF4lOcDvjADQZtwLXY3qIhvYcKdOrIffrUAURnJRYnrB/MixizWvw252xBn9tmxpm68O3KsGBzcUwEB0Su");
-                addItem.setRequesterCredentials(rc);
-                addItem.setItem(item);
-                xml = PojoXmlUtil.pojoToXml(addItem);
-                xml = "<?xml version=\"1.0\" encoding=\"utf-8\"?>"+xml;
-            }else{
-                AddFixedPriceItemRequest addItem = new AddFixedPriceItemRequest();
-                addItem.setXmlns("urn:ebay:apis:eBLBaseComponents");
-                addItem.setErrorLanguage("en_US");
-                addItem.setWarningLevel("High");
-                RequesterCredentials rc = new RequesterCredentials();
-                rc.seteBayAuthToken("AgAAAA**AQAAAA**aAAAAA**wV1JUQ**nY+sHZ2PrBmdj6wVnY+sEZ2PrA2dj6wFk4GhCpGGoA+dj6x9nY+seQ**cx0CAA**AAMAAA**2kuzIn+bBej1QDsDFfI2N74mj8psZYNYrtgX97fzWSGXO7EjvdlE9leu9HCY1bR9wdrzlAE7AKcT9Oz5BDNZbNQLS+uoifmNUM47lSqxWeYTQS2GtMK25LPYhxY+OQp6UVZ8lUh6Oqr91ub03emzufuZHo+6KSNJfNXMtOBVaB7PDeBQyNWoFBO0/LYiS5ql6HXB7vCj0W+K/iT4t3aPs5KlXAXjewM/Sa+nUDtjT9SseqrKrxdZx5fkAePeSrBs229tdCrkTtE0n+ZE9ppwJjElZpu7yfQL44McNa16KBxYYO0PnX7ENg2yMxf3H4aji0BEfB41lrC1LwhmNSebJGrJXRQVS9jmZyDqYiBdn1t536va/LPTP8kc3GZ7hnZRJuhMxoGGgx4ev5Hip0L7dk6cAPKHIkHUIjfA5pwVHEJZpvea+7uvwAh5pj9U7r6rmB9FXH2G9l+F5SytYlIXsDjwNtrEN53k5HrM0vhnGdd7pUwvyu7Nu4U5aPkZQZjTr6OrTWioDsZZwEz+pf0scw0IYweMhicCqMTNbvkJsj2cikX49C6XSAcoUyrGtGa11vFChrifmq74dPZmUEtT1hDtwL1Ix3VPyZcJtTukKljxa0W0IwIe676X5HmiGhvk5qPPUImkXcZdQUK1gMdZmw0seMl5xmFG33kKVSD9H0p0JAEF4lOcDvjADQZtwLXY3qIhvYcKdOrIffrUAURnJRYnrB/MixizWvw252xBn9tmxpm68O3KsGBzcUwEB0Su");
-                addItem.setRequesterCredentials(rc);
-                addItem.setItem(item);
-                xml = PojoXmlUtil.pojoToXml(addItem);
-                xml = "<?xml version=\"1.0\" encoding=\"utf-8\"?>"+xml;
+            //当选择多账号时刊登
+            String [] paypals = request.getParameterValues("ebayAccounts");
+            if("timeSave".equals(mouth)){//定时刊登
+                for (String paypal : paypals) {
+                    UsercontrollerEbayAccount ua = this.iUsercontrollerEbayAccount.selectById(Long.parseLong(paypal));
+                    PublicUserConfig pUserConfig = DataDictionarySupport.getPublicUserConfigByID(ua.getPaypalAccountId());
+                    //如果配置ＥＢＡＹ账号时，选择强制使用paypal账号则用该账号
+                    //item.setPayPalEmailAddress(pUserConfig.getConfigValue());
+                    //定时刊登时，需要获取保存到数据库中的ＩＤ
+                    if (item.getListingType().equals("Chinese")) {
+                        AddItemRequest addItem = new AddItemRequest();
+                        addItem.setXmlns("urn:ebay:apis:eBLBaseComponents");
+                        addItem.setErrorLanguage("en_US");
+                        addItem.setWarningLevel("High");
+                        RequesterCredentials rc = new RequesterCredentials();
+                        rc.seteBayAuthToken(ua.getEbayToken());
+                        addItem.setRequesterCredentials(rc);
+                        addItem.setItem(item);
+                        xml = PojoXmlUtil.pojoToXml(addItem);
+                        xml = "<?xml version=\"1.0\" encoding=\"utf-8\"?>" + xml;
+                    } else {
+                        AddFixedPriceItemRequest addItem = new AddFixedPriceItemRequest();
+                        addItem.setXmlns("urn:ebay:apis:eBLBaseComponents");
+                        addItem.setErrorLanguage("en_US");
+                        addItem.setWarningLevel("High");
+                        RequesterCredentials rc = new RequesterCredentials();
+                        rc.seteBayAuthToken(ua.getEbayToken());
+                        addItem.setRequesterCredentials(rc);
+                        addItem.setItem(item);
+                        xml = PojoXmlUtil.pojoToXml(addItem);
+                        xml = "<?xml version=\"1.0\" encoding=\"utf-8\"?>" + xml;
+                    }
+                    //得到刊登成功后的ＩＤ
+                    TradingTimerListingWithBLOBs ttl = new TradingTimerListingWithBLOBs();
+                    ttl.setItem(Long.parseLong(itemMap.get(paypal).toString()));
+                    ttl.setTimerMessage(xml);
+                    this.iTradingTimerListing.saveTradingTimer(ttl);
+                    System.out.println(xml);
+                }
+            }else {//立即刊登
+                for (String paypal : paypals) {
+                    UsercontrollerEbayAccount ua = this.iUsercontrollerEbayAccount.selectById(Long.parseLong(paypal));
+                    PublicUserConfig pUserConfig = DataDictionarySupport.getPublicUserConfigByID(ua.getPaypalAccountId());
+                    //如果配置ＥＢＡＹ账号时，选择强制使用paypal账号则用该账号
+                    //item.setPayPalEmailAddress(pUserConfig.getConfigValue());
+                    //定时刊登时，需要获取保存到数据库中的ＩＤ
+                    if (item.getListingType().equals("Chinese")) {
+                        AddItemRequest addItem = new AddItemRequest();
+                        addItem.setXmlns("urn:ebay:apis:eBLBaseComponents");
+                        addItem.setErrorLanguage("en_US");
+                        addItem.setWarningLevel("High");
+                        RequesterCredentials rc = new RequesterCredentials();
+                        rc.seteBayAuthToken(ua.getEbayToken());
+                        addItem.setRequesterCredentials(rc);
+                        addItem.setItem(item);
+                        xml = PojoXmlUtil.pojoToXml(addItem);
+                        xml = "<?xml version=\"1.0\" encoding=\"utf-8\"?>" + xml;
+                    } else {
+                        AddFixedPriceItemRequest addItem = new AddFixedPriceItemRequest();
+                        addItem.setXmlns("urn:ebay:apis:eBLBaseComponents");
+                        addItem.setErrorLanguage("en_US");
+                        addItem.setWarningLevel("High");
+                        RequesterCredentials rc = new RequesterCredentials();
+                        rc.seteBayAuthToken(ua.getEbayToken());
+                        addItem.setRequesterCredentials(rc);
+                        addItem.setItem(item);
+                        xml = PojoXmlUtil.pojoToXml(addItem);
+                        xml = "<?xml version=\"1.0\" encoding=\"utf-8\"?>" + xml;
+                    }
+                    System.out.println(xml);
+                    //Asserts.assertTrue(false, "错误");
+                    UsercontrollerDevAccountExtend d = userInfoService.getDevInfo(1L);
+                    d.setApiSiteid(DataDictionarySupport.getTradingDataDictionaryByID(Long.parseLong(tradingItem.getSite())).getName1());
+                    if (item.getListingType().equals("Chinese")) {
+                        d.setApiCallName(APINameStatic.AddItem);
+                    } else {
+                        d.setApiCallName(APINameStatic.AddFixedPriceItem);
+                    }
+                    //String xml= BindAccountAPI.getSessionID(d.getRunname());
 
+                    AddApiTask addApiTask = new AddApiTask();
+                    Map<String, String> resMap = addApiTask.exec(d, xml, apiUrl);
+                    String r1 = resMap.get("stat");
+                    String res = resMap.get("message");
+                    System.out.println(res);
+                    if ("fail".equalsIgnoreCase(r1)) {
+                        AjaxSupport.sendFailText("fail", "数据已保存，但刊登失败！");
+                        return;
+                    }
+                    String ack = SamplePaseXml.getVFromXmlString(res, "Ack");
+                    if ("Success".equalsIgnoreCase(ack) || "Warning".equalsIgnoreCase(ack)) {
+                        String itemId = SamplePaseXml.getVFromXmlString(res, "ItemID");
+                        tradingItem.setItemId(itemId);
+                        tradingItem.setIsFlag("Success");
+                        this.iTradingItem.saveTradingItem(tradingItem);
+                        AjaxSupport.sendSuccessText("message", "操作成功！");
+                    } else {
+                        String errors = SamplePaseXml.getVFromXmlString(res, "Errors");
+                        //logger.error("获取apisessionid失败!"+errors);
+                        AjaxSupport.sendFailText("fail", "数据已保存，但刊登失败！");
+                    }
+                }
             }
-            System.out.println(xml);
-            //Asserts.assertTrue(false, "错误");
-            UsercontrollerDevAccountExtend d = userInfoService.getDevInfo(1L);
-            d.setApiSiteid(DataDictionarySupport.getTradingDataDictionaryByID(Long.parseLong(tradingItem.getSite())).getName1());
-            if(item.getListingType().equals("Chinese")){
-                d.setApiCallName(APINameStatic.AddItem);
-            }else {
-                d.setApiCallName(APINameStatic.AddFixedPriceItem);
-            }
-            //String xml= BindAccountAPI.getSessionID(d.getRunname());
 
-            AddApiTask addApiTask = new AddApiTask();
-            Map<String, String> resMap= addApiTask.exec(d, xml, apiUrl);
-            String r1=resMap.get("stat");
-            String res=resMap.get("message");
-            if("fail".equalsIgnoreCase(r1)){
-                AjaxSupport.sendFailText("fail","数据已保存，但刊登失败！");
-                return;
-            }
-            String ack = SamplePaseXml.getVFromXmlString(res,"Ack");
-            if("Success".equalsIgnoreCase(ack)||"Warning".equalsIgnoreCase(ack)){
-                String itemId= SamplePaseXml.getVFromXmlString(res, "ItemID");
-                tradingItem.setItemId(itemId);
-                tradingItem.setIsFlag("Success");
-                this.iTradingItem.saveTradingItem(tradingItem);
-                AjaxSupport.sendSuccessText("message", "操作成功！");
-            }else {
-                String errors=SamplePaseXml.getVFromXmlString(res,"Errors");
-                //logger.error("获取apisessionid失败!"+errors);
-                AjaxSupport.sendFailText("fail","数据已保存，但刊登失败！");
-            }
+
         }
-
     }
 }

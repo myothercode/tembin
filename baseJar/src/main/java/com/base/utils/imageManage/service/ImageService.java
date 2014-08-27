@@ -8,6 +8,9 @@ import java.util.Map;
 public interface ImageService {
     String getImageDir();
 
+    /**获取图片前缀*/
+    String getImageUrlPrefix();
+
     String getImageUserDir();
 
     Map<String,String> getFTPINfo();

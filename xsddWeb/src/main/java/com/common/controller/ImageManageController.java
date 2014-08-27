@@ -1,6 +1,10 @@
 package com.common.controller;
 
+import com.baidu.ueditor.upload.StorageManager;
+import com.base.utils.common.MyStringUtil;
+import com.base.utils.common.ObjectUtils;
 import com.base.utils.imageManage.service.ImageService;
+import com.common.base.utils.ajax.AjaxResponse;
 import org.apache.http.HttpResponse;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +20,7 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 
 /**
@@ -29,12 +34,19 @@ public class ImageManageController {
 
     @Autowired
     private ImageService imageService;
-/*    @RequestMapping("/upLoadImage.do")
-    public void upLoadImage(@RequestParam("upfile")MultipartFile[] multipartFiles){
-        for (MultipartFile multipartFile : multipartFiles){
-            System.out.println(multipartFile.getName());
+    @RequestMapping("/upLoadImage.do")
+    public void upLoadImage(@RequestParam("multipartFiles")MultipartFile[] multipartFiles,HttpServletResponse response) throws IOException {
+
+        if(ObjectUtils.isLogicalNull(multipartFiles)){
+            AjaxResponse.sendText(response,"nofile");
+            return;
         }
-    }*/
+        MultipartFile multipartFile = multipartFiles[0];
+        String stuff= MyStringUtil.getExtension(multipartFile.getOriginalFilename(),"");
+        String r = StorageManager.ftpUploadFile(multipartFile.getInputStream(),"templateViewIMG",stuff);
+        if(r==null){r="err";}
+        AjaxResponse.sendText(response,"/templateViewIMG/"+r);
+    }
 @RequestMapping("/getImageStream.do")
 @ResponseBody
 public void getImageStream(@RequestParam("path") String path,HttpServletResponse response) throws Exception{

@@ -1,14 +1,13 @@
 package com.module.controller;
 
-import com.base.database.trading.model.tradingTemplateInitTable;
+import com.base.database.trading.model.TradingTemplateInitTable;
 import com.base.domains.CommonParmVO;
-import com.base.domains.SessionVO;
 import com.base.domains.querypojos.TemplateInitTableQuery;
 import com.base.mybatis.page.Page;
 import com.base.mybatis.page.PageJsonBean;
 import com.base.utils.annotations.AvoidDuplicateSubmission;
-import com.base.utils.cache.SessionCacheSupport;
 import com.base.utils.common.ObjectUtils;
+import com.base.utils.imageManage.service.ImageService;
 import com.common.base.utils.ajax.AjaxSupport;
 import com.common.base.web.BaseAction;
 import com.trading.service.ITradingTemplateInitTable;
@@ -34,6 +33,9 @@ public class TemplateInitTableController extends BaseAction{
 
     @Autowired
     private ITradingTemplateInitTable iTradingTemplateInitTable;
+    @Autowired
+    private ImageService imageService;
+
     /**
      * 模板模块
      * @param request
@@ -44,6 +46,19 @@ public class TemplateInitTableController extends BaseAction{
     @RequestMapping("/TemplateInitTableList.do")
     public ModelAndView TemplateInitTableList(HttpServletRequest request,HttpServletResponse response,ModelMap modelMap){
         return forword("module/templateinittable/templateinittableList",modelMap);
+    }
+
+    /**
+     * 选择模板
+     * @param request
+     * @param response
+     * @param modelMap
+     * @return
+     */
+    @RequestMapping("/selectTemplate.do")
+    public ModelAndView selectTemplate(HttpServletRequest request,HttpServletResponse response,ModelMap modelMap){
+        modelMap.put("imageUrlPrefix",imageService.getImageUrlPrefix());
+        return forword("module/templateinittable/selectTemplate",modelMap);
     }
 
     /**获取list数据的ajax方法*/
@@ -71,6 +86,8 @@ public class TemplateInitTableController extends BaseAction{
     @RequestMapping("/addTemplateInitTable.do")
     @AvoidDuplicateSubmission(needSaveToken = true)
     public ModelAndView addTemplateInitTable(HttpServletRequest request,HttpServletResponse response,@ModelAttribute( "initSomeParmMap" )ModelMap modelMap){
+        modelMap.put("imageUrlPrefix",imageService.getImageUrlPrefix());
+       // modelMap.put("currUserLoginID",imageService.getImageUserDir());
         return forword("module/templateinittable/addTemplateInitTable",modelMap);
     }
     /**
@@ -87,6 +104,7 @@ public class TemplateInitTableController extends BaseAction{
         m.put("id",request.getParameter("id"));
         List<TemplateInitTableQuery> TemplateInitTableli = this.iTradingTemplateInitTable.selectByTemplateInitTableList(m);
         modelMap.put("TemplateInitTable",TemplateInitTableli.get(0));
+        modelMap.put("imageUrlPrefix",imageService.getImageUrlPrefix());
         return forword("module/templateinittable/addTemplateInitTable",modelMap);
     }
 
@@ -112,13 +130,15 @@ public class TemplateInitTableController extends BaseAction{
         String templatehtml=request.getParameter("templateHtml");
         String tLevel=request.getParameter("level");
         String templateName=request.getParameter("templateName");
-        tradingTemplateInitTable tm=new tradingTemplateInitTable();
+        String templateViewUrl=request.getParameter("templateViewUrl");
+        TradingTemplateInitTable tm=new TradingTemplateInitTable();
         if(!ObjectUtils.isLogicalNull(id)){
             tm.setId(Long.parseLong(id));
         }
         tm.setTemplateHtml(templatehtml);
         tm.setTLevel(tLevel);
         tm.setTemplateName(templateName);
+        tm.setTemplateViewUrl(templateViewUrl);
         iTradingTemplateInitTable.saveTemplateInitTable(tm);
         AjaxSupport.sendSuccessText("message", "操作成功！");
     }

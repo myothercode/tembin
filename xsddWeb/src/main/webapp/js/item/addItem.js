@@ -148,6 +148,90 @@ function reSortItemPic(){
     domArr=null;
     m.clear();
 }
+function getLocalStorage(name){
+    var a="",b=0;
+    $("input[type='radio'][name='"+name+"']").each(function(i,d){
+        if(localStorage.getItem(name+"_userselect." + $(d).val()) != null){
+            if(parseInt(localStorage.getItem(name+"_userselect." + $(d).val()))>b){
+                b=parseInt(localStorage.getItem(name+"_userselect." + $(d).val()));
+                a=$(d).val();
+            }
+        }
+    });
+    return a;
+}
+//把用户常用的选择信息记录下来
+function checkLocalStorage(){
+    $("input[type='radio'][name='buyerId']").each(function(i,d){
+        if($(d).prop("checked")) {
+            if (localStorage.getItem("buyerId_userselect." + $(d).val()) != null) {
+                localStorage.setItem("buyerId_userselect." + $(d).val(), parseInt(localStorage.getItem("buyerId_userselect." + $(d).val())) + 1);
+            } else {
+                localStorage.setItem("buyerId_userselect." + $(d).val(), 1);
+            }
+        }
+    });
+
+    $("input[type='radio'][name='discountpriceinfoId']").each(function(i,d){
+        if($(d).prop("checked")) {
+            if (localStorage.getItem("discountpriceinfoId_userselect." + $(d).val()) != null) {
+                localStorage.setItem("discountpriceinfoId_userselect." + $(d).val(), parseInt(localStorage.getItem("discountpriceinfoId_userselect." + $(d).val())) + 1);
+            } else {
+                localStorage.setItem("discountpriceinfoId_userselect." + $(d).val(), 1);
+            }
+        }
+    });
+
+    $("input[type='radio'][name='itemLocationId']").each(function(i,d){
+        if($(d).prop("checked")) {
+            if (localStorage.getItem("itemLocationId_userselect." + $(d).val()) != null) {
+                localStorage.setItem("itemLocationId_userselect." + $(d).val(), parseInt(localStorage.getItem("itemLocationId_userselect." + $(d).val())) + 1);
+            } else {
+                localStorage.setItem("itemLocationId_userselect." + $(d).val(), 1);
+            }
+        }
+    });
+
+    $("input[type='radio'][name='payId']").each(function(i,d){
+        if($(d).prop("checked")) {
+            if (localStorage.getItem("payId_userselect." + $(d).val()) != null) {
+                localStorage.setItem("payId_userselect." + $(d).val(), parseInt(localStorage.getItem("payId_userselect." + $(d).val())) + 1);
+            } else {
+                localStorage.setItem("payId_userselect." + $(d).val(), 1);
+            }
+        }
+    });
+
+    $("input[type='radio'][name='returnpolicyId']").each(function(i,d){
+        if($(d).prop("checked")) {
+            if (localStorage.getItem("returnpolicyId_userselect." + $(d).val()) != null) {
+                localStorage.setItem("returnpolicyId_userselect." + $(d).val(), parseInt(localStorage.getItem("returnpolicyId_userselect." + $(d).val())) + 1);
+            } else {
+                localStorage.setItem("returnpolicyId_userselect." + $(d).val(), 1);
+            }
+        }
+    });
+
+    $("input[type='radio'][name='shippingDeailsId']").each(function(i,d){
+        if($(d).prop("checked")) {
+            if (localStorage.getItem("shippingDeailsId_userselect." + $(d).val()) != null) {
+                localStorage.setItem("shippingDeailsId_userselect." + $(d).val(), parseInt(localStorage.getItem("shippingDeailsId_userselect." + $(d).val())) + 1);
+            } else {
+                localStorage.setItem("shippingDeailsId_userselect." + $(d).val(), 1);
+            }
+        }
+    });
+    $("input[type='radio'][name='sellerItemInfoId']").each(function(i,d){
+        if($(d).prop("checked")) {
+            if (localStorage.getItem("sellerItemInfoId_userselect." + $(d).val()) != null) {
+                localStorage.setItem("sellerItemInfoId_userselect." + $(d).val(), parseInt(localStorage.getItem("sellerItemInfoId_userselect." + $(d).val())) + 1);
+            } else {
+                localStorage.setItem("sellerItemInfoId_userselect." + $(d).val(), 1);
+            }
+        }
+    });
+}
+
 /**保存并提交*/
 function saveData(objs,name) {
     asyCombox2InputData();//同步comebox的数值
@@ -204,6 +288,7 @@ function saveData(objs,name) {
 
 
     $("#Description").val(myDescription.getContent());
+    checkLocalStorage();
     var data = $('#form').serialize();
     var urll = "/xsddWeb/saveItem.do";
     $(objs).attr("disabled",true);

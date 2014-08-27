@@ -67,6 +67,7 @@
     <result column="item_name" jdbcType="VARCHAR" property="itemName" />
     <result column="is_flag" jdbcType="VARCHAR" property="isFlag" />
     <result column="item_id" jdbcType="VARCHAR" property="itemId" />
+    <result column="template_id" jdbcType="BIGINT" property="templateId" />
   </resultMap>
   <resultMap extends="BaseResultMap" id="ResultMapWithBLOBs" type="com.base.database.trading.model.TradingItem">
     <!--
@@ -156,7 +157,7 @@
     StartPrice, SubTitle, TaxCategory, Title, UseRecommendedProduct, UseTaxTable, UUID, 
     VIN, VRM, create_user, create_time, local_uuid, item_location_id, buyer_id, pay_id, 
     returnpolicy_id, DiscountPriceInfo_id, Seller_item_info_id, shipping_deails_id, ebay_account, 
-    item_name, is_flag, item_id
+    item_name, is_flag, item_id, template_id
   </sql>
   <sql id="Blob_Column_List">
     <!--
@@ -260,7 +261,7 @@
       pay_id, returnpolicy_id, DiscountPriceInfo_id, 
       Seller_item_info_id, shipping_deails_id, ebay_account, 
       item_name, is_flag, item_id, 
-      Description)
+      template_id, Description)
     values (#{id,jdbcType=BIGINT}, #{applicationdata,jdbcType=VARCHAR}, #{attributesetarray,jdbcType=VARCHAR}, 
       #{autopay,jdbcType=VARCHAR}, #{bestofferenabled,jdbcType=VARCHAR}, #{categorybasedattributesprefill,jdbcType=VARCHAR}, 
       #{categorymappingallowed,jdbcType=VARCHAR}, #{conditiondescription,jdbcType=VARCHAR}, 
@@ -283,7 +284,7 @@
       #{payId,jdbcType=BIGINT}, #{returnpolicyId,jdbcType=BIGINT}, #{discountpriceinfoId,jdbcType=BIGINT}, 
       #{sellerItemInfoId,jdbcType=BIGINT}, #{shippingDeailsId,jdbcType=BIGINT}, #{ebayAccount,jdbcType=VARCHAR}, 
       #{itemName,jdbcType=VARCHAR}, #{isFlag,jdbcType=VARCHAR}, #{itemId,jdbcType=VARCHAR}, 
-      #{description,jdbcType=LONGVARCHAR})
+      #{templateId,jdbcType=BIGINT}, #{description,jdbcType=LONGVARCHAR})
       <selectKey resultType="long" keyProperty="id" order="AFTER">
           SELECT LAST_INSERT_ID()
       </selectKey>
@@ -478,6 +479,9 @@
       <if test="itemId != null">
         item_id,
       </if>
+      <if test="templateId != null">
+        template_id,
+      </if>
       <if test="description != null">
         Description,
       </if>
@@ -665,6 +669,9 @@
       </if>
       <if test="itemId != null">
         #{itemId,jdbcType=VARCHAR},
+      </if>
+      <if test="templateId != null">
+        #{templateId,jdbcType=BIGINT},
       </if>
       <if test="description != null">
         #{description,jdbcType=LONGVARCHAR},
@@ -874,6 +881,9 @@
       <if test="record.itemId != null">
         item_id = #{record.itemId,jdbcType=VARCHAR},
       </if>
+      <if test="record.templateId != null">
+        template_id = #{record.templateId,jdbcType=BIGINT},
+      </if>
       <if test="record.description != null">
         Description = #{record.description,jdbcType=LONGVARCHAR},
       </if>
@@ -949,6 +959,7 @@
       item_name = #{record.itemName,jdbcType=VARCHAR},
       is_flag = #{record.isFlag,jdbcType=VARCHAR},
       item_id = #{record.itemId,jdbcType=VARCHAR},
+      template_id = #{record.templateId,jdbcType=BIGINT},
       Description = #{record.description,jdbcType=LONGVARCHAR}
     <if test="_parameter != null">
       <include refid="Update_By_Example_Where_Clause" />
@@ -1020,7 +1031,8 @@
       ebay_account = #{record.ebayAccount,jdbcType=VARCHAR},
       item_name = #{record.itemName,jdbcType=VARCHAR},
       is_flag = #{record.isFlag,jdbcType=VARCHAR},
-      item_id = #{record.itemId,jdbcType=VARCHAR}
+      item_id = #{record.itemId,jdbcType=VARCHAR},
+      template_id = #{record.templateId,jdbcType=BIGINT}
     <if test="_parameter != null">
       <include refid="Update_By_Example_Where_Clause" />
     </if>
@@ -1212,6 +1224,9 @@
       <if test="itemId != null">
         item_id = #{itemId,jdbcType=VARCHAR},
       </if>
+      <if test="templateId != null">
+        template_id = #{templateId,jdbcType=BIGINT},
+      </if>
       <if test="description != null">
         Description = #{description,jdbcType=LONGVARCHAR},
       </if>
@@ -1284,6 +1299,7 @@
       item_name = #{itemName,jdbcType=VARCHAR},
       is_flag = #{isFlag,jdbcType=VARCHAR},
       item_id = #{itemId,jdbcType=VARCHAR},
+      template_id = #{templateId,jdbcType=BIGINT},
       Description = #{description,jdbcType=LONGVARCHAR}
     where id = #{id,jdbcType=BIGINT}
   </update>
@@ -1352,7 +1368,8 @@
       ebay_account = #{ebayAccount,jdbcType=VARCHAR},
       item_name = #{itemName,jdbcType=VARCHAR},
       is_flag = #{isFlag,jdbcType=VARCHAR},
-      item_id = #{itemId,jdbcType=VARCHAR}
+      item_id = #{itemId,jdbcType=VARCHAR},
+      template_id = #{templateId,jdbcType=BIGINT}
     where id = #{id,jdbcType=BIGINT}
   </update>
 </mapper>

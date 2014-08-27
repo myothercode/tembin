@@ -4,7 +4,6 @@ import com.base.database.trading.model.TradingOrderGetSellerTransactions;
 import com.base.domains.CommonParmVO;
 import com.base.domains.userinfo.UsercontrollerDevAccountExtend;
 import com.base.domains.userinfo.UsercontrollerEbayAccountExtend;
-import com.base.sampleapixml.APINameStatic;
 import com.base.sampleapixml.BindAccountAPI;
 import com.base.sampleapixml.GetSellerTransactionsAPI;
 import com.base.userinfo.service.UserInfoService;
@@ -58,14 +57,28 @@ public class OrderGetSellerTransactionsController extends BaseAction {
     public void apiOrderSellerTransactions(CommonParmVO commonParmVO,HttpServletRequest request) throws Exception {
         String ebayId=request.getParameter("ebayId");
         Long ebay=Long.valueOf(ebayId);
-        UsercontrollerDevAccountExtend d = userInfoService.getDevInfo(null);//开发者帐号id
+        /*UsercontrollerDevAccountExtend d = userInfoService.getDevInfo(null);//开发者帐号id
         d.setApiSiteid("0");
         d.setApiCallName(APINameStatic.GetSellerTransactions);
         String token=userInfoService.getTokenByEbayID(ebay);
         String xml = BindAccountAPI.GetSellerTransactions(token);//获取接受消息
         AddApiTask addApiTask = new AddApiTask();
-           /* Map<String, String> resMap = addApiTask.exec(d, xml, "https://api.ebay.com/ws/api.dll");*/
-        Map<String, String> resMap = addApiTask.exec(d, xml, apiUrl);
+           *//* Map<String, String> resMap = addApiTask.exec(d, xml, "https://api.ebay.com/ws/api.dll");*//*
+        Map<String, String> resMap = addApiTask.exec(d, xml, apiUrl);*/
+        UsercontrollerDevAccountExtend d=new UsercontrollerDevAccountExtend();
+        d.setApiCallName("GetSellerTransactions");
+        d.setApiCompatibilityLevel("883");
+        d.setApiDevName("5d70d647-b1e2-4c7c-a034-b343d58ca425");
+        d.setApiAppName("sandpoin-1f58-4e64-a45b-56507b02bbeb");
+        d.setApiCertName("936fc911-c05c-455c-8838-3a698f2da43a");
+        d.setApiSiteid("0");
+        String token="AgAAAA**AQAAAA**aAAAAA**/axvUQ**nY+sHZ2PrBmdj6wVnY+sEZ2PrA2dj6AFlIWnC5iEpAidj6x9nY+seQ**I9ABAA**AAMAAA**fxldhpfo5xKyb9gLGSZgZtGZ35LrWfrf6xXxYJN/x1dazCBJKQIPEKf8Jf1YhWtmekAMZAJh4XkfsCuJfo+ROf/KEATGPEJEFI/bK+5DdZRndlY4AY9V3SM+iNPq0kXNAEy7hfWNqpb1PeA1TRWU21O1z07Vcnq+8Rr6XpwUWCL16T+KKsYpeM7CIudbtNY6+jsl0Vp65tOgYLfBmqgz6Q3XwVZXWQ914BetqWQsGudhvxsrwItxQruXZgOgiUZjJl8fjL1YWIYj+sa3CJPPDJy1l6+/NRMfD7cbfMbaF4m5tCXgcziyq/IQVnJHHxonUvNJj6zOQD/j0baLBdqOz+bGEWOSaPjEyRLvpwPfXVahl41OjJmKTqQTT1otJMw0LtDIWuhE6VhsQqFD79zw4GzEUrgWdjf9GUaHiirsC3U+1XFPiuA29djDJS9Rk8flXxZJstCuPCX9V0L8fcTiqrKr6k5c+yE2doyBV5FkM5JfJ+SJLk6r3qiIBQFwpvPQc/+R6UYhvY8msN1TiIVEQiBNAH1VfjRAq+SAmKhWW2UP/fOgy8aop2W/HnpG89WQ3UDIFRkOWijU/sepdwGVVYvGvtPEd9xHX1CZO6ZIJ6pMdPTaHxisPSQxJGvZ1GJW/daKgeNbSDDwoKYkzrG5CGJysOj3MOWeJNXKDbu9scB5nfiOX7JLVKurr1p0zxWXF4Mhhk3MWfqjP2SYYL3RIiTDKXHZiju4LluIxUcx9VDo85wXGV6JdO5xT4VrLgEA";
+        String xml = BindAccountAPI.GetSellerTransactions(token);//获取接受消息
+        AddApiTask addApiTask = new AddApiTask();
+        /* Map<String, String> resMap = addApiTask.exec(d, xml, "https://api.ebay.com/ws/api.dll");*/
+        Map<String, String> resMap = addApiTask.exec(d, xml, "https://api.sandbox.ebay.com/ws/api.dll");
+
+        //------------------------
         String r1 = resMap.get("stat");
         String res = resMap.get("message");
         if ("fail".equalsIgnoreCase(r1)) {

@@ -16,7 +16,7 @@ public interface ITradingItem {
 
     TradingItem toDAOPojo(Item item) throws Exception;
 
-    void saveItem(Item item, TradingItem tradingItem) throws Exception;
+    Map saveItem(Item item, TradingItem tradingItem) throws Exception;
 
     List<ItemQuery> selectByItemList(Map map, Page page);
 

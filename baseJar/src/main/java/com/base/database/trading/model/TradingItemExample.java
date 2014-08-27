@@ -4317,6 +4317,66 @@ public class TradingItemExample {
             addCriterion("item_id not between", value1, value2, "itemId");
             return (Criteria) this;
         }
+
+        public Criteria andTemplateIdIsNull() {
+            addCriterion("template_id is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andTemplateIdIsNotNull() {
+            addCriterion("template_id is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andTemplateIdEqualTo(Long value) {
+            addCriterion("template_id =", value, "templateId");
+            return (Criteria) this;
+        }
+
+        public Criteria andTemplateIdNotEqualTo(Long value) {
+            addCriterion("template_id <>", value, "templateId");
+            return (Criteria) this;
+        }
+
+        public Criteria andTemplateIdGreaterThan(Long value) {
+            addCriterion("template_id >", value, "templateId");
+            return (Criteria) this;
+        }
+
+        public Criteria andTemplateIdGreaterThanOrEqualTo(Long value) {
+            addCriterion("template_id >=", value, "templateId");
+            return (Criteria) this;
+        }
+
+        public Criteria andTemplateIdLessThan(Long value) {
+            addCriterion("template_id <", value, "templateId");
+            return (Criteria) this;
+        }
+
+        public Criteria andTemplateIdLessThanOrEqualTo(Long value) {
+            addCriterion("template_id <=", value, "templateId");
+            return (Criteria) this;
+        }
+
+        public Criteria andTemplateIdIn(List<Long> values) {
+            addCriterion("template_id in", values, "templateId");
+            return (Criteria) this;
+        }
+
+        public Criteria andTemplateIdNotIn(List<Long> values) {
+            addCriterion("template_id not in", values, "templateId");
+            return (Criteria) this;
+        }
+
+        public Criteria andTemplateIdBetween(Long value1, Long value2) {
+            addCriterion("template_id between", value1, value2, "templateId");
+            return (Criteria) this;
+        }
+
+        public Criteria andTemplateIdNotBetween(Long value1, Long value2) {
+            addCriterion("template_id not between", value1, value2, "templateId");
+            return (Criteria) this;
+        }
     }
 
     /**

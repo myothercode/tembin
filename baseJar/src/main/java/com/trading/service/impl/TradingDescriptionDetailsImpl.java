@@ -52,6 +52,10 @@ public class TradingDescriptionDetailsImpl implements com.trading.service.ITradi
         ObjectUtils.toInitPojoForInsert(pojo);
         return pojo;
     }
+    @Override
+    public TradingDescriptionDetailsWithBLOBs selectById(Long id){
+        return this.tradingDescriptionDetailsMapper.selectByPrimaryKey(id);
+    }
 
     @Override
     public List<DescriptionDetailsWithBLOBsQuery> selectByDescriptionDetailsList(Map map,Page page) {

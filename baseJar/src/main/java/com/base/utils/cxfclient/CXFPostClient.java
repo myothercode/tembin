@@ -5,6 +5,7 @@ import com.base.utils.httpclient.ApiHeader;
 import org.apache.cxf.jaxws.JaxWsProxyFactoryBean;
 import org.apache.http.message.BasicHeader;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -13,6 +14,7 @@ import java.util.List;
  * Created by Administrtor on 2014/8/22.
  */
 @Component("cxfPostClient")
+@Scope(value = "prototype")
 public class CXFPostClient {
     @Value("${POSTSERVER.WS.URL}")
     private String wsurl;

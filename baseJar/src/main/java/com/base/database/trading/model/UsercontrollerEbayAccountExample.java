@@ -385,6 +385,76 @@ public class UsercontrollerEbayAccountExample {
             return (Criteria) this;
         }
 
+        public Criteria andEbayNameCodeIsNull() {
+            addCriterion("ebay_name_code is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andEbayNameCodeIsNotNull() {
+            addCriterion("ebay_name_code is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andEbayNameCodeEqualTo(String value) {
+            addCriterion("ebay_name_code =", value, "ebayNameCode");
+            return (Criteria) this;
+        }
+
+        public Criteria andEbayNameCodeNotEqualTo(String value) {
+            addCriterion("ebay_name_code <>", value, "ebayNameCode");
+            return (Criteria) this;
+        }
+
+        public Criteria andEbayNameCodeGreaterThan(String value) {
+            addCriterion("ebay_name_code >", value, "ebayNameCode");
+            return (Criteria) this;
+        }
+
+        public Criteria andEbayNameCodeGreaterThanOrEqualTo(String value) {
+            addCriterion("ebay_name_code >=", value, "ebayNameCode");
+            return (Criteria) this;
+        }
+
+        public Criteria andEbayNameCodeLessThan(String value) {
+            addCriterion("ebay_name_code <", value, "ebayNameCode");
+            return (Criteria) this;
+        }
+
+        public Criteria andEbayNameCodeLessThanOrEqualTo(String value) {
+            addCriterion("ebay_name_code <=", value, "ebayNameCode");
+            return (Criteria) this;
+        }
+
+        public Criteria andEbayNameCodeLike(String value) {
+            addCriterion("ebay_name_code like", value, "ebayNameCode");
+            return (Criteria) this;
+        }
+
+        public Criteria andEbayNameCodeNotLike(String value) {
+            addCriterion("ebay_name_code not like", value, "ebayNameCode");
+            return (Criteria) this;
+        }
+
+        public Criteria andEbayNameCodeIn(List<String> values) {
+            addCriterion("ebay_name_code in", values, "ebayNameCode");
+            return (Criteria) this;
+        }
+
+        public Criteria andEbayNameCodeNotIn(List<String> values) {
+            addCriterion("ebay_name_code not in", values, "ebayNameCode");
+            return (Criteria) this;
+        }
+
+        public Criteria andEbayNameCodeBetween(String value1, String value2) {
+            addCriterion("ebay_name_code between", value1, value2, "ebayNameCode");
+            return (Criteria) this;
+        }
+
+        public Criteria andEbayNameCodeNotBetween(String value1, String value2) {
+            addCriterion("ebay_name_code not between", value1, value2, "ebayNameCode");
+            return (Criteria) this;
+        }
+
         public Criteria andPaypalAccountIdIsNull() {
             addCriterion("paypal_account_id is null");
             return (Criteria) this;
@@ -442,6 +512,76 @@ public class UsercontrollerEbayAccountExample {
 
         public Criteria andPaypalAccountIdNotBetween(Long value1, Long value2) {
             addCriterion("paypal_account_id not between", value1, value2, "paypalAccountId");
+            return (Criteria) this;
+        }
+
+        public Criteria andUseDefaultPaypalOnlyIsNull() {
+            addCriterion("use_default_paypal_only is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andUseDefaultPaypalOnlyIsNotNull() {
+            addCriterion("use_default_paypal_only is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andUseDefaultPaypalOnlyEqualTo(String value) {
+            addCriterion("use_default_paypal_only =", value, "useDefaultPaypalOnly");
+            return (Criteria) this;
+        }
+
+        public Criteria andUseDefaultPaypalOnlyNotEqualTo(String value) {
+            addCriterion("use_default_paypal_only <>", value, "useDefaultPaypalOnly");
+            return (Criteria) this;
+        }
+
+        public Criteria andUseDefaultPaypalOnlyGreaterThan(String value) {
+            addCriterion("use_default_paypal_only >", value, "useDefaultPaypalOnly");
+            return (Criteria) this;
+        }
+
+        public Criteria andUseDefaultPaypalOnlyGreaterThanOrEqualTo(String value) {
+            addCriterion("use_default_paypal_only >=", value, "useDefaultPaypalOnly");
+            return (Criteria) this;
+        }
+
+        public Criteria andUseDefaultPaypalOnlyLessThan(String value) {
+            addCriterion("use_default_paypal_only <", value, "useDefaultPaypalOnly");
+            return (Criteria) this;
+        }
+
+        public Criteria andUseDefaultPaypalOnlyLessThanOrEqualTo(String value) {
+            addCriterion("use_default_paypal_only <=", value, "useDefaultPaypalOnly");
+            return (Criteria) this;
+        }
+
+        public Criteria andUseDefaultPaypalOnlyLike(String value) {
+            addCriterion("use_default_paypal_only like", value, "useDefaultPaypalOnly");
+            return (Criteria) this;
+        }
+
+        public Criteria andUseDefaultPaypalOnlyNotLike(String value) {
+            addCriterion("use_default_paypal_only not like", value, "useDefaultPaypalOnly");
+            return (Criteria) this;
+        }
+
+        public Criteria andUseDefaultPaypalOnlyIn(List<String> values) {
+            addCriterion("use_default_paypal_only in", values, "useDefaultPaypalOnly");
+            return (Criteria) this;
+        }
+
+        public Criteria andUseDefaultPaypalOnlyNotIn(List<String> values) {
+            addCriterion("use_default_paypal_only not in", values, "useDefaultPaypalOnly");
+            return (Criteria) this;
+        }
+
+        public Criteria andUseDefaultPaypalOnlyBetween(String value1, String value2) {
+            addCriterion("use_default_paypal_only between", value1, value2, "useDefaultPaypalOnly");
+            return (Criteria) this;
+        }
+
+        public Criteria andUseDefaultPaypalOnlyNotBetween(String value1, String value2) {
+            addCriterion("use_default_paypal_only not between", value1, value2, "useDefaultPaypalOnly");
             return (Criteria) this;
         }
 

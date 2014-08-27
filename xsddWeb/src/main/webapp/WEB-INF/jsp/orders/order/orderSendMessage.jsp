@@ -12,6 +12,7 @@
 <head>
     <title></title>
     <script type="text/javascript">
+        var api = frameElement.api, W = api.opener;
         function submitCommit(){
             var url=path+"/order/apiGetOrdersSendMessage.do";
             var data=$("#sendForm").serialize();
@@ -19,6 +20,7 @@
                     [function(m,r){
                         alert(r);
                         W.viewsendMessage.close();
+                        W.viewsendMessage1.close();
                         Base.token;
                     },
                         function(m,r){
@@ -35,6 +37,7 @@
 <input type="hidden" name="itemid" value="${order.itemid}">
 <input type="hidden" name="buyeruserid" value="${order.buyeruserid}">
     <input type="hidden" name="selleruserid" value="${order.selleruserid}">
+    <input type="hidden" name="transactionid" value="${order.transactionid}">
 主题：<input type="text" name="subject" style="width: 700px"><br/>
 内容：<textarea id="body" name="body" style="width: 700px;height: 400px;"></textarea>
 <input type="button" value="发送" onclick="submitCommit();"/>

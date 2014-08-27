@@ -13,7 +13,13 @@
     <title></title>
 </head>
 <body>
-<div style="width: 600px">
+<button>选择分类</button>
+<div id="search">
+
+</div>
+
+
+<div style="width: 600px" id="choose">
 <div id="mainDiv"  style="width: 580px;height: 400px"></div>
 <div id="menuPath" style="float: left;width: 550px;overflow: hidden"></div>
 </div>

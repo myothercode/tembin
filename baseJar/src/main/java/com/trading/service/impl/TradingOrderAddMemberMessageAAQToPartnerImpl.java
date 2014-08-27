@@ -36,10 +36,11 @@ public class TradingOrderAddMemberMessageAAQToPartnerImpl implements com.trading
     }
 
     @Override
-    public List<TradingOrderAddMemberMessageAAQToPartner> selectTradingOrderAddMemberMessageAAQToPartnerByItemId(String itemid) {
+    public List<TradingOrderAddMemberMessageAAQToPartner> selectTradingOrderAddMemberMessageAAQToPartnerByTransactionId(String TransactionId,Integer type) {
         TradingOrderAddMemberMessageAAQToPartnerExample example=new TradingOrderAddMemberMessageAAQToPartnerExample();
         TradingOrderAddMemberMessageAAQToPartnerExample.Criteria cr=example.createCriteria();
-        cr.andItemidEqualTo(itemid);
+        cr.andTransactionidEqualTo(TransactionId);
+        cr.andMessagetypeEqualTo(type);
         List<TradingOrderAddMemberMessageAAQToPartner> list=tradingOrderAddMemberMessageAAQToPartnerMapper.selectByExample(example);
         return list;
     }

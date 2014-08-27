@@ -58,3 +58,16 @@
     border-radius: 4px;
     font-size: 1em;
 }
+
+#editor {
+    border: 1px solid #CCC;
+    width: 1000px
+}
+#editor_toolbar_box {
+    background: #F0F0EE;
+    padding: 2px;
+}
+#editor_iframe_holder {
+    border-top: 1px solid #CCC;
+    border-bottom: 1px solid #CCC;
+}

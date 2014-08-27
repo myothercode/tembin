@@ -41,8 +41,10 @@
             var devAccountID=$('#devSelect').val();
             if(devAccountID==null || devAccountID ==0){alert('请选择开发帐号');return;}
             var url=path+"/user/apiFetchToken.do";
-            var name=$('#bm').val();
-            var data={strV1:sessid,id:devAccountID};
+            var name=$('#bm').val();//别名
+            var code = $('#code').val();//别名代码缩写
+
+            var data={strV1:sessid,id:devAccountID,strV3:code,strV2:name};
             $().invoke(
                     url,
                     data,
@@ -80,6 +82,27 @@
             getAllDevSelect();
         });
 
+/**将填入的别名进行缩写处理规则为提取字符串中的大写字母和数字的最后一位*/
+        function getShortName(obj){
+            var syy=obj.value;
+            if(syy==null || syy==''){return;}
+
+    /**如果没有数字，又没有大写字母*/
+            if(!/[A-Z]/g.test(syy) && !/[0-9]/g.test(syy)){
+                $('#code').val(syy.substr(0,1).toLocaleUpperCase()+""+subRight(syy,1).toLocaleUpperCase());
+                return;
+            }
+
+            var shortn;
+            if(/[A-Z]/.test(syy.substr(0,1))){
+                shortn=getUpperChar(syy);
+            }else{
+                var firstWord=syy.substr(0,1).toLocaleUpperCase();
+                shortn=firstWord+""+getUpperChar(syy);
+            }
+            var nummm=subRight(strGetNum(syy),1)
+            $('#code').val(shortn+nummm)
+        }
 
     </script>
 </head>
@@ -92,8 +115,13 @@
 
 <button onclick="getBindParm()">账户授权</button>
 帐号别名
-<input type="text" id="bm" />
+<input type="text" id="bm" onblur="getShortName(this)" />
+&nbsp;
+别名缩写
+<input type="text" id="code" />
 <button onclick="fetchToken()">授权已完成?</button>
 
 </body>
+
+
 </html>

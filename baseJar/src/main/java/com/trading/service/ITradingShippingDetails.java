@@ -7,7 +7,6 @@ import com.base.domains.querypojos.ShippingdetailsQuery;
 import com.base.mybatis.page.Page;
 import com.base.xmlpojo.trading.addproduct.ShippingDetails;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import java.util.Map;
 

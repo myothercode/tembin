@@ -13,6 +13,7 @@
     <script>
         var returnItem ="";
         function addItem(){
+            //window.open("/xsddWeb/addItem.do");
             returnItem=$.dialog({title: '新增商品',
                 content: 'url:/xsddWeb/addItem.do',
                 icon: 'succeed',
