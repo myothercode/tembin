@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+
+
+    <import resource="classpath*:baseJar/spring/applicationContext.xml" />
+    <import resource="classpath*:xsddWeb/spring/spring-Ehcache.xml" />
+    <import resource="classpath*:baseJar/spring/applicationContext-cxfclient.xml" />
+    <!--<import resource="classpath*:xsddWeb/spring/applicationShiro.xml" />-->
+
+
+
+
+    <!-- define the SqlSessionFactory
+    <bean id="sqlSessionFactoryBean" class="org.mybatis.spring.SqlSessionFactoryBean">
+        <property name="dataSource" ref="dataSource" />
+        <property name="typeAliasesPackage" value="com.appcenter.sample.domain" />
+        <property name="configLocation" value="classpath:META-INF/AppcenterInfrastructureJar/mybatis-config.xml" />
+    </bean>
+
+    &lt;!&ndash; scan for mappers and let them be autowired &ndash;&gt;
+    <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+        <property name="basePackage" value="com.appcenter.**.mapper" />
+    </bean>
+
+    <bean id="sqlSessionTemplateBean" class="org.mybatis.spring.SqlSessionTemplate">
+        <constructor-arg index="0" ref="sqlSessionFactoryBean"/>
+    </bean>
+    <bean id="transactionManager"
+		class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<property name="dataSource" ref="dataSource" />
+	</bean>
+	<bean id="wsClientTemplate" class="com.appcenter.infrastructure.callback.WSClientTemplate"/>
+    -->
+
+
+
+</beans>
