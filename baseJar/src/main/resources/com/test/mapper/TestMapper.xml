@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.test.mapper.TestMapper" >
+ <select id="queryTest" resultType="java.util.Map" parameterType="map">
+     select id,StringV,dateV from testTable
+ </select>
+
+<update id="updateTest" parameterType="map">
+    update testTable d set d.StringV=#{StringV} where d.id=#{id}
+</update>
+
+</mapper>
