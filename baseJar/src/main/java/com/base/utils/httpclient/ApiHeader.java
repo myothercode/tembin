@@ -1,13 +1,11 @@
 package com.base.utils.httpclient;
 
 import com.base.domains.userinfo.UsercontrollerDevAccountExtend;
-import org.apache.http.Header;
 import org.apache.http.message.BasicHeader;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Created by Administrtor on 2014/8/6.
@@ -37,6 +35,7 @@ public class ApiHeader {
         headers.add(new BasicHeader("X-EBAY-SOA-SERVICE-NAME",devAccountExtend.getSoaServiceName()));
         headers.add(new BasicHeader("X-EBAY-SOA-SERVICE-VERSION",devAccountExtend.getSoaServiceVersion()));
         headers.add(new BasicHeader("X-EBAY-SOA-GLOBAL-ID",devAccountExtend.getSoaGlobalId()));
+        headers.add(new BasicHeader("X-EBAY-SOA-RESPONSE-DATA-FORMAT",devAccountExtend.getSoaResponseDataformat()));
         return headers;
     }
 

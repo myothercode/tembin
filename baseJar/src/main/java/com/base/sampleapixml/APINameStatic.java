@@ -11,14 +11,18 @@ public class APINameStatic {
     public static final String ReviseItem = "ReviseItem";
     /**获取sessionID的api*/
     public static final String GetSessionID = "GetSessionID";
-
+    /**获取运输方式ＡＰＩ*/
+    public static final String GeteBayDetails = "GeteBayDetails";
     /**获取token*/
     public static final String FetchToken = "FetchToken";
     /**
      * 添加固价商品
      */
     public static final String AddFixedPriceItem = "AddFixedPriceItem";
-
+    /**
+     * 通过关键字查询
+     */
+    public static final String FindItemsByKeywords = "findItemsByKeywords";
     /**
      * 拍买商品用
      */
@@ -65,5 +69,9 @@ public class APINameStatic {
      *GetAccount
      */
     public static final  String GetAccount="GetAccount";
+    /*
+     *评价及修改状态
+     */
+    public static final  String CompleteSale="CompleteSale";
 }
 

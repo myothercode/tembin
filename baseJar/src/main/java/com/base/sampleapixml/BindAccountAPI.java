@@ -1,6 +1,7 @@
 package com.base.sampleapixml;
 
 import com.base.database.trading.model.TradingMessageAddmembermessage;
+import org.apache.commons.lang.StringUtils;
 
 import java.util.Map;
 
@@ -82,19 +83,23 @@ public class BindAccountAPI {
                 "</GetMyMessagesRequest> ";
         return xml;
     }
-    public static String getUserCases(){
+    public static String getUserCases(Map map){
         String xml="<?xml version=\"1.0\" encoding=\"utf-8\"?>" +
-                "<getUserCasesRequest xmlns=http://www.ebay.com/marketplace/resolution/v1/services>" +
+                "<getUserCasesRequest xmlns:ser=\"http://www.ebay.com/marketplace/resolution/v1/services\" xmlns:soap=\"http://www.w3.org/2003/05/soap-envelope\">" +
                 "<creationDateRangeFilter>" +
-                "<fromDate>2014-08-12T00:00:00.Z</fromDate>" +
-                "<toDate>2014-08-07T00:00:00.Z</toDate>" +
+                "<fromDate>"+map.get("fromTime")+"</fromDate>" +
+                "<toDate>"+map.get("toTime")+"</toDate>" +
                 "</creationDateRangeFilter>" +
+               /* "<paginationInput>" +
+                "<pageNumber>"+map.get("page")+"</pageNumber>" +
+                "<entriesPerPage>100</entriesPerPage>" +
+                "</paginationInput>" +*/
                 "<paginationInput>" +
-                "<pageNumber>1</pageNumber>" +
-                "<entriesPerPage>10</entriesPerPage>" +
-                "</paginationInput>" +
+                "    <pageNumber>1</pageNumber>" +
+                "    <entriesPerPage>40</entriesPerPage>" +
+                "  </paginationInput>"+
                 "</getUserCasesRequest>";
-        return xml;
+              return xml;
     }
     public static String getGetOrders(Map<String,String> map){
         String xml="<?xml version=\"1.0\" encoding=\"utf-8\"?>" +
@@ -180,4 +185,70 @@ public class BindAccountAPI {
                 "</GetAccountRequest>";
         return xml;
     }
+    /*
+    *评价
+    */
+    public static  String getEvaluate(Map map){
+        String xml="<?xml version=\"1.0\" encoding=\"utf-8\"?>" +
+                "<CompleteSaleRequest xmlns=\"urn:ebay:apis:eBLBaseComponents\">" +
+                "  <RequesterCredentials>" +
+                "    <eBayAuthToken>"+map.get("token")+"</eBayAuthToken>" +
+                "  </RequesterCredentials>" +
+                "  <WarningLevel>High</WarningLevel>" +
+                "  <FeedbackInfo>" +
+                "    <CommentText>"+map.get("CommentText")+"</CommentText>" +
+                "    <CommentType>Positive</CommentType>" +
+                "    <TargetUser>"+map.get("buyeruserid")+"</TargetUser>" +
+                "  </FeedbackInfo>" +
+                "  <ItemID>"+map.get("itemid")+"</ItemID>" +
+                "  <Shipment>" +
+                "    <Notes>Shipped USPS Media</Notes>" +
+                "  </Shipment>" +
+                "  <Shipped>true</Shipped>" +
+                "  <TransactionID>"+map.get("transactionid")+"</TransactionID>" +
+                "</CompleteSaleRequest>";
+        return xml;
+    }
+
+    /*
+     * 修改订单发货状态
+     */
+    public static  String getModifyOrderStatus(Map<String,String> map){
+        String xml1="";
+        if(StringUtils.isNotBlank(map.get("ShipmentTrackingNumber"))&&StringUtils.isNotBlank(map.get("ShippingCarrierUsed"))){
+            xml1= "<Shipment>" +
+                    "<ShipmentTrackingDetails>" +
+                    "<ShipmentTrackingNumber>"+map.get("ShipmentTrackingNumber")+"</ShipmentTrackingNumber>"+
+                    "<ShippingCarrierUsed>"+map.get("ShippingCarrierUsed")+"</ShippingCarrierUsed>" +
+                    "</ShipmentTrackingDetails>" +
+                    "</Shipment>";
+        }
+        String xml="<?xml version=\"1.0\" encoding=\"utf-8\"?>" +
+                "<CompleteSaleRequest xmlns=\"urn:ebay:apis:eBLBaseComponents\">" +
+                "<RequesterCredentials>" +
+                "<eBayAuthToken>"+map.get("token")+"</eBayAuthToken>" +
+                "</RequesterCredentials>" +
+                "<TransactionID>"+map.get("transactionid")+"</TransactionID>" +
+                "<ItemID>"+map.get("itemid")+"</ItemID>" +xml1+
+                "<Shipped>"+map.get("shippStatus")+"</Shipped>" +
+                "</CompleteSaleRequest>​";
+        return xml;
+    }
+    /*
+   *获取EBP纠纷
+   */
+    public static  String getEBPCase(Map map){
+        String xml="<?xml version=\"1.0\" encoding=\"utf-8\"?>" +
+                "<getEBPCaseDetailRequest xmlns:soap=\"http://www.ebay.com/marketplace/resolution/v1/services\">" +
+                "<RequesterCredentials>" +
+                "<eBayAuthToken>"+map.get("token")+"</eBayAuthToken>" +
+                "</RequesterCredentials>" +
+                "<caseId>" +
+                "<id>"+map.get("caseId")+"</id>" +
+                "<type>"+map.get("caseType")+"</type>" +
+                "</caseId>" +
+                "</getEBPCaseDetailRequest>";
+        return xml;
+    }
+
 }

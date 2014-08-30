@@ -1,7 +1,9 @@
 package com.base.utils.xmlutils;
 
 import com.base.database.publicd.model.PublicDataDict;
+import com.base.database.trading.model.TradingDataDictionary;
 import com.base.database.trading.model.TradingFeedBackDetail;
+import com.base.database.trading.model.TradingReseCategory;
 import com.base.utils.common.DateUtils;
 import com.base.utils.common.DictCollectionsUtil;
 import com.base.xmlpojo.trading.addproduct.*;
@@ -34,7 +36,12 @@ public class SamplePaseXml {
         return e.getTextTrim();
     }
 
-
+    /**
+     * 查询商品明细
+     * @param xml
+     * @return
+     * @throws DocumentException
+     */
     public static Item getItem(String xml) throws DocumentException {
         Item item = new Item();
         Document document= DocumentHelper.parseText(xml);
@@ -419,5 +426,54 @@ public class SamplePaseXml {
             }
         }
         return text;
+    }
+
+    /**
+     * 通过Title 查询是相似分类信息
+     * @param xml
+     * @param key
+     * @return
+     * @throws DocumentException
+     */
+    public static List<TradingReseCategory> selectCategoryByKey(String xml,String key) throws DocumentException {
+        List<TradingReseCategory> litrc = new ArrayList();
+        Document document= DocumentHelper.parseText(xml);
+        Element rootElt = document.getRootElement();
+        Element recommend = rootElt.element("searchResult");
+        Iterator<Element> iter = recommend.elementIterator("item");
+        while (iter.hasNext()){
+            Element ele=iter.next();
+            Element elecate = ele.element("primaryCategory");
+            TradingReseCategory trc = new TradingReseCategory();
+            trc.setId(Long.parseLong(elecate.elementText("categoryId")));
+            trc.setCategoryId(elecate.elementText("categoryId"));
+            trc.setCategoryName(StringEscapeUtils.escapeHtml(elecate.elementText("categoryName")));
+            trc.setCategoryKey(key);
+            litrc.add(trc);
+        }
+        return litrc;
+    }
+
+    /**
+     * 组装运输方式
+     * @param xml
+     * @return
+     * @throws DocumentException
+     */
+    public static List<TradingDataDictionary> selectShippingService(String xml) throws DocumentException {
+        List<TradingDataDictionary> lidata = new ArrayList();
+        Document document= DocumentHelper.parseText(xml);
+        Element rootElt = document.getRootElement();
+        Iterator<Element> ies = rootElt.elementIterator("ShippingServiceDetails");
+        while (ies.hasNext()){
+            Element element = ies.next();
+            TradingDataDictionary tdd = new TradingDataDictionary();
+            tdd.setType("domestic transportation");
+            tdd.setValue(element.elementText("ShippingService"));
+            tdd.setName(element.elementText("Description"));
+            tdd.setName1(element.elementText("ShippingCategory"));
+            lidata.add(tdd);
+        }
+        return lidata;
     }
 }

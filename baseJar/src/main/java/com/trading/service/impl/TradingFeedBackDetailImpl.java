@@ -11,8 +11,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Created by Administrtor on 2014/8/16.
- */
+ * Created by Administrtor on 2014/8/16. */
 @Service
 public class TradingFeedBackDetailImpl implements com.trading.service.ITradingFeedBackDetail {
 

@@ -32,6 +32,8 @@ public interface ITradingDataDictionary {
     /**根据ID查询publicDataDictionary*/
     List<PublicDataDict> selectPublicDictionaryByID(Long id);
 
+    List<PublicDataDict> selectPublicDictionaryByItemIDs(String itemid,String type);
+
     /**根据itemID查询publicDataDictionary*/
     List<PublicDataDict> selectPublicDictionaryByItemID(Long id);
 

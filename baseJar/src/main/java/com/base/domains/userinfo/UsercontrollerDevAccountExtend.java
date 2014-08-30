@@ -23,6 +23,8 @@ public class UsercontrollerDevAccountExtend extends UsercontrollerDevAccount {
 
     private String soaRequestDataFormat;
 
+    private String soaResponseDataformat;
+
     public String getSoaGlobalId() {
         return soaGlobalId;
     }
@@ -93,5 +95,13 @@ public class UsercontrollerDevAccountExtend extends UsercontrollerDevAccount {
 
     public void setApiCallName(String apiCallName) {
         this.apiCallName = apiCallName;
+    }
+
+    public String getSoaResponseDataformat() {
+        return soaResponseDataformat;
+    }
+
+    public void setSoaResponseDataformat(String soaResponseDataformat) {
+        this.soaResponseDataformat = soaResponseDataformat;
     }
 }

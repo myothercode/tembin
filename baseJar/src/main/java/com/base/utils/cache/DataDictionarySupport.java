@@ -139,6 +139,13 @@ public class DataDictionarySupport extends CacheBaseSupport{
         List<PublicDataDict> tradingDataDictionaries = dictionary.selectPublicDictionaryByID(id);
         return tradingDataDictionaries;
     }
+
+    /**PublicDataDict通过itemid去找*/
+    public static PublicDataDict getPublicDataDictionaryByItemIDs(String itemid,String type){
+        ITradingDataDictionary dictionary = (ITradingDataDictionary) ApplicationContextUtil.getBean(ITradingDataDictionary.class);
+        List<PublicDataDict> tradingDataDictionaries = dictionary.selectPublicDictionaryByItemIDs(itemid,type);
+        return tradingDataDictionaries.get(0);
+    }
     /**PublicDataDict通过itemid去找*/
     public static List<PublicDataDict> getPublicDataDictionaryByitemID(Long id){
         ITradingDataDictionary dictionary = (ITradingDataDictionary) ApplicationContextUtil.getBean(ITradingDataDictionary.class);

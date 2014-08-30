@@ -15,6 +15,7 @@ import com.base.utils.common.EncryptionUtil;
 import com.base.utils.common.ObjectUtils;
 import com.base.utils.exception.Asserts;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
@@ -37,6 +38,7 @@ public class UserInfoServiceImpl implements com.base.userinfo.service.UserInfoSe
     private UsercontrollerEbayDevMapper UsercontrollerEbayDevMapper;
     @Autowired
     private UsercontrollerUserMapper userMapper;
+
 
     @Override
     public SessionVO getUserInfo(LoginVO loginVO){
@@ -100,11 +102,21 @@ public class UserInfoServiceImpl implements com.base.userinfo.service.UserInfoSe
         UsercontrollerEbayAccount ebayAccount = userInfoServiceMapper.getTokenByEbayID(ebayID);
         return ebayAccount.getEbayToken();
     }
+    @Override
+    /**根据ebay帐号id 查询UsercontrollerEbayAccount*/
+    public UsercontrollerEbayAccount getEbayAccountByEbayID(Long ebayID){
+        boolean b=ebayIsBindDev(ebayID);
+        if(!b){return null;}//返回1，代表当前ebay帐号没绑定当前设定的默认开发帐号
+
+        UsercontrollerEbayAccount ebayAccount = userInfoServiceMapper.getTokenByEbayID(ebayID);
+        return ebayAccount;
+    }
 
     @Override
     /**判断ebay账户是否绑定了默认的开发帐号*/
     public boolean ebayIsBindDev(Long ebayID){
         SessionVO sessionVO = SessionCacheSupport.getSessionVO();
+        if(sessionVO==null){return true;}
         UsercontrollerUser user=userMapper.selectByPrimaryKey(((Long)sessionVO.getId()).intValue());
         Long defaultDevID=user.getDefaultDevAccount();//当前用户的默认绑定dev帐号
         Map map = new HashMap();

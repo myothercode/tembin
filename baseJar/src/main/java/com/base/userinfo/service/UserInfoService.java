@@ -28,6 +28,9 @@ public interface UserInfoService {
     /**根据ebay帐号id 查询token*/
     String getTokenByEbayID(Long ebayID);
 
+    /**根据ebay帐号id 查询UsercontrollerEbayAccount*/
+    UsercontrollerEbayAccount getEbayAccountByEbayID(Long ebayID);
+
     /**判断ebay账户是否绑定了默认的开发帐号*/
     boolean ebayIsBindDev(Long ebayID);
 

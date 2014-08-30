@@ -192,32 +192,6 @@ public class TradingTimerListingExample {
             criteria.add(new Criterion(condition, value1, value2));
         }
 
-        protected void addCriterionForJDBCDate(String condition, Date value, String property) {
-            if (value == null) {
-                throw new RuntimeException("Value for " + property + " cannot be null");
-            }
-            addCriterion(condition, new java.sql.Date(value.getTime()), property);
-        }
-
-        protected void addCriterionForJDBCDate(String condition, List<Date> values, String property) {
-            if (values == null || values.size() == 0) {
-                throw new RuntimeException("Value list for " + property + " cannot be null or empty");
-            }
-            List<java.sql.Date> dateList = new ArrayList<java.sql.Date>();
-            Iterator<Date> iter = values.iterator();
-            while (iter.hasNext()) {
-                dateList.add(new java.sql.Date(iter.next().getTime()));
-            }
-            addCriterion(condition, dateList, property);
-        }
-
-        protected void addCriterionForJDBCDate(String condition, Date value1, Date value2, String property) {
-            if (value1 == null || value2 == null) {
-                throw new RuntimeException("Between values for " + property + " cannot be null");
-            }
-            addCriterion(condition, new java.sql.Date(value1.getTime()), new java.sql.Date(value2.getTime()), property);
-        }
-
         protected void addCriterionForJDBCTime(String condition, Date value, String property) {
             if (value == null) {
                 throw new RuntimeException("Value for " + property + " cannot be null");
@@ -314,63 +288,123 @@ public class TradingTimerListingExample {
             return (Criteria) this;
         }
 
-        public Criteria andTimerEqualTo(String value) {
+        public Criteria andTimerEqualTo(Date value) {
             addCriterion("timer =", value, "timer");
             return (Criteria) this;
         }
 
-        public Criteria andTimerNotEqualTo(String value) {
+        public Criteria andTimerNotEqualTo(Date value) {
             addCriterion("timer <>", value, "timer");
             return (Criteria) this;
         }
 
-        public Criteria andTimerGreaterThan(String value) {
+        public Criteria andTimerGreaterThan(Date value) {
             addCriterion("timer >", value, "timer");
             return (Criteria) this;
         }
 
-        public Criteria andTimerGreaterThanOrEqualTo(String value) {
+        public Criteria andTimerGreaterThanOrEqualTo(Date value) {
             addCriterion("timer >=", value, "timer");
             return (Criteria) this;
         }
 
-        public Criteria andTimerLessThan(String value) {
+        public Criteria andTimerLessThan(Date value) {
             addCriterion("timer <", value, "timer");
             return (Criteria) this;
         }
 
-        public Criteria andTimerLessThanOrEqualTo(String value) {
+        public Criteria andTimerLessThanOrEqualTo(Date value) {
             addCriterion("timer <=", value, "timer");
             return (Criteria) this;
         }
 
-        public Criteria andTimerLike(String value) {
-            addCriterion("timer like", value, "timer");
-            return (Criteria) this;
-        }
-
-        public Criteria andTimerNotLike(String value) {
-            addCriterion("timer not like", value, "timer");
-            return (Criteria) this;
-        }
-
-        public Criteria andTimerIn(List<String> values) {
+        public Criteria andTimerIn(List<Date> values) {
             addCriterion("timer in", values, "timer");
             return (Criteria) this;
         }
 
-        public Criteria andTimerNotIn(List<String> values) {
+        public Criteria andTimerNotIn(List<Date> values) {
             addCriterion("timer not in", values, "timer");
             return (Criteria) this;
         }
 
-        public Criteria andTimerBetween(String value1, String value2) {
+        public Criteria andTimerBetween(Date value1, Date value2) {
             addCriterion("timer between", value1, value2, "timer");
             return (Criteria) this;
         }
 
-        public Criteria andTimerNotBetween(String value1, String value2) {
+        public Criteria andTimerNotBetween(Date value1, Date value2) {
             addCriterion("timer not between", value1, value2, "timer");
+            return (Criteria) this;
+        }
+
+        public Criteria andFrequencyIsNull() {
+            addCriterion("frequency is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andFrequencyIsNotNull() {
+            addCriterion("frequency is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andFrequencyEqualTo(String value) {
+            addCriterion("frequency =", value, "frequency");
+            return (Criteria) this;
+        }
+
+        public Criteria andFrequencyNotEqualTo(String value) {
+            addCriterion("frequency <>", value, "frequency");
+            return (Criteria) this;
+        }
+
+        public Criteria andFrequencyGreaterThan(String value) {
+            addCriterion("frequency >", value, "frequency");
+            return (Criteria) this;
+        }
+
+        public Criteria andFrequencyGreaterThanOrEqualTo(String value) {
+            addCriterion("frequency >=", value, "frequency");
+            return (Criteria) this;
+        }
+
+        public Criteria andFrequencyLessThan(String value) {
+            addCriterion("frequency <", value, "frequency");
+            return (Criteria) this;
+        }
+
+        public Criteria andFrequencyLessThanOrEqualTo(String value) {
+            addCriterion("frequency <=", value, "frequency");
+            return (Criteria) this;
+        }
+
+        public Criteria andFrequencyLike(String value) {
+            addCriterion("frequency like", value, "frequency");
+            return (Criteria) this;
+        }
+
+        public Criteria andFrequencyNotLike(String value) {
+            addCriterion("frequency not like", value, "frequency");
+            return (Criteria) this;
+        }
+
+        public Criteria andFrequencyIn(List<String> values) {
+            addCriterion("frequency in", values, "frequency");
+            return (Criteria) this;
+        }
+
+        public Criteria andFrequencyNotIn(List<String> values) {
+            addCriterion("frequency not in", values, "frequency");
+            return (Criteria) this;
+        }
+
+        public Criteria andFrequencyBetween(String value1, String value2) {
+            addCriterion("frequency between", value1, value2, "frequency");
+            return (Criteria) this;
+        }
+
+        public Criteria andFrequencyNotBetween(String value1, String value2) {
+            addCriterion("frequency not between", value1, value2, "frequency");
             return (Criteria) this;
         }
 
@@ -905,52 +939,52 @@ public class TradingTimerListingExample {
         }
 
         public Criteria andCreateTimeEqualTo(Date value) {
-            addCriterionForJDBCDate("create_time =", value, "createTime");
+            addCriterion("create_time =", value, "createTime");
             return (Criteria) this;
         }
 
         public Criteria andCreateTimeNotEqualTo(Date value) {
-            addCriterionForJDBCDate("create_time <>", value, "createTime");
+            addCriterion("create_time <>", value, "createTime");
             return (Criteria) this;
         }
 
         public Criteria andCreateTimeGreaterThan(Date value) {
-            addCriterionForJDBCDate("create_time >", value, "createTime");
+            addCriterion("create_time >", value, "createTime");
             return (Criteria) this;
         }
 
         public Criteria andCreateTimeGreaterThanOrEqualTo(Date value) {
-            addCriterionForJDBCDate("create_time >=", value, "createTime");
+            addCriterion("create_time >=", value, "createTime");
             return (Criteria) this;
         }
 
         public Criteria andCreateTimeLessThan(Date value) {
-            addCriterionForJDBCDate("create_time <", value, "createTime");
+            addCriterion("create_time <", value, "createTime");
             return (Criteria) this;
         }
 
         public Criteria andCreateTimeLessThanOrEqualTo(Date value) {
-            addCriterionForJDBCDate("create_time <=", value, "createTime");
+            addCriterion("create_time <=", value, "createTime");
             return (Criteria) this;
         }
 
         public Criteria andCreateTimeIn(List<Date> values) {
-            addCriterionForJDBCDate("create_time in", values, "createTime");
+            addCriterion("create_time in", values, "createTime");
             return (Criteria) this;
         }
 
         public Criteria andCreateTimeNotIn(List<Date> values) {
-            addCriterionForJDBCDate("create_time not in", values, "createTime");
+            addCriterion("create_time not in", values, "createTime");
             return (Criteria) this;
         }
 
         public Criteria andCreateTimeBetween(Date value1, Date value2) {
-            addCriterionForJDBCDate("create_time between", value1, value2, "createTime");
+            addCriterion("create_time between", value1, value2, "createTime");
             return (Criteria) this;
         }
 
         public Criteria andCreateTimeNotBetween(Date value1, Date value2) {
-            addCriterionForJDBCDate("create_time not between", value1, value2, "createTime");
+            addCriterion("create_time not between", value1, value2, "createTime");
             return (Criteria) this;
         }
 

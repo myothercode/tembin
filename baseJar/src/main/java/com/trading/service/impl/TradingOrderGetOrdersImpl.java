@@ -32,7 +32,7 @@ public class TradingOrderGetOrdersImpl implements com.trading.service.ITradingOr
     public void saveOrderGetOrders(TradingOrderGetOrders OrderGetOrders) throws Exception {
         if(OrderGetOrders.getId()==null){
             ObjectUtils.toInitPojoForInsert(OrderGetOrders);
-            tradingOrderGetOrdersMapper.insertSelective(OrderGetOrders);
+            tradingOrderGetOrdersMapper.insert(OrderGetOrders);
         }else{
             TradingOrderGetOrders t=tradingOrderGetOrdersMapper.selectByPrimaryKey(OrderGetOrders.getId());
             Asserts.assertTrue(t != null && t.getCreateUser() != null, "没有找到记录或者记录创建者为空");

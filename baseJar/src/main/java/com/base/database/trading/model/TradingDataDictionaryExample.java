@@ -729,6 +729,76 @@ public class TradingDataDictionaryExample {
             addCriterion("uuid not between", value1, value2, "uuid");
             return (Criteria) this;
         }
+
+        public Criteria andDataDescIsNull() {
+            addCriterion("data_desc is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andDataDescIsNotNull() {
+            addCriterion("data_desc is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andDataDescEqualTo(String value) {
+            addCriterion("data_desc =", value, "dataDesc");
+            return (Criteria) this;
+        }
+
+        public Criteria andDataDescNotEqualTo(String value) {
+            addCriterion("data_desc <>", value, "dataDesc");
+            return (Criteria) this;
+        }
+
+        public Criteria andDataDescGreaterThan(String value) {
+            addCriterion("data_desc >", value, "dataDesc");
+            return (Criteria) this;
+        }
+
+        public Criteria andDataDescGreaterThanOrEqualTo(String value) {
+            addCriterion("data_desc >=", value, "dataDesc");
+            return (Criteria) this;
+        }
+
+        public Criteria andDataDescLessThan(String value) {
+            addCriterion("data_desc <", value, "dataDesc");
+            return (Criteria) this;
+        }
+
+        public Criteria andDataDescLessThanOrEqualTo(String value) {
+            addCriterion("data_desc <=", value, "dataDesc");
+            return (Criteria) this;
+        }
+
+        public Criteria andDataDescLike(String value) {
+            addCriterion("data_desc like", value, "dataDesc");
+            return (Criteria) this;
+        }
+
+        public Criteria andDataDescNotLike(String value) {
+            addCriterion("data_desc not like", value, "dataDesc");
+            return (Criteria) this;
+        }
+
+        public Criteria andDataDescIn(List<String> values) {
+            addCriterion("data_desc in", values, "dataDesc");
+            return (Criteria) this;
+        }
+
+        public Criteria andDataDescNotIn(List<String> values) {
+            addCriterion("data_desc not in", values, "dataDesc");
+            return (Criteria) this;
+        }
+
+        public Criteria andDataDescBetween(String value1, String value2) {
+            addCriterion("data_desc between", value1, value2, "dataDesc");
+            return (Criteria) this;
+        }
+
+        public Criteria andDataDescNotBetween(String value1, String value2) {
+            addCriterion("data_desc not between", value1, value2, "dataDesc");
+            return (Criteria) this;
+        }
     }
 
     /**

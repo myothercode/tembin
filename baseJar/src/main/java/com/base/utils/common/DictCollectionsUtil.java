@@ -80,6 +80,10 @@ public class DictCollectionsUtil {
         if(ObjectUtils.isLogicalNull(tList)){return null;}
         return (List<T>)dataPublicCollectionsFilterByID((List<PublicDataDict>)tList,type);
     }
+    public static<T> List<T> dataPublicDataCollectionsFilterByItemIDs(List<T> tList,String itemid,String type){
+        if(ObjectUtils.isLogicalNull(tList)){return null;}
+        return (List<T>)dataPublicCollectionsFilterByItemIDs((List<PublicDataDict>)tList,itemid,type);
+    }
     public static<T> List<T> dataPublicDataCollectionsFilterByItemID(List<T> tList,Long type){
         if(ObjectUtils.isLogicalNull(tList)){return null;}
         return (List<T>)dataPublicCollectionsFilterByItemID((List<PublicDataDict>)tList,type);
@@ -137,6 +141,18 @@ public class DictCollectionsUtil {
             @Override
             public boolean apply(PublicDataDict tradingDataDictionary) {
                 return id==tradingDataDictionary.getId()||id.equals(tradingDataDictionary.getId());
+            }
+        });
+        PublicDataDict[] tt = x.toArray(new PublicDataDict[]{});
+        return Arrays.asList(tt);
+    }
+
+    /**根据字典中的ItemID筛选出指定条件的<publicDataDictionary>对象*/
+    public static List<PublicDataDict> dataPublicCollectionsFilterByItemIDs(List<PublicDataDict> ts,final String itemId,final String type){
+        Collection<PublicDataDict> x= Collections2.filter(ts, new Predicate<PublicDataDict>() {
+            @Override
+            public boolean apply(PublicDataDict tradingDataDictionary) {
+                return ((itemId==tradingDataDictionary.getItemId()||itemId.equals(tradingDataDictionary.getItemId()))&& type.equalsIgnoreCase(tradingDataDictionary.getItemType()));
             }
         });
         PublicDataDict[] tt = x.toArray(new PublicDataDict[]{});

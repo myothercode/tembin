@@ -45,6 +45,7 @@ public class AddApiTask {
 
         map.put("stat","success");
         map.put("message",res);
+        map.put("activeCount",String.valueOf(TaskPool.threadPoolTaskExecutor.getActiveCount()) ) ;
         return map;
 
     }

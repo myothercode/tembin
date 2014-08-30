@@ -37,9 +37,10 @@
     
     <resultMap id="ebayToken" type="com.base.database.trading.model.UsercontrollerEbayAccount">
         <result column="ebay_token" jdbcType="LONGVARCHAR" property="ebayToken" />
+        <result column="user_id" jdbcType="LONGVARCHAR" property="userId" />
     </resultMap>
     <select id="getTokenByEbayID" parameterType="java.lang.Long" resultMap="ebayToken">
-        select e.ebay_token from usercontroller_ebay_account e where e.id = #{id}
+        select e.ebay_token,e.user_id from usercontroller_ebay_account e where e.id = #{id}
     </select>
     
     <select id="ebayIsBindDev" parameterType="map" resultType="int">

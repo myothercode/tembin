@@ -70,6 +70,7 @@ public class SessionCacheSupport extends CacheBaseSupport {
 
     /**获取当前用户session*/
     public static SessionVO getSessionVO(){
+        if(RequestResponseContext.getRequest()==null){return null;}
         HttpSession session = RequestResponseContext.getRequest().getSession();
         return SessionCacheSupport.get((String) session.getAttribute(USERLOGINID));
     }
