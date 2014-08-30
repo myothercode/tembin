@@ -16,9 +16,10 @@
         }
     </style>
     <script type="text/javascript">
+        var OrderSendEvaluateMessage;
         function evaluateBuy(){
-            var url=path+'/order/sendEvaluateMessage.do?orderid=${order.orderid}';
-            OrderGetOrders=$.dialog({title: '评价',
+            var url=path+'/order/initSendEvaluateMessage.do?transactionid=${order.transactionid}';
+            OrderSendEvaluateMessage=$.dialog({title: '评价',
                 content: 'url:'+url,
                 icon: 'succeed',
                 width:800,
@@ -31,7 +32,7 @@
 <body>
 <div class="table-a">
     <table border="0" cellpadding="0" cellspacing="0" style="width: 390px;" >
-        <tr><td>来自卖家:☆<a href="void()" onclick="evaluateBuy();">给买家评价</a></td></tr>
+        <tr><td>来自卖家:☆<a href="javascript:void()" onclick="evaluateBuy();">给买家评价</a></td></tr>
         <tr><td>来自买家:☆</td></tr>
     </table>
 </div><br/>

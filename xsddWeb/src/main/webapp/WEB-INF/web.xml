@@ -52,7 +52,10 @@
         <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
     </listener>
 
-
+    <!-- 防止内存泄露，更好的处理内存 -->
+    <listener>
+        <listener-class>org.springframework.web.util.IntrospectorCleanupListener</listener-class>
+    </listener>
 
 
     <!-- Spring view分发器 -->

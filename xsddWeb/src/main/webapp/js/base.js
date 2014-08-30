@@ -86,6 +86,7 @@ if(url.indexOf("?")==-1){
                         fun[0].apply(self, ["stringData", responseText]);
                         return;
                     }
+
                     if(jsonFormat.test(responseText)) {
                         var re = eval("(" + responseText + ")");
 

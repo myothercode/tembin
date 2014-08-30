@@ -23,6 +23,7 @@
                     {title:"ebay商品详情",name:"itemUrl",width:"8%",align:"left",format:makeOption3},
                     {title:"买家",name:"buyeruserid",width:"8%",align:"left"},
                     {title:"卖家",name:"selleruserid",width:"8%",align:"left"},
+                    {title:"发货状态",name:"shipped",width:"8%",align:"left",format:makeOption4},
                     {title:"交易总数",name:"countNum",width:"8%",align:"left"},
                     {title:"操作",name:"option1",width:"8%",align:"left",format:makeOption1}
                 ],
@@ -38,7 +39,8 @@
         /**查看消息*/
         function makeOption1(json){
             var htm="<a target=\"_blank\" href=\"javascript:void(0)\" onclick=\"viewOrder('"+json.orderid+"');\">查看详情</a>";
-            return htm;
+            var htm1="|<a target=\"_blank\" href=\"javascript:void(0)\" onclick=\"modifyOrderStatus('"+json.transactionid+"');\">修改发货状态</a>";
+            return htm+htm1;
         }
         function makeOption2(json){
             var htm="<img src='"+json.pictrue+"' style='width: 50px;hidden=50px;' />";
@@ -47,6 +49,13 @@
         function makeOption3(json){
             var htm="<a target=\"_blank\" href=\"javascript:void(0)\" onclick=\"ebayurl('"+json.itemUrl+"');\">"+json.title+"</a>";
             return htm;
+        }
+        function makeOption4(json){
+            if(json.orderstatus=='Completed'&&json.shipmenttrackingnumber){
+                return '已发货';
+            }else{
+                return '未发货';
+            }
         }
         function ebayurl(url){
             console.debug(url);
@@ -66,6 +75,7 @@
                     {title:"ebay商品详情",name:"itemUrl",width:"8%",align:"left",format:makeOption3},
                     {title:"买家",name:"buyeruserid",width:"8%",align:"left"},
                     {title:"卖家",name:"selleruserid",width:"8%",align:"left"},
+                    {title:"发货状态",name:"shipped",width:"8%",align:"left",format:makeOption4},
                     {title:"交易总数",name:"countNum",width:"8%",align:"left"},
                     {title:"操作",name:"option1",width:"8%",align:"left",format:makeOption1}
                 ],
@@ -83,6 +93,16 @@
                 icon: 'succeed',
                 width:1050,
                 height:1050
+            });
+        }
+        function modifyOrderStatus(id){
+            var url=path+'/order/modifyOrderStatus.do?transactionid='+id;
+            OrderGetOrders=$.dialog({title: '修改订单状态',
+                content: 'url:'+url,
+                icon: 'succeed',
+                width:1050,
+                height:1050,
+                lock:true
             });
         }
         function getBindParm(){

@@ -83,6 +83,65 @@ public class ShippingDetailsController extends BaseAction{
     }
 
     /**
+     * 查询数据并展示
+     * @param modelMap
+     * @param request
+     * @return
+     */
+    @RequestMapping("/ajax/shipingService.do")
+    @ResponseBody
+    public void shipingService(ModelMap modelMap,HttpServletRequest request){
+        List<TradingDataDictionary> litype = DataDictionarySupport.getTradingDataDictionaryByType(DataDictionarySupport.DATA_DICT_SHIPPING_TYPE,Long.parseLong(request.getParameter("parentID")));
+
+        List<Map<String,List<TradingDataDictionary>>> maps = new ArrayList<Map<String, List<TradingDataDictionary>>>();
+
+        for(TradingDataDictionary tdd: litype){
+            Map<String,List<TradingDataDictionary>> b= xx(maps,tdd.getName1());
+            if(b==null){
+                Map<String, List<TradingDataDictionary>> map=new HashMap<String, List<TradingDataDictionary>>();
+                List<TradingDataDictionary> list = new ArrayList<TradingDataDictionary>();
+                list.add(tdd);
+                map.put(tdd.getName1(),list);
+                maps.add(map);
+            }else {
+                List<TradingDataDictionary> list = b.get(tdd.getName1());
+                list.add(tdd);
+            }
+        }
+
+        List<List<TradingDataDictionary>> lll=new ArrayList<List<TradingDataDictionary>>();
+
+
+        List<ShippingDetailsSSVO> x=new ArrayList<ShippingDetailsSSVO>();
+
+
+        for (Map<String,List<TradingDataDictionary>> ma : maps){
+            for (Map.Entry e : ma.entrySet()){
+                List<TradingDataDictionary> f= (List<TradingDataDictionary>) e.getValue();
+                ShippingDetailsSSVO d=new ShippingDetailsSSVO();
+                d.setDictionaries(f);
+                d.setName1(f.get(0).getName1());
+                x.add(d);
+            }
+
+        }
+
+
+        AjaxSupport.sendSuccessText("",x);
+    }
+
+    private Map<String,List<TradingDataDictionary>> xx( List<Map<String,List<TradingDataDictionary>>> maps,String key){
+        for (Map map :maps){
+             if(map.get(key)!=null){
+                 return map;
+             }
+        }
+        return null;
+
+    }
+
+
+    /**
      * 新增页面跳转
      * @param request
      * @param response
@@ -98,7 +157,7 @@ public class ShippingDetailsController extends BaseAction{
         List<TradingDataDictionary> lidata = DataDictionarySupport.getTradingDataDictionaryByType(DataDictionarySupport.DATA_DICT_SITE);
         modelMap.put("siteList",lidata);
 
-        List<TradingDataDictionary> litype = DataDictionarySupport.getTradingDataDictionaryByType(DataDictionarySupport.DATA_DICT_SHIPPING_TYPE);
+        /*List<TradingDataDictionary> litype = DataDictionarySupport.getTradingDataDictionaryByType(DataDictionarySupport.DATA_DICT_SHIPPING_TYPE);
         List<TradingDataDictionary> li1 = new ArrayList<TradingDataDictionary>();
         List<TradingDataDictionary> li2 = new ArrayList<TradingDataDictionary>();
         List<TradingDataDictionary> li3 = new ArrayList<TradingDataDictionary>();
@@ -135,7 +194,7 @@ public class ShippingDetailsController extends BaseAction{
         }
         modelMap.put("inter1",inter1);
         modelMap.put("inter2",inter2);
-
+*/
         List<TradingDataDictionary> lipackage = DataDictionarySupport.getTradingDataDictionaryByType(DataDictionarySupport.DATA_DICT_SHIPPINGPACKAGE);
 
         modelMap.put("lipackage",lipackage);

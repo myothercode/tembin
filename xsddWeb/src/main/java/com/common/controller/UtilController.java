@@ -1,9 +1,13 @@
 package com.common.controller;
 
 import com.base.database.publicd.model.PublicDataDict;
+import com.base.database.trading.model.TradingDataDictionary;
+import com.base.database.trading.model.TradingReseCategory;
+import com.base.domains.CommonParmVO;
 import com.base.domains.SessionVO;
 import com.base.domains.userinfo.UsercontrollerDevAccountExtend;
 import com.base.domains.userinfo.UsercontrollerEbayAccountExtend;
+import com.base.mybatis.page.PageJsonBean;
 import com.base.sampleapixml.APINameStatic;
 import com.base.sampleapixml.CategoryAPI;
 import com.base.userinfo.service.UserInfoService;
@@ -12,12 +16,18 @@ import com.base.utils.cache.SessionCacheSupport;
 import com.base.utils.common.DictCollectionsUtil;
 import com.base.utils.common.UUIDUtil;
 import com.base.utils.exception.Asserts;
+import com.base.utils.httpclient.HttpClientUtil;
 import com.base.utils.threadpool.AddApiTask;
+import com.base.utils.xmlutils.SamplePaseXml;
+import com.common.base.utils.ajax.AjaxResponse;
 import com.common.base.utils.ajax.AjaxSupport;
 import com.common.base.web.BaseAction;
 import com.trading.service.ITradingDataDictionary;
+import com.trading.service.ITradingReseCategory;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.http.client.HttpClient;
+import org.apache.http.message.BasicHeader;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -29,6 +39,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -42,11 +54,15 @@ public class UtilController extends BaseAction{
     static Logger logger = Logger.getLogger(UtilController.class);
     @Value("${EBAY.API.URL}")
     private String apiUrl;
-
+    @Autowired
+    private ITradingDataDictionary iTradingDataDictionary;
     @Autowired
     private UserInfoService userInfoService;
     @Autowired
     private ITradingDataDictionary tradingDataDictionary;
+    @Autowired
+    private ITradingReseCategory iTradingReseCategory;
+
 
     /**用于更新页面token*/
     @RequestMapping("/ajax/getToken.do")
@@ -125,11 +141,130 @@ public class UtilController extends BaseAction{
         return;
 
     }
+
+    /**
+     * 通过ＡＰＩ查询相似分类
+     * @param title
+
+     */
+    @RequestMapping("/ajax/getReseCategoryMenu.do")
+    @ResponseBody
+    public void getReseCategoryMenu(ModelMap modelMap,String title,CommonParmVO commonParmVO) throws Exception {
+        StringBuffer sb = new StringBuffer();
+        sb.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
+        sb.append("<findItemsByKeywordsRequest xmlns=\"http://www.ebay.com/marketplace/search/v1/services\">");
+        sb.append("<keywords>" + title + "</keywords>");
+        sb.append("<paginationInput>");
+        sb.append("<entriesPerPage>10</entriesPerPage>");
+        sb.append("</paginationInput>");
+        sb.append("</findItemsByKeywordsRequest>");
+
+        System.out.println(sb.toString());
+        List<BasicHeader> headers = new ArrayList<BasicHeader>();
+        headers.add(new BasicHeader("X-EBAY-SOA-SERVICE-NAME","FindingService"));
+        headers.add(new BasicHeader("X-EBAY-SOA-OPERATION-NAME","findItemsByKeywords"));
+        headers.add(new BasicHeader("X-EBAY-SOA-SERVICE-VERSION","1.12.0"));
+        headers.add(new BasicHeader("X-EBAY-SOA-GLOBAL-ID","EBAY-US"));
+        headers.add(new BasicHeader("X-EBAY-SOA-SECURITY-APPNAME","sandpoin-23af-4f47-a304-242ffed6ff5b"));
+        headers.add(new BasicHeader("X-EBAY-SOA-REQUEST-DATA-FORMAT","XML"));
+        HttpClient httpClient= HttpClientUtil.getHttpsClient();
+        String res= HttpClientUtil.post(httpClient,"http://svcs.ebay.com/services/search/FindingService/v1?",sb.toString(),"UTF-8",headers);
+        List<TradingReseCategory> litr = SamplePaseXml.selectCategoryByKey(res, title);
+        for(int i = 0;i<litr.size()-1;i++){
+            TradingReseCategory tr1 = litr.get(i);
+            for(int j = litr.size()-1;j>i;j-- ){
+                TradingReseCategory tr2 = litr.get(j);
+                if(tr1.getCategoryId().equals(tr2.getCategoryId())){
+                    litr.remove(j);
+                }
+            }
+        }
+        PageJsonBean jsonBean=commonParmVO.getJsonBean();
+        jsonBean.setPageCount(10);
+        jsonBean.setPageNum(1);
+        jsonBean.setTotal(litr.size());
+        jsonBean.setList(litr);
+        AjaxSupport.sendSuccessText("", jsonBean);
+    }
+
+    /**
+     * 保存到本地分类表中
+     * @param
+
+     */
+    @RequestMapping("/ajax/saveReseCategory.do")
+    @ResponseBody
+    public void saveReseCategory(ModelMap modelMap,TradingReseCategory tradingReseCategory,HttpServletRequest request,HttpServletResponse response) throws Exception {
+        String id = request.getParameter("id");
+        this.iTradingReseCategory.saveTradingReseCategory(tradingReseCategory);
+        AjaxSupport.sendSuccessText("", "{\"pathstr\":\""+this.getStr(tradingReseCategory.getCategoryId())+"\"}");
+
+    }
+
+    public String getStr(String itemid){
+        String str = "";
+        PublicDataDict pub = DataDictionarySupport.getPublicDataDictionaryByItemIDs(itemid,DictCollectionsUtil.category);
+        str = pub.getItemEnName();
+        while (1==1){
+            if(!pub.getItemParentId().equals("0")){
+                pub = DataDictionarySupport.getPublicDataDictionaryByItemIDs(pub.getItemParentId(),DictCollectionsUtil.category);
+                if("".equals(str)){
+                    str = pub.getItemEnName();
+                }else{
+                    str = pub.getItemEnName() + "->" + str;
+                }
+            }else{
+                break;
+            }
+        }
+        return str;
+    }
+    public PublicDataDict getPublicDataDictString(String itemid){
+        PublicDataDict lipublic = DataDictionarySupport.getPublicDataDictionaryByItemIDs(itemid,DictCollectionsUtil.category);
+        return lipublic;
+    }
+
     /**商品目录选择页面初始化*/
     @RequestMapping("category/initSelectCategoryPage.do")
-    public ModelAndView initSelectCategoryPage(@ModelAttribute( "initSomeParmMap" )ModelMap modelMap){
+    public ModelAndView initSelectCategoryPage(@ModelAttribute( "initSomeParmMap" )ModelMap modelMap,HttpServletRequest request){
+        modelMap.put("title",request.getParameter("title"));
         return forword("/commonPage/category/popSelectCategoryPage",modelMap);
     }
+
 /**商品类别相关结束==========================================================*/
 
+
+            /*调用ＡＰＩ抓取数据*/
+    @RequestMapping("category/saveTradingDic.do")
+    @ResponseBody
+    public ModelAndView saveTradingDic(ModelMap modelMap, HttpServletRequest request) throws Exception {
+        String xml = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n" +
+                "<GeteBayDetailsRequest xmlns=\"urn:ebay:apis:eBLBaseComponents\">\n" +
+                "<RequesterCredentials>\n" +
+                "<eBayAuthToken>AgAAAA**AQAAAA**aAAAAA**wV1JUQ**nY+sHZ2PrBmdj6wVnY+sEZ2PrA2dj6wFk4GhCpGGoA+dj6x9nY+seQ**cx0CAA**AAMAAA**2kuzIn+bBej1QDsDFfI2N74mj8psZYNYrtgX97fzWSGXO7EjvdlE9leu9HCY1bR9wdrzlAE7AKcT9Oz5BDNZbNQLS+uoifmNUM47lSqxWeYTQS2GtMK25LPYhxY+OQp6UVZ8lUh6Oqr91ub03emzufuZHo+6KSNJfNXMtOBVaB7PDeBQyNWoFBO0/LYiS5ql6HXB7vCj0W+K/iT4t3aPs5KlXAXjewM/Sa+nUDtjT9SseqrKrxdZx5fkAePeSrBs229tdCrkTtE0n+ZE9ppwJjElZpu7yfQL44McNa16KBxYYO0PnX7ENg2yMxf3H4aji0BEfB41lrC1LwhmNSebJGrJXRQVS9jmZyDqYiBdn1t536va/LPTP8kc3GZ7hnZRJuhMxoGGgx4ev5Hip0L7dk6cAPKHIkHUIjfA5pwVHEJZpvea+7uvwAh5pj9U7r6rmB9FXH2G9l+F5SytYlIXsDjwNtrEN53k5HrM0vhnGdd7pUwvyu7Nu4U5aPkZQZjTr6OrTWioDsZZwEz+pf0scw0IYweMhicCqMTNbvkJsj2cikX49C6XSAcoUyrGtGa11vFChrifmq74dPZmUEtT1hDtwL1Ix3VPyZcJtTukKljxa0W0IwIe676X5HmiGhvk5qPPUImkXcZdQUK1gMdZmw0seMl5xmFG33kKVSD9H0p0JAEF4lOcDvjADQZtwLXY3qIhvYcKdOrIffrUAURnJRYnrB/MixizWvw252xBn9tmxpm68O3KsGBzcUwEB0Su</eBayAuthToken>\n" +
+                "</RequesterCredentials>\n" +
+                "<DetailName>ShippingServiceDetails</DetailName>\n" +
+                "<Version>885</Version>\n" +
+                "</GeteBayDetailsRequest>";
+
+        List<TradingDataDictionary> lidata = DataDictionarySupport.getTradingDataDictionaryByType(DataDictionarySupport.DATA_DICT_SITE);
+        modelMap.put("siteList", lidata);
+        for (int i = 0; i < lidata.size(); i++) {
+            TradingDataDictionary tdd = lidata.get(i);
+            UsercontrollerDevAccountExtend d = userInfoService.getDevInfo(1L);
+            d.setApiSiteid(tdd.getName1());
+            //d.setApiSiteid("0");
+            d.setApiCallName(APINameStatic.GeteBayDetails);
+            AddApiTask addApiTask = new AddApiTask();
+            Map<String, String> resMap = addApiTask.exec(d, xml, apiUrl);
+            String res = resMap.get("message");
+            List<TradingDataDictionary> litdd = SamplePaseXml.selectShippingService(res);
+            for (TradingDataDictionary tdddesc : litdd) {
+                tdddesc.setParentId(tdd.getId());
+                tdddesc.setDataDesc(tdd.getName() + "国内运输");
+                this.iTradingDataDictionary.saveDataDictionary(tdddesc);
+            }
+        }
+        return forword("/test",modelMap);
+    }
 }

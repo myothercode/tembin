@@ -4,10 +4,38 @@
 
 $(document).ready(function(){
     getMenuData();
+   // getRese();
 })
-
 /**这个就是最终选择的值*/
 var _finalSelectedVal='';
+function getRese(){
+    _invokeGetData_type=null;
+    $("#rese1").initTable({
+        url:path + "/ajax/getReseCategoryMenu.do?title="+title,
+        columnData:[
+            {title: "选项", name: "option1", width: "8%", align: "left", format: showRadio},
+            {title:"ID",name:"categoryId",width:"8%",align:"left"},
+            {title:"名称",name:"categoryName",width:"8%",align:"left"}
+        ],
+        selectDataNow:true,
+        isrowClick:false,
+        showIndex:false
+    });
+    isSearchedCa=true;
+}
+/**组装操作选项*/
+function showRadio(json) {
+    var htm = "<input type=\"radio\" name=\"cateId\" showname="+json.categoryName+" value=" + json.categoryId + " onclick='selectCheck(this)'>";
+    return htm;
+}
+var selectFlag = "";
+function selectCheck(obj){
+    if($(obj).prop("checked")){
+        selectFlag="radio";
+        _finalSelectedVal=$(obj).val();
+        $("#menuPath").text($(obj).attr("showname"));
+    }
+}
 
 /**添加div到页面*/
 function addDvi(){
@@ -28,16 +56,16 @@ function makeDivId(){
 
 
 /**获取菜单*/
+var isSearchedCa=false;
 var _invokeGetData_type=null;
 function getMenuData(parentID,level){
-    _invokeGetData_type="string";
     removeDiv(level);
-
     if(localStorage.getItem("category_menu_"+parentID)!=null){
         var json= eval("(" + localStorage.getItem("category_menu_"+parentID) + ")");
         var jdata=json.result;
         makeMutilSelect(jdata,level);
     }else{
+        _invokeGetData_type="string";
         var url=path+"/ajax/getCategoryMenu.do";
         if(parentID==null){parentID=0;level=1;}
         var data={"parentID":parentID};
@@ -49,8 +77,24 @@ function getMenuData(parentID,level){
                 var json= eval("(" + localStorage.getItem("category_menu_"+parentID) + ")");
                 var jdata=json.result;
                 makeMutilSelect(jdata,level);
-            }
+
+            },
+        {async: true}
         )
+    }
+}
+function showDiv(obj){
+
+    if($(obj).attr("name")=="rese"){
+        if(isSearchedCa==false){
+            getRese();
+        }
+
+        $("#rese1").show();
+        $("#choose").hide();
+    }else{
+        $("#choose").show();
+        $("#rese1").hide();
     }
 }
 /**组装多行select*/
@@ -108,9 +152,26 @@ function showMenuPath(){
 var api = frameElement.api, W = api.opener;
 //点击确定按扭
 function que(){
-    W.document.getElementById("PrimaryCategory.categoryID").value=_finalSelectedVal;
-    W.document.getElementById("PrimaryCategoryshow").innerHTML=$("#menuPath").text();
-    W.CategoryType.close();
+    if(selectFlag=="radio"){
+        var url=path+"/ajax/saveReseCategory.do?categoryId="+_finalSelectedVal+"&categoryName="+$("#menuPath").text()+"&categoryKey="+title;
+        var data=null;
+        $().invoke(url,data,
+            [function(m,r){
+                var rr= $.parseJSON(r)
+                W.document.getElementById("PrimaryCategory").value=_finalSelectedVal;
+                W.document.getElementById("PrimaryCategoryshow").innerHTML= rr.pathstr;
+                W.CategoryType.close();
+
+            },
+                function(m,r){
+                    alert(r);
+                }]
+        );
+    }else{
+        W.document.getElementById("PrimaryCategory").value=_finalSelectedVal;
+        W.document.getElementById("PrimaryCategoryshow").innerHTML=$("#menuPath").text();
+        W.CategoryType.close();
+    }
 }
 
 

@@ -618,13 +618,19 @@ function removeThis(obj) {
 }
 
 //当输入分类，
-function addTypeAttr(obj) {
-    getCategorySpecificsData(obj.value, "typeAttrs", "afterClickAttr", "attTable");
+function addTypeAttr() {
+    var values = $("#PrimaryCategory").val();
+    getCategorySpecificsData(values, "typeAttrs", "afterClickAttr", "attTable");
 }
 var CategoryType;
 function selectType() {
+    var title = $("#Title").val();
+    if(title==null||title==""){
+        alert("请输入第一标题！");
+        return;
+    }
     CategoryType = $.dialog({title: '选择商品分类',
-        content: 'url:' + path + '/category/initSelectCategoryPage.do',
+        content: 'url:' + path + '/category/initSelectCategoryPage.do?title='+title,
         icon: 'succeed',
         width: 650,
         lock: true
@@ -741,7 +747,7 @@ function selectTemplate(){
 <li style="background:#F7F7F7; padding-top:9px;">
     <dt>第一分类</dt>
     <div class="new_left">
-        <input type="text" id="PrimaryCategory.categoryID" style="width:300px;" name="PrimaryCategory.categoryID"
+        <input type="text" id="PrimaryCategory" style="width:300px;" name="PrimaryCategory.categoryID"
                onblur="addTypeAttr(this)" class="validate[required] form-control" title="PrimaryCategory.categoryID"
                class="validate[required]" value="${item.categoryid}">
         <b class="new_button"><a data-toggle="modal" href="javascript:void(0)" onclick="selectType()">选择分类</a></b>

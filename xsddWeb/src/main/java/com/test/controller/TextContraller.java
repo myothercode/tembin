@@ -127,7 +127,12 @@ public class TextContraller extends BaseAction {
     }
 
     @RequestMapping("sometest.do")
-    public ModelAndView sometest(ModelMap modelMap){
+    public ModelAndView sometest(ModelMap modelMap,String id) throws InterruptedException {
+        int i=0;
+        System.out.println(i++);
+        if("1".equals(id)){
+            Thread.sleep(10000L);
+        }
         return forword("sometest",modelMap);
 
     }

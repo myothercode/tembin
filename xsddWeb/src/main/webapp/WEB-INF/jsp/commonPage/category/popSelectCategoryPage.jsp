@@ -11,10 +11,17 @@
 <html>
 <head>
     <title></title>
+    <script>
+        var title = '${title}';
+    </script>
 </head>
 <body>
-<button>选择分类</button>
+<button name="search" onclick="showDiv(this)">选择分类</button>
+<button name="rese" onclick="showDiv(this)">相似分类</button>
 <div id="search">
+
+</div>
+<div id="rese1" style="display: none;">
 
 </div>
 

@@ -231,6 +231,11 @@
             <artifactId>org.json</artifactId>
             <version>1.0</version>
         </dependency>
+        <dependency>
+            <groupId>org.reflections</groupId>
+            <artifactId>reflections</artifactId>
+            <version>0.9.9-RC2</version>
+        </dependency>
 
 
         <!--cxf-->
@@ -278,6 +283,22 @@
 
 
     </dependencies>
-
+<build>
+        <finalName>xsddWebroot</finalName>
+        <plugins>
+            <plugin>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.1</version>
+                <configuration>
+                    <encoding>UTF-8</encoding>
+                </configuration>
+            </plugin>
+            <plugin>
+                <artifactId>maven-war-plugin</artifactId>
+                <version>2.3</version>
+                <configuration></configuration>
+            </plugin>
+        </plugins>
+    </build>
 
 </project>

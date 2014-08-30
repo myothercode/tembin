@@ -32,7 +32,7 @@ public class GetOrderItemController extends BaseAction {
     private String apiUrl;
 
     @RequestMapping("/orderItemList.do")
-    public ModelAndView OrdersList(HttpServletRequest request,HttpServletResponse response,ModelMap modelMap){
+     public ModelAndView OrdersList(HttpServletRequest request,HttpServletResponse response,ModelMap modelMap){
         return forword("/orders/orderItem/orderItemList",modelMap);
     }
    /* *//**获取list数据的ajax方法*//*

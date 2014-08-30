@@ -107,6 +107,22 @@
             intertable +=' </table> ';
             return intertable;
         }
+        function selectSite(obj){
+            var urll = path+"/ajax/shipingService.do?parentID="+obj.value;
+            var api = frameElement.api, W = api.opener;
+            $().invoke(
+                    urll,
+                    null,
+                    [function (m, r) {
+                        var map = $.parseJSON(r);
+                        alert(map.length);
+                    },
+                        function (m, r) {
+                            alert(r);
+                        }]
+            )
+        }
+
         //创国内运输表
         function createTables(obj1,obj2,obj3,obj4,obj5){
             //用于国内运输选项
@@ -355,8 +371,7 @@
         <tr>
             <td align="right">站点</td>
             <td>
-                <select name="site">
-
+                <select name="site" onchange="selectSite(this)">
                     <c:forEach items="${siteList}" var="sites">
                         <c:if test="${shipping.site==sites.id}">
                             <option value="${sites.id}" selected="selected">${sites.name}</option>

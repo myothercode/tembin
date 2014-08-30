@@ -122,6 +122,7 @@ public class ItemController extends BaseAction{
         AjaxSupport.sendSuccessText("",jsonBean);
     }
 
+    /**刊登主页面*/
     @RequestMapping("/addItem.do")
     @AvoidDuplicateSubmission(needSaveToken = true)
     public ModelAndView addItem(HttpServletRequest request,HttpServletResponse response,ModelMap modelMap){
@@ -229,7 +230,7 @@ public class ItemController extends BaseAction{
     }
 
     /**
-     * 保存运输选项数据
+     * 刊登商品
      * @param request
      * @throws Exception
      */
@@ -466,7 +467,6 @@ public class ItemController extends BaseAction{
                     Map<String, String> resMap = addApiTask.exec(d, xml, apiUrl);
                     String r1 = resMap.get("stat");
                     String res = resMap.get("message");
-                    System.out.println(res);
                     if ("fail".equalsIgnoreCase(r1)) {
                         AjaxSupport.sendFailText("fail", "数据已保存，但刊登失败！");
                         return;
