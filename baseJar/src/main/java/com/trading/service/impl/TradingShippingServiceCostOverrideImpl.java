@@ -7,11 +7,13 @@ import com.base.utils.common.ObjectUtils;
 import com.base.xmlpojo.trading.addproduct.ShippingServiceCostOverride;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Created by cz on 2014/7/24.
  */
 @Service
+@Transactional(rollbackFor = Exception.class)
 public class TradingShippingServiceCostOverrideImpl implements com.trading.service.ITradingShippingServiceCostOverride {
     @Autowired
     private TradingShippingservicecostoverrideMapper ts;

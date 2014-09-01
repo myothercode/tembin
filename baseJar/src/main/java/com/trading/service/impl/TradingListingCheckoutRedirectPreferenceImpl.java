@@ -7,11 +7,13 @@ import com.base.utils.common.ObjectUtils;
 import com.base.xmlpojo.trading.addproduct.ListingCheckoutRedirectPreference;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Created by cz on 2014/7/24.
  */
 @Service
+@Transactional(rollbackFor = Exception.class)
 public class TradingListingCheckoutRedirectPreferenceImpl implements com.trading.service.ITradingListingCheckoutRedirectPreference {
     @Autowired
     private TradingListingcheckoutredirectpreferenceMapper tradingListMapper;

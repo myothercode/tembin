@@ -95,7 +95,7 @@ public class BindAccountAPI {
                 "<entriesPerPage>100</entriesPerPage>" +
                 "</paginationInput>" +*/
                 "<paginationInput>" +
-                "    <pageNumber>1</pageNumber>" +
+                "    <pageNumber>2</pageNumber>" +
                 "    <entriesPerPage>40</entriesPerPage>" +
                 "  </paginationInput>"+
                 "</getUserCasesRequest>";
@@ -240,9 +240,9 @@ public class BindAccountAPI {
     public static  String getEBPCase(Map map){
         String xml="<?xml version=\"1.0\" encoding=\"utf-8\"?>" +
                 "<getEBPCaseDetailRequest xmlns:soap=\"http://www.ebay.com/marketplace/resolution/v1/services\">" +
-                "<RequesterCredentials>" +
+                /*"<RequesterCredentials>" +
                 "<eBayAuthToken>"+map.get("token")+"</eBayAuthToken>" +
-                "</RequesterCredentials>" +
+                "</RequesterCredentials>" +*/
                 "<caseId>" +
                 "<id>"+map.get("caseId")+"</id>" +
                 "<type>"+map.get("caseType")+"</type>" +
@@ -250,5 +250,17 @@ public class BindAccountAPI {
                 "</getEBPCaseDetailRequest>";
         return xml;
     }
-
+    /*
+   *获取一般纠纷
+   */
+    public static  String getGetDispute(String token,String caseId){
+        String xml="<?xml version=\"1.0\" encoding=\"utf-8\"?>" +
+                "<GetDisputeRequest xmlns=\"urn:ebay:apis:eBLBaseComponents\">" +
+                "  <RequesterCredentials>" +
+                "    <eBayAuthToken>"+token+"</eBayAuthToken>" +
+                "  </RequesterCredentials>" +
+                "  <DisputeID>"+caseId+"</DisputeID>" +
+                "</GetDisputeRequest>";
+        return xml;
+    }
 }

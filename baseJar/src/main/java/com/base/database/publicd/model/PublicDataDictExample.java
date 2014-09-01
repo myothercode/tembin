@@ -165,10 +165,6 @@ public class PublicDataDictExample {
             return criteria.size() > 0;
         }
 
-        public List<Criterion> getAllCriteria() {
-            return criteria;
-        }
-
         public List<Criterion> getCriteria() {
             return criteria;
         }
@@ -743,6 +739,76 @@ public class PublicDataDictExample {
             addCriterion("item_type not between", value1, value2, "itemType");
             return (Criteria) this;
         }
+
+        public Criteria andSiteIdIsNull() {
+            addCriterion("site_id is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andSiteIdIsNotNull() {
+            addCriterion("site_id is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andSiteIdEqualTo(String value) {
+            addCriterion("site_id =", value, "siteId");
+            return (Criteria) this;
+        }
+
+        public Criteria andSiteIdNotEqualTo(String value) {
+            addCriterion("site_id <>", value, "siteId");
+            return (Criteria) this;
+        }
+
+        public Criteria andSiteIdGreaterThan(String value) {
+            addCriterion("site_id >", value, "siteId");
+            return (Criteria) this;
+        }
+
+        public Criteria andSiteIdGreaterThanOrEqualTo(String value) {
+            addCriterion("site_id >=", value, "siteId");
+            return (Criteria) this;
+        }
+
+        public Criteria andSiteIdLessThan(String value) {
+            addCriterion("site_id <", value, "siteId");
+            return (Criteria) this;
+        }
+
+        public Criteria andSiteIdLessThanOrEqualTo(String value) {
+            addCriterion("site_id <=", value, "siteId");
+            return (Criteria) this;
+        }
+
+        public Criteria andSiteIdLike(String value) {
+            addCriterion("site_id like", value, "siteId");
+            return (Criteria) this;
+        }
+
+        public Criteria andSiteIdNotLike(String value) {
+            addCriterion("site_id not like", value, "siteId");
+            return (Criteria) this;
+        }
+
+        public Criteria andSiteIdIn(List<String> values) {
+            addCriterion("site_id in", values, "siteId");
+            return (Criteria) this;
+        }
+
+        public Criteria andSiteIdNotIn(List<String> values) {
+            addCriterion("site_id not in", values, "siteId");
+            return (Criteria) this;
+        }
+
+        public Criteria andSiteIdBetween(String value1, String value2) {
+            addCriterion("site_id between", value1, value2, "siteId");
+            return (Criteria) this;
+        }
+
+        public Criteria andSiteIdNotBetween(String value1, String value2) {
+            addCriterion("site_id not between", value1, value2, "siteId");
+            return (Criteria) this;
+        }
     }
 
     /**
@@ -779,8 +845,6 @@ public class PublicDataDictExample {
 
         private boolean listValue;
 
-        private String typeHandler;
-
         public String getCondition() {
             return condition;
         }
@@ -809,22 +873,16 @@ public class PublicDataDictExample {
             return listValue;
         }
 
-        public String getTypeHandler() {
-            return typeHandler;
-        }
-
         protected Criterion(String condition) {
             super();
             this.condition = condition;
-            this.typeHandler = null;
             this.noValue = true;
         }
 
-        protected Criterion(String condition, Object value, String typeHandler) {
+        protected Criterion(String condition, Object value) {
             super();
             this.condition = condition;
             this.value = value;
-            this.typeHandler = typeHandler;
             if (value instanceof List<?>) {
                 this.listValue = true;
             } else {
@@ -832,21 +890,12 @@ public class PublicDataDictExample {
             }
         }
 
-        protected Criterion(String condition, Object value) {
-            this(condition, value, null);
-        }
-
-        protected Criterion(String condition, Object value, Object secondValue, String typeHandler) {
+        protected Criterion(String condition, Object value, Object secondValue) {
             super();
             this.condition = condition;
             this.value = value;
             this.secondValue = secondValue;
-            this.typeHandler = typeHandler;
             this.betweenValue = true;
-        }
-
-        protected Criterion(String condition, Object value, Object secondValue) {
-            this(condition, value, secondValue, null);
         }
     }
 }

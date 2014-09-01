@@ -198,7 +198,7 @@ public class TradingShippingDetailsImpl implements com.trading.service.ITradingS
         //ConvertPOJOUtil.convert(sd.getInsuranceDetails(),tsd);
         sd.setInternationalShippingServiceOption(this.iTradingInternationalShippingServiceOption.toXmlPojo(tsd.getId()));
         sd.setShippingServiceOptions(this.iTradingShippingServiceOptions.toXmlPojo(tsd.getId()));
-        System.out.println(PojoXmlUtil.pojoToXml(sd));
+        //System.out.println(PojoXmlUtil.pojoToXml(sd));
         return sd;
     }
 

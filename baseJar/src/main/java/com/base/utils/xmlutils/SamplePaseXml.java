@@ -476,4 +476,29 @@ public class SamplePaseXml {
         }
         return lidata;
     }
+
+    /**
+     * 得到分类
+     * @param xml
+     * @return
+     * @throws DocumentException
+     */
+    public static List<PublicDataDict> selectPublicDataDict(String xml) throws DocumentException {
+        List<PublicDataDict> lidata = new ArrayList();
+        Document document= DocumentHelper.parseText(xml);
+        Element rootElt = document.getRootElement();
+        Element el = rootElt.element("CategoryArray");
+        Iterator<Element> ies = el.elementIterator("Category");
+        while (ies.hasNext()){
+            Element ment = ies.next();
+            PublicDataDict pdd = new PublicDataDict();
+            pdd.setItemEnName(ment.elementText("CategoryName"));
+            pdd.setItemId(ment.elementText("CategoryID"));
+            pdd.setItemLevel(ment.elementText("CategoryLevel"));
+            pdd.setItemParentId(ment.elementText("CategoryParentID"));
+            pdd.setItemType("category");
+            lidata.add(pdd);
+        }
+        return lidata;
+    }
 }

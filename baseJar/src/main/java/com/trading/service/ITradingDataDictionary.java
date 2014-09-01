@@ -3,6 +3,7 @@ package com.trading.service;
 import com.base.database.publicd.model.PublicDataDict;
 import com.base.database.publicd.model.PublicUserConfig;
 import com.base.database.trading.model.TradingDataDictionary;
+import com.base.domains.DictDataFilterParmVO;
 import org.springframework.cache.annotation.Cacheable;
 
 import java.util.List;
@@ -38,11 +39,11 @@ public interface ITradingDataDictionary {
     List<PublicDataDict> selectPublicDictionaryByItemID(Long id);
 
     /**根据parentID查询publicDataDictionary*/
-    List<PublicDataDict> selectPublicDictionaryByParentID(Long id,String itemType);
+    List<PublicDataDict> selectPublicDictionaryByParentID(DictDataFilterParmVO vo);
 
 
     /**根据parentID和itemlevel查询publicDataDictionary*/
-    List<PublicDataDict> selectPublicDictionaryByItemLevel(Long id, String itemLevel, String itemType);
+    List<PublicDataDict> selectPublicDictionaryByItemLevel(DictDataFilterParmVO v);
 
     /**根据ID查询userConfig*/
     PublicUserConfig selectUserConfigByID(Long id);

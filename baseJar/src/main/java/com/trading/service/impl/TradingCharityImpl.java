@@ -7,11 +7,13 @@ import com.base.utils.common.ObjectUtils;
 import com.base.xmlpojo.trading.addproduct.Charity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Created by cz on 2014/7/24.
  */
 @Service
+@Transactional(rollbackFor = Exception.class)
 public class TradingCharityImpl implements com.trading.service.ITradingCharity {
     @Autowired
     private TradingCharityMapper tradingCharityMapper;

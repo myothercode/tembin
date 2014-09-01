@@ -3,6 +3,7 @@ package com.base.utils.cache;
 import com.base.database.publicd.model.PublicDataDict;
 import com.base.database.publicd.model.PublicUserConfig;
 import com.base.database.trading.model.TradingDataDictionary;
+import com.base.domains.DictDataFilterParmVO;
 import com.base.utils.applicationcontext.ApplicationContextUtil;
 import com.base.utils.common.ObjectUtils;
 import com.google.common.base.Predicate;
@@ -153,15 +154,15 @@ public class DataDictionarySupport extends CacheBaseSupport{
         return tradingDataDictionaries;
     }
     /**PublicDataDict通过parentid和type去找*/
-    public static List<PublicDataDict> getPublicDataDictionaryByParentID(Long id ,String itemType){
+    public static List<PublicDataDict> getPublicDataDictionaryByParentID(DictDataFilterParmVO vo){
         ITradingDataDictionary dictionary = (ITradingDataDictionary) ApplicationContextUtil.getBean(ITradingDataDictionary.class);
-        List<PublicDataDict> tradingDataDictionaries = dictionary.selectPublicDictionaryByParentID(id,itemType);
+        List<PublicDataDict> tradingDataDictionaries = dictionary.selectPublicDictionaryByParentID(vo);
         return tradingDataDictionaries;
     }
     /**PublicDataDict通过parentid和level去找*/
-    public static List<PublicDataDict> getPublicDataDictionaryByItemLevel(Long id ,String itemLevel,String itemType){
+    public static List<PublicDataDict> getPublicDataDictionaryByItemLevel(DictDataFilterParmVO v){
         ITradingDataDictionary dictionary = (ITradingDataDictionary) ApplicationContextUtil.getBean(ITradingDataDictionary.class);
-        List<PublicDataDict> tradingDataDictionaries = dictionary.selectPublicDictionaryByItemLevel(id,itemLevel,itemType);
+        List<PublicDataDict> tradingDataDictionaries = dictionary.selectPublicDictionaryByItemLevel(v);
         return tradingDataDictionaries;
     }
     /**PublicUserConfig字典表查询,用类型作为条件*/

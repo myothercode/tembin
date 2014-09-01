@@ -2,11 +2,14 @@ package com.trading.service.impl;
 
 import com.base.database.trading.mapper.TradingGetDisputeMapper;
 import com.base.database.trading.model.TradingGetDispute;
+import com.base.database.trading.model.TradingGetDisputeExample;
 import com.base.utils.common.ObjectUtils;
 import com.base.utils.exception.Asserts;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 /**
  * 退货政策
@@ -30,6 +33,15 @@ public class TradingGetDisputeImpl implements com.trading.service.ITradingGetDis
             ObjectUtils.valiUpdate(t.getCreateUser(),TradingGetDisputeMapper.class,GetDispute.getId());
             tradingGetDisputeMapper.updateByPrimaryKeySelective(GetDispute);
         }
+    }
+
+    @Override
+    public List<TradingGetDispute> selectGetDisputeByTransactionId(String TransactionId) {
+        TradingGetDisputeExample example=new TradingGetDisputeExample();
+        TradingGetDisputeExample.Criteria cr=example.createCriteria();
+        cr.andTransactionidEqualTo(TransactionId);
+        List<TradingGetDispute> list=tradingGetDisputeMapper.selectByExample(example);
+        return list;
     }
 
 

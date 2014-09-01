@@ -21,6 +21,7 @@ import com.trading.service.*;
 import org.apache.commons.lang.ArrayUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.*;
@@ -30,6 +31,7 @@ import java.util.*;
  * Created by cz on 2014/7/23.
  */
 @Service
+@Transactional(rollbackFor = Exception.class)
 public class TradingItemImpl implements com.trading.service.ITradingItem {
 
     @Autowired

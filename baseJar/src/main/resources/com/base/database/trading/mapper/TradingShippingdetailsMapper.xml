@@ -210,6 +210,9 @@
       #{ifDescribe,jdbcType=VARCHAR}, #{site,jdbcType=VARCHAR}, #{countType,jdbcType=VARCHAR}, 
       #{interCountType,jdbcType=VARCHAR}, #{getitfast,jdbcType=VARCHAR}, #{dispatchtimemax,jdbcType=BIGINT}, 
       #{checkFlag,jdbcType=VARCHAR})
+      <selectKey resultType="long" keyProperty="id" order="AFTER">
+          SELECT LAST_INSERT_ID()
+      </selectKey>
   </insert>
   <insert id="insertSelective" parameterType="com.base.database.trading.model.TradingShippingdetails" >
     <!--
@@ -461,6 +464,9 @@
         #{checkFlag,jdbcType=VARCHAR},
       </if>
     </trim>
+      <selectKey resultType="long" keyProperty="id" order="AFTER">
+          SELECT LAST_INSERT_ID()
+      </selectKey>
   </insert>
   <select id="countByExample" parameterType="com.base.database.trading.model.TradingShippingdetailsExample" resultType="java.lang.Integer" >
     <!--

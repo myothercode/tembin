@@ -15,6 +15,8 @@ public class APINameStatic {
     public static final String GeteBayDetails = "GeteBayDetails";
     /**获取token*/
     public static final String FetchToken = "FetchToken";
+    /**取得不同站点的分类*/
+    public static final String GetCategories = "GetCategories";
     /**
      * 添加固价商品
      */
@@ -73,5 +75,10 @@ public class APINameStatic {
      *评价及修改状态
      */
     public static final  String CompleteSale="CompleteSale";
+
+    /*
+     *一般的纠纷
+     */
+    public static final  String GetDispute="GetDispute";
 }
 

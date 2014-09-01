@@ -12,6 +12,7 @@ import com.base.utils.exception.Asserts;
 import com.base.xmlpojo.trading.addproduct.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Map;
@@ -21,6 +22,7 @@ import java.util.Map;
  * Created by cz on 2014/7/23.
  */
 @Service
+@Transactional(rollbackFor = Exception.class)
 public class TradingBuyerRequirementDetailsImpl implements com.trading.service.ITradingBuyerRequirementDetails {
     @Autowired
     private TradingBuyerRequirementDetailsMapper tradingBuyerRequirementDetailsMapper;

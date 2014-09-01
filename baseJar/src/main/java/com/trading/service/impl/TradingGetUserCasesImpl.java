@@ -1,8 +1,11 @@
 package com.trading.service.impl;
 
+import com.base.database.customtrading.mapper.UserCasesMapper;
 import com.base.database.trading.mapper.TradingGetUserCasesMapper;
 import com.base.database.trading.model.TradingGetUserCases;
 import com.base.database.trading.model.TradingGetUserCasesExample;
+import com.base.domains.querypojos.UserCasesQuery;
+import com.base.mybatis.page.Page;
 import com.base.utils.common.ObjectUtils;
 import com.base.utils.exception.Asserts;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * 退货政策
@@ -21,6 +25,8 @@ public class TradingGetUserCasesImpl implements com.trading.service.ITradingGetU
 
     @Autowired
     private TradingGetUserCasesMapper tradingGetUserCasesMapper;
+    @Autowired
+    private UserCasesMapper userCasesMapper;
 
     @Override
     public void saveGetUserCases(TradingGetUserCases GetUserCases) throws Exception {
@@ -36,7 +42,7 @@ public class TradingGetUserCasesImpl implements com.trading.service.ITradingGetU
     }
 
     @Override
-    public List<TradingGetUserCases> selectOrderGetItemByTransactionId(String transactionid) {
+    public List<TradingGetUserCases> selectGetUserCasesByTransactionId(String transactionid) {
         TradingGetUserCasesExample example=new TradingGetUserCasesExample();
         TradingGetUserCasesExample.Criteria cr=example.createCriteria();
         cr.andTransactionidEqualTo(transactionid);
@@ -44,5 +50,17 @@ public class TradingGetUserCasesImpl implements com.trading.service.ITradingGetU
         return list;
     }
 
+    @Override
+    public List<UserCasesQuery> selectGetUserCases(Map map, Page page) {
+        return userCasesMapper.selectUserCases(map,page);
+    }
 
+    @Override
+    public TradingGetUserCases selectUserCasesById(Long id) {
+        TradingGetUserCasesExample example=new TradingGetUserCasesExample();
+        TradingGetUserCasesExample.Criteria cr=example.createCriteria();
+        cr.andIdEqualTo(id);
+        List<TradingGetUserCases> list=tradingGetUserCasesMapper.selectByExample(example);
+        return list.size()>0?list.get(0):null;
+    }
 }

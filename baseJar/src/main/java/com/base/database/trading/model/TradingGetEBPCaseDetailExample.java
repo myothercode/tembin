@@ -855,6 +855,76 @@ public class TradingGetEBPCaseDetailExample {
             return (Criteria) this;
         }
 
+        public Criteria andTransactionidIsNull() {
+            addCriterion("transactionId is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andTransactionidIsNotNull() {
+            addCriterion("transactionId is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andTransactionidEqualTo(String value) {
+            addCriterion("transactionId =", value, "transactionid");
+            return (Criteria) this;
+        }
+
+        public Criteria andTransactionidNotEqualTo(String value) {
+            addCriterion("transactionId <>", value, "transactionid");
+            return (Criteria) this;
+        }
+
+        public Criteria andTransactionidGreaterThan(String value) {
+            addCriterion("transactionId >", value, "transactionid");
+            return (Criteria) this;
+        }
+
+        public Criteria andTransactionidGreaterThanOrEqualTo(String value) {
+            addCriterion("transactionId >=", value, "transactionid");
+            return (Criteria) this;
+        }
+
+        public Criteria andTransactionidLessThan(String value) {
+            addCriterion("transactionId <", value, "transactionid");
+            return (Criteria) this;
+        }
+
+        public Criteria andTransactionidLessThanOrEqualTo(String value) {
+            addCriterion("transactionId <=", value, "transactionid");
+            return (Criteria) this;
+        }
+
+        public Criteria andTransactionidLike(String value) {
+            addCriterion("transactionId like", value, "transactionid");
+            return (Criteria) this;
+        }
+
+        public Criteria andTransactionidNotLike(String value) {
+            addCriterion("transactionId not like", value, "transactionid");
+            return (Criteria) this;
+        }
+
+        public Criteria andTransactionidIn(List<String> values) {
+            addCriterion("transactionId in", values, "transactionid");
+            return (Criteria) this;
+        }
+
+        public Criteria andTransactionidNotIn(List<String> values) {
+            addCriterion("transactionId not in", values, "transactionid");
+            return (Criteria) this;
+        }
+
+        public Criteria andTransactionidBetween(String value1, String value2) {
+            addCriterion("transactionId between", value1, value2, "transactionid");
+            return (Criteria) this;
+        }
+
+        public Criteria andTransactionidNotBetween(String value1, String value2) {
+            addCriterion("transactionId not between", value1, value2, "transactionid");
+            return (Criteria) this;
+        }
+
         public Criteria andCreateUserIsNull() {
             addCriterion("create_user is null");
             return (Criteria) this;

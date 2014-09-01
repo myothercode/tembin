@@ -3,6 +3,7 @@ package com.base.utils.common;
 import com.base.database.publicd.model.PublicDataDict;
 import com.base.database.publicd.model.PublicUserConfig;
 import com.base.database.trading.model.TradingDataDictionary;
+import com.base.domains.DictDataFilterParmVO;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Collections2;
 import com.google.common.collect.ImmutableList;
@@ -88,13 +89,13 @@ public class DictCollectionsUtil {
         if(ObjectUtils.isLogicalNull(tList)){return null;}
         return (List<T>)dataPublicCollectionsFilterByItemID((List<PublicDataDict>)tList,type);
     }
-    public static<T> List<T> dataPublicDataCollectionsFilterByParentID(List<T> tList,Long type,String itemType){
+    public static<T> List<T> dataPublicDataCollectionsFilterByParentID(List<T> tList,DictDataFilterParmVO vo){
         if(ObjectUtils.isLogicalNull(tList)){return null;}
-        return (List<T>)dataPublicCollectionsFilterByParentID((List<PublicDataDict>)tList,type,itemType);
+        return (List<T>)dataPublicCollectionsFilterByParentID((List<PublicDataDict>)tList,vo);
     }
-    public static<T> List<T> dataPublicDataCollectionsFilterByItemLevel(List<T> tList,Long type,String itemlevel,String itemType){
+    public static<T> List<T> dataPublicDataCollectionsFilterByItemLevel(List<T> tList,DictDataFilterParmVO v){
         if(ObjectUtils.isLogicalNull(tList)){return null;}
-        return (List<T>)dataPublicCollectionsFilterByItemLevel((List<PublicDataDict>)tList,type,itemlevel,itemType);
+        return (List<T>)dataPublicCollectionsFilterByItemLevel((List<PublicDataDict>)tList,v);
     }
 
     /**根据字典中的类型筛选出指定条件的list<TradingDataDictionary>对象*/
@@ -172,12 +173,16 @@ public class DictCollectionsUtil {
     }
 
     /**根据字典中的parentID和itemtype筛选出指定条件的<publicDataDictionary>对象*/
-    public static List<PublicDataDict> dataPublicCollectionsFilterByParentID(List<PublicDataDict> ts,final Long id,final String itemType){
+    public static List<PublicDataDict> dataPublicCollectionsFilterByParentID(List<PublicDataDict> ts,DictDataFilterParmVO vo){
+        final Long id=vo.getLongV1();
+        final String itemType = vo.getStringV1();
+        final String siteID = vo.getStringV2();
         Collection<PublicDataDict> x= Collections2.filter(ts, new Predicate<PublicDataDict>() {
             @Override
             public boolean apply(PublicDataDict tradingDataDictionary) {
                 return (id==Long.parseLong(tradingDataDictionary.getItemParentId())
                         ||id.equals(Long.parseLong(tradingDataDictionary.getItemParentId())))
+                        && siteID.equalsIgnoreCase(tradingDataDictionary.getSiteId())
                         && itemType.equalsIgnoreCase(tradingDataDictionary.getItemType());
             }
         });
@@ -186,23 +191,30 @@ public class DictCollectionsUtil {
 
     }
     /**根据字典中的parentID和itemlevel筛选出指定条件的<publicDataDictionary>对象*/
-    public static List<PublicDataDict> dataPublicCollectionsFilterByItemLevel(List<PublicDataDict> ts,final Long id,final String itemLevel,final String itemType){
+    public static List<PublicDataDict> dataPublicCollectionsFilterByItemLevel(List<PublicDataDict> ts,DictDataFilterParmVO v){
+        final Long id = v.getLongV1();
+        final String itemLevel=v.getStringV1();
+        final String itemType=v.getStringV2();
+        final String siteID = v.getStringV3();
         Collection<PublicDataDict> x= Collections2.filter(ts, new Predicate<PublicDataDict>() {
             @Override
             public boolean apply(PublicDataDict tradingDataDictionary) {
 
                 if(id==null || id==0L){
                     return (itemType.equalsIgnoreCase(tradingDataDictionary.getItemType())
+                            && siteID.equalsIgnoreCase(tradingDataDictionary.getSiteId())
                             && itemLevel.equalsIgnoreCase(tradingDataDictionary.getItemLevel()));
                 }
                 else  if(StringUtils.isEmpty(itemLevel)||"0".equalsIgnoreCase(itemLevel)){
                     return itemType.equalsIgnoreCase(tradingDataDictionary.getItemType())
+                            && siteID.equalsIgnoreCase(tradingDataDictionary.getSiteId())
                             && (id==Long.parseLong(tradingDataDictionary.getItemParentId())
                             ||id.equals(Long.parseLong(tradingDataDictionary.getItemParentId())));
                 }
                 else {
                     return (id==Long.parseLong(tradingDataDictionary.getItemParentId())
                             ||id.equals(Long.parseLong(tradingDataDictionary.getItemParentId())))
+                            && siteID.equalsIgnoreCase(tradingDataDictionary.getSiteId())
                             && itemLevel.equalsIgnoreCase(tradingDataDictionary.getItemLevel())
                             && itemType.equalsIgnoreCase(tradingDataDictionary.getItemType());
                 }
@@ -250,4 +262,9 @@ public class DictCollectionsUtil {
         PublicUserConfig[] tt = x.toArray(new PublicUserConfig[]{});
         return Arrays.asList(tt).get(0);
     }
+
+    /**根据siteID筛选数据*/
+
+
+
 }

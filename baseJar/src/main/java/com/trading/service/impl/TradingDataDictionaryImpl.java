@@ -9,6 +9,7 @@ import com.base.database.publicd.model.PublicUserConfigExample;
 import com.base.database.trading.mapper.TradingDataDictionaryMapper;
 import com.base.database.trading.model.TradingDataDictionary;
 import com.base.database.trading.model.TradingDataDictionaryExample;
+import com.base.domains.DictDataFilterParmVO;
 import com.base.domains.SessionVO;
 import com.base.utils.cache.DataDictionarySupport;
 import com.base.utils.cache.SessionCacheSupport;
@@ -17,6 +18,7 @@ import com.base.utils.common.ObjectUtils;
 import com.base.utils.xmlutils.SamplePaseXml;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,6 +28,7 @@ import java.util.List;
  * 数据字典、trading数据字典和用户配置字典都是这个service
  */
 @Service
+@Transactional(rollbackFor = Exception.class)
 public class TradingDataDictionaryImpl implements com.trading.service.ITradingDataDictionary {
     @Autowired
     private TradingDataDictionaryMapper tradingDataDictionaryMapper;
@@ -126,16 +129,16 @@ public class TradingDataDictionaryImpl implements com.trading.service.ITradingDa
     }
     @Override
     /**根据parentID查询publicDataDictionary*/
-    public List<PublicDataDict> selectPublicDictionaryByParentID(Long id , String itemType){
+    public List<PublicDataDict> selectPublicDictionaryByParentID(DictDataFilterParmVO vo){
         List<PublicDataDict> ts=queryPublicDictAll();
-        List<PublicDataDict> n= DictCollectionsUtil.dataPublicDataCollectionsFilterByParentID(ts, id,itemType);
+        List<PublicDataDict> n= DictCollectionsUtil.dataPublicDataCollectionsFilterByParentID(ts, vo);
         return n;
     }
     @Override
     /**根据parentID和itemlevel查询publicDataDictionary*/
-    public List<PublicDataDict> selectPublicDictionaryByItemLevel(Long id , String itemLevel,String itemType){
+    public List<PublicDataDict> selectPublicDictionaryByItemLevel(DictDataFilterParmVO v){
         List<PublicDataDict> ts=queryPublicDictAll();
-        List<PublicDataDict> n= DictCollectionsUtil.dataPublicDataCollectionsFilterByItemLevel(ts, id,itemLevel,itemType);
+        List<PublicDataDict> n= DictCollectionsUtil.dataPublicDataCollectionsFilterByItemLevel(ts, v);
         return n;
     }
     @Override
