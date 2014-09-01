@@ -28,7 +28,6 @@
             map.put("orders",path+"/order/getOrdersList.do");
             map.put("orderItem",path+"/orderItem/orderItemList.do");
             map.put("listing",path+"/getListingItemList.do");
-            map.put("externalTransaction",path+"/sellertransactions/orderSellerTransactionsList.do");
             map.put("usercases",path+"/userCases/userCasesList.do");
             top.location=map.get(name);
 
@@ -84,7 +83,6 @@
 
         <div><input type="button" value="获取商品反馈数量" name="abcds地" onclick="testSize(this)"/></div>
         <div><input type="button" value="在线商品管理" name="listing" onclick="submitForm(this)"/></div>
-        <div><input type="button" value="外部交易" name="externalTransaction" onclick="submitForm(this)"/></div>
         <div><input type="button" value="纠纷" name="usercases" onclick="submitForm(this)"/></div>
 </form>
 </body>

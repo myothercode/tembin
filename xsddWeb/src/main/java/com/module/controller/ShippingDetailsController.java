@@ -181,7 +181,7 @@ public class ShippingDetailsController extends BaseAction{
         modelMap.put("li3",li3);
         modelMap.put("li4",li4);
         modelMap.put("li5",li5);
-
+*/
         List<TradingDataDictionary> liinter = DataDictionarySupport.getTradingDataDictionaryByType(DataDictionarySupport.DATA_DICT_SHIPPINGINTER_TYPE);
         List<TradingDataDictionary> inter1 = new ArrayList();
         List<TradingDataDictionary> inter2 = new ArrayList();
@@ -194,7 +194,7 @@ public class ShippingDetailsController extends BaseAction{
         }
         modelMap.put("inter1",inter1);
         modelMap.put("inter2",inter2);
-*/
+
         List<TradingDataDictionary> lipackage = DataDictionarySupport.getTradingDataDictionaryByType(DataDictionarySupport.DATA_DICT_SHIPPINGPACKAGE);
 
         modelMap.put("lipackage",lipackage);
@@ -221,35 +221,12 @@ public class ShippingDetailsController extends BaseAction{
         List<TradingDataDictionary> lidata = DataDictionarySupport.getTradingDataDictionaryByType(DataDictionarySupport.DATA_DICT_SITE);
         modelMap.put("siteList",lidata);
 
-        List<TradingDataDictionary> litype = DataDictionarySupport.getTradingDataDictionaryByType(DataDictionarySupport.DATA_DICT_SHIPPING_TYPE);
-        List<TradingDataDictionary> li1 = new ArrayList<TradingDataDictionary>();
-        List<TradingDataDictionary> li2 = new ArrayList<TradingDataDictionary>();
-        List<TradingDataDictionary> li3 = new ArrayList<TradingDataDictionary>();
-        List<TradingDataDictionary> li4 = new ArrayList<TradingDataDictionary>();
-        List<TradingDataDictionary> li5 = new ArrayList<TradingDataDictionary>();
-        for(TradingDataDictionary tdd:litype){
-            if(tdd.getName1().equals("Economy services")){
-                li1.add(tdd);
-            }else if(tdd.getName1().equals("Expedited services")){
-                li2.add(tdd);
-            }else if(tdd.getName1().equals("One-day services")){
-                li3.add(tdd);
-            }else if(tdd.getName1().equals("Other services")){
-                li4.add(tdd);
-            }else if(tdd.getName1().equals("Standard services")){
-                li5.add(tdd);
-            }
-        }
-        modelMap.put("li1",li1);
-        modelMap.put("li2",li2);
-        modelMap.put("li3",li3);
-        modelMap.put("li4",li4);
-        modelMap.put("li5",li5);
+
 
         List<TradingDataDictionary> liinter = DataDictionarySupport.getTradingDataDictionaryByType(DataDictionarySupport.DATA_DICT_SHIPPINGINTER_TYPE);
         List<TradingDataDictionary> inter1 = new ArrayList();
         List<TradingDataDictionary> inter2 = new ArrayList();
-        for(TradingDataDictionary tdd:litype){
+        for(TradingDataDictionary tdd:liinter){
             if(tdd.getName1().equals("Expedited services")){
                 inter1.add(tdd);
             }else if(tdd.getName1().equals("Other services")){

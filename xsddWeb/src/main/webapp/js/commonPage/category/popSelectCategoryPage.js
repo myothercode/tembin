@@ -60,8 +60,9 @@ var isSearchedCa=false;
 var _invokeGetData_type=null;
 function getMenuData(parentID,level){
     removeDiv(level);
-    if(localStorage.getItem("category_menu_"+parentID)!=null){
-        var json= eval("(" + localStorage.getItem("category_menu_"+parentID) + ")");
+    var sitId=$(W.document.getElementsByName("site")).eq(0).val();
+    if(localStorage.getItem("category_menu_"+sitId+""+parentID)!=null){
+        var json= eval("(" + localStorage.getItem("category_menu_"+sitId+""+parentID) + ")");
         var jdata=json.result;
         makeMutilSelect(jdata,level);
     }else{
@@ -73,8 +74,8 @@ function getMenuData(parentID,level){
             url,
             data,
             function(m,r){
-                localStorage.setItem("category_menu_"+parentID,r);
-                var json= eval("(" + localStorage.getItem("category_menu_"+parentID) + ")");
+                localStorage.setItem("category_menu_"+sitId+""+parentID,r);
+                var json= eval("(" + localStorage.getItem("category_menu_"+sitId+""+parentID) + ")");
                 var jdata=json.result;
                 makeMutilSelect(jdata,level);
 

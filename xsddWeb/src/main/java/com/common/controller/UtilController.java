@@ -1,9 +1,11 @@
 package com.common.controller;
 
+import com.base.database.publicd.mapper.PublicDataDictMapper;
 import com.base.database.publicd.model.PublicDataDict;
 import com.base.database.trading.model.TradingDataDictionary;
 import com.base.database.trading.model.TradingReseCategory;
 import com.base.domains.CommonParmVO;
+import com.base.domains.DictDataFilterParmVO;
 import com.base.domains.SessionVO;
 import com.base.domains.userinfo.UsercontrollerDevAccountExtend;
 import com.base.domains.userinfo.UsercontrollerEbayAccountExtend;
@@ -26,6 +28,7 @@ import com.trading.service.ITradingDataDictionary;
 import com.trading.service.ITradingReseCategory;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.math.NumberUtils;
 import org.apache.http.client.HttpClient;
 import org.apache.http.message.BasicHeader;
 import org.apache.log4j.Logger;
@@ -62,7 +65,8 @@ public class UtilController extends BaseAction{
     private ITradingDataDictionary tradingDataDictionary;
     @Autowired
     private ITradingReseCategory iTradingReseCategory;
-
+    @Autowired
+    public PublicDataDictMapper publicDataDictMapper;
 
     /**用于更新页面token*/
     @RequestMapping("/ajax/getToken.do")
@@ -83,10 +87,16 @@ public class UtilController extends BaseAction{
     /**用于获取商品类别的属性*/
     @RequestMapping("/ajax/getCategorySpecifics.do")
     @ResponseBody
-    public void getCategorySpecifics(String parentCategoryID,HttpServletRequest request) throws Exception {
+    public void getCategorySpecifics(String parentCategoryID,HttpServletRequest request,String siteID) throws Exception {
         Asserts.assertTrue(StringUtils.isNotEmpty(parentCategoryID),"目录id不能为空");
-        List<PublicDataDict> publicDataDictList = DataDictionarySupport.getPublicDataDictionaryByParentID(Long.valueOf(parentCategoryID),
-                DictCollectionsUtil.categorySpecifics);
+        Asserts.assertTrue(NumberUtils.isNumber(parentCategoryID),"只能输入数字!");
+
+
+        DictDataFilterParmVO vo=new DictDataFilterParmVO();
+        vo.setLongV1(Long.valueOf(parentCategoryID));
+        vo.setStringV1(DictCollectionsUtil.categorySpecifics);
+        vo.setStringV2(siteID);
+        List<PublicDataDict> publicDataDictList = DataDictionarySupport.getPublicDataDictionaryByParentID(vo);
         if(publicDataDictList!=null && publicDataDictList.size()>0){
             AjaxSupport.sendSuccessText("",publicDataDictList);
             return;
@@ -123,7 +133,7 @@ public class UtilController extends BaseAction{
      * */
     @RequestMapping("/ajax/getCategoryMenu.do")
     @ResponseBody
-    public void getCategoryMenu(String parentID,String level){
+    public void getCategoryMenu(String parentID,String level,String siteID){
         List<PublicDataDict> publicDataDictList=null;
         if(StringUtils.isEmpty(level)){
             level=DictCollectionsUtil.ITEM_LEVEL_ONE;
@@ -131,9 +141,18 @@ public class UtilController extends BaseAction{
         if(StringUtils.isEmpty(parentID) || "0".equals(parentID)){
             parentID="0";
             level = DictCollectionsUtil.ITEM_LEVEL_ONE;
-            publicDataDictList = DataDictionarySupport.getPublicDataDictionaryByItemLevel(Long.valueOf(parentID),level,DictCollectionsUtil.category);
+            DictDataFilterParmVO vo=new DictDataFilterParmVO();
+            vo.setLongV1(Long.valueOf(parentID));
+            vo.setStringV1(level);
+            vo.setStringV2(DictCollectionsUtil.category);
+            vo.setStringV3(siteID);
+            publicDataDictList = DataDictionarySupport.getPublicDataDictionaryByItemLevel(vo);
         }else {
-            publicDataDictList = DataDictionarySupport.getPublicDataDictionaryByParentID(Long.valueOf(parentID),DictCollectionsUtil.category);
+            DictDataFilterParmVO vo=new DictDataFilterParmVO();
+            vo.setLongV1(Long.valueOf(parentID));
+            vo.setStringV1(DictCollectionsUtil.category);
+            vo.setStringV2(siteID);
+            publicDataDictList = DataDictionarySupport.getPublicDataDictionaryByParentID(vo);
         }
 
 
@@ -267,4 +286,40 @@ public class UtilController extends BaseAction{
         }
         return forword("/test",modelMap);
     }
+
+    @RequestMapping("category/getCategories.do")
+    @ResponseBody
+    public ModelAndView getCategories(ModelMap modelMap, HttpServletRequest request) throws Exception {
+        String xml = "";
+
+        List<TradingDataDictionary> lidata = DataDictionarySupport.getTradingDataDictionaryByType(DataDictionarySupport.DATA_DICT_SITE);
+        modelMap.put("siteList", lidata);
+        for (int i = 0; i < lidata.size(); i++) {
+            TradingDataDictionary tdd = lidata.get(i);
+            xml="<?xml version=\"1.0\" encoding=\"utf-8\"?>\n" +
+                    "<GetCategoriesRequest xmlns=\"urn:ebay:apis:eBLBaseComponents\">\n" +
+                    "<RequesterCredentials>\n" +
+                    "<eBayAuthToken>AgAAAA**AQAAAA**aAAAAA**wV1JUQ**nY+sHZ2PrBmdj6wVnY+sEZ2PrA2dj6wFk4GhCpGGoA+dj6x9nY+seQ**cx0CAA**AAMAAA**2kuzIn+bBej1QDsDFfI2N74mj8psZYNYrtgX97fzWSGXO7EjvdlE9leu9HCY1bR9wdrzlAE7AKcT9Oz5BDNZbNQLS+uoifmNUM47lSqxWeYTQS2GtMK25LPYhxY+OQp6UVZ8lUh6Oqr91ub03emzufuZHo+6KSNJfNXMtOBVaB7PDeBQyNWoFBO0/LYiS5ql6HXB7vCj0W+K/iT4t3aPs5KlXAXjewM/Sa+nUDtjT9SseqrKrxdZx5fkAePeSrBs229tdCrkTtE0n+ZE9ppwJjElZpu7yfQL44McNa16KBxYYO0PnX7ENg2yMxf3H4aji0BEfB41lrC1LwhmNSebJGrJXRQVS9jmZyDqYiBdn1t536va/LPTP8kc3GZ7hnZRJuhMxoGGgx4ev5Hip0L7dk6cAPKHIkHUIjfA5pwVHEJZpvea+7uvwAh5pj9U7r6rmB9FXH2G9l+F5SytYlIXsDjwNtrEN53k5HrM0vhnGdd7pUwvyu7Nu4U5aPkZQZjTr6OrTWioDsZZwEz+pf0scw0IYweMhicCqMTNbvkJsj2cikX49C6XSAcoUyrGtGa11vFChrifmq74dPZmUEtT1hDtwL1Ix3VPyZcJtTukKljxa0W0IwIe676X5HmiGhvk5qPPUImkXcZdQUK1gMdZmw0seMl5xmFG33kKVSD9H0p0JAEF4lOcDvjADQZtwLXY3qIhvYcKdOrIffrUAURnJRYnrB/MixizWvw252xBn9tmxpm68O3KsGBzcUwEB0Su</eBayAuthToken>\n" +
+                    "</RequesterCredentials>\n" +
+                    "<CategorySiteID>"+tdd.getName1()+"</CategorySiteID>\n" +
+                    "<DetailLevel>ReturnAll</DetailLevel>\n" +
+                    "<Version>885</Version>\n" +
+                    "</GetCategoriesRequest>​";
+
+            UsercontrollerDevAccountExtend d = userInfoService.getDevInfo(1L);
+            d.setApiSiteid(tdd.getName1());
+            //d.setApiSiteid("0");
+            d.setApiCallName(APINameStatic.GetCategories);
+            AddApiTask addApiTask = new AddApiTask();
+            Map<String, String> resMap = addApiTask.exec(d, xml, apiUrl);
+            String res = resMap.get("message");
+            List<PublicDataDict> litdd = SamplePaseXml.selectPublicDataDict(res);
+            for (PublicDataDict pdd : litdd) {
+                pdd.setSiteId(tdd.getId().toString());
+                this.publicDataDictMapper.insertSelective(pdd);
+            }
+        }
+        return forword("/test",modelMap);
+    }
+
 }

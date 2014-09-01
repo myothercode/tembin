@@ -42,10 +42,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -237,7 +234,7 @@ public class ItemController extends BaseAction{
     @RequestMapping("/saveItem.do")
     @AvoidDuplicateSubmission(needRemoveToken = true)
     @ResponseBody
-    public void saveItem(HttpServletRequest request,Item item,TradingItem tradingItem) throws Exception {
+    public void saveItem(HttpServletRequest request,Item item,TradingItem tradingItem,Date timerListing) throws Exception {
 
         String mouth = request.getParameter("dataMouth");
         if("save".equals(mouth)){
@@ -410,6 +407,7 @@ public class ItemController extends BaseAction{
                     //得到刊登成功后的ＩＤ
                     TradingTimerListingWithBLOBs ttl = new TradingTimerListingWithBLOBs();
                     ttl.setItem(Long.parseLong(itemMap.get(paypal).toString()));
+                    ttl.setTimer(timerListing);
                     ttl.setTimerMessage(xml);
                     if (item.getListingType().equals("Chinese")) {
                         ttl.setApiMethod(APINameStatic.AddItem);
@@ -419,7 +417,7 @@ public class ItemController extends BaseAction{
                     ttl.setEbayId(paypal);
                     ttl.setStateId(DataDictionarySupport.getTradingDataDictionaryByID(Long.parseLong(tradingItem.getSite())).getName1());
                     this.iTradingTimerListing.saveTradingTimer(ttl);
-                    System.out.println(xml);
+                    //System.out.println(xml);
                 }
                 AjaxSupport.sendSuccessText("message", "操作成功！");
             }else {//立即刊登

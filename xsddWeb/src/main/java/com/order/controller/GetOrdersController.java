@@ -68,8 +68,6 @@ public class GetOrdersController extends BaseAction {
     @Autowired
     private  ITradingMessageGetmymessage iTradingMessageGetmymessage;
     @Autowired
-    private  ITradingMessageAddmembermessage iTradingMessageAddmembermessage;
-    @Autowired
     private ITradingOrderSenderAddress iTradingOrderSenderAddress;
     @Autowired
     private  ITradingOrderAddMemberMessageAAQToPartner iTradingOrderAddMemberMessageAAQToPartner;
@@ -889,15 +887,15 @@ public class GetOrdersController extends BaseAction {
                     accountmap.put("Itemid","161282030915");
                     accountmap.put("fromTime", start);
                     accountmap.put("toTime", end);*/
-                    d.setApiCallName(APINameStatic.GetAccount);
+                /*    d.setApiCallName(APINameStatic.GetAccount);
                     Map accountmap=new HashMap();
                     accountmap.put("token",token);
                     accountmap.put("Itemid",order.getItemid());
                     accountmap.put("fromTime", start);
                     accountmap.put("toTime", end);
-                    String accountxml = BindAccountAPI.getGetAccount(accountmap);
+                    String accountxml = BindAccountAPI.getGetAccount(accountmap);*/
                    /* Map<String, String> accountresmap = addApiTask.exec(ds, accountxml, "https://api.ebay.com/ws/api.dll");*/
-                    Map<String, String> accountresmap = addApiTask.exec(d, accountxml, apiUrl);
+                  /*  Map<String, String> accountresmap = addApiTask.exec(d, accountxml, apiUrl);
                     String accountr1 = accountresmap.get("stat");
                     String accountres = accountresmap.get("message");
                     if ("fail".equalsIgnoreCase(accountr1)) {
@@ -923,9 +921,47 @@ public class GetOrdersController extends BaseAction {
                         logger.error("GetAccount获取apisessionid失败!" + errors);
                         AjaxSupport.sendFailText("fail", "获取必要的参数失败！请稍后重试");
                         return;
-                    }
+                    }*/
                     //----------------
+                    //同步外部交易
+                  /*  UsercontrollerDevAccountExtend d=new UsercontrollerDevAccountExtend();*/
+                    d.setApiCallName("GetSellerTransactions");
+                   /* d.setApiCompatibilityLevel("883");
+                    d.setApiDevName("5d70d647-b1e2-4c7c-a034-b343d58ca425");
+                    d.setApiAppName("sandpoin-1f58-4e64-a45b-56507b02bbeb");
+                    d.setApiCertName("936fc911-c05c-455c-8838-3a698f2da43a");
+                    d.setApiSiteid("0");*/
+                    /*token="AgAAAA**AQAAAA**aAAAAA*axvUQ**nY+sHZ2PrBmdj6wVnY+sEZ2PrA2dj6AFlIWnC5iEpAidj6x9nY+seQ**I9ABAA**AAMAAA**fxldhpfo5xKyb9gLGSZgZtGZ35LrWfrf6xXxYJN/x1dazCBJKQIPEKf8Jf1YhWtmekAMZAJh4XkfsCuJfo+ROf/KEATGPEJEFI/bK+5DdZRndlY4AY9V3SM+iNPq0kXNAEy7hfWNqpb1PeA1TRWU21O1z07Vcnq+8Rr6XpwUWCL16T+KKsYpeM7CIudbtNY6+jsl0Vp65tOgYLfBmqgz6Q3XwVZXWQ914BetqWQsGudhvxsrwItxQruXZgOgiUZjJl8fjL1YWIYj+sa3CJPPDJy1l6+/NRMfD7cbfMbaF4m5tCXgcziyq/IQVnJHHxonUvNJj6zOQD/j0baLBdqOz+bGEWOSaPjEyRLvpwPfXVahl41OjJmKTqQTT1otJMw0LtDIWuhE6VhsQqFD79zw4GzEUrgWdjf9GUaHiirsC3U+1XFPiuA29djDJS9Rk8flXxZJstCuPCX9V0L8fcTiqrKr6k5c+yE2doyBV5FkM5JfJ+SJLk6r3qiIBQFwpvPQc/+R6UYhvY8msN1TiIVEQiBNAH1VfjRAq+SAmKhWW2UP/fOgy8aop2W/HnpG89WQ3UDIFRkOWijU/sepdwGVVYvGvtPEd9xHX1CZO6ZIJ6pMdPTaHxisPSQxJGvZ1GJW/daKgeNbSDDwoKYkzrG5CGJysOj3MOWeJNXKDbu9scB5nfiOX7JLVKurr1p0zxWXF4Mhhk3MWfqjP2SYYL3RIiTDKXHZiju4LluIxUcx9VDo85wXGV6JdO5xT4VrLgEA";*/
+        /*String token="AgAAAA**AQAAAA**aAAAAA**CLSRUQ**nY+sHZ2PrBmdj6wVnY+sEZ2PrA2dj6AFlYCjDJGCqA+dj6x9nY+seQ**FdYBAA**AAMAAA**w2sMbwlQ7TBHWxj9EsVedHQRI3+lonY9MDfiyayQbnFkjEanjL/yMCpS/D2B9xHRzRx+ppxWZkRPgeAKJvNotPLLrVTuEzOl5M7pi6Tw8+pzcmIEsOh7HQO78JlyFlvLc/ruE6/hG0E/HO1UX76YBwxp00N9f1NNUpo5u36D/TYsx5O2jXFTKkCOHwz6RW9vtN6TU39aLm+JQme2+NfFFXnbX8MHzoUiX7Sty0R88ZpX5wLp8ZdgXCEc5zZDQziYB1MSXF9hsmby5wKbxFF+OvW/zKADThk1gprgAgnEOucyoao+cUMHopLlYgMbjnLzdCXP5F9z+fkYTnKF6AEl5eHBpcKQGbPzswnKebRoBVw+bI2I1C/iq+PvBUyndFAexjrvlDQbEKr6qb6AWRVTTfkW2ce6a0ixRuCTq35zEpWpfAqkSKo+X23d/Q4V8R30rDXotOWDZL6o408cMO+UQ17uVA2arA1JNkYfc/AZ0T0z7ze5o/yp93jJPlDgi05Ut4fpCAMZw3X85GxrTlbEtawWgoyUbmMuv4f6QHZLZAerOaJA8DRJkzkzjJJ025bp1HvAECOc4ggdv0cofu4q96shssgNYYZJUPM+q4+0fnGK0pxQTNY9SV6vSaVCVoTZJo6vefW7OiHX2/eLoPKFuUfsKXXEv9OY71gD1xzYg/rpCMAqCTq1dKqqyT1R5fxANnoRX7vwkq+7jkCj2fAfKTnHi9mSuBFsilKLmnsqqWy3IGShMgdxiQwBEk6IWi9C";*/
+                    String sellerxml = BindAccountAPI.GetSellerTransactions(token);//获取接受消息
+                    /*AddApiTask addApiTask = new AddApiTask();*/
+        /* Map<String, String> resMap = addApiTask.exec(d, xml, "https://api.ebay.com/ws/api.dll");*/
+                    Map<String, String> resSellerMap = addApiTask.exec(d, sellerxml, apiUrl);
 
+                    //------------------------
+                    String sellerR1 = resSellerMap.get("stat");
+                    String sellerRes = resSellerMap.get("message");
+                    if ("fail".equalsIgnoreCase(sellerR1)) {
+                        AjaxSupport.sendFailText("fail", sellerRes);
+                        return;
+                    }
+                    String sellerAck = SamplePaseXml.getVFromXmlString(res, "Ack");
+                    if ("Success".equalsIgnoreCase(sellerAck)) {
+                        List<TradingOrderGetSellerTransactions> lists= GetSellerTransactionsAPI.parseXMLAndSave(sellerRes);
+                        for(TradingOrderGetSellerTransactions list:lists){
+                            List<TradingOrderGetSellerTransactions>  transactionseList=iTradingOrderGetSellerTransactions.selectTradingOrderGetSellerTransactionsByTransactionId(list.getTransactionid());
+                            if(transactionseList!=null&&transactionseList.size()>0){
+                                list.setId(transactionseList.get(0).getId());
+                            }
+                            iTradingOrderGetSellerTransactions.saveOrderGetSellerTransactions(list);
+                        }
+                        AjaxSupport.sendSuccessText("success", "同步成功！");
+                    } else {
+                        String errors = SamplePaseXml.getVFromXmlString(sellerRes, "Errors");
+                        logger.error("获取外部交易失败!" + errors);
+                        AjaxSupport.sendFailText("fail", "获取必要的参数失败！请稍后重试");
+                    }
+                    //---------------------------------------
                     iTradingOrderGetOrders.saveOrderGetOrders(order);
                 }
             }

@@ -1,5 +1,7 @@
 /**
  * Created by Administrtor on 2014/8/15.
+ * 加载物品类别属性以及保持并提交的js
+ *
  * 类别id，存放属性大类的div id，点击div后执行的方法名,选择属性值的table
  * getCategorySpecificsData("63516","attList","afterClickAttr","attTable");
  * 在提交之前调用asyCombox2InputData()同步数据
@@ -86,7 +88,10 @@ function afterClickAttr(obj, parentid,attTable) {
         "<td>" + "<a href='javascript:void(0)' onclick='removeThisTr(this)'>移除</a>" + "</td></tr>";
     $('#'+attTable).append(tr);
     $(obj).hide();
-    $.parser.parse();
+    //try{
+        $.parser.parse();
+    //}catch (e){}
+
 }
 
 /**同步combox的数据*/
@@ -303,7 +308,7 @@ function saveData(objs,name) {
             W.returnItem.close();
         },
             function (m, r) {
-                //Base.token();
+                Base.token();
                 alert(r)
                 $(objs).attr("disabled",false);
             }]

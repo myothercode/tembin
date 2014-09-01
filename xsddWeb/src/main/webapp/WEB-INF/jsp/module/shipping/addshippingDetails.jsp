@@ -12,6 +12,7 @@
 <head>
     <title></title>
     <script>
+        var shippingService = "";
         //国际运输选择所有地区
         function selectAllLocation(obj){
             $(obj).parent().parent().find("input[name='ShipToLocation']").prop("checked",true);
@@ -108,19 +109,34 @@
             return intertable;
         }
         function selectSite(obj){
-            var urll = path+"/ajax/shipingService.do?parentID="+obj.value;
+            var vals = "";
+            if(typeof obj=="object"||typeof obj=="Object"){
+                vals = obj.value;
+            }else{
+                vals = obj;
+            }
+            var urll = path+"/ajax/shipingService.do?parentID="+vals;
             var api = frameElement.api, W = api.opener;
             $().invoke(
                     urll,
-                    null,
+                    {},
                     [function (m, r) {
-                        var map = $.parseJSON(r);
-                        alert(map.length);
+                        shippingService="";
+                        for(var i = 0;i< r.length;i++){
+                            shippingService +=' <optgroup label="'+r[i].name1+'">';
+                            for(var j = 0;j<r[i].dictionaries.length;j++){
+                                shippingService +='<option value="'+r[i].dictionaries[j].value+'" selected="selected">'+r[i].dictionaries[j].name+'</option>';
+                            }
+                            shippingService +='</optgroup>';
+                        }
+                        $("select[name='ShippingService']").each(function(i,d){
+                            $(d).html(shippingService);
+                        });
                     },
                         function (m, r) {
                             alert(r);
                         }]
-            )
+            );
         }
 
         //创国内运输表
@@ -135,51 +151,6 @@
             tables +=' <td align="right"  width="200">运输方式</td> ';
             tables +=' <td> ';
             tables +=' <select name="ShippingService"> ';
-            tables +=' <optgroup label="Economy services">';
-            <c:forEach var="li1" items="${li1}">
-                if(obj1==${li1.id}){
-                    tables +=' <option value="${li1.id}" selected="selected">${li1.name}</option>';
-                }else{
-                    tables +=' <option value="${li1.id}">${li1.name}</option>';
-                }
-            </c:forEach>
-            tables +=' </optgroup>';
-            tables +=' <optgroup label="Expedited services">';
-            <c:forEach var="li2" items="${li2}">
-            if(obj1==${li2.id}){
-                tables +=' <option value="${li2.id}"  selected="selected">${li2.name}</option>';
-            }else{
-                tables +=' <option value="${li2.id}">${li2.name}</option>';
-            }
-            </c:forEach>
-            tables +=' </optgroup>';
-            tables +=' <optgroup label="One-day services">';
-            <c:forEach var="li3" items="${li3}">
-            if(obj1==${li3.id}){
-                tables += ' <option value="${li3.id}" selected="selected">${li3.name}</option>';
-            }else {
-                tables += ' <option value="${li3.id}">${li3.name}</option>';
-            }
-            </c:forEach>
-            tables +=' </optgroup>';
-            tables +=' <optgroup label="Other services">';
-            <c:forEach var="li4" items="${li4}">
-            if(obj1==${li4.id}) {
-                tables += ' <option value="${li4.id}" selected="selected">${li4.name}</option>';
-            }else{
-                tables += ' <option value="${li4.id}">${li4.name}</option>';
-            }
-            </c:forEach>
-            tables +=' </optgroup>';
-            tables +=' <optgroup label="Standard services">';
-            <c:forEach var="li5" items="${li5}">
-            if(obj1==${li5.id}) {
-                tables += ' <option value="${li5.id}" selected="selected">${li5.name}</option>';
-            }else{
-                tables += ' <option value="${li5.id}">${li5.name}</option>';
-            }
-            </c:forEach>
-            tables +=' </optgroup>';
             tables +=' </select> ';
             tables +=' </td> ';
             tables +=' </tr> ';
@@ -188,9 +159,9 @@
             tables +=' <td> ';
             tables +=' <input type="text" name="ShippingServiceCost.value"  class="validate[required,custom[number]]" value="'+obj2+'" id="numberShippingServiceCost"> ';
             if(obj3=="1"){
-                tables +=' <input type="checkbox" name="FreeShipping" value="1" checked> 免费 ';
+                tables +=' <input type="checkbox" name="FreeShipping" value="1" checked onclick="shippingfee(this)"> 免费 ';
             }else{
-                tables +=' <input type="checkbox" name="FreeShipping" value="1"> 免费 ';
+                tables +=' <input type="checkbox" name="FreeShipping" value="1" onclick="shippingfee(this)"> 免费 ';
             }
             tables +=' </td> ';
             tables +=' </tr> ';
@@ -209,14 +180,28 @@
             tables +=' </table> ';
             return tables;
         }
+
+        function shippingfee(obj){
+            if($(obj).prop("checked")){
+                $(obj).parent().parent().parent().find("input[type='text']").val("0");
+            }else{
+                $(obj).parent().parent().parent().find("input[type='text']").val("");
+            }
+        }
         $(document).ready(function() {
+            var site = '${shipping.site}';
             <c:if test="${litso==null}">
                 $("#shippingMore").append(createTables('','','','',''));
             </c:if>
-            <c:forEach var="obj" items="${litso}">
-                $("#shippingMore").append(createTables('${obj.shippingservice}','${obj.shippingservicecost}','${obj.freeshipping}','${obj.shippingserviceadditionalcost}','${obj.shippingsurcharge}'));
-            </c:forEach>
-
+            <c:if test="${litso!=null}">
+                <c:forEach var="obj" items="${litso}">
+                    $("#shippingMore").append(createTables('${obj.shippingservice}','${obj.shippingservicecost}','${obj.freeshipping}','${obj.shippingserviceadditionalcost}','${obj.shippingsurcharge}'));
+                </c:forEach>
+                selectSite(site);
+                <c:forEach var="obj" items="${litso}">
+                    $("select[name='ShippingService']").find("option[value='${obj.shippingservice}']").attr("selected", true)
+                </c:forEach>
+            </c:if>
             if($("#del").parent().parent().find("table").length>3){
                 $("#del").show();
             }
@@ -234,7 +219,8 @@
         });
         //添加国内运输选项
         function addShippingDetial(obj) {
-            $("#shippingMore").append(createTables('','','','',''));
+            var ss = $("#shippingMore").append(createTables('','','','',''));
+            $(obj).parent().parent().find("table").last().find("select[name='ShippingService']").html(shippingService);
             checkNumber();
             if($(obj).parent().parent().find("table").length>2){
                 $("#del").show();
@@ -315,14 +301,12 @@
                     urll,
                     data,
                     [function (m, r) {
-                        Base.token();
                         alert(r);
                         $(objs).attr("disabled",false);
                         W.refreshTable();
                         W.returnShipping.close();
                     },
                         function (m, r) {
-                            Base.token();
                             $(objs).attr("disabled",false);
                         }]
             )
