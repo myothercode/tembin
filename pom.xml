@@ -114,11 +114,22 @@
         <artifactId>spring-context-support</artifactId>
         <version>${spring.version}</version>
     </dependency>
+        <!--<dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-websocket</artifactId>
+            <version>${spring.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-messaging</artifactId>
+            <version>${spring.version}</version>
+        </dependency>-->
         <dependency>
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-core</artifactId>
             <version>4.0.0.M1</version>
         </dependency>
+
     <!--springjar end-->
 
         <dependency>
@@ -140,7 +151,7 @@
         <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>javax.servlet-api</artifactId>
-            <version>3.1-b02</version>
+            <version>3.1.0</version>
             <scope>provided</scope>
         </dependency>
         <dependency>

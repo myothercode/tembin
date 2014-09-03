@@ -10,8 +10,12 @@ $(document).ready(function(){
 var _finalSelectedVal='';
 function getRese(){
     _invokeGetData_type=null;
+    var sitId=$(W.document.getElementsByName("site")).eq(0).val();
+    if(title==null ||title=='' || sitId ==null){
+        alert('请选择站点并且输入标题！')
+        return;}
     $("#rese1").initTable({
-        url:path + "/ajax/getReseCategoryMenu.do?title="+title,
+        url:path + "/ajax/getReseCategoryMenu.do?title="+title+"&siteid="+sitId,
         columnData:[
             {title: "选项", name: "option1", width: "8%", align: "left", format: showRadio},
             {title:"ID",name:"categoryId",width:"8%",align:"left"},
@@ -69,7 +73,7 @@ function getMenuData(parentID,level){
         _invokeGetData_type="string";
         var url=path+"/ajax/getCategoryMenu.do";
         if(parentID==null){parentID=0;level=1;}
-        var data={"parentID":parentID};
+        var data={"parentID":parentID,"siteID":sitId};
         $().invoke(
             url,
             data,
@@ -155,7 +159,8 @@ var api = frameElement.api, W = api.opener;
 function que(){
     if(selectFlag=="radio"){
         var url=path+"/ajax/saveReseCategory.do?categoryId="+_finalSelectedVal+"&categoryName="+$("#menuPath").text()+"&categoryKey="+title;
-        var data=null;
+        var sitId=$(W.document.getElementsByName("site")).eq(0).val();
+        var data={"siteId":sitId};
         $().invoke(url,data,
             [function(m,r){
                 var rr= $.parseJSON(r)

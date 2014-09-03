@@ -34,6 +34,7 @@ public class GetOrdersAPI {
                     Iterator<Element> it=transactionArray.elementIterator("Transaction");
                     TradingOrderGetOrders getorder=new TradingOrderGetOrders();
                     //--------解析order下面第一层
+                    getorder.setSelleremail(SamplePaseXml.getSpecifyElementText(order,"SellerEmail"));
                     getorder.setOrderid(SamplePaseXml.getSpecifyElementText(order, "OrderID"));
                     getorder.setOrderstatus(SamplePaseXml.getSpecifyElementText(order,"OrderStatus"));
                     getorder.setAdjustmentamount(SamplePaseXml.getSpecifyElementText(order, "AdjustmentAmount"));

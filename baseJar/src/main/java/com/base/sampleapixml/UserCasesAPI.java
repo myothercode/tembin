@@ -26,9 +26,14 @@ public class UserCasesAPI {
             Element summary= (Element) caseSummary.next();
             userCases.setCaseid(SamplePaseXml.getSpecifyElementText(summary,"caseId","id"));
             userCases.setCasetype(SamplePaseXml.getSpecifyElementText(summary,"caseId","type"));
-            userCases.setBuyerid(SamplePaseXml.getSpecifyElementText(summary,"user","userId"));
-            userCases.setSellerid(SamplePaseXml.getSpecifyElementText(summary,"otherParty","userId"));
-            userCases.setStatus(SamplePaseXml.getSpecifyElementText(summary,"status","UPIStatus"));
+            userCases.setSellerid(SamplePaseXml.getSpecifyElementText(summary,"user","userId"));
+            userCases.setBuyerid(SamplePaseXml.getSpecifyElementText(summary,"otherParty","userId"));
+            String UPIStatus=SamplePaseXml.getSpecifyElementText(summary,"status","UPIStatus");
+            if(UPIStatus!=null){
+                userCases.setStatus(UPIStatus);
+            }else{
+                userCases.setStatus(SamplePaseXml.getSpecifyElementText(summary,"status","EBPSNADStatus"));
+            }
             userCases.setItemid(SamplePaseXml.getSpecifyElementText(summary,"item","itemId"));
             userCases.setItemtitle(SamplePaseXml.getSpecifyElementText(summary,"item","itemTitle"));
             userCases.setTransactionid(SamplePaseXml.getSpecifyElementText(summary,"item","transactionId"));

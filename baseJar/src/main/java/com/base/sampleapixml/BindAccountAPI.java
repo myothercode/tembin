@@ -95,8 +95,8 @@ public class BindAccountAPI {
                 "<entriesPerPage>100</entriesPerPage>" +
                 "</paginationInput>" +*/
                 "<paginationInput>" +
-                "    <pageNumber>2</pageNumber>" +
-                "    <entriesPerPage>40</entriesPerPage>" +
+                "    <pageNumber>1</pageNumber>" +
+                "    <entriesPerPage>200</entriesPerPage>" +
                 "  </paginationInput>"+
                 "</getUserCasesRequest>";
               return xml;

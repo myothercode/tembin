@@ -2,16 +2,15 @@ package com.common.controller;
 
 import com.base.database.publicd.mapper.PublicDataDictMapper;
 import com.base.database.publicd.model.PublicDataDict;
+import com.base.database.publicd.model.PublicDataDictExample;
 import com.base.database.trading.model.TradingDataDictionary;
 import com.base.database.trading.model.TradingReseCategory;
 import com.base.domains.CommonParmVO;
 import com.base.domains.DictDataFilterParmVO;
 import com.base.domains.SessionVO;
 import com.base.domains.userinfo.UsercontrollerDevAccountExtend;
-import com.base.domains.userinfo.UsercontrollerEbayAccountExtend;
 import com.base.mybatis.page.PageJsonBean;
 import com.base.sampleapixml.APINameStatic;
-import com.base.sampleapixml.CategoryAPI;
 import com.base.userinfo.service.UserInfoService;
 import com.base.utils.cache.DataDictionarySupport;
 import com.base.utils.cache.SessionCacheSupport;
@@ -21,12 +20,11 @@ import com.base.utils.exception.Asserts;
 import com.base.utils.httpclient.HttpClientUtil;
 import com.base.utils.threadpool.AddApiTask;
 import com.base.utils.xmlutils.SamplePaseXml;
-import com.common.base.utils.ajax.AjaxResponse;
 import com.common.base.utils.ajax.AjaxSupport;
 import com.common.base.web.BaseAction;
+import com.test.mapper.TestMapper;
 import com.trading.service.ITradingDataDictionary;
 import com.trading.service.ITradingReseCategory;
-import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
 import org.apache.http.client.HttpClient;
@@ -44,6 +42,7 @@ import org.springframework.web.servlet.ModelAndView;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -67,6 +66,8 @@ public class UtilController extends BaseAction{
     private ITradingReseCategory iTradingReseCategory;
     @Autowired
     public PublicDataDictMapper publicDataDictMapper;
+    @Autowired
+    public TestMapper testMapper;
 
     /**用于更新页面token*/
     @RequestMapping("/ajax/getToken.do")
@@ -89,27 +90,43 @@ public class UtilController extends BaseAction{
     @ResponseBody
     public void getCategorySpecifics(String parentCategoryID,HttpServletRequest request,String siteID) throws Exception {
         Asserts.assertTrue(StringUtils.isNotEmpty(parentCategoryID),"目录id不能为空");
-        Asserts.assertTrue(NumberUtils.isNumber(parentCategoryID),"只能输入数字!");
+        Asserts.assertTrue(NumberUtils.isNumber(siteID),"只能输入数字!");
 
-
-        DictDataFilterParmVO vo=new DictDataFilterParmVO();
+        /*DictDataFilterParmVO vo=new DictDataFilterParmVO();
         vo.setLongV1(Long.valueOf(parentCategoryID));
         vo.setStringV1(DictCollectionsUtil.categorySpecifics);
         vo.setStringV2(siteID);
-        List<PublicDataDict> publicDataDictList = DataDictionarySupport.getPublicDataDictionaryByParentID(vo);
+        List<PublicDataDict> publicDataDictList1 = DataDictionarySupport.getPublicDataDictionaryByParentID(vo);*/
+
+        PublicDataDictExample tradingDataDictionaryExample =new PublicDataDictExample();
+        tradingDataDictionaryExample.createCriteria().andItemTypeEqualTo(DictCollectionsUtil.categorySpecifics)
+        .andItemParentIdEqualTo(parentCategoryID).andSiteIdEqualTo(siteID);
+        List<PublicDataDict> publicDataDictList = this.publicDataDictMapper.selectByExample(tradingDataDictionaryExample);
+
+
+
         if(publicDataDictList!=null && publicDataDictList.size()>0){
-            AjaxSupport.sendSuccessText("",publicDataDictList);
-            return;
+
+        }else {
+            publicDataDictList=new ArrayList<PublicDataDict>();
         }
+        AjaxSupport.sendSuccessText("",publicDataDictList);
+        return;
+        /*TradingDataDictionary td = DataDictionarySupport.getTradingDataDictionaryByID(Long.parseLong(siteID));
+        String sitecode = td.getName1();
+
         //获取当前帐号绑定的开发帐号信息
         UsercontrollerDevAccountExtend d = userInfoService.getDevInfo(null);
-        d.setApiSiteid("0");
+        d.setApiSiteid(sitecode);
         d.setApiCallName(APINameStatic.GetCategorySpecifics);
         //获取当前登录人的所有ebay帐号
         List<UsercontrollerEbayAccountExtend> ebays = userInfoService.getEbayAccountForCurrUser();
         Long ebayID=ebays.get(0).getId();
         String token = userInfoService.getTokenByEbayID(ebayID);
-        String xml=CategoryAPI.getCategorySpecificsRequest(token,parentCategoryID);
+
+
+
+        String xml=CategoryAPI.getCategorySpecificsRequest(token,parentCategoryID,sitecode);
 
         AddApiTask addApiTask = new AddApiTask();
         Map<String, String> resMap = addApiTask.exec(d, xml, apiUrl);
@@ -119,12 +136,15 @@ public class UtilController extends BaseAction{
             AjaxSupport.sendFailText("fail",res);
             return;
         }
-        List<PublicDataDict> publicDataDictList1 = tradingDataDictionary.addPublicData(res);
+
+
+
+        List<PublicDataDict> publicDataDictList1 = tradingDataDictionary.addPublicData(res,siteID);
 
        // DataDictionarySupport.removePublicDictCache();
 
         AjaxSupport.sendSuccessText("",publicDataDictList1);
-        return;
+        return;*/
     }
 
     /**获取类别目录菜单
@@ -168,7 +188,7 @@ public class UtilController extends BaseAction{
      */
     @RequestMapping("/ajax/getReseCategoryMenu.do")
     @ResponseBody
-    public void getReseCategoryMenu(ModelMap modelMap,String title,CommonParmVO commonParmVO) throws Exception {
+    public void getReseCategoryMenu(ModelMap modelMap,String title,String siteid,CommonParmVO commonParmVO) throws Exception {
         StringBuffer sb = new StringBuffer();
         sb.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
         sb.append("<findItemsByKeywordsRequest xmlns=\"http://www.ebay.com/marketplace/search/v1/services\">");
@@ -178,12 +198,13 @@ public class UtilController extends BaseAction{
         sb.append("</paginationInput>");
         sb.append("</findItemsByKeywordsRequest>");
 
-        System.out.println(sb.toString());
+        TradingDataDictionary tdd = DataDictionarySupport.getTradingDataDictionaryByID(Long.parseLong(siteid));
+
         List<BasicHeader> headers = new ArrayList<BasicHeader>();
         headers.add(new BasicHeader("X-EBAY-SOA-SERVICE-NAME","FindingService"));
         headers.add(new BasicHeader("X-EBAY-SOA-OPERATION-NAME","findItemsByKeywords"));
         headers.add(new BasicHeader("X-EBAY-SOA-SERVICE-VERSION","1.12.0"));
-        headers.add(new BasicHeader("X-EBAY-SOA-GLOBAL-ID","EBAY-US"));
+        headers.add(new BasicHeader("X-EBAY-SOA-GLOBAL-ID",tdd.getDataDesc()));
         headers.add(new BasicHeader("X-EBAY-SOA-SECURITY-APPNAME","sandpoin-23af-4f47-a304-242ffed6ff5b"));
         headers.add(new BasicHeader("X-EBAY-SOA-REQUEST-DATA-FORMAT","XML"));
         HttpClient httpClient= HttpClientUtil.getHttpsClient();
@@ -213,7 +234,8 @@ public class UtilController extends BaseAction{
      */
     @RequestMapping("/ajax/saveReseCategory.do")
     @ResponseBody
-    public void saveReseCategory(ModelMap modelMap,TradingReseCategory tradingReseCategory,HttpServletRequest request,HttpServletResponse response) throws Exception {
+    public void saveReseCategory(ModelMap modelMap,TradingReseCategory tradingReseCategory,String siteId,
+                                 HttpServletRequest request,HttpServletResponse response) throws Exception {
         String id = request.getParameter("id");
         this.iTradingReseCategory.saveTradingReseCategory(tradingReseCategory);
         AjaxSupport.sendSuccessText("", "{\"pathstr\":\""+this.getStr(tradingReseCategory.getCategoryId())+"\"}");
@@ -296,6 +318,9 @@ public class UtilController extends BaseAction{
         modelMap.put("siteList", lidata);
         for (int i = 0; i < lidata.size(); i++) {
             TradingDataDictionary tdd = lidata.get(i);
+            if(tdd.getId()==291||tdd.getId()==311){
+                continue;
+            }
             xml="<?xml version=\"1.0\" encoding=\"utf-8\"?>\n" +
                     "<GetCategoriesRequest xmlns=\"urn:ebay:apis:eBLBaseComponents\">\n" +
                     "<RequesterCredentials>\n" +
@@ -305,21 +330,91 @@ public class UtilController extends BaseAction{
                     "<DetailLevel>ReturnAll</DetailLevel>\n" +
                     "<Version>885</Version>\n" +
                     "</GetCategoriesRequest>​";
-
-            UsercontrollerDevAccountExtend d = userInfoService.getDevInfo(1L);
-            d.setApiSiteid(tdd.getName1());
-            //d.setApiSiteid("0");
-            d.setApiCallName(APINameStatic.GetCategories);
-            AddApiTask addApiTask = new AddApiTask();
-            Map<String, String> resMap = addApiTask.exec(d, xml, apiUrl);
-            String res = resMap.get("message");
+            List<BasicHeader> headers = new ArrayList<BasicHeader>();
+            headers.add(new BasicHeader("X-EBAY-API-COMPATIBILITY-LEVEL","885"));
+            headers.add(new BasicHeader("X-EBAY-API-DEV-NAME", "5d70d647-b1e2-4c7c-a034-b343d58ca425"));
+            headers.add(new BasicHeader("X-EBAY-API-APP-NAME","sandpoin-1f58-4e64-a45b-56507b02bbeb"));
+            headers.add(new BasicHeader("X-EBAY-API-CERT-NAME","936fc911-c05c-455c-8838-3a698f2da43a"));
+            headers.add(new BasicHeader("X-EBAY-API-SITEID",tdd.getName1()));
+            headers.add(new BasicHeader("X-EBAY-API-CALL-NAME",APINameStatic.GetCategories));
+            HttpClient httpClient= HttpClientUtil.getHttpsClient();
+            String res= HttpClientUtil.post(httpClient, "https://api.sandbox.ebay.com/ws/api.dll", xml.toString(), "UTF-8", headers);
             List<PublicDataDict> litdd = SamplePaseXml.selectPublicDataDict(res);
             for (PublicDataDict pdd : litdd) {
                 pdd.setSiteId(tdd.getId().toString());
-                this.publicDataDictMapper.insertSelective(pdd);
+                try {
+                    this.publicDataDictMapper.insertSelective(pdd);
+                }catch(Exception e){
+                    continue;
+                }
             }
         }
         return forword("/test",modelMap);
+    }
+
+
+    /**抓取目录属性*/
+    @RequestMapping("category/getCategoriesSpec.do")
+    @ResponseBody
+    public String getCategoriesSpec(ModelMap modelMap, HttpServletRequest request) throws Exception {
+
+        List<Map> maps=testMapper.queryTest(new HashMap());
+
+
+        for (Map m:maps){
+
+        Map map=new HashMap();
+        map.put("siteID",m.get("StringV"));
+        List<PublicDataDict> x=  testMapper.selectForCatchData(map);
+        m.put("flag","1");
+        testMapper.updateTest(m);
+
+int i=0;
+        for (PublicDataDict p:x){
+i++;
+            if(i>4800){
+                m.put("flag","0");
+                testMapper.updateTest(m);
+                return "还未完成!";}
+
+            String xml="<?xml version=\"1.0\" encoding=\"utf-8\"?>" +
+                    "<GetCategorySpecificsRequest xmlns=\"urn:ebay:apis:eBLBaseComponents\">" +
+                    "<RequesterCredentials>" +
+                    "<eBayAuthToken>AgAAAA**AQAAAA**aAAAAA**wV1JUQ**nY+sHZ2PrBmdj6wVnY+sEZ2PrA2dj6wFk4GhCpGGoA+dj6x9nY+seQ**cx0CAA**AAMAAA**2kuzIn+bBej1QDsDFfI2N74mj8psZYNYrtgX97fzWSGXO7EjvdlE9leu9HCY1bR9wdrzlAE7AKcT9Oz5BDNZbNQLS+uoifmNUM47lSqxWeYTQS2GtMK25LPYhxY+OQp6UVZ8lUh6Oqr91ub03emzufuZHo+6KSNJfNXMtOBVaB7PDeBQyNWoFBO0/LYiS5ql6HXB7vCj0W+K/iT4t3aPs5KlXAXjewM/Sa+nUDtjT9SseqrKrxdZx5fkAePeSrBs229tdCrkTtE0n+ZE9ppwJjElZpu7yfQL44McNa16KBxYYO0PnX7ENg2yMxf3H4aji0BEfB41lrC1LwhmNSebJGrJXRQVS9jmZyDqYiBdn1t536va/LPTP8kc3GZ7hnZRJuhMxoGGgx4ev5Hip0L7dk6cAPKHIkHUIjfA5pwVHEJZpvea+7uvwAh5pj9U7r6rmB9FXH2G9l+F5SytYlIXsDjwNtrEN53k5HrM0vhnGdd7pUwvyu7Nu4U5aPkZQZjTr6OrTWioDsZZwEz+pf0scw0IYweMhicCqMTNbvkJsj2cikX49C6XSAcoUyrGtGa11vFChrifmq74dPZmUEtT1hDtwL1Ix3VPyZcJtTukKljxa0W0IwIe676X5HmiGhvk5qPPUImkXcZdQUK1gMdZmw0seMl5xmFG33kKVSD9H0p0JAEF4lOcDvjADQZtwLXY3qIhvYcKdOrIffrUAURnJRYnrB/MixizWvw252xBn9tmxpm68O3KsGBzcUwEB0Su</eBayAuthToken>" +
+                    "</RequesterCredentials>" +
+                    "<CategoryID>"+p.getItemId()+"</CategoryID>" +
+                    "</GetCategorySpecificsRequest>​";
+
+            TradingDataDictionary t= DataDictionarySupport.getTradingDataDictionaryByID(Long.valueOf(p.getSiteId()));
+
+            List<BasicHeader> headers = new ArrayList<BasicHeader>();
+            headers.add(new BasicHeader("X-EBAY-API-COMPATIBILITY-LEVEL","885"));
+            /*headers.add(new BasicHeader("X-EBAY-API-DEV-NAME", "bbafa7e7-2f98-4783-9c34-f403faeb007f"));
+            headers.add(new BasicHeader("X-EBAY-API-APP-NAME","chengdul-5b82-4a84-a496-6a2c75e4e0d5"));
+            headers.add(new BasicHeader("X-EBAY-API-CERT-NAME","724f4467-9280-437c-a998-f5bcfee67ce5"));*/
+            headers.add(new BasicHeader("X-EBAY-API-DEV-NAME", "5d70d647-b1e2-4c7c-a034-b343d58ca425"));
+            headers.add(new BasicHeader("X-EBAY-API-APP-NAME","sandpoin-1f58-4e64-a45b-56507b02bbeb"));
+            headers.add(new BasicHeader("X-EBAY-API-CERT-NAME","936fc911-c05c-455c-8838-3a698f2da43a"));
+            headers.add(new BasicHeader("X-EBAY-API-SITEID",t.getName1()));
+            headers.add(new BasicHeader("X-EBAY-API-CALL-NAME",APINameStatic.GetCategorySpecifics));
+
+            HttpClient httpClient= HttpClientUtil.getHttpsClient();
+            String res= HttpClientUtil.post(httpClient, "https://api.sandbox.ebay.com/ws/api.dll", xml, "UTF-8", headers);
+
+            try {
+                List<PublicDataDict> publicDataDictList1 = tradingDataDictionary.addPublicData(res, String.valueOf(t.getId()));
+            } catch (Exception e) {
+                e.printStackTrace();
+                continue;
+            }
+
+        }
+
+        }
+
+
+
+        return "ok";
     }
 
 }

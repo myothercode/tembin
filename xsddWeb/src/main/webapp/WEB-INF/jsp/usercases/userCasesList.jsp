@@ -31,6 +31,7 @@
                     {title:"Itemid",name:"itemid",width:"8%",align:"left"},
                     {title:"seller",name:"sellerid",width:"8%",align:"left"},
                     {title:"buyer",name:"buyerid",width:"8%",align:"left"},
+                    {title:"ebay商品详情",name:"itemUrl",width:"8%",align:"left",format:makeOption2},
                     {title:"操作",name:"option1",width:"8%",align:"left",format:makeOption1}
                 ],
                 selectDataNow:false,
@@ -46,7 +47,18 @@
         function makeOption1(json){
             var htm="<a target=\"_blank\" href=\"javascript:void(0)\" onclick=\"synDetails('"+json.id+"');\">同步详情</a>";
             var htm1="|<a target=\"_blank\" href=\"javascript:void(0)\" onclick=\"viewDetails('"+json.transactionid+"');\">查看详情</a>";
-            return htm+htm1;
+            var htm2="";
+            var flag=json.casetype;
+            var flag1=flag.substring(0,3);
+            if(flag1=="EBP"){
+                htm2="|<a target=\"_blank\" href=\"javascript:void(0)\" onclick=\"handleDispute('"+json.transactionid+"');\">处理纠纷</a>";
+            }
+            var h=htm+htm1+htm2;
+            return h;
+        }
+        function makeOption2(json){
+            var htm="<a target=\"_blank\" href=\"http://www.sandbox.ebay.com/itm/\""+json.itemid+">"+json.itemtitle+"</a>";
+            return htm;
         }
         function synDetails(id){
             var url=path+"/userCases/synDetails.do?id="+id;
@@ -66,6 +78,15 @@
                 lock:true
             });
         }
+        function handleDispute(id){
+            var url=path+"/userCases/handleDispute.do?transactionid="+id;
+            userCases=$.dialog({title: '处理纠纷',
+                content: 'url:'+url,
+                icon: 'succeed',
+                width:600,
+                height:350
+            });
+        }
         function submitCommit(){
             var type=$("#type").val();
             $("#UserCasesListTable").initTable({
@@ -76,6 +97,7 @@
                     {title:"Itemid",name:"itemid",width:"8%",align:"left"},
                     {title:"seller",name:"sellerid",width:"8%",align:"left"},
                     {title:"buyer",name:"buyerid",width:"8%",align:"left"},
+                    {title:"ebay商品详情",name:"itemUrl",width:"8%",align:"left",format:makeOption2},
                     {title:"操作",name:"option1",width:"8%",align:"left",format:makeOption1}
                 ],
                 selectDataNow:false,
@@ -92,6 +114,7 @@
     <option value="all">all</option>
     <option value="EBP">EBP</option>
     <option value="dispute">dispute</option>
+    <option value="CANCEL">CANCEL</option>
 </select>
 <input type="button" value="查询" onclick="submitCommit();"/>
 <div id="UserCasesListTable"></div>

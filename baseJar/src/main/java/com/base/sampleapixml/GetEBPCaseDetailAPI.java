@@ -35,15 +35,18 @@ public class GetEBPCaseDetailAPI {
         ebpCaseDetail.setAppealcreationdate(DateUtils.returnDate(creationDate));
         ebpCaseDetail.setSellershipmentaddress(SamplePaseXml.getSpecifyElementText(caseDetail,"sellerShipment","shippingAddress"));
         ebpCaseDetail.setBuyerreturnshipmentaddress(SamplePaseXml.getSpecifyElementText(caseDetail,"buyerReturnShipment","shippingAddress"));
+        ebpCaseDetail.setAgreedrefundamount(SamplePaseXml.getSpecifyElementText(caseDetail,"agreedRefundAmount"));
+        ebpCaseDetail.setDetailstatusinfodescription(SamplePaseXml.getSpecifyElementText(caseDetail,"detailStatusInfo","description"));
+        ebpCaseDetail.setInitialbuyerexpectationdetail(SamplePaseXml.getSpecifyElementText(caseDetail,"initialBuyerExpectationDetail","description"));
         Iterator history=caseDetail.elementIterator("responseHistory");
         while(history.hasNext()){
             Element response= (Element) history.next();
             TradingCaseResponseHistory responseHistory=new TradingCaseResponseHistory();
             responseHistory.setNote(SamplePaseXml.getSpecifyElementText(response,"note"));
             responseHistory.setAuthorrole(SamplePaseXml.getSpecifyElementText(response,"author","role"));
-            responseHistory.setActivity(SamplePaseXml.getSpecifyElementText(response,"activity"));
+            responseHistory.setActivity(SamplePaseXml.getSpecifyElementText(response,"activityDetail","description"));
             String creationDate1=SamplePaseXml.getSpecifyElementText(response,"creationDate");
-            responseHistory.setCreationdate(DateUtils.returnDate(creationDate));
+            responseHistory.setCreationdate(DateUtils.returnDate(creationDate1));
             historyList.add(responseHistory);
         }
         Element paymentDetail1=caseDetail.element("paymentDetail");

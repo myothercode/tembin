@@ -2,11 +2,22 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.test.mapper.TestMapper" >
  <select id="queryTest" resultType="java.util.Map" parameterType="map">
-     select id,StringV,dateV from testTable
+     select id,StringV,dateV from testTable where flag='0' LIMIT 1
  </select>
 
 <update id="updateTest" parameterType="map">
-    update testTable d set d.StringV=#{StringV} where d.id=#{id}
+    update testTable d set d.flag=#{flag} where d.id=#{id}
 </update>
+
+<select id="selectForCatchData" parameterType="map" resultType="com.base.database.publicd.model.PublicDataDict">
+    select id,item_id itemId,site_id siteId from public_data_dict
+    where item_type='category'
+    and item_id not in
+    (select DISTINCT public_data_dict.item_parent_id from public_data_dict where item_type='category')
+    and item_id not IN
+    (select DISTINCT public_data_dict.item_parent_id from public_data_dict where item_type='categorySpecifics')
+    and site_id = #{siteID}
+</select>
+
 
 </mapper>

@@ -38,6 +38,7 @@
             var site = '${buyerRequires.siteCode}';
             $("select[name='site']").find("option[value='" + site + "']").prop("selected", true);
             var buyerFlag='${buyerRequires.buyerFlag}';
+            showFlag(buyerFlag);
             $("input[type='radio'][name='buyer_flag'][value='"+buyerFlag+"']").prop("checked",true);
             var linkedpaypalaccount = '${buyerRequires.linkedpaypalaccount}';
             if(linkedpaypalaccount!=null){
@@ -107,6 +108,13 @@
             }
 
         });
+        function showFlag(obj){
+            if(obj=="1"){
+                $("#buyerShow").hide();
+            }else{
+                $("#buyerShow").show();
+            }
+        }
     </script>
 </head>
 <body>
@@ -130,9 +138,9 @@
             <tr>
                 <td>买家要求:</td>
                 <td>
-                    <div><input type="radio" name="buyer_flag" value="1"/> 允许所有买家购买我的物品</div>
-                    <div><input type="radio" name="buyer_flag" value="0"/> 不允许以下买家购买我的物品</div>
-                    <div style="margin-left: 25px;">
+                    <div><input type="radio" name="buyer_flag" value="1" checked onclick="showFlag('1')"/> 允许所有买家购买我的物品</div>
+                    <div><input type="radio" name="buyer_flag" value="0" onclick="showFlag('0')"/> 不允许以下买家购买我的物品</div>
+                    <div id="buyerShow" style="margin-left: 25px;display: none;">
                         <div><input type="checkbox" name="LinkedPayPalAccount" value="0"/>没有 PayPal 账户</div>
                         <div><input type="checkbox" name="ShipToRegistrationCountry" value="0"/>主要运送地址在我的运送范围之外</div>
                         <div><input type="checkbox" name="MaximumUnpaidItemStrikesInfo" onclick="checkData(this)"/>

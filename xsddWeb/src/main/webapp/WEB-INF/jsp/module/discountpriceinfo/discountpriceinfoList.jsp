@@ -39,7 +39,8 @@
                     {title:"账户名称",name:"ebayName",width:"8%",align:"left"},
                     {title:"开始时间",name:"disStarttime",width:"8%",align:"left"},
                     {title:"结束时间",name:"disEndtime",width:"8%",align:"left"},
-                    {title:"降价",name:"madeforoutletcomparisonprice",width:"8%",align:"left"},
+                    {title:"折扣",name:"madeforoutletcomparisonprice",width:"8%",align:"left"},
+                    {title:"降价",name:"minimumadvertisedprice",width:"8%",align:"left"},
                     {title:"是否免运费",name:"isShippingfee",width:"8%",align:"left"},
                     {title:"操作",name:"option1",width:"8%",align:"left",format:makeOption1}
                 ],

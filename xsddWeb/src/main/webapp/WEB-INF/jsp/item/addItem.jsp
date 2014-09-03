@@ -60,6 +60,13 @@
 
 <script>
 var myDescription = null;
+var payid = '${item.payId}';
+var buyid = '${item.buyerId}'
+var discountpriceinfoId = '${item.discountpriceinfoId}';
+var itemLocationId = '${item.itemLocationId}';
+var returnpolicyId = '${item.returnpolicyId}';
+var shippingDeailsId = '${item.shippingDeailsId}';
+var sellerItemInfoId = '${item.sellerItemInfoId}';
 
 
 $(document).ready(function () {
@@ -72,20 +79,7 @@ $(document).ready(function () {
     $("#form").validationEngine();
     myDescription = UE.getEditor('myDescription',ueditorToolBar);
 
-    var payid = '${item.payId}';
-    var buyid = '${item.buyerId}'
-    var discountpriceinfoId = '${item.discountpriceinfoId}';
-    var itemLocationId = '${item.itemLocationId}';
-    var returnpolicyId = '${item.returnpolicyId}';
-    var shippingDeailsId = '${item.shippingDeailsId}';
-    var sellerItemInfoId = '${item.sellerItemInfoId}';
-    $("input[name='buyerId'][value='" + buyid + "']").attr("checked", "checked");
-    $("input[name='payId'][value='" + payid + "']").attr("checked", "checked");
-    $("input[name='discountpriceinfoId'][value='" + discountpriceinfoId + "']").attr("checked", "checked");
-    $("input[name='itemLocationId'][value='" + itemLocationId + "']").attr("checked", "checked");
-    $("input[name='returnpolicyId'][value='" + returnpolicyId + "']").attr("checked", "checked");
-    $("input[name='shippingDeailsId'][value='" + shippingDeailsId + "']").attr("checked", "checked");
-    $("input[name='sellerItemInfoId'][value='" + sellerItemInfoId + "']").attr("checked", "checked");
+
     <c:forEach items="${lipa}" var="pa">
     $("#trValue").after().append(addValueTr('${pa.name}', '${pa.value}'));
     </c:forEach>

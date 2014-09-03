@@ -22,6 +22,7 @@
         <property name="locations">
             <list>
                 <value>classpath*:/baseJar/config/config.properties</value>
+                <value>file:c:/config/config.properties</value>
             </list>
         </property>
     </bean>

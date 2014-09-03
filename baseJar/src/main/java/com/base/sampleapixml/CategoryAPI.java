@@ -6,7 +6,7 @@ package com.base.sampleapixml;
  */
 public class CategoryAPI {
     /**根据商品类别获取商品类的属性*/
-    public static String getCategorySpecificsRequest(String token,String categoryID){
+    public static String getCategorySpecificsRequest(String token,String categoryID,String siteCode){
         String x="<?xml version=\"1.0\" encoding=\"utf-8\"?>" +
                 "<GetCategorySpecificsRequest xmlns=\"urn:ebay:apis:eBLBaseComponents\">" +
                 "<RequesterCredentials>" +

@@ -49,6 +49,8 @@ function loadDataBuyer(){
             if (url.indexOf("addItem.do") != -1) {
                 var buyerId = getLocalStorage("buyerId");
                 $("input[type='radio'][name='buyerId'][value='" + buyerId + "']").attr("checked", true);
+            }else{
+                $("input[name='buyerId'][value='" + buyid + "']").attr("checked", "checked");
             }
         }
     });
@@ -75,8 +77,10 @@ function loadDiscountPriceInfo(){
         showIndex: false,
         afterLoadTable:function(){
             if (url.indexOf("addItem.do") != -1) {
-                var discountpriceinfoId = getLocalStorage("discountpriceinfoId");
-                $("input[type='radio'][name='discountpriceinfoId'][value='" + discountpriceinfoId + "']").attr("checked", true);
+                var discountpriceinfoId1 = getLocalStorage("discountpriceinfoId");
+                $("input[type='radio'][name='discountpriceinfoId'][value='" + discountpriceinfoId1 + "']").attr("checked", true);
+            }else{
+                $("input[name='discountpriceinfoId'][value='" + discountpriceinfoId + "']").attr("checked", "checked");
             }
         }
     });
@@ -101,8 +105,10 @@ var loadItemLocationV=false;
          showIndex: false,
          afterLoadTable:function(){
              if (url.indexOf("addItem.do") != -1) {
-                 var itemLocationId = getLocalStorage("itemLocationId");
-                 $("input[type='radio'][name='itemLocationId'][value='" + itemLocationId + "']").attr("checked", true);
+                 var itemLocationId1 = getLocalStorage("itemLocationId");
+                 $("input[type='radio'][name='itemLocationId'][value='" + itemLocationId1 + "']").attr("checked", true);
+             }else{
+                 $("input[name='itemLocationId'][value='" + itemLocationId + "']").attr("checked", "checked");
              }
          }
      });
@@ -128,8 +134,10 @@ function loadPayOption(){
         showIndex: false,
         afterLoadTable:function(){
             if (url.indexOf("addItem.do") != -1) {
-                var payId = getLocalStorage("payId");
-                $("input[type='radio'][name='payId'][value='" + payId + "']").attr("checked", true);
+                var payId1 = getLocalStorage("payId");
+                $("input[type='radio'][name='payId'][value='" + payId1 + "']").attr("checked", true);
+            }else{
+                $("input[name='payId'][value='" + payid + "']").attr("checked", "checked");
             }
         }
     });
@@ -157,8 +165,10 @@ if(loadReturnpolicyV==true){return;}
         showIndex: false,
         afterLoadTable:function(){
             if (url.indexOf("addItem.do") != -1) {
-                var returnpolicyId = getLocalStorage("returnpolicyId");
-                $("input[type='radio'][name='returnpolicyId'][value='" + returnpolicyId + "']").attr("checked", true);
+                var returnpolicyId1 = getLocalStorage("returnpolicyId");
+                $("input[type='radio'][name='returnpolicyId'][value='" + returnpolicyId1 + "']").attr("checked", true);
+            }else{
+                $("input[name='returnpolicyId'][value='" + returnpolicyId + "']").attr("checked", "checked");
             }
         }
     });
@@ -185,8 +195,10 @@ function loadShippingDeails(){
         showIndex: false,
         afterLoadTable:function(){
             if (url.indexOf("addItem.do") != -1) {
-                var shippingDeailsId = getLocalStorage("shippingDeailsId");
-                $("input[type='radio'][name='shippingDeailsId'][value='" + shippingDeailsId + "']").attr("checked", true);
+                var shippingDeailsId1 = getLocalStorage("shippingDeailsId");
+                $("input[type='radio'][name='shippingDeailsId'][value='" + shippingDeailsId1 + "']").attr("checked", true);
+            }else{
+                $("input[name='shippingDeailsId'][value='" + shippingDeailsId + "']").attr("checked", "checked");
             }
         }
     });
@@ -213,8 +225,10 @@ function loaddescriptiondetails(){
         showIndex: false,
         afterLoadTable:function(){
             if (url.indexOf("addItem.do") != -1) {
-                var sellerItemInfoId = getLocalStorage("sellerItemInfoId");
-                $("input[type='radio'][name='sellerItemInfoId'][value='" + sellerItemInfoId + "']").attr("checked", true);
+                var sellerItemInfoId1 = getLocalStorage("sellerItemInfoId");
+                $("input[type='radio'][name='sellerItemInfoId'][value='" + sellerItemInfoId1 + "']").attr("checked", true);
+            }else{
+                $("input[name='sellerItemInfoId'][value='" + sellerItemInfoId + "']").attr("checked", "checked");
             }
         }
     });

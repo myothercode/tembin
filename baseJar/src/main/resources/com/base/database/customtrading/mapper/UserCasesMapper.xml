@@ -34,8 +34,14 @@
             <if test="caseType=='EBP'">
                 and UserCases.caseType like "%EBP%"
             </if>
+            <if test="caseType=='CANCEL'">
+                and UserCases.caseType like "%CANCEL%"
+            </if>
             <if test="caseType!='EBP'">
                 and UserCases.caseType not like "%EBP%"
+            </if>
+            <if test="caseType!='CANCEL'">
+                and UserCases.caseType not like "%CANCEL%"
             </if>
         </if>
     </select>

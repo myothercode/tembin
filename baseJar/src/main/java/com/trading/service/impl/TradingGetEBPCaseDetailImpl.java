@@ -2,11 +2,14 @@ package com.trading.service.impl;
 
 import com.base.database.trading.mapper.TradingGetEBPCaseDetailMapper;
 import com.base.database.trading.model.TradingGetEBPCaseDetail;
+import com.base.database.trading.model.TradingGetEBPCaseDetailExample;
 import com.base.utils.common.ObjectUtils;
 import com.base.utils.exception.Asserts;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 /**
  * 退货政策
@@ -30,5 +33,14 @@ public class TradingGetEBPCaseDetailImpl implements com.trading.service.ITrading
             ObjectUtils.valiUpdate(t.getCreateUser(),TradingGetEBPCaseDetailMapper.class,GetEBPCaseDetail.getId());
             tradingGetEBPCaseDetailMapper.updateByPrimaryKeySelective(GetEBPCaseDetail);
         }
+    }
+
+    @Override
+    public List<TradingGetEBPCaseDetail> selectGetEBPCaseDetailByTransactionId(String transactionid) {
+        TradingGetEBPCaseDetailExample example=new TradingGetEBPCaseDetailExample();
+        TradingGetEBPCaseDetailExample.Criteria cr=example.createCriteria();
+        cr.andTransactionidEqualTo(transactionid);
+        List<TradingGetEBPCaseDetail> list=tradingGetEBPCaseDetailMapper.selectByExample(example);
+        return list;
     }
 }

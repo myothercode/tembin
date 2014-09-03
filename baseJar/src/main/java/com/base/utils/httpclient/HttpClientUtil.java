@@ -25,12 +25,15 @@ import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.CoreConnectionPNames;
 import org.apache.http.params.HttpParams;
 import org.apache.http.params.HttpProtocolParams;
+import org.apache.log4j.Logger;
 
-import javax.net.ssl.HostnameVerifier;
-import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.*;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.security.NoSuchAlgorithmException;
+import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -39,7 +42,7 @@ import org.apache.log4j.*;
 
 public class HttpClientUtil {
 	//private static Logger logger = Logger.getLogger(HttpClientUtil.class);
-    static Logger log= Logger.getLogger(ExceptionInterceptor.class);
+    static Logger log= Logger.getLogger(HttpClientUtil.class);
 	private static final String USER_AGENT = "Mozilla/5.0 (Windows; U; Windows NT 6.0; zh-CN; rv:1.9.1.8) Gecko/20100202 Firefox/3.5.8 (.NET CLR 3.5.30729)";
 
 	public static HttpClient getHttpClient() {
@@ -71,14 +74,36 @@ public class HttpClientUtil {
 	}
 
 	public static HttpClient getHttpsClient() {
+        SSLContext ctx=null;
+        try {
+            ctx=SSLContext.getInstance("TLS");
+            X509TrustManager tm = new X509TrustManager() {
+                @Override
+                public void checkClientTrusted(X509Certificate[] x509Certificates, String s) throws CertificateException {}
 
-		HostnameVerifier hostnameVerifier = org.apache.http.conn.ssl.SSLSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER;
+                @Override
+                public void checkServerTrusted(X509Certificate[] x509Certificates, String s) throws CertificateException {}
+
+                @Override
+                public X509Certificate[] getAcceptedIssuers() {
+                    return new X509Certificate[0];
+                }
+            };
+            ctx.init(null, new TrustManager[] { tm }, null);
+        } catch (Exception e) {
+           log.error(e.getMessage(),e);
+        }
+
+
+        HostnameVerifier hostnameVerifier = SSLSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER;
 		HttpsURLConnection.setDefaultHostnameVerifier(hostnameVerifier);
 
 		SchemeRegistry registry = new SchemeRegistry();
-		SSLSocketFactory socketFactory = SSLSocketFactory.getSocketFactory();
-		socketFactory
-				.setHostnameVerifier((X509HostnameVerifier) hostnameVerifier);
+        SSLSocketFactory socketFactory = new SSLSocketFactory(ctx, SSLSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER);
+		//SSLSocketFactory socketFactory = SSLSocketFactory.getSocketFactory();
+
+		//socketFactory
+		//		.setHostnameVerifier((X509HostnameVerifier) hostnameVerifier);
 		registry.register(new Scheme("https", socketFactory, 443));
 
 		// httpClient = new DefaultHttpClient();

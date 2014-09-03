@@ -1335,146 +1335,6 @@ public class TradingOrderGetOrdersExample {
             return (Criteria) this;
         }
 
-        public Criteria andStreet1IsNull() {
-            addCriterion("street1 is null");
-            return (Criteria) this;
-        }
-
-        public Criteria andStreet1IsNotNull() {
-            addCriterion("street1 is not null");
-            return (Criteria) this;
-        }
-
-        public Criteria andStreet1EqualTo(String value) {
-            addCriterion("street1 =", value, "street1");
-            return (Criteria) this;
-        }
-
-        public Criteria andStreet1NotEqualTo(String value) {
-            addCriterion("street1 <>", value, "street1");
-            return (Criteria) this;
-        }
-
-        public Criteria andStreet1GreaterThan(String value) {
-            addCriterion("street1 >", value, "street1");
-            return (Criteria) this;
-        }
-
-        public Criteria andStreet1GreaterThanOrEqualTo(String value) {
-            addCriterion("street1 >=", value, "street1");
-            return (Criteria) this;
-        }
-
-        public Criteria andStreet1LessThan(String value) {
-            addCriterion("street1 <", value, "street1");
-            return (Criteria) this;
-        }
-
-        public Criteria andStreet1LessThanOrEqualTo(String value) {
-            addCriterion("street1 <=", value, "street1");
-            return (Criteria) this;
-        }
-
-        public Criteria andStreet1Like(String value) {
-            addCriterion("street1 like", value, "street1");
-            return (Criteria) this;
-        }
-
-        public Criteria andStreet1NotLike(String value) {
-            addCriterion("street1 not like", value, "street1");
-            return (Criteria) this;
-        }
-
-        public Criteria andStreet1In(List<String> values) {
-            addCriterion("street1 in", values, "street1");
-            return (Criteria) this;
-        }
-
-        public Criteria andStreet1NotIn(List<String> values) {
-            addCriterion("street1 not in", values, "street1");
-            return (Criteria) this;
-        }
-
-        public Criteria andStreet1Between(String value1, String value2) {
-            addCriterion("street1 between", value1, value2, "street1");
-            return (Criteria) this;
-        }
-
-        public Criteria andStreet1NotBetween(String value1, String value2) {
-            addCriterion("street1 not between", value1, value2, "street1");
-            return (Criteria) this;
-        }
-
-        public Criteria andStreet2IsNull() {
-            addCriterion("street2 is null");
-            return (Criteria) this;
-        }
-
-        public Criteria andStreet2IsNotNull() {
-            addCriterion("street2 is not null");
-            return (Criteria) this;
-        }
-
-        public Criteria andStreet2EqualTo(String value) {
-            addCriterion("street2 =", value, "street2");
-            return (Criteria) this;
-        }
-
-        public Criteria andStreet2NotEqualTo(String value) {
-            addCriterion("street2 <>", value, "street2");
-            return (Criteria) this;
-        }
-
-        public Criteria andStreet2GreaterThan(String value) {
-            addCriterion("street2 >", value, "street2");
-            return (Criteria) this;
-        }
-
-        public Criteria andStreet2GreaterThanOrEqualTo(String value) {
-            addCriterion("street2 >=", value, "street2");
-            return (Criteria) this;
-        }
-
-        public Criteria andStreet2LessThan(String value) {
-            addCriterion("street2 <", value, "street2");
-            return (Criteria) this;
-        }
-
-        public Criteria andStreet2LessThanOrEqualTo(String value) {
-            addCriterion("street2 <=", value, "street2");
-            return (Criteria) this;
-        }
-
-        public Criteria andStreet2Like(String value) {
-            addCriterion("street2 like", value, "street2");
-            return (Criteria) this;
-        }
-
-        public Criteria andStreet2NotLike(String value) {
-            addCriterion("street2 not like", value, "street2");
-            return (Criteria) this;
-        }
-
-        public Criteria andStreet2In(List<String> values) {
-            addCriterion("street2 in", values, "street2");
-            return (Criteria) this;
-        }
-
-        public Criteria andStreet2NotIn(List<String> values) {
-            addCriterion("street2 not in", values, "street2");
-            return (Criteria) this;
-        }
-
-        public Criteria andStreet2Between(String value1, String value2) {
-            addCriterion("street2 between", value1, value2, "street2");
-            return (Criteria) this;
-        }
-
-        public Criteria andStreet2NotBetween(String value1, String value2) {
-            addCriterion("street2 not between", value1, value2, "street2");
-            return (Criteria) this;
-        }
-
         public Criteria andCitynameIsNull() {
             addCriterion("cityName is null");
             return (Criteria) this;
@@ -2522,6 +2382,76 @@ public class TradingOrderGetOrdersExample {
 
         public Criteria andBuyeremailNotBetween(String value1, String value2) {
             addCriterion("buyerEmail not between", value1, value2, "buyeremail");
+            return (Criteria) this;
+        }
+
+        public Criteria andSelleremailIsNull() {
+            addCriterion("sellerEmail is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andSelleremailIsNotNull() {
+            addCriterion("sellerEmail is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andSelleremailEqualTo(String value) {
+            addCriterion("sellerEmail =", value, "selleremail");
+            return (Criteria) this;
+        }
+
+        public Criteria andSelleremailNotEqualTo(String value) {
+            addCriterion("sellerEmail <>", value, "selleremail");
+            return (Criteria) this;
+        }
+
+        public Criteria andSelleremailGreaterThan(String value) {
+            addCriterion("sellerEmail >", value, "selleremail");
+            return (Criteria) this;
+        }
+
+        public Criteria andSelleremailGreaterThanOrEqualTo(String value) {
+            addCriterion("sellerEmail >=", value, "selleremail");
+            return (Criteria) this;
+        }
+
+        public Criteria andSelleremailLessThan(String value) {
+            addCriterion("sellerEmail <", value, "selleremail");
+            return (Criteria) this;
+        }
+
+        public Criteria andSelleremailLessThanOrEqualTo(String value) {
+            addCriterion("sellerEmail <=", value, "selleremail");
+            return (Criteria) this;
+        }
+
+        public Criteria andSelleremailLike(String value) {
+            addCriterion("sellerEmail like", value, "selleremail");
+            return (Criteria) this;
+        }
+
+        public Criteria andSelleremailNotLike(String value) {
+            addCriterion("sellerEmail not like", value, "selleremail");
+            return (Criteria) this;
+        }
+
+        public Criteria andSelleremailIn(List<String> values) {
+            addCriterion("sellerEmail in", values, "selleremail");
+            return (Criteria) this;
+        }
+
+        public Criteria andSelleremailNotIn(List<String> values) {
+            addCriterion("sellerEmail not in", values, "selleremail");
+            return (Criteria) this;
+        }
+
+        public Criteria andSelleremailBetween(String value1, String value2) {
+            addCriterion("sellerEmail between", value1, value2, "selleremail");
+            return (Criteria) this;
+        }
+
+        public Criteria andSelleremailNotBetween(String value1, String value2) {
+            addCriterion("sellerEmail not between", value1, value2, "selleremail");
             return (Criteria) this;
         }
 

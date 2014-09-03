@@ -2,11 +2,14 @@ package com.trading.service.impl;
 
 import com.base.database.trading.mapper.TradingCaseResponseHistoryMapper;
 import com.base.database.trading.model.TradingCaseResponseHistory;
+import com.base.database.trading.model.TradingCaseResponseHistoryExample;
 import com.base.utils.common.ObjectUtils;
 import com.base.utils.exception.Asserts;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 /**
  * 退货政策
@@ -30,5 +33,14 @@ public class TradingCaseResponseHistoryImpl implements com.trading.service.ITrad
             ObjectUtils.valiUpdate(t.getCreateUser(),TradingCaseResponseHistoryMapper.class,CaseResponseHistory.getId());
             tradingCaseResponseHistoryMapper.updateByPrimaryKeySelective(CaseResponseHistory);
         }
+    }
+
+    @Override
+    public List<TradingCaseResponseHistory> selectCaseResponseHistoryById(Long Id) {
+        TradingCaseResponseHistoryExample example=new TradingCaseResponseHistoryExample();
+        TradingCaseResponseHistoryExample.Criteria cr=example.createCriteria();
+        cr.andEbpcasedetailIdEqualTo(Id);
+        List<TradingCaseResponseHistory> list=tradingCaseResponseHistoryMapper.selectByExample(example);
+        return list;
     }
 }

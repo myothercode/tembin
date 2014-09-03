@@ -49,5 +49,12 @@ public interface ITradingDataDictionary {
     PublicUserConfig selectUserConfigByID(Long id);
 
     /**添加类别属性信息*/
-    List<PublicDataDict> addPublicData(String xml) throws Exception;
+    List<PublicDataDict> addPublicData(String xml,String siteID) throws Exception;
+
+    //@Cacheable(value ="dataDictionaryCache")
+    /**查询所有的TradingDataDictionary数据字典数据*/
+    List<TradingDataDictionary> queryDictAll();
+
+    /**查询所有的publicDataDictionary数据字典数据*/
+    List<PublicDataDict> queryPublicDictAll();
 }

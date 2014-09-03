@@ -925,6 +925,216 @@ public class TradingGetEBPCaseDetailExample {
             return (Criteria) this;
         }
 
+        public Criteria andAgreedrefundamountIsNull() {
+            addCriterion("agreedRefundAmount is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andAgreedrefundamountIsNotNull() {
+            addCriterion("agreedRefundAmount is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andAgreedrefundamountEqualTo(String value) {
+            addCriterion("agreedRefundAmount =", value, "agreedrefundamount");
+            return (Criteria) this;
+        }
+
+        public Criteria andAgreedrefundamountNotEqualTo(String value) {
+            addCriterion("agreedRefundAmount <>", value, "agreedrefundamount");
+            return (Criteria) this;
+        }
+
+        public Criteria andAgreedrefundamountGreaterThan(String value) {
+            addCriterion("agreedRefundAmount >", value, "agreedrefundamount");
+            return (Criteria) this;
+        }
+
+        public Criteria andAgreedrefundamountGreaterThanOrEqualTo(String value) {
+            addCriterion("agreedRefundAmount >=", value, "agreedrefundamount");
+            return (Criteria) this;
+        }
+
+        public Criteria andAgreedrefundamountLessThan(String value) {
+            addCriterion("agreedRefundAmount <", value, "agreedrefundamount");
+            return (Criteria) this;
+        }
+
+        public Criteria andAgreedrefundamountLessThanOrEqualTo(String value) {
+            addCriterion("agreedRefundAmount <=", value, "agreedrefundamount");
+            return (Criteria) this;
+        }
+
+        public Criteria andAgreedrefundamountLike(String value) {
+            addCriterion("agreedRefundAmount like", value, "agreedrefundamount");
+            return (Criteria) this;
+        }
+
+        public Criteria andAgreedrefundamountNotLike(String value) {
+            addCriterion("agreedRefundAmount not like", value, "agreedrefundamount");
+            return (Criteria) this;
+        }
+
+        public Criteria andAgreedrefundamountIn(List<String> values) {
+            addCriterion("agreedRefundAmount in", values, "agreedrefundamount");
+            return (Criteria) this;
+        }
+
+        public Criteria andAgreedrefundamountNotIn(List<String> values) {
+            addCriterion("agreedRefundAmount not in", values, "agreedrefundamount");
+            return (Criteria) this;
+        }
+
+        public Criteria andAgreedrefundamountBetween(String value1, String value2) {
+            addCriterion("agreedRefundAmount between", value1, value2, "agreedrefundamount");
+            return (Criteria) this;
+        }
+
+        public Criteria andAgreedrefundamountNotBetween(String value1, String value2) {
+            addCriterion("agreedRefundAmount not between", value1, value2, "agreedrefundamount");
+            return (Criteria) this;
+        }
+
+        public Criteria andDetailstatusinfodescriptionIsNull() {
+            addCriterion("detailStatusInfoDescription is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andDetailstatusinfodescriptionIsNotNull() {
+            addCriterion("detailStatusInfoDescription is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andDetailstatusinfodescriptionEqualTo(String value) {
+            addCriterion("detailStatusInfoDescription =", value, "detailstatusinfodescription");
+            return (Criteria) this;
+        }
+
+        public Criteria andDetailstatusinfodescriptionNotEqualTo(String value) {
+            addCriterion("detailStatusInfoDescription <>", value, "detailstatusinfodescription");
+            return (Criteria) this;
+        }
+
+        public Criteria andDetailstatusinfodescriptionGreaterThan(String value) {
+            addCriterion("detailStatusInfoDescription >", value, "detailstatusinfodescription");
+            return (Criteria) this;
+        }
+
+        public Criteria andDetailstatusinfodescriptionGreaterThanOrEqualTo(String value) {
+            addCriterion("detailStatusInfoDescription >=", value, "detailstatusinfodescription");
+            return (Criteria) this;
+        }
+
+        public Criteria andDetailstatusinfodescriptionLessThan(String value) {
+            addCriterion("detailStatusInfoDescription <", value, "detailstatusinfodescription");
+            return (Criteria) this;
+        }
+
+        public Criteria andDetailstatusinfodescriptionLessThanOrEqualTo(String value) {
+            addCriterion("detailStatusInfoDescription <=", value, "detailstatusinfodescription");
+            return (Criteria) this;
+        }
+
+        public Criteria andDetailstatusinfodescriptionLike(String value) {
+            addCriterion("detailStatusInfoDescription like", value, "detailstatusinfodescription");
+            return (Criteria) this;
+        }
+
+        public Criteria andDetailstatusinfodescriptionNotLike(String value) {
+            addCriterion("detailStatusInfoDescription not like", value, "detailstatusinfodescription");
+            return (Criteria) this;
+        }
+
+        public Criteria andDetailstatusinfodescriptionIn(List<String> values) {
+            addCriterion("detailStatusInfoDescription in", values, "detailstatusinfodescription");
+            return (Criteria) this;
+        }
+
+        public Criteria andDetailstatusinfodescriptionNotIn(List<String> values) {
+            addCriterion("detailStatusInfoDescription not in", values, "detailstatusinfodescription");
+            return (Criteria) this;
+        }
+
+        public Criteria andDetailstatusinfodescriptionBetween(String value1, String value2) {
+            addCriterion("detailStatusInfoDescription between", value1, value2, "detailstatusinfodescription");
+            return (Criteria) this;
+        }
+
+        public Criteria andDetailstatusinfodescriptionNotBetween(String value1, String value2) {
+            addCriterion("detailStatusInfoDescription not between", value1, value2, "detailstatusinfodescription");
+            return (Criteria) this;
+        }
+
+        public Criteria andInitialbuyerexpectationdetailIsNull() {
+            addCriterion("initialBuyerExpectationDetail is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andInitialbuyerexpectationdetailIsNotNull() {
+            addCriterion("initialBuyerExpectationDetail is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andInitialbuyerexpectationdetailEqualTo(String value) {
+            addCriterion("initialBuyerExpectationDetail =", value, "initialbuyerexpectationdetail");
+            return (Criteria) this;
+        }
+
+        public Criteria andInitialbuyerexpectationdetailNotEqualTo(String value) {
+            addCriterion("initialBuyerExpectationDetail <>", value, "initialbuyerexpectationdetail");
+            return (Criteria) this;
+        }
+
+        public Criteria andInitialbuyerexpectationdetailGreaterThan(String value) {
+            addCriterion("initialBuyerExpectationDetail >", value, "initialbuyerexpectationdetail");
+            return (Criteria) this;
+        }
+
+        public Criteria andInitialbuyerexpectationdetailGreaterThanOrEqualTo(String value) {
+            addCriterion("initialBuyerExpectationDetail >=", value, "initialbuyerexpectationdetail");
+            return (Criteria) this;
+        }
+
+        public Criteria andInitialbuyerexpectationdetailLessThan(String value) {
+            addCriterion("initialBuyerExpectationDetail <", value, "initialbuyerexpectationdetail");
+            return (Criteria) this;
+        }
+
+        public Criteria andInitialbuyerexpectationdetailLessThanOrEqualTo(String value) {
+            addCriterion("initialBuyerExpectationDetail <=", value, "initialbuyerexpectationdetail");
+            return (Criteria) this;
+        }
+
+        public Criteria andInitialbuyerexpectationdetailLike(String value) {
+            addCriterion("initialBuyerExpectationDetail like", value, "initialbuyerexpectationdetail");
+            return (Criteria) this;
+        }
+
+        public Criteria andInitialbuyerexpectationdetailNotLike(String value) {
+            addCriterion("initialBuyerExpectationDetail not like", value, "initialbuyerexpectationdetail");
+            return (Criteria) this;
+        }
+
+        public Criteria andInitialbuyerexpectationdetailIn(List<String> values) {
+            addCriterion("initialBuyerExpectationDetail in", values, "initialbuyerexpectationdetail");
+            return (Criteria) this;
+        }
+
+        public Criteria andInitialbuyerexpectationdetailNotIn(List<String> values) {
+            addCriterion("initialBuyerExpectationDetail not in", values, "initialbuyerexpectationdetail");
+            return (Criteria) this;
+        }
+
+        public Criteria andInitialbuyerexpectationdetailBetween(String value1, String value2) {
+            addCriterion("initialBuyerExpectationDetail between", value1, value2, "initialbuyerexpectationdetail");
+            return (Criteria) this;
+        }
+
+        public Criteria andInitialbuyerexpectationdetailNotBetween(String value1, String value2) {
+            addCriterion("initialBuyerExpectationDetail not between", value1, value2, "initialbuyerexpectationdetail");
+            return (Criteria) this;
+        }
+
         public Criteria andCreateUserIsNull() {
             addCriterion("create_user is null");
             return (Criteria) this;

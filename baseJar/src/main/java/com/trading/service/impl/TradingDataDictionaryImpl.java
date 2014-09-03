@@ -37,6 +37,10 @@ public class TradingDataDictionaryImpl implements com.trading.service.ITradingDa
     @Autowired
     private PublicUserConfigMapper publicUserConfigMapper;
 
+    public String publicDataDictionary="no";//publicDataDictionary表是否已经加载过数据
+    public String tradingDataDictionary="no";//tradingDataDictionary表是否已经加载过数据
+
+
     @Override
     public void saveDataDictionary(TradingDataDictionary tradingDataDictionary){
         this.tradingDataDictionaryMapper.insert(tradingDataDictionary);
@@ -152,39 +156,53 @@ public class TradingDataDictionaryImpl implements com.trading.service.ITradingDa
 
     @Override
     /**添加类别属性信息，并返回解析完毕的集合*/
-    public List<PublicDataDict> addPublicData(String xml) throws Exception {
+    public List<PublicDataDict> addPublicData(String xml,String siteID) throws Exception {
         List<PublicDataDict> publicDataDictList = SamplePaseXml.getListForPublicDataDict(xml);
         if(publicDataDictList.isEmpty()){return new ArrayList<PublicDataDict>();}
         for (PublicDataDict publicDataDict : publicDataDictList){
-            publicDataDictMapper.insertSelective(publicDataDict);
+            publicDataDict.setSiteId(siteID);
+            if("noval".equalsIgnoreCase(publicDataDict.getItemEnName())){
+                continue;
+            }
+            try {
+                publicDataDictMapper.insertSelective(publicDataDict);
+            } catch (Exception e) {
+                e.printStackTrace();
+                continue;
+            }
         }
         return publicDataDictList;
     }
 
 
 
-    //@Override
+    @Override
     //@Cacheable(value ="dataDictionaryCache")
     /**查询所有的TradingDataDictionary数据字典数据*/
-    private List<TradingDataDictionary> queryDictAll(){
+    public List<TradingDataDictionary> queryDictAll(){
         /**检查缓存里面是否已经有数据*/
         List<TradingDataDictionary> tradingDataDictionaries=DataDictionarySupport.getTradingDictCache();
-        if(ObjectUtils.isLogicalNull(tradingDataDictionaries)){
+        if(ObjectUtils.isLogicalNull(tradingDataDictionaries) && "no".equalsIgnoreCase(tradingDataDictionary)){
             TradingDataDictionaryExample tradingDataDictionaryExample =new TradingDataDictionaryExample();
             tradingDataDictionaries = this.tradingDataDictionaryMapper.selectByExample(tradingDataDictionaryExample);
             DataDictionarySupport.put(tradingDataDictionaries);
+            tradingDataDictionary="yes";
         }
        return tradingDataDictionaries;
     }
+    @Override
     /**查询所有的publicDataDictionary数据字典数据*/
-    private List<PublicDataDict> queryPublicDictAll(){
+    public List<PublicDataDict> queryPublicDictAll(){
         /**检查缓存里面是否已经有数据*/
         List<PublicDataDict> tradingDataDictionaries=DataDictionarySupport.getPublicDictCache();
-        if(ObjectUtils.isLogicalNull(tradingDataDictionaries)){
+        if(ObjectUtils.isLogicalNull(tradingDataDictionaries) && "no".equalsIgnoreCase(publicDataDictionary)){
             PublicDataDictExample tradingDataDictionaryExample =new PublicDataDictExample();
+            tradingDataDictionaryExample.createCriteria().andItemTypeNotEqualTo(DictCollectionsUtil.categorySpecifics);//不查询有关类别属性的数据
             tradingDataDictionaries = this.publicDataDictMapper.selectByExample(tradingDataDictionaryExample);
             DataDictionarySupport.put(tradingDataDictionaries);
+            publicDataDictionary="yes";
         }
+
         return tradingDataDictionaries;
     }
     /**查询指定用户id的userConfig数据字典数据*/

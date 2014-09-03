@@ -28,10 +28,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by Administrtor on 2014/8/28.
@@ -56,6 +53,14 @@ public class UserCasesController extends BaseAction{
     private ITradingGetDispute iTradingGetDispute;
     @Autowired
     private ITradingGetDisputeMessage iTradingGetDisputeMessage;
+    @Autowired
+    private ITradingOrderGetOrders iTradingOrderGetOrders;
+    @Autowired
+    private ITradingOrderGetSellerTransactions iTradingOrderGetSellerTransactions;
+    @Autowired
+    private ITradingOrderGetItem iTradingOrderGetItem;
+    @Autowired
+    private ITradingOrderPictureDetails iTradingOrderPictureDetails ;
     /*
     *纠纷列表
     */
@@ -113,12 +118,73 @@ public class UserCasesController extends BaseAction{
     public ModelAndView viewDetails(HttpServletRequest request,@ModelAttribute( "initSomeParmMap" )ModelMap modelMap) throws Exception {
         String transactionid=request.getParameter("transactionid");
         List<TradingGetDispute> disputeList=iTradingGetDispute.selectGetDisputeByTransactionId(transactionid);
-        TradingGetDispute dispute=null;
+        TradingGetDispute dispute=new TradingGetDispute();
+        TradingOrderGetOrders order=new TradingOrderGetOrders();
+        TradingOrderGetSellerTransactions sellerTransaction=new TradingOrderGetSellerTransactions();
         if(disputeList!=null&&disputeList.size()>0){
             dispute=disputeList.get(0);
         }
+        String url="http://www.sandbox.ebay.com/itm/"+dispute.getItemid();
+        List<TradingOrderGetOrders> orders=iTradingOrderGetOrders.selectOrderGetOrdersByTransactionId(transactionid);
+        if(orders!=null&&orders.size()>0){
+            order=orders.get(0);
+        }
+        List<TradingOrderGetSellerTransactions> sellerTransactionses= iTradingOrderGetSellerTransactions.selectTradingOrderGetSellerTransactionsByTransactionId(transactionid);
+        if(sellerTransactionses!=null&&sellerTransactionses.size()>0){
+            sellerTransaction=sellerTransactionses.get(0);
+        }
+        String pic="";
+        if(order!=null){
+            List<TradingOrderGetItem> items=iTradingOrderGetItem.selectOrderGetItemByItemId(order.getItemid());
+            List<TradingOrderPictureDetails> detailses=iTradingOrderPictureDetails.selectOrderGetItemById(items.get(0).getPicturedetailsId());
+            pic=detailses.get(0).getPictureurl();
+        }
+        modelMap.put("url",url);
+        modelMap.put("order",order);
         modelMap.put("dispute",dispute);
+        modelMap.put("transaction",sellerTransaction);
+        modelMap.put("pic",pic);
         return forword("usercases/viewCases",modelMap);
+    }
+    /*
+   * 处理纠纷
+   */
+    @RequestMapping("/handleDispute.do")
+    @AvoidDuplicateSubmission(needSaveToken = true)
+    public ModelAndView handleDispute(HttpServletRequest request,@ModelAttribute( "initSomeParmMap" )ModelMap modelMap) throws Exception {
+        String transactionid=request.getParameter("transactionid");
+        List<TradingGetEBPCaseDetail> EBPlist=iTradingGetEBPCaseDetail.selectGetEBPCaseDetailByTransactionId(transactionid);
+        List<TradingGetUserCases> casesList=iTradingGetUserCases.selectGetUserCasesByTransactionId(transactionid);
+        TradingGetEBPCaseDetail ebpCaseDetail=new TradingGetEBPCaseDetail();
+        TradingGetUserCases cases=new TradingGetUserCases();
+        List<TradingCaseResponseHistory> responses=new ArrayList<TradingCaseResponseHistory>();
+        if(EBPlist!=null&&EBPlist.size()>0){
+            ebpCaseDetail=EBPlist.get(0);
+            responses=iTradingCaseResponseHistory.selectCaseResponseHistoryById(ebpCaseDetail.getId());
+        }
+        if(casesList!=null&&casesList.size()>0){
+            cases=casesList.get(0);
+        }
+        TradingOrderGetOrders order=new TradingOrderGetOrders();
+        List<TradingOrderGetOrders> orders=iTradingOrderGetOrders.selectOrderGetOrdersByTransactionId(transactionid);
+        if(orders!=null&&orders.size()>0){
+            order=orders.get(0);
+        }
+        modelMap.put("ebpCaseDetail",ebpCaseDetail);
+        modelMap.put("cases",cases);
+        modelMap.put("responses",responses);
+        modelMap.put("paydate",order.getPaidtime());
+        return forword("usercases/handleDispute",modelMap);
+    }
+    /*
+  * 响应纠纷
+  */
+    @RequestMapping("/responseDispute.do")
+    @AvoidDuplicateSubmission(needSaveToken = true)
+    public ModelAndView responseDispute(HttpServletRequest request,@ModelAttribute( "initSomeParmMap" )ModelMap modelMap) throws Exception {
+        String transactionid=request.getParameter("transactionid");
+        modelMap.put("transactionid",transactionid);
+        return forword("usercases/responseDispute",modelMap);
     }
     /*
     *同步纠纷详情
@@ -220,7 +286,7 @@ public class UserCasesController extends BaseAction{
         }
     }
     /*
-     *同步纠纷
+     *同步纠纷目录
      */
     @RequestMapping("/apiGetuserCasessRequest.do")
     @AvoidDuplicateSubmission(needRemoveToken = true)
@@ -297,7 +363,6 @@ public class UserCasesController extends BaseAction{
             String errors = SamplePaseXml.getVFromXmlString(res, "Errors");
             logger.error("获取纠纷总数失败!" + errors);
             AjaxSupport.sendFailText("fail", "获取必要的参数失败！请稍后重试");
-
         }
     }
 }

@@ -149,6 +149,9 @@
       #{quantity,jdbcType=INTEGER}, #{quantitysold,jdbcType=INTEGER}, #{orderitemId,jdbcType=BIGINT}, 
       #{createUser,jdbcType=BIGINT}, #{createTime,jdbcType=TIMESTAMP}, #{uuid,jdbcType=VARCHAR}
       )
+      <selectKey resultType="long" keyProperty="id" order="AFTER">
+          SELECT LAST_INSERT_ID()
+      </selectKey>
   </insert>
   <insert id="insertSelective" parameterType="com.base.database.trading.model.TradingOrderVariation" >
     <!--
@@ -214,6 +217,9 @@
         #{uuid,jdbcType=VARCHAR},
       </if>
     </trim>
+      <selectKey resultType="long" keyProperty="id" order="AFTER">
+          SELECT LAST_INSERT_ID()
+      </selectKey>
   </insert>
   <select id="countByExample" parameterType="com.base.database.trading.model.TradingOrderVariationExample" resultType="java.lang.Integer" >
     <!--

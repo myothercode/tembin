@@ -64,13 +64,11 @@
             $().invoke(url,data,
                     [function(m,r){
                         alert(r);
-                        Base.token();
                         W.refreshTable();
                         W.discountPriceInfo.close();
                     },
                         function(m,r){
                             alert(r);
-                            Base.token();
                         }]
             );
         }
@@ -119,10 +117,10 @@
                         <td><input type="checkbox" id="selectflag">价格折扣（不包括拍卖物品）</td>
                     </tr>
                     <tr>
-                        <td><input type="radio" name="a1" disabled="disabled" value="a1">在原价上给予折扣<input type="text" id="MadeForOutletComparisonPrice"  class="validate[custom[number]]"  name="MadeForOutletComparisonPrice" value="${dis.madeforoutletcomparisonprice}" disabled="disabled" size="10">%</td>
+                        <td><input type="radio" name="a1" value="a1" checked>在原价上给予折扣<input type="text" id="MadeForOutletComparisonPrice"  class="validate[custom[number]]"  name="MadeForOutletComparisonPrice" value="${dis.madeforoutletcomparisonprice}" size="10">%</td>
                     </tr>
                     <tr>
-                        <td><input type="radio" name="a1"  disabled="disabled" value="a2">在原价上降价<input type="text" id="MinimumAdvertisedPrice" class="validate[custom[number]]" name="MinimumAdvertisedPrice" value="${dis.minimumadvertisedprice}" disabled="disabled" size="10"></td>
+                        <td><input type="radio" name="a1"  value="a2">在原价上降价<input type="text" id="MinimumAdvertisedPrice" class="validate[custom[number]]" name="MinimumAdvertisedPrice" value="${dis.minimumadvertisedprice}" disabled="disabled" size="10"></td>
                     </tr>
                     <tr>
                         <td><input type="checkbox" id="isShippingFee" name="isShippingFee" value="1">免运费（用于第一运输方法）</td>

@@ -81,6 +81,7 @@
             intertable +=' <td> ';
             intertable +=' <input type="text" name="ShippingServiceCost.value" class="validate[required,custom[number]]" value="'+obj2+'" id="numberShippingServiceCost2"> ';
             //intertable +=' <input type="checkbox" name="isFee"> 免费 ';
+            intertable += ' <input type="checkbox" name="interFreeShipping" value="1" onclick="shippingfee(this)"> 免费 ';
             intertable +=' </td> ';
             intertable +=' </tr> ';
             intertable +=' <tr> ';
@@ -109,6 +110,10 @@
             return intertable;
         }
         function selectSite(obj){
+            var array = new Array();
+            <%--<c:forEach var="obj" items="${litso}">
+                array.add(${obj.shippingservice});
+            </c:forEach>--%>
             var vals = "";
             if(typeof obj=="object"||typeof obj=="Object"){
                 vals = obj.value;
@@ -125,11 +130,11 @@
                         for(var i = 0;i< r.length;i++){
                             shippingService +=' <optgroup label="'+r[i].name1+'">';
                             for(var j = 0;j<r[i].dictionaries.length;j++){
-                                shippingService +='<option value="'+r[i].dictionaries[j].value+'" selected="selected">'+r[i].dictionaries[j].name+'</option>';
+                                shippingService +='<option value="'+r[i].dictionaries[j].id+'">'+r[i].dictionaries[j].name+'</option>';
                             }
                             shippingService +='</optgroup>';
                         }
-                        $("select[name='ShippingService']").each(function(i,d){
+                        $("select[name='ShippingService'][shortName='a1']").each(function(i,d){
                             $(d).html(shippingService);
                         });
                     },
@@ -150,33 +155,40 @@
             tables +=' <tr> ';
             tables +=' <td align="right"  width="200">运输方式</td> ';
             tables +=' <td> ';
-            tables +=' <select name="ShippingService"> ';
+            tables +=' <select name="ShippingService" shortName="a1"> ';
+            if(shippingService!=""){
+                tables +=shippingService;
+            }
             tables +=' </select> ';
             tables +=' </td> ';
             tables +=' </tr> ';
-            tables +=' <tr> ';
-            tables +=' <td align="right">运费</td> ';
-            tables +=' <td> ';
-            tables +=' <input type="text" name="ShippingServiceCost.value"  class="validate[required,custom[number]]" value="'+obj2+'" id="numberShippingServiceCost"> ';
-            if(obj3=="1"){
-                tables +=' <input type="checkbox" name="FreeShipping" value="1" checked onclick="shippingfee(this)"> 免费 ';
-            }else{
-                tables +=' <input type="checkbox" name="FreeShipping" value="1" onclick="shippingfee(this)"> 免费 ';
+            if($("#countType").find("option[value='1']:selected").val()=="1"){
+                //当选择计算国内运输选项时
+            }else {
+                tables += ' <tr> ';
+                tables += ' <td align="right">运费</td> ';
+                tables += ' <td> ';
+                tables += ' <input type="text" name="ShippingServiceCost.value"  class="validate[required,custom[number]]" value="' + obj2 + '" id="numberShippingServiceCost"> ';
+                if (obj3 == "1") {
+                    tables += ' <input type="checkbox" name="FreeShipping" value="1" checked onclick="shippingfee(this)"> 免费 ';
+                } else {
+                    tables += ' <input type="checkbox" name="FreeShipping" value="1" onclick="shippingfee(this)"> 免费 ';
+                }
+                tables += ' </td> ';
+                tables += ' </tr> ';
+                tables += ' <tr> ';
+                tables += ' <td align="right">额外每件加收</td> ';
+                tables += ' <td> ';
+                tables += ' <input type="text" name="ShippingServiceAdditionalCost.value" class="validate[required,custom[number]]" value="' + obj4 + '" id="numberShippingServiceAdditionalCost"> ';
+                tables += ' </td> ';
+                tables += ' </tr> ';
+                tables += ' <tr> ';
+                tables += ' <td align="right">AK,HI,PR 额外收费</td> ';
+                tables += ' <td> ';
+                tables += ' <input type="text" name="ShippingSurcharge.value" class="validate[required,custom[number]]" value="' + obj5 + '" id="numberShippingSurcharge"> ';
+                tables += ' </td> ';
+                tables += ' </tr> ';
             }
-            tables +=' </td> ';
-            tables +=' </tr> ';
-            tables +=' <tr> ';
-            tables +=' <td align="right">额外每件加收</td> ';
-            tables +=' <td> ';
-            tables +=' <input type="text" name="ShippingServiceAdditionalCost.value" class="validate[required,custom[number]]" value="'+obj4+'" id="numberShippingServiceAdditionalCost"> ';
-            tables +=' </td> ';
-            tables +=' </tr> ';
-            tables +=' <tr> ';
-            tables +=' <td align="right">AK,HI,PR 额外收费</td> ';
-            tables +=' <td> ';
-            tables +=' <input type="text" name="ShippingSurcharge.value" class="validate[required,custom[number]]" value="'+obj5+'" id="numberShippingSurcharge"> ';
-            tables +=' </td> ';
-            tables +=' </tr> ';
             tables +=' </table> ';
             return tables;
         }
@@ -195,19 +207,17 @@
             </c:if>
             <c:if test="${litso!=null}">
                 <c:forEach var="obj" items="${litso}">
-                    $("#shippingMore").append(createTables('${obj.shippingservice}','${obj.shippingservicecost}','${obj.freeshipping}','${obj.shippingserviceadditionalcost}','${obj.shippingsurcharge}'));
+                    var ss = $("#shippingMore").append(createTables('${obj.shippingservice}','${obj.shippingservicecost}','${obj.freeshipping}','${obj.shippingserviceadditionalcost}','${obj.shippingsurcharge}'));
                 </c:forEach>
                 selectSite(site);
-                <c:forEach var="obj" items="${litso}">
-                    $("select[name='ShippingService']").find("option[value='${obj.shippingservice}']").attr("selected", true)
-                </c:forEach>
             </c:if>
+
             if($("#del").parent().parent().find("table").length>3){
                 $("#del").show();
             }
             <c:if test="${litio!=null}">
                 <c:forEach var="obj" items="${litio}">
-                    var ss = $("#inter").append(createInterTables('${obj.shippingservice}','${obj.shippingservicecost}','${obj.shippingserviceadditionalcost}'));
+                    $("#inter").append(createInterTables('${obj.shippingservice}','${obj.shippingservicecost}','${obj.shippingserviceadditionalcost}'));
                 </c:forEach>
             </c:if>
 
@@ -216,6 +226,16 @@
             }
             checkNumber();
             $("#form").validationEngine();
+            setTimeout(function(){
+                <c:forEach var="obj" items="${litso}" varStatus="ind">
+                    $("select[name='ShippingService'][shortName='a1']").each(function(i,d){
+                        if('${ind.index}'==i){
+                            $(d).find("option[value='${obj.shippingservice}']").attr("selected",true);
+                        }
+                    });
+                </c:forEach>
+            },500);
+
         });
         //添加国内运输选项
         function addShippingDetial(obj) {
@@ -315,6 +335,8 @@
             if($("#interCountType").val()=="1"||$("#countType").val()=="1"){
                 $("#countTitle").show();
                 $("#countMessage").show();
+                $("#shippingMore").html("");
+                $("#shippingMore").append(createTables('','','','',''));
             }else{
                 $("#countTitle").hide();
                 $("#countMessage").hide();
@@ -371,7 +393,7 @@
         </tr>
         <td align="right">国内运输类型</td>
         <td>
-            <select name="countType" id="countType" onchange="(selectShippingTypethis)">
+            <select name="countType" id="countType" onchange="selectShippingType(this)">
                 <option value="0" <c:if test="${shipping.countType=='0'}">selected="selected" </c:if>>标准</option>
                 <option value="1" <c:if test="${shipping.countType=='1'}">selected="selected" </c:if>>计算</option>
             </select>

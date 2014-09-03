@@ -25,9 +25,10 @@ public class GetOrderItemAPI {
     public static String SERVICE_OPTIONS="serviceOptions";
     public static String PICTURE_DETAILS="picturedetails";
     public static String RETURN_POLICY="orderReturnpolicy";
-/*    public static String ITEM_SPECIFICS="itemSpecifics";
+    public static String ITEM_SPECIFICS="itemSpecifics";
     public static String VARIATION="variation";
-    public static String PICTURES="pictures";*/
+    public static String PICTURES="pictures";
+    public static String VARIATION_SPECIFICS="variationspecificsset";
 
     public static Map<String,String> apiGetOrderItem(UsercontrollerDevAccountExtend d,String token,String url,String Itemid){
         Map map=new HashMap();
@@ -313,48 +314,68 @@ public class GetOrderItemAPI {
         orderReturnpolicy.setShippingcostpaidbyoption(SamplePaseXml.getSpecifyElementText(Item,"ReturnPolicy","ShippingCostPaidByOption"));
         orderReturnpolicy.setShippingcostpaidby(SamplePaseXml.getSpecifyElementText(Item,"ReturnPolicy","ShippingCostPaidBy"));
         map.put(RETURN_POLICY,orderReturnpolicy);
-        /*Element ItemSpecifics=Item.element("ItemSpecifics");
-        Iterator Specifics=ItemSpecifics.elementIterator("NameValueList");
+        Element ItemSpecifics=Item.element("ItemSpecifics");
         List<TradingOrderItemSpecifics> specificList=new ArrayList<TradingOrderItemSpecifics>();
-        while(Specifics.hasNext()){
-            Element specific= (Element) Specifics.next();
-            TradingOrderItemSpecifics itemSpecifics=new TradingOrderItemSpecifics();
-            itemSpecifics.setName(SamplePaseXml.getSpecifyElementText(specific,"Name"));
-            itemSpecifics.setValue(SamplePaseXml.getSpecifyElementText(specific,"Value"));
-            specificList.add(itemSpecifics);
+        if(ItemSpecifics!=null){
+            Iterator Specifics=ItemSpecifics.elementIterator("NameValueList");
+            while(Specifics.hasNext()){
+                Element specific= (Element) Specifics.next();
+                TradingOrderItemSpecifics itemSpecifics=new TradingOrderItemSpecifics();
+                itemSpecifics.setName(SamplePaseXml.getSpecifyElementText(specific,"Name"));
+                itemSpecifics.setValue(SamplePaseXml.getSpecifyElementText(specific,"Value"));
+                specificList.add(itemSpecifics);
+            }
         }
-        map.put(ITEM_SPECIFICS,specificList);*/
-       /* Element Variations=Item.element("Variations");
-        Iterator Variation=Variations.elementIterator("Variation");
+        map.put(ITEM_SPECIFICS,specificList);
+        Element Variations=Item.element("Variations");
         List<TradingOrderVariation> variationList=new ArrayList<TradingOrderVariation>();
-        while(Variation.hasNext()){
-            Element varEl= (Element) Variation.next();
-            TradingOrderVariation variation=new TradingOrderVariation();
-            variation.setSku(SamplePaseXml.getSpecifyElementText(varEl,"SKU"));
-            String StartPrice=SamplePaseXml.getSpecifyElementText(varEl, "StartPrice");
-            if(StartPrice!=null){
-                variation.setStartprice(Double.valueOf(StartPrice));
-            }
-            String Quantity=SamplePaseXml.getSpecifyElementText(varEl, "Quantity");
-            if(Quantity!=null){
-                variation.setQuantity(Integer.valueOf(Quantity));
-            }
-            String Quantitysold=SamplePaseXml.getSpecifyElementText(varEl, "SellingStatus", "QuantitySold");
-            if(Quantitysold!=null){
-                variation.setQuantitysold(Integer.valueOf(Quantitysold));
+        List<TradingOrderVariationSpecifics> specificsList=new ArrayList<TradingOrderVariationSpecifics>();
+        if(Variations!=null){
+            Iterator Variation=Variations.elementIterator("Variation");
+            while(Variation.hasNext()){
+                Element varEl= (Element) Variation.next();
+                TradingOrderVariation variation=new TradingOrderVariation();
+                variation.setSku(SamplePaseXml.getSpecifyElementText(varEl,"SKU"));
+                String StartPrice=SamplePaseXml.getSpecifyElementText(varEl, "StartPrice");
+                if(StartPrice!=null){
+                    variation.setStartprice(Double.valueOf(StartPrice));
+                }
+                String Quantity=SamplePaseXml.getSpecifyElementText(varEl, "Quantity");
+                if(Quantity!=null){
+                    variation.setQuantity(Integer.valueOf(Quantity));
+                }
+                String Quantitysold=SamplePaseXml.getSpecifyElementText(varEl, "SellingStatus", "QuantitySold");
+                if(Quantitysold!=null){
+                    variation.setQuantitysold(Integer.valueOf(Quantitysold));
+                }
+                variationList.add(variation);
+                Element specificsEl=varEl.element("VariationSpecifics");
+                Iterator valueList=specificsEl.elementIterator("NameValueList");
+                while(valueList.hasNext()){
+                    TradingOrderVariationSpecifics specifics=new TradingOrderVariationSpecifics();
+                    Element s= (Element) valueList.next();
+                    specifics.setName(SamplePaseXml.getSpecifyElementText(s,"Name"));
+                    specifics.setValue(SamplePaseXml.getSpecifyElementText(s,"Value"));
+                    specificsList.add(specifics);
+                }
             }
         }
-        Iterator Pictures=Variations.elementIterator("Pictures");
         List<TradingOrderPictures> pictrueList=new ArrayList<TradingOrderPictures>();
-        while(Pictures.hasNext()){
-            Element picturnEl= (Element) Pictures.next();
-            TradingOrderPictures pictures=new TradingOrderPictures();
-            pictures.setVariationspecificname(SamplePaseXml.getSpecifyElementText(picturnEl,"VariationSpecificName"));
-            pictures.setVariationspecificvalue(SamplePaseXml.getSpecifyElementText(picturnEl,"VariationSpecificValue"));
-
-            pictures.setPictureurl(SamplePaseXml.getSpecifyElementText(picturnEl,"PictureURL"));
+        if(Variations!=null){
+            Element Pictures=Variations.element("Pictures");
+            Iterator pictureSet=Pictures.elementIterator("VariationSpecificPictureSet");
+            while(pictureSet.hasNext()){
+                Element picturnEl= (Element) pictureSet.next();
+                TradingOrderPictures pictures=new TradingOrderPictures();
+                pictures.setVariationspecificname(SamplePaseXml.getSpecifyElementText(Pictures,"VariationSpecificName"));
+                pictures.setVariationspecificvalue(SamplePaseXml.getSpecifyElementText(picturnEl,"VariationSpecificValue"));
+                pictures.setPictureurl(SamplePaseXml.getSpecifyElementText(picturnEl,"PictureURL"));
+                pictrueList.add(pictures);
+            }
         }
-        map.put(VARIATION,variationList);*/
+        map.put(VARIATION,variationList);
+        map.put(PICTURES,pictrueList);
+        map.put(VARIATION_SPECIFICS,specificsList);
        /* listingDetails.set(SamplePaseXml.getSpecifyElementText(Item,"ListingDetails","ViewItemURLForNaturalSearch"));*/
         return map;
     }

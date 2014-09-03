@@ -24,7 +24,7 @@ import java.util.List;
 @Controller
 @RequestMapping("orderItem")
 public class GetOrderItemController extends BaseAction {
-    static Logger logger = Logger.getLogger(GetOrdersController.class);
+    static Logger logger = Logger.getLogger(GetOrderItemController.class);
     @Autowired
     private UserInfoService userInfoService;
 

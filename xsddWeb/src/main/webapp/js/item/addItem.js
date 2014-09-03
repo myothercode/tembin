@@ -20,21 +20,23 @@
 var _invokeGetData_type=null;
 function getCategorySpecificsData(id,indiv,funName,attTable){
     _invokeGetData_type="string";
+    var siteID=$(document.getElementsByName("site")).eq(0).val();
     $('#'+indiv).html('');
-    if(localStorage.getItem("category_att_ID"+id)!=null){
-        var json= eval("(" + localStorage.getItem("category_att_ID"+id) + ")");
+    if(localStorage.getItem("category_att_ID"+siteID+""+id)!=null){
+        var json= eval("(" + localStorage.getItem("category_att_ID"+siteID+""+id) + ")");
         var jdata=json.result;
         getAttMainMenu(jdata,indiv,funName,attTable);
     }else{
         var url=path+"/ajax/getCategorySpecifics.do";
-        var data={"parentCategoryID":id};
+        var data={"parentCategoryID":id,"siteID":siteID};
         $().invoke(
             url,
             data,
             [
                 function(m,r){
-                    localStorage.setItem("category_att_ID"+data.parentCategoryID,r);
-                    var json= eval("(" + localStorage.getItem("category_att_ID"+data.parentCategoryID) + ")");
+                    if(r==null || r==''){return;}
+                    localStorage.setItem("category_att_ID"+siteID+""+data.parentCategoryID,r);
+                    var json= eval("(" + localStorage.getItem("category_att_ID"+siteID+""+data.parentCategoryID) + ")");
                     var jdata=json.result;
                     getAttMainMenu(jdata,indiv,funName,attTable);
                     //alert(localStorage.getItem("aaa").length);
@@ -65,7 +67,8 @@ function getAttMainMenu(json,indiv,funName,attTable){
 
 /**筛选出满足条件的数据*/
 function queryData(queryParm,parentid){
-    var json1= eval("(" + localStorage.getItem("category_att_ID"+parentid) + ")");
+    var siteID=$(document.getElementsByName("site")).eq(0).val();
+    var json1= eval("(" + localStorage.getItem("category_att_ID"+siteID+""+parentid) + ")");
     var json=json1.result;
     return  $.grep(json,function(n,i){
         return n['itemId']==queryParm;
