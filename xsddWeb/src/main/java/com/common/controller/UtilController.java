@@ -61,8 +61,6 @@ public class UtilController extends BaseAction{
     @Autowired
     private UserInfoService userInfoService;
     @Autowired
-    private ITradingDataDictionary tradingDataDictionary;
-    @Autowired
     private ITradingReseCategory iTradingReseCategory;
     @Autowired
     public PublicDataDictMapper publicDataDictMapper;
@@ -402,7 +400,7 @@ i++;
             String res= HttpClientUtil.post(httpClient, "https://api.sandbox.ebay.com/ws/api.dll", xml, "UTF-8", headers);
 
             try {
-                List<PublicDataDict> publicDataDictList1 = tradingDataDictionary.addPublicData(res, String.valueOf(t.getId()));
+                List<PublicDataDict> publicDataDictList1 = iTradingDataDictionary.addPublicData(res, String.valueOf(t.getId()));
             } catch (Exception e) {
                 e.printStackTrace();
                 continue;
