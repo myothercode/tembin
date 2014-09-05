@@ -25,10 +25,15 @@
                 ],
                 selectDataNow:false,
                 isrowClick:false,
-                showIndex:false
+                showIndex:false,
+                isrowClick: true,
+                rowClickMethod: function (obj,o){
+                    $("input[type='radio'][name='templateId'][value='"+obj.id+"']").attr("checked",true);
+                }
             });
             refreshTable();
         });
+
         function returnSelect(json) {
             var htm = "<input type=\"radio\" src='"+json.templateViewUrl+"' name=\"templateId\" value=" + json.id + ">";
             return htm;

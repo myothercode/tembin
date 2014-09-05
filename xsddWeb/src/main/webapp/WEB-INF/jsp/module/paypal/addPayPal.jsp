@@ -23,13 +23,11 @@
             $().invoke(url,data,
                     [function(m,r){
                         alert(r)
-                        Base.token();
                         W.refreshTable();
                         W.payPal.close();
                     },
                         function(m,r){
                             alert(r);
-                            Base.token();
                         }]
             );
         }

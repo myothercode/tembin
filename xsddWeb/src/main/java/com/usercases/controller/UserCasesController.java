@@ -16,6 +16,7 @@ import com.base.utils.xmlutils.SamplePaseXml;
 import com.common.base.utils.ajax.AjaxSupport;
 import com.common.base.web.BaseAction;
 import com.trading.service.*;
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -61,6 +62,8 @@ public class UserCasesController extends BaseAction{
     private ITradingOrderGetItem iTradingOrderGetItem;
     @Autowired
     private ITradingOrderPictureDetails iTradingOrderPictureDetails ;
+    @Autowired
+    private ITradingOrderAddMemberMessageAAQToPartner iTradingOrderAddMemberMessageAAQToPartner;
     /*
     *纠纷列表
     */
@@ -97,7 +100,54 @@ public class UserCasesController extends BaseAction{
         jsonBean.setTotal((int)page.getTotalCount());
         AjaxSupport.sendSuccessText("", jsonBean);
     }
-
+    /**获取list数据的ajax方法*/
+    @RequestMapping("/sendMessage.do")
+    @ResponseBody
+    public void sendMessage(CommonParmVO commonParmVO,HttpServletRequest request) throws Exception {
+        String number=request.getParameter("number");
+        String carrier=request.getParameter("carrier");
+        String sendmessage=request.getParameter("sendmessage");
+        String transactionid=request.getParameter("transactionid");
+        String status=request.getParameter("status");
+        List<TradingOrderGetOrders> orders=iTradingOrderGetOrders.selectOrderGetOrdersByTransactionId(transactionid);
+        if((number==null&&carrier==null&&sendmessage==null)||(sendmessage!=null&&number!=null)||(sendmessage!=null&&carrier!=null)){
+            AjaxSupport.sendFailText("fail","请选择其中一个进行提交");
+            return;
+        }
+        if(StringUtils.isNotBlank(status)){
+            Map<String,String> map=sendMessage1(orders.get(0),"Tracking status","Tracking number:"+number+",carrier:"+carrier+",status:"+status);
+            if("false".equals(map.get("flag"))){
+                AjaxSupport.sendFailText("fail",map.get("message"));
+                return;
+            }else{
+                AjaxSupport.sendSuccessText("", map.get("message"));
+                return;
+            }
+        }else if(sendmessage==null&&!StringUtils.isNotBlank(status)){
+            AjaxSupport.sendFailText("fail","status is empty");
+        }
+        if(sendmessage!=null){
+            Map<String,String> map=sendMessage1(orders.get(0),"纠纷消息",sendmessage);
+            if("false".equals(map.get("flag"))){
+                AjaxSupport.sendFailText("fail",map.get("message"));
+            }else{
+                AjaxSupport.sendSuccessText("", map.get("message"));
+            }
+        }
+    }
+    /**获取list数据的ajax方法*/
+    @RequestMapping("/sendMessage2.do")
+    @ResponseBody
+    public void sendMessage2(CommonParmVO commonParmVO,HttpServletRequest request) throws Exception {
+        String transactionid=request.getParameter("transactionid");
+        List<TradingOrderGetOrders> orders=iTradingOrderGetOrders.selectOrderGetOrdersByTransactionId(transactionid);
+        Map<String,String> map=sendMessage1(orders.get(0),"Tracking status","I shipped the item without tracking information");
+        if("false".equals(map.get("flag"))){
+            AjaxSupport.sendFailText("fail",map.get("message"));
+        }else{
+            AjaxSupport.sendSuccessText("", map.get("message"));
+        }
+    }
     /*
      * 同步纠纷详情初始化
      */
@@ -173,7 +223,7 @@ public class UserCasesController extends BaseAction{
         modelMap.put("ebpCaseDetail",ebpCaseDetail);
         modelMap.put("cases",cases);
         modelMap.put("responses",responses);
-        modelMap.put("paydate",order.getPaidtime());
+        modelMap.put("order",order);
         return forword("usercases/handleDispute",modelMap);
     }
     /*
@@ -183,6 +233,11 @@ public class UserCasesController extends BaseAction{
     @AvoidDuplicateSubmission(needSaveToken = true)
     public ModelAndView responseDispute(HttpServletRequest request,@ModelAttribute( "initSomeParmMap" )ModelMap modelMap) throws Exception {
         String transactionid=request.getParameter("transactionid");
+        TradingOrderGetOrders order=new TradingOrderGetOrders();
+        List<TradingOrderGetOrders> orders=iTradingOrderGetOrders.selectOrderGetOrdersByTransactionId(transactionid);
+        if(orders!=null&&orders.size()>0){
+            order=orders.get(0);
+        }
         modelMap.put("transactionid",transactionid);
         return forword("usercases/responseDispute",modelMap);
     }
@@ -207,21 +262,23 @@ public class UserCasesController extends BaseAction{
         UsercontrollerDevAccountExtend d=new UsercontrollerDevAccountExtend();
         AddApiTask addApiTask = new AddApiTask();
         if(caseType.contains("EBP")){
-            d.setSoaGlobalId("EBAY-US");
-            d.setSoaServiceVersion("1.0.0");
-            d.setSoaServiceName("ResolutionCaseManagementService");
+           /* d.setSoaGlobalId("EBAY-US");
+            d.setSoaServiceVersion("1.0.0");*/
+           /* d.setSoaServiceName("ResolutionCaseManagementService");*/
             d.setSoaOperationName("getEBPCaseDetail");
             d.setSoaSecurityToken(token);
-            d.setSoaRequestDataFormat("XML");
+           /* d.setSoaRequestDataFormat("XML");*/
             d.setHeaderType("DisputeApiHeader");
-            d.setSoaResponseDataformat("XML");
+/*            d.setSoaResponseDataformat("XML");*/
             Map ebpMap=new HashMap();
+            ebpMap.put("token",token);
             ebpMap.put("caseId", caseId);
             ebpMap.put("caseType",sellerId);
             String ebpXml = BindAccountAPI.getEBPCase(ebpMap);
-            Map<String, String> resEbpMap = addApiTask.exec(d, ebpXml, "https://svcs.ebay.com/services/resolution/ResolutionCaseManagementService/v1?REST-PAYLOAD");
+            Map<String, String> resEbpMap = addApiTask.exec(d, ebpXml, "https://svcs.ebay.com/services/resolution/ResolutionCaseManagementService/v1");
             String ebpR1 = resEbpMap.get("stat");
             String ebpRes = resEbpMap.get("message");
+
             if ("fail".equalsIgnoreCase(ebpR1)) {
                 AjaxSupport.sendFailText("fail", ebpRes);
                 return;
@@ -248,6 +305,7 @@ public class UserCasesController extends BaseAction{
             d.setApiCertName("165cae7e-4264-4244-adff-e11c3aea204e");
             d.setApiCompatibilityLevel("883");
             d.setApiSiteid("0");
+            d.setHeaderType("");
             d.setApiCallName(APINameStatic.GetDispute);
             String xml = BindAccountAPI.getGetDispute(token, caseId);
             Map<String, String> resMap = addApiTask.exec(d, xml, "https://api.ebay.com/ws/api.dll");
@@ -296,16 +354,16 @@ public class UserCasesController extends BaseAction{
         Long ebay=Long.valueOf(ebayId);
         /*UsercontrollerDevAccountExtend d = userInfoService.getDevInfo(null);//开发者帐号id*/
         UsercontrollerDevAccountExtend d=new UsercontrollerDevAccountExtend();
-        d.setSoaGlobalId("EBAY-US");
-        d.setSoaServiceVersion("1.0.0");
-        d.setSoaServiceName("ResolutionCaseManagementService");
+      /*  d.setSoaGlobalId("EBAY-US");
+        d.setSoaServiceVersion("1.0.0");*/
+        /*d.setSoaServiceName("ResolutionCaseManagementService");*/
         d.setSoaOperationName("getUserCases");
         /*d.setSoaSecurityToken("AgAAAA**AQAAAA**aAAAAA**CLSRUQ**nY+sHZ2PrBmdj6wVnY+sEZ2PrA2dj6AFlYCjDJGCqA+dj6x9nY+seQ**FdYBAA**AAMAAA**w2sMbwlQ7TBHWxj9EsVedHQRI3+lonY9MDfiyayQbnFkjEanjL/yMCpS/D2B9xHRzRx+ppxWZkRPgeAKJvNotPLLrVTuEzOl5M7pi6Tw8+pzcmIEsOh7HQO78JlyFlvLc/ruE6/hG0E/HO1UX76YBwxp00N9f1NNUpo5u36D/TYsx5O2jXFTKkCOHwz6RW9vtN6TU39aLm+JQme2+NfFFXnbX8MHzoUiX7Sty0R88ZpX5wLp8ZdgXCEc5zZDQziYB1MSXF9hsmby5wKbxFF+OvW/zKADThk1gprgAgnEOucyoao+cUMHopLlYgMbjnLzdCXP5F9z+fkYTnKF6AEl5eHBpcKQGbPzswnKebRoBVw+bI2I1C/iq+PvBUyndFAexjrvlDQbEKr6qb6AWRVTTfkW2ce6a0ixRuCTq35zEpWpfAqkSKo+X23d/Q4V8R30rDXotOWDZL6o408cMO+UQ17uVA2arA1JNkYfc/AZ0T0z7ze5o/yp93jJPlDgi05Ut4fpCAMZw3X85GxrTlbEtawWgoyUbmMuv4f6QHZLZAerOaJA8DRJkzkzjJJ025bp1HvAECOc4ggdv0cofu4q96shssgNYYZJUPM+q4+0fnGK0pxQTNY9SV6vSaVCVoTZJo6vefW7OiHX2/eLoPKFuUfsKXXEv9OY71gD1xzYg/rpCMAqCTq1dKqqyT1R5fxANnoRX7vwkq+7jkCj2fAfKTnHi9mSuBFsilKLmnsqqWy3IGShMgdxiQwBEk6IWi9C");*/
         String token="AgAAAA**AQAAAA**aAAAAA**CLSRUQ**nY+sHZ2PrBmdj6wVnY+sEZ2PrA2dj6AFlYCjDJGCqA+dj6x9nY+seQ**FdYBAA**AAMAAA**w2sMbwlQ7TBHWxj9EsVedHQRI3+lonY9MDfiyayQbnFkjEanjL/yMCpS/D2B9xHRzRx+ppxWZkRPgeAKJvNotPLLrVTuEzOl5M7pi6Tw8+pzcmIEsOh7HQO78JlyFlvLc/ruE6/hG0E/HO1UX76YBwxp00N9f1NNUpo5u36D/TYsx5O2jXFTKkCOHwz6RW9vtN6TU39aLm+JQme2+NfFFXnbX8MHzoUiX7Sty0R88ZpX5wLp8ZdgXCEc5zZDQziYB1MSXF9hsmby5wKbxFF+OvW/zKADThk1gprgAgnEOucyoao+cUMHopLlYgMbjnLzdCXP5F9z+fkYTnKF6AEl5eHBpcKQGbPzswnKebRoBVw+bI2I1C/iq+PvBUyndFAexjrvlDQbEKr6qb6AWRVTTfkW2ce6a0ixRuCTq35zEpWpfAqkSKo+X23d/Q4V8R30rDXotOWDZL6o408cMO+UQ17uVA2arA1JNkYfc/AZ0T0z7ze5o/yp93jJPlDgi05Ut4fpCAMZw3X85GxrTlbEtawWgoyUbmMuv4f6QHZLZAerOaJA8DRJkzkzjJJ025bp1HvAECOc4ggdv0cofu4q96shssgNYYZJUPM+q4+0fnGK0pxQTNY9SV6vSaVCVoTZJo6vefW7OiHX2/eLoPKFuUfsKXXEv9OY71gD1xzYg/rpCMAqCTq1dKqqyT1R5fxANnoRX7vwkq+7jkCj2fAfKTnHi9mSuBFsilKLmnsqqWy3IGShMgdxiQwBEk6IWi9C";
         d.setSoaSecurityToken(token);
-        d.setSoaRequestDataFormat("XML");
+       /* d.setSoaRequestDataFormat("XML");*/
         d.setHeaderType("DisputeApiHeader");
-        d.setSoaResponseDataformat("XML");
+     /*   d.setSoaResponseDataformat("XML");*/
         Map map=new HashMap();
         Date startTime2= DateUtils.subDays(new Date(), 9);
         Date endTime= DateUtils.addDays(startTime2, 9);
@@ -364,5 +422,54 @@ public class UserCasesController extends BaseAction{
             logger.error("获取纠纷总数失败!" + errors);
             AjaxSupport.sendFailText("fail", "获取必要的参数失败！请稍后重试");
         }
+    }
+    private Map<String,String> sendMessage1(TradingOrderGetOrders order,String subject,String body) throws Exception {
+        UsercontrollerDevAccountExtend d = userInfoService.getDevInfo(null);//开发者帐号id
+        d.setApiSiteid("0");
+        d.setApiCallName(APINameStatic.AddMemberMessageAAQToPartner);
+        Map map=new HashMap();
+        Map<String,String> returnMap=new HashMap<String, String>();
+        String ebayName=order.getSelleruserid();
+        List<UsercontrollerEbayAccountExtend> dList= userInfoService.getEbayAccountForCurrUser();
+        String token=null;
+        for(UsercontrollerEbayAccountExtend list:dList){
+            if(StringUtils.isNotBlank(ebayName)&&ebayName.equals(list.getEbayName())){
+                token=list.getEbayToken();
+            }
+        }
+        map.put("token", token);
+        map.put("subject",subject);
+        map.put("body",body);
+        map.put("itemid",order.getItemid());
+        map.put("buyeruserid",order.getBuyeruserid());
+        String xml = BindAccountAPI.getAddMemberMessageAAQToPartner(map);//获取接受消息
+        AddApiTask addApiTask = new AddApiTask();
+          /*  Map<String, String> resMap = addApiTask.exec(d, xml, "https://api.ebay.com/ws/api.dll");*/
+        Map<String, String> resMap = addApiTask.exec(d, xml, apiUrl);
+        String r1 = resMap.get("stat");
+        String res = resMap.get("message");
+        if ("fail".equalsIgnoreCase(r1)) {
+            AjaxSupport.sendFailText("fail", res);
+            returnMap.put("flag","false");
+            returnMap.put("message",res);
+        }
+        String ack = SamplePaseXml.getVFromXmlString(res, "Ack");
+        if ("Success".equalsIgnoreCase(ack)) {
+            TradingOrderAddMemberMessageAAQToPartner message1=new TradingOrderAddMemberMessageAAQToPartner();
+            message1.setBody(body);
+            message1.setItemid(order.getItemid());
+            message1.setRecipientid(order.getBuyeruserid());
+            message1.setSubject(subject);
+            message1.setSender(order.getSelleruserid());
+            message1.setMessagetype(1);
+            message1.setTransactionid(order.getTransactionid());
+            iTradingOrderAddMemberMessageAAQToPartner.saveOrderAddMemberMessageAAQToPartner(message1);
+            returnMap.put("flag","true");
+            returnMap.put("message", "发送成功");
+        }else{
+            returnMap.put("flag","false");
+            returnMap.put("message","获取必要的参数失败！请稍后重试");
+        }
+        return returnMap;
     }
 }

@@ -10,6 +10,7 @@
 <html>
 <head>
     <title></title>
+    <script type="text/javascript" src=<c:url value ="/js/sitemessage/siteMessage.js" /> ></script>
 </head>
 <body>
 

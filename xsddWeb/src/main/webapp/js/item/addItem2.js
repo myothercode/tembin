@@ -2,8 +2,23 @@
  * Created by Administrtor on 2014/9/1.
  */
 
+
+
+/**如果是编辑页面初始化几个模块选项*/
+function initModel(){
+    loadDataBuyer();
+    loadDiscountPriceInfo();
+    loadItemLocation();
+    loadPayOption();
+    loadReturnpolicy();
+    loadShippingDeails();
+    loaddescriptiondetails();
+    setTimeout(function(){
+        myDescription.setHeight(500);
+    },5000);
+}
+
 /**将几个加载模块的方法定义为一个全局变量*/
-var url = window.location.href;
 var loadModelFunctions={
     "buyer":loadDataBuyer,
     "discountpriceinfo":loadDiscountPriceInfo,
@@ -25,7 +40,7 @@ var ueditorToolBar={
     //关闭elementPath
     elementPathEnabled:false
     //默认的编辑区域高度
-    //initialFrameHeight:500 ,
+    //initialFrameHeight:500
     //initialFrameWidth:'98%'
 };
 
@@ -309,17 +324,24 @@ function onShow(obj) {
 //选择刊登 类型，判断显示
 function changeRadio(obj) {
     if (obj == "2") {
+        if($("input[type='checkbox'][name='ebayAccounts']:checked").length>1){
+            alert("多属性不允许多账号刊登！");
+            $("input[type='radio'][name='listingType'][value='"+obj+"']").attr("checked",false);
+        }
         $("#oneAttr").hide();
         $("#twoAttr").show();
         $("#Auction").hide();
+        $("dt[name='priceMessage']").hide();
     } else if (obj == "FixedPriceItem") {
         $("#oneAttr").show();
         $("#twoAttr").hide();
         $("#Auction").hide();
+        $("dt[name='priceMessage']").show();
     } else if (obj == "Chinese") {
         $("#oneAttr").show();
         $("#twoAttr").hide();
         $("#Auction").show();
+        $("dt[name='priceMessage']").show();
     }
 }
 //点击添回SKU输入项
@@ -493,16 +515,23 @@ function selectPic(a) {
     sss = a.id;
 }
 
+/**移除选中的图片*/
+function deletePic(a){
+    $(a.parentNode.parentNode).remove();
+}
 function addPictrueUrl(urls) {
-    if (sss == "apicUrls") {//商品图片
+    if (sss.indexOf("apicUrls")!=-1) {//商品图片
         var str = '';
+        str += "<ul class='gbin1-list'>";
         for (var i = 0; i < urls.length; i++) {
-            str += "<div class='brick small'>";
-            str += '<span><input type="hidden" name="PictureDetails.PictureURL[' + i + ']" value="' + urls[i].src + '"><img src=' + urls[i].src.replace("@", ":") + ' height="100%" width="100%" /></span>'
-            str += "<a class='delete' href='#'>&times;</a></div>";
-            $("#picture").append(str);
-            str = "";
+            str += '<li><div style="position:relative"><input type="hidden" name="PictureDetails.PictureURL[' + i + ']" value="' + urls[i].src + '">' +
+                '<img src=' + urls[i].src.replace("@", ":") + ' height="100%" width="100%" />' +
+                '<a onclick="deletePic(this)" style="position: absolute;top: -45px;right: -15px;" href=\'javascript:void(0)\'>&times;</a></div>';
+            str += "</li>";
         }
+        str += "</ul>";
+        $("#picture"+sss.substr(sss.indexOf("_"),sss.length)).append(str);
+        str = "";
     } else {//多属性图片
         $('#' + sss).before("<input type='hidden' name='VariationSpecificValue_" + sss + "' value='" + sss + "'>");
         for (var i = 0; i < urls.length; i++) {
@@ -510,6 +539,17 @@ function addPictrueUrl(urls) {
         }
     }
     initDraug();//初始化拖动图片
+}
+function initDraug(){
+    $('.gbin1-list').sortable().bind('sortupdate', function() {
+        $('#msg').html('position changed').fadeIn(200).delay(1000).fadeOut(200);
+    });
+    return $('.gridly .delete').click(function (event) {
+        event.preventDefault();
+        event.stopPropagation();
+        $(this).closest('.brick').remove();
+        return $('.gridly').gridly('layout');
+    });
 }
 function removeThis(obj) {
     $(obj).parent().remove();
@@ -543,7 +583,7 @@ function selectType() {
     });
 }
 function incount(obj) {
-    $("#incount").text($(obj).val().length);
+    $(obj).parent().find("span").text($(obj).val().length);
 }
 
 function setTab(obj) {
@@ -556,7 +596,9 @@ function setTab(obj) {
     var name = $(obj).attr("name");
     $(obj).addClass("new_ic_1");
     $("#" + name).show();
-    loadModelFunctions[name]();
+    if(name!="priceMessage"){
+        loadModelFunctions[name]();
+    }
 }
 function closeWindow(){
     var api = frameElement.api, W = api.opener;

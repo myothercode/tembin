@@ -168,8 +168,34 @@ function getLocalStorage(name){
     });
     return a;
 }
+
+function getTemplateNumber(){
+    var a=0;
+    for(var i =0;i<localStorage.length;i++){
+        if(localStorage.key(i).indexOf("template_")!=-1){
+            var json= eval("("+localStorage.getItem(localStorage.key(i))+")");
+            if(parseInt(json.countnumber)>a){
+                a=parseInt(json.countnumber);
+            }
+        }
+    }
+    return a;
+}
+
 //把用户常用的选择信息记录下来
 function checkLocalStorage(){
+    //模板选择记录
+    var templateId = $("#templateId").val();
+    if(templateId!=null&&templateId!=""){
+        var json= eval("("+localStorage.getItem("template_"+templateId)+")");
+        if(json!=null){
+            localStorage.setItem("template_" + templateId,"{\"countnumber\":\""+(parseInt(json.countnumber)+1)+"\",\"result\":{\"templateId\":\""+json.result.templateId+"\",\"templateUrl\":\""+json.result.templateUrl+"\"}}");
+        }else{
+            localStorage.setItem("template_" + templateId,"{\"countnumber\":\"1\",\"result\":{\"templateId\":\""+templateId+"\",\"templateUrl\":\""+$("#templateUrl").attr("src")+"\"}}");
+        }
+    }
+
+
     $("input[type='radio'][name='buyerId']").each(function(i,d){
         if($(d).prop("checked")) {
             if (localStorage.getItem("buyerId_userselect." + $(d).val()) != null) {
@@ -318,3 +344,49 @@ function saveData(objs,name) {
     )
 }
 
+function selectAccount(obj){
+    if($("input[type='radio'][name='listingType']:checked").val()==""||$("input[type='radio'][name='listingType']:checked").val()==null){
+        alert("请先选择刊登类型！");
+        $(obj).prop("checked",false);
+    }
+    if($("input[type='radio'][name='listingType']:checked").val()=="2"&&$("input[type='checkbox'][name='ebayAccounts']:checked").length>1){
+        alert("多属性不允许多账号刊登！");
+        $(obj).prop("checked",false);
+    }
+    $("#showPics").text("");
+    $("input[type='checkbox'][name='ebayAccounts']:checked").each(function(i,d){
+        //初始化上传图片
+        var showStr = "<div class='panel' style='display: block'>";
+        showStr +=" <section class='example' id='picture_"+$(d).val()+"'></section> ";
+        showStr +=" <script type=text/plain id='picUrls_"+$(d).val()+"'></script> ";
+        showStr +=" <div style='padding-left: 60px;'><a href='javascript:void(0)' id='apicUrls_"+$(d).val()+"' onclick='selectPic(this)'>选择图片</a></div> </div> ";
+        $("#showPics").append(showStr);
+        $().image_editor.init("picUrls_"+$(d).val()); //编辑器的实例id
+        $().image_editor.show("apicUrls_"+$(d).val()); //上传图片的按钮id        }
+        //增加标题跟数量与价格
+    });
+    initTitle();
+}
+
+function initTitle(){
+    $("#titleDiv").text("");
+    $("input[type='checkbox'][name='ebayAccounts']:checked").each(function(i,d) {
+        var titleHtml="";
+        titleHtml+=' <li> ';
+        titleHtml+=' <dt>物品标题('+$(d).attr("shortName")+')</dt> ';
+        titleHtml+=' <div class="new_left"> ';
+        titleHtml+=' <input type="text" name="Title_'+$(d).val()+'" id="Title_'+$(d).val()+'" style="width:600px;" ';
+        titleHtml+=' class="validate[required,maxSize[80]] form-control" size="100" ';
+        titleHtml+=' onkeyup="incount(this)"><span id="incount">0</span>/80 ';
+        titleHtml+=' </div> ';
+        titleHtml+=' </li> ';
+        titleHtml+=' <li> ';
+        titleHtml+=' <dt>子标题('+$(d).attr("shortName")+')</dt> ';
+        titleHtml+=' <div class="new_left"> ';
+        titleHtml+=' <input type="text" name="SubTitle_'+$(d).val()+'" style="width:600px;" class="form-control" id="SubTitle_'+$(d).val()+'" ';
+        titleHtml+=' size="100"> ';
+        titleHtml+=' </div> ';
+        titleHtml+=' </li> ';
+        $("#titleDiv").append(titleHtml);
+    });
+}

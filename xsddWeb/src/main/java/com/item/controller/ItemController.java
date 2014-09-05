@@ -20,15 +20,19 @@ import com.base.utils.common.ConvertPOJOUtil;
 import com.base.utils.common.MyCollectionsUtil;
 import com.base.utils.common.ObjectUtils;
 import com.base.utils.exception.Asserts;
+import com.base.utils.imageManage.service.ImageService;
 import com.base.utils.threadpool.AddApiTask;
 import com.base.utils.threadpool.ApiCallable;
+import com.base.utils.threadpool.TaskMessageVO;
 import com.base.utils.threadpool.TaskPool;
 import com.base.utils.xmlutils.PojoXmlUtil;
 import com.base.utils.xmlutils.SamplePaseXml;
 import com.base.xmlpojo.trading.addproduct.*;
 import com.common.base.utils.ajax.AjaxSupport;
 import com.common.base.web.BaseAction;
+import com.sitemessage.service.SiteMessageStatic;
 import com.trading.service.*;
+import org.dom4j.Element;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
@@ -91,6 +95,8 @@ public class ItemController extends BaseAction{
     private ITradingDescriptionDetails iTradingDescriptionDetails;
     @Autowired
     private ITradingTimerListing iTradingTimerListing;
+    @Autowired
+    private ImageService imageService;
 
     /**
      * 商品展示列表
@@ -130,7 +136,7 @@ public class ItemController extends BaseAction{
         //List<PublicUserConfig> ebayList = DataDictionarySupport.getPublicUserConfigByType(DataDictionarySupport.PUBLIC_DATA_DICT_PAYPAL, c.getId());
         List<UsercontrollerEbayAccount> ebayList = this.iUsercontrollerEbayAccount.selectUsercontrollerEbayAccountByUserId(c.getId());
         modelMap.put("ebayList",ebayList);
-
+        modelMap.put("imageUrlPrefix",imageService.getImageUrlPrefix());
         return forword("item/addItem",modelMap);
     }
 
@@ -223,6 +229,9 @@ public class ItemController extends BaseAction{
             modelMap.put("tai",tai);
         }
 
+        TradingTemplateInitTable ttit = this.iTradingTemplateInitTable.selectById(ti.getTemplateId());
+        modelMap.put("ttit",ttit);
+        modelMap.put("imageUrlPrefix",imageService.getImageUrlPrefix());
         return forword("item/addItem",modelMap);
     }
 
@@ -462,25 +471,45 @@ public class ItemController extends BaseAction{
                     //String xml= BindAccountAPI.getSessionID(d.getRunname());
 
                     AddApiTask addApiTask = new AddApiTask();
-                    Map<String, String> resMap = addApiTask.exec(d, xml, apiUrl);
-                    String r1 = resMap.get("stat");
-                    String res = resMap.get("message");
-                    if ("fail".equalsIgnoreCase(r1)) {
-                        AjaxSupport.sendFailText("fail", "数据已保存，但刊登失败！");
+
+                    if("".equalsIgnoreCase("")){//如果是延迟通知
+                        TaskMessageVO taskMessageVO=new TaskMessageVO();
+                        taskMessageVO.setMessageContext("消息前缀，比如增加范本id等等内容");
+                        taskMessageVO.setMessageTitle("title");
+                        taskMessageVO.setMessageType(SiteMessageStatic.LISTING_MESSAGE_TYPE);
+                        taskMessageVO.setMessageFrom("system");
+                        SessionVO sessionVO=SessionCacheSupport.getSessionVO();
+                        taskMessageVO.setMessageTo(sessionVO.getId());
+                        addApiTask.execDelayReturn(d, xml, apiUrl, taskMessageVO);
+                        AjaxSupport.sendSuccessText("message", "操作成功！结果请稍后查看消息！");
                         return;
+                    }else {
+                        Map<String, String> resMap = addApiTask.exec(d, xml, apiUrl);
+                        String r1 = resMap.get("stat");
+                        String res = resMap.get("message");
+                        if ("fail".equalsIgnoreCase(r1)) {
+                            AjaxSupport.sendFailText("fail", "数据已保存，但刊登失败！");
+                            return;
+                        }
+                        String ack = SamplePaseXml.getVFromXmlString(res, "Ack");
+                        if ("Success".equalsIgnoreCase(ack) || "Warning".equalsIgnoreCase(ack)) {
+                            String itemId = SamplePaseXml.getVFromXmlString(res, "ItemID");
+                            tradingItem.setItemId(itemId);
+                            tradingItem.setIsFlag("Success");
+                            this.iTradingItem.saveTradingItem(tradingItem);
+                            AjaxSupport.sendSuccessText("message", "操作成功！");
+                        } else {
+                            //String errors = SamplePaseXml.getVFromXmlString(res, "Errors");
+
+
+                            String errors  = SamplePaseXml.getSpecifyElementTextAllInOne(res,"Errors","LongMessage");
+
+                            //logger.error("获取apisessionid失败!"+errors);
+                            AjaxSupport.sendFailText("fail", "数据已保存，但刊登失败！"+errors);
+                        }
                     }
-                    String ack = SamplePaseXml.getVFromXmlString(res, "Ack");
-                    if ("Success".equalsIgnoreCase(ack) || "Warning".equalsIgnoreCase(ack)) {
-                        String itemId = SamplePaseXml.getVFromXmlString(res, "ItemID");
-                        tradingItem.setItemId(itemId);
-                        tradingItem.setIsFlag("Success");
-                        this.iTradingItem.saveTradingItem(tradingItem);
-                        AjaxSupport.sendSuccessText("message", "操作成功！");
-                    } else {
-                        String errors = SamplePaseXml.getVFromXmlString(res, "Errors");
-                        //logger.error("获取apisessionid失败!"+errors);
-                        AjaxSupport.sendFailText("fail", "数据已保存，但刊登失败！");
-                    }
+
+
                 }
             }
         }

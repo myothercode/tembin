@@ -13,67 +13,66 @@
     <title></title>
     <script>
         $(document).ready(function() {
+            initfun();
+        });
+        function initfun(){
             $("input[name='location']").bind("click",function(){
                 var loca = $("input[name='location']");
                 var locastr= "",locaname="";
                 for(var i = 0;i<loca.length;i++){
                     if($(loca[i]).prop("checked")){
                         $(loca[i]).parent().find("span").hide();
+                        $(loca[i]).parent().find(".abcd").hide();
+                        $(loca[i]).parent().find(".abcd").find("input[name='location']").attr("checked",false);
+                        $(loca[i]).parent().find("a").text("显示所有国家");
                         locastr+=$(loca[i]).val()+",";
                         locaname+=$(loca[i]).attr("value1")+",";
                     }else{
                         $(loca[i]).parent().find("span").show();
                     }
                 }
-
-                if(locaname==""){
-                    $("#showLocalTionName").text($("#localTionNamechi").val());
-                }else{
-                    if($("#localTionNamechi").val()==""){
-                        $("#showLocalTionName").text(locaname.substr(0,locaname.length-1));
-                    }else{
-                        $("#showLocalTionName").text(locaname.substr(0,locaname.length-1)+","+$("#localTionNamechi").val());
-                    }
-
-                }
-
-                $("#localTionName").val(locaname.substr(0,locaname.length-1))
-                $("#localTionValue").val(locastr.substr(0,locastr.length-1))
-
-                if($("#localTionValueAll").val()==""){
-                    if($("#localTionValuechi").val()==""){
-                        $("#localTionValueAll").val(locastr.substr(0,locastr.length-1));
-                    }else{
-                        $("#localTionValueAll").val(locastr.substr(0,locastr.length-1)+","+$("#localTionValuechi").val());
-                    }
-                }else{
+                if(locastr!=""){
+                    $("#showLocalTionName").text(locaname.substr(0,locaname.length-1));
+                    $("#localTionNameAll").val(locaname.substr(0,locaname.length-1));
                     $("#localTionValueAll").val(locastr.substr(0,locastr.length-1));
                 }
-
-                if($("#localTionNameAll").val()==""){
-                    if($("#localTionNamechi").val()==""){
-                        $("#localTionNameAll").val(locaname.substr(0,locaname.length-1));
-                    }else{
-                        $("#localTionNameAll").val(locaname.substr(0,locaname.length-1)+","+$("#localTionNamechi").val());
-                    }
-                    $("#localTionNameAll").val(locaname.substr(0,locaname.length-1)+","+$("#localTionNamechi").val());
-                }else{
-                    $("#localTionNameAll").val(locaname.substr(0,locaname.length-1));
-                }
-
             });
-        });
+
+        }
         var chi =""
-         function selectCountry(id){
-            var api = frameElement.api, W = api.opener;
-            chi = $.dialog({title: '不运送地选项',
-                content: 'url:/xsddWeb/countryList.do?parentid='+id,
-                icon: 'succeed',
-                width:800,
-                parent:api,
-                lock:true,
-                zIndex:2004
-            });
+         function selectCountry(id,obj){
+             if($(obj).parent().parent().find(".abcd").html()==""||$(obj).parent().parent().find(".abcd").html()==null){
+                 $(obj).parent().parent().find(".abcd").show();
+                 var urll = path+'/ajax/countryList.do?parentid='+id;
+                 $().invoke(
+                         urll,
+                         {},
+                         [function (m, r) {
+                             for(var i = 0;i< r.length;i++){
+                                 var data = r[i];
+                                 var str = "<div style='padding-left: 10px;'><input type='checkbox' name='location' value1="+data.name+" value ='"+data.value+"'>"+data.name+"</div>";
+                                 <c:forEach items="${litam}" var="tam">
+                                        if(data.value=='${tam.value}'){
+                                            str = "<div style='padding-left: 10px;'><input type='checkbox' name='location' value1="+data.name+" value ='"+data.value+"' checked>"+data.name+"</div>";
+                                        }
+                                 </c:forEach>
+                                 $(obj).parent().parent().find(".abcd").append(str);
+                             }
+                             $(obj).text("隐藏所有国家");
+                             initfun();
+                         },
+                             function (m, r) {
+                             }]
+                 );
+             }else {
+                 if ($(obj).text() == "显示所有国家") {
+                    $(obj).parent().parent().find(".abcd").show();
+                     $(obj).text("隐藏所有国家");
+                 }else{
+                     $(obj).parent().parent().find(".abcd").hide();
+                     $(obj).text("显示所有国家");
+                 }
+             }
         }
 
         function selectNotLocaltion(){
@@ -113,11 +112,12 @@
                 <span style="text-align:left;display:-moz-inline-box; display:inline-block; width:250px;">
                     <input type="checkbox" name="location" value="${data.id}" value1="${data.name}">${data.name}
                     <span>
-                    [<a href="javascript:void(0)" onclick="selectCountry('${data.id}')">
+                    [<a href="javascript:void(0)" onclick="selectCountry('${data.id}',this)">
                     显示所有国家
                     </a>]
                     </span>
-                    </span>
+                    <div class="abcd"></div>
+                </span>
             </c:if>
         </c:forEach>
     </div>

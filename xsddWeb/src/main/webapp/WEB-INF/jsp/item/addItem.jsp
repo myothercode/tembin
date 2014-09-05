@@ -33,6 +33,14 @@
 <link rel="stylesheet" type="text/css" href=<c:url value="/css/compiled/layout.css"/>>
 <link rel="stylesheet" type="text/css" href=<c:url value="/css/compiled/elements.css"/>>
 <link rel="stylesheet" type="text/css" href=<c:url value="/css/compiled/icons.css"/>>
+<!-- open sans font -->
+
+
+<link href=
+      <c:url value="/js/gridly/css/style.css"/> rel='stylesheet' type='text/css'>
+<script src=
+        <c:url value="/js/gridly/js/jquery.sortable.js"/> type='text/javascript'></script>
+
 
 <!-- libraries -->
 <link href=
@@ -41,23 +49,6 @@
 <!-- this page specific styles -->
 <link rel="stylesheet" href=
 <c:url value="/css/compiled/gallery.css"/> type="text/css" media="screen"/>
-
-<!-- open sans font -->
-
-
-<link href=
-      <c:url value="/js/gridly/css/jquery.gridly.css"/> rel='stylesheet' type='text/css'>
-<link href=
-      <c:url value="/js/gridly/css/sample.css"/> rel='stylesheet' type='text/css'>
-<%--<script src=
-        <c:url value="/js/gridly/js/jquery-ui.js"/> type='text/javascript'></script>--%>
-<script src=
-        <c:url value="/js/gridly/js/jquery.gridly.js"/> type='text/javascript'></script>
-<script src=
-        <c:url value="/js/gridly/js/sample.js"/> type='text/javascript'></script>
-<script src=
-        <c:url value="/js/gridly/js/rainbow.js"/> type='text/javascript'></script>
-
 <script>
 var myDescription = null;
 var payid = '${item.payId}';
@@ -67,13 +58,23 @@ var itemLocationId = '${item.itemLocationId}';
 var returnpolicyId = '${item.returnpolicyId}';
 var shippingDeailsId = '${item.shippingDeailsId}';
 var sellerItemInfoId = '${item.sellerItemInfoId}';
-
-
+var imageUrlPrefix = '${imageUrlPrefix}';
+var url = window.location.href;
 $(document).ready(function () {
-    _sku = '${item.sku}';
-    $().image_editor.init("picUrls"); //编辑器的实例id
-    $().image_editor.show("apicUrls"); //上传图片的按钮id
 
+    var srcs = '${ttit.templateViewUrl}';
+    $("#templateUrl").attr("src",imageUrlPrefix+srcs);
+
+    _sku = '${item.sku}';
+    //$().image_editor.init("picUrls"); //编辑器的实例id
+   // $().image_editor.show("apicUrls"); //上传图片的按钮id
+    if(url.indexOf("addItem.do")!=-1){
+        var numbers = getTemplateNumber();
+        var json= eval("("+localStorage.getItem("template_"+numbers)+")");
+        var result = json.result;
+        $("#templateId").val(result.templateId);
+        $("#templateUrl").prop("src",result.templateUrl);
+    }
     _invokeGetData_type = null;
 
     $("#form").validationEngine();
@@ -182,15 +183,58 @@ $(document).ready(function () {
     $("input[name='SecondFlag'][value='" + secondflag + "']").prop("checked", true);
     initDraug();//初始化拖动图片
     changeBackcolour();
-    loadPayOption();
+    initModel();
 });
 
 
 
 </script>
+<style>
+    .price_div{
+        float: left;
+    }
+    .price_div li{
+        float: left;
+        width: 100%;
+        list-style-type: none;
+        height: 45px;
+    }
+    .price_div li dt{
+        float: left;
+        text-align: right;
+        width: 100px;
+        line-height: 30px;
+        padding-right: 20px;
+        font-weight: normal;
+    }
+    .price_div li em{
+        float: left;
+        padding-right: 9px;
+        font-style: normal;
+        line-height: 35px;
+    }
+    .price_div li em input{
+        padding-right: 8px;
+    }
+    .new h1{
+        float: left;
+        height: 35px;
+        width: 100%;
+        font-size: 16px;
+        line-height: 35px;
+        font-weight: normal;
+        color: #333;
+        background-color: #F7F7F7;
+        text-indent: 1em;
+        margin-top: 9px;
+        margin-right: 0px;
+        margin-bottom: 9px;
+        margin-left: 50px;
+    }
+</style>
 </head>
 <c:set var="item" value="${item}"/>
-<body>
+<body style="height: 1949px;">
 <form id="form" class="new_user_form">
 <div class="here">当前位置：首页 > 刊登管理 > <b>刊登</b></div>
 <div class="a_bal"></div>
@@ -206,19 +250,14 @@ $(document).ready(function () {
                value="${item.itemName}">
     </div>
 </li>
-<li>
-    <dt>ebay账户</dt>
-    <c:forEach items="${ebayList}" var="ebay">
-        <em style="color:#48a5f3"><input type="checkbox" name="ebayAccounts" value="${ebay.id}">${ebay.ebayNameCode}</em>
-    </c:forEach>
-    <%--<div class="ui-select dt5">
-        <select name="ebayAccount" class="validate[required]">
-            <c:forEach items="${ebayList}" var="ebay">
-                <option value="${ebay.id}">${ebay.configName}</option>
-            </c:forEach>
-        </select>
-    </div>--%>
-</li>
+    <li>
+        <dt>刊登类型</dt>
+        <em style="color:#48a5f3"><input type="radio" name="listingType" value="Chinese" onchange="changeRadio('Chinese')">拍买</em>
+        <em style="color:#48a5f3"><input type="radio" name="listingType" value="FixedPriceItem"
+                                         onchange="changeRadio('FixedPriceItem')">固价</em>
+        <em style="color:#48a5f3"><input type="radio" name="listingType" value="2" onchange="changeRadio('2')">多属性</em>
+    </li>
+
 <li>
     <dt>站点</dt>
     <div class="ui-select dt5">
@@ -229,13 +268,19 @@ $(document).ready(function () {
         </select>
     </div>
 </li>
-<li>
-    <dt>刊登类型</dt>
-    <em style="color:#48a5f3"><input type="radio" name="listingType" value="Chinese" onchange="changeRadio('Chinese')">拍买</em>
-    <em style="color:#48a5f3"><input type="radio" name="listingType" value="FixedPriceItem"
-                                     onchange="changeRadio('FixedPriceItem')">固价</em>
-    <em style="color:#48a5f3"><input type="radio" name="listingType" value="2" onchange="changeRadio('2')">多属性</em>
-</li>
+    <li>
+        <dt>ebay账户</dt>
+        <c:forEach items="${ebayList}" var="ebay">
+            <em style="color:#48a5f3"><input type="checkbox" name="ebayAccounts" value="${ebay.id}" shortName ="${ebay.ebayNameCode}"  onchange="selectAccount(this)">${ebay.ebayNameCode}</em>
+        </c:forEach>
+        <%--<div class="ui-select dt5">
+            <select name="ebayAccount" class="validate[required]">
+                <c:forEach items="${ebayList}" var="ebay">
+                    <option value="${ebay.id}">${ebay.configName}</option>
+                </c:forEach>
+            </select>
+        </div>--%>
+    </li>
 <li>
     <dt>SKU</dt>
     <div class="new_left">
@@ -247,22 +292,10 @@ $(document).ready(function () {
     <dt>无货在线</dt>
     <em style="color:#48a5f3"><input type="checkbox" name="OutOfStockControl" value="1">是否开启无货在线</em>
 </li>
-<li>
-    <dt>物品标题</dt>
-    <div class="new_left">
-        <input type="text" name="Title" id="Title" style="width:600px;"
-               class="validate[required,maxSize[80]] form-control" value="${item.title}" size="100"
-               onkeyup="incount(this)"><span id="incount">0</span>/80
-    </div>
-</li>
-<li>
-    <dt>子标题</dt>
-    <div class="new_left">
-        <input type="text" name="SubTitle" style="width:600px;" class="form-control" id="SubTitle"
-               value="${item.subtitle}" size="100">
-    </div>
+<div id="titleDiv">
 
-</li>
+</div>
+
 <h1>分类</h1>
 <li style="background:#F7F7F7; padding-top:9px;">
     <dt>第一分类</dt>
@@ -285,63 +318,17 @@ $(document).ready(function () {
     <li style=" padding-left:80px;padding-top:9px;background:#F7F7F7"></li>
 </div>
 <h1>商品图片</h1>
+<span id="showPics">
 
-<div class="panel" style="display: block">
+</span>
+<%--<div class="panel" style="display: block">
     <section class='example'>
         <div id="picture" class="gridly">
         </div>
     </section>
     <script type=text/plain id='picUrls'></script>
     <div style="padding-left: 60px;"><a href="javascript:void(0)" id="apicUrls" onclick="selectPic(this)">选择图片</a></div>
-</div>
-
-<div id="Auction" style="display: none;">
-    <h1>拍买</h1>
-    <li>
-        <dt>私人拍买</dt>
-        <em style="color:#48a5f3"><input type="checkbox" name="PrivateListing" value="on">不向公众显示买家的名称</em>
-    </li>
-    <li>
-        <dt>刊登天数</dt>
-        <div class="ui-select dt5">
-            <select name="ListingDuration">
-                <option value="Days_1">1</option>
-                <option value="Days_3">3</option>
-                <option value="Days_5">5</option>
-                <option value="Days_7">7</option>
-                <option value="Days_10">10</option>
-            </select>
-        </div>
-    </li>
-    <li>
-        <dt>保留价</dt>
-        <div class="new_left">
-            <input type="text" name="ReservePrice" style="width:300px;" id="ReservePrice" class="form-control">
-        </div>
-    </li>
-    <li>
-        <dt>保留价</dt>
-        <div class="new_left">
-            <input type="text" name="BuyItNowPrice" style="width:300px;" id="BuyItNowPrice" class="form-control">
-        </div>
-    </li>
-    <li>
-        <dt>销售比基数</dt>
-        <div class="new_left">
-            <input type="text" name="ListingScale" id="ListingScale" class="form-control" style="width:100px;">
-        </div>
-        <em style="color:#48a5f3"><input type="checkbox" name="SecondFlag" value="on">二次交易机会</em>
-    </li>
-    <li>
-        <dt>是否单物品</dt>
-        <div class="ui-select dt5">
-            <select name="ListingFlag">
-                <option value="0">单独物品</option>
-                <option value="1">批量物品</option>
-            </select>
-        </div>
-    </li>
-</div>
+</div>--%>
 
 <div id="twoAttr" style="display: none;">
     <h1>多属性</h1>
@@ -366,23 +353,6 @@ $(document).ready(function () {
     </li>
 </div>
 <h1>自定义物品属性</h1>
-
-<div id="oneAttr" style="display: none;">
-    <li>
-        <dt>商品价格</dt>
-        <div class="new_left">
-            <input type="text" name="StartPrice.value" style="width:300px;" class="validate[required] form-control"
-                   value="${item.startprice==null?'0':item.startprice}"/>
-        </div>
-    </li>
-    <li>
-        <dt>商品数量</dt>
-        <div class="new_left">
-            <input type="text" style="width:300px;" class="validate[required] form-control" name="Quantity"
-                   value="${item.quantity}"/>
-        </div>
-    </li>
-</div>
 <li style="height: 100%;">
     <dt>属性</dt>
     <div>
@@ -419,7 +389,7 @@ $(document).ready(function () {
     <dt>模板</dt>
     <div class="new_left">
         <div id="showTemplate">
-            <input type="hidden" id="templateId" name="templateId">
+            <input type="hidden" id="templateId" name="templateId" value="${ttit.id}">
             <img src="" id="templateUrl">
         </div>
         <a href="javascript:void(0)" onclick="selectTemplate(this)">选择模板</a>
@@ -433,7 +403,6 @@ $(document).ready(function () {
         <script id="myDescription" type="text/plain" style="width:875px;height:300px;">${item.description}</script>
     </div>
 </li>
-
 <div class="new_view">
 
     <%--<li><a href="javascript:void(0)">预览</a></li>
@@ -450,7 +419,8 @@ $(document).ready(function () {
 </div>
 </div>
 <div class="new_tab">
-    <dt class=new_ic_1 name=pay onmouseover="setTab(this)">付款方式</dt>
+    <dt class=new_ic_1 name=priceMessage onmouseover="setTab(this)">价格管理</dt>
+    <dt name=pay onmouseover="setTab(this)">付款方式</dt>
     <dt name=shippingDeails onmouseover="setTab(this)">运输选项</dt>
     <dt name=itemLocation onmouseover="setTab(this)">物品所在地</dt>
     <dt name=buyer onmouseover="setTab(this)">买家要求</dt>
@@ -458,26 +428,85 @@ $(document).ready(function () {
     <dt name=discountpriceinfo onmouseover="setTab(this)">折扣信息</dt>
     <dt name=descriptiondetails onmouseover="setTab(this)">卖家描述</dt>
 </div>
-
+<div name="showModel" id="priceMessage" class="price_div">
+    <br/>
+    <div id="Auction" style="display: none;">
+        <h1 style="padding-left: 50px;">拍买</h1>
+        <li>
+            <dt>私人拍买</dt>
+            <em style="color:#48a5f3"><input type="checkbox" name="PrivateListing" value="on">不向公众显示买家的名称</em>
+        </li>
+        <li>
+            <dt>刊登天数</dt>
+            <div class="ui-select dt5">
+                <select name="ListingDuration">
+                    <option value="Days_1">1</option>
+                    <option value="Days_3">3</option>
+                    <option value="Days_5">5</option>
+                    <option value="Days_7">7</option>
+                    <option value="Days_10">10</option>
+                </select>
+            </div>
+        </li>
+        <li>
+            <dt>保留价</dt>
+            <div class="new_left">
+                <input type="text" name="ReservePrice" style="width:300px;" id="ReservePrice" class="form-control">
+            </div>
+        </li>
+        <li>
+            <dt>保留价</dt>
+            <div class="new_left">
+                <input type="text" name="BuyItNowPrice" style="width:300px;" id="BuyItNowPrice" class="form-control">
+            </div>
+        </li>
+        <li>
+            <dt>销售比基数</dt>
+            <div class="new_left">
+                <input type="text" name="ListingScale" id="ListingScale" class="form-control" style="width:100px;">
+            </div>
+            <em style="color:#48a5f3"><input type="checkbox" name="SecondFlag" value="on">二次交易机会</em>
+        </li>
+        <li>
+            <dt>是否单物品</dt>
+            <div class="ui-select dt5">
+                <select name="ListingFlag">
+                    <option value="0">单独物品</option>
+                    <option value="1">批量物品</option>
+                </select>
+            </div>
+        </li>
+    </div>
+    <div id="oneAttr" style="display: none;">
+        <li>
+            <dt>商品价格</dt>
+            <div class="new_left">
+                <input type="text" name="StartPrice.value" style="width:300px;" class="validate[required] form-control"
+                       value="${item.startprice==null?'0':item.startprice}"/>
+            </div>
+        </li>
+        <li>
+            <dt>商品数量</dt>
+            <div class="new_left">
+                <input type="text" style="width:300px;" class="validate[required] form-control" name="Quantity"
+                       value="${item.quantity}"/>
+            </div>
+        </li>
+    </div>
+    <br/>
+    <br/>
+    <br/>
+    <br/>
+</div>
 <div name="showModel" id="buyer" style="display: none;"></div>
 <div name="showModel" id="discountpriceinfo" style="display: none;"></div>
 <div name="showModel" id="itemLocation" style="display: none;"></div>
-<div name="showModel" id="pay"></div>
+<div name="showModel" id="pay" style="display: none;"></div>
 <div name="showModel" id="returnpolicy" style="display: none;"></div>
 <div name="showModel" id="shippingDeails" style="display: none;"></div>
 <div name="showModel" id="descriptiondetails" style="display: none;"></div>
-
-
 <input type="hidden" name="id" id="id" value="${item.id}">
 <input type="hidden" name="dataMouth" id="dataMouth" value="">
-
-
-<br/>
-<br/>
-
-<br/>
-
-
 </form>
 
 </body>

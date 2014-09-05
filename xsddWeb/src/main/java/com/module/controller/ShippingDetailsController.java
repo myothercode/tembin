@@ -20,10 +20,7 @@ import com.base.xmlpojo.trading.addproduct.ShippingDetails;
 import com.base.xmlpojo.trading.addproduct.ShippingServiceOptions;
 import com.common.base.utils.ajax.AjaxSupport;
 import com.common.base.web.BaseAction;
-import com.trading.service.ITradingAttrMores;
-import com.trading.service.ITradingInternationalShippingServiceOption;
-import com.trading.service.ITradingShippingDetails;
-import com.trading.service.ITradingShippingServiceOptions;
+import com.trading.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -48,7 +45,8 @@ public class ShippingDetailsController extends BaseAction{
     @Autowired
     private ITradingShippingDetails iTradingShippingDetails;
 
-
+    @Autowired
+    private ITradingAttrMores iTradingAttrMores;
     /**
      * 查询数据并展示
      * @param modelMap
@@ -251,6 +249,29 @@ public class ShippingDetailsController extends BaseAction{
         modelMap.put("litso",litso);
         List<TradingInternationalshippingserviceoption> litio = this.iTradingShippingDetails.selectByInternationalshippingserviceoption(tradingShippingdetails.getId());
         modelMap.put("litio",litio);
+        List li = new ArrayList();
+        for(TradingInternationalshippingserviceoption tis : litio){
+            li.add(this.iTradingAttrMores.selectByParnetid(tis.getId(),"ShipToLocation"));
+        }
+        if(li!=null&&li.size()>0){
+            modelMap.put("tololi",li);
+        }
+        List<TradingAttrMores> litam = this.iTradingAttrMores.selectByParnetid(tradingShippingdetails.getId(),"ExcludeShipToLocation");
+        modelMap.put("litam",litam);
+        List<TradingDataDictionary> litdd = DataDictionarySupport.getTradingDataDictionaryByType("country");
+        String toname = "",tovalue="";
+        for(TradingAttrMores tam : litam){
+            for(TradingDataDictionary tdd : litdd){
+                if(tam.getValue().equals(tdd.getValue())){
+                    toname += tdd.getName()+",";
+                    tovalue += tdd.getValue()+",";
+                }
+            }
+        }
+        if(toname!=null&&!"".equals(toname)) {
+            modelMap.put("tamstr", toname.substring(0, toname.length() - 1));
+            modelMap.put("tamvaluestr", tovalue.substring(0, tovalue.length() - 1));
+        }
         return forword("module/shipping/addshippingDetails",modelMap);
     }
 
@@ -264,6 +285,16 @@ public class ShippingDetailsController extends BaseAction{
      */
     @RequestMapping("/locationList.do")
     public ModelAndView locationList(HttpServletRequest request,HttpServletResponse response,ModelMap modelMap){
+        String sdid = request.getParameter("parentId");
+        String sdname = request.getParameter("parentName");
+        if(sdid!=null&&!"".equals(sdid)) {
+            List<TradingAttrMores> litam = this.iTradingAttrMores.selectByParnetid(Long.parseLong(sdid), "ExcludeShipToLocation");
+            modelMap.put("litam", litam);
+        }
+        if(sdname!=null&&!"".equals(sdname)){
+            modelMap.put("sdname",sdname);
+        }
+
         List<TradingDataDictionary> lidata = DataDictionarySupport.getTradingDataDictionaryByType(DataDictionarySupport.DATA_DICT_DELTA);
         List<TradingDataDictionary> li1 = new ArrayList();
         List<TradingDataDictionary> li2 = new ArrayList();
@@ -290,12 +321,12 @@ public class ShippingDetailsController extends BaseAction{
      * @param modelMap
      * @return
      */
-    @RequestMapping("/countryList.do")
-    public ModelAndView countryList(HttpServletRequest request,HttpServletResponse response,ModelMap modelMap){
+    @RequestMapping("/ajax/countryList.do")
+    @ResponseBody
+    public void countryList(HttpServletRequest request,HttpServletResponse response,ModelMap modelMap){
         String parentid = request.getParameter("parentid");
         List<TradingDataDictionary> lidata = DataDictionarySupport.getTradingDataDictionaryByType(DataDictionarySupport.DATA_DICT_COUNTRY,Long.parseLong(parentid));
-        modelMap.put("lidata",lidata);
-        return forword("module/shipping/countryList",modelMap);
+        AjaxSupport.sendSuccessText("",lidata);
     }
 
     /**

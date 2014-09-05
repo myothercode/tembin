@@ -22,7 +22,7 @@
         function caseDetails(){
             flag=!flag;
             var casesdetail=document.getElementById("casesdetail");
-            var h1="<div><b>The case details:</b><br/>${ebpCaseDetail.openreason}<br/>the buyer paid on <fmt:formatDate value="${paydate}" pattern="yyyy-MM-dd HH:mm"/><br/></div>";
+            var h1="<div><b>The case details:</b><br/>${ebpCaseDetail.openreason}<br/>the buyer paid on <fmt:formatDate value="${order.paidtime}" pattern="yyyy-MM-dd HH:mm"/><br/></div>";
             var hhh="<div><b>additional information:</b><br/><c:forEach items="${responses}" var="res">${res.note}<br/></c:forEach></div><div><b>the buyer requested:</b><br/>${ebpCaseDetail.initialbuyerexpectationdetail}</div>";
             if(flag){
                 casesdetail.innerHTML=h1+hhh;

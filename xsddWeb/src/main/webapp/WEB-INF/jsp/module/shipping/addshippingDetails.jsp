@@ -93,7 +93,7 @@
             intertable +=' <tr> ';
             intertable +=' <td align="right" style="vertical-align: top;">运到</td> ';
             intertable +=' <td> ';
-            intertable +=' <input type="checkbox" name="ShipToLocationInter" onclick="selectLocation(this)"/> 全球 <a href="javascript:void(0)" onclick="selectAllLocation(this)">选择以下所有国家和地区</a>';
+            intertable +=' <input type="checkbox" name="ShipToLocationInter" value="Worldwide" onclick="selectLocation(this)"/> 全球 <a href="javascript:void(0)" onclick="selectAllLocation(this)">选择以下所有国家和地区</a>';
             intertable +=' </br>';
             intertable +=' <input type="checkbox" name="ShipToLocation" value="Asia"> 亚洲 ';
             intertable +=' <input type="checkbox" name="ShipToLocation" value="AU"> 澳大利亚 ';
@@ -217,13 +217,30 @@
             }
             <c:if test="${litio!=null}">
                 <c:forEach var="obj" items="${litio}">
+                    var toloList = '${obj.id}';
                     $("#inter").append(createInterTables('${obj.shippingservice}','${obj.shippingservicecost}','${obj.shippingserviceadditionalcost}'));
+                    <c:forEach var="tolo" items="${tololi}" varStatus="lo">
+                        var inde = '${lo.index}';
+                        <c:forEach var="tolos" items="${tolo}">
+                            var vals= '${tolos.value}';
+                            $("#inter").find("table").eq(inde).find("input[type='checkbox'][name='ShipToLocation'][value='"+vals+"']").attr("checked",true);
+                            $("#inter").find("table").eq(inde).find("input[type='checkbox'][name='ShipToLocationInter'][value='"+vals+"']").attr("checked",true);
+                        </c:forEach>
+                    </c:forEach>
                 </c:forEach>
             </c:if>
 
             if($("#delinter").parent().parent().find("table").length<2){
                 $("#delinter").hide();
             }
+            var extlo="";
+            <c:if test="${tamstr!=null}">
+                extlo+='${tamstr}';
+                $("select[name='selecttype']").find("option[value='2']").attr("selected",true);
+                $("#createNoLocationList").show();
+                $("#createNoLocationList").text("选择不运输地列表");
+            </c:if>
+            $("#notLocationName").text(extlo);
             checkNumber();
             $("#form").validationEngine();
             setTimeout(function(){
@@ -280,8 +297,10 @@
         var par="";
         function createNoLocationList(){
             var api = frameElement.api, W = api.opener;
+            var sdid = '${tradingShippingdetails.id}';
+            var sdname = '${tamstr}';
             par = $.dialog({title: '不运送地选项',
-                content: 'url:/xsddWeb/locationList.do',
+                content: 'url:/xsddWeb/locationList.do?parentId='+sdid+"&parentName="+sdname,
                 icon: 'succeed',
                 width:800,
                 parent:api,
@@ -297,7 +316,7 @@
                     $(dd).prop("name",t+name_);
                 });
             });
-
+            $("input[type='checkbox'][name='ShipToLocationInter']").attr("name","ShipToLocation");
              var interMoreTables = $("table[name='interMoreTable']").each(function(i,d){
                  $(d).find("select,input[type='text']").each(function(ii,dd){
                      var name_= $(dd).prop("name");
@@ -310,6 +329,7 @@
                      $(dd).prop("name",t);
                  });
              });
+
             if(!$("#form").validationEngine("validate")){
                 return;
             }
@@ -535,7 +555,7 @@
         <tr>
             <td colspan="2">
                 <span id="notLocationName"></span>
-                <input type="hidden" name="notLocationValue" id="notLocationValue">
+                <input type="hidden" name="notLocationValue" id="notLocationValue" value="${tamvaluestr}">
                 <br/>
                 <a href="javascript:void(0)" onclick="createNoLocationList()" style="display: none;" id="createNoLocationList">创建不运送地区列表</a>
             </td>
