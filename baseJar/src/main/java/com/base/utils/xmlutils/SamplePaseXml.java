@@ -428,6 +428,13 @@ public class SamplePaseXml {
         return text;
     }
 
+    /**直接根据nodes来获取消息*/
+    public static String getSpecifyElementTextAllInOne(String res,String... nodes) throws Exception {
+        Document document= DocumentHelper.parseText(res);
+        Element rootElt = document.getRootElement();
+        return getSpecifyElementText(rootElt,nodes);
+    }
+
     /**
      * 通过Title 查询是相似分类信息
      * @param xml

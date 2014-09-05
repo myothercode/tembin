@@ -37,7 +37,7 @@ public class TradingPayPalImpl implements com.trading.service.ITradingPayPal {
             TradingPaypal t=tradingPaypalMapper.selectByPrimaryKey(tradingPaypal.getId());
             Asserts.assertTrue(t != null && t.getCreateUser() != null, "没有找到记录或者记录创建者为空");
             ObjectUtils.valiUpdate(t.getCreateUser(),TradingPaypalMapper.class,tradingPaypal.getId());
-            this.tradingPaypalMapper.updateByPrimaryKey(tradingPaypal);
+            this.tradingPaypalMapper.updateByPrimaryKeySelective(tradingPaypal);
         }
 
     }

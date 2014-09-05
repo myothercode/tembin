@@ -8,6 +8,7 @@ import com.base.database.sitemessage.model.PublicSitemessageExample;
 import com.base.database.sitemessage.model.SiteMessageCountVO;
 import com.base.mybatis.page.Page;
 import com.base.utils.common.ObjectUtils;
+import com.base.utils.threadpool.TaskMessageVO;
 import com.sitemessage.service.SiteMessageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -49,8 +50,15 @@ public class SiteMessageServiceImpl implements SiteMessageService {
         return customPublicSitemessage;
     }
 
+    @Override
     /**获取weid未读消息的数量*/
     public List<SiteMessageCountVO> countSiteMessage(Map map){
        return customPublicSitemessageMapper.countSiteMessage(map);
+    }
+
+    @Override
+    /**新增一条消息*/
+    public void addSiteMessage(TaskMessageVO taskMessageVO){
+        publicSitemessageMapper.insertSelective(taskMessageVO.toPublicSiteMessage());
     }
 }

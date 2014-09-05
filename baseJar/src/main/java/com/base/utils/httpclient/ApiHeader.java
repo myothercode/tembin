@@ -31,11 +31,11 @@ public class ApiHeader {
         List<BasicHeader> headers = new ArrayList<BasicHeader>();
         headers.add(new BasicHeader("X-EBAY-SOA-OPERATION-NAME",devAccountExtend.getSoaOperationName()));
         headers.add(new BasicHeader("X-EBAY-SOA-SECURITY-TOKEN ",devAccountExtend.getSoaSecurityToken()));
-        headers.add(new BasicHeader("X-EBAY-SOA-REQUEST-DATA-FORMAT",devAccountExtend.getSoaRequestDataFormat()));
+       /* headers.add(new BasicHeader("X-EBAY-SOA-REQUEST-DATA-FORMAT",devAccountExtend.getSoaRequestDataFormat()));
         headers.add(new BasicHeader("X-EBAY-SOA-SERVICE-NAME",devAccountExtend.getSoaServiceName()));
         headers.add(new BasicHeader("X-EBAY-SOA-SERVICE-VERSION",devAccountExtend.getSoaServiceVersion()));
-        headers.add(new BasicHeader("X-EBAY-SOA-GLOBAL-ID",devAccountExtend.getSoaGlobalId()));
-        headers.add(new BasicHeader("X-EBAY-SOA-RESPONSE-DATA-FORMAT",devAccountExtend.getSoaResponseDataformat()));
+        headers.add(new BasicHeader("X-EBAY-SOA-GLOBAL-ID",devAccountExtend.getSoaGlobalId()));*/
+   /*     headers.add(new BasicHeader("X-EBAY-SOA-RESPONSE-DATA-FORMAT",devAccountExtend.getSoaResponseDataformat()));*/
         return headers;
     }
 

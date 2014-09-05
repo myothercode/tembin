@@ -7,6 +7,7 @@ import com.base.database.trading.mapper.TradingShippingserviceoptionsMapper;
 import com.base.database.trading.model.*;
 import com.base.domains.querypojos.ShippingdetailsQuery;
 import com.base.mybatis.page.Page;
+import com.base.utils.applicationcontext.RequestResponseContext;
 import com.base.utils.common.ConvertPOJOUtil;
 import com.base.utils.common.ObjectUtils;
 import com.base.utils.exception.Asserts;
@@ -21,6 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
