@@ -451,12 +451,11 @@ function removeCols(obj) {
 var attrName = new Map();
 //当输入属性名称时调用的方法
 function addc(obj) {
-    if ($(obj.parentNode)[0].cellIndex == 3) {
+    if ($(obj.parentNode)[0].cellIndex == 4) {
         attrName = obj.value;
     }
-
     var attrValue = new Map();
-    if ($(obj.parentNode)[0].cellIndex == 3) {
+    if ($(obj.parentNode)[0].cellIndex == 4) {
         $("#moreAttrs tr td:nth-child(5)").each(function (i, d) {
             if ($(d).find("input[name='attr_Value']").val() != undefined && $(d).find("input[name='attr_Value']").val() != "") {
                 attrValue.put($(d).find("input[name='attr_Value']").val(), $(d).find("input[name='attr_Value']").val());
@@ -471,7 +470,7 @@ function addc(obj) {
 //当输入属性值时调用的方法
 function addb(obj) {
     var attrValue = new Map();
-    if ($(obj.parentNode)[0].cellIndex == 3) {
+    if ($(obj.parentNode)[0].cellIndex == 4) {
         $("#moreAttrs tr td:nth-child(5)").each(function (i, d) {
             if ($(d).find("input[name='attr_Value']").val() != undefined && $(d).find("input[name='attr_Value']").val() != "") {
                 attrValue.put($(d).find("input[name='attr_Value']").val(), $(d).find("input[name='attr_Value']").val());
@@ -494,7 +493,7 @@ function addb(obj) {
             for (var j = 0; j < m.keys.length; j++) {
                 $('#' + attrValue.get(attrValue.keys[i])).before("<input type='hidden' name='" + attrValue.get(attrValue.keys[i]) + "' value='" + m.get(j) + "'><img src='" + m.get(j) + "' height='50' width='50' />");
             }
-            //$().image_editor.init(attrName+"."+attrValue.get(attrValue.keys[i])); //编辑器的实例id
+            $().image_editor.init(attrName+"."+attrValue.get(attrValue.keys[i])); //编辑器的实例id
             $().image_editor.show(attrValue.get(attrValue.keys[i])); //上传图片的按钮id
         }
     }
@@ -524,7 +523,7 @@ function addPictrueUrl(urls) {
         var str = '';
         str += "<ul class='gbin1-list'>";
         for (var i = 0; i < urls.length; i++) {
-            str += '<li><div style="position:relative"><input type="hidden" name="PictureDetails.PictureURL[' + i + ']" value="' + urls[i].src + '">' +
+            str += '<li><div style="position:relative"><input type="hidden" name="PictureDetails'+sss.substr(sss.indexOf("_"),sss.length)+'.PictureURL" value="' + urls[i].src + '">' +
                 '<img src=' + urls[i].src.replace("@", ":") + ' height="100%" width="100%" />' +
                 '<a onclick="deletePic(this)" style="position: absolute;top: -45px;right: -15px;" href=\'javascript:void(0)\'>&times;</a></div>';
             str += "</li>";

@@ -71,9 +71,11 @@ $(document).ready(function () {
     if(url.indexOf("addItem.do")!=-1){
         var numbers = getTemplateNumber();
         var json= eval("("+localStorage.getItem("template_"+numbers)+")");
-        var result = json.result;
-        $("#templateId").val(result.templateId);
-        $("#templateUrl").prop("src",result.templateUrl);
+        if(json!=null){
+            var result = json.result;
+            $("#templateId").val(result.templateId);
+            $("#templateUrl").prop("src",result.templateUrl);
+        }
     }
     _invokeGetData_type = null;
 
@@ -105,7 +107,7 @@ $(document).ready(function () {
     //多属性
     <c:forEach items="${liv}" var="liv" varStatus="status">
     var str = "";
-    str += "<tr>";
+    str += "<tr><td class='dragHandle'></td>";
     str += "<td><input type='text' name='SKU' class='validate[required] form-control' value='${liv.sku}'></td>";
     str += "<td><input type='text' name='Quantity' class='validate[required] form-control' value='${liv.quantity}'></td>";
     str += "<td><input type='text' name='StartPrice.value' class='validate[required] form-control' value=${liv.startprice}></td>";
@@ -146,10 +148,31 @@ $(document).ready(function () {
          for(var j = 0;j< m.keys.length;j++){
          $('#'+attrValue.get(attrValue.keys[i])).before("<input type='hidden' name='"+attrValue.get(attrValue.keys[i])+"' value='"+ m.get(j)+"'><img src='"+m.get(j)+"' height='50' width='50' />");
          }*/
-        $("#picMore").append(addPic($("#moreAttrs tr:eq(0) td:eq(3)").find("input").val(), attrValue.get(attrValue.keys[i])));
-        //$().image_editor.init($("#moreAttrs tr:eq(0) td:eq(3)").find("input").val()+"."+attrValue.get(attrValue.keys[i])); //编辑器的实例id
+        $("#picMore").append(addPic($("#moreAttrs tr:eq(0) td:eq(4)").find("input").val(), attrValue.get(attrValue.keys[i])));
+        $().image_editor.init($("#moreAttrs tr:eq(0) td:eq(4)").find("input").val()+"."+attrValue.get(attrValue.keys[i])); //编辑器的实例id
         $().image_editor.show(attrValue.get(attrValue.keys[i])); //上传图片的按钮id
     }
+    var picstr='';
+    <c:if test="${lipic!=null}">
+        var showStr = "<div class='panel' style='display: block'>";
+        showStr +=" <section class='example' id='picture_"+ebayAccount+"'></section> ";
+        showStr +=" <script type=text/plain id='picUrls_"+ebayAccount+"'/>";
+        showStr +=" <div style='padding-left: 60px;'><a href='javascript:void(0)' id='apicUrls_"+ebayAccount+"' onclick='selectPic(this)'>选择图片</a></div> </div> ";
+        $("#showPics").append(showStr);
+        $().image_editor.init("picUrls_"+ebayAccount); //编辑器的实例id
+        $().image_editor.show("apicUrls_"+ebayAccount); //上传图片的按钮id
+        picstr += "<ul class='gbin1-list'>";
+        <c:forEach items="${lipic}" var="lipic" varStatus="status">
+            picstr += '<li><div style="position:relative"><input type="hidden" name="PictureDetails_'+ebayAccount+'.PictureURL" value="${lipic.value}">' +
+            '<img src=${lipic.value} height="100%" width="100%" />' +
+            '<a onclick="deletePic(this)" style="position: absolute;top: -45px;right: -15px;" href=\'javascript:void(0)\'>&times;</a></div>';
+            picstr += "</li>";
+        </c:forEach>
+        picstr += "</ul>";
+        $("#picture_"+ebayAccount).append(picstr);
+    </c:if>
+
+
     var str = '';
     <c:forEach items="${litam}" var="tam" varStatus="status">
     str += "<div class='brick small'>";
@@ -234,7 +257,7 @@ $(document).ready(function () {
 </style>
 </head>
 <c:set var="item" value="${item}"/>
-<body style="height: 1949px;">
+<body style="height: 2949px;">
 <form id="form" class="new_user_form">
 <div class="here">当前位置：首页 > 刊登管理 > <b>刊登</b></div>
 <div class="a_bal"></div>
@@ -271,7 +294,7 @@ $(document).ready(function () {
     <li>
         <dt>ebay账户</dt>
         <c:forEach items="${ebayList}" var="ebay">
-            <em style="color:#48a5f3"><input type="checkbox" name="ebayAccounts" value="${ebay.id}" shortName ="${ebay.ebayNameCode}"  onchange="selectAccount(this)">${ebay.ebayNameCode}</em>
+            <em style="color:#48a5f3"><input type="checkbox" name="ebayAccounts" value="${ebay.id}" shortName="${ebay.ebayNameCode}" onchange="selectAccount(this)">${ebay.ebayNameCode}</em>
         </c:forEach>
         <%--<div class="ui-select dt5">
             <select name="ebayAccount" class="validate[required]">
@@ -292,8 +315,26 @@ $(document).ready(function () {
     <dt>无货在线</dt>
     <em style="color:#48a5f3"><input type="checkbox" name="OutOfStockControl" value="1">是否开启无货在线</em>
 </li>
+    <li>
+        <dt>刊登消息</dt>
+        <em style="color:#48a5f3"><input type="checkbox" name="ListingMessage" value="1" checked>延迟通知刊登消息</em>
+    </li>
 <div id="titleDiv">
-
+    <li>
+        <dt>物品标题</dt>
+        <div class="new_left">
+            <input type="text" name="Title_${item.ebayAccount}" id="Title" style="width:600px;"
+                   class="validate[required,maxSize[80]] form-control" value="${item.title}" size="100"
+                   onkeyup="incount(this)"><span id="incount">0</span>/80
+        </div>
+    </li>
+    <li>
+        <dt>子标题</dt>
+        <div class="new_left">
+            <input type="text" name="SubTitle_${item.ebayAccount}" style="width:600px;" class="form-control" id="SubTitle"
+                   value="${item.subtitle}" size="100">
+        </div>
+    </li>
 </div>
 
 <h1>分类</h1>
@@ -481,14 +522,14 @@ $(document).ready(function () {
         <li>
             <dt>商品价格</dt>
             <div class="new_left">
-                <input type="text" name="StartPrice.value" style="width:300px;" class="validate[required] form-control"
+                <input type="text" name="StartPrice.value_${item.ebayAccount}" style="width:300px;" class="validate[required] form-control"
                        value="${item.startprice==null?'0':item.startprice}"/>
             </div>
         </li>
         <li>
             <dt>商品数量</dt>
             <div class="new_left">
-                <input type="text" style="width:300px;" class="validate[required] form-control" name="Quantity"
+                <input type="text" style="width:300px;" class="validate[required] form-control" name="Quantity_${item.ebayAccount}"
                        value="${item.quantity}"/>
             </div>
         </li>

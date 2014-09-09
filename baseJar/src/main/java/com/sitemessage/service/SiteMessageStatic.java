@@ -11,4 +11,8 @@ public class SiteMessageStatic {
     public static final String LISTING_MESSAGE_SUCCESS="listing_message_success";
     *//**刊登失败的消息类型*//*
     public static final String LISTING_MESSAGE_FAIL="listing_message_fail";*/
+
+    /**执行刊登动作后需要执行的bean类型*/
+    public static final String LISTING_ITEM_BEAN="listing_item_bean";
+
 }

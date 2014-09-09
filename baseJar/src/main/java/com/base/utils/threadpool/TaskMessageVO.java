@@ -8,12 +8,41 @@ import java.util.Date;
  * Created by Administrtor on 2014/9/5.
  * 用于任务中传递消息
  */
-public class TaskMessageVO {
+public class  TaskMessageVO<T> {
     private String messageType;//类型，参见TaskPool类中的定义
     private String messageTitle;//标题
     private String messageContext;//消息内容前缀
     private Long messageTo;//接收人
     private String messageFrom;//发送人
+
+    private boolean weitherAddMessage=true;//是否写入消息，默认是true
+    private String beanNameType;//要执行的bean类型名
+    private T objClass;//传递的对象参数
+
+
+    public String getBeanNameType() {
+        return beanNameType;
+    }
+
+    public T getObjClass() {
+        return objClass;
+    }
+
+    public void setObjClass(T objClass) {
+        this.objClass = objClass;
+    }
+
+    public void setBeanNameType(String beanNameType) {
+        this.beanNameType = beanNameType;
+    }
+
+    public boolean isWeitherAddMessage() {
+        return weitherAddMessage;
+    }
+
+    public void setWeitherAddMessage(boolean weitherAddMessage) {
+        this.weitherAddMessage = weitherAddMessage;
+    }
 
     public String getMessageFrom() {
         return messageFrom;

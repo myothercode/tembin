@@ -4,13 +4,16 @@ import com.base.domains.userinfo.UsercontrollerDevAccountExtend;
 import com.base.utils.applicationcontext.ApplicationContextUtil;
 import com.base.utils.cxfclient.CXFPostClient;
 import com.base.utils.httpclient.ApiHeader;
+import com.base.utils.threadpoolimplements.ThreadPoolBaseInterFace;
 import com.base.utils.xmlutils.SamplePaseXml;
 import com.sitemessage.service.SiteMessageService;
 import com.sitemessage.service.SiteMessageStatic;
 import org.apache.http.message.BasicHeader;
 import org.apache.log4j.Logger;
+import org.springframework.context.ApplicationContext;
 
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.Callable;
 
 /**
@@ -44,7 +47,8 @@ public class ApiRunable implements Runnable {
             logger.error(taskMessageVO.getMessageTo()+":标题"+taskMessageVO.getMessageTitle()+"请求post出错!"+xml,e);
         }
 
-        addMessage(res);
+        afterPost(res);
+
 
         return;
     }
@@ -56,6 +60,24 @@ public class ApiRunable implements Runnable {
         this.taskMessageVO=taskMessageVO;
     }
 
+    /**请求完成后要执行的方法*/
+    public void afterPost(String res){
+        ApplicationContext applicationContext = ApplicationContextUtil.getContext();
+        Map<String, ThreadPoolBaseInterFace> map = applicationContext
+                .getBeansOfType(ThreadPoolBaseInterFace.class, false, true);
+
+        for (ThreadPoolBaseInterFace f : map.values()){
+            if(taskMessageVO.getBeanNameType().equals(f.getType())){
+                f.doWork(res,taskMessageVO);//执行自定义的方法
+                if(taskMessageVO.isWeitherAddMessage()){
+                    addMessage(res);//添加信息
+                }
+            }
+        }
+
+    }
+
+
 
     public void addMessage(String res){
         SiteMessageService siteMessageService= (SiteMessageService) ApplicationContextUtil.getBean(SiteMessageService.class);
@@ -63,9 +85,9 @@ public class ApiRunable implements Runnable {
         try {
             ack = SamplePaseXml.getVFromXmlString(res, "Ack");
             if ("Success".equalsIgnoreCase(ack)) {
-                String itemId = SamplePaseXml.getVFromXmlString(res, "ItemID");
+                //String itemId = SamplePaseXml.getVFromXmlString(res, "ItemID");
                 taskMessageVO.setMessageTitle(taskMessageVO.getMessageTitle()+"执行成功");
-                taskMessageVO.setMessageContext(taskMessageVO.getMessageContext() + ",执行成功,itemID:"+itemId);
+                taskMessageVO.setMessageContext(taskMessageVO.getMessageContext() + ",执行成功");
                 taskMessageVO.setMessageType(taskMessageVO.getMessageType()+"_SUCCESS");
 
             }else if("Warning".equalsIgnoreCase(ack)){

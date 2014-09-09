@@ -28,6 +28,7 @@ import com.base.utils.threadpool.TaskPool;
 import com.base.utils.xmlutils.PojoXmlUtil;
 import com.base.utils.xmlutils.SamplePaseXml;
 import com.base.xmlpojo.trading.addproduct.*;
+import com.base.xmlpojo.trading.addproduct.attrclass.StartPrice;
 import com.common.base.utils.ajax.AjaxSupport;
 import com.common.base.web.BaseAction;
 import com.sitemessage.service.SiteMessageStatic;
@@ -216,7 +217,6 @@ public class ItemController extends BaseAction{
                     modelMap.put("lipics", lipics);
                 }
             }
-
         }
         List<TradingPicturedetails> lipd = this.iTradingPictureDetails.selectByParentId(Long.parseLong(id));
         for(TradingPicturedetails pd : lipd){
@@ -288,19 +288,19 @@ public class ItemController extends BaseAction{
                 template.replace("{ProductDetail}",item.getDescription());
                 if(tttt!=null&&tradingItem.getSellerItemInfoId()!=null){//如果选择了卖家描述
                     TradingDescriptionDetailsWithBLOBs tdd = this.iTradingDescriptionDetails.selectById(tradingItem.getSellerItemInfoId());
-                    template.replace("{PaymentMethodTitle}",tdd.getPayTitle());
+                    template.replace("{PaymentMethodTitle}",tdd.getPayTitle()==null?"PayTitle":tdd.getPayTitle());
                     template.replace("{PaymentMethod}",tdd.getPayInfo());
 
-                    template.replace("{ShippingDetailTitle}",tdd.getShippingTitle());
+                    template.replace("{ShippingDetailTitle}",tdd.getShippingTitle()==null?"ShippingTitle()":tdd.getShippingTitle());
                     template.replace("{ShippingDetail}",tdd.getShippingInfo());
 
-                    template.replace("{SalesPolicyTitle}",tdd.getGuaranteeTitle());
+                    template.replace("{SalesPolicyTitle}",tdd.getGuaranteeTitle()==null?"GuaranteeTitle()":tdd.getGuaranteeTitle());
                     template.replace("{SalesPolicy}",tdd.getGuaranteeInfo());
 
-                    template.replace("{AboutUsTitle}",tdd.getFeedbackTitle());
+                    template.replace("{AboutUsTitle}",tdd.getFeedbackTitle()==null?"FeedbackTitle()":tdd.getFeedbackTitle());
                     template.replace("{AboutUs}",tdd.getFeedbackInfo());
 
-                    template.replace("{ContactUsTitle}",tdd.getContactTitle());
+                    template.replace("{ContactUsTitle}",tdd.getContactTitle()==null?"ContactTitle":tdd.getContactTitle());
                     template.replace("{ContactUs}",tdd.getContactInfo());
 
                 }
@@ -385,6 +385,33 @@ public class ItemController extends BaseAction{
             String [] paypals = request.getParameterValues("ebayAccounts");
             if("timeSave".equals(mouth)){//定时刊登
                 for (String paypal : paypals) {
+                    item.setTitle(request.getParameter("Title_"+paypal));
+                    item.setSubTitle(request.getParameter("SubTitle_"+paypal));
+                    if(request.getParameter("Quantity_"+paypal)!=null&&!"".equals(request.getParameter("Quantity_"+paypal))){
+                        item.setQuantity(Integer.parseInt(request.getParameter("Quantity_"+paypal)));
+                    }
+                    if(request.getParameter("StartPrice.value_"+paypal)!=null&&!"".equals(request.getParameter("StartPrice.value_"+paypal))){
+                        StartPrice sp = new StartPrice();
+                        sp.setValue(Double.parseDouble(request.getParameter("StartPrice.value_"+paypal)));
+                        sp.setCurrencyID(DataDictionarySupport.getTradingDataDictionaryByID(Long.parseLong(tradingItem.getSite())).getValue1());
+                        item.setStartPrice(sp);
+                    }
+                    String [] picurl = request.getParameterValues("PictureDetails_"+paypal+".PictureURL");
+                    if(picurl!=null&&picurl.length>0){
+                        PictureDetails pd = item.getPictureDetails();
+                        if(pd==null){
+                            pd = new PictureDetails();
+                        }
+                        List lipic = new ArrayList();
+                        for(int i = 0;i<picurl.length;i++){
+                            lipic.add(picurl[i]);
+                        }
+                        if(lipic.size()>0){
+                            pd.setPictureURL(lipic);
+                        }
+                        item.setPictureDetails(pd);
+                    }
+
                     UsercontrollerEbayAccount ua = this.iUsercontrollerEbayAccount.selectById(Long.parseLong(paypal));
                     PublicUserConfig pUserConfig = DataDictionarySupport.getPublicUserConfigByID(ua.getPaypalAccountId());
                     //如果配置ＥＢＡＹ账号时，选择强制使用paypal账号则用该账号
@@ -431,6 +458,32 @@ public class ItemController extends BaseAction{
                 AjaxSupport.sendSuccessText("message", "操作成功！");
             }else {//立即刊登
                 for (String paypal : paypals) {
+                    item.setTitle(request.getParameter("Title_"+paypal));
+                    item.setSubTitle(request.getParameter("SubTitle_"+paypal));
+                    if(request.getParameter("Quantity_"+paypal)!=null&&!"".equals(request.getParameter("Quantity_"+paypal))){
+                        item.setQuantity(Integer.parseInt(request.getParameter("Quantity_"+paypal)));
+                    }
+                    if(request.getParameter("StartPrice.value_"+paypal)!=null&&!"".equals(request.getParameter("StartPrice.value_"+paypal))){
+                        StartPrice sp = new StartPrice();
+                        sp.setValue(Double.parseDouble(request.getParameter("StartPrice.value_"+paypal)));
+                        sp.setCurrencyID(DataDictionarySupport.getTradingDataDictionaryByID(Long.parseLong(tradingItem.getSite())).getValue1());
+                        item.setStartPrice(sp);
+                    }
+                    String [] picurl = request.getParameterValues("PictureDetails_"+paypal+".PictureURL");
+                    if(picurl!=null&&picurl.length>0){
+                        PictureDetails pd = item.getPictureDetails();
+                        if(pd==null){
+                            pd = new PictureDetails();
+                        }
+                        List lipic = new ArrayList();
+                        for(int i = 0;i<picurl.length;i++){
+                            lipic.add(picurl[i]);
+                        }
+                        if(lipic.size()>0){
+                            pd.setPictureURL(lipic);
+                        }
+                        item.setPictureDetails(pd);
+                    }
                     UsercontrollerEbayAccount ua = this.iUsercontrollerEbayAccount.selectById(Long.parseLong(paypal));
                     PublicUserConfig pUserConfig = DataDictionarySupport.getPublicUserConfigByID(ua.getPaypalAccountId());
                     //如果配置ＥＢＡＹ账号时，选择强制使用paypal账号则用该账号
@@ -472,14 +525,16 @@ public class ItemController extends BaseAction{
 
                     AddApiTask addApiTask = new AddApiTask();
 
-                    if("".equalsIgnoreCase("")){//如果是延迟通知
+                    if("1".equals(request.getParameter("ListingMessage"))){//如果是延迟通知
                         TaskMessageVO taskMessageVO=new TaskMessageVO();
-                        taskMessageVO.setMessageContext("消息前缀，比如增加范本id等等内容");
-                        taskMessageVO.setMessageTitle("title");
+                        taskMessageVO.setMessageContext("刊登");
+                        taskMessageVO.setMessageTitle("刊登操作");
                         taskMessageVO.setMessageType(SiteMessageStatic.LISTING_MESSAGE_TYPE);
+                        taskMessageVO.setBeanNameType(SiteMessageStatic.LISTING_ITEM_BEAN);
                         taskMessageVO.setMessageFrom("system");
                         SessionVO sessionVO=SessionCacheSupport.getSessionVO();
                         taskMessageVO.setMessageTo(sessionVO.getId());
+                        taskMessageVO.setObjClass(tradingItem);
                         addApiTask.execDelayReturn(d, xml, apiUrl, taskMessageVO);
                         AjaxSupport.sendSuccessText("message", "操作成功！结果请稍后查看消息！");
                         return;

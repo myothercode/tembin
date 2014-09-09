@@ -15,6 +15,7 @@ import com.base.utils.common.ConvertPOJOUtil;
 import com.base.utils.common.MyCollectionsUtil;
 import com.base.utils.common.ObjectUtils;
 import com.base.xmlpojo.trading.addproduct.*;
+import com.base.xmlpojo.trading.addproduct.attrclass.StartPrice;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Collections2;
 import com.trading.service.*;
@@ -92,7 +93,10 @@ public class TradingItemImpl implements com.trading.service.ITradingItem {
         //保存商品信息到数据库中
 
         if(item.getVariations()!=null){
-            item.getVariations().getPictures().setVariationSpecificName(item.getVariations().getVariationSpecificsSet().getNameValueList().get(0).getName());
+            Pictures pt = new Pictures();
+            pt.setVariationSpecificName(item.getVariations().getVariationSpecificsSet().getNameValueList().get(0).getName());
+            pt.setVariationSpecificPictureSet(item.getVariations().getPictures().getVariationSpecificPictureSet());
+            item.getVariations().setPictures(pt);
         }
         tradingItem1.setConditionid(item.getConditionID().longValue());
         tradingItem1.setCategoryid(item.getPrimaryCategory().getCategoryID());
@@ -107,6 +111,7 @@ public class TradingItemImpl implements com.trading.service.ITradingItem {
         HttpServletRequest request = RequestResponseContext.getRequest();
         String [] paypals = request.getParameterValues("ebayAccounts");
         Map itemMap = new HashMap();
+        //String [] dicUrl =
         for(int is =0;is<paypals.length;is++) {
             TradingItem tradingItem = new TradingItem();
             tradingItem = tradingItem1;
@@ -115,6 +120,17 @@ public class TradingItemImpl implements com.trading.service.ITradingItem {
             if(is>=1){
                 tradingItem.setId(null);
             }
+            tradingItem.setTitle(request.getParameter("Title_"+paypals[is]));
+            tradingItem.setSubtitle(request.getParameter("SubTitle_"+paypals[is]));
+            if(request.getParameter("Quantity_"+paypals[is])!=null&&!"".equals(request.getParameter("Quantity_"+paypals[is]))){
+                tradingItem.setQuantity(Long.parseLong(request.getParameter("Quantity_"+paypals[is])));
+            }
+            if(request.getParameter("StartPrice.value_"+paypals[is])!=null&&!"".equals(request.getParameter("StartPrice.value_"+paypals[is]))){
+                tradingItem.setStartprice(Double.parseDouble(request.getParameter("StartPrice.value_"+paypals[is])));
+            }
+
+
+
             this.saveTradingItem(tradingItem);
             itemMap.put(paypals[is],tradingItem.getId());
             if(item.getListingType().equals("Chinese")){//拍买商品保存数据
@@ -282,10 +298,23 @@ public class TradingItemImpl implements com.trading.service.ITradingItem {
                 this.iTradingPictureDetails.savePictureDetails(tpicd);
 
                 this.iTradingAttrMores.deleteByParentId("PictureURL",tpicd.getId());
-                List<String> lipic = item.getPictureDetails().getPictureURL();
-                lipic = MyCollectionsUtil.listUnique(lipic);
-                for(int i =0;i<lipic.size();i++){
-                    TradingAttrMores tam = this.iTradingAttrMores.toDAOPojo("PictureURL",lipic.get(i));
+                String [] picurl = request.getParameterValues("PictureDetails_"+paypals[is]+".PictureURL");
+                for(int i = 0;i<picurl.length;i++){
+                    TradingAttrMores tam = this.iTradingAttrMores.toDAOPojo("PictureURL",picurl[i]);
+                    tam.setParentId(tpicd.getId());
+                    tam.setParentUuid(tpicd.getUuid());
+                    this.iTradingAttrMores.saveAttrMores(tam);
+                }
+            }else{
+                TradingPicturedetails tpicd = this.iTradingPictureDetails.toDAOPojo(picd);
+                tpicd.setParentId(tradingItem.getId());
+                tpicd.setParentUuid(tradingItem.getUuid());
+                this.iTradingPictureDetails.savePictureDetails(tpicd);
+
+                this.iTradingAttrMores.deleteByParentId("PictureURL",tpicd.getId());
+                String [] picurl = request.getParameterValues("PictureDetails_"+paypals[is]+".PictureURL");
+                for(int i = 0;i<picurl.length;i++){
+                    TradingAttrMores tam = this.iTradingAttrMores.toDAOPojo("PictureURL",picurl[i]);
                     tam.setParentId(tpicd.getId());
                     tam.setParentUuid(tpicd.getUuid());
                     this.iTradingAttrMores.saveAttrMores(tam);

@@ -276,7 +276,7 @@ function saveData(objs,name) {
         return;
     }
     var pciValue = new Map();
-    $("#moreAttrs tr td:nth-child(4)").each(function (i,d) {
+    $("#moreAttrs tr td:nth-child(5)").each(function (i,d) {
         if($(d).find("input[name='attr_Value']").val()!=undefined&&$(d).find("input[name='attr_Value']").val()!=""){
             pciValue.put($(d).find("input[name='attr_Value']").val(),$(d).find("input[name='attr_Value']").val());
         }
@@ -303,9 +303,9 @@ function saveData(objs,name) {
         var t="Variations.VariationSpecificsSet.NameValueList["+i+"].Name";
         $(d).prop("name",t);
     });
-    var len = $("#moreAttrs").find("tr").find("td").length/$("#moreAttrs").find("tr").length-4;
+    var len = $("#moreAttrs").find("tr").find("td").length/$("#moreAttrs").find("tr").length-5;
     for(var j=0;j<len ;j++){
-        $("#moreAttrs tr:gt(0) td:nth-child("+(j+4)+")").each(function (i,d) {
+        $("#moreAttrs tr:gt(0) td:nth-child("+(j+5)+")").each(function (i,d) {
             $(d).find("input[name='attr_Value']").each(function(ii,dd){
                 $(dd).prop("name","Variations.VariationSpecificsSet.NameValueList["+j+"].Value["+i+"]");
             });
@@ -317,9 +317,6 @@ function saveData(objs,name) {
             $(dd).prop("name","Variations.Variation["+i+"]."+name_);
         });
     });
-
-
-
     $("#Description").val(myDescription.getContent());
     checkLocalStorage();
     var data = $('#form').serialize();
@@ -366,6 +363,7 @@ function selectAccount(obj){
         //增加标题跟数量与价格
     });
     initTitle();
+    initPrice();
 }
 
 function initTitle(){
@@ -388,5 +386,25 @@ function initTitle(){
         titleHtml+=' </div> ';
         titleHtml+=' </li> ';
         $("#titleDiv").append(titleHtml);
+    });
+}
+function initPrice(){
+    $("#oneAttr").text("");
+    $("input[type='checkbox'][name='ebayAccounts']:checked").each(function(i,d) {
+        var priceHtml="";
+        priceHtml+=' <li> ';
+        priceHtml+=' <dt>商品价格('+$(d).attr("shortName")+')</dt> ';
+        priceHtml+=' <div class="new_left"> ';
+        priceHtml+=' <input type="text" name="StartPrice.value" style="width:300px;" class="validate[required] form-control" /> ';
+        priceHtml+=' </div> ';
+        priceHtml+=' </li> ';
+        priceHtml+=' <li> ';
+        priceHtml+=' <dt>商品数量('+$(d).attr("shortName")+')</dt> ';
+        priceHtml+=' <div class="new_left"> ';
+        priceHtml+=' <input type="text" style="width:300px;" class="validate[required] form-control" name="Quantity"  /> ';
+        priceHtml+=' </div> ';
+        priceHtml+='  </li> ';
+        $("#oneAttr").append(priceHtml);
+
     });
 }
