@@ -7,6 +7,7 @@ import com.base.domains.DictDataFilterParmVO;
 import org.springframework.cache.annotation.Cacheable;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by Administrtor on 2014/7/24.
@@ -20,6 +21,8 @@ public interface ITradingDataDictionary {
 
     /**根据类型查询TradingDataDictionary*/
     List<TradingDataDictionary> selectDictionaryByType(String type);
+
+    List<TradingDataDictionary> selectDictionaryByMap(Map<String, String> m);
 
     /**根据类型查询PublicDataDict*/
     List<PublicDataDict> selectPublicDataDictByType(String type);
@@ -57,4 +60,6 @@ public interface ITradingDataDictionary {
 
     /**查询所有的publicDataDictionary数据字典数据*/
     List<PublicDataDict> queryPublicDictAll();
+
+    List<PublicUserConfig> selectUserConfigDictionaryByMap(Map<String, String> m);
 }

@@ -1,9 +1,12 @@
 package com.base.utils.threadpool;
 
 import com.base.domains.userinfo.UsercontrollerDevAccountExtend;
+import com.base.sampleapixml.APINameStatic;
+import com.base.userinfo.service.UserInfoService;
 import com.base.utils.applicationcontext.ApplicationContextUtil;
 import com.sitemessage.service.SiteMessageService;
 import com.sitemessage.service.SiteMessageStatic;
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.util.concurrent.ListenableFutureCallback;
 import org.springframework.util.concurrent.ListenableFutureTask;
@@ -26,6 +29,28 @@ public class AddApiTask {
             map.put("message","当前队列任务太多，请稍后再试");
         }
 
+        /**根据新逻辑，重新查询开发帐号取得用量最少的*/
+        UserInfoService userInfoService = (UserInfoService) ApplicationContextUtil.getBean(UserInfoService.class);
+        UsercontrollerDevAccountExtend dt=null;
+        try {
+            dt = userInfoService.getDevByOrder(new HashMap());
+            Map map1 = new HashMap();
+            map1.put("id",dt.getId());
+            userInfoService.addUseNum(map1);//累计一次调用量
+        } catch (Exception e) {
+            logger.error("获取开发帐号失败!"+xml,e);
+        }
+
+        if(dt!=null){
+            d.setRunname(dt.getRunname());
+            d.setApiAppName(dt.getApiAppName());
+            d.setApiDevName(dt.getApiDevName());
+            d.setApiCertName(dt.getApiCertName());
+            d.setApiCompatibilityLevel(dt.getApiCompatibilityLevel());
+        }
+        if(APINameStatic.GetSessionID.equalsIgnoreCase(d.getApiCallName())){
+                xml = StringUtils.replace(xml,"<RuName>runName</RuName>","<RuName>"+d.getRunname()+"</RuName>");
+        }
         ListenableFutureTask<String> task = new ListenableFutureTask<String>(new ApiCallable(d,xml,url));
         /**添加成功和失败后的处理*/
         task.addCallback(new ListenableFutureCallback<String>() {
@@ -48,6 +73,13 @@ public class AddApiTask {
         } catch (Exception e) {
             map.put("stat","fail");
             map.put("message",e.getMessage()+"调用"+d.getApiCallName()+"失败");
+            map.put("activeCount",String.valueOf(TaskPool.threadPoolTaskExecutor.getActiveCount()) ) ;
+            return map;
+        }
+        if(StringUtils.isEmpty(res)){
+            map.put("stat","fail");
+            map.put("message","调用"+d.getApiCallName()+"失败;没有获取到返回参数");
+            map.put("activeCount",String.valueOf(TaskPool.threadPoolTaskExecutor.getActiveCount()) ) ;
             return map;
         }
 
@@ -69,6 +101,26 @@ public class AddApiTask {
             taskMessageVO.setMessageType(taskMessageVO.getMessageType()+"_FAIL");
             siteMessageService.addSiteMessage(taskMessageVO);
             return;
+        }
+
+        /**根据新逻辑，重新查询开发帐号取得用量最少的*/
+        UserInfoService userInfoService = (UserInfoService) ApplicationContextUtil.getBean(UserInfoService.class);
+        UsercontrollerDevAccountExtend dt=null;
+        try {
+            dt = userInfoService.getDevByOrder(new HashMap());
+            Map map1 = new HashMap();
+            map1.put("id",dt.getId());
+            userInfoService.addUseNum(map1);//累计一次调用量
+        } catch (Exception e) {
+            logger.error("获取开发帐号失败!"+xml,e);
+        }
+
+        if(dt!=null){
+            d.setRunname(dt.getRunname());
+            d.setApiAppName(dt.getApiAppName());
+            d.setApiDevName(dt.getApiDevName());
+            d.setApiCertName(dt.getApiCertName());
+            d.setApiCompatibilityLevel(dt.getApiCompatibilityLevel());
         }
         TaskPool.threadPoolTaskExecutor.execute(new ApiRunable(d,xml,url,taskMessageVO));
     }

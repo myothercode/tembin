@@ -30,7 +30,7 @@ public class TradingGetDisputeImpl implements com.trading.service.ITradingGetDis
         }else{
             TradingGetDispute t=tradingGetDisputeMapper.selectByPrimaryKey(GetDispute.getId());
             Asserts.assertTrue(t != null && t.getCreateUser() != null, "没有找到记录或者记录创建者为空");
-            ObjectUtils.valiUpdate(t.getCreateUser(),TradingGetDisputeMapper.class,GetDispute.getId());
+            ObjectUtils.valiUpdate(t.getCreateUser(),TradingGetDisputeMapper.class,GetDispute.getId(),"Synchronize");
             tradingGetDisputeMapper.updateByPrimaryKeySelective(GetDispute);
         }
     }

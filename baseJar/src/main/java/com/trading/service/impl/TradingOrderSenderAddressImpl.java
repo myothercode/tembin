@@ -30,7 +30,7 @@ public class TradingOrderSenderAddressImpl implements com.trading.service.ITradi
         }else{
             TradingOrderSenderAddress t=tradingOrderSenderAddressMapper.selectByPrimaryKey(OrderSenderAddress.getId());
             Asserts.assertTrue(t != null && t.getCreateUser() != null, "没有找到记录或者记录创建者为空");
-            ObjectUtils.valiUpdate(t.getCreateUser(),TradingOrderSenderAddressMapper.class,OrderSenderAddress.getId());
+            ObjectUtils.valiUpdate(t.getCreateUser(),TradingOrderSenderAddressMapper.class,OrderSenderAddress.getId(),"Synchronize");
             tradingOrderSenderAddressMapper.updateByPrimaryKeySelective(OrderSenderAddress);
         }
     }

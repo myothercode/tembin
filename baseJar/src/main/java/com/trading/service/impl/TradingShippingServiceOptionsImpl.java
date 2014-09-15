@@ -27,14 +27,19 @@ public class TradingShippingServiceOptionsImpl implements com.trading.service.IT
     private TradingShippingserviceoptionsMapper tsm;
 
     @Override
-    public void saveShippingServiceOptions(TradingShippingserviceoptions pojo){
-        this.tsm.insert(pojo);
+    public void saveShippingServiceOptions(TradingShippingserviceoptions pojo) throws Exception {
+        if(pojo.getId()==null) {
+            ObjectUtils.toInitPojoForInsert(pojo);
+            this.tsm.insert(pojo);
+        }else{
+            this.tsm.updateByPrimaryKeySelective(pojo);
+        }
     }
 
     @Override
     public TradingShippingserviceoptions toDAOPojo(ShippingServiceOptions sso) throws Exception {
         TradingShippingserviceoptions pojo = new TradingShippingserviceoptions();
-        ObjectUtils.toInitPojoForInsert(pojo);
+
         ConvertPOJOUtil.convert(pojo,sso);
         pojo.setShippingservicecost(sso.getShippingServiceCost().getValue());
         pojo.setShippingserviceadditionalcost(sso.getShippingServiceAdditionalCost().getValue());

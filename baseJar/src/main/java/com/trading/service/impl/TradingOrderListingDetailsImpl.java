@@ -27,7 +27,7 @@ public class TradingOrderListingDetailsImpl implements com.trading.service.ITrad
         }else{
             TradingOrderListingDetails t=tradingOrderListingDetailsMapper.selectByPrimaryKey(OrderListingDetails.getId());
             Asserts.assertTrue(t != null && t.getCreateUser() != null, "没有找到记录或者记录创建者为空");
-            ObjectUtils.valiUpdate(t.getCreateUser(),TradingOrderListingDetailsMapper.class,OrderListingDetails.getId());
+            ObjectUtils.valiUpdate(t.getCreateUser(),TradingOrderListingDetailsMapper.class,OrderListingDetails.getId(),"Synchronize");
             tradingOrderListingDetailsMapper.updateByPrimaryKeySelective(OrderListingDetails);
         }
     }

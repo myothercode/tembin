@@ -65,9 +65,54 @@ public class SamplePaseXml {
         item.setDispatchTimeMax(Integer.parseInt(element.elementText("DispatchTimeMax")));
         item.setListingDuration(element.elementText("ListingDuration"));
         item.setDescription(element.elementText("Description"));
+        item.setSKU(element.elementText("SKU"));
+        item.setConditionID(Integer.parseInt(element.elementText("CategoryID")==null?"1000":element.elementText("CategoryID")));
         PrimaryCategory pc = new PrimaryCategory();
         pc.setCategoryID(element.element("PrimaryCategory").elementText("CategoryID"));
         item.setPrimaryCategory(pc);
+        item.setListingType(element.elementText("ListingType"));
+        //自定义属性
+        Element elspe = element.element("ItemSpecifics");
+        if(elspe!=null){
+            ItemSpecifics itemSpecifics = new ItemSpecifics();
+            Iterator<Element> itnvl = elspe.elementIterator("NameValueList");
+            List<NameValueList> linvl = new ArrayList<NameValueList>();
+            while (itnvl.hasNext()){
+                Element nvl = itnvl.next();
+                NameValueList nvli = new NameValueList();
+                nvli.setName(nvl.elementText("Name"));
+                List<String> listr = new ArrayList();
+                Iterator<Element> itval = nvl.elementIterator("Value");
+                while (itval.hasNext()){
+                    listr.add(itval.next().getText());
+                }
+                nvli.setValue(listr);
+                linvl.add(nvli);
+            }
+            itemSpecifics.setNameValueList(linvl);
+        }
+        //图片信息
+        Element pice = element.element("PictureDetails");
+        if(pice!=null){
+            PictureDetails pd = new PictureDetails();
+            if(pice.elementText("GalleryType")!=null){
+                pd.setGalleryType(pice.elementText("GalleryType"));
+            }
+            if(pice.elementText("PhotoDisplay")!=null){
+                pd.setPhotoDisplay(pice.elementText("PhotoDisplay"));
+            }
+            if(pice.elementText("GalleryURL")!=null){
+                pd.setGalleryURL(pice.elementText("GalleryURL"));
+            }
+            Iterator<Element> itpicurl = pice.elementIterator("PictureURL");
+            List<String> urlli = new ArrayList();
+            while (itpicurl.hasNext()){
+                Element url = itpicurl.next();
+                urlli.add(url.getStringValue());
+            }
+            pd.setPictureURL(urlli);
+            item.setPictureDetails(pd);
+        }
         //取得退货政策并封装
         Element returne = element.element("ReturnPolicy");
         ReturnPolicy rp = new ReturnPolicy();
@@ -246,8 +291,10 @@ public class SamplePaseXml {
             if(element.element("BuyItNowPrice")!=null) {
                 item.setBuyItNowPrice(Double.parseDouble(element.elementText("BuyItNowPrice")));
             }
+            if(element.element("ReservePrice")!=null){
+                item.setReservePrice(Double.parseDouble(element.elementText("ReservePrice")));
+            }
         }
-
         return item;
     }
     /**
@@ -273,11 +320,16 @@ public class SamplePaseXml {
             item.setLocation(element.elementText("Location"));
             item.setItemID(element.elementText("ItemID"));
             item.setHitCounter(element.elementText("HitCounter"));
-            item.setAutoPay(element.elementText("AutoPay").equals("true")?true:false);
+            item.setAutoPay(element.elementText("AutoPay").equals("true") ? true : false);
             item.setGiftIcon(element.elementText("GiftIcon"));
             item.setListingDuration(element.elementText("ListingDuration"));
             item.setQuantity(Integer.parseInt(element.elementText("Quantity")));
-
+            item.setSKU(element.elementText("SKU"));
+            StartPrice sp = new StartPrice();
+            sp.setValue(Double.parseDouble(element.element("SellingStatus").elementText("CurrentPrice")));
+            sp.setCurrencyID(element.element("SellingStatus").element("CurrentPrice").attributeValue("currencyID"));
+            item.setStartPrice(sp);
+            item.setConditionID(Integer.parseInt(element.elementText("ConditionID")==null?"1000":element.elementText("ConditionID")));
             List lishipto = new ArrayList();
             Iterator<Element> shipe = element.elementIterator("ShipToLocations");
             while (shipe.hasNext()){

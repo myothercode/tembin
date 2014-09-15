@@ -10,4 +10,6 @@ public interface IPublicItemCustom {
     void saveItemCustom(PublicItemCustom ItemCustom) throws Exception;
 
     PublicItemCustom selectItemCustomByid(Long id);
+
+    void deleteItemCustom (Long id) throws Exception;
 }

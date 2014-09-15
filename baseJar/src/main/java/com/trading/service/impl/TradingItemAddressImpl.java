@@ -42,7 +42,6 @@ public class TradingItemAddressImpl implements com.trading.service.ITradingItemA
     @Override
     public TradingItemAddress toDAOPojo(String name, String address, Long countryId, String postalcode) throws Exception {
         TradingItemAddress pojo = new TradingItemAddress();
-        ObjectUtils.toInitPojoForInsert(pojo);
         pojo.setName(name);
         pojo.setAddress(address);
         pojo.setCountryId(countryId);

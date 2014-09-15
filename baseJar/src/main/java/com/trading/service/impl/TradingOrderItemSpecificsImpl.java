@@ -32,7 +32,7 @@ public class TradingOrderItemSpecificsImpl implements ITradingOrderItemSpecifics
         }else{
             TradingOrderItemSpecifics t=tradingOrderItemSpecificsMapper.selectByPrimaryKey(OrderItemSpecifics.getId());
             Asserts.assertTrue(t != null && t.getCreateUser() != null, "没有找到记录或者记录创建者为空");
-            ObjectUtils.valiUpdate(t.getCreateUser(),TradingOrderItemSpecificsMapper.class,OrderItemSpecifics.getId());
+            ObjectUtils.valiUpdate(t.getCreateUser(),TradingOrderItemSpecificsMapper.class,OrderItemSpecifics.getId(),"Synchronize");
             tradingOrderItemSpecificsMapper.updateByPrimaryKeySelective(OrderItemSpecifics);
         }
     }

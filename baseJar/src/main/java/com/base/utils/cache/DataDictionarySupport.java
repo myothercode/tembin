@@ -4,6 +4,7 @@ import com.base.database.publicd.model.PublicDataDict;
 import com.base.database.publicd.model.PublicUserConfig;
 import com.base.database.trading.model.TradingDataDictionary;
 import com.base.domains.DictDataFilterParmVO;
+import com.base.domains.SessionVO;
 import com.base.utils.applicationcontext.ApplicationContextUtil;
 import com.base.utils.common.ObjectUtils;
 import com.google.common.base.Predicate;
@@ -84,6 +85,15 @@ public class DataDictionarySupport extends CacheBaseSupport{
         if(element==null){return null;}
         return (List<PublicUserConfig>) element.getObjectValue();
     }
+    /**获取userConfig数据字典*/
+    public static void removePublicUserConfig(Long userID){
+        if(userID==null || userID==0){
+            SessionVO sessionVO=SessionCacheSupport.getSessionVO();
+            userID=sessionVO.getId();
+        }
+        Cache cache = cacheManager.getCache(DICT_CACHE_NAME);
+        cache.remove(PUBLIC_USER_CONFIG+userID.toString());
+    }
     /**将数据集合放入缓存*/
     public static<T> void put(List<T> t,String... name){
         if (ObjectUtils.isLogicalNull(t)){return;}
@@ -103,6 +113,12 @@ public class DataDictionarySupport extends CacheBaseSupport{
     public static List<TradingDataDictionary> getTradingDataDictionaryByType(String type){
         ITradingDataDictionary dictionary = (ITradingDataDictionary) ApplicationContextUtil.getBean(ITradingDataDictionary.class);
         List<TradingDataDictionary> tradingDataDictionaries = dictionary.selectDictionaryByType(type);
+        return tradingDataDictionaries;
+    }
+    /**TradingDataDictionary字典表查询,用map作为条件*/
+    public static List<TradingDataDictionary> getTradingDataDictionaryByMap(Map<String,String> map){
+        ITradingDataDictionary dictionary = (ITradingDataDictionary) ApplicationContextUtil.getBean(ITradingDataDictionary.class);
+        List<TradingDataDictionary> tradingDataDictionaries = dictionary.selectDictionaryByMap(map);
         return tradingDataDictionaries;
     }
     /**TradingDataDictionary字典表查询,用类型个parentid作为条件*/
@@ -176,5 +192,11 @@ public class DataDictionarySupport extends CacheBaseSupport{
         ITradingDataDictionary dictionary = (ITradingDataDictionary) ApplicationContextUtil.getBean(ITradingDataDictionary.class);
         PublicUserConfig tradingDataDictionaries = dictionary.selectUserConfigByID(id);
         return tradingDataDictionaries;
+    }
+    /**PublicUserConfig字典表查询,用map作为条件*/
+    public static List<PublicUserConfig> getUserConfigDictionaryByMap(Map<String,String> map){
+        ITradingDataDictionary dictionary = (ITradingDataDictionary) ApplicationContextUtil.getBean(ITradingDataDictionary.class);
+        List<PublicUserConfig> publicUserConfigs=dictionary.selectUserConfigDictionaryByMap(map);
+        return publicUserConfigs;
     }
 }

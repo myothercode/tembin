@@ -7,6 +7,25 @@ public class PermissionVO {
     private Long permissionID;
     private String permissionURL;
     private String permissionName;
+    private String permissionLevel;
+    private Long parentID;
+
+
+    public String getPermissionLevel() {
+        return permissionLevel;
+    }
+
+    public void setPermissionLevel(String permissionLevel) {
+        this.permissionLevel = permissionLevel;
+    }
+
+    public Long getParentID() {
+        return parentID;
+    }
+
+    public void setParentID(Long parentID) {
+        this.parentID = parentID;
+    }
 
     public Long getPermissionID() {
         return permissionID;

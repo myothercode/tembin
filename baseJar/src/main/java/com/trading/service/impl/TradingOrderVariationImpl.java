@@ -32,7 +32,7 @@ public class TradingOrderVariationImpl implements ITradingOrderVariation {
         }else{
             TradingOrderVariation t=tradingOrderVariationMapper.selectByPrimaryKey(OrderVariation.getId());
             Asserts.assertTrue(t != null && t.getCreateUser() != null, "没有找到记录或者记录创建者为空");
-            ObjectUtils.valiUpdate(t.getCreateUser(),TradingOrderVariationMapper.class,OrderVariation.getId());
+            ObjectUtils.valiUpdate(t.getCreateUser(),TradingOrderVariationMapper.class,OrderVariation.getId(),"Synchronize");
             tradingOrderVariationMapper.updateByPrimaryKeySelective(OrderVariation);
         }
     }

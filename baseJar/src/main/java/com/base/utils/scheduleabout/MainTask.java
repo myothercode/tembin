@@ -6,6 +6,8 @@ import com.base.utils.common.CommAutowiredClass;
 import com.base.utils.common.MyClassUtil;
 import com.base.utils.scheduleabout.commontask.TimeListingItemTaskRunAble;
 import com.base.utils.threadpool.TaskPool;
+import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.quartz.JobExecutionContext;
 import org.quartz.Scheduler;
@@ -16,6 +18,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.scheduling.quartz.SchedulerFactoryBean;
 import org.springframework.stereotype.Component;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -27,15 +30,26 @@ import java.util.List;
 public class MainTask {
     static Logger logger = Logger.getLogger(MainTask.class);
     private String isDongInitMethod="no";//是否已经执行了初始化方法
+    private CommAutowiredClass isStartTimerTask=null;
+
+    public static final String LISTING_SCHEDULE="listSchedule";//定时刊登任务
+    public static final String KEY_MOVE_LIST_TASK="keyMoveListTask";//一键搬家任务
 
 
-    /**主入口*/
-    @Scheduled(cron="0 0/15 *  * * ?")
+    /**主入口,15瞄执行一次的任务*/
+    @Scheduled(cron="0 0/2 *  * * ?")
     public void mainMethod(){
-        CommAutowiredClass isStartTimerTask= (CommAutowiredClass) ApplicationContextUtil.getBean(CommAutowiredClass.class);
+        if (isStartTimerTask==null) {
+            isStartTimerTask = (CommAutowiredClass) ApplicationContextUtil.getBean(CommAutowiredClass.class);
+        }
+
+        List<String> taskList=null;
         if("false".equalsIgnoreCase(isStartTimerTask.isStartTimerTask)){
             return;
+        }else {
+            taskList=Arrays.asList(StringUtils.split(isStartTimerTask.isStartTimerTask,","));
         }
+
         int i=TaskPool.scheduledThreadPoolTaskExecutor.getActiveCount();
         if(i>0){
             System.out.println("队列中还有任务没有完成，等待下一次执行...........");
@@ -47,7 +61,9 @@ public class MainTask {
         List<? extends Scheduledable> scheduledableList = MyClassUtil.newInstance(classList);
 
         for (Scheduledable s : scheduledableList){
-            TaskPool.scheduledThreadPoolTaskExecutor.execute(s);
+            if(taskList !=null && taskList.contains(s.getScheduledType())){
+                TaskPool.scheduledThreadPoolTaskExecutor.execute(s);
+            }
         }
     }
 
@@ -69,5 +85,7 @@ public class MainTask {
             return;
         }
     }
+
+    /**每天凌晨执行一次的任务比如userInfoServiceMapper.initUseNum todo*/
 
 }

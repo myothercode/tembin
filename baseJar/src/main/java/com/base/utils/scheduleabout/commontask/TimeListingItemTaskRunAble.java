@@ -13,6 +13,7 @@ import com.base.utils.applicationcontext.ApplicationContextUtil;
 import com.base.utils.common.CommAutowiredClass;
 import com.base.utils.common.ObjectUtils;
 import com.base.utils.scheduleabout.BaseScheduledClass;
+import com.base.utils.scheduleabout.MainTask;
 import com.base.utils.scheduleabout.Scheduledable;
 import com.base.utils.threadpool.AddApiTask;
 import com.base.utils.xmlutils.SamplePaseXml;
@@ -117,5 +118,10 @@ public class TimeListingItemTaskRunAble extends BaseScheduledClass implements Sc
     }
 
     public TimeListingItemTaskRunAble(){
+    }
+
+    @Override
+    public String getScheduledType() {
+        return MainTask.LISTING_SCHEDULE;
     }
 }

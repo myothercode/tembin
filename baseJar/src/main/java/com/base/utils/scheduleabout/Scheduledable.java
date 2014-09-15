@@ -5,4 +5,6 @@ package com.base.utils.scheduleabout;
  * 所有的定时任务都需实现此接口
  */
 public interface Scheduledable extends Runnable {
+    /**获取任务类型*/
+    public String getScheduledType();
 }

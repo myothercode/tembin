@@ -8,6 +8,7 @@ import com.base.utils.threadpoolimplements.ThreadPoolBaseInterFace;
 import com.base.utils.xmlutils.SamplePaseXml;
 import com.sitemessage.service.SiteMessageService;
 import com.sitemessage.service.SiteMessageStatic;
+import org.apache.commons.lang.StringUtils;
 import org.apache.http.message.BasicHeader;
 import org.apache.log4j.Logger;
 import org.springframework.context.ApplicationContext;
@@ -81,6 +82,14 @@ public class ApiRunable implements Runnable {
 
     public void addMessage(String res){
         SiteMessageService siteMessageService= (SiteMessageService) ApplicationContextUtil.getBean(SiteMessageService.class);
+        if(StringUtils.isEmpty(res)){
+            taskMessageVO.setMessageTitle(taskMessageVO.getMessageTitle()+"执行失败！");
+            taskMessageVO.setMessageContext(taskMessageVO.getMessageContext() + ",没有获取到值res!");
+            taskMessageVO.setMessageType(taskMessageVO.getMessageType()+"_FAIL");
+            siteMessageService.addSiteMessage(taskMessageVO);
+            return;
+        }
+
         String ack="";
         try {
             ack = SamplePaseXml.getVFromXmlString(res, "Ack");
@@ -106,7 +115,7 @@ public class ApiRunable implements Runnable {
             logger.error("解析xml出错",e);
             taskMessageVO.setMessageType(taskMessageVO.getMessageType());
             taskMessageVO.setMessageTitle(taskMessageVO.getMessageTitle()+"解析报错！");
-            taskMessageVO.setMessageContext("解析出错！请稍后查看是否刊登成功!");
+            taskMessageVO.setMessageContext("解析出错！请稍后查看ebay网站是否刊登成功!");
         }finally {
             siteMessageService.addSiteMessage(taskMessageVO);
         }

@@ -30,7 +30,7 @@ public class TradingOrderGetSellerTransactionsImpl implements com.trading.servic
         }else{
             TradingOrderGetSellerTransactions t=tradingOrderGetSellerTransactionsMapper.selectByPrimaryKey(OrderGetSellerTransactions.getId());
             Asserts.assertTrue(t != null && t.getCreateUser() != null, "没有找到记录或者记录创建者为空");
-            ObjectUtils.valiUpdate(t.getCreateUser(),TradingOrderGetSellerTransactionsMapper.class,OrderGetSellerTransactions.getId());
+            ObjectUtils.valiUpdate(t.getCreateUser(),TradingOrderGetSellerTransactionsMapper.class,OrderGetSellerTransactions.getId(),"Synchronize");
             tradingOrderGetSellerTransactionsMapper.updateByPrimaryKeySelective(OrderGetSellerTransactions);
         }
     }

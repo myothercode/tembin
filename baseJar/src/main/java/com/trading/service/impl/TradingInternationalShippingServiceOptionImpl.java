@@ -29,14 +29,18 @@ public class TradingInternationalShippingServiceOptionImpl implements com.tradin
     @Autowired
     private ITradingAttrMores iTradingAttrMores;
     @Override
-    public void saveInternationalShippingServiceOption(TradingInternationalshippingserviceoption pojo){
-        this.tradingInternationalshippingserviceoptionMapper.insert(pojo);
+    public void saveInternationalShippingServiceOption(TradingInternationalshippingserviceoption pojo) throws Exception {
+        if(pojo.getId()==null) {
+            ObjectUtils.toInitPojoForInsert(pojo);
+            this.tradingInternationalshippingserviceoptionMapper.insert(pojo);
+        }else{
+            this.tradingInternationalshippingserviceoptionMapper.updateByPrimaryKeySelective(pojo);
+        }
     }
 
     @Override
     public TradingInternationalshippingserviceoption toDAOPojo(InternationalShippingServiceOption isso) throws Exception {
         TradingInternationalshippingserviceoption pojo = new TradingInternationalshippingserviceoption();
-        ObjectUtils.toInitPojoForInsert(pojo);
         ConvertPOJOUtil.convert(pojo,isso);
         pojo.setShippingservicecost(isso.getShippingServiceCost().getValue());
         pojo.setShippingservicepriority(isso.getShippingServicePriority().longValue());

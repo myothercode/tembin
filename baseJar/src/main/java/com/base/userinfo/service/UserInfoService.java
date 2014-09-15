@@ -9,6 +9,7 @@ import com.base.domains.userinfo.UsercontrollerDevAccountExtend;
 import com.base.domains.userinfo.UsercontrollerEbayAccountExtend;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by Administrtor on 2014/7/24.
@@ -36,4 +37,13 @@ public interface UserInfoService {
 
     /**查询所有的开发帐号*/
     List<UsercontrollerDevAccount> queryAllDevAccount();
+
+    /**获取到用量最小的开发帐号*/
+    UsercontrollerDevAccountExtend getDevByOrder(Map map) throws Exception;
+
+    /**累计开发帐号的使用次数*/
+    void addUseNum(Map map);
+
+    /**初清零开发帐号的使用次数*/
+    void initUseNum(Map map);
 }

@@ -43,4 +43,20 @@ public class PublicItemSupplierImpl implements com.publicd.service.IPublicItemSu
         List<PublicItemSupplier> list=PublicItemSupplierMapper.selectByExample(example);
         return list!=null&&list.size()>0?list.get(0):null;
     }
+
+    @Override
+    public void deleteItemSupplier(Long id) throws Exception {
+        if(id!=null){
+            PublicItemSupplierMapper.deleteByPrimaryKey(id);
+        }
+    }
+
+    @Override
+    public PublicItemSupplier selectItemSupplierByName(String name) {
+        PublicItemSupplierExample example=new PublicItemSupplierExample();
+        PublicItemSupplierExample.Criteria cr=example.createCriteria();
+        cr.andNameEqualTo(name);
+        List<PublicItemSupplier> list=PublicItemSupplierMapper.selectByExample(example);
+        return list!=null&&list.size()>0?list.get(0):null;
+    }
 }

@@ -36,4 +36,14 @@ public interface UserInfoServiceMapper {
 
     /**查询所有的开发帐号列表*/
     public List<UsercontrollerDevAccount> queryAllDevAccount();
+
+    /**获取到用量最少的开发帐号*/
+    UsercontrollerDevAccount getDevByOrder(Map map);
+
+    /**累计开发帐号的使用次数*/
+    void addUseNum(Map map);
+
+    /**初清零开发帐号的使用次数*/
+    void initUseNum(Map map);
+
 }

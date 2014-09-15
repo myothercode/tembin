@@ -43,4 +43,11 @@ public class PublicItemCustomImpl implements com.publicd.service.IPublicItemCust
         List<PublicItemCustom> list=PublicItemCustomMapper.selectByExample(example);
         return list!=null&&list.size()>0?list.get(0):null;
     }
+
+    @Override
+    public void deleteItemCustom(Long id) throws Exception {
+        if(id!=null){
+            PublicItemCustomMapper.deleteByPrimaryKey(id);
+        }
+    }
 }

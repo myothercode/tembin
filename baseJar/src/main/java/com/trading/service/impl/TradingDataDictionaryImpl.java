@@ -15,6 +15,7 @@ import com.base.utils.cache.DataDictionarySupport;
 import com.base.utils.cache.SessionCacheSupport;
 import com.base.utils.common.DictCollectionsUtil;
 import com.base.utils.common.ObjectUtils;
+import com.base.utils.exception.Asserts;
 import com.base.utils.xmlutils.SamplePaseXml;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -22,6 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by cz on 2014/7/24.
@@ -82,6 +84,12 @@ public class TradingDataDictionaryImpl implements com.trading.service.ITradingDa
         return this.tradingDataDictionaryMapper.selectByExample(tradingDataDictionaryExample);*/
         List<TradingDataDictionary> ts=queryDictAll();
         List<TradingDataDictionary> n= DictCollectionsUtil.dataCollectionFilterByType(ts, type);
+        return n;
+    }
+    @Override
+    public List<TradingDataDictionary> selectDictionaryByMap(Map<String,String> m){
+        List<TradingDataDictionary> ts=queryDictAll();
+        List<TradingDataDictionary> n= DictCollectionsUtil.dataTradingCollectionFilterByMap(ts, m);
         return n;
     }
 
@@ -216,6 +224,21 @@ public class TradingDataDictionaryImpl implements com.trading.service.ITradingDa
             DataDictionarySupport.put(tradingDataDictionaries,userID.toString());
         }
         return tradingDataDictionaries;
+    }
+
+    @Override
+    public List<PublicUserConfig> selectUserConfigDictionaryByMap(Map<String,String> m){
+        Long userid=null;
+        if(m.containsKey("userID")){
+            userid=Long.valueOf(m.get("userID")) ;
+        }else {
+            SessionVO sessionVO=SessionCacheSupport.getSessionVO();
+            userid=sessionVO.getId();
+        }
+        Asserts.assertTrue(!ObjectUtils.isLogicalNull(userid),"必须指定用户id！");
+        List<PublicUserConfig> ts=queryPublicUserConfigAll(userid);
+        List<PublicUserConfig> n= DictCollectionsUtil.dataUserConfigCollectionFilterByMap(ts, m);
+        return n;
     }
 
 

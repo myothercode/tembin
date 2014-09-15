@@ -11,4 +11,7 @@ public interface IPublicItemSupplier {
 
     PublicItemSupplier selectItemSupplierByid(Long id);
 
+    void deleteItemSupplier (Long id) throws Exception;
+
+    PublicItemSupplier selectItemSupplierByName(String name);
 }

@@ -1,5 +1,6 @@
 package com.trading.service;
 
+import com.base.database.keymove.model.KeyMoveList;
 import com.base.database.trading.model.TradingItem;
 import com.base.domains.querypojos.ItemQuery;
 import com.base.mybatis.page.Page;
@@ -25,4 +26,6 @@ public interface ITradingItem {
     TradingItem selectByItemId(String itemId);
 
     void updateTradingItem(Item item, TradingItem tradingItem) throws Exception;
+
+    void saveListingItem(Item item, KeyMoveList kml) throws Exception;
 }

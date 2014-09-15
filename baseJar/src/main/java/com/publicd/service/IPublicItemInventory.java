@@ -11,4 +11,5 @@ public interface IPublicItemInventory {
 
     PublicItemInventory selectItemInventoryByid(Long id);
 
+    void deleteItemInventory (Long id) throws Exception;
 }

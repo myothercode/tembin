@@ -572,7 +572,8 @@ public class TextXml {
         //testShippingServiceCostOverrideList();
         //testAddFixedPriceItemRequest();
         //testBuyerRequirementDetails();
-        testAddFixedPriceItemRequests();
+        //testAddFixedPriceItemRequests();
+        System.out.println(57/100);
     }
 
     /**

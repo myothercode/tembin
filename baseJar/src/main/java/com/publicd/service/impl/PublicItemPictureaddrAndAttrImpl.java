@@ -2,11 +2,14 @@ package com.publicd.service.impl;
 
 import com.base.database.publicd.mapper.PublicItemPictureaddrAndAttrMapper;
 import com.base.database.publicd.model.PublicItemPictureaddrAndAttr;
+import com.base.database.publicd.model.PublicItemPictureaddrAndAttrExample;
 import com.base.utils.common.ObjectUtils;
 import com.base.utils.exception.Asserts;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 /**
  * 退货政策
@@ -29,6 +32,24 @@ public class PublicItemPictureaddrAndAttrImpl implements com.publicd.service.IPu
             Asserts.assertTrue(t != null && t.getCreateUser() != null, "没有找到记录或者记录创建者为空");
             ObjectUtils.valiUpdate(t.getCreateUser(),PublicItemPictureaddrAndAttrMapper.class,ItemPictureaddrAndAttr.getId());
             PublicItemPictureaddrAndAttrMapper.updateByPrimaryKeySelective(ItemPictureaddrAndAttr);
+        }
+    }
+
+    @Override
+    public List<PublicItemPictureaddrAndAttr> selectPictureaddrAndAttrByInformationId(Long id,String type,Long userid) {
+        PublicItemPictureaddrAndAttrExample example=new PublicItemPictureaddrAndAttrExample();
+        PublicItemPictureaddrAndAttrExample.Criteria cr=example.createCriteria();
+        cr.andIteminformationIdEqualTo(id);
+        cr.andAttrtypeEqualTo(type);
+        cr.andCreateUserEqualTo(userid);
+        List<PublicItemPictureaddrAndAttr> list=PublicItemPictureaddrAndAttrMapper.selectByExample(example);
+        return list;
+    }
+
+    @Override
+    public void deletePublicItemPictureaddrAndAttr(PublicItemPictureaddrAndAttr ItemPictureaddrAndAttr) throws Exception {
+        if(ItemPictureaddrAndAttr!=null&&ItemPictureaddrAndAttr.getId()!=null){
+            PublicItemPictureaddrAndAttrMapper.deleteByPrimaryKey(ItemPictureaddrAndAttr.getId());
         }
     }
 }

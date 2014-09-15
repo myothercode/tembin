@@ -3,15 +3,15 @@ package com.base.utils.common;
 
 
 
-import com.base.database.trading.model.TradingCharity;
 import com.base.domains.SessionVO;
 import com.base.utils.cache.SessionCacheSupport;
 import com.base.utils.exception.Asserts;
+import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.beanutils.PropertyUtils;
+import org.apache.commons.lang.StringUtils;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
 import java.util.Collection;
 import java.util.Date;
 
@@ -70,7 +70,10 @@ public class ObjectUtils {
             }else if (name.equalsIgnoreCase("createTime")){
                 PropertyUtils.setSimpleProperty(t,name,new Date());
             }else if (name.equalsIgnoreCase("createUser")){
-                PropertyUtils.setSimpleProperty(t,name, SessionCacheSupport.getSessionVO().getId());
+                String v = BeanUtils.getSimpleProperty(t,name);
+                if(StringUtils.isEmpty(v)) {
+                    PropertyUtils.setSimpleProperty(t, name, SessionCacheSupport.getSessionVO().getId());
+                }
             }else{
                 continue;
             }
@@ -78,7 +81,12 @@ public class ObjectUtils {
     }
 
     /**验证当前用户是否与想要修改的记录创建者一致*/
-    public static boolean valiUpdate(long createUserID,Class c,long itemID){
+    public static boolean valiUpdate(long createUserID,Class c,long itemID,String... type){
+        if(!ObjectUtils.isLogicalNull(type)){
+            if("Synchronize".equalsIgnoreCase(type[0])){
+                return true;
+            }
+        }
         SessionVO sessionVO = SessionCacheSupport.getSessionVO();
         Asserts.assertTrue(createUserID == sessionVO.getId(),"您没有权限修改");
         return true;

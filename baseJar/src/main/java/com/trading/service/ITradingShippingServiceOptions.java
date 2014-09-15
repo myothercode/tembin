@@ -9,7 +9,7 @@ import java.util.List;
  * Created by Administrtor on 2014/7/24.
  */
 public interface ITradingShippingServiceOptions {
-    void saveShippingServiceOptions(TradingShippingserviceoptions pojo);
+    void saveShippingServiceOptions(TradingShippingserviceoptions pojo) throws Exception;
 
     TradingShippingserviceoptions toDAOPojo(ShippingServiceOptions sso) throws Exception;
 

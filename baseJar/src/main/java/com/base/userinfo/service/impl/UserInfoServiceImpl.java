@@ -64,11 +64,10 @@ public class UserInfoServiceImpl implements com.base.userinfo.service.UserInfoSe
     /**获取开发者帐号的信息*/
     public UsercontrollerDevAccountExtend getDevInfo( Long id ) throws Exception {
         if(id==null || id==0L){//如果为空，那么就去取账户设置的默认dev
-            SessionVO sessionVO = SessionCacheSupport.getSessionVO();
-            //UsercontrollerUser user=userMapper.selectByPrimaryKey(((Long)sessionVO.getId()).intValue());
+            /*SessionVO sessionVO = SessionCacheSupport.getSessionVO();
             Asserts.assertTrue(sessionVO.getDefaultDevID()!=null,"未设置默认开发帐号");
-            id= Long.valueOf(sessionVO.getDefaultDevID());
-            //id=user.getDefaultDevAccount();
+            id= Long.valueOf(sessionVO.getDefaultDevID());*/
+            return new UsercontrollerDevAccountExtend();
         }
         UsercontrollerDevAccount x= usercontrollerDevAccountMapper.selectByPrimaryKey(id);
         return x.toExtend();
@@ -96,8 +95,8 @@ public class UserInfoServiceImpl implements com.base.userinfo.service.UserInfoSe
     @Override
     /**根据ebay帐号id 查询token*/
     public String getTokenByEbayID(Long ebayID){
-        boolean b=ebayIsBindDev(ebayID);
-        if(!b){return "1";}//返回1，代表当前ebay帐号没绑定当前设定的默认开发帐号
+        //boolean b=ebayIsBindDev(ebayID);
+        //if(!b){return "1";}//返回1，代表当前ebay帐号没绑定当前设定的默认开发帐号
 
         UsercontrollerEbayAccount ebayAccount = userInfoServiceMapper.getTokenByEbayID(ebayID);
         return ebayAccount.getEbayToken();
@@ -105,8 +104,8 @@ public class UserInfoServiceImpl implements com.base.userinfo.service.UserInfoSe
     @Override
     /**根据ebay帐号id 查询UsercontrollerEbayAccount*/
     public UsercontrollerEbayAccount getEbayAccountByEbayID(Long ebayID){
-        boolean b=ebayIsBindDev(ebayID);
-        if(!b){return null;}//返回1，代表当前ebay帐号没绑定当前设定的默认开发帐号
+        //boolean b=ebayIsBindDev(ebayID);
+        //if(!b){return null;}//返回1，代表当前ebay帐号没绑定当前设定的默认开发帐号
 
         UsercontrollerEbayAccount ebayAccount = userInfoServiceMapper.getTokenByEbayID(ebayID);
         return ebayAccount;
@@ -131,5 +130,24 @@ public class UserInfoServiceImpl implements com.base.userinfo.service.UserInfoSe
     /**查询所有的开发帐号*/
     public List<UsercontrollerDevAccount> queryAllDevAccount(){
         return userInfoServiceMapper.queryAllDevAccount();
+    }
+
+    @Override
+    /**获取到用量最小的开发帐号*/
+    public UsercontrollerDevAccountExtend getDevByOrder(Map map) throws Exception {
+        UsercontrollerDevAccount u =userInfoServiceMapper.getDevByOrder(map);
+        return u.toExtend();
+    }
+
+    @Override
+    /**累计开发帐号的使用次数*/
+    public void addUseNum(Map map){
+        userInfoServiceMapper.addUseNum(map);
+    }
+
+    @Override
+    /**初清零开发帐号的使用次数*/
+    public void initUseNum(Map map){
+        userInfoServiceMapper.initUseNum(map);
     }
 }

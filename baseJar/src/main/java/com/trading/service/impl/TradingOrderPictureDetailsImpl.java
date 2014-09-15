@@ -30,7 +30,7 @@ public class TradingOrderPictureDetailsImpl implements com.trading.service.ITrad
         }else{
             TradingOrderPictureDetails t=tradingOrderPictureDetailsMapper.selectByPrimaryKey(OrderPictureDetails.getId());
             Asserts.assertTrue(t != null && t.getCreateUser() != null, "没有找到记录或者记录创建者为空");
-            ObjectUtils.valiUpdate(t.getCreateUser(),TradingOrderPictureDetailsMapper.class,OrderPictureDetails.getId());
+            ObjectUtils.valiUpdate(t.getCreateUser(),TradingOrderPictureDetailsMapper.class,OrderPictureDetails.getId(),"Synchronize");
             tradingOrderPictureDetailsMapper.updateByPrimaryKeySelective(OrderPictureDetails);
         }
     }

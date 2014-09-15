@@ -8,6 +8,7 @@ import com.base.database.trading.model.UsercontrollerDevAccount;
 public class UsercontrollerDevAccountExtend extends UsercontrollerDevAccount {
     private String apiSiteid;
     private String apiCallName;
+    private Long ebayID;
 
     private String headerType;
 
@@ -24,6 +25,14 @@ public class UsercontrollerDevAccountExtend extends UsercontrollerDevAccount {
     private String soaRequestDataFormat;
 
     private String soaResponseDataformat;
+
+    public Long getEbayID() {
+        return ebayID;
+    }
+
+    public void setEbayID(Long ebayID) {
+        this.ebayID = ebayID;
+    }
 
     public String getSoaGlobalId() {
         return soaGlobalId;

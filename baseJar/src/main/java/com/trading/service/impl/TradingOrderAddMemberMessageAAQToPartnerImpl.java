@@ -30,7 +30,7 @@ public class TradingOrderAddMemberMessageAAQToPartnerImpl implements com.trading
         }else{
             TradingOrderAddMemberMessageAAQToPartner t=tradingOrderAddMemberMessageAAQToPartnerMapper.selectByPrimaryKey(OrderAddMemberMessageAAQToPartner.getId());
             Asserts.assertTrue(t != null && t.getCreateUser() != null, "没有找到记录或者记录创建者为空");
-            ObjectUtils.valiUpdate(t.getCreateUser(),TradingOrderAddMemberMessageAAQToPartnerMapper.class,OrderAddMemberMessageAAQToPartner.getId());
+            ObjectUtils.valiUpdate(t.getCreateUser(),TradingOrderAddMemberMessageAAQToPartnerMapper.class,OrderAddMemberMessageAAQToPartner.getId(),"Synchronize");
             tradingOrderAddMemberMessageAAQToPartnerMapper.updateByPrimaryKeySelective(OrderAddMemberMessageAAQToPartner);
         }
     }

@@ -30,7 +30,7 @@ public class TradingGetEBPCaseDetailImpl implements com.trading.service.ITrading
         }else{
             TradingGetEBPCaseDetail t=tradingGetEBPCaseDetailMapper.selectByPrimaryKey(GetEBPCaseDetail.getId());
             Asserts.assertTrue(t != null && t.getCreateUser() != null, "没有找到记录或者记录创建者为空");
-            ObjectUtils.valiUpdate(t.getCreateUser(),TradingGetEBPCaseDetailMapper.class,GetEBPCaseDetail.getId());
+            ObjectUtils.valiUpdate(t.getCreateUser(),TradingGetEBPCaseDetailMapper.class,GetEBPCaseDetail.getId(),"Synchronize");
             tradingGetEBPCaseDetailMapper.updateByPrimaryKeySelective(GetEBPCaseDetail);
         }
     }

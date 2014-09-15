@@ -6,6 +6,7 @@ import com.base.utils.threadpool.TaskMessageVO;
 import com.base.utils.xmlutils.SamplePaseXml;
 import com.sitemessage.service.SiteMessageStatic;
 import com.trading.service.ITradingItem;
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -23,6 +24,7 @@ public class DelayListingItemImpl implements ThreadPoolBaseInterFace {
 
     @Override
     public <T> void doWork(String res,T... t) {
+        if(StringUtils.isEmpty(res)){return;}
         TaskMessageVO taskMessageVO = (TaskMessageVO)t[0];
         TradingItem tradingItem = (TradingItem) taskMessageVO.getObjClass();
         String ack = null;
@@ -33,7 +35,7 @@ public class DelayListingItemImpl implements ThreadPoolBaseInterFace {
             if ("Success".equalsIgnoreCase(ack) || "Warning".equalsIgnoreCase(ack)) {}
             else {return;}
         } catch (Exception e) {
-            logger.error("解析xml出错,请稍后到ebay网站确认结果",e);
+            logger.error("解析xml出错,请稍后到ebay网站确认结果,itemid:"+itemId,e);
             return;
         }
         if(ObjectUtils.isLogicalNull(itemId)){return;}
@@ -43,7 +45,7 @@ public class DelayListingItemImpl implements ThreadPoolBaseInterFace {
         try {
             iTradingItem.saveTradingItem(tradingItem);
         } catch (Exception e) {
-            logger.error("写入itemid出错",e);
+            logger.error("写入itemid出错tradingItemid:"+tradingItem.getId()+"itemid:"+itemId,e);
         }
     }
 

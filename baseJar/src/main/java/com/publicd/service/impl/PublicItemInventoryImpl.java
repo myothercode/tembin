@@ -43,4 +43,11 @@ public class PublicItemInventoryImpl implements com.publicd.service.IPublicItemI
         List<PublicItemInventory> list=PublicItemInventoryMapper.selectByExample(example);
         return list!=null&&list.size()>0?list.get(0):null;
     }
+
+    @Override
+    public void deleteItemInventory(Long id) throws Exception {
+        if(id!=null){
+            PublicItemInventoryMapper.deleteByPrimaryKey(id);
+        }
+    }
 }

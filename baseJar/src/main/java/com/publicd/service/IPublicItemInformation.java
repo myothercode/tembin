@@ -4,6 +4,8 @@ import com.base.database.publicd.model.PublicItemInformation;
 import com.base.domains.querypojos.ItemInformationQuery;
 import com.base.mybatis.page.Page;
 
+import javax.servlet.ServletOutputStream;
+import java.io.File;
 import java.util.List;
 import java.util.Map;
 
@@ -19,5 +21,13 @@ public interface IPublicItemInformation {
     void deleteItemInformation (Long id) throws Exception;
 
     PublicItemInformation selectItemInformationByid(Long id);
+
+    List<ItemInformationQuery> selectItemInformationByType(Map map, Page page);
+
+    PublicItemInformation selectItemInformationBySKU(String sku);
+
+    void exportItemInformation(List<PublicItemInformation> list,String outputFile,ServletOutputStream outputStream) throws Exception;
+
+    List<PublicItemInformation> importItemInformation(File file) throws Exception;
 
 }

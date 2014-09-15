@@ -8,8 +8,11 @@ import com.google.common.base.Predicate;
 import com.google.common.collect.Collections2;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMultiset;
+import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 
 /**
@@ -17,6 +20,8 @@ import java.util.*;
  * 数据字典的集合处理类
  */
 public class DictCollectionsUtil {
+    static Logger logger = Logger.getLogger(DictCollectionsUtil.class);
+
     /**publisc表的itemtype*/
     public static final String categorySpecifics="categorySpecifics";
     /**商品类别*/
@@ -109,6 +114,37 @@ public class DictCollectionsUtil {
         TradingDataDictionary[] tt = x.toArray(new TradingDataDictionary[]{});
        return Arrays.asList(tt);
     }
+    /**根据map中的条件来筛选TradingDataDictionary对象集合*/
+    public static List<TradingDataDictionary> dataTradingCollectionFilterByMap(List<TradingDataDictionary> ts,final Map<String , String> map){
+        Collection<TradingDataDictionary> x= Collections2.filter(ts, new Predicate<TradingDataDictionary>() {
+            @Override
+            public boolean apply(TradingDataDictionary tradingDataDictionary) {
+                boolean b=true;
+                for (Map.Entry<String,String> entry : map.entrySet()){
+                    String key=entry.getKey();
+                    String value = entry.getValue();
+                    try {
+                        String v1 = BeanUtils.getSimpleProperty(tradingDataDictionary,key);
+                        if(StringUtils.isEmpty(v1) || !value.equalsIgnoreCase(v1)){
+                            b=false;
+                            break;
+                        }
+                    }catch (NoSuchMethodException e1){
+                        b=false;
+                        break;
+                    }catch (Exception e) {
+                       logger.error("获取属性出错",e);
+                        b=false;
+                        break;
+                    }
+                }
+                return b;
+            }
+        });
+        TradingDataDictionary[] tt = x.toArray(new TradingDataDictionary[]{});
+        return Arrays.asList(tt);
+    }
+
 
     /**根据字典中的ID筛选出指定条件的list<TradingDataDictionary>对象*/
     public static TradingDataDictionary dataTradingCollectionFilterByID(List<TradingDataDictionary> ts,final Long id){
@@ -263,7 +299,36 @@ public class DictCollectionsUtil {
         return Arrays.asList(tt).get(0);
     }
 
-    /**根据siteID筛选数据*/
+    /**根据map中的条件来筛选PublicUserConfig对象集合*/
+    public static List<PublicUserConfig> dataUserConfigCollectionFilterByMap(List<PublicUserConfig> ts,final Map<String , String> map){
+        Collection<PublicUserConfig> x= Collections2.filter(ts, new Predicate<PublicUserConfig>() {
+            @Override
+            public boolean apply(PublicUserConfig publicUserConfig) {
+                boolean b=true;
+                for (Map.Entry<String,String> entry : map.entrySet()){
+                    String key=entry.getKey();
+                    String value = entry.getValue();
+                    try {
+                        String v1 = BeanUtils.getSimpleProperty(publicUserConfig,key);
+                        if(StringUtils.isEmpty(v1) || !value.equalsIgnoreCase(v1)){
+                            b=false;
+                            break;
+                        }
+                    }catch (NoSuchMethodException e1){
+                        b=false;
+                        break;
+                    }catch (Exception e) {
+                        logger.error("获取属性出错",e);
+                        b=false;
+                        break;
+                    }
+                }
+                return b;
+            }
+        });
+        PublicUserConfig[] tt = x.toArray(new PublicUserConfig[]{});
+        return Arrays.asList(tt);
+    }
 
 
 

@@ -27,7 +27,7 @@ public class TradingOrderSellingStatusImpl implements com.trading.service.ITradi
         }else{
             TradingOrderSellingStatus t=tradingOrderSellingStatusMapper.selectByPrimaryKey(OrderSellingStatus.getId());
             Asserts.assertTrue(t != null && t.getCreateUser() != null, "没有找到记录或者记录创建者为空");
-            ObjectUtils.valiUpdate(t.getCreateUser(),TradingOrderSellingStatusMapper.class,OrderSellingStatus.getId());
+            ObjectUtils.valiUpdate(t.getCreateUser(),TradingOrderSellingStatusMapper.class,OrderSellingStatus.getId(),"Synchronize");
             tradingOrderSellingStatusMapper.updateByPrimaryKeySelective(OrderSellingStatus);
         }
     }

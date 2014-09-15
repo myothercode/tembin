@@ -30,7 +30,7 @@ public class TradingOrderGetItemImpl implements com.trading.service.ITradingOrde
         }else{
             TradingOrderGetItem t=tradingOrderGetItemMapper.selectByPrimaryKey(OrderGetItem.getId());
             Asserts.assertTrue(t != null && t.getCreateUser() != null, "没有找到记录或者记录创建者为空");
-            ObjectUtils.valiUpdate(t.getCreateUser(),TradingOrderGetItemMapper.class,OrderGetItem.getId());
+            ObjectUtils.valiUpdate(t.getCreateUser(),TradingOrderGetItemMapper.class,OrderGetItem.getId(),"Synchronize");
             tradingOrderGetItemMapper.updateByPrimaryKeySelective(OrderGetItem);
         }
     }
