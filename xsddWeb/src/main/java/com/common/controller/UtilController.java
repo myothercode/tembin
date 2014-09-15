@@ -1,10 +1,17 @@
 package com.common.controller;
 
+import com.base.database.keymove.mapper.KeyMoveListMapper;
+import com.base.database.keymove.model.KeyMoveList;
+import com.base.database.keymove.model.KeyMoveListExample;
 import com.base.database.publicd.mapper.PublicDataDictMapper;
 import com.base.database.publicd.model.PublicDataDict;
 import com.base.database.publicd.model.PublicDataDictExample;
+import com.base.database.trading.mapper.UsercontrollerDevAccountMapper;
+import com.base.database.trading.mapper.UsercontrollerEbayAccountMapper;
 import com.base.database.trading.model.TradingDataDictionary;
 import com.base.database.trading.model.TradingReseCategory;
+import com.base.database.trading.model.UsercontrollerDevAccount;
+import com.base.database.trading.model.UsercontrollerEbayAccount;
 import com.base.domains.CommonParmVO;
 import com.base.domains.DictDataFilterParmVO;
 import com.base.domains.SessionVO;
@@ -14,22 +21,27 @@ import com.base.sampleapixml.APINameStatic;
 import com.base.userinfo.service.UserInfoService;
 import com.base.utils.cache.DataDictionarySupport;
 import com.base.utils.cache.SessionCacheSupport;
+import com.base.utils.common.DateUtils;
 import com.base.utils.common.DictCollectionsUtil;
 import com.base.utils.common.UUIDUtil;
 import com.base.utils.exception.Asserts;
 import com.base.utils.httpclient.HttpClientUtil;
 import com.base.utils.threadpool.AddApiTask;
 import com.base.utils.xmlutils.SamplePaseXml;
+import com.base.xmlpojo.trading.addproduct.Item;
 import com.common.base.utils.ajax.AjaxSupport;
 import com.common.base.web.BaseAction;
 import com.test.mapper.TestMapper;
 import com.trading.service.ITradingDataDictionary;
+import com.trading.service.ITradingItem;
 import com.trading.service.ITradingReseCategory;
+import com.trading.service.IUsercontrollerEbayAccount;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
 import org.apache.http.client.HttpClient;
 import org.apache.http.message.BasicHeader;
 import org.apache.log4j.Logger;
+import org.dom4j.Element;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
@@ -41,10 +53,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by Administrtor on 2014/7/31.
@@ -66,7 +75,14 @@ public class UtilController extends BaseAction{
     public PublicDataDictMapper publicDataDictMapper;
     @Autowired
     public TestMapper testMapper;
-
+    @Autowired
+    private IUsercontrollerEbayAccount iUsercontrollerEbayAccount;
+    @Autowired
+    private UsercontrollerEbayAccountMapper usercontrollerEbayAccountMapper;//查询开发帐号信息
+    @Autowired
+    private ITradingItem iTradingItem;
+    @Autowired
+    private KeyMoveListMapper keyMoveListMapper;
     /**用于更新页面token*/
     @RequestMapping("/ajax/getToken.do")
     @ResponseBody
@@ -413,6 +429,127 @@ i++;
 
 
         return "ok";
+    }
+
+
+    @RequestMapping("keymove/userSelectSite.do")
+    public ModelAndView userSelectSite(ModelMap modelMap,HttpServletRequest request){
+        List<TradingDataDictionary> lidata = DataDictionarySupport.getTradingDataDictionaryByType(DataDictionarySupport.DATA_DICT_SITE);
+        modelMap.put("siteList",lidata);
+        SessionVO c= SessionCacheSupport.getSessionVO();
+        List<UsercontrollerEbayAccount> ebayList = this.iUsercontrollerEbayAccount.selectUsercontrollerEbayAccountByUserId(c.getId());
+        modelMap.put("ebayList",ebayList);
+        return forword("/userselect/userselect",modelMap);
+    }
+
+    /*一键搬家*/
+    @RequestMapping("keymove/saveItemToLocation.do")
+    @ResponseBody
+    public ModelAndView saveItemToLocation(ModelMap modelMap, HttpServletRequest request) throws Exception {
+        String startFrom = request.getParameter("startFrom");
+        String startTo = request.getParameter("startTo");
+        String [] userId = request.getParameterValues("ebayAccounts");
+        TradingDataDictionary sitedata = DataDictionarySupport.getTradingDataDictionaryByID(Long.parseLong(request.getParameter("site")));
+        String colStr;
+        List<Item> li = new ArrayList();
+        for(String id : userId){
+            UsercontrollerEbayAccount uea = this.usercontrollerEbayAccountMapper.selectByPrimaryKey(Long.parseLong(id));
+            colStr = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n" +
+                    "<GetSellerListRequest xmlns=\"urn:ebay:apis:eBLBaseComponents\">\n" +
+                    "<RequesterCredentials>\n" +
+                    "<eBayAuthToken>"+uea.getEbayToken()+"</eBayAuthToken>\n" +
+                    "</RequesterCredentials>\n" +
+                    "<Pagination ComplexType=\"PaginationType\">\n" +
+                    "\t<EntriesPerPage>100</EntriesPerPage>\n" +
+                    "\t<PageNumber>1</PageNumber>\n" +
+                    "</Pagination>\n" +
+                    "<StartTimeFrom>"+DateUtils.DateToString(DateUtils.parseDateTime(startFrom))+"</StartTimeFrom>\n" +
+                    "<StartTimeTo>"+DateUtils.DateToString(DateUtils.parseDateTime(startTo))+"</StartTimeTo>\n" +
+                    "<UserID>"+uea.getEbayName()+"</UserID>\n" +
+                    "<GranularityLevel>Coarse</GranularityLevel>\n" +
+                    "<DetailLevel>ItemReturnDescription</DetailLevel>\n" +
+                    "</GetSellerListRequest>";
+            System.out.println(colStr);
+            UsercontrollerDevAccountExtend d = userInfoService.getDevInfo(uea.getUserId());
+            d.setApiSiteid(sitedata.getName1());
+            d.setApiCallName(APINameStatic.ListingItemList);
+            AddApiTask addApiTask = new AddApiTask();
+            Map<String, String> resMap = addApiTask.exec(d, colStr, apiUrl);
+            String res = resMap.get("message");
+            String ack = SamplePaseXml.getVFromXmlString(res, "Ack");
+            if("Success".equals(ack)) {//ＡＰＩ成功请求，保存数据
+                //String totalNumber = SamplePaseXml.getVFromXmlString(res, "ReturnedItemCountActual");
+                Element el = SamplePaseXml.getApiElement(res, "PaginationResult");
+                String totalNumber = el.elementText("TotalNumberOfEntries");
+                li.addAll(SamplePaseXml.getItemElememt(res));
+                if(Integer.parseInt(totalNumber)>100){
+                    int patesize=0;
+                    if(Integer.parseInt(totalNumber)/100>0){
+                        if(Integer.parseInt(totalNumber)-Integer.parseInt(totalNumber)/100*100>0){
+                            patesize=Integer.parseInt(totalNumber)/100+1;
+                        }else{
+                            patesize=Integer.parseInt(totalNumber)/100;
+                        }
+                    }else{
+                        patesize=1;
+                    }
+                    for(int i=2;i<=patesize;i++){
+                        colStr = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n" +
+                                "<GetSellerListRequest xmlns=\"urn:ebay:apis:eBLBaseComponents\">\n" +
+                                "<RequesterCredentials>\n" +
+                                "<eBayAuthToken>"+uea.getEbayToken()+"</eBayAuthToken>\n" +
+                                "</RequesterCredentials>\n" +
+                                "<Pagination ComplexType=\"PaginationType\">\n" +
+                                "\t<EntriesPerPage>100</EntriesPerPage>\n" +
+                                "\t<PageNumber>"+i+"</PageNumber>\n" +
+                                "</Pagination>\n" +
+                                "<StartTimeFrom>"+DateUtils.DateToString(DateUtils.parseDateTime(startFrom))+"</StartTimeFrom>\n" +
+                                "<StartTimeTo>"+DateUtils.DateToString(DateUtils.parseDateTime(startTo))+"</StartTimeTo>\n" +
+                                "<UserID>"+uea.getEbayName()+"</UserID>\n" +
+                                "<GranularityLevel>Coarse</GranularityLevel>\n" +
+                                "<DetailLevel>ItemReturnDescription</DetailLevel>\n" +
+                                "</GetSellerListRequest>";
+                        resMap = addApiTask.exec(d, colStr, apiUrl);
+                        res = resMap.get("message");
+                        String acks = SamplePaseXml.getVFromXmlString(res, "Ack");
+                        if("Success".equals(acks)) {//ＡＰＩ成功请求，保存数据
+                            li.addAll(SamplePaseXml.getItemElememt(res));
+                        }else{//ＡＰＩ请求失败
+
+                        }
+                    }
+                }
+            }else{//ＡＰＩ请求失败
+
+            }
+
+        }
+        List<Item> liitem = new ArrayList<Item>();
+        for(String id : userId) {
+            UsercontrollerEbayAccount uea = this.usercontrollerEbayAccountMapper.selectByPrimaryKey(Long.parseLong(id));
+            for (Item item : li) {
+                KeyMoveListExample kmle = new KeyMoveListExample();
+                kmle.createCriteria().andUserIdEqualTo(uea.getUserId()).andItemIdEqualTo(item.getItemID()).andSiteIdEqualTo(sitedata.getName1());
+                List<KeyMoveList> likml = this.keyMoveListMapper.selectByExample(kmle);
+                if(likml==null||likml.size()==0){
+                    KeyMoveList kml = new KeyMoveList();
+                    kml.setCreateTime(new Date());
+                    kml.setItemId(item.getItemID());
+                    kml.setUserId(uea.getUserId());
+                    kml.setEbaytoken(uea.getEbayToken());
+                    kml.setTaskFlag("0");
+                    kml.setSiteId(sitedata.getId()+"");
+                    kml.setPaypalId(id);
+                    this.keyMoveListMapper.insertSelective(kml);
+                }
+            }
+        }
+        //this.iTradingItem.saveListingItem(liitem);
+        return forword("/test",modelMap);
+    }
+
+    public String cosPost(){
+        return "";
     }
 
 }

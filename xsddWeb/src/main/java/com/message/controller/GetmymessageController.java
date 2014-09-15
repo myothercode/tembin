@@ -1,8 +1,8 @@
 package com.message.controller;
 
 import com.base.database.trading.model.TradingMessageAddmembermessage;
-import com.base.database.trading.model.TradingMessageGetmymessage;
 import com.base.domains.CommonParmVO;
+import com.base.domains.SessionVO;
 import com.base.domains.querypojos.MessageGetmymessageQuery;
 import com.base.domains.userinfo.UsercontrollerDevAccountExtend;
 import com.base.domains.userinfo.UsercontrollerEbayAccountExtend;
@@ -13,15 +13,16 @@ import com.base.sampleapixml.BindAccountAPI;
 import com.base.sampleapixml.GetMyMessageAPI;
 import com.base.userinfo.service.UserInfoService;
 import com.base.utils.annotations.AvoidDuplicateSubmission;
+import com.base.utils.cache.SessionCacheSupport;
 import com.base.utils.common.DateUtils;
 import com.base.utils.threadpool.AddApiTask;
-import com.base.utils.xmlutils.SamplePaseXml;
+import com.base.utils.threadpool.TaskMessageVO;
 import com.common.base.utils.ajax.AjaxSupport;
 import com.common.base.web.BaseAction;
+import com.sitemessage.service.SiteMessageStatic;
 import com.trading.service.ITradingMessageAddmembermessage;
 import com.trading.service.ITradingMessageGetmymessage;
 import org.apache.log4j.Logger;
-import org.dom4j.Element;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
@@ -190,16 +191,13 @@ public class GetmymessageController extends BaseAction{
     public void apiGetMyMessagesRequest(CommonParmVO commonParmVO,HttpServletRequest request) throws Exception {
         String ebayId=request.getParameter("ebayId");
         Long ebay=Long.valueOf(ebayId);
-        UsercontrollerDevAccountExtend d = userInfoService.getDevInfo(null);//开发者帐号id
       /*  UsercontrollerDevAccountExtend d=new UsercontrollerDevAccountExtend();
         d.setApiDevName("5d70d647-b1e2-4c7c-a034-b343d58ca425");
         d.setApiAppName("sandpoin-23af-4f47-a304-242ffed6ff5b");
         d.setApiCertName("165cae7e-4264-4244-adff-e11c3aea204e");
         d.setApiCompatibilityLevel("881");*/
-        d.setApiSiteid("0");
-        d.setApiCallName(APINameStatic.GetMyMessages);
-        request.getSession().setAttribute("dveId", d);
-        Map map=new HashMap();
+        //----修改前---
+        /*Map map=new HashMap();
         Date startTime2= com.base.utils.common.DateUtils.subDays(new Date(),8);
         Date endTime= DateUtils.addDays(startTime2,9);
         Date end1= com.base.utils.common.DateUtils.turnToDateEnd(endTime);
@@ -212,7 +210,11 @@ public class GetmymessageController extends BaseAction{
         map.put("endTime", end);
         String xml = BindAccountAPI.getGetMyMessages(map);//获取接受消息
         AddApiTask addApiTask = new AddApiTask();
-        /*  Map<String, String> resMap = addApiTask.exec(d, xml, "https://api.ebay.com/ws/api.dll");*/
+        UsercontrollerDevAccountExtend d = userInfoService.getDevInfo(null);//开发者帐号id
+        d.setApiSiteid("0");
+        d.setApiCallName(APINameStatic.GetMyMessages);
+        request.getSession().setAttribute("dveId", d);
+         *//* Map<String, String> resMap = addApiTask.exec(d, xml, "https://api.ebay.com/ws/api.dll");*//*
         Map<String, String> resMap = addApiTask.exec(d, xml, apiUrl);
         String r1 = resMap.get("stat");
         String res = resMap.get("message");
@@ -232,8 +234,46 @@ public class GetmymessageController extends BaseAction{
             AjaxSupport.sendSuccessText("success", "同步成功！");
         } else {
             String errors = SamplePaseXml.getVFromXmlString(res, "Errors");
-            logger.error("获取apisessionid失败!" + errors);
+            logger.error("执行失败!" + errors);
             AjaxSupport.sendFailText("fail", "获取必要的参数失败！请稍后重试");
-        }
+        }*/
+        //--修改后---
+        UsercontrollerDevAccountExtend d = new UsercontrollerDevAccountExtend();
+        d.setApiSiteid("0");
+        d.setApiCallName(APINameStatic.GetMyMessages);
+        request.getSession().setAttribute("dveId", d);
+        Map map=new HashMap();
+       Date startTime2= com.base.utils.common.DateUtils.subDays(new Date(),8);
+        Date endTime= DateUtils.addDays(startTime2, 9);
+       /* Date startTime2= com.base.utils.common.DateUtils.subDays(new Date(),30);
+        Date endTime= DateUtils.addDays(startTime2, 31);*/
+
+
+        Date end1= com.base.utils.common.DateUtils.turnToDateEnd(endTime);
+        String start=DateUtils.DateToString(startTime2);
+        String end= DateUtils.DateToString(end1);
+        String token=userInfoService.getTokenByEbayID(ebay);
+        map.put("token", token);
+        map.put("detail", "ReturnHeaders");
+        map.put("startTime", start);
+        map.put("endTime", end);
+        String xml = BindAccountAPI.getGetMyMessages(map);//获取接受消息
+        AddApiTask addApiTask = new AddApiTask();
+          /*Map<String, String> resMap = addApiTask.exec(d, xml, "https://api.ebay.com/ws/api.dll");*/
+        /*Map<String, String> resMap = addApiTask.exec(d, xml, apiUrl);*/
+        TaskMessageVO taskMessageVO=new TaskMessageVO();
+        taskMessageVO.setMessageContext("接受的消息");
+        taskMessageVO.setMessageTitle("获取接受消息的");
+        taskMessageVO.setMessageType(SiteMessageStatic.SYNCHRONIZE_GET_MESSAGE_TYPE);
+        taskMessageVO.setBeanNameType(SiteMessageStatic.SYNCHRONIZE_GET_MESSAGE_BEAN);
+        taskMessageVO.setMessageFrom("system");
+        Map m=new HashMap();
+        m.put("accountId",commonParmVO.getId());
+        m.put("ebay",ebay);
+        taskMessageVO.setObjClass(m);
+        SessionVO sessionVO= SessionCacheSupport.getSessionVO();
+        taskMessageVO.setMessageTo(sessionVO.getId());
+        addApiTask.execDelayReturn(d, xml, apiUrl, taskMessageVO);
+        AjaxSupport.sendSuccessText("message", "操作成功！结果请稍后查看消息！");
     }
 }

@@ -33,7 +33,9 @@ import org.springframework.web.servlet.ModelAndView;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by chace.cai on 2014/6/20.
@@ -60,6 +62,17 @@ public class TextContraller extends BaseAction {
         return forword("test",modelMap);
     }
 
+    /**登录后的主框架页面*/
+    @RequestMapping("/mainFrame.do")
+    public ModelAndView mainFrame(HttpServletRequest request,HttpServletResponse response,
+                             @ModelAttribute( "initSomeParmMap" )ModelMap modelMap){
+        // Map map = new HashMap();
+        SessionVO sessionVO = SessionCacheSupport.getSessionVO();
+        modelMap.put("ccc",sessionVO.getUserName());
+        return forword("mainFrame",modelMap);
+    }
+
+    /**登录操作*/
     @RequestMapping("/login.do")
     public ModelAndView login(LoginVO loginVO,HttpServletRequest request,HttpServletResponse response,ModelMap modelMap){
 
@@ -71,9 +84,8 @@ public class TextContraller extends BaseAction {
         SessionCacheSupport.remove(sessionVO.getLoginId());
         sessionVO.setSessionID(request.getSession().getId());
         SessionCacheSupport.put(sessionVO);
-        return redirect("test.do");
+        return redirect("mainFrame.do");
         //modelMap.put("ccc",sessionVO.getUserName());
-
         //return forword("test",modelMap);
     }
 
@@ -128,11 +140,11 @@ public class TextContraller extends BaseAction {
 
     @RequestMapping("sometest.do")
     public ModelAndView sometest(ModelMap modelMap,String id) throws InterruptedException {
-        int i=0;
-        System.out.println(i++);
-        if("1".equals(id)){
-            Thread.sleep(10000L);
-        }
+        Map<String,String> map=new HashMap<String, String>();
+        map.put("type","country");
+        map.put("value","GM");
+        //map.put("ds","d");
+        List<TradingDataDictionary> x= DataDictionarySupport.getTradingDataDictionaryByMap(map);
         return forword("sometest",modelMap);
 
     }

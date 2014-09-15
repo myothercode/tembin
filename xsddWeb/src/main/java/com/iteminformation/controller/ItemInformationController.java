@@ -2,10 +2,14 @@ package com.iteminformation.controller;
 
 import com.base.database.publicd.model.*;
 import com.base.domains.CommonParmVO;
+import com.base.domains.SessionVO;
 import com.base.domains.querypojos.ItemInformationQuery;
 import com.base.mybatis.page.Page;
 import com.base.mybatis.page.PageJsonBean;
 import com.base.utils.annotations.AvoidDuplicateSubmission;
+import com.base.utils.cache.DataDictionarySupport;
+import com.base.utils.cache.SessionCacheSupport;
+import com.base.utils.cache.DataDictionarySupport;
 import com.common.base.utils.ajax.AjaxSupport;
 import com.common.base.web.BaseAction;
 import com.publicd.service.*;
@@ -15,11 +19,17 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
+import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.File;
+import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -40,13 +50,20 @@ public class ItemInformationController extends BaseAction {
     private IPublicItemCustom iPublicItemCustom;
     @Autowired
     private IPublicItemInventory iPublicItemInventory;
+    @Autowired
+    private IPublicItemPictureaddrAndAttr iPublicItemPictureaddrAndAttr;
     /*
    *纠纷列表
    */
     @RequestMapping("/itemInformationList.do")
     public ModelAndView itemInformationList(HttpServletRequest request,HttpServletResponse response,ModelMap modelMap){
-        return forword("/itemInformation/itemInformationList",modelMap);
+        List<PublicUserConfig> types= iPublicUserConfig.selectUserConfigByItemType("itemType");
+        List<PublicUserConfig> remarks=iPublicUserConfig.selectUserConfigByItemType("remark");
+        modelMap.put("types",types);
+        modelMap.put("remarks",remarks);
+        return forword("/itemInformation/itemInformation",modelMap);
     }
+
     /**获取list数据的ajax方法*/
     @RequestMapping("/ajax/loadItemInformationList.do")
     @ResponseBody
@@ -65,7 +82,7 @@ public class ItemInformationController extends BaseAction {
         if("all".equals(itemType)){
             itemType=null;
         }
-        if(StringUtils.isNotBlank(content)){
+        if(!StringUtils.isNotBlank(content)){
             content=null;
         }
         Map m = new HashMap();
@@ -92,6 +109,8 @@ public class ItemInformationController extends BaseAction {
         PublicItemInventory inventory=new PublicItemInventory();
         PublicItemCustom custom=new PublicItemCustom();
         PublicItemSupplier supplier=null;
+        List<PublicItemPictureaddrAndAttr> pictures=null;
+        List<PublicItemPictureaddrAndAttr> attrs=null;
         if(StringUtils.isNotBlank(id)){
             itemInformation=iPublicItemInformation.selectItemInformationByid(Long.valueOf(id));
             if(itemInformation.getInventoryId()!=null){
@@ -103,23 +122,47 @@ public class ItemInformationController extends BaseAction {
             if(itemInformation.getSupplierId()!=null){
                 supplier=iPublicItemSupplier.selectItemSupplierByid(itemInformation.getSupplierId());
             }
+            SessionVO c= SessionCacheSupport.getSessionVO();
+            pictures=iPublicItemPictureaddrAndAttr.selectPictureaddrAndAttrByInformationId(itemInformation.getId(),"picture",c.getId());
+            attrs=iPublicItemPictureaddrAndAttr.selectPictureaddrAndAttrByInformationId(itemInformation.getId(),"attr",c.getId());
         }
-        List<PublicUserConfig> types=iPublicUserConfig.selectUserConfigByItemType();
+        List<PublicUserConfig> types=iPublicUserConfig.selectUserConfigByItemType("itemType");
         modelMap.put("types",types);
         modelMap.put("itemInformation",itemInformation);
         modelMap.put("inventory",inventory);
         modelMap.put("custom",custom);
         modelMap.put("supplier",supplier);
+        modelMap.put("pictures",pictures);
+        modelMap.put("attrs",attrs);
         return forword("/itemInformation/addItemInformation",modelMap);
     }
-   /* *//*
+    /*
      *添加供应商
-     *//*
-    @RequestMapping("/addSupplier.do")
+     */
+    @RequestMapping("/addDiscription.do")
     @AvoidDuplicateSubmission(needSaveToken = true)
-    public ModelAndView addSupplier(HttpServletRequest request,HttpServletResponse response,
+    public ModelAndView addDiscription(HttpServletRequest request,HttpServletResponse response,
+                                           @ModelAttribute( "initSomeParmMap" )ModelMap modelMap) throws UnsupportedEncodingException {
+        String id=request.getParameter("id");
+        PublicItemInformation itemInformation=new PublicItemInformation();
+        if(StringUtils.isNotBlank(id)){
+            itemInformation=iPublicItemInformation.selectItemInformationByid(Long.valueOf(id));
+        }
+        modelMap.put("itemInformation",itemInformation);
+        return forword("/itemInformation/addDiscription",modelMap);
+    }
+    /*
+    *初始化添加商品标签界面
+    */
+    @RequestMapping("/addRemark.do")
+    @AvoidDuplicateSubmission(needSaveToken = true)
+    public ModelAndView addRemark(HttpServletRequest request,HttpServletResponse response,
                                            @ModelAttribute( "initSomeParmMap" )ModelMap modelMap){
-        return forword("/itemInformation/addSupplier",modelMap);
+        String id=request.getParameter("id");
+        List<PublicUserConfig> parents=iPublicUserConfig.selectUserConfigByItemType("remark");
+        modelMap.put("id",id);
+        modelMap.put("parents",parents);
+        return forword("/itemInformation/addRemark",modelMap);
     }
     /*
      *删除产品信息
@@ -128,12 +171,127 @@ public class ItemInformationController extends BaseAction {
    @AvoidDuplicateSubmission(needRemoveToken = true)
    @ResponseBody
    public void removeItemInformation(HttpServletRequest request) throws Exception {
-       String id=request.getParameter("id");
-       if(StringUtils.isNotBlank(id)){
-           iPublicItemInformation.deleteItemInformation(Long.valueOf(id));
+       int i=0;
+       while(i>=0){
+           String id=request.getParameter("id["+i+"]");
+           if(!StringUtils.isNotBlank(id)&&i==0){
+               i=-2;
+           }else if(StringUtils.isNotBlank(id)){
+               PublicItemInformation itemInformation= iPublicItemInformation.selectItemInformationByid(Long.valueOf(id));
+               if(itemInformation!=null&&itemInformation.getInventoryId()!=null){
+                   iPublicItemInventory.deleteItemInventory(itemInformation.getInventoryId());
+               }
+               if(itemInformation!=null&&itemInformation.getSupplierId()!=null){
+                   iPublicItemSupplier.deleteItemSupplier(itemInformation.getSupplierId());
+               }
+               if(itemInformation!=null&&itemInformation.getCustomId()!=null){
+                   iPublicItemCustom.deleteItemCustom(itemInformation.getCustomId());
+               }
+               iPublicItemInformation.deleteItemInformation(Long.valueOf(id));
+               i++;
+           }else{
+               i=-1;
+           }
        }
-       AjaxSupport.sendSuccessText("", "删除成功!");
+       if(i==-2){
+           AjaxSupport.sendFailText("fail","商品不存在");
+       }else{
+           AjaxSupport.sendSuccessText("", "删除成功!");
+       }
+
    }
+    /*
+    *导出产品信息
+    */
+    @RequestMapping("/exportItemInformation1.do")
+    public void  exportItemInformation1(HttpServletRequest request,HttpServletResponse response) throws Exception {
+        response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+        response.setCharacterEncoding("UTF-8");
+        int i=0;
+        List<PublicItemInformation> list=new ArrayList<PublicItemInformation>();
+        String outputFile1= request.getSession().getServletContext().getRealPath("/");
+        String outputFile=outputFile1+"download\\itemInformation.xls";
+        while(i>=0){
+            String id=request.getParameter("id["+i+"]");
+            if(!StringUtils.isNotBlank(id)&&i==0) {
+                i = -2;
+            }else if(StringUtils.isNotBlank(id)){
+                PublicItemInformation itemInformation= new PublicItemInformation();
+                itemInformation =iPublicItemInformation.selectItemInformationByid(Long.valueOf(id));
+                list.add(itemInformation);
+                i++;
+            }else{
+                i=-1;
+            }
+        }
+        if(i!=-2) {
+            response.setHeader("Content-Disposition","attachment;filename=itemInformation.xls");// 组装附件名称和格式
+            ServletOutputStream outputStream = response.getOutputStream();
+            iPublicItemInformation.exportItemInformation(list, outputFile,outputStream);
+        }
+    }
+    /*
+   *导入商品标签界面初始化
+   */
+    @RequestMapping("/importItemInformation.do")
+    @AvoidDuplicateSubmission(needSaveToken = true)
+    public ModelAndView importItemInformation(HttpServletRequest request,HttpServletResponse response,
+                                  @ModelAttribute( "initSomeParmMap" )ModelMap modelMap){
+        modelMap.put("flag","false");
+        return forword("/itemInformation/importItemInformation",modelMap);
+    }
+    /*
+   *导入
+   */
+    @RequestMapping("/ajax/importInformation.do")
+    @AvoidDuplicateSubmission(needSaveToken = true)
+    public ModelAndView importInformation(@RequestParam(value = "file", required = false)MultipartFile file,HttpServletRequest request,ModelMap modelMap) throws Exception {
+        String fileName ="upload.xls";
+        String path=request.getSession().getServletContext().getRealPath("/")+"upload";
+        File f=new File(path,fileName);
+        String fileName1 = file.getOriginalFilename();
+        if(!f.exists()){
+            f.mkdirs();
+        }
+        file.transferTo(f);
+        List<PublicItemInformation> list= iPublicItemInformation.importItemInformation(f);
+        for(PublicItemInformation itemInformation:list){
+            iPublicItemInformation.saveItemInformation(itemInformation);
+        }
+        modelMap.put("flag","true");
+        return forword("/itemInformation/importItemInformation",modelMap);
+    }
+    /*
+    *保存标签
+    */
+    @RequestMapping("/ajax/saveremark.do")
+    @AvoidDuplicateSubmission(needRemoveToken = true)
+    @ResponseBody
+    public void saveremark(HttpServletRequest request) throws Exception {
+        String remark=request.getParameter("remark");
+        String id=request.getParameter("id");
+        String parentid=request.getParameter("parentid");
+        if(StringUtils.isNotBlank(id)){
+            PublicUserConfig config=new PublicUserConfig();
+            config.setConfigType("remark");
+            config.setConfigName(remark);
+            if(!"0".equals(parentid)){
+                config.setItemParentId(parentid);
+                PublicUserConfig c=iPublicUserConfig.selectUserConfigById(Long.valueOf(parentid));
+                String level=c.getItemLevel();
+                config.setItemLevel((Integer.valueOf(level)+1)+"");
+            }else{
+                config.setItemLevel("1");
+            }
+            iPublicUserConfig.saveUserConfig(config);
+            DataDictionarySupport.removePublicUserConfig(config.getUserId());
+            PublicItemInformation itemInformation= iPublicItemInformation.selectItemInformationByid(Long.valueOf(id));
+            itemInformation.setRemarkId(config.getId());
+            iPublicItemInformation.saveItemInformation(itemInformation);
+            AjaxSupport.sendSuccessText("", "添加成功!");
+        }
+
+    }
     /*
      *保存产品信息
      */
@@ -164,6 +322,33 @@ public class ItemInformationController extends BaseAction {
         String inventoryid=request.getParameter("inventoryid");
         String customid=request.getParameter("customid");
         String supplierid=request.getParameter("supplierid");
+        String discription=request.getParameter("discription");
+        List<String> pictures=new ArrayList<String>();
+        List<String> attrs=new ArrayList<String>();
+        List<String> attrNames=new ArrayList<String>();
+        int i=0;
+        while(i>=0){
+
+            String picture=request.getParameter("Picture[" + i + "]");
+            if(StringUtils.isNotBlank(picture)){
+                pictures.add(picture);
+                i++;
+            }else{
+                i=-1;
+            }
+        }
+        i=0;
+        while(i>=0){
+            String attr=request.getParameter("attrValue["+i+"]");
+            String attrName=request.getParameter("attrName["+i+"]");
+            if(StringUtils.isNotBlank(attr)){
+                attrs.add(attr);
+                attrNames.add(attrName);
+                i++;
+            }else{
+                i=-1;
+            }
+        }
         PublicItemInformation itemInformation=new PublicItemInformation();
         if(!StringUtils.isNotBlank(name)){
             AjaxSupport.sendFailText("fail","商品名称不能为空");
@@ -213,13 +398,13 @@ public class ItemInformationController extends BaseAction {
                 inventory.setHeight(Double.valueOf(height));
             }
             if (StringUtils.isNotBlank(length)) {
-                inventory.setHeight(Double.valueOf(length));
+                inventory.setLength(Double.valueOf(length));
             }
             if (StringUtils.isNotBlank(width)) {
-                inventory.setHeight(Double.valueOf(width));
+                inventory.setWidth(Double.valueOf(width));
             }
             if (StringUtils.isNotBlank(warning)) {
-                inventory.setHeight(Double.valueOf(warning));
+                inventory.setWarningnumber(Integer.valueOf(warning));
             }
             if(StringUtils.isNotBlank(inventoryid)){
                 inventory.setId(Long.valueOf(inventoryid));
@@ -233,7 +418,53 @@ public class ItemInformationController extends BaseAction {
         if(StringUtils.isNotBlank(id)){
             itemInformation.setId(Long.valueOf(id));
         }
+        if(StringUtils.isNotBlank(discription)){
+            itemInformation.setDescription(discription);
+        }
         iPublicItemInformation.saveItemInformation(itemInformation);
+        SessionVO c= SessionCacheSupport.getSessionVO();
+        List<PublicItemPictureaddrAndAttr> pictureaddrAnds=iPublicItemPictureaddrAndAttr.selectPictureaddrAndAttrByInformationId(itemInformation.getId(),"picture",c.getId()) ;
+        List<PublicItemPictureaddrAndAttr> AndAttrs=iPublicItemPictureaddrAndAttr.selectPictureaddrAndAttrByInformationId(itemInformation.getId(),"attr",c.getId()) ;
+        for(PublicItemPictureaddrAndAttr p:pictureaddrAnds){
+            iPublicItemPictureaddrAndAttr.deletePublicItemPictureaddrAndAttr(p);
+        }
+        for(PublicItemPictureaddrAndAttr p:AndAttrs){
+            iPublicItemPictureaddrAndAttr.deletePublicItemPictureaddrAndAttr(p);
+        }
+        for(int j=0;j<pictures.size();j++){
+            PublicItemPictureaddrAndAttr picture=new PublicItemPictureaddrAndAttr();
+            picture.setIteminformationId(itemInformation.getId());
+            picture.setAttrname("picture");
+            picture.setAttrvalue(pictures.get(j));
+            picture.setAttrtype("picture");
+            iPublicItemPictureaddrAndAttr.saveItemPictureaddrAndAttr(picture);
+        }
+        for(int j=0;j<attrs.size();j++){
+            String attr1=attrs.get(j);
+            String attrName1=attrNames.get(j);
+            PublicItemPictureaddrAndAttr attr=new PublicItemPictureaddrAndAttr();
+            attr.setAttrname(attrName1);
+            attr.setAttrvalue(attr1);
+            attr.setIteminformationId(itemInformation.getId());
+            attr.setAttrtype("attr");
+            iPublicItemPictureaddrAndAttr.saveItemPictureaddrAndAttr(attr);
+        }
         AjaxSupport.sendSuccessText("", "操作成功!");
+    }
+
+    /**
+     * 得到产品图片信息
+     * @param modelMap
+     * @param request
+     * @return
+     */
+    @RequestMapping("/ajax/getPicList.do")
+    @ResponseBody
+    public void getPicList(ModelMap modelMap,HttpServletRequest request){
+        String informationid = request.getParameter("informationid");
+        SessionVO c= SessionCacheSupport.getSessionVO();
+        List<PublicItemPictureaddrAndAttr> lippa = this.iPublicItemPictureaddrAndAttr.selectPictureaddrAndAttrByInformationId(Long.parseLong(informationid),"picture",c.getId());
+
+        AjaxSupport.sendSuccessText("",lippa);
     }
 }

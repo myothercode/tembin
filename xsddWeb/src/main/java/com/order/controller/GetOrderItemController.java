@@ -108,7 +108,6 @@ public class GetOrderItemController extends BaseAction {
             AjaxSupport.sendSuccessText("success", "同步成功！");
         } else {
             String errors = SamplePaseXml.getVFromXmlString(res, "Errors");
-            logger.error("获取apisessionid失败!" + errors);
             AjaxSupport.sendFailText("fail", "获取必要的参数失败！请稍后重试");
         }
     }*/

@@ -384,16 +384,16 @@
 	margin-left: 0px !important;
 	vertical-align: middle;
 	min-width: 100px;
-	height: 35px;
+	height: 25px;
 	min-height: 25px !important;
 	position: relative;
 	overflow: hidden;
 	background: #ffffff;
 	background: url("../../img/select-bg.png"), -moz-linear-gradient(top, white 0%, #f0f1f2 100%);
 	background: url("../../img/select-bg.png"), -webkit-gradient(linear, left top, left bottom, color-stop(0%, white), color-stop(100%, #f0f1f2));
-	background: url("../../img/select-bg.png"), -webkit-linear-gradient(top, white 0%, #f0f1f2 100%);
-	background: url("../../img/select-bg.png"), -o-linear-gradient(top, white 0%, #f0f1f2 100%);
-	background: url("../../img/select-bg.png"), -ms-linear-gradient(top, white 0%, #f0f1f2 100%);
+
+
+
 
 
 
@@ -405,22 +405,23 @@
 	background-position: 94%;
 	background-repeat: no-repeat;
 	background-image: url(../../img/select-bg.png);
+	line-height: 22px;
 }
 .ui-select select {
-	line-height: inherit;
-	width: 135%;
+	line-height: 25px;
+	width: 120%;
 	font-family: "Open Sans", Arial;
 	font-size: 12px;
 	border: none;
-	height: 34px;
+	height: 26px;
 	-webkit-appearance: none;
-	color: #737f8d;
+	color: #737FA7;
 	text-shadow: 1px 1px 1px #fff;
 	background: transparent;
 	padding-top: 1px;
 	padding-right: 30px;
-	padding-bottom: 0px;
-	padding-left: 7px;
+	padding-bottom: 3px;
+	padding-left: 24px;
 	margin: 0px;
 }
 

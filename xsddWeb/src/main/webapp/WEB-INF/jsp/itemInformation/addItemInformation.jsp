@@ -11,11 +11,23 @@
 <html>
 <head>
     <title></title>
+    <script type="text/javascript" src=<c:url value ="/js/ueditor/ueditor.config.js" /> ></script>
+    <script type="text/javascript" src=<c:url value ="/js/ueditor/ueditor.all.js" /> ></script>
+    <script type="text/javascript" src=<c:url value ="/js/ueditor/lang/zh-cn/zh-cn.js" /> ></script>
+    <script type="text/javascript" src=<c:url value ="/js/ueditor/dialogs/image/imageextend.js" /> ></script>
+ <%--   <script type="text/javascript" src=<c:url value="/js/item/addItem.js"/>></script>
+    <script type="text/javascript" src=<c:url value="/js/item/addItem2.js"/>></script>--%>
     <script type="text/javascript">
         var api = frameElement.api, W = api.opener;
         var add=0;
         function addAttrabute() {
-            add = add + 1;
+            var names=$("input[name=attrName]");
+            var values=$("input[name=attrValue]");
+            if(names){
+                add=names.length+1;
+            }else{
+                add = add + 1;
+            }
             var addAttr1 = " <tr><td>名称</td><td>值</td></tr><tr><td><input type=\"text\" name=\"attrName\" /></td><td><input type=\"text\" name=\"attrValue\" /><a href=\"javascript:void()\" onclick=\"removeAttrabute(this)\" >移除</a></td></tr>"
             var addAttr2 = "<tr><td><input type=\"text\" name=\"attrName\" /></td><td><input type=\"text\" name=\"attrValue\" /><a href=\"javascript:void()\" onclick=\"removeAttrabute(this)\" >移除</a></td></tr>";
             var table = document.getElementById("attrabute1");
@@ -65,20 +77,97 @@
      /*       W.itemInformation.close();*/
         }
         function submitCommit(){
+            var names=$("input[name=attrName]");
+            var values=$("input[name=attrValue]");
+            var pictures=$("input[name=Picture]");
+            for(var i=0;i<names.length;i++){
+                $(names[i]).attr("name","attrName["+i+"]");
+                $(values[i]).attr("name","attrValue["+i+"]");
+            }
+            for(var i=0;i<pictures.length;i++){
+                $(pictures[i]).attr("name","Picture["+i+"]");
+            }
             var url=path+"/information/ajax/saveItemInformation.do";
             var data=$("#informationForm").serialize();
             $().invoke(url,data,
                     [function(m,r){
                         alert(r);
                         W.refreshTable();
-                        /*Base.token();*/
                         W.itemInformation.close();
+                        Base.token();
                     },
                         function(m,r){
                             alert(r);
                             Base.token();
                         }]
             );
+        }
+        var adddiscription;
+        var discription;
+        var discriptionFlag=false;
+
+        function addDiscription(){
+            var trs=$("tr[scop=tr]");
+            console.debug(trs);
+            var name=$("#informationName").val();
+            if(trs.length>0){
+                alert("描述已经存在,请编辑");
+                return;
+            }
+            var url=path+"/information/addDiscription.do?name="+name;
+            adddiscription=$.dialog({title: '添加描述',
+                content: 'url:'+url,
+                icon: 'succeed',
+                width:800,
+                height:750,
+                lock:true
+            });
+        }
+        function removeDiscription(ph){
+            var tr=$(ph).parent().parent();
+            tr.remove();
+        }
+        function editDiscription(ph){
+            discription=$(ph).parent().parent();
+            discriptionFlag=true;
+            var name=$("#informationName").val();
+            var descriptionName=$("#descriptionName").val();
+            var url=path+"/information/addDiscription.do?descriptionName="+descriptionName+"&name="+name;
+            adddiscription=$.dialog({title: '编辑描述',
+                content: 'url:'+url,
+                icon: 'succeed',
+                width:800,
+                height:750,
+                lock:true
+            });
+        }
+        $(document).ready(function () {
+            $().image_editor.init("picUrls"); //编辑器的实例id
+            $().image_editor.show("apicUrls"); //上传图片的按钮id
+        })
+        var afterUploadCallback = null;
+        var sss;
+        function addpicture(a){
+            _sku =$("#sku").val();
+            afterUploadCallback = {"imgURLS": addPictrueUrl};
+            sss = a.id;
+        }
+        function addPictrueUrl(urls) {
+           /* if (sss.indexOf("apicUrls")!=-1) {//商品图片*/
+                var str = '';
+                str += "<ul class='gbin1-list'>";
+                for (var i = 0; i < urls.length; i++) {
+                    str += '<li><div style="position:relative"><input type="hidden" name="Picture" value="' + urls[i].src.replace("@", ":") + '">' +
+                            '<img src=' + urls[i].src.replace("@", ":") + ' style="width: 50px;height: 50px;" />' +
+                            '<a href=\'javascritp:void(0)\' onclick=\'removeThis(this)\'>移除</a></span></div>';
+                    str += "</li>";
+                }
+                str += "</ul>";
+                $("#picture").append(str);
+                str = "";
+        }
+        function removeThis(a){
+            $(a).parent().parent().remove();
         }
     </script>
 </head>
@@ -90,7 +179,7 @@
 <input type="hidden" name="supplierid" value="${supplier.id}"/>
 <table style="width: 1000px;">
     <tr>
-        <td></td><td>名称:</td><td><input type="text" name="name" value="${itemInformation.name}"/></td>
+        <td></td><td>名称:</td><td><input type="text" id="informationName" name="name" value="${itemInformation.name}"/></td>
     </tr>
     <tr><td colspan="3"><hr/></td></tr>
     <tr>
@@ -98,7 +187,7 @@
     </tr>
     <tr><td colspan="3"><hr/></td></tr>
     <tr>
-        <td></td><td>SKU</td><td><input type="text" name="sku" value="${itemInformation.sku}"/></td>
+        <td></td><td>SKU</td><td><input type="text" id="sku" name="sku" value="${itemInformation.sku}"/></td>
     </tr>
     <tr>
         <td></td><td></td><td>
@@ -121,16 +210,72 @@
         </td>
     </tr>
     <tr>
-        <td></td><td>图片</td><td><a href="javascript:void()">选择图片</a><br/>
+        <td></td><td>图片</td><td>
+        <div class="panel" style="display: block">
+            <section class='example'>
+                <div id="picture" class="gridly">
+                    <c:if test="${pictures!=null}">
+                    <ul>
+                        <c:forEach items="${pictures}" var="picture">
+                            <li>
+                                <div>
+                                    <input type="hidden" name="Picture" value="${picture.attrvalue}">
+                                    <img src="${picture.attrvalue}" style="width: 50px;"/>
+                                    <a href="javascritp:void(0)" onclick="removeThis(this)">移除</a>
+                                </div>
+                            </li>
+                        </c:forEach>
+                    </ul>
+                    </c:if>
+                </div>
+            </section>
+            <script type=text/plain id='picUrls'></script>
+            <div style="padding-left: 60px;"><a href="javascript:void(0)" id="apicUrls" onclick="addpicture(this)">选择图片</a></div>
+        </div>
+        <br/>
         </td>
     </tr>
     <tr>
-        <td></td><td>描述</td><td><a href="javascript:void()">添加描述</a></td>
+        <td></td><td>描述</td><td>
+        <div id="addDiscription">
+            <%--<input type="hidden" name="descriptionName" value="${itemInformation.description}"/>--%>
+            <c:if test="${itemInformation!=null}">
+                <c:if test="${itemInformation.description!=null}">
+                    <table id="discriptionTable" border="1" cellpadding="0" cellspacing="0" style="width: 400px;">
+                        <tr>
+                            <td width="70%">描述名称</td>
+                            <td width="30%">动作</td>
+                        </tr>
+                        <tr scop="tr">
+                            <td>${itemInformation.name}
+                                <input type="hidden" name="discription" value="${itemInformation.description}" />
+                            </td>
+                            <td>
+                                <a href="javascript:void();" onclick="editDiscription(this);">编辑</a>&nbsp;
+                                <a href="javascript:void();" onclick="removeDiscription(this);">移除</a>
+                            </td>
+                        </tr>
+                     </table>
+                </c:if>
+            </c:if>
+        </div>
+        <br/><a href="javascript:void();" onclick="addDiscription();">添加描述</a></td>
     </tr>
     <tr>
         <td></td><td>自定义物品属性</td><td>
         <div>
             <table id="attrabute1" >
+                <c:if test="${attrs!=null}">
+                    <tr>
+                        <td>名称</td><td>值</td>
+                    </tr>
+                    <c:forEach items="${attrs}" var="attr">
+                        <tr>
+                            <td><input type="text" name="attrName" value="${attr.attrname}"/></td>
+                            <td><input type="text" name="attrValue" value="${attr.attrvalue}"/></td>
+                        </tr>
+                    </c:forEach>
+                </c:if>
             </table>
         </div>
         <a href="javascript:void()" onclick="addAttrabute();">添加</a></td>
@@ -216,5 +361,7 @@
     <input type="button" value="保存" onclick="submitCommit();"/>
     <input type="button" value="关闭" onclick="closedialog();"/>
 </div>
+
+
 </body>
 </html>

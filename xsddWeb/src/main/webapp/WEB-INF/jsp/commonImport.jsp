@@ -11,6 +11,21 @@
 <%@taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" pageEncoding="utf-8" %>
 
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<!-- bootstrap -->
+<link href="<c:url value ="/css/bootstrap/bootstrap.css"/>" rel="stylesheet"/>
+<link href="<c:url value ="/css/bootstrap/bootstrap-overrides.css"/>" type="text/css" rel="stylesheet"/>
+<!-- global styles -->
+<link rel="stylesheet" type="text/css" href="<c:url value ="/css/compiled/layout.css"/> "/>
+<link rel="stylesheet" type="text/css" href="<c:url value ="/css/compiled/elements.css"/>"/>
+<link rel="stylesheet" type="text/css" href="<c:url value ="/css/compiled/icons.css"/>"/>
+<!-- libraries -->
+<link href="<c:url value ="/css/lib/font-awesome.css"/>" type="text/css" rel="stylesheet" />
+<!-- this page specific styles -->
+<link rel="stylesheet" href="<c:url value ="/css/compiled/gallery.css"/>" type="text/css" media="screen" />
+
 <link rel="stylesheet" type="text/css" href="<c:url value ="/css/basecss/base.css" />"/>
 <link rel="stylesheet" type="text/css" href="<c:url value ="/js/validation/validationEngine.jquery.css" />"/>
 <link rel="stylesheet" type="text/css" href="<c:url value ="/js/jquery-easyui/themes/default/easyui.css" />"/>
@@ -24,6 +39,8 @@
 <script type="text/javascript" src=<c:url value ="/js/validation/jquery.validationEngine.js" /> ></script>
 <script type="text/javascript" src=<c:url value ="/js/validation/jquery.validationEngine-zh_CN.js" /> ></script>
 <script type="text/javascript" src=<c:url value ="/js/jquery-easyui/jquery.easyui.min.js" /> ></script>
+<script src="<c:url value ="/js/bootstrap.min.js"/>"></script>
+<script src="<c:url value ="/js/theme.js"/>"></script>
 
 <%
     String rootPath = request.getContextPath();
@@ -35,4 +52,33 @@
     var _token="<%=_token%>";
 
     var _sku=null;
+    var _jscacheVersion="${jscacheVersion}";
+
+    function cleanLocalStorageFunction() {
+        try {
+            var __v = __getjv();
+            if(_jscacheVersion==""){return;}
+            if (__v == null) {
+                __setjv();
+            } else {
+                if (__v != _jscacheVersion ) {
+                    localStorage.clear();
+                    __setjv();
+                }
+            }
+
+        }catch (e){alert(e+"处理本地缓存失败！")}
+    }
+
+        function __setjv(){
+            localStorage.setItem("tiancheng_jscacheVersion",_jscacheVersion);
+        }
+        function __getjv(){
+            return localStorage.getItem("tiancheng_jscacheVersion");
+        }
+        cleanLocalStorageFunction();
+
+
+
+
 </script>

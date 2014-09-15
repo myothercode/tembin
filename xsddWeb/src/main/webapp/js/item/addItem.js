@@ -354,7 +354,7 @@ function selectAccount(obj){
     $("input[type='checkbox'][name='ebayAccounts']:checked").each(function(i,d){
         //初始化上传图片
         var showStr = "<div class='panel' style='display: block'>";
-        showStr +=" <section class='example' id='picture_"+$(d).val()+"'></section> ";
+        showStr +=" <section class='example' ><ul class='gbin1-list' id='picture_"+$(d).val()+"'></ul></section> ";
         showStr +=" <script type=text/plain id='picUrls_"+$(d).val()+"'></script> ";
         showStr +=" <div style='padding-left: 60px;'><a href='javascript:void(0)' id='apicUrls_"+$(d).val()+"' onclick='selectPic(this)'>选择图片</a></div> </div> ";
         $("#showPics").append(showStr);
@@ -406,5 +406,27 @@ function initPrice(){
         priceHtml+='  </li> ';
         $("#oneAttr").append(priceHtml);
 
+    });
+}
+//选择产品
+var Porduct;
+function selectProduct(){
+    if($("input[type='radio'][name='listingType']:checked").val()==""||$("input[type='radio'][name='listingType']:checked").val()==null){
+        alert("请先选择刊登类型！");
+        return;
+    }
+    if($("input[type='checkbox'][name='ebayAccounts']:checked").length<1){
+        alert("请选择刊登账号！");
+        return;
+    }
+    Porduct = $.dialog({
+        id:"itemClass_",
+        title: '选择产品信息',
+        content: 'url:' + path + '/selectItemInformation.do',
+        icon: 'succeed',
+        zIndex:2000,
+        width: 750,
+        height:700,
+        lock: true
     });
 }

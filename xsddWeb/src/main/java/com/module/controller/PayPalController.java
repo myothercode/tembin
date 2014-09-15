@@ -42,7 +42,7 @@ public class PayPalController extends BaseAction{
 
     @Autowired
     private ITradingPayPal iTradingPayPal;
-
+    
     /**
      * 列表页面跳转及查询
      * @param request

@@ -49,6 +49,8 @@ public class UserManageController extends BaseAction {
     @Autowired
     private UserInfoService userInfoService;
 
+
+    /**绑定帐号的主页面*/
     @RequestMapping("bindEbayAccount.do")
     @AvoidDuplicateSubmission(needSaveToken = true)
     public ModelAndView bindEbayAccount(@ModelAttribute( "initSomeParmMap" )ModelMap modelMap,
@@ -66,7 +68,7 @@ public class UserManageController extends BaseAction {
         UsercontrollerDevAccountExtend d = userInfoService.getDevInfo(null);
         d.setApiSiteid("0");
         d.setApiCallName(APINameStatic.GetSessionID);
-        String xml= BindAccountAPI.getSessionID(d.getRunname());
+        String xml= BindAccountAPI.getSessionID("runName");
 
         AddApiTask addApiTask = new AddApiTask();
         Map<String, String> resMap= addApiTask.exec(d, xml, apiUrl);

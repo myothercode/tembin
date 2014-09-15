@@ -66,8 +66,7 @@ $(document).ready(function () {
     $("#templateUrl").attr("src",imageUrlPrefix+srcs);
 
     _sku = '${item.sku}';
-    //$().image_editor.init("picUrls"); //编辑器的实例id
-   // $().image_editor.show("apicUrls"); //上传图片的按钮id
+
     if(url.indexOf("addItem.do")!=-1){
         var numbers = getTemplateNumber();
         var json= eval("("+localStorage.getItem("template_"+numbers)+")");
@@ -76,6 +75,9 @@ $(document).ready(function () {
             $("#templateId").val(result.templateId);
             $("#templateUrl").prop("src",result.templateUrl);
         }
+        $("#picDivShow").show();
+        $().image_editor.init("picUrls"); //编辑器的实例id
+        $().image_editor.show("apicUrls"); //上传图片的按钮id
     }
     _invokeGetData_type = null;
 
@@ -155,32 +157,30 @@ $(document).ready(function () {
     var picstr='';
     <c:if test="${lipic!=null}">
         var showStr = "<div class='panel' style='display: block'>";
-        showStr +=" <section class='example' id='picture_"+ebayAccount+"'></section> ";
+        showStr +=" <section class='example'><ul class='gbin1-list' id='picture_"+ebayAccount+"'></ul></section> ";
         showStr +=" <script type=text/plain id='picUrls_"+ebayAccount+"'/>";
         showStr +=" <div style='padding-left: 60px;'><a href='javascript:void(0)' id='apicUrls_"+ebayAccount+"' onclick='selectPic(this)'>选择图片</a></div> </div> ";
         $("#showPics").append(showStr);
         $().image_editor.init("picUrls_"+ebayAccount); //编辑器的实例id
         $().image_editor.show("apicUrls_"+ebayAccount); //上传图片的按钮id
-        picstr += "<ul class='gbin1-list'>";
         <c:forEach items="${lipic}" var="lipic" varStatus="status">
             picstr += '<li><div style="position:relative"><input type="hidden" name="PictureDetails_'+ebayAccount+'.PictureURL" value="${lipic.value}">' +
             '<img src=${lipic.value} height="100%" width="100%" />' +
             '<a onclick="deletePic(this)" style="position: absolute;top: -45px;right: -15px;" href=\'javascript:void(0)\'>&times;</a></div>';
             picstr += "</li>";
         </c:forEach>
-        picstr += "</ul>";
         $("#picture_"+ebayAccount).append(picstr);
     </c:if>
 
 
-    var str = '';
+/*    var str = '';
     <c:forEach items="${litam}" var="tam" varStatus="status">
     str += "<div class='brick small'>";
     str += '<span><input type="hidden" name="PictureDetails.PictureURL[${status.index}]" value="${tam.value}"><img src="${tam.value}" height="100%" width="100%" /></span>';
     str += "<a class='delete' href='#'>&times;</a></div>";
     $("#picture").append(str);
     str = "";
-    </c:forEach>
+    </c:forEach>*/
 
     <c:forEach items="${lipics}" var="pics">
         $("#${pics.tamname}").before("<input type='hidden' name='VariationSpecificValue_${pics.tamname}' value='${pics.tamname}'>");
@@ -307,8 +307,9 @@ $(document).ready(function () {
 <li>
     <dt>SKU</dt>
     <div class="new_left">
-        <input type="text" name="sku" id="sku" style="width:300px;" class="validate[required] form-control"
+        <input type="text" name="SKU" id="sku" style="width:300px;" class="validate[required] form-control"
                onblur="onShow(this)" value="${item.sku}">
+        <b class="new_button"><a data-toggle="modal" href="javascript:void(0)" onclick="selectProduct()">选择产品</a></b>
     </div>
 </li>
 <li>
@@ -362,15 +363,6 @@ $(document).ready(function () {
 <span id="showPics">
 
 </span>
-<%--<div class="panel" style="display: block">
-    <section class='example'>
-        <div id="picture" class="gridly">
-        </div>
-    </section>
-    <script type=text/plain id='picUrls'></script>
-    <div style="padding-left: 60px;"><a href="javascript:void(0)" id="apicUrls" onclick="selectPic(this)">选择图片</a></div>
-</div>--%>
-
 <div id="twoAttr" style="display: none;">
     <h1>多属性</h1>
     <li style="height: 100%;">
@@ -496,7 +488,7 @@ $(document).ready(function () {
             </div>
         </li>
         <li>
-            <dt>保留价</dt>
+            <dt>一口价</dt>
             <div class="new_left">
                 <input type="text" name="BuyItNowPrice" style="width:300px;" id="BuyItNowPrice" class="form-control">
             </div>

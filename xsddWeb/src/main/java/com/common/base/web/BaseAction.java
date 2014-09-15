@@ -22,6 +22,7 @@ public class BaseAction {
     public ModelMap initSomeParm(){
         ModelMap map=new ModelMap();
         map.put("nowDateTime",new Date());
+        map.put("jscacheVersion","3");
         return map;
     }
 

@@ -30,6 +30,8 @@
             map.put("listing",path+"/getListingItemList.do");
             map.put("usercases",path+"/userCases/userCasesList.do");
             map.put("itemInformation",path+"/information/itemInformationList.do");
+            map.put("keymove",path+"/keymove/userSelectSite.do");
+            map.put("itemInformationType",path+"/informationType/itemInformationTypeList.do");
             top.location=map.get(name);
 
         }
@@ -86,6 +88,8 @@
         <div><input type="button" value="在线商品管理" name="listing" onclick="submitForm(this)"/></div>
         <div><input type="button" value="纠纷" name="usercases" onclick="submitForm(this)"/></div>
         <div><input type="button" value="产品信息" name="itemInformation" onclick="submitForm(this)"/></div>
+        <div><input type="button" value="一键搬家" name="keymove" onclick="submitForm(this)"/></div>
+        <div><input type="button" value="产品信息分类" name="itemInformationType" onclick="submitForm(this)"/></div>
 </form>
 </body>
 </html>

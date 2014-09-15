@@ -28,7 +28,7 @@
                 showIndex:false,
                 isrowClick: true,
                 rowClickMethod: function (obj,o){
-                    $("input[type='radio'][name='templateId'][value='"+obj.id+"']").attr("checked",true);
+                    $("input[type='radio'][name='templateId'][value='"+obj.id+"']").prop("checked",true);
                 }
             });
             refreshTable();

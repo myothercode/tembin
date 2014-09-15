@@ -172,6 +172,7 @@
                 <c:forEach items="${item.shippingDetails.shippingServiceOptions}" var="shi">
                     $("#shippingMore").append(createTables('${shi.shippingService}','${shi.shippingServiceCost.value}','${shi.freeShipping}','${shi.shippingServiceAdditionalCost.value}','${shi.shippingSurcharge.value}'));
                 </c:forEach>
+                selectSite('${siteid}');
             </c:if>
             //国际运输选项
             <c:if test="${item.shippingDetails!=null&&item.shippingDetails.internationalShippingServiceOption!=null}">
@@ -210,6 +211,51 @@
         function incount(obj){
             $("#incount").text($(obj).val().length);
         }
+        var shippingService = "";
+        function selectSite(obj){
+            var array = new Array();
+            <%--<c:forEach var="obj" items="${litso}">
+                array.add(${obj.shippingservice});
+            </c:forEach>--%>
+            var vals = "";
+            if(typeof obj=="object"||typeof obj=="Object"){
+                vals = obj.value;
+            }else{
+                vals = obj;
+            }
+            var urll = path+"/ajax/shipingService.do?parentID="+vals;
+            var api = frameElement.api, W = api.opener;
+            $().invoke(
+                    urll,
+                    {},
+                    [function (m, r) {
+                        shippingService="";
+                        for(var i = 0;i< r.length;i++){
+                            shippingService +=' <optgroup label="'+r[i].name1+'">';
+                            for(var j = 0;j<r[i].dictionaries.length;j++){
+                                shippingService +='<option value="'+r[i].dictionaries[j].id+'">'+r[i].dictionaries[j].name+'</option>';
+                            }
+                            shippingService +='</optgroup>';
+                        }
+                        $("select[name='ShippingService'][shortName='a1']").each(function(i,d){
+                            $(d).html(shippingService);
+                        });
+                    },
+                        function (m, r) {
+                            alert(r);
+                        }]
+            );
+        }
+
+        setTimeout(function(){
+            <c:forEach var="obj" items="${item.shippingDetails.shippingServiceOptions}" varStatus="ind">
+            $("select[name='ShippingService'][shortName='a1']").each(function(i,d){
+                if('${ind.index}'==i){
+                    $(d).find("option[value='${obj.shippingService}']").attr("selected",true);
+                }
+            });
+            </c:forEach>
+        },500);
     </script>
 </head>
 <body>
@@ -699,52 +745,10 @@
         tables +=' <tr> ';
         tables +=' <td align="right"  width="200">运输方式</td> ';
         tables +=' <td> ';
-        tables +=' <select name="ShippingService"> ';
-        tables +=' <optgroup label="Economy services">';
-        <c:forEach var="li1" items="${li1}">
-        if(obj1=='${li1.value}'){
-            tables +=' <option value="${li1.value}" selected="selected">${li1.name}</option>';
-        }else{
-            tables +=' <option value="${li1.value}">${li1.name}</option>';
+        tables +=' <select name="ShippingService" shortName="a1"> ';
+        if(shippingService!=""){
+            tables +=shippingService;
         }
-        </c:forEach>
-        tables +=' </optgroup>';
-        tables +=' <optgroup label="Expedited services">';
-        <c:forEach var="li2" items="${li2}">
-        if(obj1=='${li2.value}'){
-            tables +=' <option value="${li2.value}"  selected="selected">${li2.name}</option>';
-        }else{
-            tables +=' <option value="${li2.value}">${li2.name}</option>';
-        }
-        </c:forEach>
-        tables +=' </optgroup>';
-        tables +=' <optgroup label="One-day services">';
-        <c:forEach var="li3" items="${li3}">
-        if(obj1=='${li3.value}'){
-            tables += ' <option value="${li3.value}" selected="selected">${li3.name}</option>';
-        }else {
-            tables += ' <option value="${li3.value}">${li3.name}</option>';
-        }
-        </c:forEach>
-        tables +=' </optgroup>';
-        tables +=' <optgroup label="Other services">';
-        <c:forEach var="li4" items="${li4}">
-        if(obj1=='${li4.value}') {
-            tables += ' <option value="${li4.value}" selected="selected">${li4.name}</option>';
-        }else{
-            tables += ' <option value="${li4.value}">${li4.name}</option>';
-        }
-        </c:forEach>
-        tables +=' </optgroup>';
-        tables +=' <optgroup label="Standard services">';
-        <c:forEach var="li5" items="${li5}">
-        if(obj1=='${li5.value}') {
-            tables += ' <option value="${li5.value}" selected="selected">${li5.name}</option>';
-        }else{
-            tables += ' <option value="${li5.value}">${li5.name}</option>';
-        }
-        </c:forEach>
-        tables +=' </optgroup>';
         tables +=' </select> ';
         tables +=' </td> ';
         tables +=' </tr> ';

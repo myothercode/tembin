@@ -501,7 +501,7 @@ function addb(obj) {
 function addPic(attrName, attrValue) {
     var str = "";
     str += "<div><div>" + attrName + ":" + attrValue + "</div><script type=text/plain id='" + attrName + "." + attrValue + "' />";
-    str += "<div><a href='javascript:void(0)' id=" + attrValue + " onClick='selectPic(this)'>选择图片</a></div>";
+    str += "<div><a href='javascript:void(0)' id=" + attrValue + " onClick='selectPic( )'>选择图片</a></div>";
     str += "</div>";
     return str;
 }
@@ -521,14 +521,12 @@ function deletePic(a){
 function addPictrueUrl(urls) {
     if (sss.indexOf("apicUrls")!=-1) {//商品图片
         var str = '';
-        str += "<ul class='gbin1-list'>";
         for (var i = 0; i < urls.length; i++) {
             str += '<li><div style="position:relative"><input type="hidden" name="PictureDetails'+sss.substr(sss.indexOf("_"),sss.length)+'.PictureURL" value="' + urls[i].src + '">' +
                 '<img src=' + urls[i].src.replace("@", ":") + ' height="100%" width="100%" />' +
                 '<a onclick="deletePic(this)" style="position: absolute;top: -45px;right: -15px;" href=\'javascript:void(0)\'>&times;</a></div>';
             str += "</li>";
         }
-        str += "</ul>";
         $("#picture"+sss.substr(sss.indexOf("_"),sss.length)).append(str);
         str = "";
     } else {//多属性图片

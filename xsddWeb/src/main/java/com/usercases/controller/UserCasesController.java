@@ -2,19 +2,24 @@ package com.usercases.controller;
 
 import com.base.database.trading.model.*;
 import com.base.domains.CommonParmVO;
+import com.base.domains.SessionVO;
 import com.base.domains.querypojos.UserCasesQuery;
 import com.base.domains.userinfo.UsercontrollerDevAccountExtend;
 import com.base.domains.userinfo.UsercontrollerEbayAccountExtend;
 import com.base.mybatis.page.Page;
 import com.base.mybatis.page.PageJsonBean;
-import com.base.sampleapixml.*;
+import com.base.sampleapixml.APINameStatic;
+import com.base.sampleapixml.BindAccountAPI;
 import com.base.userinfo.service.UserInfoService;
 import com.base.utils.annotations.AvoidDuplicateSubmission;
+import com.base.utils.cache.SessionCacheSupport;
 import com.base.utils.common.DateUtils;
 import com.base.utils.threadpool.AddApiTask;
+import com.base.utils.threadpool.TaskMessageVO;
 import com.base.utils.xmlutils.SamplePaseXml;
 import com.common.base.utils.ajax.AjaxSupport;
 import com.common.base.web.BaseAction;
+import com.sitemessage.service.SiteMessageStatic;
 import com.trading.service.*;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -275,7 +280,8 @@ public class UserCasesController extends BaseAction{
             ebpMap.put("caseId", caseId);
             ebpMap.put("caseType",sellerId);
             String ebpXml = BindAccountAPI.getEBPCase(ebpMap);
-            Map<String, String> resEbpMap = addApiTask.exec(d, ebpXml, "https://svcs.ebay.com/services/resolution/ResolutionCaseManagementService/v1");
+            //---修改前---
+           /* Map<String, String> resEbpMap = addApiTask.exec(d, ebpXml, "https://svcs.ebay.com/services/resolution/ResolutionCaseManagementService/v1");
             String ebpR1 = resEbpMap.get("stat");
             String ebpRes = resEbpMap.get("message");
 
@@ -294,7 +300,18 @@ public class UserCasesController extends BaseAction{
                 String errors = SamplePaseXml.getVFromXmlString(ebpRes, "Errors");
                 logger.error("获取EBP纠纷失败!" + errors);
                 AjaxSupport.sendFailText("fail", "获取必要的参数失败！请稍后重试");
-            }
+            }*/
+            TaskMessageVO taskMessageVO=new TaskMessageVO();
+            taskMessageVO.setMessageContext("EBP纠纷");
+            taskMessageVO.setMessageTitle("同步EBP纠纷");
+            taskMessageVO.setMessageType(SiteMessageStatic.SYNCHRONIZE_USER_CASE_EBP_TYPE);
+            taskMessageVO.setBeanNameType(SiteMessageStatic.SYNCHRONIZE_USER_CASE_EBP_BEAN);
+            taskMessageVO.setMessageFrom("system");
+            SessionVO sessionVO= SessionCacheSupport.getSessionVO();
+            taskMessageVO.setMessageTo(sessionVO.getId());
+            addApiTask.execDelayReturn(d, ebpXml,"https://svcs.ebay.com/services/resolution/ResolutionCaseManagementService/v1", taskMessageVO);
+            AjaxSupport.sendSuccessText("message", "操作成功！结果请稍后查看消息！");
+            //---修改后---
         }else{
            /* UsercontrollerDevAccountExtend d = userInfoService.getDevInfo(null);//开发者帐号id
             d.setApiSiteid("0");
@@ -308,7 +325,8 @@ public class UserCasesController extends BaseAction{
             d.setHeaderType("");
             d.setApiCallName(APINameStatic.GetDispute);
             String xml = BindAccountAPI.getGetDispute(token, caseId);
-            Map<String, String> resMap = addApiTask.exec(d, xml, "https://api.ebay.com/ws/api.dll");
+            //---修改前---
+            /*Map<String, String> resMap = addApiTask.exec(d, xml, "https://api.ebay.com/ws/api.dll");
             String r1 = resMap.get("stat");
             String res = resMap.get("message");
             if ("fail".equalsIgnoreCase(r1)) {
@@ -340,7 +358,18 @@ public class UserCasesController extends BaseAction{
                 String errors = SamplePaseXml.getVFromXmlString(res, "Errors");
                 logger.error("获取一般纠纷失败!" + errors);
                 AjaxSupport.sendFailText("fail", "获取必要的参数失败！请稍后重试");
-            }
+            }*/
+            //---修改后---
+            TaskMessageVO taskMessageVO=new TaskMessageVO();
+            taskMessageVO.setMessageContext("一般纠纷");
+            taskMessageVO.setMessageTitle("同步一般纠纷");
+            taskMessageVO.setMessageType(SiteMessageStatic.SYNCHRONIZE_USER_CASE_DISPUTE_TYPE);
+            taskMessageVO.setBeanNameType(SiteMessageStatic.SYNCHRONIZE_USER_CASE_DISPUTE_BEAN);
+            taskMessageVO.setMessageFrom("system");
+            SessionVO sessionVO= SessionCacheSupport.getSessionVO();
+            taskMessageVO.setMessageTo(sessionVO.getId());
+            addApiTask.execDelayReturn(d, xml,"https://api.ebay.com/ws/api.dll", taskMessageVO);
+            AjaxSupport.sendSuccessText("message", "操作成功！结果请稍后查看消息！");
         }
     }
     /*
@@ -375,7 +404,8 @@ public class UserCasesController extends BaseAction{
         map.put("page","1");
         String xml = BindAccountAPI.getUserCases(map);
         AddApiTask addApiTask = new AddApiTask();
-        Map<String, String> resMap = addApiTask.exec(d, xml, "https://svcs.ebay.com/services/resolution/ResolutionCaseManagementService/v1?REST-PAYLOAD");
+        //---修改前---
+        /*Map<String, String> resMap = addApiTask.exec(d, xml, "https://svcs.ebay.com/services/resolution/ResolutionCaseManagementService/v1?REST-PAYLOAD");
         String r1 = resMap.get("stat");
         String res = resMap.get("message");
         if ("fail".equalsIgnoreCase(r1)) {
@@ -387,8 +417,8 @@ public class UserCasesController extends BaseAction{
             Map<String,Object> map1= UserCasesAPI.parseXMLAndSave(res);
             String totalPages= (String) map1.get("totalPages");
             int totalPage= Integer.parseInt(totalPages);
-           /* for(int i=1;i<=totalPage;i++){*/
-              /*  if(i!=1){
+            for(int i=1;i<=totalPage;i++){*/
+                /*if(i!=1){
                     map.put("page",i+"");
                     xml = BindAccountAPI.getUserCases(map);
                     resMap = addApiTask.exec(d, xml, "https://svcs.ebay.com/services/resolution/ResolutionCaseManagementService/v1?REST-PAYLOAD");
@@ -406,7 +436,7 @@ public class UserCasesController extends BaseAction{
                     }
                     map1= UserCasesAPI.parseXMLAndSave(res);
                 }*/
-                List<TradingGetUserCases> userCasesList= (List<TradingGetUserCases>) map1.get("cases");
+             /*   List<TradingGetUserCases> userCasesList= (List<TradingGetUserCases>) map1.get("cases");
                 for(TradingGetUserCases userCases:userCasesList){
                     List<TradingGetUserCases> casesList=iTradingGetUserCases.selectGetUserCasesByTransactionId(userCases.getTransactionid());
                     if(casesList!=null&&casesList.size()>0){
@@ -414,14 +444,26 @@ public class UserCasesController extends BaseAction{
                     }
                     iTradingGetUserCases.saveGetUserCases(userCases);
                 }
-            /*}*/
+            }
 
             AjaxSupport.sendSuccessText("success", "同步成功！");
         }else{
             String errors = SamplePaseXml.getVFromXmlString(res, "Errors");
             logger.error("获取纠纷总数失败!" + errors);
             AjaxSupport.sendFailText("fail", "获取必要的参数失败！请稍后重试");
-        }
+        }*/
+        //---修改后--
+
+        TaskMessageVO taskMessageVO=new TaskMessageVO();
+        taskMessageVO.setMessageContext("纠纷");
+        taskMessageVO.setMessageTitle("同步纠纷");
+        taskMessageVO.setMessageType(SiteMessageStatic.SYNCHRONIZE_USER_CASE_TYPE);
+        taskMessageVO.setBeanNameType(SiteMessageStatic.SYNCHRONIZE_USER_CASE_BEAN);
+        taskMessageVO.setMessageFrom("system");
+        SessionVO sessionVO= SessionCacheSupport.getSessionVO();
+        taskMessageVO.setMessageTo(sessionVO.getId());
+        addApiTask.execDelayReturn(d, xml,"https://svcs.ebay.com/services/resolution/ResolutionCaseManagementService/v1?REST-PAYLOAD", taskMessageVO);
+        AjaxSupport.sendSuccessText("message", "操作成功！结果请稍后查看消息！");
     }
     private Map<String,String> sendMessage1(TradingOrderGetOrders order,String subject,String body) throws Exception {
         UsercontrollerDevAccountExtend d = userInfoService.getDevInfo(null);//开发者帐号id

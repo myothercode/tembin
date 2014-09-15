@@ -167,7 +167,6 @@ function que(){
                 W.document.getElementById("PrimaryCategory").value=_finalSelectedVal;
                 W.document.getElementById("PrimaryCategoryshow").innerHTML= rr.pathstr;
                 W.CategoryType.close();
-
             },
                 function(m,r){
                     alert(r);

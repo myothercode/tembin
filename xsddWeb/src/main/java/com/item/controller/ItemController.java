@@ -41,6 +41,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.ui.ModelMap;
 import org.springframework.util.concurrent.ListenableFutureCallback;
 import org.springframework.util.concurrent.ListenableFutureTask;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
@@ -107,7 +108,7 @@ public class ItemController extends BaseAction{
      * @return
      */
     @RequestMapping("/itemList.do")
-    public ModelAndView itemList(HttpServletRequest request,HttpServletResponse response,ModelMap modelMap){
+    public ModelAndView itemList(HttpServletRequest request,HttpServletResponse response,@ModelAttribute( "initSomeParmMap" )ModelMap modelMap){
         return forword("item/itemList",modelMap);
     }
 
@@ -129,7 +130,7 @@ public class ItemController extends BaseAction{
     /**刊登主页面*/
     @RequestMapping("/addItem.do")
     @AvoidDuplicateSubmission(needSaveToken = true)
-    public ModelAndView addItem(HttpServletRequest request,HttpServletResponse response,ModelMap modelMap){
+    public ModelAndView addItem(HttpServletRequest request,HttpServletResponse response,@ModelAttribute( "initSomeParmMap" )ModelMap modelMap){
         List<TradingDataDictionary> lidata = DataDictionarySupport.getTradingDataDictionaryByType(DataDictionarySupport.DATA_DICT_SITE);
         modelMap.put("siteList",lidata);
 
@@ -143,7 +144,7 @@ public class ItemController extends BaseAction{
 
     @RequestMapping("/editItem.do")
     @AvoidDuplicateSubmission(needSaveToken = true)
-    public ModelAndView editItem(HttpServletRequest request,HttpServletResponse response,ModelMap modelMap) throws Exception {
+    public ModelAndView editItem(HttpServletRequest request,HttpServletResponse response,@ModelAttribute( "initSomeParmMap" )ModelMap modelMap) throws Exception {
         String id = request.getParameter("id");
         List<TradingDataDictionary> lidata = DataDictionarySupport.getTradingDataDictionaryByType(DataDictionarySupport.DATA_DICT_SITE);
         modelMap.put("siteList",lidata);
@@ -485,7 +486,7 @@ public class ItemController extends BaseAction{
                         item.setPictureDetails(pd);
                     }
                     UsercontrollerEbayAccount ua = this.iUsercontrollerEbayAccount.selectById(Long.parseLong(paypal));
-                    PublicUserConfig pUserConfig = DataDictionarySupport.getPublicUserConfigByID(ua.getPaypalAccountId());
+                    //PublicUserConfig pUserConfig = DataDictionarySupport.getPublicUserConfigByID(ua.getPaypalAccountId());
                     //如果配置ＥＢＡＹ账号时，选择强制使用paypal账号则用该账号
                     //item.setPayPalEmailAddress(pUserConfig.getConfigValue());
                     //定时刊登时，需要获取保存到数据库中的ＩＤ
@@ -514,7 +515,7 @@ public class ItemController extends BaseAction{
                     }
                     System.out.println(xml);
                     //Asserts.assertTrue(false, "错误");
-                    UsercontrollerDevAccountExtend d = userInfoService.getDevInfo(1L);
+                    UsercontrollerDevAccountExtend d = new UsercontrollerDevAccountExtend();
                     d.setApiSiteid(DataDictionarySupport.getTradingDataDictionaryByID(Long.parseLong(tradingItem.getSite())).getName1());
                     if (item.getListingType().equals("Chinese")) {
                         d.setApiCallName(APINameStatic.AddItem);
@@ -559,7 +560,6 @@ public class ItemController extends BaseAction{
 
                             String errors  = SamplePaseXml.getSpecifyElementTextAllInOne(res,"Errors","LongMessage");
 
-                            //logger.error("获取apisessionid失败!"+errors);
                             AjaxSupport.sendFailText("fail", "数据已保存，但刊登失败！"+errors);
                         }
                     }
@@ -569,4 +569,19 @@ public class ItemController extends BaseAction{
             }
         }
     }
+
+    /**
+     * 选择产品列表列表
+     * @param request
+     * @param response
+     * @param modelMap
+     * @return
+     */
+    @RequestMapping("/selectItemInformation.do")
+    public ModelAndView selectItemInformation(HttpServletRequest request,HttpServletResponse response,@ModelAttribute( "initSomeParmMap" )ModelMap modelMap){
+        return forword("/itemInformation/selectItemInformation",modelMap);
+    }
+
+
+
 }

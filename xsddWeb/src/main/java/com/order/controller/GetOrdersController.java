@@ -2,19 +2,24 @@ package com.order.controller;
 
 import com.base.database.trading.model.*;
 import com.base.domains.CommonParmVO;
+import com.base.domains.SessionVO;
 import com.base.domains.querypojos.OrderGetOrdersQuery;
 import com.base.domains.userinfo.UsercontrollerDevAccountExtend;
 import com.base.domains.userinfo.UsercontrollerEbayAccountExtend;
 import com.base.mybatis.page.Page;
 import com.base.mybatis.page.PageJsonBean;
-import com.base.sampleapixml.*;
+import com.base.sampleapixml.APINameStatic;
+import com.base.sampleapixml.BindAccountAPI;
 import com.base.userinfo.service.UserInfoService;
 import com.base.utils.annotations.AvoidDuplicateSubmission;
+import com.base.utils.cache.SessionCacheSupport;
 import com.base.utils.common.DateUtils;
 import com.base.utils.threadpool.AddApiTask;
+import com.base.utils.threadpool.TaskMessageVO;
 import com.base.utils.xmlutils.SamplePaseXml;
 import com.common.base.utils.ajax.AjaxSupport;
 import com.common.base.web.BaseAction;
+import com.sitemessage.service.SiteMessageStatic;
 import com.trading.service.*;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -29,7 +34,6 @@ import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.text.SimpleDateFormat;
 import java.util.*;
 
 /**
@@ -613,8 +617,10 @@ public class GetOrdersController extends BaseAction {
         d.setApiCallName(APINameStatic.GetOrders);
         request.getSession().setAttribute("dveId", d);*/
         Map map=new HashMap();
-        Date startTime2=DateUtils.subDays(new Date(),9);
-        Date endTime= DateUtils.addDays(startTime2, 9);
+       /* Date startTime2=DateUtils.subDays(new Date(),9);
+        Date endTime= DateUtils.addDays(startTime2, 9);*/
+        Date startTime2=DateUtils.subDays(new Date(),30);
+        Date endTime= DateUtils.addDays(startTime2, 30);
         Date end1= com.base.utils.common.DateUtils.turnToDateEnd(endTime);
         String start= DateUtils.DateToString(startTime2);
         String end=DateUtils.DateToString(end1);
@@ -626,8 +632,11 @@ public class GetOrdersController extends BaseAction {
         map.put("page","1");
         String xml = BindAccountAPI.getGetOrders(map);
         AddApiTask addApiTask = new AddApiTask();
+        //---修改前---
        /* Map<String, String> resMap = addApiTask.exec(d, xml, "https://api.ebay.com/ws/api.dll");*/
-        Map<String, String> resMap = addApiTask.exec(d, xml, apiUrl);
+
+
+        /*Map<String, String> resMap = addApiTask.exec(d, xml, apiUrl);
         String r1 = resMap.get("stat");
         String res = resMap.get("message");
         if ("fail".equalsIgnoreCase(r1)) {
@@ -645,7 +654,7 @@ public class GetOrdersController extends BaseAction {
                     map.put("page",i+"");
                     xml = BindAccountAPI.getGetOrders(map);
                     resMap = addApiTask.exec(d, xml, apiUrl);
-                   /* resMap = addApiTask.exec(d, xml, "https://api.ebay.com/ws/api.dll");*/
+                   *//* resMap = addApiTask.exec(d, xml, "https://api.ebay.com/ws/api.dll");*//*
                     r1 = resMap.get("stat");
                     res = resMap.get("message");
                     if ("fail".equalsIgnoreCase(r1)) {
@@ -669,9 +678,11 @@ public class GetOrdersController extends BaseAction {
                         if(l.getItemid().equals(order.getItemid())){
                             order.setId(ls.get(0).getId());
                         }
-                    }
+                    }*/
+
+
                     //--------------自动发送消息-------------------------
-                    List<TradingOrderAddMemberMessageAAQToPartner> addmessages=iTradingOrderAddMemberMessageAAQToPartner.selectTradingOrderAddMemberMessageAAQToPartnerByTransactionId(order.getTransactionid(),2);
+                   /* List<TradingOrderAddMemberMessageAAQToPartner> addmessages=iTradingOrderAddMemberMessageAAQToPartner.selectTradingOrderAddMemberMessageAAQToPartnerByTransactionId(order.getTransactionid(),2);
                     if(addmessages!=null&&addmessages.size()>0){
                         for(TradingOrderAddMemberMessageAAQToPartner addmessage:addmessages){
                             TradingOrderAddMemberMessageAAQToPartner message=new TradingOrderAddMemberMessageAAQToPartner();
@@ -796,9 +807,11 @@ public class GetOrdersController extends BaseAction {
                                 }
                             }
                         }
-                    }
+                    }*/
+
+
                     //------------同步订单商品-----------
-                    d.setApiCallName(APINameStatic.GetItem);
+                    /*d.setApiCallName(APINameStatic.GetItem);
                     Map<String,String> itemresmap=GetOrderItemAPI.apiGetOrderItem(d,token,apiUrl,order.getItemid());
                     String itemr1 = itemresmap.get("stat");
                     String itemres = itemresmap.get("message");
@@ -926,7 +939,9 @@ public class GetOrdersController extends BaseAction {
                         logger.error("GetItem获取apisessionid失败!" + errors);
                         AjaxSupport.sendFailText("fail", "获取必要的参数失败！请稍后重试");
                         return;
-                    }
+                    }*/
+
+
                     //同步account-----
                     /*   UsercontrollerDevAccountExtend ds=new UsercontrollerDevAccountExtend();
                        ds.setApiDevName("5d70d647-b1e2-4c7c-a034-b343d58ca425");
@@ -975,9 +990,11 @@ public class GetOrdersController extends BaseAction {
                         AjaxSupport.sendFailText("fail", "获取必要的参数失败！请稍后重试");
                         return;
                     }*/
+
+
                     //----------------
                     //同步外部交易
-                    d.setApiCallName("GetSellerTransactions");
+                   /* d.setApiCallName("GetSellerTransactions");
                     String sellerxml = BindAccountAPI.GetSellerTransactions(token);//获取接受消息
                     Map<String, String> resSellerMap = addApiTask.exec(d, sellerxml, apiUrl);
                     //------------------------
@@ -1012,9 +1029,27 @@ public class GetOrdersController extends BaseAction {
             String errors = SamplePaseXml.getVFromXmlString(res, "Errors");
             logger.error("Order获取apisessionid失败!" + errors);
             AjaxSupport.sendFailText("fail", "获取必要的参数失败！请稍后重试");
-        }
+        }*/
+
+
+        //---修改后---
+        TaskMessageVO taskMessageVO=new TaskMessageVO();
+        taskMessageVO.setMessageContext("订单");
+        taskMessageVO.setMessageTitle("同步订单");
+        taskMessageVO.setMessageType(SiteMessageStatic.SYNCHRONIZE_GET_ORDER_TYPE);
+        taskMessageVO.setBeanNameType(SiteMessageStatic.SYNCHRONIZE_GET_ORDER_BEAN);
+        taskMessageVO.setMessageFrom("system");
+        SessionVO sessionVO= SessionCacheSupport.getSessionVO();
+        taskMessageVO.setMessageTo(sessionVO.getId());
+        Map map2=new HashMap();
+        map2.put("token",token);
+        map2.put("d",d);
+        taskMessageVO.setObjClass(map2);
+        addApiTask.execDelayReturn(d, xml,apiUrl, taskMessageVO);
+        AjaxSupport.sendSuccessText("message", "操作成功！结果请稍后查看消息！");
     }
-    private String dateToString(Date date){
+    //---修改前---
+    /*private String dateToString(Date date){
         String d=null;
         if(date!=null){
             SimpleDateFormat f = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
@@ -1022,12 +1057,12 @@ public class GetOrdersController extends BaseAction {
             d=startTime.substring(0,4)+startTime.substring(5,7)+startTime.substring(8,10);
         }
         return d;
-    }
-    private Map<String,String> autoSendMessage(TradingOrderGetOrders order,Integer flag,String token,UsercontrollerDevAccountExtend d) throws Exception {
+    }*/
+    /*private Map<String,String> autoSendMessage(TradingOrderGetOrders order,Integer flag,String token,UsercontrollerDevAccountExtend d) throws Exception {
         Map<String,String> messageMap=new HashMap<String, String>();
-       /* String[] bodys={"付款的",
+       *//* String[] bodys={"付款的",
                         "发货的",
-                        "发货n天的"};*/
+                        "发货n天的"};*//*
         String[] bodys={"Hello "+order.getBuyeruserid()+",\n" +
                 "\n" +
                 "Thank you for your payment for:\n" +
@@ -1045,7 +1080,7 @@ public class GetOrdersController extends BaseAction {
                 "us.\n" +
                 "\n" +
                 "Yours Sincerely,\n" +
-                "Thanks and best regards.",/*---*/
+                "Thanks and best regards.",*//*---*//*
                 "Dear fed53\n" +
                         "\n" +
                         "We have shipped your eBay item "+order.getTitle()+". It is estimated to arrive in 8-15 business days in normal conditions. If not, please do not hesitate to contact us. We shall do whatever we can to help you.\n" +
@@ -1055,7 +1090,7 @@ public class GetOrdersController extends BaseAction {
                         "Thanks again for your great purchase and great understanding. We sincerely hope our item and customer service can give you the BEST BUYING EXPERIENCE on eBay.If you have any other concerns, feel free to let me know. Please give us a chance to rectify problem before leaving a negative feedback, and then we will try our best to help resolve it rightly. \n" +
                         "\n" +
                         "Yours Sincerely,\n" +
-                        "Thanks and best regards.",/*---*/
+                        "Thanks and best regards.",*//*---*//*
                 "Dear elainegs85,\n" +
                         "\n" +
                         "It is 2 days since your item was shipped. May I know whether you've received it?\n" +
@@ -1097,5 +1132,5 @@ public class GetOrdersController extends BaseAction {
             messageMap.put("message","获取必要的参数失败！请稍后重试");
         }
         return messageMap;
-    }
+    }*/
 }
