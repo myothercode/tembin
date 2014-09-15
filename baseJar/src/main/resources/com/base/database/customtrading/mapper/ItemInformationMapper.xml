@@ -16,6 +16,9 @@
         <result column="inventory _id" property="inventoryId" jdbcType="BIGINT" />
         <result column="custom_id" property="customId" jdbcType="BIGINT" />
         <result column="typeName" property="typeName" jdbcType="BIGINT" />
+        <result column="remark" property="remark" jdbcType="VARCHAR" />
+        <result column="countNum" property="countNum" jdbcType="BIGINT" />
+        <result column="typeId" property="typeId" jdbcType="BIGINT" />
         <result column="pictureUrl" property="pictureUrl" jdbcType="BIGINT" />
         <result column="create_user" property="createUser" jdbcType="BIGINT" />
         <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
@@ -23,13 +26,50 @@
     </resultMap>
 
     <select id="selectItemInformation" resultMap="BaseResultMap" parameterType="map">
-        select itemInformation.*,dic.config_name typeName,attr.attrValue pictureUrl
+        select itemInformation.*,dic.config_name typeName,attr.attrValue pictureUrl,dic1.config_name remark
         from public_item_information itemInformation
         left join public_user_config dic on itemInformation.type_id=dic.id
+        left join public_user_config dic1 on itemInformation.remark_id=dic1.id
         left join public_item_pictureaddr_and_attr attr on itemInformation.id=attr.itemInformation_id
         where 1=1
         <if test="id!=null">
             and itemInformation.id = #{id}
         </if>
+        <if test="remark!=null">
+            <if test="remark=='null'">
+                and itemInformation.remark_id is null
+            </if>
+            <if test="remark!='null'">
+                and itemInformation.remark_id =#{remark}
+            </if>
+        </if>
+        <if test="information!=null">
+            <if test="information=='custom'">
+                and itemInformation.custom_id is  null
+            </if>
+            <if test="information=='supplier'">
+                and itemInformation.supplier_id is  null
+            </if>
+            <if test="information=='inventory'">
+                and itemInformation.inventory_id is  null
+            </if >
+        </if>
+        <if test="itemType!=null">
+            and dic.id=#{itemType}
+        </if>
+        <if test="content!=null">
+            and itemInformation.name like "%"#{content}"%"
+        </if>
+        group by itemInformation.id
+    </select>
+    <select id="selectItemInformationByType" resultMap="BaseResultMap" parameterType="map">
+        select itemInformation.*,dic.config_name typeName,dic.id typeId,count(*) countNum
+        from public_item_information itemInformation
+        left join public_user_config dic on itemInformation.type_id=dic.id
+        where 1=1
+        <if test="id!=null">
+            and itemInformation.id = #{id}
+        </if>
+        group by dic.id
     </select>
 </mapper>

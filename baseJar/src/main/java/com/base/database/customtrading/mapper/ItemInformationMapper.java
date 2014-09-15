@@ -14,4 +14,6 @@ public interface ItemInformationMapper {
      */
     List<ItemInformationQuery> selectItemInformation(Map map, Page page);
 
+    List<ItemInformationQuery> selectItemInformationByType(Map map, Page page);
+
 }

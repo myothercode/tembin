@@ -8,12 +8,21 @@
  </select>
 
     <select id="queryPermissionByRoleID" resultType="com.base.domains.PermissionVO" parameterType="map" >
-        select p.permission_id permissionID,p.permission_value permissionURL,p.permission_name permissionName from usercontroller_role_permission rp
+        select p.permission_id permissionID,p.permission_value permissionURL,p.permission_name permissionName ,
+        p.permission_level permissionLevel,p.permission_parent_id parentID
+        from usercontroller_role_permission rp
         INNER JOIN usercontroller_permission p on rp.permission_id=p.permission_id
         where rp.role_id in
         <foreach item="item" index="index" collection="idArray" open="("	separator="," close=")">
             #{item.roleID,jdbcType=DECIMAL}
         </foreach>
+        and p.permission_level != '1'
+
+        UNION ALL
+        select p.permission_id permissionID,p.permission_value permissionURL,p.permission_name permissionName ,
+        p.permission_level permissionLevel,p.permission_parent_id parentID
+        from usercontroller_permission p
+        where p.permission_level='1'
     </select>
     
     <select id="querySessionVOInfo" parameterType="com.base.domains.LoginVO" resultType="com.base.domains.SessionVO">
@@ -50,5 +59,28 @@
     <select id="queryAllDevAccount" resultType="com.base.database.trading.model.UsercontrollerDevAccount">
         select dev.id ,dev.dev_user devUser from Usercontroller_Dev_Account dev
     </select>
+
+    <resultMap id="BaseResultMap" type="com.base.database.trading.model.UsercontrollerDevAccount" >
+        <id column="id" property="id" jdbcType="BIGINT" />
+        <result column="dev_user" property="devUser" jdbcType="VARCHAR" />
+        <result column="API_DEV_NAME" property="apiDevName" jdbcType="VARCHAR" />
+        <result column="API_APP_NAME" property="apiAppName" jdbcType="VARCHAR" />
+        <result column="API_CERT_NAME" property="apiCertName" jdbcType="VARCHAR" />
+        <result column="API_COMPATIBILITY_LEVEL" property="apiCompatibilityLevel" jdbcType="VARCHAR" />
+        <result column="runName" property="runname" jdbcType="VARCHAR" />
+    </resultMap>
+    <select id="getDevByOrder" resultMap="BaseResultMap" parameterType="map" >
+        select
+        id, dev_user, API_DEV_NAME, API_APP_NAME, API_CERT_NAME, API_COMPATIBILITY_LEVEL,runName
+        from usercontroller_dev_account where
+        max_num is null or use_num &lt; max_num
+        order by use_num asc limit 1
+    </select>
+    <update id="addUseNum" parameterType="map">
+        update usercontroller_dev_account set use_num=use_num+1 where id=#{id}
+    </update>
+    <update id="initUseNum" parameterType="map">
+        update usercontroller_dev_account set use_num=0,use_date=#{date}
+    </update>
 
 </mapper>
