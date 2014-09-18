@@ -41,22 +41,76 @@
                     {title:"结束时间",name:"disEndtime",width:"8%",align:"left"},
                     {title:"折扣",name:"madeforoutletcomparisonprice",width:"8%",align:"left"},
                     {title:"降价",name:"minimumadvertisedprice",width:"8%",align:"left"},
-                    {title:"是否免运费",name:"isShippingfee",width:"8%",align:"left"},
+                    {title:"数据状态",name:"option1",width:"8%",align:"left",format:makeOption2},
                     {title:"操作",name:"option1",width:"8%",align:"left",format:makeOption1}
                 ],
                 selectDataNow:false,
                 isrowClick:false,
-                showIndex:true
+                showIndex:false
             });
             refreshTable();
         });
         function refreshTable() {
             $("#discountPriceInfoListTable").selectDataAfterSetParm({"bedDetailVO.deptId": "", "isTrue": 0});
         }
+        //数据状态
+        function makeOption2(json){
+            var htm=''
+            if(json.checkFlag=="0"){
+                htm='已启用';
+            }else{
+                htm='已禁用';
+            }
+            return htm;
+        }
         /**组装操作选项*/
         function makeOption1(json){
-            var htm="<a target=\"_blank\" href=\"javascript:void(0)\" onclick=\"editdiscountpriceinfo('"+json.id+"');\">编辑</a>";
+            var htm='<div class="ui-select" style="margin-top:9px; width:10px">'
+            htm+='<select onchange="selectDo(this)">'
+            htm+='<option value="">请选择</option>'
+            htm+='<option value="'+json.id+'">查看</option>'
+            if(json.checkFlag=="0") {
+                htm += '<option value="' + json.id + '">禁用</option>'
+            }else{
+                htm += '<option value="' + json.id + '">启用</option>'
+            }
+            htm+='<option value="'+json.id+'">编辑</option>'
+
+            htm+='</select>'
+            htm+='</div>';
             return htm;
+        }
+        function selectDo(obj){
+            if($(obj).find(":selected").text()=="编辑"){
+                editdiscountpriceinfo($(obj).find(":selected").val());
+            }else if($(obj).find(":selected").text()=="禁用"||$(obj).find(":selected").text()=="启用"){
+                delDiscountprice($(obj).find(":selected").val());
+            }else if($(obj).find(":selected").text()=="查看"){
+                editdiscountpriceinfoSelect($(obj).find(":selected").val());
+            }
+            $(obj).val("");
+        }
+        function delDiscountprice(id){
+            var url=path+"/ajax/delDiscountprice.do?id="+id;
+            $().invoke(url,{},
+                    [function(m,r){
+                        alert(r);
+                        Base.token();
+                        refreshTable();
+                    },
+                        function(m,r){
+                            alert(r);
+                            Base.token();
+                        }]
+            );
+        }
+        function editdiscountpriceinfoSelect(id){
+            discountPriceInfo= $.dialog({title: '编辑折扣选项',
+                content: 'url:/xsddWeb/editDiscountPriceInfo.do?id='+id+'&&type=01',
+                icon: 'succeed',
+                width:500,
+                lock:true
+            });
         }
     </script>
 </head>

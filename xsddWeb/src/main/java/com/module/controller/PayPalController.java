@@ -51,6 +51,7 @@ public class PayPalController extends BaseAction{
      * @return
      */
     @RequestMapping("/PayPalList.do")
+    @AvoidDuplicateSubmission(needSaveToken = true)
     public ModelAndView payPalList(HttpServletRequest request,HttpServletResponse response,ModelMap modelMap){
         /*Map m = new HashMap();
         List<PaypalQuery> paypalli = this.iTradingPayPal.selectByPayPalList(m);
@@ -112,6 +113,10 @@ public class PayPalController extends BaseAction{
         m.put("id",request.getParameter("id"));
         PaypalQuery paypalli = this.iTradingPayPal.selectByPayPal(m);
         modelMap.put("paypal",paypalli);
+        String type = request.getParameter("type");
+        if(type!=null&&!"".equals(type)){
+            modelMap.put("type",type);
+        }
         return forword("module/paypal/addPayPal",modelMap);
     }
 
@@ -135,12 +140,37 @@ public class PayPalController extends BaseAction{
 
         TradingPaypal tp = new TradingPaypal();
         if(!ObjectUtils.isLogicalNull(id)){
+            TradingPaypal tps= this.iTradingPayPal.selectById(Long.parseLong(id));
+            tp.setCheckFlag(tps.getCheckFlag());
             tp.setId(Long.parseLong(id));
         }
         tp.setPayName(name);
         tp.setPaypal(paypal);
         tp.setSite(site);
         tp.setPaymentinstructions(paypalDesc);
+        this.iTradingPayPal.savePaypal(tp);
+        AjaxSupport.sendSuccessText("","操作成功!");
+    }
+
+    /**
+     * 保存数据
+     * @param request
+     * @param response
+     * @param modelMap
+     * @return
+     * @throws Exception
+     */
+    @RequestMapping("/ajax/delPayPal.do")
+    @AvoidDuplicateSubmission(needRemoveToken = true)
+    @ResponseBody
+    public void delPayPal(HttpServletRequest request,HttpServletResponse response,@ModelAttribute( "initSomeParmMap" )ModelMap modelMap) throws Exception {
+        String id = request.getParameter("id");
+        TradingPaypal tp= this.iTradingPayPal.selectById(Long.parseLong(id));
+        if(tp.getCheckFlag().equals("1")){
+            tp.setCheckFlag("0");
+        }else{
+            tp.setCheckFlag("1");
+        }
         this.iTradingPayPal.savePaypal(tp);
         AjaxSupport.sendSuccessText("","操作成功!");
     }

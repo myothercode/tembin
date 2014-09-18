@@ -17,7 +17,7 @@
             returnItem=$.dialog({title: '新增商品',
                 content: 'url:/xsddWeb/addItem.do',
                 icon: 'succeed',
-                width:1000
+                width:1200
             });
         }
 
@@ -25,7 +25,7 @@
             returnItem=$.dialog({title: '编辑商品',
                 content: 'url:/xsddWeb/editItem.do?id='+id,
                 icon: 'succeed',
-                width:1000
+                width:1200
             });
         }
 

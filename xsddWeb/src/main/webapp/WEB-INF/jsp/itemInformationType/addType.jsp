@@ -16,7 +16,6 @@
         function submitCommit(){
             var url=path+"/informationType/ajax/saveinformationType.do";
             var data=$("#addTypeForm").serialize();
-            alert($("select[name=parent]").val());
             $().invoke(url,data,
                     [function(m,r){
                         alert(r);

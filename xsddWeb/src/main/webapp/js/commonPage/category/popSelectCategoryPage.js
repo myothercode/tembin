@@ -157,6 +157,7 @@ function showMenuPath(){
 var api = frameElement.api, W = api.opener;
 //点击确定按扭
 function que(){
+    W.document.getElementById("PrimaryCategoryshow").style.display="block";
     if(selectFlag=="radio"){
         var url=path+"/ajax/saveReseCategory.do?categoryId="+_finalSelectedVal+"&categoryName="+$("#menuPath").text()+"&categoryKey="+title;
         var sitId=$(W.document.getElementsByName("site")).eq(0).val();

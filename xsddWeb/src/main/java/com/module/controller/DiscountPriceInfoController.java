@@ -46,6 +46,7 @@ public class DiscountPriceInfoController extends BaseAction {
      * @return
      */
     @RequestMapping("/discountPriceInfoList.do")
+    @AvoidDuplicateSubmission(needSaveToken = true)
     public ModelAndView discountPriceInfoList(HttpServletRequest request,HttpServletResponse response,ModelMap modelMap){
        /* SessionVO c= SessionCacheSupport.getSessionVO();
         Map m = new HashMap();
@@ -105,6 +106,10 @@ public class DiscountPriceInfoController extends BaseAction {
         m.put("id",id);
         List<DiscountpriceinfoQuery> disli = this.iTradingDiscountPriceInfo.selectByDiscountpriceinfo(m);
         modelMap.put("dis",disli.get(0));
+        String type = request.getParameter("type");
+        if(type!=null&&!"".equals(type)){
+            modelMap.put("type",type);
+        }
 
         return forword("module/discountpriceinfo/adddiscountpriceinfo",modelMap);
     }
@@ -150,6 +155,30 @@ public class DiscountPriceInfoController extends BaseAction {
         }
         tdpi.setMinimumadvertisedpriceexposure("DuringCheckout");
         this.iTradingDiscountPriceInfo.saveDiscountpriceinfo(tdpi);
+        AjaxSupport.sendSuccessText("","操作成功!");
+    }
+
+    /**
+     * 保存数据
+     * @param request
+     * @param response
+     * @param modelMap
+     * @return
+     * @throws Exception
+     */
+    @RequestMapping("/ajax/delDiscountprice.do")
+    @AvoidDuplicateSubmission(needRemoveToken = true)
+    @ResponseBody
+    public void delDiscountprice(HttpServletRequest request,HttpServletResponse response,@ModelAttribute( "initSomeParmMap" )ModelMap modelMap) throws Exception {
+        String id = request.getParameter("id");
+
+        TradingDiscountpriceinfo tp= this.iTradingDiscountPriceInfo.selectById(Long.parseLong(id));
+        if(tp.getCheckFlag().equals("1")){
+            tp.setCheckFlag("0");
+        }else{
+            tp.setCheckFlag("1");
+        }
+        this.iTradingDiscountPriceInfo.saveDiscountpriceinfo(tp);
         AjaxSupport.sendSuccessText("","操作成功!");
     }
 }

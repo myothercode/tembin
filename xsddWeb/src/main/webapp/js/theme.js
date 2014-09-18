@@ -63,6 +63,7 @@ function initLeftMenuBar() {
   // sidebar menu dropdown toggle
   $("#dashboard-menu .dropdown-toggle").click(function (e) {
     e.preventDefault();
+      addArrow(this);
     var $item = $(this).parent();
     $item.toggleClass("active");
     if ($item.hasClass("active")) {

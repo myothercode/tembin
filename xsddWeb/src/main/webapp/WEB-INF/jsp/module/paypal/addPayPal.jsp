@@ -33,6 +33,16 @@
         }
         $(document).ready(function() {
             jQuery("#payPalForm").validationEngine();
+            var type = '${type}';
+            if(type=="01"){
+                $("input").each(function(i,d){
+                    $(d).attr("disabled",true);
+                });
+                $("select").each(function(i,d){
+                    $(d).attr("disabled",true);
+                });
+                $("textarea").attr("disabled",true);
+            }
         });
     </script>
 </head>

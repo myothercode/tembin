@@ -9,7 +9,6 @@ import com.base.mybatis.page.PageJsonBean;
 import com.base.utils.annotations.AvoidDuplicateSubmission;
 import com.base.utils.cache.DataDictionarySupport;
 import com.base.utils.cache.SessionCacheSupport;
-import com.base.utils.cache.DataDictionarySupport;
 import com.common.base.utils.ajax.AjaxSupport;
 import com.common.base.web.BaseAction;
 import com.publicd.service.*;
@@ -73,13 +72,13 @@ public class ItemInformationController extends BaseAction {
         String information=request.getParameter("information");
         String itemType=request.getParameter("itemType");
         String content=request.getParameter("content");
-        if("all".equals(remark)){
+        if("all".equals(remark)||!StringUtils.isNotBlank(remark)){
             remark=null;
         }
-        if("all".equals(information)){
+        if("all".equals(information)||!StringUtils.isNotBlank(information)){
             information=null;
         }
-        if("all".equals(itemType)){
+        if("all".equals(itemType)||!StringUtils.isNotBlank(itemType)){
             itemType=null;
         }
         if(!StringUtils.isNotBlank(content)){
@@ -92,8 +91,8 @@ public class ItemInformationController extends BaseAction {
         m.put("content",content);
         PageJsonBean jsonBean=commonParmVO.getJsonBean();
         Page page=jsonBean.toPage();
-        List<ItemInformationQuery> list=iPublicItemInformation.selectItemInformation(m,page);
-        jsonBean.setList(list);
+        List<ItemInformationQuery> lists=iPublicItemInformation.selectItemInformation(m,page);
+        jsonBean.setList(lists);
         jsonBean.setTotal((int)page.getTotalCount());
         AjaxSupport.sendSuccessText("", jsonBean);
     }

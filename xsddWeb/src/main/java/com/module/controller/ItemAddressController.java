@@ -45,6 +45,7 @@ public class ItemAddressController  extends BaseAction {
      * @return
      */
     @RequestMapping("/ItemAddressList.do")
+    @AvoidDuplicateSubmission(needSaveToken = true)
     public ModelAndView itemAddressList(HttpServletRequest request,HttpServletResponse response,@ModelAttribute( "initSomeParmMap" )ModelMap modelMap){
         /*List<ItemAddressQuery> li = this.iTradingItemAddress.selectByItemAddressQuery(null);
         modelMap.put("li",li);*/
@@ -126,8 +127,34 @@ public class ItemAddressController  extends BaseAction {
         map.put("id",request.getParameter("id"));
         List<ItemAddressQuery> li = this.iTradingItemAddress.selectByItemAddressQuery(map);
         modelMap.put("itemAddress",li.get(0));
-
+        String type = request.getParameter("type");
+        if(type!=null&&!"".equals(type)){
+            modelMap.put("type",type);
+        }
         return forword("module/itemaddr/addItemAddress",modelMap);
+    }
+
+    /**
+     * 保存数据
+     * @param request
+     * @param response
+     * @param modelMap
+     * @return
+     * @throws Exception
+     */
+    @RequestMapping("/ajax/delItemAddress.do")
+    @AvoidDuplicateSubmission(needRemoveToken = true)
+    @ResponseBody
+    public void delItemAddress(HttpServletRequest request,HttpServletResponse response,@ModelAttribute( "initSomeParmMap" )ModelMap modelMap) throws Exception {
+        String id = request.getParameter("id");
+        TradingItemAddress tp= this.iTradingItemAddress.selectById(Long.parseLong(id));
+        if(tp.getCheckFlag().equals("1")){
+            tp.setCheckFlag("0");
+        }else{
+            tp.setCheckFlag("1");
+        }
+        this.iTradingItemAddress.saveItemAddress(tp);
+        AjaxSupport.sendSuccessText("","操作成功!");
     }
 
 }

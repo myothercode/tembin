@@ -53,6 +53,17 @@
                 $("#isShippingFee").attr("checked",true);
             }
             $("#discountPriceInfoForm").validationEngine();
+
+            var type = '${type}';
+            if(type=="01"){
+                $("input").each(function(i,d){
+                    $(d).attr("disabled",true);
+                });
+                $("select").each(function(i,d){
+                    $(d).attr("disabled",true);
+                });
+                $("textarea").attr("disabled",true);
+            }
         });
         var api = frameElement.api, W = api.opener;
         function submitCommit(){
@@ -128,9 +139,11 @@
                 </table>
             </td>
         </tr>
-        <div>
-            <input type="button" value="保存" onclick="submitCommit();"/>
-        </div>
+        <tr>
+            <td colspan="2">
+                <input type="button" value="保存" onclick="submitCommit();"/>
+            </td>
+        </tr>
     </table>
 </form>
 </body>

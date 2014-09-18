@@ -47,6 +47,7 @@ public class BuyerRequirementDetailsController extends BaseAction {
      * @return
      */
     @RequestMapping("/BuyerRequirementDetailsList.do")
+    @AvoidDuplicateSubmission(needSaveToken = true)
     public ModelAndView buyerRequirementDetails(HttpServletRequest request,HttpServletResponse response,
                                                 @ModelAttribute( "initSomeParmMap" )ModelMap modelMap){
         /*Map m = new HashMap();
@@ -98,6 +99,10 @@ public class BuyerRequirementDetailsController extends BaseAction {
         m.put("id",request.getParameter("id"));
         List<BuyerRequirementDetailsQuery> buyerRequires=this.iTradingBuyerRequirementDetails.selectTradingBuyerRequirementDetailsByList(m);
         modelMap.put("buyerRequires",buyerRequires.get(0));
+        String type = request.getParameter("type");
+        if(type!=null&&!"".equals(type)){
+            modelMap.put("type",type);
+        }
         return forword("module/buyer/addBuyer",modelMap);
     }
 
@@ -197,12 +202,37 @@ public class BuyerRequirementDetailsController extends BaseAction {
         }
         tbrds.setSiteCode(Integer.parseInt(site));
         if(!ObjectUtils.isLogicalNull(id)){
+            TradingBuyerRequirementDetails tp= this.iTradingBuyerRequirementDetails.selectById(Long.parseLong(id));
+            tbrds.setCheckFlag(tp.getCheckFlag());
             tbrds.setId(Long.parseLong(id));
         }
         //List<TradingDataDictionary> lidata = this.iTradingDataDictionary.s
        // tbrds.setSiteValue(lidata.get(0).getValue());
 
         this.iTradingBuyerRequirementDetails.saveBuyerRequirementDetails(tbrds);
+        AjaxSupport.sendSuccessText("","操作成功!");
+    }
+
+    /**
+     * 删除数据
+     * @param request
+     * @param response
+     * @param modelMap
+     * @return
+     * @throws Exception
+     */
+    @RequestMapping("/ajax/delBuyer.do")
+    @AvoidDuplicateSubmission(needRemoveToken = true)
+    @ResponseBody
+    public void delBuyer(HttpServletRequest request,HttpServletResponse response,@ModelAttribute( "initSomeParmMap" )ModelMap modelMap) throws Exception {
+        String id = request.getParameter("id");
+        TradingBuyerRequirementDetails tp= this.iTradingBuyerRequirementDetails.selectById(Long.parseLong(id));
+        if(tp.getCheckFlag().equals("1")){
+            tp.setCheckFlag("0");
+        }else{
+            tp.setCheckFlag("1");
+        }
+        this.iTradingBuyerRequirementDetails.saveBuyerRequirementDetails(tp);
         AjaxSupport.sendSuccessText("","操作成功!");
     }
 }

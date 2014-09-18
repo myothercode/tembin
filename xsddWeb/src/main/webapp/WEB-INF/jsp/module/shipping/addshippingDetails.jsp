@@ -46,10 +46,11 @@
 
         function createInterTables(obj1,obj2,obj3){
             //用于国际运输选项
+            var count =getCount('interMoreTable');
             var intertable = "";
             intertable +=' <table name="interMoreTable">';
             intertable +=' <tr> ';
-            intertable +=' <td colspan="2">第一运输</td> ';
+            intertable +=' <td colspan="2">第'+count+'运输</td> ';
             intertable +=' </tr> ';
             intertable +=' <tr> ';
             intertable +=' <td align="right" width="200">运输方式</td> ';
@@ -144,13 +145,36 @@
             );
         }
 
+        function getCount(name){
+            var count = $("table[name='"+name+"']").length;
+            var str = '';
+            count=count+1;
+            if(count==1){
+                str='一';
+            }else if(count==2){
+                str='二'
+            } else if(count==3){
+                str='三'
+            } else if(count==4){
+                str='四'
+            } else if(count==5){
+                str='五'
+            }else if(count==6){
+                str='六'
+            }else if(count==7){
+                str='七'
+            }
+            return str;
+        }
         //创国内运输表
         function createTables(obj1,obj2,obj3,obj4,obj5){
             //用于国内运输选项
+            var count =getCount('moreTable');
+
             var tables = "";
             tables +=' <table name="moreTable">';
             tables +=' <tr> ';
-            tables +=' <td colspan="2">第一运输</td> ';
+            tables +=' <td colspan="2">第'+count+'运输</td> ';
             tables +=' </tr> ';
             tables +=' <tr> ';
             tables +=' <td align="right"  width="200">运输方式</td> ';
@@ -242,6 +266,7 @@
             </c:if>
             $("#notLocationName").text(extlo);
             checkNumber();
+
             $("#form").validationEngine();
             setTimeout(function(){
                 <c:forEach var="obj" items="${litso}" varStatus="ind">
@@ -253,6 +278,19 @@
                 </c:forEach>
             },500);
 
+            var type = '${type}';
+            if(type=="01"){
+                $("input").each(function(i,d){
+                    $(d).attr("disabled",true);
+                });
+                $("select").each(function(i,d){
+                    $(d).attr("disabled",true);
+                });
+                $("textarea").attr("disabled",true);
+                $("a").each(function(i,d){
+                    $(d).hide();
+                });
+            }
         });
         //添加国内运输选项
         function addShippingDetial(obj) {
@@ -368,7 +406,7 @@
 <form id="form">
     <table width="100%">
         <tr>
-            <td colspan="2">
+            <td colspan="2" style="padding-left: 50px;">
                 运输选项
                 <hr/>
             </td>
@@ -377,7 +415,7 @@
             <td align="right" width="200">名称</td>
             <td>
                 <input type="hidden" name="id" id="id" value="${shipping.id}">
-                <input type="text" name="shippingName" id="shippingName" class="validate[required]" value="${shipping.shippingName}"></td>
+                <input type="text" name="shippingName" id="shippingName" class="validate[required]"  class="form-control" value="${shipping.shippingName}"></td>
         </tr>
         <tr>
             <td align="right">ebay账号</td>
@@ -436,7 +474,7 @@
             </td>
         </tr>
         <tr id="countTitle" style="display: none;">
-            <td colspan="2">
+            <td colspan="2" style="padding-left: 50px;">
                 <br/>
                 计算
                 <hr/>
@@ -492,14 +530,14 @@
             </td>
         </tr>
         <tr>
-            <td colspan="2">
+            <td colspan="2" style="padding-left: 50px;">
                 <br/>
                 国内运输
                 <hr/>
             </td>
         </tr>
         <tr>
-            <td colspan="2">
+            <td colspan="2" style="padding-left: 70px;">
                 <table>
                     <tr>
                         <td align="right">处理时间</td>
@@ -528,14 +566,14 @@
             </td>
         </tr>
         <tr>
-            <td colspan="2">
+            <td colspan="2" style="padding-left: 50px;">
                 <br/>
                 国际运输
                 <hr/>
             </td>
         </tr>
         <tr>
-            <td colspan="2">
+            <td colspan="2" style="padding-left: 70px;">
                 <table id="inter">
                 </table>
                 <a href="javascript:void(0)" onclick="addShippingDetialInter(this)">添加</a>
@@ -553,7 +591,7 @@
             </td>
         </tr>
         <tr>
-            <td colspan="2">
+            <td colspan="2" style="padding-left: 70px;">
                 <span id="notLocationName"></span>
                 <input type="hidden" name="notLocationValue" id="notLocationValue" value="${tamvaluestr}">
                 <br/>
@@ -561,7 +599,7 @@
             </td>
         </tr>
     </table>
-    <div>
+    <div style="padding-left: 70px;">
         <input type="button" value="确定" onclick="saveData(this)">
     </div>
 </form>

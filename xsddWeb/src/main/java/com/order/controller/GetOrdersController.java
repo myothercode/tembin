@@ -46,29 +46,12 @@ public class GetOrdersController extends BaseAction {
     static Logger logger = Logger.getLogger(GetOrdersController.class);
     @Autowired
     private UserInfoService userInfoService;
-
     @Autowired
     private ITradingOrderGetOrders iTradingOrderGetOrders;
     @Autowired
-    private ITradingOrderShippingServiceOptions iTradingOrderShippingServiceOptions;
-    @Autowired
     private ITradingOrderGetItem iTradingOrderGetItem;
     @Autowired
-    private ITradingOrderListingDetails iTradingOrderListingDetails;
-    @Autowired
-    private ITradingOrderSeller iTradingOrderSeller;
-    @Autowired
-    private ITradingOrderSellingStatus iTradingOrderSellingStatus;
-    @Autowired
-    private ITradingOrderShippingDetails iTradingOrderShippingDetails;
-    @Autowired
     private ITradingOrderPictureDetails iTradingOrderPictureDetails;
-    @Autowired
-    private ITradingOrderReturnpolicy iTradingOrderReturnpolicy;
-    @Autowired
-    private ITradingOrderSellerInformation iTradingOrderSellerInformation;
-    @Autowired
-    private  ITradingOrderCalculatedShippingRate iTradingOrderCalculatedShippingRate;
     @Autowired
     private  ITradingMessageGetmymessage iTradingMessageGetmymessage;
     @Autowired
@@ -77,14 +60,6 @@ public class GetOrdersController extends BaseAction {
     private  ITradingOrderAddMemberMessageAAQToPartner iTradingOrderAddMemberMessageAAQToPartner;
     @Autowired
     private  ITradingOrderGetAccount iTradingOrderGetAccount;
-    @Autowired
-    private  ITradingOrderItemSpecifics iTradingOrderItemSpecifics;
-    @Autowired
-    private  ITradingOrderVariation iTradingOrderVariation;
-    @Autowired
-    private  ITradingOrderVariationSpecifics iTradingOrderVariationSpecifics;
-    @Autowired
-    private  ITradingOrderPictures iTradingOrderPictures;
     @Autowired
     private  ITradingOrderGetSellerTransactions iTradingOrderGetSellerTransactions;
     @Value("${EBAY.API.URL}")

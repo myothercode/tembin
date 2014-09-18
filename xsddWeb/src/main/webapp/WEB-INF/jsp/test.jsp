@@ -32,6 +32,9 @@
             map.put("itemInformation",path+"/information/itemInformationList.do");
             map.put("keymove",path+"/keymove/userSelectSite.do");
             map.put("itemInformationType",path+"/informationType/itemInformationTypeList.do");
+            map.put("sendMessage",path+"/sendMessage/sendMessageList.do");
+            map.put("autoSendMessage",path+"/sendMessage/autoSendMessageList.do");
+            map.put("virtualSKU",path+"/virtualSKU/virtualSKUList.do");
             top.location=map.get(name);
 
         }
@@ -90,6 +93,9 @@
         <div><input type="button" value="产品信息" name="itemInformation" onclick="submitForm(this)"/></div>
         <div><input type="button" value="一键搬家" name="keymove" onclick="submitForm(this)"/></div>
         <div><input type="button" value="产品信息分类" name="itemInformationType" onclick="submitForm(this)"/></div>
+        <div><input type="button" value="查看发送消息" name="sendMessage" onclick="submitForm(this)"/></div>
+        <div><input type="button" value="查看自动发送消息" name="autoSendMessage" onclick="submitForm(this)"/></div>
+        <div><input type="button" value="虚拟SKU" name="virtualSKU" onclick="submitForm(this)"/></div>
 </form>
 </body>
 </html>

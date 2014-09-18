@@ -384,7 +384,7 @@ function initTitle(){
         titleHtml+=' <input type="text" name="SubTitle_'+$(d).val()+'" style="width:600px;" class="form-control" id="SubTitle_'+$(d).val()+'" ';
         titleHtml+=' size="100"> ';
         titleHtml+=' </div> ';
-        titleHtml+=' </li> ';
+        titleHtml+=' </li><li class="flip" style=" padding-left:260px;padding-top:9px;" onclick="showSubTitle(this)"><img src="img/new_list_ico.png"></li> ';
         $("#titleDiv").append(titleHtml);
     });
 }
@@ -428,5 +428,17 @@ function selectProduct(){
         width: 750,
         height:700,
         lock: true
+    });
+}
+
+function showSubTitle(obj){
+    $(obj).parent().find("li").each(function(i,d){
+        if(i==($(obj).index()-1)){
+            if($(d).is(":hidden")){
+                $(d).show();
+            }else{
+                $(d).hide();
+            }
+        }
     });
 }

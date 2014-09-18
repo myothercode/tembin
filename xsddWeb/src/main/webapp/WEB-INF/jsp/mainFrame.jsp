@@ -10,10 +10,11 @@
 <html>
 <head>
     <%@include file= "/WEB-INF/jsp/commonImport.jsp" %>
+    <script type="text/javascript" src=<c:url value ="/js/commonPage/mainframe/mainFramePage.js" /> ></script>
     <title></title>
     <script type="text/javascript">
         $(document).ready(function(){
-            initLeftMenuBar();
+            getMenu();
         });
     </script>
 </head>
@@ -124,7 +125,7 @@
             </a>
         </li>
         <li class="settings hidden-xs hidden-sm">
-            <a href="../../signin.html" role="button">
+            <a onclick="logout()" href="javascript:void(0)" role="button">
                 <i class="icon-share-alt"></i>
             </a>
         </li>
@@ -135,81 +136,15 @@
 <!-- sidebar -->
 <div id="sidebar-nav">
     <ul id="dashboard-menu">
-        <li>
-            <a class="dropdown-toggle" href="#">
-                <i class="icon-home"></i>
-                <span>首页</span>
-                <i class="icon-chevron-down"></i>
-            </a>
-            <ul class="submenu">
-                <li><a href="../../user-list.html">User list</a></li>
-                <li><a href="../../new-user.html">New user form</a></li>
-                <li><a href="../../user-profile.html">User profile</a></li>
-            </ul>
-        </li>
-        <li class="active">
-            <a class="dropdown-toggle" href="#">
-                <div class="pointer">
-                    <div class="arrow"></div>
-                    <div class="arrow_border"></div>
-                </div>
-                <i class="icon-picture"></i>
-                <span>刊登管理</span>
-                <i class="icon-chevron-down"></i>
-            </a>
 
-            <ul class="active submenu">
-                <li><a href="../../form-showcase.html" class="active">刊登</a></li>
-
-
-
-
-                <li><a href="../../form-wizard.html">范本</a></li>
-                <li><a href="../../form-wizard.html">定时</a></li>
-                <li><a href="../../form-wizard.html">刊登</a></li>
-                <li><a href="../../form-wizard.html">重新刊登</a></li>
-            </ul>
-        </li>
-
-        <li>
-            <a class="dropdown-toggle" href="#">
-                <i class="icon-group"></i>
-                <span>客服管理</span>
-                <i class="icon-chevron-down"></i>
-            </a>
-            <ul class="submenu">
-                <li><a href="../../user-list.html">User list</a></li>
-                <li><a href="../../new-user.html">New user form</a></li>
-                <li><a href="../../user-profile.html">User profile</a></li>
-            </ul>
-        </li>
-        <li>
-            <a class="dropdown-toggle" href="#">
-                <i class="icon-edit1"></i>
-                <span>商品管理</span>
-                <i class="icon-chevron-down"></i>
-            </a>
-            <ul class="submenu">
-                <li><a href="../../form-showcase.html">Form showcase</a></li>
-                <li><a href="../../form-wizard.html">Form wizard</a></li>
-            </ul>
-        </li>
-        <li>
-            <a class="dropdown-toggle" href="#">
-                <i class="icon-signal"></i>
-                <span>销售管理</span>
-                <i class="icon-chevron-down"></i>
-            </a>
-            <ul class="submenu">
-                <li><a href="../../user-list.html">User list</a></li>
-                <li><a href="../../new-user.html">New user form</a></li>
-                <li><a href="../../user-profile.html">User profile</a></li>
-            </ul>
-        </li>
     </ul>
 </div>
 
-<div class="content"></div>
+<div class="content">
+    <iframe width="100%" height="100%" frameborder="0px" name="contentMain">
+
+    </iframe>
+</div>
 
 
 </body>

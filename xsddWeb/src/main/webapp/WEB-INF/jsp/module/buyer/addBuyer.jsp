@@ -106,7 +106,15 @@
                 $("input[type='checkbox'][name='MaximumItemCount_flag']").prop("checked",true);
                 $("input[type='checkbox'][name='MaximumItemCount_flag']").attr("disabled",false);
             }
-
+            var type = '${type}';
+            if(type=="01") {
+                $("input").each(function(i,d){
+                    $(d).attr("disabled",true);
+                });
+                $("select").each(function(i,d){
+                    $(d).attr("disabled",true);
+                });
+            }
         });
         function showFlag(obj){
             if(obj=="1"){

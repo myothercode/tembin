@@ -32,6 +32,8 @@ import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -75,7 +77,6 @@ public class TextContraller extends BaseAction {
     /**登录操作*/
     @RequestMapping("/login.do")
     public ModelAndView login(LoginVO loginVO,HttpServletRequest request,HttpServletResponse response,ModelMap modelMap){
-
         Asserts.assertTrue(!ObjectUtils.isLogicalNull(loginVO.getLoginId()),"登信息为空");
         SessionVO sessionVO = userInfoService.getUserInfo(loginVO);
         Asserts.assertTrue(!ObjectUtils.isLogicalNull(sessionVO),"帐号或者密码不正确!");
@@ -87,6 +88,16 @@ public class TextContraller extends BaseAction {
         return redirect("mainFrame.do");
         //modelMap.put("ccc",sessionVO.getUserName());
         //return forword("test",modelMap);
+    }
+    /**登出操作*/
+    @RequestMapping("/logout.do")
+    public ModelAndView logout(HttpServletRequest request) throws IOException {
+        SessionVO sessionVO=SessionCacheSupport.getSessionVO();
+        SessionCacheSupport.remove(sessionVO.getLoginId());
+        HttpSession session = request.getSession();
+        session.removeAttribute(SessionCacheSupport.USERLOGINID);
+        session.invalidate();
+        return redirect("/login.jsp");
     }
 
     @RequestMapping("/test1.do")

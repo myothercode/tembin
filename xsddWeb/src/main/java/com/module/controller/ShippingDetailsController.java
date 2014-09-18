@@ -47,6 +47,12 @@ public class ShippingDetailsController extends BaseAction{
 
     @Autowired
     private ITradingAttrMores iTradingAttrMores;
+
+    @Autowired
+    private ITradingShippingServiceOptions iTradingShippingServiceOptions;
+
+    @Autowired
+    private ITradingInternationalShippingServiceOption iTradingInternationalShippingServiceOption;
     /**
      * 查询数据并展示
      * @param modelMap
@@ -63,6 +69,17 @@ public class ShippingDetailsController extends BaseAction{
         PageJsonBean jsonBean=commonParmVO.getJsonBean();
         Page page=jsonBean.toPage();
         List<ShippingdetailsQuery> lisq = this.iTradingShippingDetails.selectByShippingdetailsQuery(m,page);
+        for(ShippingdetailsQuery sq:lisq){
+            List<TradingShippingserviceoptions> lits = this.iTradingShippingServiceOptions.selectByParentId(sq.getId());
+            for(TradingShippingserviceoptions ts: lits){
+                TradingDataDictionary tdds = DataDictionarySupport.getTradingDataDictionaryByID(Long.parseLong(ts.getShippingservice()));
+                if(tdds!=null) {
+                    ts.setShippingservice(tdds.getName());
+                }
+            }
+            sq.setLits(lits);
+            sq.setLiti(this.iTradingInternationalShippingServiceOption.selectByParentid(sq.getId()));
+        }
         jsonBean.setList(lisq);
         jsonBean.setTotal((int)page.getTotalCount());
         AjaxSupport.sendSuccessText("",jsonBean);
@@ -76,6 +93,7 @@ public class ShippingDetailsController extends BaseAction{
      * @return
      */
     @RequestMapping("/shippingDetailsList.do")
+    @AvoidDuplicateSubmission(needSaveToken = true)
     public ModelAndView shippingDetailsList(HttpServletRequest request,HttpServletResponse response,ModelMap modelMap){
         return forword("module/shipping/shippingDetailsList",modelMap);
     }
@@ -219,7 +237,10 @@ public class ShippingDetailsController extends BaseAction{
         List<TradingDataDictionary> lidata = DataDictionarySupport.getTradingDataDictionaryByType(DataDictionarySupport.DATA_DICT_SITE);
         modelMap.put("siteList",lidata);
 
-
+        String type = request.getParameter("type");
+        if(type!=null&&!"".equals(type)){
+            modelMap.put("type",type);
+        }
 
         List<TradingDataDictionary> liinter = DataDictionarySupport.getTradingDataDictionaryByType(DataDictionarySupport.DATA_DICT_SHIPPINGINTER_TYPE);
         List<TradingDataDictionary> inter1 = new ArrayList();
@@ -342,6 +363,28 @@ public class ShippingDetailsController extends BaseAction{
         this.iTradingShippingDetails.saveAllData(tradingShippingdetails,shippingDetails,request.getParameter("notLocationValue"));
 
         AjaxSupport.sendSuccessText("message", "操作成功！");
+    }
+    /**
+     * 保存数据
+     * @param request
+     * @param response
+     * @param modelMap
+     * @return
+     * @throws Exception
+     */
+    @RequestMapping("/ajax/delshippingDetails.do")
+    @AvoidDuplicateSubmission(needRemoveToken = true)
+    @ResponseBody
+    public void delshippingDetails(HttpServletRequest request,HttpServletResponse response,@ModelAttribute( "initSomeParmMap" )ModelMap modelMap) throws Exception {
+        String id = request.getParameter("id");
+        TradingShippingdetails tp= this.iTradingShippingDetails.selectById(Long.parseLong(id));
+        if(tp.getCheckFlag().equals("1")){
+            tp.setCheckFlag("0");
+        }else{
+            tp.setCheckFlag("1");
+        }
+        this.iTradingShippingDetails.saveShippingDetails(tp);
+        AjaxSupport.sendSuccessText("","操作成功!");
     }
 
 
