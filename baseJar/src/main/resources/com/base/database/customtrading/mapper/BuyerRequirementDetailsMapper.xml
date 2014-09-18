@@ -28,6 +28,7 @@
         <result column="uuid" jdbcType="VARCHAR" property="uuid" />
         <result column="site_value" jdbcType="VARCHAR" property="siteValue" />
         <result column="site_name" jdbcType="VARCHAR" property="siteName" />
+        <result column="check_flag" jdbcType="VARCHAR" property="checkFlag" />
     </resultMap>
 
     <select id="selectByBuyer" resultMap="BaseResultMap" parameterType="map">

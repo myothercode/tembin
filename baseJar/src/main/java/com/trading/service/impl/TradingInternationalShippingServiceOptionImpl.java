@@ -48,6 +48,12 @@ public class TradingInternationalShippingServiceOptionImpl implements com.tradin
         return pojo;
     }
 
+    @Override
+    public List<TradingInternationalshippingserviceoption> selectByParentid(Long parentid){
+        TradingInternationalshippingserviceoptionExample tie = new TradingInternationalshippingserviceoptionExample();
+        tie.createCriteria().andParentIdEqualTo(parentid);
+        return this.tradingInternationalshippingserviceoptionMapper.selectByExample(tie);
+    }
     /**
      * 通过父ID删除数据
      * @param id

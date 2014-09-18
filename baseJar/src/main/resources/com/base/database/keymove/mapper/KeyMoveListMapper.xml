@@ -180,6 +180,9 @@
     values (#{id,jdbcType=BIGINT}, #{userId,jdbcType=BIGINT}, #{itemId,jdbcType=VARCHAR}, 
       #{siteId,jdbcType=VARCHAR}, #{taskFlag,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, 
       #{paypalId,jdbcType=VARCHAR}, #{ebaytoken,jdbcType=LONGVARCHAR})
+      <selectKey resultType="long" keyProperty="id" order="AFTER">
+          SELECT LAST_INSERT_ID()
+      </selectKey>
   </insert>
   <insert id="insertSelective" parameterType="com.base.database.keymove.model.KeyMoveList">
     <!--
@@ -239,6 +242,9 @@
         #{ebaytoken,jdbcType=LONGVARCHAR},
       </if>
     </trim>
+      <selectKey resultType="long" keyProperty="id" order="AFTER">
+          SELECT LAST_INSERT_ID()
+      </selectKey>
   </insert>
   <select id="countByExample" parameterType="com.base.database.keymove.model.KeyMoveListExample" resultType="java.lang.Integer">
     <!--

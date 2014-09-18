@@ -13,6 +13,8 @@ public interface ITradingShippingServiceOptions {
 
     TradingShippingserviceoptions toDAOPojo(ShippingServiceOptions sso) throws Exception;
 
+    List<TradingShippingserviceoptions> selectByParentId(Long parentid);
+
     void deleteByParentId(Long id);
 
     List<ShippingServiceOptions> toXmlPojo(Long id) throws Exception;

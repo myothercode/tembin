@@ -45,6 +45,7 @@
     <result column="Inter_count_type" jdbcType="VARCHAR" property="interCountType" />
       <result column="site_name" jdbcType="VARCHAR" property="siteName" />
       <result column="ebay_Name" jdbcType="VARCHAR" property="ebayName" />
+      <result column="check_flag" property="checkFlag" jdbcType="VARCHAR" />
   </resultMap>
 
     <select id="selectByShippingdetails" resultMap="BaseResultMap" parameterType="map">

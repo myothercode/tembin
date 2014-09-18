@@ -9,7 +9,16 @@ public class PermissionVO {
     private String permissionName;
     private String permissionLevel;
     private Long parentID;
+    private String menuClass;//菜单样式
 
+
+    public String getMenuClass() {
+        return menuClass;
+    }
+
+    public void setMenuClass(String menuClass) {
+        this.menuClass = menuClass;
+    }
 
     public String getPermissionLevel() {
         return permissionLevel;

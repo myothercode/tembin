@@ -13,6 +13,8 @@ public interface ITradingInternationalShippingServiceOption {
 
     TradingInternationalshippingserviceoption toDAOPojo(InternationalShippingServiceOption isso) throws Exception;
 
+    List<TradingInternationalshippingserviceoption> selectByParentid(Long parentid);
+
     void deleteByParentId(Long id);
 
 

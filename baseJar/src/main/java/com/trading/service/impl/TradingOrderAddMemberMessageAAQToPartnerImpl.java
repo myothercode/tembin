@@ -1,8 +1,11 @@
 package com.trading.service.impl;
 
+import com.base.database.customtrading.mapper.AddMemberMessageAAQToPartnerMapper;
 import com.base.database.trading.mapper.TradingOrderAddMemberMessageAAQToPartnerMapper;
 import com.base.database.trading.model.TradingOrderAddMemberMessageAAQToPartner;
 import com.base.database.trading.model.TradingOrderAddMemberMessageAAQToPartnerExample;
+import com.base.domains.querypojos.TradingOrderAddMemberMessageAAQToPartnerQuery;
+import com.base.mybatis.page.Page;
 import com.base.utils.common.ObjectUtils;
 import com.base.utils.exception.Asserts;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * 退货政策
@@ -21,7 +25,8 @@ public class TradingOrderAddMemberMessageAAQToPartnerImpl implements com.trading
 
     @Autowired
     private TradingOrderAddMemberMessageAAQToPartnerMapper tradingOrderAddMemberMessageAAQToPartnerMapper;
-
+    @Autowired
+    private AddMemberMessageAAQToPartnerMapper addMemberMessageAAQToPartnerMapper;
     @Override
     public void saveOrderAddMemberMessageAAQToPartner(TradingOrderAddMemberMessageAAQToPartner OrderAddMemberMessageAAQToPartner) throws Exception {
         if(OrderAddMemberMessageAAQToPartner.getId()==null){
@@ -36,12 +41,27 @@ public class TradingOrderAddMemberMessageAAQToPartnerImpl implements com.trading
     }
 
     @Override
-    public List<TradingOrderAddMemberMessageAAQToPartner> selectTradingOrderAddMemberMessageAAQToPartnerByTransactionId(String TransactionId,Integer type) {
+    public List<TradingOrderAddMemberMessageAAQToPartner> selectTradingOrderAddMemberMessageAAQToPartnerByTransactionId(String TransactionId,Integer type,Integer...messageflag) {
         TradingOrderAddMemberMessageAAQToPartnerExample example=new TradingOrderAddMemberMessageAAQToPartnerExample();
         TradingOrderAddMemberMessageAAQToPartnerExample.Criteria cr=example.createCriteria();
         cr.andTransactionidEqualTo(TransactionId);
         cr.andMessagetypeEqualTo(type);
+        if(messageflag!=null){
+            cr.andMessageflagEqualTo(messageflag[0]);
+        }
         List<TradingOrderAddMemberMessageAAQToPartner> list=tradingOrderAddMemberMessageAAQToPartnerMapper.selectByExample(example);
         return list;
+    }
+
+    @Override
+    public List<TradingOrderAddMemberMessageAAQToPartnerQuery> selectTradingOrderAddMemberMessageAAQToPartner(Map map, Page page) {
+        return addMemberMessageAAQToPartnerMapper.selectByAddMemberMessageAAQToPartnerList(map,page);
+    }
+
+    @Override
+    public void deleteTradingOrderAddMemberMessageAAQToPartner(Long id) {
+        if(id!=null){
+            tradingOrderAddMemberMessageAAQToPartnerMapper.deleteByPrimaryKey(id);
+        }
     }
 }

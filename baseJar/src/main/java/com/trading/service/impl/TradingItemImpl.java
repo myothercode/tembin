@@ -1073,10 +1073,18 @@ public class TradingItemImpl implements com.trading.service.ITradingItem {
                         //保存国网运输详情
                         this.iTradingShippingServiceOptions.deleteByParentId(tradingShippingdetails.getId());
                         List<ShippingServiceOptions> lisso = shippingDetails.getShippingServiceOptions();
+
+
                         for (int i = 0; i < lisso.size(); i++) {
                             ShippingServiceOptions sso = lisso.get(i);
                             sso.setShippingServicePriority((i + 1));
                             TradingShippingserviceoptions tsp = this.iTradingShippingServiceOptions.toDAOPojo(sso);
+                            Map ms = new HashMap();
+                            ms.put("type","domestic transportation");
+                            ms.put("value",tsp.getShippingservice());
+                            ms.put("parentId",tradingItem.getSite());
+                            List<TradingDataDictionary> litdd = DataDictionarySupport.getTradingDataDictionaryByMap(ms);
+                            tsp.setShippingservice(litdd.get(0).getId()+"");
                             tsp.setParentUuid(tradingShippingdetails.getUuid());
                             tsp.setParentId(tradingShippingdetails.getId());
                             tsp.setCreateUser(kml.getUserId());
@@ -1091,6 +1099,12 @@ public class TradingItemImpl implements com.trading.service.ITradingItem {
 
                                 isso.setShippingServicePriority((i + 1));
                                 TradingInternationalshippingserviceoption tiss = this.iTradingInternationalShippingServiceOption.toDAOPojo(isso);
+                                Map ms = new HashMap();
+                                ms.put("type","International transport");
+                                ms.put("value",tiss.getShippingservice());
+                                ms.put("parentId",tradingItem.getSite());
+                                List<TradingDataDictionary> litdd = DataDictionarySupport.getTradingDataDictionaryByMap(ms);
+                                tiss.setShippingservice(litdd.get(0).getId()+"");
                                 tiss.setParentId(tradingShippingdetails.getId());
                                 tiss.setParentUuid(tradingShippingdetails.getUuid());
                                 tiss.setCreateUser(kml.getUserId());

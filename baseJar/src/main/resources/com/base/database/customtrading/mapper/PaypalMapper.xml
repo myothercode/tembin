@@ -16,6 +16,7 @@
     <result column="uuid" jdbcType="VARCHAR" property="uuid" />
     <result column="site_name" jdbcType="VARCHAR" property="siteName" />
     <result column="paypal_name" jdbcType="VARCHAR" property="payPalName" />
+    <result column="check_flag" jdbcType="VARCHAR" property="checkFlag" />
   </resultMap>
 
     <select id="selectByPayPalList" resultMap="BaseResultMap" parameterType="map">

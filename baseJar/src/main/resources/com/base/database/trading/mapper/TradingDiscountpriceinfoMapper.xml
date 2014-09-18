@@ -21,6 +21,7 @@
     <result column="is_shippingfee" jdbcType="VARCHAR" property="isShippingfee" />
     <result column="name" jdbcType="VARCHAR" property="name" />
     <result column="ebay_account" jdbcType="VARCHAR" property="ebayAccount" />
+    <result column="check_flag" jdbcType="VARCHAR" property="checkFlag" />
   </resultMap>
   <sql id="Example_Where_Clause">
     <!--
@@ -95,7 +96,7 @@
     -->
     id, MadeForOutletComparisonPrice, MinimumAdvertisedPrice, MinimumAdvertisedPriceExposure, 
     OriginalRetailPrice, SoldOffeBay, SoldOneBay, create_user, create_time, uuid, dis_starttime, 
-    dis_endtime, is_shippingfee, name, ebay_account
+    dis_endtime, is_shippingfee, name, ebay_account, check_flag
   </sql>
   <select id="selectByExample" parameterType="com.base.database.trading.model.TradingDiscountpriceinfoExample" resultMap="BaseResultMap">
     <!--
@@ -153,16 +154,13 @@
       SoldOffeBay, SoldOneBay, create_user, 
       create_time, uuid, dis_starttime, 
       dis_endtime, is_shippingfee, name, 
-      ebay_account)
+      ebay_account, check_flag)
     values (#{id,jdbcType=BIGINT}, #{madeforoutletcomparisonprice,jdbcType=BIGINT}, #{minimumadvertisedprice,jdbcType=BIGINT}, 
       #{minimumadvertisedpriceexposure,jdbcType=VARCHAR}, #{originalretailprice,jdbcType=VARCHAR}, 
       #{soldoffebay,jdbcType=VARCHAR}, #{soldonebay,jdbcType=VARCHAR}, #{createUser,jdbcType=BIGINT}, 
       #{createTime,jdbcType=TIMESTAMP}, #{uuid,jdbcType=VARCHAR}, #{disStarttime,jdbcType=TIMESTAMP}, 
       #{disEndtime,jdbcType=TIMESTAMP}, #{isShippingfee,jdbcType=VARCHAR}, #{name,jdbcType=VARCHAR}, 
-      #{ebayAccount,jdbcType=VARCHAR})
-      <selectKey resultType="long" keyProperty="id" order="AFTER">
-          SELECT LAST_INSERT_ID()
-      </selectKey>
+      #{ebayAccount,jdbcType=VARCHAR}, #{checkFlag,jdbcType=VARCHAR})
   </insert>
   <insert id="insertSelective" parameterType="com.base.database.trading.model.TradingDiscountpriceinfo">
     <!--
@@ -216,6 +214,9 @@
       <if test="ebayAccount != null">
         ebay_account,
       </if>
+      <if test="checkFlag != null">
+        check_flag,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
       <if test="id != null">
@@ -263,10 +264,10 @@
       <if test="ebayAccount != null">
         #{ebayAccount,jdbcType=VARCHAR},
       </if>
+      <if test="checkFlag != null">
+        #{checkFlag,jdbcType=VARCHAR},
+      </if>
     </trim>
-      <selectKey resultType="long" keyProperty="id" order="AFTER">
-          SELECT LAST_INSERT_ID()
-      </selectKey>
   </insert>
   <select id="countByExample" parameterType="com.base.database.trading.model.TradingDiscountpriceinfoExample" resultType="java.lang.Integer">
     <!--
@@ -330,6 +331,9 @@
       <if test="record.ebayAccount != null">
         ebay_account = #{record.ebayAccount,jdbcType=VARCHAR},
       </if>
+      <if test="record.checkFlag != null">
+        check_flag = #{record.checkFlag,jdbcType=VARCHAR},
+      </if>
     </set>
     <if test="_parameter != null">
       <include refid="Update_By_Example_Where_Clause" />
@@ -355,7 +359,8 @@
       dis_endtime = #{record.disEndtime,jdbcType=TIMESTAMP},
       is_shippingfee = #{record.isShippingfee,jdbcType=VARCHAR},
       name = #{record.name,jdbcType=VARCHAR},
-      ebay_account = #{record.ebayAccount,jdbcType=VARCHAR}
+      ebay_account = #{record.ebayAccount,jdbcType=VARCHAR},
+      check_flag = #{record.checkFlag,jdbcType=VARCHAR}
     <if test="_parameter != null">
       <include refid="Update_By_Example_Where_Clause" />
     </if>
@@ -409,6 +414,9 @@
       <if test="ebayAccount != null">
         ebay_account = #{ebayAccount,jdbcType=VARCHAR},
       </if>
+      <if test="checkFlag != null">
+        check_flag = #{checkFlag,jdbcType=VARCHAR},
+      </if>
     </set>
     where id = #{id,jdbcType=BIGINT}
   </update>
@@ -431,7 +439,8 @@
       dis_endtime = #{disEndtime,jdbcType=TIMESTAMP},
       is_shippingfee = #{isShippingfee,jdbcType=VARCHAR},
       name = #{name,jdbcType=VARCHAR},
-      ebay_account = #{ebayAccount,jdbcType=VARCHAR}
+      ebay_account = #{ebayAccount,jdbcType=VARCHAR},
+      check_flag = #{checkFlag,jdbcType=VARCHAR}
     where id = #{id,jdbcType=BIGINT}
   </update>
 </mapper>

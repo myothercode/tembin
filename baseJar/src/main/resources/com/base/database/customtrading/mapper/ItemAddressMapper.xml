@@ -15,6 +15,7 @@
     <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
     <result column="uuid" jdbcType="VARCHAR" property="uuid" />
     <result column="country_name" jdbcType="VARCHAR" property="countryName" />
+    <result column="check_flag" jdbcType="VARCHAR" property="checkFlag" />
   </resultMap>
 
     <select id="selectByItemAddressList" resultMap="BaseResultMap" parameterType="map">

@@ -1,6 +1,7 @@
 package com.trading.service.impl;
 
 import com.base.database.trading.mapper.TradingShippingserviceoptionsMapper;
+import com.base.database.trading.model.TradingBuyerRequirementDetails;
 import com.base.database.trading.model.TradingShippingserviceoptions;
 import com.base.database.trading.model.TradingShippingserviceoptionsExample;
 import com.base.utils.cache.DataDictionarySupport;
@@ -46,7 +47,12 @@ public class TradingShippingServiceOptionsImpl implements com.trading.service.IT
         pojo.setShippingsurcharge(sso.getShippingSurcharge().getValue());
         return pojo;
     }
-
+    @Override
+    public List<TradingShippingserviceoptions> selectByParentId(Long parentid){
+        TradingShippingserviceoptionsExample tse = new TradingShippingserviceoptionsExample();
+        tse.createCriteria().andParentIdEqualTo(parentid);
+        return this.tsm.selectByExample(tse);
+    }
     /**
      * 通过父ID删掉数据
      * @param id

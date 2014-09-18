@@ -47,12 +47,12 @@
             <if test="information=='custom'">
                 and itemInformation.custom_id is  null
             </if>
-            <if test="information=='supplier'">
-                and itemInformation.supplier_id is  null
-            </if>
-            <if test="information=='inventory'">
-                and itemInformation.inventory_id is  null
+            <if test="information=='notAll'">
+                and (itemInformation.inventory_id is  null or itemInformation.custom_id is  null or itemInformation.supplier_id is null)
             </if >
+            <if test="information=='picture'">
+                and attr.attrValue is null
+            </if>
         </if>
         <if test="itemType!=null">
             and dic.id=#{itemType}

@@ -22,6 +22,7 @@
     <result column="name" jdbcType="VARCHAR" property="name" />
     <result column="ebay_account" jdbcType="VARCHAR" property="ebayAccount" />
     <result column="ebay_name" jdbcType="VARCHAR" property="ebayName" />
+      <result column="check_flag" jdbcType="VARCHAR" property="checkFlag" />
   </resultMap>
     <select id="selectByDiscountpriceinfoList" resultMap="BaseResultMap" parameterType="map">
         select dis.*,fig.config_name ebay_name from trading_discountpriceinfo dis
