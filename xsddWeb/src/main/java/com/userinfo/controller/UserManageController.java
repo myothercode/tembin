@@ -34,7 +34,7 @@ import java.util.Map;
 
 /**
  * Created by Administrtor on 2014/8/6.
- * 用户管理
+ * ebay用户管理
  */
 @Controller
 @RequestMapping("user")

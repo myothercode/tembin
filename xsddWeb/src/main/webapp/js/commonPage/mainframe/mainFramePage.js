@@ -18,6 +18,7 @@ function getMenu(){
                 }
 
             }
+            initLeftMenuBar();
         },
         function(m,r){alert(r)}]
 
@@ -46,7 +47,6 @@ function addMenuLevel2(json){
         "onclick='addArrow(this)' href="+json.permissionURL+">"+json.permissionName+"</a></li>";
     var parID="menu_1_"+json['parentID'];
     $("#"+parID+" .submenu").append(h);
-    initLeftMenuBar();
 }
 
 /**为选中的菜单的大菜单增加箭头*/

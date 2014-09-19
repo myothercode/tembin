@@ -1,6 +1,8 @@
 package com.module.controller;
 
+import com.base.database.trading.model.TradingDescriptionDetails;
 import com.base.database.trading.model.TradingDescriptionDetailsWithBLOBs;
+import com.base.database.trading.model.TradingReturnpolicy;
 import com.base.domains.CommonParmVO;
 import com.base.domains.querypojos.DescriptionDetailsWithBLOBsQuery;
 import com.base.mybatis.page.Page;
@@ -34,6 +36,7 @@ public class DescriptionDetailsController extends BaseAction{
     private ITradingDescriptionDetails iTradingDescriptionDetails;
 
     @RequestMapping("/DescriptionDetailsList.do")
+    @AvoidDuplicateSubmission(needSaveToken = true)
     public ModelAndView DescriptionDetailsList(HttpServletRequest request,HttpServletResponse response,ModelMap modelMap){
       /*  Map m = new HashMap();
         List<DescriptionDetailsWithBLOBsQuery> DescriptionDetailsli = this.iTradingDescriptionDetails.selectByDescriptionDetailsList(m);
@@ -68,6 +71,8 @@ public class DescriptionDetailsController extends BaseAction{
         m.put("id",request.getParameter("id"));
         List<DescriptionDetailsWithBLOBsQuery> DescriptionDetailsli = this.iTradingDescriptionDetails.selectByDescriptionDetailsList(m);
         modelMap.put("DescriptionDetails",DescriptionDetailsli.get(0));
+        String type = request.getParameter("type");
+        modelMap.put("type",type);
         return forword("module/descriptiondetails/adddescriptiondetails",modelMap);
     }
 
@@ -79,6 +84,29 @@ public class DescriptionDetailsController extends BaseAction{
                                        ModelMap modelMap) throws Exception {
 
         this.iTradingDescriptionDetails.saveDescriptionDetails(tradingDescription);
+        AjaxSupport.sendSuccessText("","操作成功!");
+    }
+
+    /**
+     * 保存数据
+     * @param request
+     * @param response
+     * @param modelMap
+     * @return
+     * @throws Exception
+     */
+    @RequestMapping("/ajax/delDescriptionDetails.do")
+    @AvoidDuplicateSubmission(needRemoveToken = true)
+    @ResponseBody
+    public void delDescriptionDetails(HttpServletRequest request,HttpServletResponse response,@ModelAttribute( "initSomeParmMap" )ModelMap modelMap) throws Exception {
+        String id = request.getParameter("id");
+        TradingDescriptionDetailsWithBLOBs tp= this.iTradingDescriptionDetails.selectById(Long.parseLong(id));
+        if(tp.getCheckFlag().equals("1")){
+            tp.setCheckFlag("0");
+        }else{
+            tp.setCheckFlag("1");
+        }
+        this.iTradingDescriptionDetails.saveDescriptionDetails(tp);
         AjaxSupport.sendSuccessText("","操作成功!");
     }
 }

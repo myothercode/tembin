@@ -35,16 +35,12 @@
                 url:path + "/ajax/loadDescriptionDetailsList.do",
                 columnData:[
                     {title:"名称",name:"name",width:"8%",align:"left"},
-                    {title:"pay",name:"payInfo",width:"8%",align:"left"},
-                    {title:"shipping",name:"shippingInfo",width:"8%",align:"left"},
-                    {title:"contact",name:"contactInfo",width:"8%",align:"left"},
-                    {title:"Guarantee",name:"guaranteeInfo",width:"8%",align:"left"},
-                    {title:"Feedback",name:"feedbackInfo",width:"8%",align:"left"},
+                    {title:"数据状态",name:"option1",width:"8%",align:"left",format:makeOption2},
                     {title:"操作",name:"option1",width:"8%",align:"left",format:makeOption1}
                 ],
                 selectDataNow:false,
                 isrowClick:true,
-                showIndex:true
+                showIndex:false
             });
             refreshTable();
         });
@@ -53,7 +49,61 @@
         }
         /**组装操作选项*/
         function makeOption1(json){
-            var htm="<a target=\"_blank\" href=\"javascript:void(0)\" onclick=\"editDescriptionDetails('"+json.id+"');\">编辑</a>";
+            var htm='<div class="ui-select" style="margin-top:9px; width:10px">'
+            htm+='<select onchange="selectDo(this)">'
+            htm+='<option value="">请选择</option>'
+            htm+='<option value="'+json.id+'">查看</option>'
+            if(json.checkFlag=="0") {
+                htm += '<option value="' + json.id + '">禁用</option>'
+            }else{
+                htm += '<option value="' + json.id + '">启用</option>'
+            }
+            htm+='<option value="'+json.id+'">编辑</option>'
+
+            htm+='</select>'
+            htm+='</div>';
+            return htm;
+        }
+        function selectDo(obj){
+            if($(obj).find(":selected").text()=="编辑"){
+                editDescriptionDetails($(obj).find(":selected").val());
+            }else if($(obj).find(":selected").text()=="禁用"||$(obj).find(":selected").text()=="启用"){
+                delDescriptionDetails($(obj).find(":selected").val());
+            }else if($(obj).find(":selected").text()=="查看"){
+                editDescriptionDetailsselect($(obj).find(":selected").val());
+            }
+            $(obj).val("");
+        }
+        function editDescriptionDetailsselect(id){
+            returnPolicy=$.dialog({title: '查看退货政策',
+                content: 'url:/xsddWeb/editDescriptionDetails.do?id='+id+'&type=01',
+                icon: 'succeed',
+                width:1025,
+                lock:true
+            });
+        }
+        function delDescriptionDetails(id){
+            var url=path+"/ajax/delDescriptionDetails.do?id="+id;
+            $().invoke(url,{},
+                    [function(m,r){
+                        alert("操作成功！");
+                        Base.token();
+                        refreshTable();
+                    },
+                        function(m,r){
+                            alert(r);
+                            Base.token();
+                        }]
+            );
+        }
+        //数据状态
+        function makeOption2(json){
+            var htm=''
+            if(json.checkFlag=="0"){
+                htm='已启用';
+            }else{
+                htm='已禁用';
+            }
             return htm;
         }
     </script>

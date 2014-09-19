@@ -1,7 +1,7 @@
 /*表格样式*/
 .tab_ZY { text-align:left; border-collapse:collapse;}
-.tab_ZY th { border-top:1px solid #b7c0c7; border-bottom:1px solid #b7c0c7;text-align:left; padding:7px 0 7px 10px; background:#f2f6ff; color:#0c8cbe;}
-.tab_ZY td { padding:9px 10px; border-bottom:1px solid #dddddd; color:#111111;}
+.tab_ZY th { border-top:1px solid #b7c0c7; border-bottom:1px solid #b7c0c7;text-align:left; padding:7px 0 7px 10px; background:#F7F7F7;font-weight: bold}
+.tab_ZY td { padding:9px 10px; border-bottom:1px solid #dddddd; color:#111111;background:#ffffff}
 .tab_ZY tr.alt td{background:#ffffff}
 .tab_ZY tr.over td{background:#e8f1ff; border-bottom:1px solid #bfd9ff; border-top:1px solid #bfd9ff;}
 .tab_ZY tr.clickCss td{background:#bdd8ff; border-bottom:1px solid #79aeff; border-top:1px solid #79aeff;}

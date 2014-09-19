@@ -130,6 +130,19 @@
     var um4 =UE.getEditor('myEditor4',ueditorToolBar);
 
     _sku="systemImage";
+    var type = '${type}';
+    if(type=="01"){
+        $("input").each(function(i,d){
+            $(d).attr("disabled",true);
+        });
+        $("select").each(function(i,d){
+            $(d).attr("disabled",true);
+        });
+        /*$("p").each(function(i,d){
+           $(d).attr("disabled",true);
+        });*/
+        $("textarea").attr("disabled",true);
+    }
 
 </script>
 <script type="text/javascript">

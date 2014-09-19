@@ -37,6 +37,7 @@ public class ReturnpolicyController extends BaseAction{
     private ITradingReturnpolicy iTradingReturnpolicy;
 
     @RequestMapping("/ReturnpolicyList.do")
+    @AvoidDuplicateSubmission(needSaveToken = true)
     public ModelAndView ReturnpolicyList(HttpServletRequest request,HttpServletResponse response,
                                          @ModelAttribute( "initSomeParmMap" )ModelMap modelMap){
         /*Map m = new HashMap();
@@ -102,6 +103,10 @@ public class ReturnpolicyController extends BaseAction{
         m.put("id",request.getParameter("id"));
         List<ReturnpolicyQuery> Returnpolicyli = this.iTradingReturnpolicy.selectByReturnpolicyList(m);
         modelMap.put("Returnpolicy",Returnpolicyli.get(0));
+        String type = request.getParameter("type");
+        if(type!=null&&!"".equals(type)){
+            modelMap.put("type",type);
+        }
         return forword("module/returnpolicy/addReturnpolicy",modelMap);
     }
 
@@ -116,6 +121,29 @@ public class ReturnpolicyController extends BaseAction{
             tradingReturnpolicy.setId(null);
         }
         this.iTradingReturnpolicy.saveTradingReturnpolicy(tradingReturnpolicy);
+        AjaxSupport.sendSuccessText("","操作成功!");
+    }
+
+    /**
+     * 保存数据
+     * @param request
+     * @param response
+     * @param modelMap
+     * @return
+     * @throws Exception
+     */
+    @RequestMapping("/ajax/delReturnPolicy.do")
+    @AvoidDuplicateSubmission(needRemoveToken = true)
+    @ResponseBody
+    public void delReturnPolicy(HttpServletRequest request,HttpServletResponse response,@ModelAttribute( "initSomeParmMap" )ModelMap modelMap) throws Exception {
+        String id = request.getParameter("id");
+        TradingReturnpolicy tp= this.iTradingReturnpolicy.selectById(Long.parseLong(id));
+        if(tp.getCheckFlag().equals("1")){
+            tp.setCheckFlag("0");
+        }else{
+            tp.setCheckFlag("1");
+        }
+        this.iTradingReturnpolicy.saveTradingReturnpolicy(tp);
         AjaxSupport.sendSuccessText("","操作成功!");
     }
 }
