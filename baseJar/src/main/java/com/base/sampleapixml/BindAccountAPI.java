@@ -3,6 +3,9 @@ package com.base.sampleapixml;
 import com.base.database.trading.model.TradingMessageAddmembermessage;
 import org.apache.commons.lang.StringUtils;
 
+import java.math.BigInteger;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.Map;
 
 /**
@@ -263,4 +266,187 @@ public class BindAccountAPI {
                 "</GetDisputeRequest>";
         return xml;
     }
+    /*
+  *四海邮AddOrder
+  */
+    public static  String getSiHaiYouAddOrder(){
+        String md=md5("11111111"+"auctivision");
+        String xml="<?xml version=\"1.0\" encoding=\"utf-8\"?>" +
+                "<soap:Envelope xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\">" +
+                "  <soap:Body>" +
+                "    <AddOrder xmlns=\"http://www.4haiyou.com/\">" +
+                "      <order>" +
+                "        <Address1>XXX Address -1</Address1>" +
+                "        <Address2></Address2>" +
+                "        <City>Shen Zhen</City>" +
+                "        <ContactName>Andy George</ContactName>" +
+                "        <Country>CA</Country>" +
+                "        <Email>caixu23@msn.com</Email>" +
+                "        <OrderNumber>number001-002</OrderNumber>" +
+                "        <Phone>800-111-1234</Phone>" +
+                "        <Province>CA</Province>" +
+                "        <Zipcode>12345</Zipcode>" +
+                "        <ShippingType>International</ShippingType>" +
+                "        <Value>16.21</Value>" +
+                "        <OrderLine>" +
+                "          <OrderLine>" +
+                "            <SKU>SKU001</SKU>" +
+                "            <Quantity>1</Quantity>" +
+                "          </OrderLine>" +
+                "        </OrderLine>" +
+                "        <ShippingFee>0</ShippingFee>" +
+                "        <ExtraFee>0</ExtraFee>" +
+                "        <TrackingNumber></TrackingNumber>" +
+                "        <Status></Status>" +
+                "        <OrderError></OrderError>" +
+                "        <ShippingDateTime></ShippingDateTime>" +
+                "        <GuaranteePrice>0</GuaranteePrice>" +
+                "        <Fulfillment>0</Fulfillment>" +
+                "      </order>" +
+                "      <userName>demo1@4haiyou.com</userName>" +
+                "      <password>"+md+"</password>" +
+                "    </AddOrder>" +
+                "  </soap:Body>" +
+                "</soap:Envelope>";
+        return xml;
+    }
+    /*
+ *出口易
+ */
+    public static  String getChuKouYi(){
+        /*String xml="<?xml version=\"1.0\" encoding=\"utf-8\"?>" +
+                "<soap:Envelope xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\">" +
+                "  <soap:Body>" +
+                "    <VerifyUser xmlns=\"http://www.chukou1.com/\">" +
+                "      <request>" +
+                "        <Token>887E99B5F89BB18BEA12B204B620D236</Token>"+
+                "        <UserKey>wr5qjqh4gj</UserKey>" +
+                "        <UserID>guest</UserID>" +
+                "      </request>" +
+                "    </VerifyUser>" +
+                "  </soap:Body>" +
+                "</soap:Envelope>";*/
+        //添加单个产品型号的信息
+       /* String xml="<?xml version=\"1.0\" encoding=\"utf-8\"?>" +
+                "<soap:Envelope xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\">" +
+                "  <soap:Body>" +
+                "    <ProductAddModel xmlns=\"http://www.chukou1.com/\">" +
+                "      <request>" +
+                "        <Token>887E99B5F89BB18BEA12B204B620D236</Token>"+
+                "        <UserKey>wr5qjqh4gj</UserKey>" +
+                "        <ModelDetail>" +
+                "          <SKU>SKU123</SKU>" +
+                "          <Custom></Custom>" +
+                "          <Category>电子产品</Category>" +
+                "          <Description>description</Description>" +
+                "          <ProductFlag>Normal</ProductFlag>" +
+                "          <Packing>" +
+                "            <Length>1</Length>" +
+                "            <Width>1</Width>" +
+                "            <Height>1</Height>" +
+                "          </Packing>" +
+                "          <Weight>2</Weight>" +
+                "          <DeclareName>iii</DeclareName>" +
+                "          <DeclareValue>20</DeclareValue>" +
+                "          <Warning>5</Warning>" +
+                "        </ModelDetail>" +
+                "      </request>" +
+                "    </ProductAddModel>" +
+                "  </soap:Body>" +
+                "</soap:Envelope>";*/
+        //获取库存编码
+        String xml="<?xml version=\"1.0\" encoding=\"utf-8\"?>" +
+                "<soap:Envelope xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\">" +
+                "  <soap:Body>" +
+                "    <ProductGetStorageNo xmlns=\"http://www.chukou1.com/\">" +
+                "      <request>" +
+                "        <Token>887E99B5F89BB18BEA12B204B620D236</Token>"+
+                "        <UserKey>wr5qjqh4gj</UserKey>" +
+                "        <Warehouse>UK</Warehouse>" +
+                "        <SKU>SKU123</SKU>" +
+                "      </request>" +
+                "    </ProductGetStorageNo>" +
+                "  </soap:Body>" +
+                "</soap:Envelope>";
+  /*  *//*    String xml="<?xml version=\"1.0\" encoding=\"utf-8\"?>" +
+                "<soap:Envelope xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\">" +
+                "  <soap:Body>" +
+                "    <ProductGetStock xmlns=\"http://www.chukou1.com/\">" +
+                "      <request>" +
+                "        <Token>887E99B5F89BB18BEA12B204B620D236</Token>"+
+                "        <UserKey>wr5qjqh4gj</UserKey>" +
+                "        <SKU>SKU123</SKU>" +
+                "        <Custom>string</Custom>" +
+                "        <Warehouse>US</Warehouse>" +
+                "      </request>" +
+                "    </ProductGetStock>" +
+                "  </soap:Body>" +
+                "</soap:Envelope>";*//*
+        String xml="<?xml version=\"1.0\" encoding=\"utf-8\"?>" +
+                "<soap:Envelope xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\">" +
+                "  <soap:Body>" +
+                "    <InStoreAddOrder xmlns=\"http://www.chukou1.com/\">" +
+                "      <request>" +
+                "        <Token>887E99B5F89BB18BEA12B204B620D236</Token>"+
+                "        <UserKey>wr5qjqh4gj</UserKey>" +
+                "        <OrderDetail>" +
+                "          <OrderSign>123456789</OrderSign>" +
+                "          <State>Received</State>" +
+                "          <ShippingMethod>EMS</ShippingMethod>" +
+                "          <Warehouse>US</Warehouse>" +
+                "          <Location>SZ</Location>" +
+                "          <PickupType>0</PickupType>" +
+                "          <PickUpAddress>" +
+                "            <District>cd</District>" +
+                "            <DistrictCode>cd</DistrictCode>" +
+                "            <CityCode>cd</CityCode>" +
+                "            <ProvinceCode>614900</ProvinceCode>" +
+                "          </PickUpAddress>" +
+                "          <ArriveTime>2014-01-01</ArriveTime>" +
+                "          <CaseList>" +
+                "            <InStoreCase xsi:nil=\"true\"/>" +
+               *//* "            <CaseNo>1</CaseNo>"+
+                "            <State>Received</State>"+
+                "            <Packing>" +
+                "               <Length>1</Length>" +
+                "               <Width>1</Width>" +
+                "               <Height>1</Height>" +
+                "            </Packing>"+
+                "            <Weight>2</Weight>"+
+                "            <ProductList>" +
+                "               <DeclareName>iii</DeclareName>" +
+                "               <DeclareValue>20</DeclareValue>" +
+                "               <Quantity>1</Quantity>" +
+                "               <SKU>SKU123</SKU>" +
+                "            </ProductList>"+
+                "            </InStoreCase>"+*//*
+                "          </CaseList>" +
+                "          <Remark>98765</Remark>" +
+                "        </OrderDetail>" +
+                "        <Submit>true</Submit>" +
+                "      </request>" +
+                "    </InStoreAddOrder>" +
+                "  </soap:Body>" +
+                "</soap:Envelope>";*/
+        return xml;
+    }
+        public static String md5(String s) {
+            if (s != null) {
+                String md5_str = "";
+                try {
+                    MessageDigest m = MessageDigest.getInstance("MD5");
+                    m.update(s.getBytes(), 0, s.length());
+                    md5_str = new BigInteger(1, m.digest()).toString(16);
+                    // Log.i("MD5", md5_str);
+                    if (md5_str.length() < 32) {
+                        md5_str = "0".concat(md5_str);
+                    }
+                } catch (NoSuchAlgorithmException e) {
+                    e.printStackTrace();
+                }
+                return md5_str;
+            }
+            return "";
+        }
+
 }

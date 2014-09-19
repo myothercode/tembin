@@ -25,6 +25,7 @@
       <result column="RefundOption_name" jdbcType="VARCHAR" property="refundOptionName" />
       <result column="ShippingCostPaidByOption_name" jdbcType="VARCHAR" property="shippingCostPaidByOptionName" />
       <result column="site_name" jdbcType="VARCHAR" property="siteName" />
+      <result column="check_flag" jdbcType="VARCHAR" property="checkFlag" />
   </resultMap>
 
     <select id="selectByReturnpolicyList" resultMap="BaseResultMap" parameterType="map">

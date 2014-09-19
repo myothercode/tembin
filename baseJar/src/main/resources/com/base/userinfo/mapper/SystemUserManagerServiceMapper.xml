@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.base.userinfo.mapper.SystemUserManagerServiceMapper" >
+
+<select id="queryAccountListByUserID" parameterType="map" resultType="com.base.domains.userinfo.UsercontrollerUserExtend">
+    select u.user_id userId  ,
+    u.user_name userName,
+    u.user_login_id userLoginId,
+    u.user_org_id userOrgId,
+    u.user_parent_id userParentId,
+    u.`status` `status`,
+    u.user_email userEmail,
+    u.tel_phone telPhone,
+    u.address address,
+    org.org_name orgName,
+    group_concat(r.role_name) roleName
+    from usercontroller_user u
+    LEFT JOIN usercontroller_org org on u.user_org_id=org.org_id
+    LEFT JOIN usercontroller_user_role ur on ur.user_id=u.user_id
+    left JOIN usercontroller_role r on ur.role_id=r.role_id
+    where u.user_id=#{userID} or u.user_parent_id=#{userID}
+    GROUP BY u.user_id
+</select>
+
+</mapper>

@@ -166,6 +166,10 @@ public class TradingDescriptionDetailsExample {
             return criteria.size() > 0;
         }
 
+        public List<Criterion> getAllCriteria() {
+            return criteria;
+        }
+
         public List<Criterion> getCriteria() {
             return criteria;
         }
@@ -860,6 +864,76 @@ public class TradingDescriptionDetailsExample {
             addCriterion("Feedback_title not between", value1, value2, "feedbackTitle");
             return (Criteria) this;
         }
+
+        public Criteria andCheckFlagIsNull() {
+            addCriterion("check_flag is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andCheckFlagIsNotNull() {
+            addCriterion("check_flag is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andCheckFlagEqualTo(String value) {
+            addCriterion("check_flag =", value, "checkFlag");
+            return (Criteria) this;
+        }
+
+        public Criteria andCheckFlagNotEqualTo(String value) {
+            addCriterion("check_flag <>", value, "checkFlag");
+            return (Criteria) this;
+        }
+
+        public Criteria andCheckFlagGreaterThan(String value) {
+            addCriterion("check_flag >", value, "checkFlag");
+            return (Criteria) this;
+        }
+
+        public Criteria andCheckFlagGreaterThanOrEqualTo(String value) {
+            addCriterion("check_flag >=", value, "checkFlag");
+            return (Criteria) this;
+        }
+
+        public Criteria andCheckFlagLessThan(String value) {
+            addCriterion("check_flag <", value, "checkFlag");
+            return (Criteria) this;
+        }
+
+        public Criteria andCheckFlagLessThanOrEqualTo(String value) {
+            addCriterion("check_flag <=", value, "checkFlag");
+            return (Criteria) this;
+        }
+
+        public Criteria andCheckFlagLike(String value) {
+            addCriterion("check_flag like", value, "checkFlag");
+            return (Criteria) this;
+        }
+
+        public Criteria andCheckFlagNotLike(String value) {
+            addCriterion("check_flag not like", value, "checkFlag");
+            return (Criteria) this;
+        }
+
+        public Criteria andCheckFlagIn(List<String> values) {
+            addCriterion("check_flag in", values, "checkFlag");
+            return (Criteria) this;
+        }
+
+        public Criteria andCheckFlagNotIn(List<String> values) {
+            addCriterion("check_flag not in", values, "checkFlag");
+            return (Criteria) this;
+        }
+
+        public Criteria andCheckFlagBetween(String value1, String value2) {
+            addCriterion("check_flag between", value1, value2, "checkFlag");
+            return (Criteria) this;
+        }
+
+        public Criteria andCheckFlagNotBetween(String value1, String value2) {
+            addCriterion("check_flag not between", value1, value2, "checkFlag");
+            return (Criteria) this;
+        }
     }
 
     /**
@@ -896,6 +970,8 @@ public class TradingDescriptionDetailsExample {
 
         private boolean listValue;
 
+        private String typeHandler;
+
         public String getCondition() {
             return condition;
         }
@@ -924,16 +1000,22 @@ public class TradingDescriptionDetailsExample {
             return listValue;
         }
 
+        public String getTypeHandler() {
+            return typeHandler;
+        }
+
         protected Criterion(String condition) {
             super();
             this.condition = condition;
+            this.typeHandler = null;
             this.noValue = true;
         }
 
-        protected Criterion(String condition, Object value) {
+        protected Criterion(String condition, Object value, String typeHandler) {
             super();
             this.condition = condition;
             this.value = value;
+            this.typeHandler = typeHandler;
             if (value instanceof List<?>) {
                 this.listValue = true;
             } else {
@@ -941,12 +1023,21 @@ public class TradingDescriptionDetailsExample {
             }
         }
 
-        protected Criterion(String condition, Object value, Object secondValue) {
+        protected Criterion(String condition, Object value) {
+            this(condition, value, null);
+        }
+
+        protected Criterion(String condition, Object value, Object secondValue, String typeHandler) {
             super();
             this.condition = condition;
             this.value = value;
             this.secondValue = secondValue;
+            this.typeHandler = typeHandler;
             this.betweenValue = true;
+        }
+
+        protected Criterion(String condition, Object value, Object secondValue) {
+            this(condition, value, secondValue, null);
         }
     }
 }

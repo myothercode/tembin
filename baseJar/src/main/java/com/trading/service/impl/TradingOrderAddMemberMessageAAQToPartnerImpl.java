@@ -46,7 +46,7 @@ public class TradingOrderAddMemberMessageAAQToPartnerImpl implements com.trading
         TradingOrderAddMemberMessageAAQToPartnerExample.Criteria cr=example.createCriteria();
         cr.andTransactionidEqualTo(TransactionId);
         cr.andMessagetypeEqualTo(type);
-        if(messageflag!=null){
+        if(messageflag!=null&&messageflag.length>0){
             cr.andMessageflagEqualTo(messageflag[0]);
         }
         List<TradingOrderAddMemberMessageAAQToPartner> list=tradingOrderAddMemberMessageAAQToPartnerMapper.selectByExample(example);

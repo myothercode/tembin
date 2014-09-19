@@ -20,6 +20,7 @@
       <result column="contact_title" jdbcType="VARCHAR" property="contactTitle" />
       <result column="Guarantee_title" jdbcType="VARCHAR" property="guaranteeTitle" />
       <result column="Feedback_title" jdbcType="VARCHAR" property="feedbackTitle" />
+      <result column="check_flag" jdbcType="VARCHAR" property="checkFlag" />
   </resultMap>
 
     <select id="selectByDescriptionDetailsList" resultMap="BaseResultMap" parameterType="map">
