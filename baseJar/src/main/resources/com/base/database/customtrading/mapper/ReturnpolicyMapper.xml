@@ -38,5 +38,8 @@
         <if test="id!=null">
             and returnpolicy.id = #{id}
         </if>
+        <if test="checkFlag!=null">
+            and returnpolicy.check_flag = #{checkFlag}
+        </if>
     </select>
 </mapper>

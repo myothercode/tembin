@@ -101,6 +101,18 @@ public class ItemController extends BaseAction{
     private ImageService imageService;
 
     /**
+     * 范本管理
+     * @param request
+     * @param response
+     * @param modelMap
+     * @return
+     */
+    @RequestMapping("/itemManager.do")
+    public ModelAndView itemManager(HttpServletRequest request,HttpServletResponse response,@ModelAttribute( "initSomeParmMap" )ModelMap modelMap){
+        return forword("item/itemManager",modelMap);
+    }
+
+    /**
      * 商品展示列表
      * @param request
      * @param response
@@ -109,15 +121,23 @@ public class ItemController extends BaseAction{
      */
     @RequestMapping("/itemList.do")
     public ModelAndView itemList(HttpServletRequest request,HttpServletResponse response,@ModelAttribute( "initSomeParmMap" )ModelMap modelMap){
+        String flag=request.getParameter("flag");
+        if(flag!=null&&!"".equals(flag)){
+            modelMap.put("flag",flag);
+        }
         return forword("item/itemList",modelMap);
     }
 
     @RequestMapping("/ajax/loadItemList.do")
     @ResponseBody
-    public void loadItemList(ModelMap modelMap,CommonParmVO commonParmVO){
+    public void loadItemList(HttpServletRequest request,ModelMap modelMap,CommonParmVO commonParmVO){
         Map m = new HashMap();
         SessionVO c= SessionCacheSupport.getSessionVO();
         m.put("userid",c.getId());
+        String flag=request.getParameter("flag");
+        if(flag!=null&&!"".equals(flag)){
+            m.put("flag",flag);
+        }
         /**分页组装*/
         PageJsonBean jsonBean=commonParmVO.getJsonBean();
         Page page=jsonBean.toPage();

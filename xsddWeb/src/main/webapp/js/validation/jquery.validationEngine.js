@@ -1983,7 +1983,7 @@
 	 *            method (optional) action
 	 */
 	 $.fn.validationEngine = function(method) {
-
+         if(method==null){$('div .formError').remove();}//如果是初始化，那么就移除掉之前的提示框
 		 var form = $(this);
 		 if(!form[0]) return form;  // stop here if the form does not exist
 

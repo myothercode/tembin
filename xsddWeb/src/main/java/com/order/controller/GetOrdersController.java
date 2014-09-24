@@ -32,6 +32,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
+import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.*;
@@ -62,6 +63,10 @@ public class GetOrdersController extends BaseAction {
     private  ITradingOrderGetAccount iTradingOrderGetAccount;
     @Autowired
     private  ITradingOrderGetSellerTransactions iTradingOrderGetSellerTransactions;
+   /* @Autowired
+    private ITradingOrderVariation iTradingOrderVariation;
+    @Autowired
+    private ITradingOrderVariationSpecifics iTradingOrderVariationSpecifics;*/
     @Value("${EBAY.API.URL}")
     private String apiUrl;
 
@@ -69,36 +74,65 @@ public class GetOrdersController extends BaseAction {
     public ModelAndView OrdersList(HttpServletRequest request,HttpServletResponse response,ModelMap modelMap){
         return forword("/orders/order/getOrdersList",modelMap);
     }
+    //新建文件夹
+    @RequestMapping("/addTabRemark.do")
+    public ModelAndView addTabRemark(HttpServletRequest request,HttpServletResponse response,ModelMap modelMap){
+        return forword("/orders/order/addTabRemark",modelMap);
+    }
+
+    //保存文件夹
+    @RequestMapping("/saveTabremark.do")
+    public void saveTabremark(HttpServletRequest request,HttpServletResponse response,ModelMap modelMap){
+        AjaxSupport.sendSuccessText("", "文件夹保存成功");
+    }
     /**获取list数据的ajax方法*/
     @RequestMapping("/ajax/loadOrdersList.do")
     @ResponseBody
     public void loadOrdersList(CommonParmVO commonParmVO,HttpServletRequest request) throws Exception {
-        String orderStatus=request.getParameter("orderStatus");
-        String starttime=request.getParameter("starttime");
-        String endtime=request.getParameter("endtime");
+        String countryQ=request.getParameter("countryQ");
+        String typeQ=request.getParameter("typeQ");
+        String daysQ=request.getParameter("daysQ");
+        String itemType=request.getParameter("itemType");
+        String content=request.getParameter("content");
         String status=request.getParameter("status");
         /**分页组装*/
         PageJsonBean jsonBean=commonParmVO.getJsonBean();
         Page page=jsonBean.toPage();
         List<UsercontrollerEbayAccountExtend> ebays=userInfoService.getEbayAccountForCurrUser();
         Map map=new HashMap();
-        if(orderStatus==null||"All".equals(orderStatus)){
-            orderStatus=null;
+        Date starttime=null;
+        Date endtime=null;
+        if(StringUtils.isNotBlank(daysQ)){
+            if("2".equals(daysQ)){
+                starttime=DateUtils.subDays(new Date(),1);
+                Date endTime= DateUtils.addDays(starttime, 0);
+                endtime= com.base.utils.common.DateUtils.turnToDateEnd(endTime);
+            }else{
+                int day=Integer.parseInt(daysQ);
+                starttime=DateUtils.subDays(new Date(),day-1);
+                Date endTime= DateUtils.addDays(starttime,day-1);
+                endtime= com.base.utils.common.DateUtils.turnToDateEnd(endTime);
+            }
         }
-        if(status==null||"All".equals(status)){
+        if(!StringUtils.isNotBlank(status)||"All".equals(status)){
             status=null;
         }
-        if(!StringUtils.isNotBlank(starttime)){
-            starttime=null;
+        if(!StringUtils.isNotBlank(countryQ)){
+            countryQ=null;
         }
-        if(!StringUtils.isNotBlank(endtime)){
-            endtime=null;
+        if(!StringUtils.isNotBlank(typeQ)){
+            typeQ=null;
+        }
+        if(!StringUtils.isNotBlank(content)){
+            typeQ=null;
         }
         map.put("ebays",ebays);
-        map.put("orderStatus",orderStatus);
         map.put("starttime",starttime);
         map.put("endtime",endtime);
         map.put("status",status);
+        map.put("countryQ",countryQ);
+        map.put("typeQ",typeQ);
+        map.put("content",content);
         List<OrderGetOrdersQuery> lists= this.iTradingOrderGetOrders.selectOrderGetOrdersByGroupList(map,page);
         for(OrderGetOrdersQuery list:lists){
             String itemid=list.getItemid();
@@ -110,6 +144,11 @@ public class GetOrdersController extends BaseAction {
                     list.setPictrue(pictureDetailses.get(0).getPictureurl());
                 }
             }
+            List<TradingOrderAddMemberMessageAAQToPartner> partners=iTradingOrderAddMemberMessageAAQToPartner.selectTradingOrderAddMemberMessageAAQToPartnerByTransactionId(list.getTransactionid(),3);
+            if(partners!=null&&partners.size()>0){
+                list.setMessage(partners.get(0).getBody());
+            }
+           /* iTradingOrderVariation.selectOrderVariationByItemId()*/
             String url="http://www.sandbox.ebay.com/itm/"+list.getItemid();
             list.setItemUrl(url);
         }
@@ -514,6 +553,24 @@ public class GetOrdersController extends BaseAction {
              AjaxSupport.sendFailText("fail", "获取必要的参数失败！请稍后重试");
          }
      }
+    /*
+   *下载订单downloadOrders
+   */
+    @RequestMapping("/downloadOrders.do")
+    public void  downloadOrders(HttpServletRequest request,HttpServletResponse response) throws Exception {
+        response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+        response.setCharacterEncoding("UTF-8");
+        String outputFile1= request.getSession().getServletContext().getRealPath("/");
+        String outputFile=outputFile1+"download\\orders.xls";
+        String status=request.getParameter("status");
+        if(!StringUtils.isNotBlank(status)||"null".equals(status)){
+            status=null;
+        }
+        List<TradingOrderGetOrders> orders=iTradingOrderGetOrders.selectOrderGetOrdersByPaypalStatus(status);
+        response.setHeader("Content-Disposition","attachment;filename=orders.xls");// 组装附件名称和格式
+        ServletOutputStream outputStream = response.getOutputStream();
+        iTradingOrderGetOrders.downloadOrders(orders, outputFile,outputStream);
+    }
      /*
      *订单中卖家发消息
      */
@@ -592,10 +649,10 @@ public class GetOrdersController extends BaseAction {
         d.setApiCallName(APINameStatic.GetOrders);
         request.getSession().setAttribute("dveId", d);*/
         Map map=new HashMap();
-       /* Date startTime2=DateUtils.subDays(new Date(),9);
+  /*      Date startTime2=DateUtils.subDays(new Date(),9);
         Date endTime= DateUtils.addDays(startTime2, 9);*/
-        Date startTime2=DateUtils.subDays(new Date(),30);
-        Date endTime= DateUtils.addDays(startTime2, 30);
+        Date startTime2=DateUtils.subDays(new Date(),40);
+        Date endTime= DateUtils.addDays(startTime2, 40);
         Date end1= com.base.utils.common.DateUtils.turnToDateEnd(endTime);
         String start= DateUtils.DateToString(startTime2);
         String end=DateUtils.DateToString(end1);

@@ -53,12 +53,14 @@ public class ItemAddressController  extends BaseAction {
     }
     @RequestMapping("/ajax/loadItemAddressList.do")
     @ResponseBody
-    public void loadItemAddressList(CommonParmVO commonParmVO){
+    public void loadItemAddressList(HttpServletRequest request,CommonParmVO commonParmVO){
         Map m = new HashMap();
+        String checkFlag = request.getParameter("checkFlag");
+        m.put("checkFlag",checkFlag);
         /**分页组装*/
         PageJsonBean jsonBean=commonParmVO.getJsonBean();
         Page page=jsonBean.toPage();
-        List<ItemAddressQuery> li = this.iTradingItemAddress.selectByItemAddressQuery(null,page);
+        List<ItemAddressQuery> li = this.iTradingItemAddress.selectByItemAddressQuery(m,page);
         jsonBean.setList(li);
         jsonBean.setTotal((int)page.getTotalCount());
         AjaxSupport.sendSuccessText("", jsonBean);

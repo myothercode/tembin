@@ -62,8 +62,10 @@ public class PayPalController extends BaseAction{
 
     @RequestMapping("/ajax/loadPayPalList.do")
     @ResponseBody
-    public void loadPayPalList(ModelMap modelMap,CommonParmVO commonParmVO){
+    public void loadPayPalList(HttpServletRequest request,ModelMap modelMap,CommonParmVO commonParmVO){
         Map m = new HashMap();
+        String checkFlag = request.getParameter("checkFlag");
+        m.put("checkFlag",checkFlag);
         /**分页组装*/
         PageJsonBean jsonBean=commonParmVO.getJsonBean();
         Page page=jsonBean.toPage();

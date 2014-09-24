@@ -23,8 +23,8 @@
     <result column="createdTime" jdbcType="TIMESTAMP" property="createdtime" />
     <result column="paymentMethods" jdbcType="VARCHAR" property="paymentmethods" />
     <result column="name" jdbcType="VARCHAR" property="name" />
-    <result column="street1" jdbcType="VARCHAR" property="street1" />
-    <result column="street2" jdbcType="VARCHAR" property="street2" />
+    <result column="street1" jdbcType="LONGVARCHAR" property="street1" />
+    <result column="street2" jdbcType="LONGVARCHAR" property="street2" />
     <result column="cityName" jdbcType="VARCHAR" property="cityname" />
     <result column="stateOrProvince" jdbcType="VARCHAR" property="stateorprovince" />
     <result column="country" jdbcType="VARCHAR" property="country" />
@@ -54,6 +54,8 @@
     <result column="actualShippingCost" jdbcType="DOUBLE" property="actualshippingcost" />
     <result column="actualHandlingCost" jdbcType="DOUBLE" property="actualhandlingcost" />
     <result column="buyerUserID" jdbcType="VARCHAR" property="buyeruserid" />
+    <result column="comment" jdbcType="VARCHAR" property="comment" />
+    <result column="folder" jdbcType="VARCHAR" property="folder" />
     <result column="sellerUserID" jdbcType="VARCHAR" property="selleruserid" />
     <result column="create_user" jdbcType="BIGINT" property="createUser" />
     <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
@@ -132,13 +134,13 @@
     -->
     id, orderID, orderStatus, adjustmentAmount, amountSaved, amountPaid, ebayPaymentStatus, 
     lastModifiedTime, paymentMethod, status, shippingdetails_id, selectedShippingService, 
-    selectedShippingServiceCost, creatingUserRole, createdTime, paymentMethods, name,street1,street2,
-    cityName, stateOrProvince, country, countryName, phone, postalCode, addressID, addressOwner, 
-    shippingCarrierUsed, shipmentTrackingNumber, externalAddressID, subtotal, total, 
-    digitalDelivery, buyerEmail, sellerEmail, sellingManagerSales, itemID, sKU, title, 
-    quantityPurchased, transactionID, sellingManagerSalesRecordNumber, transactionPrice, 
-    paidTime, shippedTime, actualShippingCost, actualHandlingCost, buyerUserID, sellerUserID, 
-    create_user, create_time, uuid
+    selectedShippingServiceCost, creatingUserRole, createdTime, paymentMethods, name, 
+    street1, street2, cityName, stateOrProvince, country, countryName, phone, postalCode, 
+    addressID, addressOwner, shippingCarrierUsed, shipmentTrackingNumber, externalAddressID, 
+    subtotal, total, digitalDelivery, buyerEmail, sellerEmail, sellingManagerSales, itemID, 
+    sKU, title, quantityPurchased, transactionID, sellingManagerSalesRecordNumber, transactionPrice, 
+    paidTime, shippedTime, actualShippingCost, actualHandlingCost, buyerUserID, comment, 
+    folder, sellerUserID, create_user, create_time, uuid
   </sql>
   <select id="selectByExample" parameterType="com.base.database.trading.model.TradingOrderGetOrdersExample" resultMap="BaseResultMap">
     <!--
@@ -197,17 +199,18 @@
       paymentMethod, status, shippingdetails_id, 
       selectedShippingService, selectedShippingServiceCost, 
       creatingUserRole, createdTime, paymentMethods, 
-      name,street1,street2 cityName, stateOrProvince,
-      country, countryName, phone, 
-      postalCode, addressID, addressOwner, 
-      shippingCarrierUsed, shipmentTrackingNumber, 
-      externalAddressID, subtotal, total, 
-      digitalDelivery, buyerEmail, sellerEmail, 
-      sellingManagerSales, itemID, sKU, 
-      title, quantityPurchased, transactionID, 
-      sellingManagerSalesRecordNumber, transactionPrice, 
-      paidTime, shippedTime, actualShippingCost, 
-      actualHandlingCost, buyerUserID, sellerUserID, 
+      name, street1, street2, 
+      cityName, stateOrProvince, country, 
+      countryName, phone, postalCode, 
+      addressID, addressOwner, shippingCarrierUsed, 
+      shipmentTrackingNumber, externalAddressID, 
+      subtotal, total, digitalDelivery, 
+      buyerEmail, sellerEmail, sellingManagerSales, 
+      itemID, sKU, title, 
+      quantityPurchased, transactionID, sellingManagerSalesRecordNumber, 
+      transactionPrice, paidTime, shippedTime, 
+      actualShippingCost, actualHandlingCost, buyerUserID, 
+      comment, folder, sellerUserID, 
       create_user, create_time, uuid
       )
     values (#{id,jdbcType=BIGINT}, #{orderid,jdbcType=VARCHAR}, #{orderstatus,jdbcType=VARCHAR}, 
@@ -216,17 +219,18 @@
       #{paymentmethod,jdbcType=VARCHAR}, #{status,jdbcType=VARCHAR}, #{shippingdetailsId,jdbcType=BIGINT}, 
       #{selectedshippingservice,jdbcType=VARCHAR}, #{selectedshippingservicecost,jdbcType=DOUBLE}, 
       #{creatinguserrole,jdbcType=VARCHAR}, #{createdtime,jdbcType=TIMESTAMP}, #{paymentmethods,jdbcType=VARCHAR}, 
-      #{name,jdbcType=VARCHAR},#{street1,jdbcType=VARCHAR},#{street2,jdbcType=VARCHAR},#{cityname,jdbcType=VARCHAR}, #{stateorprovince,jdbcType=VARCHAR},
-      #{country,jdbcType=VARCHAR}, #{countryname,jdbcType=VARCHAR}, #{phone,jdbcType=VARCHAR}, 
-      #{postalcode,jdbcType=VARCHAR}, #{addressid,jdbcType=VARCHAR}, #{addressowner,jdbcType=VARCHAR}, 
-      #{shippingcarrierused,jdbcType=VARCHAR}, #{shipmenttrackingnumber,jdbcType=VARCHAR}, 
-      #{externaladdressid,jdbcType=VARCHAR}, #{subtotal,jdbcType=VARCHAR}, #{total,jdbcType=VARCHAR}, 
-      #{digitaldelivery,jdbcType=VARCHAR}, #{buyeremail,jdbcType=VARCHAR}, #{selleremail,jdbcType=VARCHAR}, 
-      #{sellingmanagersales,jdbcType=VARCHAR}, #{itemid,jdbcType=VARCHAR}, #{sku,jdbcType=VARCHAR}, 
-      #{title,jdbcType=VARCHAR}, #{quantitypurchased,jdbcType=VARCHAR}, #{transactionid,jdbcType=VARCHAR}, 
-      #{sellingmanagersalesrecordnumber,jdbcType=INTEGER}, #{transactionprice,jdbcType=VARCHAR}, 
-      #{paidtime,jdbcType=TIMESTAMP}, #{shippedtime,jdbcType=TIMESTAMP}, #{actualshippingcost,jdbcType=DOUBLE}, 
-      #{actualhandlingcost,jdbcType=DOUBLE}, #{buyeruserid,jdbcType=VARCHAR}, #{selleruserid,jdbcType=VARCHAR}, 
+      #{name,jdbcType=VARCHAR}, #{street1,jdbcType=LONGVARCHAR}, #{street2,jdbcType=LONGVARCHAR},
+      #{cityname,jdbcType=VARCHAR}, #{stateorprovince,jdbcType=VARCHAR}, #{country,jdbcType=VARCHAR}, 
+      #{countryname,jdbcType=VARCHAR}, #{phone,jdbcType=VARCHAR}, #{postalcode,jdbcType=VARCHAR}, 
+      #{addressid,jdbcType=VARCHAR}, #{addressowner,jdbcType=VARCHAR}, #{shippingcarrierused,jdbcType=VARCHAR}, 
+      #{shipmenttrackingnumber,jdbcType=VARCHAR}, #{externaladdressid,jdbcType=VARCHAR}, 
+      #{subtotal,jdbcType=VARCHAR}, #{total,jdbcType=VARCHAR}, #{digitaldelivery,jdbcType=VARCHAR}, 
+      #{buyeremail,jdbcType=VARCHAR}, #{selleremail,jdbcType=VARCHAR}, #{sellingmanagersales,jdbcType=VARCHAR}, 
+      #{itemid,jdbcType=VARCHAR}, #{sku,jdbcType=VARCHAR}, #{title,jdbcType=VARCHAR}, 
+      #{quantitypurchased,jdbcType=VARCHAR}, #{transactionid,jdbcType=VARCHAR}, #{sellingmanagersalesrecordnumber,jdbcType=INTEGER}, 
+      #{transactionprice,jdbcType=VARCHAR}, #{paidtime,jdbcType=TIMESTAMP}, #{shippedtime,jdbcType=TIMESTAMP}, 
+      #{actualshippingcost,jdbcType=DOUBLE}, #{actualhandlingcost,jdbcType=DOUBLE}, #{buyeruserid,jdbcType=VARCHAR}, 
+      #{comment,jdbcType=VARCHAR}, #{folder,jdbcType=VARCHAR}, #{selleruserid,jdbcType=VARCHAR}, 
       #{createUser,jdbcType=BIGINT}, #{createTime,jdbcType=TIMESTAMP}, #{uuid,jdbcType=VARCHAR}
       )
   </insert>
@@ -288,12 +292,12 @@
       <if test="name != null">
         name,
       </if>
-        <if test="street1 != null">
-            street1,
-        </if>
-        <if test="street2 != null">
-            street2,
-        </if>
+      <if test="street1 != null">
+        street1,
+      </if>
+      <if test="street2 != null">
+        street2,
+      </if>
       <if test="cityname != null">
         cityName,
       </if>
@@ -381,6 +385,12 @@
       <if test="buyeruserid != null">
         buyerUserID,
       </if>
+      <if test="comment != null">
+        comment,
+      </if>
+      <if test="folder != null">
+        folder,
+      </if>
       <if test="selleruserid != null">
         sellerUserID,
       </if>
@@ -446,12 +456,12 @@
       <if test="name != null">
         #{name,jdbcType=VARCHAR},
       </if>
-        <if test="street1 != null">
-            #{street1,jdbcType=VARCHAR},
-        </if>
-        <if test="street2 != null">
-            #{street2,jdbcType=VARCHAR},
-        </if>
+      <if test="street1 != null">
+        #{street1,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="street2 != null">
+        #{street2,jdbcType=LONGVARCHAR},
+      </if>
       <if test="cityname != null">
         #{cityname,jdbcType=VARCHAR},
       </if>
@@ -539,6 +549,12 @@
       <if test="buyeruserid != null">
         #{buyeruserid,jdbcType=VARCHAR},
       </if>
+      <if test="comment != null">
+        #{comment,jdbcType=VARCHAR},
+      </if>
+      <if test="folder != null">
+        #{folder,jdbcType=VARCHAR},
+      </if>
       <if test="selleruserid != null">
         #{selleruserid,jdbcType=VARCHAR},
       </if>
@@ -621,12 +637,12 @@
       <if test="record.name != null">
         name = #{record.name,jdbcType=VARCHAR},
       </if>
-        <if test="record.street1 != null">
-            street1 = #{record.street1,jdbcType=VARCHAR},
-        </if>
-        <if test="record.street2 != null">
-            street2 = #{record.street2,jdbcType=VARCHAR},
-        </if>
+      <if test="record.street1 != null">
+        street1 = #{record.street1,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="record.street2 != null">
+        street2 = #{record.street2,jdbcType=LONGVARCHAR},
+      </if>
       <if test="record.cityname != null">
         cityName = #{record.cityname,jdbcType=VARCHAR},
       </if>
@@ -714,6 +730,12 @@
       <if test="record.buyeruserid != null">
         buyerUserID = #{record.buyeruserid,jdbcType=VARCHAR},
       </if>
+      <if test="record.comment != null">
+        comment = #{record.comment,jdbcType=VARCHAR},
+      </if>
+      <if test="record.folder != null">
+        folder = #{record.folder,jdbcType=VARCHAR},
+      </if>
       <if test="record.selleruserid != null">
         sellerUserID = #{record.selleruserid,jdbcType=VARCHAR},
       </if>
@@ -754,8 +776,8 @@
       createdTime = #{record.createdtime,jdbcType=TIMESTAMP},
       paymentMethods = #{record.paymentmethods,jdbcType=VARCHAR},
       name = #{record.name,jdbcType=VARCHAR},
-      street1 = #{record.street1,jdbcType=VARCHAR},
-      street2 = #{record.street2,jdbcType=VARCHAR},
+      street1 = #{record.street1,jdbcType=LONGVARCHAR},
+      street2 = #{record.street2,jdbcType=LONGVARCHAR},
       cityName = #{record.cityname,jdbcType=VARCHAR},
       stateOrProvince = #{record.stateorprovince,jdbcType=VARCHAR},
       country = #{record.country,jdbcType=VARCHAR},
@@ -785,6 +807,8 @@
       actualShippingCost = #{record.actualshippingcost,jdbcType=DOUBLE},
       actualHandlingCost = #{record.actualhandlingcost,jdbcType=DOUBLE},
       buyerUserID = #{record.buyeruserid,jdbcType=VARCHAR},
+      comment = #{record.comment,jdbcType=VARCHAR},
+      folder = #{record.folder,jdbcType=VARCHAR},
       sellerUserID = #{record.selleruserid,jdbcType=VARCHAR},
       create_user = #{record.createUser,jdbcType=BIGINT},
       create_time = #{record.createTime,jdbcType=TIMESTAMP},
@@ -848,12 +872,12 @@
       <if test="name != null">
         name = #{name,jdbcType=VARCHAR},
       </if>
-        <if test="street1 != null">
-            street1 = #{street1,jdbcType=VARCHAR},
-        </if>
-        <if test="street2 != null">
-            street2 = #{street2,jdbcType=VARCHAR},
-        </if>
+      <if test="street1 != null">
+        street1 = #{street1,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="street2 != null">
+        street2 = #{street2,jdbcType=LONGVARCHAR},
+      </if>
       <if test="cityname != null">
         cityName = #{cityname,jdbcType=VARCHAR},
       </if>
@@ -941,6 +965,12 @@
       <if test="buyeruserid != null">
         buyerUserID = #{buyeruserid,jdbcType=VARCHAR},
       </if>
+      <if test="comment != null">
+        comment = #{comment,jdbcType=VARCHAR},
+      </if>
+      <if test="folder != null">
+        folder = #{folder,jdbcType=VARCHAR},
+      </if>
       <if test="selleruserid != null">
         sellerUserID = #{selleruserid,jdbcType=VARCHAR},
       </if>
@@ -978,8 +1008,8 @@
       createdTime = #{createdtime,jdbcType=TIMESTAMP},
       paymentMethods = #{paymentmethods,jdbcType=VARCHAR},
       name = #{name,jdbcType=VARCHAR},
-      street1 = #{street1,jdbcType=VARCHAR},
-      street2 = #{street2,jdbcType=VARCHAR},
+      street1 = #{street1,jdbcType=LONGVARCHAR},
+      street2 = #{street2,jdbcType=LONGVARCHAR},
       cityName = #{cityname,jdbcType=VARCHAR},
       stateOrProvince = #{stateorprovince,jdbcType=VARCHAR},
       country = #{country,jdbcType=VARCHAR},
@@ -1009,6 +1039,8 @@
       actualShippingCost = #{actualshippingcost,jdbcType=DOUBLE},
       actualHandlingCost = #{actualhandlingcost,jdbcType=DOUBLE},
       buyerUserID = #{buyeruserid,jdbcType=VARCHAR},
+      comment = #{comment,jdbcType=VARCHAR},
+      folder = #{folder,jdbcType=VARCHAR},
       sellerUserID = #{selleruserid,jdbcType=VARCHAR},
       create_user = #{createUser,jdbcType=BIGINT},
       create_time = #{createTime,jdbcType=TIMESTAMP},

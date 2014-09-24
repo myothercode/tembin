@@ -61,10 +61,12 @@ public class ShippingDetailsController extends BaseAction{
      */
     @RequestMapping("/ajax/loadShippingDetailsList.do")
     @ResponseBody
-    public void loadShippingDetailsList(ModelMap modelMap,CommonParmVO commonParmVO){
+    public void loadShippingDetailsList(HttpServletRequest request,ModelMap modelMap,CommonParmVO commonParmVO){
         SessionVO c= SessionCacheSupport.getSessionVO();
         Map m = new HashMap();
         m.put("userid",c.getId());
+        String checkFlag = request.getParameter("checkFlag");
+        m.put("checkFlag",checkFlag);
         /**分页组装*/
         PageJsonBean jsonBean=commonParmVO.getJsonBean();
         Page page=jsonBean.toPage();

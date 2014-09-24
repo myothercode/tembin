@@ -151,6 +151,10 @@
       #{userLoginId,jdbcType=VARCHAR}, #{userOrgId,jdbcType=INTEGER}, #{userParentId,jdbcType=INTEGER}, 
       #{status,jdbcType=CHAR}, #{defaultDevAccount,jdbcType=BIGINT}, #{userEmail,jdbcType=VARCHAR}, 
       #{telPhone,jdbcType=VARCHAR}, #{address,jdbcType=VARCHAR})
+
+      <selectKey resultType="int" keyProperty="userId" order="AFTER">
+          SELECT LAST_INSERT_ID()
+      </selectKey>
   </insert>
   <insert id="insertSelective" parameterType="com.base.database.userinfo.model.UsercontrollerUser">
     <!--
@@ -228,6 +232,10 @@
         #{address,jdbcType=VARCHAR},
       </if>
     </trim>
+
+      <selectKey resultType="int" keyProperty="userId" order="AFTER">
+          SELECT LAST_INSERT_ID()
+      </selectKey>
   </insert>
   <select id="countByExample" parameterType="com.base.database.userinfo.model.UsercontrollerUserExample" resultType="java.lang.Integer">
     <!--
@@ -246,9 +254,7 @@
     -->
     update usercontroller_user
     <set>
-      <if test="record.userId != null">
-        user_id = #{record.userId,jdbcType=INTEGER},
-      </if>
+
       <if test="record.userName != null">
         user_name = #{record.userName,jdbcType=VARCHAR},
       </if>

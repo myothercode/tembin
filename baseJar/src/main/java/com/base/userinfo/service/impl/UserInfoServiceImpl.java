@@ -4,8 +4,10 @@ import com.base.database.trading.mapper.UsercontrollerDevAccountMapper;
 import com.base.database.trading.mapper.UsercontrollerEbayAccountMapper;
 import com.base.database.trading.mapper.UsercontrollerEbayDevMapper;
 import com.base.database.trading.model.*;
+import com.base.database.userinfo.mapper.UsercontrollerUserEbayMapper;
 import com.base.database.userinfo.mapper.UsercontrollerUserMapper;
 import com.base.database.userinfo.model.UsercontrollerUser;
+import com.base.database.userinfo.model.UsercontrollerUserEbay;
 import com.base.domains.*;
 import com.base.domains.userinfo.UsercontrollerDevAccountExtend;
 import com.base.domains.userinfo.UsercontrollerEbayAccountExtend;
@@ -14,6 +16,7 @@ import com.base.utils.cache.SessionCacheSupport;
 import com.base.utils.common.EncryptionUtil;
 import com.base.utils.common.ObjectUtils;
 import com.base.utils.exception.Asserts;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -38,6 +41,8 @@ public class UserInfoServiceImpl implements com.base.userinfo.service.UserInfoSe
     private UsercontrollerEbayDevMapper UsercontrollerEbayDevMapper;
     @Autowired
     private UsercontrollerUserMapper userMapper;
+    @Autowired
+    private UsercontrollerUserEbayMapper userEbayMapper;
 
 
     @Override
@@ -46,6 +51,7 @@ public class UserInfoServiceImpl implements com.base.userinfo.service.UserInfoSe
         loginVO.setEnpassword(enPwd);
         SessionVO sessionVO=userInfoServiceMapper.querySessionVOInfo(loginVO);
         if(ObjectUtils.isLogicalNull(sessionVO)){return null;}
+        Asserts.assertTrue(StringUtils.isNotEmpty(sessionVO.getStatus()) && "1".equalsIgnoreCase(sessionVO.getStatus()) ,"账户已停用");
         Map map = new HashMap();
         map.put("loginId",loginVO.getLoginId());
         List<RoleVO> roleVOs = userInfoServiceMapper.queryUserRole(map);//获取角色信息
@@ -82,6 +88,11 @@ public class UserInfoServiceImpl implements com.base.userinfo.service.UserInfoSe
         ebayDev.setDevAccountId(commonParmVO.getId());
         ebayDev.setEbayAccountId(ebayAccount.getId());
         UsercontrollerEbayDevMapper.insertSelective(ebayDev);
+
+        UsercontrollerUserEbay userEbay = new UsercontrollerUserEbay();
+        userEbay.setUserId(ebayAccount.getUserId());
+        userEbay.setEbayId(ebayAccount.getId());
+        userEbayMapper.insertSelective(userEbay);
     }
 
     @Override

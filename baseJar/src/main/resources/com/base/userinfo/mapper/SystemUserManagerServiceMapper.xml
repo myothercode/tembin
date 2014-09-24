@@ -18,8 +18,30 @@
     LEFT JOIN usercontroller_org org on u.user_org_id=org.org_id
     LEFT JOIN usercontroller_user_role ur on ur.user_id=u.user_id
     left JOIN usercontroller_role r on ur.role_id=r.role_id
-    where u.user_id=#{userID} or u.user_parent_id=#{userID}
-    GROUP BY u.user_id
+    where (u.user_id=#{userID} or u.user_parent_id=#{userID})
+    <if test="isShowStop=='active'">
+        and u.status = '1'
+    </if>
+    GROUP BY u.user_id ORDER BY u.`STATUS` desc,u.user_id asc
 </select>
+
+    <select id="queryUserRoleByUserID" resultType="com.base.domains.RoleVO" parameterType="map">
+        SELECT DISTINCT ur.role_id roleID ,r.role_name roleName from usercontroller_user_role ur
+        INNER JOIN usercontroller_role r on ur.role_id=r.role_id
+        WHERE ur.user_id=#{userId}
+    </select>
+
+    <select id="queryAllRoleByUserID" resultType="com.base.domains.RoleVO" parameterType="map">
+        select DISTINCT ur.role_id roleID,r.role_name roleName,r.create_user createUser from usercontroller_user_role ur
+        LEFT JOIN usercontroller_role r on r.role_id=ur.role_id
+        where r.create_user=-1 or r.create_user=#{userId}
+    </select>
+
+    <!--角色操作相关-->
+    <select id="queryRoleList" resultType="com.base.database.userinfo.model.UsercontrollerRole" parameterType="map">
+        select r.role_id roleId,r.role_name roleName,r.role_desc roleDesc, r.create_user createUser
+        from usercontroller_role r
+        WHERE r.create_user !=-1 and r.create_user=#{createUser}
+    </select>
 
 </mapper>

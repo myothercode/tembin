@@ -185,10 +185,35 @@
             $("#ItemInformationListTable").selectDataAfterSetParm();
             refreshTable2(remark,information,itemType,content);
         }
+        function onclickremark(remark,n){
+            var arr=$("span[scop=remark]");
+            for(var i=0;i<arr.length;i++){
+                if(i==n){
+                    $(arr[i]).attr("class","newusa_ici");
+                    $("#remarkForm").val(remark);
+                }else{
+                    $(arr[i]).attr("class","newusa_ici_1");
+                }
+            }
+        }
+        function onclickinformation(information,n){
+            var arr=$("span[scop=information]");
+            for(var i=0;i<arr.length;i++){
+                if(i==n){
+                    $(arr[i]).attr("class","newusa_ici");
+                    $("#informationForm").val(information);
+                }else{
+                    $(arr[i]).attr("class","newusa_ici_1");
+                }
+            }
+        }
         function submitCommit(){
+
             var itemType=$("#itemTypeid").val();
             var content=$("#content").val();
-            submitCommit1(null,null,itemType,content);
+            var remark=$("#remarkForm").val();
+            var information=$("#informationForm").val();
+            submitCommit1(remark,information,itemType,content);
         }
         function refreshTable2(remark,information,itemType,content){
             $("#ItemInformationListTable").selectDataAfterSetParm({"bedDetailVO.deptId":"", "isTrue":0,"remark":remark,"information":information,"itemType":itemType,"content":content});
@@ -240,9 +265,8 @@
     </script>
 </head>
 <body>
-<div class="content">
     <div class="new_all">
-        <div class="here">当前位置：首页 &gt; 刊登管理 &gt; <b>账户管理</b></div>
+        <div class="here">当前位置：首页 &gt; 商品管理 &gt; <b>商品模板</b></div>
         <div class="a_bal"></div>
         <div class="new">
             <script type="text/javascript">
@@ -266,10 +290,11 @@
                     <div id="con_menu_1" class="hover" style="display: none;">
                         <!--综合开始 -->
                         <div class="new_usa" style="margin-top:20px;">
-                            <li class="new_usa_list"><span class="newusa_i">按标签看：全部</span><a href="#"><span class="newusa_ici_1" onclick="submitCommit1('null',null,null,null)">无标签</span></a><a href="#"><span class="newusa_ici_1">有电池</span></a><a href="#"><span class="newusa_ici_1">无电池</span></a></li>
-                            <li class="new_usa_list"><span class="newusa_i">信息状态：全部</span><a href="#"><span class="newusa_ici_1" onclick="submitCommit1(null,'picture',null,null)">无图片</span></a><a href="#"><span class="newusa_ici_1" onclick="submitCommit1(null,'custom',null,null)">无报关信息</span></a><a href="#"><span class="newusa_ici_1" onclick="submitCommit1(null,'notAll',null,null)">信息不全</span></a></li>
+                            <li class="new_usa_list"><span class="newusa_i">按标签看：</span><span class="newusa_ici_1" scop="remark" onclick="onclickremark(null,0)">全部</span><a href="#"><span class="newusa_ici_1" scop="remark" onclick="onclickremark('null',1)">无标签</span></a><a href="#"><span class="newusa_ici_1">有电池</span></a><a href="#"><span class="newusa_ici_1">无电池</span></a></li>
+                            <li class="new_usa_list"><span class="newusa_i">信息状态：</span><span  class="newusa_ici_1" scop="information" onclick="onclickinformation(null,0)">全部</span><a href="#"><span class="newusa_ici_1" scop="information" onclick="onclickinformation('picture',1)">无图片</span></a><a href="#"><span class="newusa_ici_1" scop="information" onclick="onclickinformation('custom',2)">无报关信息</span></a><a href="#"><span class="newusa_ici_1" scop="information" onclick="onclickinformation('notAllnull',3)">信息不全</span></a></li>
                             <div class="newsearch">
                                 <span class="newusa_i">搜索内容：全部</span>
+
 <span id="sleBG">
 <span id="sleHid">
 <select id="itemTypeid" name="itemType" class="select">
@@ -282,6 +307,8 @@
 </span>
                                 <div class="vsearch">
                                     <input id="content" name="content" type="text" class="key_1"><input name="newbut" type="button" class="key_2" onclick="submitCommit();"></div>
+                                    <input type="hidden" id="remarkForm"/>
+                                    <input type="hidden" id="informationForm"/>
                             </div>
                             <div class="newds">
                                 <div class="newsj_left">
@@ -311,6 +338,5 @@
             </div>
         </div>
     </div>
-</div>
 </body>
 </html>

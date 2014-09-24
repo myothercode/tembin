@@ -78,5 +78,11 @@
         <if test="userid!=null">
             and item.create_user = #{userid}
         </if>
+        <if test="flag==1">
+            and item.is_flag = 'Success'
+        </if>
+        <if test="flag==2">
+            and item.is_flag is null
+        </if>
     </select>
 </mapper>

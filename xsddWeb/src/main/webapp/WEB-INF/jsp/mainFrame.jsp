@@ -141,7 +141,7 @@
 </div>
 
 <div class="content">
-    <iframe width="100%" height="100%" frameborder="0px" name="contentMain">
+    <iframe width="100%" height="100%" frameborder="0px" id="contentMain" name="contentMain">
 
     </iframe>
 </div>

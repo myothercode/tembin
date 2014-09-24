@@ -12,24 +12,43 @@
     <title></title>
     <script>
         $(document).ready(function(){
+            var flag='${flag}';
+            var urls="/ajax/ListingItemList.do";
+            if(flag!=null&&flag!=""){
+                urls="/ajax/ListingItemList.do?flag="+flag;
+            }
             $("#itemTable").initTable({
-                url:path + "/ajax/ListingItemList.do",
+                url:path + urls,
                 columnData:[
-                    {title:"商品Title",name:"title",width:"8%",align:"left"},
-                    {title:"商品站点",name:"site",width:"8%",align:"left"},
-                    {title:"商品SKU",name:"SKU",width:"8%",align:"left"},
-                    {title:"商品数量",name:"quantity",width:"8%",align:"left"},
+                    {title:"图片",name:"Option1",width:"8%",align:"left",format:picUrl},
+                    {title:"物品标题",name:"title",width:"8%",align:"left"},
+                    {title:"SKU",name:"sku",width:"8%",align:"left"},
+                    {title:"ebay账户",name:"ebayAccount",width:"8%",align:"left"},
+                    {title:"站点",name:"site",width:"8%",align:"left"},
+                    {title:"刊登类型",name:"listingType",width:"8%",align:"left"},
+                    {title:"价格",name:"price",width:"8%",align:"left"},
+                    {title:"数量/已售",name:"price",width:"8%",align:"left"},
+                    {title:"商品数量",name:"Option1",width:"8%",align:"left",format:tjCount},
+                    {title:"结束时间",name:"endtime",width:"8%",align:"left"},
                     {title:"操作",name:"Option1",width:"8%",align:"left",format:makeOption1}
                 ],
                 selectDataNow:false,
                 isrowClick:false,
-                showIndex:true
+                showIndex:false
             });
             refreshTable();
         });
+        function picUrl(json){
+            var htm="<img width='50px' height='50px' src='"+json.picUrl+"'>";
+            return htm;
+        }
+        function tjCount(json){
+            var htm=json.quantity+"/"+json.quantitysold;
+            return htm;
+        }
         /**组装操作选项*/
         function makeOption1(json){
-            var htm="<a target=\"_blank\" href=\"javascript:void(0)\" onclick=\"edit('"+json.itemID+"');\">在线编辑</a>";
+            var htm="<a target=\"_blank\" href=\"javascript:void(0)\" onclick=\"edit('"+json.itemId+"');\">在线编辑</a>";
             return htm;
         }
         function  refreshTable(){

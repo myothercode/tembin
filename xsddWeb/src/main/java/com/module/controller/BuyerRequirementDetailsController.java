@@ -59,6 +59,8 @@ public class BuyerRequirementDetailsController extends BaseAction {
     @ResponseBody
     public void loadBuyerRequirementDetailsList(HttpServletRequest request,HttpServletResponse response,ModelMap modelMap,CommonParmVO commonParmVO){
         Map m = new HashMap();
+        String checkFlag = request.getParameter("checkFlag");
+        m.put("checkFlag",checkFlag);
         /**分页组装*/
         PageJsonBean jsonBean=commonParmVO.getJsonBean();
         Page page=jsonBean.toPage();

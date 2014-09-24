@@ -330,13 +330,13 @@ function saveData(objs,name) {
             //Base.token();
             alert(r);
             $(objs).attr("disabled",false);
-            W.refreshTable();
-            W.returnItem.close();
+            document.location = path+"/itemList.do";
         },
             function (m, r) {
                 Base.token();
                 alert(r)
                 $(objs).attr("disabled",false);
+                document.location = path+"/itemList.do";
             }]
     )
 }

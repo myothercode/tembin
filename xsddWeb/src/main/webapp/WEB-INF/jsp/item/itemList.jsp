@@ -13,25 +13,34 @@
     <script>
         var returnItem ="";
         function addItem(){
+            document.location = path+"/addItem.do";
             //window.open("/xsddWeb/addItem.do");
-            returnItem=$.dialog({title: '新增商品',
+           /* returnItem=$.dialog({title: '新增商品',
                 content: 'url:/xsddWeb/addItem.do',
                 icon: 'succeed',
                 width:1200
-            });
+            });*/
+
+
         }
 
         function editItem(id){
-            returnItem=$.dialog({title: '编辑商品',
+            document.location = path+"/editItem.do?id="+id;
+            /*returnItem=$.dialog({title: '编辑商品',
                 content: 'url:/xsddWeb/editItem.do?id='+id,
                 icon: 'succeed',
                 width:1200
-            });
+            });*/
         }
 
         $(document).ready(function(){
+            var flag='${flag}';
+            var urls="/ajax/loadItemList.do";
+            if(flag!=null&&flag!=""){
+                urls="/ajax/loadItemList.do?flag="+flag;
+            }
             $("#itemTable").initTable({
-                url:path + "/ajax/loadItemList.do",
+                url:path + urls,
                 columnData:[
                     {title:"商品名称",name:"itemName",width:"8%",align:"left"},
                     {title:"站点",name:"siteName",width:"8%",align:"left"},
@@ -58,8 +67,8 @@
     </script>
 </head>
 <body>
-<div>
-    <input type="button" value="新增商品" onclick="addItem()">
+<div style="text-align: right;">
+    <input type="button" id="addItembutton" value="新增范本" onclick="addItem()">
 </div>
 
 <div id="itemTable">

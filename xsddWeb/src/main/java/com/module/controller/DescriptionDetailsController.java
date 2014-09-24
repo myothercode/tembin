@@ -47,8 +47,10 @@ public class DescriptionDetailsController extends BaseAction{
     /**获取list数据的ajax方法*/
     @RequestMapping("/ajax/loadDescriptionDetailsList.do")
     @ResponseBody
-    public void loadDescriptionDetailsList(CommonParmVO commonParmVO){
+    public void loadDescriptionDetailsList(HttpServletRequest request,CommonParmVO commonParmVO){
         Map m = new HashMap();
+        String checkFlag = request.getParameter("checkFlag");
+        m.put("checkFlag",checkFlag);
         /**分页组装*/
         PageJsonBean jsonBean=commonParmVO.getJsonBean();
         Page page=jsonBean.toPage();

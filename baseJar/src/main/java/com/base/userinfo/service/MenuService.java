@@ -10,4 +10,6 @@ import java.util.Map;
  */
 public interface MenuService {
     List<PermissionVO> getUserMenuList(Map map);
+
+    List<PermissionVO> getAllMenuList(Map map);
 }

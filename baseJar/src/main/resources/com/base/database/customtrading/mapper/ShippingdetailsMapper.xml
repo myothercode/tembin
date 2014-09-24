@@ -59,6 +59,8 @@
         <if test="userid!=null">
             and shipping.create_user = #{userid}
         </if>
-
+        <if test="checkFlag!=null">
+            and shipping.check_flag = #{checkFlag}
+        </if>
     </select>
 </mapper>

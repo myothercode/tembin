@@ -28,8 +28,8 @@
       <result column="createdTime" jdbcType="TIMESTAMP" property="createdtime" />
       <result column="paymentMethods" jdbcType="VARCHAR" property="paymentmethods" />
       <result column="name" jdbcType="VARCHAR" property="name" />
-      <result column="street1" jdbcType="VARCHAR" property="street1" />
-      <result column="street2" jdbcType="VARCHAR" property="street2" />
+      <result column="street1" jdbcType="LONGVARCHAR" property="street1" />
+      <result column="street2" jdbcType="LONGVARCHAR" property="street2" />
       <result column="cityName" jdbcType="VARCHAR" property="cityname" />
       <result column="stateOrProvince" jdbcType="VARCHAR" property="stateorprovince" />
       <result column="country" jdbcType="VARCHAR" property="country" />
@@ -56,18 +56,37 @@
       <result column="countNum" property="countNum" jdbcType="BIGINT" />
   </resultMap>
     <select id="selectOrderGetOrdersByGroupList" resultMap="BaseResultMap" parameterType="map">
-        select OrderGetOrders.*,count(*) countNum from trading_order_get_orders OrderGetOrders where 1=1
-        <if test="orderStatus!=null">
-            and OrderGetOrders.orderStatus = #{orderStatus}
+        select OrderGetOrders.*,count(*) countNum from trading_order_get_orders OrderGetOrders
+        <if test="typeQ!=null">
+            left join trading_order_get_item item on OrderGetOrders.itemID=item.itemID
+            left join trading_order_variation variation on item.id=variation.orderItem_id
+        </if>
+        where 1=1
+        <if test="content!=null">
+            and OrderGetOrders.title like "%"#{content}"%"
+        </if>
+        <if test="typeQ!=null">
+            <if test="typeQ=='fixation'">
+                and item.listingType="FixedPriceItem" and variation.orderItem_id is not null
+            </if>
+            <if test="typeQ=='auction'">
+                and item.listingType="Chinese"
+            </if>
+            <if test="typeQ=='multiattribute'">
+                and item.listingType="FixedPriceItem" and variation.orderItem_id is  null
+            </if>
         </if>
         <if test="status!=null">
-            and OrderGetOrders.status = #{status}
+              and OrderGetOrders.status = #{status}
         </if>
         <if test="starttime!=null">
             and OrderGetOrders.lastModifiedTime>= #{starttime}
         </if>
         <if test="endtime!=null">
             and OrderGetOrders.lastModifiedTime &lt; #{endtime}
+        </if>
+        <if test="countryQ!=null">
+            and OrderGetOrders.country=#{countryQ}
         </if>
         <if test="selleraccount!=null">
             and OrderGetOrders.sellerUserID=#{selleraccount}
@@ -88,5 +107,6 @@
             </foreach>
         </if>
         group by OrderGetOrders.orderID
+        order by OrderGetOrders.createdTime desc
     </select>
 </mapper>

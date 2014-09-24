@@ -37,5 +37,8 @@
         <if test="id!=null">
             and buyer.id = #{id}
         </if>
+        <if test="checkFlag!=null">
+            and buyer.check_flag = #{checkFlag}
+        </if>
     </select>
 </mapper>

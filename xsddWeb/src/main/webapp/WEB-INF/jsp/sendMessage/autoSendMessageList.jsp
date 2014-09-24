@@ -66,9 +66,9 @@
     </script>
 </head>
 <body>
-<div class="content">
+
     <div class="new_all">
-        <div class="here">当前位置：首页 &gt; 刊登管理 &gt; <b>自动消息</b></div>
+        <div class="here">当前位置：首页 &gt; 客户管理 &gt; <b>自动消息</b></div>
         <div class="a_bal"></div>
         <div class="new">
 
@@ -137,6 +137,6 @@
             </div>
         </div>
     </div>
-</div>
+
 </body>
 </html>

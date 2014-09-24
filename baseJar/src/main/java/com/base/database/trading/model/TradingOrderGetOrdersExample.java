@@ -1335,6 +1335,146 @@ public class TradingOrderGetOrdersExample {
             return (Criteria) this;
         }
 
+        public Criteria andStreet1IsNull() {
+            addCriterion("street1 is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andStreet1IsNotNull() {
+            addCriterion("street1 is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andStreet1EqualTo(String value) {
+            addCriterion("street1 =", value, "street1");
+            return (Criteria) this;
+        }
+
+        public Criteria andStreet1NotEqualTo(String value) {
+            addCriterion("street1 <>", value, "street1");
+            return (Criteria) this;
+        }
+
+        public Criteria andStreet1GreaterThan(String value) {
+            addCriterion("street1 >", value, "street1");
+            return (Criteria) this;
+        }
+
+        public Criteria andStreet1GreaterThanOrEqualTo(String value) {
+            addCriterion("street1 >=", value, "street1");
+            return (Criteria) this;
+        }
+
+        public Criteria andStreet1LessThan(String value) {
+            addCriterion("street1 <", value, "street1");
+            return (Criteria) this;
+        }
+
+        public Criteria andStreet1LessThanOrEqualTo(String value) {
+            addCriterion("street1 <=", value, "street1");
+            return (Criteria) this;
+        }
+
+        public Criteria andStreet1Like(String value) {
+            addCriterion("street1 like", value, "street1");
+            return (Criteria) this;
+        }
+
+        public Criteria andStreet1NotLike(String value) {
+            addCriterion("street1 not like", value, "street1");
+            return (Criteria) this;
+        }
+
+        public Criteria andStreet1In(List<String> values) {
+            addCriterion("street1 in", values, "street1");
+            return (Criteria) this;
+        }
+
+        public Criteria andStreet1NotIn(List<String> values) {
+            addCriterion("street1 not in", values, "street1");
+            return (Criteria) this;
+        }
+
+        public Criteria andStreet1Between(String value1, String value2) {
+            addCriterion("street1 between", value1, value2, "street1");
+            return (Criteria) this;
+        }
+
+        public Criteria andStreet1NotBetween(String value1, String value2) {
+            addCriterion("street1 not between", value1, value2, "street1");
+            return (Criteria) this;
+        }
+
+        public Criteria andStreet2IsNull() {
+            addCriterion("street2 is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andStreet2IsNotNull() {
+            addCriterion("street2 is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andStreet2EqualTo(String value) {
+            addCriterion("street2 =", value, "street2");
+            return (Criteria) this;
+        }
+
+        public Criteria andStreet2NotEqualTo(String value) {
+            addCriterion("street2 <>", value, "street2");
+            return (Criteria) this;
+        }
+
+        public Criteria andStreet2GreaterThan(String value) {
+            addCriterion("street2 >", value, "street2");
+            return (Criteria) this;
+        }
+
+        public Criteria andStreet2GreaterThanOrEqualTo(String value) {
+            addCriterion("street2 >=", value, "street2");
+            return (Criteria) this;
+        }
+
+        public Criteria andStreet2LessThan(String value) {
+            addCriterion("street2 <", value, "street2");
+            return (Criteria) this;
+        }
+
+        public Criteria andStreet2LessThanOrEqualTo(String value) {
+            addCriterion("street2 <=", value, "street2");
+            return (Criteria) this;
+        }
+
+        public Criteria andStreet2Like(String value) {
+            addCriterion("street2 like", value, "street2");
+            return (Criteria) this;
+        }
+
+        public Criteria andStreet2NotLike(String value) {
+            addCriterion("street2 not like", value, "street2");
+            return (Criteria) this;
+        }
+
+        public Criteria andStreet2In(List<String> values) {
+            addCriterion("street2 in", values, "street2");
+            return (Criteria) this;
+        }
+
+        public Criteria andStreet2NotIn(List<String> values) {
+            addCriterion("street2 not in", values, "street2");
+            return (Criteria) this;
+        }
+
+        public Criteria andStreet2Between(String value1, String value2) {
+            addCriterion("street2 between", value1, value2, "street2");
+            return (Criteria) this;
+        }
+
+        public Criteria andStreet2NotBetween(String value1, String value2) {
+            addCriterion("street2 not between", value1, value2, "street2");
+            return (Criteria) this;
+        }
+
         public Criteria andCitynameIsNull() {
             addCriterion("cityName is null");
             return (Criteria) this;
@@ -3312,6 +3452,146 @@ public class TradingOrderGetOrdersExample {
 
         public Criteria andBuyeruseridNotBetween(String value1, String value2) {
             addCriterion("buyerUserID not between", value1, value2, "buyeruserid");
+            return (Criteria) this;
+        }
+
+        public Criteria andCommentIsNull() {
+            addCriterion("comment is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andCommentIsNotNull() {
+            addCriterion("comment is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andCommentEqualTo(String value) {
+            addCriterion("comment =", value, "comment");
+            return (Criteria) this;
+        }
+
+        public Criteria andCommentNotEqualTo(String value) {
+            addCriterion("comment <>", value, "comment");
+            return (Criteria) this;
+        }
+
+        public Criteria andCommentGreaterThan(String value) {
+            addCriterion("comment >", value, "comment");
+            return (Criteria) this;
+        }
+
+        public Criteria andCommentGreaterThanOrEqualTo(String value) {
+            addCriterion("comment >=", value, "comment");
+            return (Criteria) this;
+        }
+
+        public Criteria andCommentLessThan(String value) {
+            addCriterion("comment <", value, "comment");
+            return (Criteria) this;
+        }
+
+        public Criteria andCommentLessThanOrEqualTo(String value) {
+            addCriterion("comment <=", value, "comment");
+            return (Criteria) this;
+        }
+
+        public Criteria andCommentLike(String value) {
+            addCriterion("comment like", value, "comment");
+            return (Criteria) this;
+        }
+
+        public Criteria andCommentNotLike(String value) {
+            addCriterion("comment not like", value, "comment");
+            return (Criteria) this;
+        }
+
+        public Criteria andCommentIn(List<String> values) {
+            addCriterion("comment in", values, "comment");
+            return (Criteria) this;
+        }
+
+        public Criteria andCommentNotIn(List<String> values) {
+            addCriterion("comment not in", values, "comment");
+            return (Criteria) this;
+        }
+
+        public Criteria andCommentBetween(String value1, String value2) {
+            addCriterion("comment between", value1, value2, "comment");
+            return (Criteria) this;
+        }
+
+        public Criteria andCommentNotBetween(String value1, String value2) {
+            addCriterion("comment not between", value1, value2, "comment");
+            return (Criteria) this;
+        }
+
+        public Criteria andFolderIsNull() {
+            addCriterion("folder is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andFolderIsNotNull() {
+            addCriterion("folder is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andFolderEqualTo(String value) {
+            addCriterion("folder =", value, "folder");
+            return (Criteria) this;
+        }
+
+        public Criteria andFolderNotEqualTo(String value) {
+            addCriterion("folder <>", value, "folder");
+            return (Criteria) this;
+        }
+
+        public Criteria andFolderGreaterThan(String value) {
+            addCriterion("folder >", value, "folder");
+            return (Criteria) this;
+        }
+
+        public Criteria andFolderGreaterThanOrEqualTo(String value) {
+            addCriterion("folder >=", value, "folder");
+            return (Criteria) this;
+        }
+
+        public Criteria andFolderLessThan(String value) {
+            addCriterion("folder <", value, "folder");
+            return (Criteria) this;
+        }
+
+        public Criteria andFolderLessThanOrEqualTo(String value) {
+            addCriterion("folder <=", value, "folder");
+            return (Criteria) this;
+        }
+
+        public Criteria andFolderLike(String value) {
+            addCriterion("folder like", value, "folder");
+            return (Criteria) this;
+        }
+
+        public Criteria andFolderNotLike(String value) {
+            addCriterion("folder not like", value, "folder");
+            return (Criteria) this;
+        }
+
+        public Criteria andFolderIn(List<String> values) {
+            addCriterion("folder in", values, "folder");
+            return (Criteria) this;
+        }
+
+        public Criteria andFolderNotIn(List<String> values) {
+            addCriterion("folder not in", values, "folder");
+            return (Criteria) this;
+        }
+
+        public Criteria andFolderBetween(String value1, String value2) {
+            addCriterion("folder between", value1, value2, "folder");
+            return (Criteria) this;
+        }
+
+        public Criteria andFolderNotBetween(String value1, String value2) {
+            addCriterion("folder not between", value1, value2, "folder");
             return (Criteria) this;
         }
 

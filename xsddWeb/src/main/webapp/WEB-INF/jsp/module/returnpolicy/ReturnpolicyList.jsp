@@ -30,17 +30,31 @@
                 lock:true
             });
         }
-
+        function makeOption3(json){
+            var htm='接受退货</br>'
+            if(json.returnsWithinOptionName!=null&&json.returnsWithinOptionName!=""){
+                htm+='退货天数：'+json.returnsWithinOptionName+'</br>';
+            }
+            if(json.returnsAcceptedOptionName!=null&&json.returnsAcceptedOptionName!=""){
+                htm+='退货政策：'+json.returnsAcceptedOptionName+'</br>';
+            }
+            if(json.shippingCostPaidByOptionName!=null&&json.shippingCostPaidByOptionName!=""){
+                var period = json.unpaidPeriod;
+                htm+='退货运费由谁承担:'+json.shippingCostPaidByOptionName+'</br>';
+            }
+            if(json.policyCount!=null&&json.policyCount!=""){
+                var period = json.policyPeriod;
+                htm+='退货方式：'+json.refundOptionName+'</br>';
+            }
+            return htm;
+        }
         $(document).ready(function(){
             $("#returnPolicyListTable").initTable({
                 url:path + "/ajax/loadReturnpolicyList.do?",
                 columnData:[
                     {title:"名称",name:"name",width:"8%",align:"left"},
                     {title:"站点",name:"siteName",width:"8%",align:"left"},
-                    {title:"退货政策",name:"returnsAcceptedOptionName",width:"8%",align:"left"},
-                    {title:"退货天数",name:"returnsWithinOptionName",width:"8%",align:"left"},
-                    {title:"退款方式",name:"refundOptionName",width:"8%",align:"left"},
-                    {title:"退货运费由谁负担",name:"shippingCostPaidByOptionName",width:"8%",align:"left"},
+                    {title:"退货明细",name:"option1",width:"8%",align:"left",format:makeOption3},
                     {title:"数据状态",name:"option1",width:"8%",align:"left",format:makeOption2},
                     {title:"操作",name:"option1",width:"8%",align:"left",format:makeOption1}
                 ],

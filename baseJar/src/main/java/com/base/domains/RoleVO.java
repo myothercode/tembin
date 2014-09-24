@@ -8,6 +8,25 @@ public class RoleVO  {
     private Long roleID;
     private String roleName;
 
+    private Long userID;
+    private Long createUser;
+
+    public Long getUserID() {
+        return userID;
+    }
+
+    public void setUserID(Long userID) {
+        this.userID = userID;
+    }
+
+    public Long getCreateUser() {
+        return createUser;
+    }
+
+    public void setCreateUser(Long createUser) {
+        this.createUser = createUser;
+    }
+
     public Long getRoleID() {
         return roleID;
     }

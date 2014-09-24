@@ -3,6 +3,7 @@ package com.base.utils.xmlutils;
 import com.base.database.publicd.model.PublicDataDict;
 import com.base.database.trading.model.TradingDataDictionary;
 import com.base.database.trading.model.TradingFeedBackDetail;
+import com.base.database.trading.model.TradingListingData;
 import com.base.database.trading.model.TradingReseCategory;
 import com.base.utils.common.DateUtils;
 import com.base.utils.common.DictCollectionsUtil;
@@ -12,6 +13,7 @@ import com.base.xmlpojo.trading.addproduct.attrclass.ShippingServiceCost;
 import com.base.xmlpojo.trading.addproduct.attrclass.ShippingSurcharge;
 import com.base.xmlpojo.trading.addproduct.attrclass.StartPrice;
 import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.http.impl.cookie.DateParseException;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.DocumentHelper;
@@ -297,6 +299,41 @@ public class SamplePaseXml {
         }
         return item;
     }
+
+    /**
+     * 定时从在线商品中同步数据下来，行成在线数据
+     * @param xml
+     * @return
+     * @throws DocumentException
+     */
+    public static List<TradingListingData> getItemListElememt(String xml,String ebayAccount) throws DocumentException, DateParseException {
+        List li = new ArrayList();
+        Document document= DocumentHelper.parseText(xml);
+        Element rootElt = document.getRootElement();
+        Element recommend = rootElt.element("ItemArray");
+        Iterator<Element> iter = recommend.elementIterator("Item");
+        while(iter.hasNext()){
+            TradingListingData item = new TradingListingData();
+            Element element = iter.next();
+            item.setTitle(element.elementText("Title"));
+            item.setItemId(element.elementText("ItemID"));
+            item.setSite(element.elementText("Site"));
+            item.setSku(element.elementText("SKU"));
+            item.setEbayAccount(ebayAccount);
+            //item.setListingType(element.element());
+            item.setPrice(Double.parseDouble(element.element("SellingStatus").elementText("CurrentPrice")));
+            //item.setShippingPrice(Long.parseLong());
+            item.setQuantity(Long.parseLong(element.elementText("Quantity")));
+            item.setQuantitysold(Long.parseLong(element.element("SellingStatus").elementText("QuantitySold")));
+            item.setListingduration(element.elementText("ListingDuration"));
+            item.setStarttime(DateUtils.parseDateTime(element.element("ListingDetails").elementText("StartTime").replace("T"," ").replace(".000Z","")));
+            item.setEndtime(DateUtils.parseDateTime(element.element("ListingDetails").elementText("EndTime").replace("T"," ").replace(".000Z","")));
+            item.setPicUrl(element.element("PictureDetails").elementText("GalleryURL"));
+            li.add(item);
+        }
+        return li;
+    }
+
     /**
      * 封装在线商品列表
      * @param xml

@@ -4,6 +4,7 @@ import com.base.database.trading.model.TradingOrderGetOrders;
 import com.base.domains.querypojos.OrderGetOrdersQuery;
 import com.base.mybatis.page.Page;
 
+import javax.servlet.ServletOutputStream;
 import java.util.List;
 import java.util.Map;
 
@@ -19,4 +20,8 @@ public interface ITradingOrderGetOrders {
     List<TradingOrderGetOrders> selectOrderGetOrdersByOrderId(String orderId);
 
     List<TradingOrderGetOrders> selectOrderGetOrdersByTransactionId(String TransactionId);
+
+    List<TradingOrderGetOrders> selectOrderGetOrdersByPaypalStatus(String status);
+
+    void downloadOrders(List<TradingOrderGetOrders> list,String outputFile,ServletOutputStream outputStream) throws Exception;
 }

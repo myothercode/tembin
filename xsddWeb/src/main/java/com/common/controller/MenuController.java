@@ -24,12 +24,22 @@ public class MenuController extends BaseAction {
     @Autowired
     private MenuService menuService;
 
-    /**获取菜单*/
+    /**获取当前登录人菜单*/
     @RequestMapping("getUserMenuList")
     @ResponseBody
     public void getUserMenuList(@ModelAttribute( "initSomeParmMap" )ModelMap modelMap,
                                 CommonParmVO commonParmVO){
         List<PermissionVO> permissionVOs=menuService.getUserMenuList(new HashMap());
+        AjaxSupport.sendSuccessText("menu",permissionVOs);
+        return;
+    }
+
+    /**获取当前登录人菜单*/
+    @RequestMapping("getAllMenuList.do")
+    @ResponseBody
+    public void getAllMenuList(@ModelAttribute( "initSomeParmMap" )ModelMap modelMap,
+                                CommonParmVO commonParmVO){
+        List<PermissionVO> permissionVOs=menuService.getAllMenuList(new HashMap());
         AjaxSupport.sendSuccessText("menu",permissionVOs);
         return;
     }

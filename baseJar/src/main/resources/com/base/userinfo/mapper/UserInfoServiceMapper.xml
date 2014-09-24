@@ -2,10 +2,16 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.base.userinfo.mapper.UserInfoServiceMapper" >
  <select id="queryUserRole" resultType="com.base.domains.RoleVO" parameterType="map">
-    SELECT ur.role_id roleID ,r.role_name roleName from usercontroller_user_role ur
+    SELECT ur.role_id roleID ,r.role_name roleName,r.create_user createUser from usercontroller_user_role ur
     INNER JOIN usercontroller_role r on ur.role_id=r.role_id
     WHERE ur.user_id=(select u.user_id from usercontroller_user u where u.user_login_id=#{loginId})
  </select>
+
+    <select id="queryAllPermission" resultType="com.base.domains.PermissionVO" parameterType="map" >
+        select p.permission_id permissionID,p.permission_value permissionURL,p.permission_name permissionName ,
+        p.permission_level permissionLevel,p.permission_parent_id parentID,p.menu_class menuClass
+        from usercontroller_permission p ORDER BY p.permission_level ,p.permission_id
+    </select>
 
     <select id="queryPermissionByRoleID" resultType="com.base.domains.PermissionVO" parameterType="map" >
         select * from (
@@ -38,11 +44,12 @@
 
 
     <select id="queryEbayAccountForUser" parameterType="java.lang.Long" resultType="com.base.domains.userinfo.UsercontrollerEbayAccountExtend">
-        select ebay.id id, ebay.user_id userId, ebay.ebay_name ebayName, ebay.paypal_account_id paypalAccountId, ebay.create_user createUser, ebay.create_time createTime, ebay.uuid uuid,ebay.ebay_token ebayToken,
+        select DISTINCT ebay.id id, ebay.user_id userId, ebay.ebay_name ebayName, ebay.paypal_account_id paypalAccountId, ebay.create_user createUser, ebay.create_time createTime, ebay.uuid uuid,ebay.ebay_token ebayToken,
         paypal.paypal_account paypalName
-        from usercontroller_ebay_account ebay
+        from usercontroller_user_ebay ue
+        left join usercontroller_ebay_account ebay on ebay.id=ue.ebay_id
         left join usercontroller_paypal_account paypal on ebay.paypal_account_id =  paypal.id
-        and ebay.user_id=#{userID}
+        where ue.user_id=#{userID}
     </select>
     
     

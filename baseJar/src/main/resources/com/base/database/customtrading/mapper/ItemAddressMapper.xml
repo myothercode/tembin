@@ -24,6 +24,9 @@
         <if test="id!=null">
             and item.id = #{id}
         </if>
+        <if test="checkFlag!=null">
+            and item.check_flag = #{checkFlag}
+        </if>
     </select>
 
 </mapper>

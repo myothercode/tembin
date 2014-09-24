@@ -388,6 +388,14 @@
 			}
 		}
 	};
+/**清除掉指定的参数*/
+    $.fn.deleteSpecUserParm = function(userParms){
+        var option = this.data("option");
+        for(var i in userParms){
+            delete option.userParm[userParms[i]];
+            delete option.sysParm[userParms[i]];
+        }
+    }
 
 	$.clickTr = function (obj) {
 		$(obj).parent().find("tr").each(function (i) {

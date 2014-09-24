@@ -50,7 +50,7 @@ var loadDataBuyerV=false;
 function loadDataBuyer(){
     if(loadDataBuyerV==true){return;}
     $("#buyer").initTable({
-        url: path + "/ajax/loadBuyerRequirementDetailsList.do",
+        url: path + "/ajax/loadBuyerRequirementDetailsList.do?checkFlag=0",
         columnData: [
             {title: "选择", name: "option1", width: "8%", align: "left", format: returnBuyer},
             {title: "名称", name: "name", width: "8%", align: "left"},
@@ -77,7 +77,7 @@ var loadDiscountPriceInfoV=false;
 function loadDiscountPriceInfo(){
     if(loadDiscountPriceInfoV==true){return;}
     $("#discountpriceinfo").initTable({
-        url: path + "/ajax/loadDiscountPriceInfoList.do",
+        url: path + "/ajax/loadDiscountPriceInfoList.do?checkFlag=0",
         columnData: [
             {title: "选项", name: "option1", width: "8%", align: "left", format: returnDiscountpriceinfo},
             {title: "名称", name: "name", width: "8%", align: "left"},
@@ -107,7 +107,7 @@ var loadItemLocationV=false;
  function loadItemLocation(){
      if(loadItemLocationV==true){return;}
      $("#itemLocation").initTable({
-         url: path + "/ajax/loadItemAddressList.do",
+         url: path + "/ajax/loadItemAddressList.do?checkFlag=0",
          columnData: [
              {title: "选项", name: "option1", width: "8%", align: "left", format: returnItemLocation},
              {title: "名称", name: "name", width: "8%", align: "left"},
@@ -135,7 +135,7 @@ var loadPayOptionV=false;
 function loadPayOption(){
     if(loadPayOptionV==true){return;}
     $("#pay").initTable({
-        url: path + "/ajax/loadPayPalList.do",
+        url: path + "/ajax/loadPayPalList.do?checkFlag=0",
         columnData: [
             {title: "选项", name: "option1", width: "8%", align: "left", format: returnPay},
             {title: "名称", name: "payName", width: "8%", align: "left"},
@@ -164,7 +164,7 @@ var loadReturnpolicyV=false;
 function loadReturnpolicy(){
 if(loadReturnpolicyV==true){return;}
     $("#returnpolicy").initTable({
-        url: path + "/ajax/loadReturnpolicyList.do",
+        url: path + "/ajax/loadReturnpolicyList.do?checkFlag=0",
         columnData: [
             {title: "选项", name: "option1", width: "8%", align: "left", format: returnReturnpolicy},
             {title: "名称", name: "name", width: "8%", align: "left"},
@@ -197,7 +197,7 @@ function loadShippingDeails(){
         return;
     }
     $("#shippingDeails").initTable({
-        url: path + "/ajax/loadShippingDetailsList.do",
+        url: path + "/ajax/loadShippingDetailsList.do?checkFlag=0",
         columnData: [
             {title: "选项", name: "option1", width: "8%", align: "left", format: returnShippingDeails},
             {title: "名称", name: "shippingName", width: "8%", align: "left"},
@@ -225,7 +225,7 @@ var descriptiondetailsV=false;
 function loaddescriptiondetails(){
     if(descriptiondetailsV==true){return;}
     $("#descriptiondetails").initTable({
-        url:path + "/ajax/loadDescriptionDetailsList.do",
+        url:path + "/ajax/loadDescriptionDetailsList.do?checkFlag=0",
         columnData:[
             {title: "选项", name: "option1", width: "8%", align: "left", format: returnDescriptiondetails},
             {title:"名称",name:"name",width:"8%",align:"left"},
@@ -598,9 +598,7 @@ function setTab(obj) {
     }
 }
 function closeWindow(){
-    var api = frameElement.api, W = api.opener;
-    W.refreshTable();
-    W.returnItem.close();
+    document.location = path+"/itemList.do";
 }
 var selectTemplates;
 function selectTemplate() {

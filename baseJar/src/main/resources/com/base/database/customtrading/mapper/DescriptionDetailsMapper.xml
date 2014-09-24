@@ -28,5 +28,8 @@
         <if test="id!=null">
             and DescriptionDetails.id = #{id}
         </if>
+        <if test="checkFlag!=null">
+            and DescriptionDetails.check_flag = #{checkFlag}
+        </if>
     </select>
 </mapper>

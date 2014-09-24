@@ -35,6 +35,7 @@
             map.put("sendMessage",path+"/sendMessage/sendMessageList.do");
             map.put("autoSendMessage",path+"/sendMessage/autoSendMessageList.do");
             map.put("virtualSKU",path+"/virtualSKU/virtualSKUList.do");
+            map.put("inventory",path+"/inventory/InventoryList.do");
             top.location=map.get(name);
 
         }
@@ -96,6 +97,7 @@
         <div><input type="button" value="查看发送消息" name="sendMessage" onclick="submitForm(this)"/></div>
         <div><input type="button" value="查看自动发送消息" name="autoSendMessage" onclick="submitForm(this)"/></div>
         <div><input type="button" value="虚拟SKU" name="virtualSKU" onclick="submitForm(this)"/></div>
+        <div><input type="button" value="库存" name="inventory" onclick="submitForm(this)"/></div>
 </form>
 </body>
 </html>

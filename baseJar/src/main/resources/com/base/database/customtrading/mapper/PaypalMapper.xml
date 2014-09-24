@@ -26,5 +26,8 @@
         <if test="id!=null">
             and paypal.id = #{id}
         </if>
+        <if test="checkFlag!=null">
+            and paypal.check_flag = #{checkFlag}
+        </if>
     </select>
 </mapper>

@@ -121,8 +121,8 @@ public class SynchronizeGetOrderImpl implements ThreadPoolBaseInterFace {
                     for (TradingOrderGetOrders order : orders) {
                         List<TradingOrderGetOrders> ls = iTradingOrderGetOrders.selectOrderGetOrdersByOrderId(order.getOrderid());
                         for (TradingOrderGetOrders l : ls) {
-                            if (l.getItemid().equals(order.getItemid())) {
-                                order.setId(ls.get(0).getId());
+                            if (l.getTransactionid().equals(order.getTransactionid())) {
+                                order.setId(l.getId());
                             }
                         }
                         //--------------自动发送消息-------------------------

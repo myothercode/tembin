@@ -216,11 +216,52 @@
 
     });
 </script>
-
+<style>
+    .price_div{
+        float: left;
+    }
+    .price_div li{
+        float: left;
+        width: 100%;
+        list-style-type: none;
+        height: 45px;
+    }
+    .price_div li dt{
+        float: left;
+        text-align: right;
+        width: 100px;
+        line-height: 30px;
+        padding-right: 20px;
+        font-weight: normal;
+    }
+    .price_div li em{
+        float: left;
+        padding-right: 9px;
+        font-style: normal;
+        line-height: 35px;
+    }
+    .price_div li em input{
+        padding-right: 8px;
+    }
+    .new h1{
+        float: left;
+        height: 35px;
+        width: 100%;
+        font-size: 16px;
+        line-height: 35px;
+        font-weight: normal;
+        color: #333;
+        background-color: #F7F7F7;
+        text-indent: 1em;
+        margin-top: 9px;
+        margin-right: 0px;
+        margin-bottom: 9px;
+        margin-left: 50px;
+    }
+</style>
 </head>
 <c:set var="item" value="${item}"/>
 <body style="height: 2949px;">
-<div class="content">
 <div class="new_all">
 <form id="form" class="new_user_form">
 <div class="here">当前位置：首页 > 刊登管理 > <b>刊登</b></div>
@@ -520,7 +561,6 @@
     <%--<li><a href="javascript:void(0)">更新在线刊登</a></li>
     <li><a href="javascript:void(0)">更新</a></li>--%>
     <li><a href="javascript:void(0)" onclick="closeWindow()">关闭</a></li>
-</div>
 </div>
 </body>
 </html>

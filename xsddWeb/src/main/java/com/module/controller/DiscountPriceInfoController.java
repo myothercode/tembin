@@ -59,8 +59,10 @@ public class DiscountPriceInfoController extends BaseAction {
     /**获取list数据的ajax方法*/
     @RequestMapping("/ajax/loadDiscountPriceInfoList.do")
     @ResponseBody
-    public void loadDiscountPriceInfoList(CommonParmVO commonParmVO){
+    public void loadDiscountPriceInfoList(HttpServletRequest request,CommonParmVO commonParmVO){
         Map m = new HashMap();
+        String checkFlag = request.getParameter("checkFlag");
+        m.put("checkFlag",checkFlag);
         /**分页组装*/
         PageJsonBean jsonBean=commonParmVO.getJsonBean();
         Page page=jsonBean.toPage();

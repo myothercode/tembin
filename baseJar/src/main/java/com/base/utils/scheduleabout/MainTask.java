@@ -34,7 +34,7 @@ public class MainTask {
 
     public static final String LISTING_SCHEDULE="listSchedule";//定时刊登任务
     public static final String KEY_MOVE_LIST_TASK="keyMoveListTask";//一键搬家任务
-
+    public static final String LISTING_DATA="tradingListData";//在线数据同步
 
     /**主入口,15瞄执行一次的任务*/
     @Scheduled(cron="0 0/2 *  * * ?")

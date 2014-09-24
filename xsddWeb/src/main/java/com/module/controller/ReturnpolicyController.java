@@ -48,8 +48,10 @@ public class ReturnpolicyController extends BaseAction{
     /**获取list数据的ajax方法*/
     @RequestMapping("/ajax/loadReturnpolicyList.do")
     @ResponseBody
-    public void loadReturnpolicyList(CommonParmVO commonParmVO){
+    public void loadReturnpolicyList(HttpServletRequest request,CommonParmVO commonParmVO){
         Map m = new HashMap();
+        String checkFlag = request.getParameter("checkFlag");
+        m.put("checkFlag",checkFlag);
         /**分页组装*/
         PageJsonBean jsonBean=commonParmVO.getJsonBean();
         Page page=jsonBean.toPage();

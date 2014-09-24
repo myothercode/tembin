@@ -21,6 +21,8 @@ public interface UserInfoServiceMapper {
 
     /**查询权限信息，根据角色id list*/
     public List<PermissionVO> queryPermissionByRoleID(Map map);
+    /**查询所有权限信息*/
+    public List<PermissionVO> queryAllPermission(Map map);
 
     /**查询sessionVO*/
     public SessionVO querySessionVOInfo(LoginVO loginVO);
