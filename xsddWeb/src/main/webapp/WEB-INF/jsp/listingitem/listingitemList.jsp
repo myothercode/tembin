@@ -13,9 +13,29 @@
     <script>
         $(document).ready(function(){
             var flag='${flag}';
-            var urls="/ajax/ListingItemList.do";
+            var county='${county}';
+            var listingtype='${listingtype}';
+            var ebayaccount='${ebayaccount}';
+            var selectType = '${selectType}';
+            var selectValue = '${selectValue}';
+            var urls="/ajax/ListingItemList.do?1=1";
             if(flag!=null&&flag!=""){
                 urls="/ajax/ListingItemList.do?flag="+flag;
+            }
+            if(county!=null&&county!=""){
+                urls+="&county="+county;
+            }
+            if(listingtype!=null&&listingtype!=""){
+                urls+="&listingtype="+listingtype;
+            }
+            if(ebayaccount!=null&&ebayaccount!=""){
+                urls+="&ebayaccount="+ebayaccount;
+            }
+            if(selectType!=null&&selectType!=""){
+                urls+="&selectType="+selectType;
+            }
+            if(selectValue!=null&&selectValue!=""){
+                urls+="&selectValue="+selectValue;
             }
             $("#itemTable").initTable({
                 url:path + urls,

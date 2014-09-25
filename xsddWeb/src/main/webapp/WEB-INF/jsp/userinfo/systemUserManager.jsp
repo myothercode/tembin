@@ -40,23 +40,23 @@
 
 
 <div style="DISPLAY: none" id=con_menu_2>
-    <form action="" method="get">
+    <form id="changePWDForm">
         <table width="100%" border="0" align="left" cellspacing="0" style="margin-top:20px;">
             <tr>
                 <td width="10%" height="40" align="right">原始密码</td>
-                <td width="82%" height="40"><input name="id" type="text" class="newps"></td>
+                <td width="82%" height="40"><input id="oldPWD" name="oldPWD" type="text" class="newps"></td>
             </tr>
             <tr>
                 <td width="10%" height="40" align="right" >新密码</td>
-                <td height="40"><input name="newps" type="password" class="newps"></td>
+                <td height="40"><input id="newPWD" name="newPWD" type="password" class="newps"></td>
             </tr>
             <tr>
                 <td width="10%" height="40" align="right">确认密码</td>
-                <td height="40"><input name="ps" type="password" class="newps"></td>
+                <td height="40"><input id="newPWD2" name="ps" type="password" class="newps"></td>
             </tr>
             <tr>
                 <td height="40" align="right">&nbsp;</td>
-                <td height="40"><input name="提交" type="submit" class="newps_put" value="保 存"></td>
+                <td height="40"><input onclick="changePWDFun()" name="提交" type="button" class="newps_put" value="保 存"></td>
             </tr>
         </table></form>
 </div>

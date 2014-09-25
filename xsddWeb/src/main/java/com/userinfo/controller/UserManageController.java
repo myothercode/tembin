@@ -6,6 +6,8 @@ import com.base.domains.CommonParmVO;
 import com.base.domains.SessionVO;
 import com.base.domains.userinfo.UsercontrollerDevAccountExtend;
 import com.base.domains.userinfo.UsercontrollerEbayAccountExtend;
+import com.base.mybatis.page.Page;
+import com.base.mybatis.page.PageJsonBean;
 import com.base.sampleapixml.APINameStatic;
 import com.base.sampleapixml.BindAccountAPI;
 import com.base.userinfo.service.UserInfoService;
@@ -29,6 +31,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -50,13 +53,21 @@ public class UserManageController extends BaseAction {
     private UserInfoService userInfoService;
 
 
-    /**绑定帐号的主页面*/
+    /**绑定帐号的弹出主页面*/
     @RequestMapping("bindEbayAccount.do")
     @AvoidDuplicateSubmission(needSaveToken = true)
     public ModelAndView bindEbayAccount(@ModelAttribute( "initSomeParmMap" )ModelMap modelMap,
                                         CommonParmVO commonParmVO) throws Exception {
         modelMap.put("tokenPageUrl",tokenPageUrl);
-        return   forword("/userinfo/bindEbayAccount",modelMap);
+        return   forword("/userinfo/pop/bindEbayAccount",modelMap);
+    }
+
+    /**ebay帐号管理页面*/
+    @RequestMapping("ebayAccountManager.do")
+    @AvoidDuplicateSubmission(needSaveToken = true)
+    public ModelAndView ebayAccountManager(@ModelAttribute( "initSomeParmMap" )ModelMap modelMap,
+                                        CommonParmVO commonParmVO) throws Exception {
+        return   forword("/userinfo/ebayAccountManager",modelMap);
     }
 
     @RequestMapping("apiGetSessionID")
@@ -136,9 +147,18 @@ public class UserManageController extends BaseAction {
     @RequestMapping("queryEbaysForCurrUser")
     @ResponseBody
     /**取得当前系统帐号对应的ebay帐号信息*/
-    public void queryEbaysForCurrUser(){
+    public void queryEbaysForCurrUser(com.base.domains.querypojos.CommonParmVO commonParmVO){
+        Map map=new HashMap();
+        PageJsonBean jsonBean = commonParmVO.getJsonBean();
+        jsonBean.setPageCount(1000);
+        jsonBean.setPageNum(1);
         List<UsercontrollerEbayAccountExtend> ebayAccountExtendList= userInfoService.getEbayAccountForCurrUser();
-        AjaxSupport.sendSuccessText("",ebayAccountExtendList);
+        for (UsercontrollerEbayAccountExtend u : ebayAccountExtendList){
+            u.setEbayToken("");
+        }
+        jsonBean.setList(ebayAccountExtendList);
+        jsonBean.setTotal(1);
+        AjaxSupport.sendSuccessText("",jsonBean);
         return;
     }
 

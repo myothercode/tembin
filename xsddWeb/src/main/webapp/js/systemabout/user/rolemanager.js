@@ -41,6 +41,8 @@ function doRole(obj){
     var d=$(optionV).attr('doaction');
     if(d=='delete'){
         deleteRole(v);
+    }else if(d=='edit'){
+        addRoleFun(v);
     }
 }
 /**删除角色*/

@@ -24,10 +24,7 @@ import com.base.xmlpojo.trading.addproduct.ReviseItemRequest;
 import com.base.xmlpojo.trading.addproduct.ShippingDetails;
 import com.common.base.utils.ajax.AjaxSupport;
 import com.common.base.web.BaseAction;
-import com.trading.service.ITradingAddItem;
-import com.trading.service.ITradingDataDictionary;
-import com.trading.service.ITradingItem;
-import com.trading.service.ITradingListingData;
+import com.trading.service.*;
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
@@ -61,6 +58,8 @@ public class ListingItemController extends BaseAction {
     private ITradingItem iTradingItem;
     @Autowired
     private ITradingListingData iTradingListingData;
+    @Autowired
+    private IUsercontrollerEbayAccount iUsercontrollerEbayAccount;
 
     @RequestMapping("/getListingItemList.do")
     public ModelAndView getListingItemList(HttpServletRequest request, HttpServletResponse response, ModelMap modelMap) throws Exception {
@@ -86,11 +85,35 @@ public class ListingItemController extends BaseAction {
         if(flag!=null&&!"".equals(flag)){
             modelMap.put("flag",flag);
         }
+        String county = request.getParameter("county");
+        if(county!=null&&!"".equals(county)){
+            modelMap.put("county",county);
+        }
+        String listingtype = request.getParameter("listingtype");
+        if(listingtype!=null&&!"".equals(listingtype)){
+            modelMap.put("listingtype",listingtype);
+        }
+        String ebayaccount = request.getParameter("ebayaccount");
+        if(ebayaccount!=null&&!"".equals(ebayaccount)){
+            modelMap.put("ebayaccount",ebayaccount);
+        }
+        String selectType = request.getParameter("selectType");
+        if(selectType!=null&&!"".equals(selectType)){
+            modelMap.put("selectType",selectType);
+        }
+        String selectValue = request.getParameter("selectValue");
+        if(selectValue!=null&&!"".equals(selectValue)){
+            modelMap.put("selectValue",selectValue);
+        }
         return forword("listingitem/listingitemList",modelMap);
     }
 
     @RequestMapping("/listingdataManager.do")
     public ModelAndView listingdataManager(HttpServletRequest request, HttpServletResponse response, ModelMap modelMap) throws Exception {
+        SessionVO c= SessionCacheSupport.getSessionVO();
+        //List<PublicUserConfig> ebayList = DataDictionarySupport.getPublicUserConfigByType(DataDictionarySupport.PUBLIC_DATA_DICT_PAYPAL, c.getId());
+        List<UsercontrollerEbayAccount> ebayList = this.iUsercontrollerEbayAccount.selectUsercontrollerEbayAccountByUserId(c.getId());
+        modelMap.put("ebayList",ebayList);
         return forword("listingitem/listingdataManager",modelMap);
     }
 
@@ -200,6 +223,26 @@ public class ListingItemController extends BaseAction {
         String flag = request.getParameter("flag");
         if(flag!=null&&!"".equals(flag)){
             map.put("flag",flag);
+        }
+        String county = request.getParameter("county");
+        if(county!=null&&!"".equals(county)){
+            map.put("county",county);
+        }
+        String listingtype = request.getParameter("listingtype");
+        if(listingtype!=null&&!"".equals(listingtype)){
+            map.put("listingtype",listingtype);
+        }
+        String ebayaccount = request.getParameter("ebayaccount");
+        if(ebayaccount!=null&&!"".equals(ebayaccount)){
+            map.put("ebayaccount",ebayaccount);
+        }
+        String selectType = request.getParameter("selectType");
+        if(selectType!=null&&!"".equals(selectType)){
+            map.put("selectType",selectType);
+        }
+        String selectValue = request.getParameter("selectValue");
+        if(selectValue!=null&&!"".equals(selectValue)){
+            map.put("selectValue",selectValue);
         }
         /**分页组装*/
         PageJsonBean jsonBean=commonParmVO.getJsonBean();
@@ -331,7 +374,7 @@ public class ListingItemController extends BaseAction {
         //生产
         //rc.seteBayAuthToken("AgAAAA**AQAAAA**aAAAAA**W2xvUQ**nY+sHZ2PrBmdj6wVnY+sEZ2PrA2dj6AFlICkCpSGoA6dj6x9nY+seQ**GNABAA**AAMAAA**Vn4yBA7u+ZDMqwb6Sdip+KaomBablhv7dCVnFt5ksAUd7RjjA4ANJ4TQVoIAQ35NZQzalPoKaGzLBFhURJa2xpJPj/BMSb0ihuql4NDVCUOsPFoWMVPIwQdVQ6dZ29DL66dBcuiRgJsTakDttxgK02lfiBgiEP0YCruAhjIKFzZPSivuvkSqKn2HIFKjJq0VDlCvqaBgYkGm26ITKH9dQj/Ql9jK3BHeWA6GSZ+nR9HPIufHLdNpT4axILEd3Lg2X/d34+QoP46rGb4iwO64AzvOXcF//WE4MuJsTQ4d6qgw6DOajpDBL0PNq1n6HItAylImyPRzfvU8hw8neigieh3CtmjzjJ81bY/swlFQdPlV6zZVE99pegMT0DO9Fms5la8W3MSeoHgWdq4i7AR6GBjlh9W9x8z05I91wOx2wNJb0ETcbwl0YbWxs72K49FYF12CZbXQytfJZNLHi+X9/jFgf4TfdrJgagMhUqP9M6Of3R2POF/4+9j/y7s11M6aWw2oxsJ6VAZQKZXtZ5T6/UfP89VA7M1t68R6f6kVr5hoD5glQa2lIw6bIQR4tubYPTAhg5uPCjWifEwYJoV5VuwAk/WHKEvihNHrYGu3c1SMuJlHatLBx7vSNrFsPFWsmP6Z3I6bBRyjSY57KQwxM3SHJvvbYO8etfU+S1gCXuvFMarCCgxv8MhdDUhA/F6A3QE+KjW91xKz8BQ/UJKBS5kOJF13xqSh+j/zoH6EVmRDLvD0uAW7xsSAiMuwT5Kq");
         //测试
-        rc.seteBayAuthToken("AgAAAA**AQAAAA**aAAAAA**wV1JUQ**nY+sHZ2PrBmdj6wVnY+sEZ2PrA2dj6wFk4GhCpGGoA+dj6x9nY+seQ**cx0CAA**AAMAAA**2kuzIn+bBej1QDsDFfI2N74mj8psZYNYrtgX97fzWSGXO7EjvdlE9leu9HCY1bR9wdrzlAE7AKcT9Oz5BDNZbNQLS+uoifmNUM47lSqxWeYTQS2GtMK25LPYhxY+OQp6UVZ8lUh6Oqr91ub03emzufuZHo+6KSNJfNXMtOBVaB7PDeBQyNWoFBO0/LYiS5ql6HXB7vCj0W+K/iT4t3aPs5KlXAXjewM/Sa+nUDtjT9SseqrKrxdZx5fkAePeSrBs229tdCrkTtE0n+ZE9ppwJjElZpu7yfQL44McNa16KBxYYO0PnX7ENg2yMxf3H4aji0BEfB41lrC1LwhmNSebJGrJXRQVS9jmZyDqYiBdn1t536va/LPTP8kc3GZ7hnZRJuhMxoGGgx4ev5Hip0L7dk6cAPKHIkHUIjfA5pwVHEJZpvea+7uvwAh5pj9U7r6rmB9FXH2G9l+F5SytYlIXsDjwNtrEN53k5HrM0vhnGdd7pUwvyu7Nu4U5aPkZQZjTr6OrTWioDsZZwEz+pf0scw0IYweMhicCqMTNbvkJsj2cikX49C6XSAcoUyrGtGa11vFChrifmq74dPZmUEtT1hDtwL1Ix3VPyZcJtTukKljxa0W0IwIe676X5HmiGhvk5qPPUImkXcZdQUK1gMdZmw0seMl5xmFG33kKVSD9H0p0JAEF4lOcDvjADQZtwLXY3qIhvYcKdOrIffrUAURnJRYnrB/MixizWvw252xBn9tmxpm68O3KsGBzcUwEB0Su");
+        rc.seteBayAuthToken("AgAAAA**AQAAAA**aAAAAA**vVcRVA**nY+sHZ2PrBmdj6wVnY+sEZ2PrA2dj6wFk4GhCpGGoA+dj6x9nY+seQ**cx0CAA**AAMAAA**Z2MB0OtmO4JsPFBZPcjclippjnZG4bwpcpXYRXDdc6wEppv5m/WiCvsjyTKWoVXCMxQl2se3U6Vn93oBL6zg8EcR3GCXCC3ZbTpEQ3lBX8avBrME9VHo0RcfcE7oLVtnBAuSffy3Dk5ICUNyU7g57/rHw8d5DnO3JeitpQcTLKAInt+sEZslri3wa4Mx0xgyFW5OF3w8mNK8ib8+57PTHcApnp8xRTAlIVuwW3F/fGbSFVReS07/MulzlFXBoW/ZPLq+L2aLFpn5s+IB5/gB0HoDo5uGzRnALmXxUz8BuwJMrUE29830W7xVSEaYSYsOcJyue6PjJKyZt0rXf8TNHusXCHX240dWllrjMVxS7pEHgKb/FKfd/79PH3rXTFmuexesXS6H1lRmHBBE1iknFwtzzS+UeN22Rd6W+hjSjuOHB33o2gMS5cOdVXHuHyOQ6VJU3bJL/eNDgyB+wz3HhZmz6sF+lmLIRKP82H1QXdlwdGdpVhAhyqnE4FH4qTgPBMxv6c4jRL5BRuyUZDLeJI1WXmaZ4pNMss+MiME7Qu+7bP7S2TZhmValbfW/FvqSrxR9LlHji7iQSsz2m56x5TLjOtkFWjRxmB6C1wzBVtzdILzbvmA/1+9RlMevalW6bg22irusiv7iuD/AnC9pZ0Sju2XK/7WpjVW4/lZyBmRbqHQJPbU/5MU3xrM8pTV8rZmPfQrRh2araaWGIBE5IW3gsTrETpRUQybXd/a107ee61GwXEUqVat1EfznFpIs");
         rir.setRequesterCredentials(rc);
         rir.setItem(ite);
         xml = PojoXmlUtil.pojoToXml(rir);

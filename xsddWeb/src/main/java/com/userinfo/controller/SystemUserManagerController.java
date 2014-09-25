@@ -135,4 +135,14 @@ public class SystemUserManagerController extends BaseAction {
         AjaxSupport.sendSuccessText("","添加成功");
     }
 
+    /**修改密码*/
+    @RequestMapping("changePWD.do")
+    @ResponseBody
+    @AvoidDuplicateSubmission(needRemoveToken = true)
+    public void changePWD(String oldPWD,String newPWD){
+        Asserts.assertTrue(StringUtils.isNotEmpty(oldPWD) && StringUtils.isNotEmpty(newPWD),"原密码和新密码不能为空");
+        systemUserManagerService.changePWD(oldPWD, newPWD);
+        AjaxSupport.sendSuccessText("","修改成功！");
+    }
+
 }

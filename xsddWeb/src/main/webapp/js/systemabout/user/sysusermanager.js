@@ -135,3 +135,25 @@ openAdduserWindowD = $.dialog({
 });
     url="";
 }
+
+/**修改密码*/
+function changePWDFun(){
+    var oldp=$('#oldPWD').val();
+    var newp=$('#newPWD').val();
+    var newp2=$('#newPWD2').val();
+    if(oldp==null || newp==null || newp2==null){alert("原密码和新密码必须输入");return;}
+    if(newp!=newp2){alert("两次输入的新密码不同！");return;}
+    $().invoke(
+        path+"/systemuser/changePWD.do",
+        {"oldPWD":oldp,"newPWD":newp},
+        [function(m,r){
+            alert(r);
+            $("#oldPWD,#newPWD,#newPWD2").val('');
+            Base.token();
+        },
+        function(m,r){
+            alert(r)
+            Base.token();
+        }]
+    );
+}
