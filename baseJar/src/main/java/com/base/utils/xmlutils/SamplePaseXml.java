@@ -320,7 +320,7 @@ public class SamplePaseXml {
             item.setSite(element.elementText("Site"));
             item.setSku(element.elementText("SKU"));
             item.setEbayAccount(ebayAccount);
-            //item.setListingType(element.element());
+            item.setListingType(element.elementText("ListingType"));
             item.setPrice(Double.parseDouble(element.element("SellingStatus").elementText("CurrentPrice")));
             //item.setShippingPrice(Long.parseLong());
             item.setQuantity(Long.parseLong(element.elementText("Quantity")));

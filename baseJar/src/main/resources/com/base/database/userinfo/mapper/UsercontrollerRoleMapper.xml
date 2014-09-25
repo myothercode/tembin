@@ -139,6 +139,10 @@
       role_desc)
     values (#{roleId,jdbcType=INTEGER}, #{roleName,jdbcType=VARCHAR}, #{createUser,jdbcType=BIGINT}, 
       #{roleDesc,jdbcType=VARCHAR})
+
+      <selectKey resultType="int" keyProperty="roleId" order="AFTER">
+          SELECT LAST_INSERT_ID()
+      </selectKey>
   </insert>
   <insert id="insertSelective" parameterType="com.base.database.userinfo.model.UsercontrollerRole" >
     <!--
@@ -174,6 +178,9 @@
         #{roleDesc,jdbcType=VARCHAR},
       </if>
     </trim>
+      <selectKey resultType="int" keyProperty="roleId" order="AFTER">
+          SELECT LAST_INSERT_ID()
+      </selectKey>
   </insert>
   <select id="countByExample" parameterType="com.base.database.userinfo.model.UsercontrollerRoleExample" resultType="java.lang.Integer" >
     <!--

@@ -32,8 +32,8 @@
     </select>
 
     <select id="queryAllRoleByUserID" resultType="com.base.domains.RoleVO" parameterType="map">
-        select DISTINCT ur.role_id roleID,r.role_name roleName,r.create_user createUser from usercontroller_user_role ur
-        LEFT JOIN usercontroller_role r on r.role_id=ur.role_id
+        select DISTINCT r.role_id roleID,r.role_name roleName,r.create_user createUser
+        from usercontroller_role r
         where r.create_user=-1 or r.create_user=#{userId}
     </select>
 

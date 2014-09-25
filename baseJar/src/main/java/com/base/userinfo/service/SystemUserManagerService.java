@@ -40,4 +40,7 @@ public interface SystemUserManagerService {
 
     /**判断某个账户是否有某个角色roleID参见role表*/
     boolean pdRole(Long roleID, List<RoleVO> roleVOList);
+
+    /**修改密码*/
+    void changePWD(String oldPWD, String newPWD);
 }

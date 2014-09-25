@@ -1,5 +1,7 @@
 package com.base.domains.userinfo;
 
+import com.base.database.userinfo.model.UsercontrollerRole;
+import com.base.database.userinfo.model.UsercontrollerRolePermission;
 import com.base.domains.RoleVO;
 
 import java.util.List;
@@ -18,6 +20,25 @@ public class AddSubUserVO {
     private List<RoleVO> roles;
     private List<UsercontrollerEbayAccountExtend> ebays;
 
+    private UsercontrollerRole role;
+    private List<UsercontrollerRolePermission> rolePermissions;
+
+
+    public UsercontrollerRole getRole() {
+        return role;
+    }
+
+    public void setRole(UsercontrollerRole role) {
+        this.role = role;
+    }
+
+    public List<UsercontrollerRolePermission> getRolePermissions() {
+        return rolePermissions;
+    }
+
+    public void setRolePermissions(List<UsercontrollerRolePermission> rolePermissions) {
+        this.rolePermissions = rolePermissions;
+    }
 
     public Long getUserID() {
         return userID;

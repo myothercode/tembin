@@ -48,9 +48,8 @@ public class ListingItemDataTaskRun extends BaseScheduledClass implements Schedu
                 "<StartTimeFrom>"+startTime+"</StartTimeFrom>\n" +
                 "<StartTimeTo>"+endTime+"</StartTimeTo>\n" +
                 "<UserID>"+ebayName+"</UserID>\n" +
-                "<GranularityLevel>Coarse</GranularityLevel>\n" +
                 "<IncludeWatchCount>true</IncludeWatchCount>\n" +
-                "<DetailLevel>ItemReturnDescription</DetailLevel>\n" +
+                "<DetailLevel>ReturnAll</DetailLevel>\n" +
                 "</GetSellerListRequest>​";
         return colStr;
     }

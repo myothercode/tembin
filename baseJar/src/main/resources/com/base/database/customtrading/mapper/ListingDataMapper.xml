@@ -38,5 +38,17 @@
         <if test="flag==2">
             and tion.QuantitySold = 0
         </if>
+        <if test="county!=null">
+            and tion.site = #{county}
+        </if>
+        <if test="listingtype!=null">
+            and tion.listing_type = #{listingtype}
+        </if>
+        <if test="ebayaccount!=null">
+            and tion.ebay_account = #{ebayaccount}
+        </if>
+        <if test="selectType!=null">
+            and tion.${selectType} = #{selectValue}
+        </if>
     </select>
 </mapper>

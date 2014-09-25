@@ -1,5 +1,6 @@
 package com.base.userinfo.service;
 
+import com.base.domains.userinfo.AddSubUserVO;
 import com.base.mybatis.page.Page;
 
 import java.util.Map;
@@ -13,4 +14,10 @@ public interface RoleManagerService {
 
     /**删除一个角色*/
     void deleteRoleById(Map map);
+
+    /**增加或者编辑一个角色*/
+    void addOrEditRole(AddSubUserVO addSubUserVO);
+
+    /**查询一个角色的信息*/
+    AddSubUserVO getRoleInfoById(Integer roleId);
 }

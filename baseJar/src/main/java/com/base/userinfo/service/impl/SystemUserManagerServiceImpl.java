@@ -216,4 +216,15 @@ public class SystemUserManagerServiceImpl implements SystemUserManagerService {
         }
     }
 
+    @Override
+    /**修改密码*/
+    public void changePWD(String oldPWD,String newPWD){
+        SessionVO sessionVO = SessionCacheSupport.getSessionVO();
+        UsercontrollerUser user = userMapper.selectByPrimaryKey((int) sessionVO.getId());
+        String EOld = EncryptionUtil.pwdEncrypt(oldPWD, user.getUserLoginId());
+        Asserts.assertTrue(user.getUserPassword().equalsIgnoreCase(EOld),"原密码错误！");
+        user.setUserPassword(EncryptionUtil.pwdEncrypt(newPWD, user.getUserLoginId()));
+        userMapper.updateByPrimaryKeySelective(user);
+    }
+
 }
