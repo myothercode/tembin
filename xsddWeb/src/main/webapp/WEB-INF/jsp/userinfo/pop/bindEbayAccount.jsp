@@ -15,15 +15,63 @@
         var sessid;
         var tokenParm;
 
-        $(document).ready(function(){
-            getAllDevSelect();
-        });
+
     </script>
     <script type="text/javascript" src=<c:url value ="/js/systemabout/bindEbayAccount/bindebay.js" /> ></script>
 </head>
 <body>
 
-选择要绑定的开发帐号
+<div style="width: 400px">
+
+    <form class="form-horizontal">
+        <fieldset>
+            <div id="legend" class="">
+                <legend class="">ebay账户绑定</legend>
+            </div>
+
+
+            <div class="control-group">
+
+                <!-- Text input-->
+                <label class="control-label" for="input01">ebay账户名</label>
+                <div class="controls">
+                    <input id="bm" onblur="getShortName(this)" type="text" placeholder="" class="input-xlarge">
+                    <p class="help-block"></p>
+                </div>
+            </div>
+
+            <div class="control-group">
+
+                <!-- Text input-->
+                <label class="control-label" for="input01">简写代码</label>
+                <div class="controls">
+                    <input id="code" type="text" placeholder="" class="input-xlarge">
+                    <p class="help-block"></p>
+                </div>
+            </div>
+        </fieldset>
+    </form>
+
+    <div class="control-group" style="text-align: center;">
+        <label class="control-label"></label>
+        <!-- Button -->
+        <div class="controls">
+            <button onclick="getBindParm()" class="btn btn-info">账户授权</button>
+        </div>
+    </div>
+
+    <div class="control-group" style="text-align: center;">
+        <label class="control-label"></label>
+        <!-- Button -->
+        <div class="controls">
+            <button class="btn btn-info" onclick="fetchToken()">确定授权完成</button>
+        </div>
+    </div>
+</div>
+
+
+
+<%--选择要绑定的开发帐号
 <select id="devSelect">
     <option value="">请选择</option>
 </select>
@@ -34,7 +82,7 @@
 &nbsp;
 别名缩写
 <input type="text" id="code" />
-<button onclick="fetchToken()">授权已完成?</button>
+<button onclick="fetchToken()">授权已完成?</button>--%>
 
 </body>
 

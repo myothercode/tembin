@@ -1,5 +1,6 @@
 package com.order.controller;
 
+import com.base.database.publicd.model.PublicUserConfig;
 import com.base.database.trading.model.*;
 import com.base.domains.CommonParmVO;
 import com.base.domains.SessionVO;
@@ -19,6 +20,7 @@ import com.base.utils.threadpool.TaskMessageVO;
 import com.base.utils.xmlutils.SamplePaseXml;
 import com.common.base.utils.ajax.AjaxSupport;
 import com.common.base.web.BaseAction;
+import com.publicd.service.IPublicUserConfig;
 import com.sitemessage.service.SiteMessageStatic;
 import com.trading.service.*;
 import org.apache.commons.lang.StringUtils;
@@ -63,6 +65,10 @@ public class GetOrdersController extends BaseAction {
     private  ITradingOrderGetAccount iTradingOrderGetAccount;
     @Autowired
     private  ITradingOrderGetSellerTransactions iTradingOrderGetSellerTransactions;
+    @Autowired
+    private IPublicUserConfig iPublicUserConfig;
+    @Autowired
+    private ITradingDataDictionary iTradingDataDictionary;
    /* @Autowired
     private ITradingOrderVariation iTradingOrderVariation;
     @Autowired
@@ -72,17 +78,156 @@ public class GetOrdersController extends BaseAction {
 
     @RequestMapping("/getOrdersList.do")
     public ModelAndView OrdersList(HttpServletRequest request,HttpServletResponse response,ModelMap modelMap){
+        List<PublicUserConfig> configs=new ArrayList<PublicUserConfig>();
+        List<PublicUserConfig> list=iPublicUserConfig.selectUserConfigByItemType("folder");
+        for(PublicUserConfig config:list){
+            String value=config.getConfigValue();
+            if(StringUtils.isNotBlank(value)){
+                configs.add(config);
+            }
+        }
+        modelMap.put("folders",configs);
         return forword("/orders/order/getOrdersList",modelMap);
     }
+    //选择文件夹
+    @RequestMapping("/selectTabRemark.do")
+    public ModelAndView selectTabRemark(HttpServletRequest request,HttpServletResponse response,ModelMap modelMap){
+        List<PublicUserConfig> list=iPublicUserConfig.selectUserConfigByItemType("folder");
+        modelMap.put("folders",list);
+        return forword("/orders/order/selectTabRemark",modelMap);
+    }
+    //将文件夹设置到order中
+    @RequestMapping("/saveOrderTabremark.do")
+    public void saveOrderTabremark(HttpServletRequest request,HttpServletResponse response,ModelMap modelMap) throws Exception {
+        String id=request.getParameter("id");
+        PublicUserConfig config=iPublicUserConfig.selectUserConfigById(Long.valueOf(id));
+        if(config==null){
+            AjaxSupport.sendFailText("fail","文件夹不存在");
+            return;
+        }
+        config.setConfigValue("true");
+        iPublicUserConfig.saveUserConfig(config);
+        AjaxSupport.sendSuccessText("", "添加文件夹成功");
+    }
+    //删除文件夹
+    @RequestMapping("/removeOrderTabremark.do")
+    public void removeOrderTabremark(HttpServletRequest request,HttpServletResponse response,ModelMap modelMap) throws Exception {
+        String id=request.getParameter("id");
+        PublicUserConfig config=iPublicUserConfig.selectUserConfigById(Long.valueOf(id));
+        if(config!=null){
+            List<UsercontrollerEbayAccountExtend> ebays=userInfoService.getEbayAccountForCurrUser();
+            List<String> ebayNames=new ArrayList<String>();
+            for(UsercontrollerEbayAccountExtend ebay:ebays){
+                ebayNames.add(ebay.getEbayName());
+            }
+            List<TradingOrderGetOrders> orders=iTradingOrderGetOrders.selectOrderGetOrdersByFolder(config.getId()+"",ebayNames);
+            if(orders!=null&&orders.size()>0){
+                for(TradingOrderGetOrders order:orders){
+                    order.setFolder(null);
+                    iTradingOrderGetOrders.saveOrderGetOrders(order);
+                }
+            }
+            iPublicUserConfig.deleteUserConfig(config);
+            AjaxSupport.sendSuccessText("", "删除文件夹成功");
+            return;
+        }else{
+            AjaxSupport.sendFailText("fail","文件夹不存在");
+        }
+
+    }
+
     //新建文件夹
     @RequestMapping("/addTabRemark.do")
     public ModelAndView addTabRemark(HttpServletRequest request,HttpServletResponse response,ModelMap modelMap){
         return forword("/orders/order/addTabRemark",modelMap);
     }
+    //添加备注
+    @RequestMapping("/addComment.do")
+    public ModelAndView addComment(HttpServletRequest request,HttpServletResponse response,ModelMap modelMap){
+        String orderid=request.getParameter("orderid");
+        modelMap.put("orderid",orderid);
+        return forword("/orders/order/addComment",modelMap);
+    }
+    //移动订单到指定文件夹初始化
+    @RequestMapping("/moveFolder.do")
+    public ModelAndView moveFolder(HttpServletRequest request,HttpServletResponse response,ModelMap modelMap){
+        List<String> orderids=new ArrayList<String>();
+        int i=0;
+        while(i>=0){
+            String order=request.getParameter("orderid["+i+"]");
+            if(order!=null){
+                orderids.add(order);
+                i++;
+            }else{
+                i=-1;
+            }
+        }
+        List<PublicUserConfig> list=iPublicUserConfig.selectUserConfigByItemType("folder");
+        List<PublicUserConfig> configs=new ArrayList<PublicUserConfig>();
+        for(PublicUserConfig config:list){
+            if(StringUtils.isNotBlank(config.getConfigValue())){
+                configs.add(config);
+            }
+        }
+        modelMap.put("folders",configs);
+        modelMap.put("orderids",orderids);
+        return forword("/orders/order/moveFolder",modelMap);
+    }
+    //保存订单到指定文件夹
+    @RequestMapping("/saveFolder.do")
+    public void saveFolder(HttpServletRequest request,HttpServletResponse response,ModelMap modelMap) throws Exception {
+        String folderId=request.getParameter("folderId");
+        int i=0;
+        while(i>=0){
+            String orderid=request.getParameter("orderid["+i+"]");
+            if(orderid!=null&&StringUtils.isNotBlank(folderId)){
+                List<TradingOrderGetOrders> orders=iTradingOrderGetOrders.selectOrderGetOrdersByOrderId(orderid);
+                for(TradingOrderGetOrders order:orders){
+                    order.setFolder(folderId);
+                    iTradingOrderGetOrders.saveOrderGetOrders(order);
+                }
+                i++;
+            }else if(!StringUtils.isNotBlank(folderId)){
+                i=-2;
+            }else{
+                i=-1;
+            }
+        }
+        if(i==-2){
+            AjaxSupport.sendFailText("fail","文件夹不存在");
+            return;
+        }
+        AjaxSupport.sendSuccessText("","添加备注成功");
 
+    }
+    //保存文件夹
+    @RequestMapping("/saveComment.do")
+    public void saveComment(HttpServletRequest request,HttpServletResponse response,ModelMap modelMap) throws Exception {
+        String orderid=request.getParameter("orderid");
+        String comment=request.getParameter("comment");
+        if(StringUtils.isNotBlank(orderid)){
+            List<TradingOrderGetOrders> orders=iTradingOrderGetOrders.selectOrderGetOrdersByOrderId(orderid);
+            for(TradingOrderGetOrders order:orders){
+                order.setComment(comment);
+                iTradingOrderGetOrders.saveOrderGetOrders(order);
+            }
+            AjaxSupport.sendSuccessText("","添加备注成功");
+        }else{
+            AjaxSupport.sendFailText("fail","该订单不存在");
+        }
+    }
     //保存文件夹
     @RequestMapping("/saveTabremark.do")
-    public void saveTabremark(HttpServletRequest request,HttpServletResponse response,ModelMap modelMap){
+    public void saveTabremark(HttpServletRequest request,HttpServletResponse response,ModelMap modelMap) throws Exception {
+        String tabName=request.getParameter("tabName");
+        if(!StringUtils.isNotBlank(tabName)){
+            AjaxSupport.sendFailText("fail","文件夹名称不能为空");
+            return;
+        }
+        PublicUserConfig config=new PublicUserConfig();
+        config.setConfigType("folder");
+        config.setConfigName(tabName);
+        iPublicUserConfig.saveUserConfig(config);
         AjaxSupport.sendSuccessText("", "文件夹保存成功");
     }
     /**获取list数据的ajax方法*/
@@ -95,6 +240,7 @@ public class GetOrdersController extends BaseAction {
         String itemType=request.getParameter("itemType");
         String content=request.getParameter("content");
         String status=request.getParameter("status");
+        String folderId=request.getParameter("folderId");
         /**分页组装*/
         PageJsonBean jsonBean=commonParmVO.getJsonBean();
         Page page=jsonBean.toPage();
@@ -123,8 +269,11 @@ public class GetOrdersController extends BaseAction {
         if(!StringUtils.isNotBlank(typeQ)){
             typeQ=null;
         }
-        if(!StringUtils.isNotBlank(content)){
-            typeQ=null;
+        if(!StringUtils.isNotBlank(itemType)){
+            itemType=null;
+        }
+        if(!StringUtils.isNotBlank(folderId)){
+            folderId=null;
         }
         map.put("ebays",ebays);
         map.put("starttime",starttime);
@@ -133,6 +282,8 @@ public class GetOrdersController extends BaseAction {
         map.put("countryQ",countryQ);
         map.put("typeQ",typeQ);
         map.put("content",content);
+        map.put("folderId",folderId);
+        map.put("itemType",itemType);
         List<OrderGetOrdersQuery> lists= this.iTradingOrderGetOrders.selectOrderGetOrdersByGroupList(map,page);
         for(OrderGetOrdersQuery list:lists){
             String itemid=list.getItemid();
@@ -143,12 +294,19 @@ public class GetOrdersController extends BaseAction {
                 if(pictureDetailses!=null&&pictureDetailses.size()>0){
                     list.setPictrue(pictureDetailses.get(0).getPictureurl());
                 }
+             /*   List<TradingDataDictionary> dictionaries=iTradingDataDictionary.s()*/
             }
             List<TradingOrderAddMemberMessageAAQToPartner> partners=iTradingOrderAddMemberMessageAAQToPartner.selectTradingOrderAddMemberMessageAAQToPartnerByTransactionId(list.getTransactionid(),3);
             if(partners!=null&&partners.size()>0){
                 list.setMessage(partners.get(0).getBody());
             }
+            List<TradingOrderGetSellerTransactions> transactionses=iTradingOrderGetSellerTransactions.selectTradingOrderGetSellerTransactionsByTransactionId(list.getTransactionid());
            /* iTradingOrderVariation.selectOrderVariationByItemId()*/
+            for(TradingOrderGetSellerTransactions transaction:transactionses){
+                list.setPaypalPaidTime(transaction.getPaidtime());
+                list.setPaypalPaymentTime(transaction.getPaymenttime());
+                list.setExternalTransactionID(transaction.getExternaltransactionid());
+            }
             String url="http://www.sandbox.ebay.com/itm/"+list.getItemid();
             list.setItemUrl(url);
         }
@@ -563,10 +721,26 @@ public class GetOrdersController extends BaseAction {
         String outputFile1= request.getSession().getServletContext().getRealPath("/");
         String outputFile=outputFile1+"download\\orders.xls";
         String status=request.getParameter("status");
+        String folderId=request.getParameter("folderId");
+        List<UsercontrollerEbayAccountExtend> ebays=userInfoService.getEbayAccountForCurrUser();
+        List<String> ebayNames=new ArrayList<String>();
+        for(UsercontrollerEbayAccountExtend ebay:ebays){
+            String name=ebay.getEbayName();
+            ebayNames.add(name);
+        }
         if(!StringUtils.isNotBlank(status)||"null".equals(status)){
             status=null;
         }
-        List<TradingOrderGetOrders> orders=iTradingOrderGetOrders.selectOrderGetOrdersByPaypalStatus(status);
+        if(!StringUtils.isNotBlank(folderId)||"null".equals(folderId)){
+            folderId=null;
+        }
+        List<TradingOrderGetOrders> orders=new ArrayList<TradingOrderGetOrders>();
+        if(status!=null){
+           orders=iTradingOrderGetOrders.selectOrderGetOrdersByPaypalStatus(status,ebayNames);
+        }
+        if(folderId!=null){
+            orders=iTradingOrderGetOrders.selectOrderGetOrdersByFolder(folderId, ebayNames);
+        }
         response.setHeader("Content-Disposition","attachment;filename=orders.xls");// 组装附件名称和格式
         ServletOutputStream outputStream = response.getOutputStream();
         iTradingOrderGetOrders.downloadOrders(orders, outputFile,outputStream);

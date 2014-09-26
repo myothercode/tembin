@@ -11,6 +11,11 @@
 <html>
 <head>
     <title></title>
+    <style type="text/css">
+        body {
+            background-color: #ffffff;
+        }
+    </style>
     <script type="text/javascript" src=<c:url value ="/js/ueditor/ueditor.config.js" /> ></script>
     <%--产品信息--%>
     <script type="text/javascript">

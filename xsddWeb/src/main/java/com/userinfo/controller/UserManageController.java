@@ -13,6 +13,7 @@ import com.base.sampleapixml.BindAccountAPI;
 import com.base.userinfo.service.UserInfoService;
 import com.base.utils.annotations.AvoidDuplicateSubmission;
 import com.base.utils.cache.SessionCacheSupport;
+import com.base.utils.common.DateUtils;
 import com.base.utils.common.ObjectUtils;
 import com.base.utils.exception.Asserts;
 import com.base.utils.threadpool.AddApiTask;
@@ -31,6 +32,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -53,7 +55,7 @@ public class UserManageController extends BaseAction {
     private UserInfoService userInfoService;
 
 
-    /**绑定帐号的弹出主页面*/
+    /**绑定ebay帐号的弹出主页面*/
     @RequestMapping("bindEbayAccount.do")
     @AvoidDuplicateSubmission(needSaveToken = true)
     public ModelAndView bindEbayAccount(@ModelAttribute( "initSomeParmMap" )ModelMap modelMap,
@@ -75,8 +77,8 @@ public class UserManageController extends BaseAction {
     @ResponseBody
     /**绑定账号的时候获取sessionid*/
     public void apiGetSessionID(CommonParmVO commonParmVO,@ModelAttribute( "initSomeParmMap" )ModelMap modelMap) throws Exception{
-        Asserts.assertTrue(commonParmVO.getId()!=null,"参数获取失败！");
-        UsercontrollerDevAccountExtend d = userInfoService.getDevInfo(null);
+//        Asserts.assertTrue(commonParmVO.getId()!=null,"参数获取失败！");
+        UsercontrollerDevAccountExtend d = userInfoService.getDevInfo(1L);
         d.setApiSiteid("0");
         d.setApiCallName(APINameStatic.GetSessionID);
         String xml= BindAccountAPI.getSessionID("runName");
@@ -109,7 +111,7 @@ public class UserManageController extends BaseAction {
     /**授权完成后获取token*/
     public void apiFetchToken(CommonParmVO commonParmVO) throws Exception {
         Asserts.assertTrue(commonParmVO.getId()!=null && StringUtils.isNotEmpty(commonParmVO.getStrV1()),"参数获取失败！");
-        UsercontrollerDevAccountExtend d = userInfoService.getDevInfo(commonParmVO.getId());//开发者帐号id
+        UsercontrollerDevAccountExtend d = userInfoService.getDevInfo(1L);//开发者帐号id
         d.setApiSiteid("0");
         d.setApiCallName(APINameStatic.FetchToken);
         String xml= BindAccountAPI.getFetchToken(commonParmVO.getStrV1());//上一步获取到的sessionID
@@ -133,7 +135,26 @@ public class UserManageController extends BaseAction {
             ebayAccount.setEbayName(commonParmVO.getStrV2());//ebay账户别名
             ebayAccount.setUserId(sessionVO.getId());
             ebayAccount.setEbayNameCode(commonParmVO.getStrV3());//ebay账户简写代码
+            String htime=SamplePaseXml.getVFromXmlString(res,"HardExpirationTime");//有效期
+            ebayAccount.setUseTimeStart(new Date());
+            ebayAccount.setUseTimeEnd(DateUtils.returnDate(htime));
+            ebayAccount.setEbayStatus("1");
             userInfoService.saveToken(ebayAccount,commonParmVO);
+
+            /**获取ebay账户*/
+            String einfoxml = BindAccountAPI.getEbayUserInfo(token);
+            d.setApiCallName(APINameStatic.GetUser);
+            Map<String, String> resMap1= addApiTask.exec(d, einfoxml, apiUrl);
+            String r11=resMap1.get("stat");
+            String res1=resMap1.get("message");
+            String ack1 = SamplePaseXml.getVFromXmlString(res1,"Ack");
+            if("Success".equalsIgnoreCase(ack1)){
+               String userID= SamplePaseXml.getSpecifyElementTextAllInOne(res1,"User","UserID");
+                UsercontrollerEbayAccount u=new UsercontrollerEbayAccount();
+                u.setId(ebayAccount.getId());
+                u.setEbayAccount(userID);
+                userInfoService.updateEbayAccount(u);
+            }
             AjaxSupport.sendSuccessText("success","绑定成功！");
         }else {
             String errors=SamplePaseXml.getVFromXmlString(res,"Errors");
@@ -154,6 +175,7 @@ public class UserManageController extends BaseAction {
         jsonBean.setPageNum(1);
         List<UsercontrollerEbayAccountExtend> ebayAccountExtendList= userInfoService.getEbayAccountForCurrUser();
         for (UsercontrollerEbayAccountExtend u : ebayAccountExtendList){
+            if(u==null){continue;}
             u.setEbayToken("");
         }
         jsonBean.setList(ebayAccountExtendList);

@@ -3,6 +3,11 @@
 <%@include file="/WEB-INF/jsp/commonImport.jsp" %>
 <html>
 <head>
+    <style type="text/css">
+        body {
+            background-color: #ffffff;
+        }
+    </style>
     <title></title>
     <script>
         function setTab(obj){

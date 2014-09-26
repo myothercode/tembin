@@ -9,13 +9,18 @@
 <%@include file="/WEB-INF/jsp/commonImport.jsp" %>
 <html>
 <head>
+    <style type="text/css">
+        body {
+            background-color: #ffffff;
+        }
+    </style>
     <title></title>
     <script>
         var map = new Map();
         map.put("listing", path + "/getListingItemList.do?1=1");
         map.put("sold", path + "/getListingItemList.do?flag=1");
         map.put("unsold", path + "/getListingItemList.do?flag=2");
-        map.put("updatelog", path + "/ReturnpolicyList.do");
+        map.put("updatelog", path + "/getListItemDataAmend.do?1=1");
         function setTab(obj) {
             var name = $(obj).attr("name");
             $(obj).parent().find("dt").each(function (i, d) {
@@ -25,7 +30,20 @@
                     $(d).attr("class", "new_tab_2");
                 }
             });
+            if(name=="updatelog"){
+                $("#amendlog").show();
+            }else{
+                $("#amendlog").hide();
+            }
+            $("a").each(function(i,d){
+                if($(d).find("span").text()=="全部"){
+                    $(d).find("span").attr("class","newusa_ici");
+                }else if($(d).find("span").text()!=""){
+                    $(d).find("span").attr("class","newusa_ici_1");
+                }
+            });
             $("#listing_frame").attr("src", map.get(name));
+
         }
         function selectCounty(obj){
             $(obj).parent().find("a").each(function(i,d){
@@ -103,6 +121,40 @@
             $(obj).parent().find("input[name='selectvalue']").val("");
             $("#listing_frame").attr("src",urls);
         }
+        var amendType = "";
+        var amendFlag = "";
+        function selectAmendType(obj){
+            var urls = $("#listing_frame").attr("src");
+            $(obj).parent().find("a").each(function(i,d){
+                $(d).find("span").attr("class","newusa_ici_1");
+            });
+            $(obj).find("span").attr("class","newusa_ici");
+            if(urls.indexOf(amendType)>0) {
+                urls = urls.replace(amendType,"");
+                urls = urls+"&amendType="+$(obj).attr("value");
+            }else{
+                urls = urls+"&amendType="+$(obj).attr("value");
+            }
+            amendType="&amendType="+$(obj).attr("value");
+            $("#listing_frame").attr("src",urls);
+
+        }
+
+        function selectAmendFlag(obj){
+            var urls = $("#listing_frame").attr("src");
+            $(obj).parent().find("a").each(function(i,d){
+                $(d).find("span").attr("class","newusa_ici_1");
+            });
+            $(obj).find("span").attr("class","newusa_ici");
+            if(urls.indexOf(amendFlag)>0) {
+                urls = urls.replace(amendFlag,"");
+                urls = urls+"&amendFlag="+$(obj).attr("value");
+            }else{
+                urls = urls+"&amendFlag="+$(obj).attr("value");
+            }
+            amendFlag="&amendFlag="+$(obj).attr("value");
+            $("#listing_frame").attr("src",urls);
+        }
     </script>
 </head>
 <body>
@@ -138,8 +190,23 @@
                     <a href="javascript:void(0)" onclick="selectListType(this)" value=""><span class="newusa_ici">全部</span></a>
                     <a href="javascript:void(0)" onclick="selectListType(this)" value="FixedPriceItem"><span class="newusa_ici_1">固价</span></a>
                     <a href="javascript:void(0)" onclick="selectListType(this)" value="2"><span class="newusa_ici_1">多属性</span></a>
-                    <a href="javascript:void(0)" onclick="selectListType(this)" value="Chinese"><span class="newusa_ici_1">拍买</span></a>
+                    <a href="javascript:void(0)" onclick="selectListType(this)" value="Chinese"><span class="newusa_ici_1">拍卖</span></a>
                 </li>
+                <div id="amendlog" style="display: none;">
+                    <li class="new_usa_list">
+                        <span class="newusa_i">修改类型：</span>
+                        <a href="javascript:void(0)" onclick="selectAmendType(this)" value=""><span class="newusa_ici">全部</span></a>
+                        <a href="javascript:void(0)" onclick="selectAmendType(this)" value="StartPrice"><span class="newusa_ici_1">价格</span></a>
+                        <a href="javascript:void(0)" onclick="selectAmendType(this)" value="Title"><span class="newusa_ici_1">标题</span></a>
+                        <a href="javascript:void(0)" onclick="selectAmendType(this)" value="Quantity"><span class="newusa_ici_1">数量</span></a>
+                    </li>
+                    <li class="new_usa_list">
+                        <span class="newusa_i">修改状态：</span>
+                        <a href="javascript:void(0)" onclick="selectAmendFlag(this)" value=""><span class="newusa_ici">全部</span></a>
+                        <a href="javascript:void(0)" onclick="selectAmendFlag(this)" value="1"><span class="newusa_ici_1">成功</span></a>
+                        <a href="javascript:void(0)" onclick="selectAmendFlag(this)" value="0"><span class="newusa_ici_1">失败</span></a>
+                    </li>
+                </div>
                 <div class="newsearch">
                     <span class="newusa_i">搜索内容：</span>
                     <a href="javascript:void(0)" onclick="selectAllData(this)" value=""><span class="newusa_ici">全部</span></a>

@@ -62,3 +62,21 @@ function setTab(name,cursel,n){
         refreshRoleTable({});
     }
     }
+
+/**打开ebay帐号绑定窗口!*/
+var bindEbayWindow;
+function openBindEbayWindow(){
+    var url=path+"/user/bindEbayAccount.do"
+    bindEbayWindow=$.dialog({
+        title:'',
+        id : "dig" + (new Date()).getTime(),
+        content:"url:"+url,
+        width : 600,
+        height : 600,
+        max:false,
+        min:false,
+        lock : true
+
+    });
+
+}

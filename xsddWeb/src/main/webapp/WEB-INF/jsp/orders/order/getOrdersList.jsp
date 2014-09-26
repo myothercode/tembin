@@ -11,6 +11,11 @@
 <html>
 <head>
     <title></title>
+    <style type="text/css">
+        body {
+            background-color: #ffffff;
+        }
+    </style>
     <script type="text/javascript">
         var OrderGetOrders;
         $(document).ready(function(){
@@ -86,6 +91,10 @@
             refreshTable2();
             refreshTable3();
             refreshTable4();
+            <c:forEach items="${folders}" begin="0"  varStatus="status">
+                setTab1('menu',${status.index+5},${status.count+4});
+            /*<dt id="menu${status.index+5}" name="${folders[status.index].id}" class="new_tab_2" onclick="setTab1('menu',${status.index+5},${status.count+4})">${folders[status.index].configName}</dt>*/
+            </c:forEach>
         });
 
         function refreshTable1(){
@@ -99,6 +108,9 @@
         }
         function refreshTable4(){
             $("#OrderGetOrdersListTable4").selectDataAfterSetParm({"bedDetailVO.deptId":"", "isTrue":0});
+        }
+        function refreshTable7(table){
+            $(table).selectDataAfterSetParm({"bedDetailVO.deptId":"", "isTrue":0});
         }
         /**查看消息*/
         function makeOption1(json){
@@ -129,9 +141,9 @@
             "<span style=\"width:100%; float:left\"><font color=\"#5F93D7\">B：</font><img src=\""+imgurl+"f.png\" width=\"14\" height=\"14\"></span>"+
             "<span style=\"width:100%; float:left\"><font color=\"#5F93D7\">S：" +
             "</font><img src=\""+imgurl1+"\" width=\"12\" height=\"12\">"+json.message+"</span>" +
-            "<span class=\"newdf\">I need black color</span>" +
-            "<span style=\"width:100%; float:left\">08/25/2014 17:56</span>" +
-            "<span style=\"width:100%; float:left; color:#999\">PayPal payment Status: [Completed], Type: [instant], Amount: [USD21.96] received on UTC 8/28/2014 1:55:59 AM, PayPal transaction ID: 5TW</span>";
+/*            "<span class=\"newdf\"></span>" +*/
+            "<span style=\"width:100%; float:left\">" +(json.paypalPaidTime==null?"":json.paypalPaidTime)+"</span>" +/*Type: [instant],*/
+            "<span style=\"width:100%; float:left; color:#999\">PayPal payment Status: ["+json.status+"],  Amount: [USD "+json.amountpaid+"] received on UTC "+(json.paypalPaymentTime==null?"":json.paypalPaymentTime)+", PayPal transaction ID:"+json.externalTransactionID+" </span>";
             return htm;
         }
 
@@ -151,7 +163,7 @@
             return htm;
         }
         function makeOption5(json){
-            var htm="<input type='checkbox' id='checkbox' name='checkbox' value='"+json.id+"' />";
+            var htm="<input type='checkbox' id='checkbox' name='checkbox' value='"+json.orderid+"' />";
             return htm;
         }
         function makeOption6(json){
@@ -326,13 +338,55 @@
             window.open(url);
         }
         function addTabRemark(){
-            var url=path+"/order/addTabRemark.do";
-            OrderGetOrders=$.dialog({title: '新建文件夹',
+            var url=path+"/order/selectTabRemark.do?";
+            OrderGetOrders=$.dialog({title: '选择文件夹',
                 content: 'url:'+url,
                 icon: 'succeed',
-                width:1025,
-                lock:true
+                width:800
             });
+        }
+    function addComment(i){
+        var table="#OrderGetOrdersListTable"+i;
+        var checkboxs=$(table).find("input[name=checkbox]:checked");
+        if(checkboxs&&checkboxs.length==1){
+            var url=path+"/order/addComment.do?orderid="+checkboxs.val();
+            OrderGetOrders=$.dialog({title: '添加备注',
+                content: 'url:'+url,
+                icon: 'succeed',
+                width:800
+            });
+        }else{
+            alert("请选择一个需要添加备注的订单");
+        }
+    }
+        function moveFolder(i){
+            var table="#OrderGetOrdersListTable"+i;
+            var checkboxs=$(table).find("input[name=checkbox]:checked");
+            console.debug(checkboxs);
+            if(checkboxs&&checkboxs.length>0){
+                var date="";
+                for(var j=0;j<checkboxs.length;j++){
+                    if(j==0){
+                        date=date+"orderid["+j+"]="+$(checkboxs[j]).val();
+                    }else{
+                        date=date+"&orderid["+j+"]="+$(checkboxs[j]).val();
+                    }
+                }
+                var url=path+"/order/moveFolder.do?"+date;
+                OrderGetOrders=$.dialog({title: '移动订单',
+                    content: 'url:'+url,
+                    icon: 'succeed',
+                    width:800
+                });
+            }else{
+                alert("请选择需要移动的订单");
+            }
+        }
+        function cleanInput(){
+            var inputs=$("input[class=key_2]");
+            for(var i=0;i<inputs.length;i++){
+                document.getElementById("content"+(i+1)).value="";
+            }
         }
     </script>
 </head>
@@ -361,6 +415,157 @@
 <div class="a_bal"></div>
 <div class="new">
 <script type="text/javascript">
+    //新增文件夹---------------------------------------------------------------
+    function setTab1(name,cursel,n){
+        for(var i=1;i<=n;i++){
+            var na="#"+name+i;
+            $(na).attr("onclick","setTab(\"menu\","+i+","+n+")");
+            if(i>4){
+                var Contentbox=document.getElementById("ContentboxDiv");
+               /* var lastdiv=document.getElementById("con_menu_2").cloneNode();*/
+                var lastdiv=$("#con_menu_4").clone();
+                $(lastdiv).attr("id","con_menu_"+i);
+                var Countrys=$(lastdiv).find("span[scop=queryCountry4]");
+                var attrs=$(lastdiv).find("span[scop=queryAttr4]");
+                var times=$(lastdiv).find("span[scop=queryTime4]");
+                var table=$(lastdiv).find("div[id=OrderGetOrdersListTable4]");
+                $(table).attr("id","OrderGetOrdersListTable"+i);
+                var id2="#menu"+i;
+                var id1=$(id2).attr("name2");
+                $(table).initTable({
+                    url:path + "/order/ajax/loadOrdersList.do?folderId="+id1,
+                    columnData:[
+                        {title:"",name:"ch",width:"2%",align:"top",format:makeOption5},
+                        {title:"订单号 / 源订单号",name:"orderid",width:"8%",align:"left",format:makeOption2},
+                        {title:"物品 / SKU / 承运商 / 追踪号",name:"orderid",width:"8%",align:"left",format:makeOption3},
+                        {title:"站点",name:"country",width:"8%",align:"left"},
+                        {title:"售价",name:"itemUrl",width:"8%",align:"left",format:makeOption6},
+                        {title:"售出日期",name:"createdtime",width:"8%",align:"left"},
+                        {title:"发货日期",name:"shippedtime",width:"8%",align:"left"},
+                        {title:"状态",name:"shipped",width:"8%",align:"left",format:makeOption4},
+                        {title:"操作",name:"option1",width:"8%",align:"left",format:makeOption1}
+                    ],
+                    selectDataNow:false,
+                    isrowClick:false,
+                    showIndex:false
+                });
+                $(table).selectDataAfterSetParm({"bedDetailVO.deptId":"", "isTrue":0});
+                for(var j=1;j<=Countrys.length;j++){
+                    $(Countrys[j-1]).attr("scop","queryCountry"+i);
+                    if(j==1){
+                        $(Countrys[j-1]).attr("onclick","queryCountry("+i+","+j+","+null+")");
+                    }
+                    if(j==2){
+                        $(Countrys[j-1]).attr("onclick","queryCountry("+i+","+j+",'US')");
+                    }
+                    if(j==3){
+                        $(Countrys[j-1]).attr("onclick","queryCountry("+i+","+j+",'UK')");
+                    }
+                    if(j==4){
+                        $(Countrys[j-1]).attr("onclick","queryCountry("+i+","+j+",'DE')");
+                    }
+                    if(j==5){
+                        $(Countrys[j-1]).attr("onclick","queryCountry("+i+","+j+",'AU')");
+                    }
+                }
+                for(var j=1;j<=attrs.length;j++){
+                    $(attrs[j-1]).attr("scop","queryAttr"+i);
+                    if(j==1){
+                        $(attrs[j-1]).attr("onclick","queryAttr("+i+","+j+","+null+")");
+                    }
+                    if(j==2){
+                        $(attrs[j-1]).attr("onclick","queryAttr("+i+","+j+",'fixation')");
+                    }
+                    if(j==3){
+                        $(attrs[j-1]).attr("onclick","queryAttr("+i+","+j+",'auction')");
+                    }
+                    if(j==4){
+                        $(attrs[j-1]).attr("onclick","queryAttr("+i+","+j+",'multiattribute')");
+                    }
+                }
+                for(var j=1;j<=times.length;j++){
+                    $(times[j-1]).attr("scop","queryTime"+i);
+                    if(j==1){
+                        $(times[j-1]).attr("onclick","queryTime("+i+","+j+","+null+")");
+                    }
+                    if(j==2){
+                        $(times[j-1]).attr("onclick","queryTime("+i+","+j+",'1')");
+                    }
+                    if(j==3){
+                        $(times[j-1]).attr("onclick","queryTime("+i+","+j+",'2')");
+                    }
+                    if(j==4){
+                        $(times[j-1]).attr("onclick","queryTime("+i+","+j+",'7')");
+                    }
+                    if(j==5){
+                        $(times[j-1]).attr("onclick","queryTime("+i+","+j+",'30')");
+                    }
+                }
+                var inp=$(lastdiv).find("input[class=key_2]");
+               /* var itemType1=$("#itemType4");
+                $(itemType1).attr("id","itemType"+i);
+                var content1=$("#content4");
+                $(content1).attr("id","content"+i);*/
+                var itemType1=$(lastdiv).find("select[id=itemType4]");
+                var content1=$(lastdiv).find("input[id=content4]");
+                $(content1).attr("id","content"+i);
+                $(itemType1).attr("id","itemType"+i);
+                $(inp).removeAttr("onclick");
+                $(inp).click(function(){
+                    var daysQ=$("#daysQ").val();
+                    var countryQ=$("#countryQ").val();
+                    var typeQ=$("#typeQ").val();
+                    var itemType=$(itemType1).val();
+                    var content=$(content1).val();
+                    var folderId=id1;
+                    refreshTable6(table,countryQ,typeQ,daysQ,itemType,content,folderId);
+                });
+                var download=$(lastdiv).find("span[id=downloadOrder4]");
+                $(download).removeAttr("onclick");
+                $(download).click(function(){
+                    var url=path+"/order/downloadOrders.do?folderId="+id1;
+                    window.open(url);
+                });
+                var addcommet=$(lastdiv).find("span[id=addComment]");
+                $(addcommet).removeAttr("onclick");
+                $(addcommet).click(function(){
+                   addComment(i-1);
+                });
+                var movefolder=$(lastdiv).find("span[id=moveFolder]");
+                $(movefolder).removeAttr("onclick");
+                $(movefolder).click(function(){
+                    moveFolder(i-1);
+                });
+                $("#ContentboxDiv").append($(lastdiv));
+              /*  lastdiv.setAttribute("id","con_menu_")*/
+            }
+        }
+        if(n>4){
+            setTab(name,cursel,n);
+        }
+    }
+    function refreshTable6(table,countryQ,typeQ,daysQ,itemType,content,folderId){
+        $(table).initTable({
+            url:path + "/order/ajax/loadOrdersList.do?",
+            columnData:[
+                {title:"",name:"ch",width:"2%",align:"top",format:makeOption5},
+                {title:"订单号 / 源订单号",name:"orderid",width:"8%",align:"left",format:makeOption2},
+                {title:"物品 / SKU / 承运商 / 追踪号",name:"orderid",width:"8%",align:"left",format:makeOption3},
+                {title:"站点",name:"country",width:"8%",align:"left"},
+                {title:"售价",name:"itemUrl",width:"8%",align:"left",format:makeOption6},
+                {title:"售出日期",name:"createdtime",width:"8%",align:"left"},
+                {title:"发货日期",name:"shippedtime",width:"8%",align:"left"},
+                {title:"状态",name:"shipped",width:"8%",align:"left",format:makeOption4},
+                {title:"操作",name:"option1",width:"8%",align:"left",format:makeOption1}
+            ],
+            selectDataNow:false,
+            isrowClick:false,
+            showIndex:false
+        });
+        $(table).selectDataAfterSetParm({"bedDetailVO.deptId":"", "isTrue":0,"countryQ":countryQ,"typeQ":typeQ,"daysQ":daysQ,"itemType":itemType,"content":content,"folderId":folderId});
+        alert("查询成功");
+    }
+    //--------------------------------------------------------------------------
     function setTab(name,cursel,n){
         for(i=1;i<=n;i++){
             var menu=document.getElementById(name+i);
@@ -375,6 +580,9 @@
     <dt id="menu2" class="new_tab_1" onclick="setTab('menu',2,4)">未付款</dt>
     <dt id="menu3" class="new_tab_2" onclick="setTab('menu',3,4)">未结清付款</dt>
     <dt id="menu4" class="new_tab_2" onclick="setTab('menu',4,4)">已付款</dt>
+    <c:forEach items="${folders}" begin="0"  varStatus="status">
+        <dt id="menu${status.index+5}" name1="${status.index+5}" name2="${folders[status.index].id}" name="${folders[status.index].configName}" class="new_tab_2" onclick="setTab1('menu',${status.index+5},${status.count+4})">${folders[status.index].configName}</dt>
+    </c:forEach>
 </div>
 <script type="text/javascript">
     function menuFix() {
@@ -402,20 +610,21 @@
         <input type="hidden" id="typeQ"/>
         <input type="hidden" id="daysQ"/>
     </form>
-<div class="Contentbox">
+<div class="Contentbox" id="ContentboxDiv">
 <div id="con_menu_1" class="hover" style="display: none;">
     <!--综合开始 -->
     <div class="new_usa" style="margin-top:20px;">
-        <li class="new_usa_list"><span class="newusa_i">收件人国家：</span><a href="#"><span class="newusa_ici_1" scop="queryCountry1"  onclick="queryCountry(1,1,null);">全部</span></a><a href="#"><span class="newusa_ic_1" scop="queryCountry1"  onclick="queryCountry(1,2,'US');"><img src="../../img/usa_1.png" >美国</span></a><a href="#"><span class="newusa_ic_1" scop="queryCountry1"  onclick="queryCountry(1,3,'UK');"><img src="../../img/usa_2.png">英国</span></a><a href="#"><span class="newusa_ic_1" scop="queryCountry1"  onclick="queryCountry(1,4,'DE');"><img src="../../img/usa_2.png">德国</span></a><a href="#"><span class="newusa_ic_1" scop="queryCountry1"  onclick="queryCountry(1,5,'AU');"><img src="../../img/usa_2.png">澳大利亚</span></a></li>
+        <li class="new_usa_list"><span class="newusa_i">收件人国家：</span><a href="#"><span class="newusa_ici_1" scop="queryCountry1"  onclick="queryCountry(1,1,null);">全部</span></a><a href="#"><span class="newusa_ic_1" scop="queryCountry1"  onclick="queryCountry(1,2,'US');"><img src="<c:url value ="/img/usa_1.png"/> ">美国</span></a><a href="#"><span class="newusa_ic_1" scop="queryCountry1"  onclick="queryCountry(1,3,'UK');"><img src="<c:url value ="/img/UK.jpg"/> ">英国</span></a><a href="#"><span class="newusa_ic_1" scop="queryCountry1"  onclick="queryCountry(1,4,'DE');"><img src="<c:url value ="/img/DE.png"/> ">德国</span></a><a href="#"><span class="newusa_ic_1" scop="queryCountry1"  onclick="queryCountry(1,5,'AU');"><img src="<c:url value ="/img/AU.jpg"/> ">澳大利亚</span></a></li>
         <li class="new_usa_list"><span class="newusa_i">刊登类型：</span><a href="#"><span class="newusa_ici_1" scop="queryAttr1"  onclick="queryAttr(1,1,null);">全部</span></a><a href="#"><span class="newusa_ici_1" scop="queryAttr1"  onclick="queryAttr(1,2,'fixation');">固价</span></a><a href="#"><span class="newusa_ici_1" scop="queryAttr1"  onclick="queryAttr(1,3,'auction');">拍卖</span></a><a href="#"><span class="newusa_ici_1" scop="queryAttr1"  onclick="queryAttr(1,4,'multiattribute');">多属性</span></a></li>
         <div class="newsearch">
             <span class="newusa_i">刊登类型：</span><a href="#"><span class="newusa_ici_1" scop="queryTime1" onclick="queryTime(1,1,null)">全部</span></a><a href="#"><span class="newusa_ici_1" scop="queryTime1" onclick="queryTime(1,2,'1')">今天</span></a><a href="#"><span scop="queryTime1" onclick="queryTime(1,3,'2')" class="newusa_ici_1">昨天</span></a><a href="#"><span scop="queryTime1" onclick="queryTime(1,4,'7');" class="newusa_ici_1">7天以内</span></a><a href="#"><span scop="queryTime1" onclick="queryTime(1,5,'30')" class="newusa_ici_1">30天以内</span></a>
 <span id="sleBG">
 <span id="sleHid">
-<select name="type" class="select" id="itemType1">
-    <option selected="selected">选择类型</option>
-    <option value="1">图书</option>
-    <option value="2">音像</option>
+<select name="type" class="select" id="itemType1" onchange="cleanInput();">
+    <option selected="selected" >选择类型</option>
+    <option value="orderId">订单号</option>
+    <option value="sku">SKU</option>
+    <option value="title">标题</option>
 </select>
 </span>
 </span>
@@ -426,7 +635,9 @@
             <div class="newsj_left">
 
                 <span class="newusa_ici_del_in"><input type="checkbox" name="checkbox" id="checkbox"></span>
-                <span class="newusa_ici_del">添加备注</span><span class="newusa_ici_del" onclick="addTabRemark();">新建文件夹</span><span onclick="downloadOrders(1);" class="newusa_ici_del">下载订单</span></div>
+                <span class="newusa_ici_del" onclick="addComment(1);">添加备注</span><span class="newusa_ici_del" onclick="addTabRemark();">新建文件夹</span><span onclick="downloadOrders(1);" class="newusa_ici_del">下载订单</span>
+                <span onclick="moveFolder(1);" class="newusa_ici_del">移动到文件夹</span>
+            </div>
             <div class="tbbay"><a data-toggle="modal" href="javascript:#" onclick="getBindParm();" >同步eBay</a></div>
         </div>
     </div>
@@ -439,16 +650,17 @@
 <div style="display: block;" id="con_menu_2">
     <!--综合开始 -->
     <div class="new_usa" style="margin-top:20px;">
-        <li class="new_usa_list"><span class="newusa_i">收件人国家：</span><a href="#"><span class="newusa_ici_1" scop="queryCountry2"  onclick="queryCountry(2,1,null);">全部</span></a><a href="#"><span class="newusa_ic_1" scop="queryCountry2"  onclick="queryCountry(2,2,'US');"><img src="../../img/usa_1.png" >美国</span></a><a href="#"><span class="newusa_ic_1" scop="queryCountry2"  onclick="queryCountry(2,3,'UK');"><img src="../../img/usa_2.png">英国</span></a><a href="#"><span class="newusa_ic_1" scop="queryCountry2"  onclick="queryCountry(2,4,'DE');"><img src="../../img/usa_2.png">德国</span></a><a href="#"><span class="newusa_ic_1" scop="queryCountry2"  onclick="queryCountry(2,5,'AU');"><img src="../../img/usa_2.png">澳大利亚</span></a></li>
+        <li class="new_usa_list"><span class="newusa_i">收件人国家：</span><a href="#"><span class="newusa_ici_1" scop="queryCountry2"  onclick="queryCountry(2,1,null);">全部</span></a><a href="#"><span class="newusa_ic_1" scop="queryCountry2"  onclick="queryCountry(2,2,'US');"><img src="<c:url value ="/img/usa_1.png"/> " >美国</span></a><a href="#"><span class="newusa_ic_1" scop="queryCountry2"  onclick="queryCountry(2,3,'UK');"><img src="<c:url value ="/img/UK.jpg"/> ">英国</span></a><a href="#"><span class="newusa_ic_1" scop="queryCountry2"  onclick="queryCountry(2,4,'DE');"><img src="<c:url value ="/img/DE.png"/> ">德国</span></a><a href="#"><span class="newusa_ic_1" scop="queryCountry2"  onclick="queryCountry(2,5,'AU');"><img src="<c:url value ="/img/AU.jpg"/> ">澳大利亚</span></a></li>
         <li class="new_usa_list"><span class="newusa_i">刊登类型：</span><a href="#"><span class="newusa_ici_1" scop="queryAttr2" onclick="queryAttr(2,1,null);">全部</span></a><a href="#"><span class="newusa_ici_1" scop="queryAttr2" onclick="queryAttr(2,2,'fixation');">固价</span></a><a href="#"><span class="newusa_ici_1" scop="queryAttr2" onclick="queryAttr(2,3,'auction');">拍卖</span></a><a href="#"><span class="newusa_ici_1" scop="queryAttr2" onclick="queryAttr(2,4,'multiattribute');">多属性</span></a></li>
         <div class="newsearch">
             <span class="newusa_i">刊登类型：</span><a href="#"><span scop="queryTime2" onclick="queryTime(2,1,null)" class="newusa_ici_1">全部</span></a><a href="#"><span scop="queryTime2" onclick="queryTime(2,2,1)" class="newusa_ici_1">今天</span></a><a href="#"><span scop="queryTime2" onclick="queryTime(2,3,'2')" class="newusa_ici_1">昨天</span></a><a href="#"><span scop="queryTime2" onclick="queryTime(2,4,'7')" class="newusa_ici_1">7天以内</span></a><a href="#"><span scop="queryTime2" onclick="queryTime(2,5,'30')" class="newusa_ici_1">30天以内</span></a>
 <span id="sleBG">
 <span id="sleHid">
-<select name="type" class="select" id="itemType2">
-    <option selected="selected">选择类型</option>
-    <option value="1">图书</option>
-    <option value="2">音像</option>
+<select name="type" class="select" id="itemType2" onchange="cleanInput();">
+    <option selected="selected" >选择类型</option>
+    <option value="orderId">订单号</option>
+    <option value="sku">SKU</option>
+    <option value="title">标题</option>
 </select>
 </span>
 </span>
@@ -459,7 +671,9 @@
             <div class="newsj_left">
 
                 <span class="newusa_ici_del_in"><input type="checkbox" name="checkbox" id="checkbox"></span>
-                <span class="newusa_ici_del">添加备注</span><span class="newusa_ici_del" onclick="addTabRemark();">新建文件夹</span><span onclick="downloadOrders(2);" class="newusa_ici_del">下载订单</span></div>
+                <span class="newusa_ici_del" onclick="addComment(2);">添加备注</span><span class="newusa_ici_del" onclick="addTabRemark();">新建文件夹</span><span onclick="downloadOrders(2);" class="newusa_ici_del">下载订单</span>
+                <span onclick="moveFolder(2);" class="newusa_ici_del">移动到文件夹</span>
+            </div>
             <div class="tbbay"><a data-toggle="modal" href="#myModal" onclick="getBindParm();" class="">同步eBay</a></div>
         </div>
     </div>
@@ -472,16 +686,17 @@
 <div style="display: none;" id="con_menu_3">
     <!--综合开始 -->
     <div class="new_usa" style="margin-top:20px;">
-        <li class="new_usa_list"><span class="newusa_i">收件人国家：</span><a href="#"><span class="newusa_ici_1" scop="queryCountry3"  onclick="queryCountry(3,1,null);">全部</span></a><a href="#"><span class="newusa_ic_1" scop="queryCountry3"  onclick="queryCountry(3,2,'US');"><img src="../../img/usa_1.png" >美国</span></a><a href="#"><span class="newusa_ic_1" scop="queryCountry3"  onclick="queryCountry(3,3,'UK');"><img src="../../img/usa_2.png">英国</span></a><a href="#"><span class="newusa_ic_1" scop="queryCountry3"  onclick="queryCountry(3,4,'DE');"><img src="../../img/usa_2.png">德国</span></a><a href="#"><span class="newusa_ic_1" scop="queryCountry3"  onclick="queryCountry(3,5,'AU');"><img src="../../img/usa_2.png">澳大利亚</span></a></li>
+        <li class="new_usa_list"><span class="newusa_i">收件人国家：</span><a href="#"><span class="newusa_ici_1" scop="queryCountry3"  onclick="queryCountry(3,1,null);">全部</span></a><a href="#"><span class="newusa_ic_1" scop="queryCountry3"  onclick="queryCountry(3,2,'US');"><img src="<c:url value ="/img/usa_1.png"/> " >美国</span></a><a href="#"><span class="newusa_ic_1" scop="queryCountry3"  onclick="queryCountry(3,3,'UK');"><img src="<c:url value ="/img/UK.jpg"/> ">英国</span></a><a href="#"><span class="newusa_ic_1" scop="queryCountry3"  onclick="queryCountry(3,4,'DE');"><img src="<c:url value ="/img/DE.png"/> ">德国</span></a><a href="#"><span class="newusa_ic_1" scop="queryCountry3"  onclick="queryCountry(3,5,'AU');"><img src="<c:url value ="/img/AU.jpg"/> ">澳大利亚</span></a></li>
         <li class="new_usa_list"><span class="newusa_i">刊登类型：</span><a href="#"><span class="newusa_ici_1" scop="queryAttr3" onclick="queryAttr(3,1,null);">全部</span></a><a href="#"><span class="newusa_ici_1" scop="queryAttr3" onclick="queryAttr(3,2,'fixation');">固价</span></a><a href="#"><span class="newusa_ici_1" scop="queryAttr3" onclick="queryAttr(3,3,'auction');">拍卖</span></a><a href="#"><span class="newusa_ici_1" scop="queryAttr3" onclick="queryAttr(3,4,'multiattribute');">多属性</span></a></li>
         <div class="newsearch">
             <span class="newusa_i">刊登类型：</span><a href="#"><span scop="queryTime3" onclick="queryTime(3,1,null)" class="newusa_ici_1">全部</span></a><a href="#"><span scop="queryTime3" onclick="queryTime(3,2,'1')" class="newusa_ici_1">今天</span></a><a href="#"><span scop="queryTime3" onclick="queryTime(3,3,'2')" class="newusa_ici_1">昨天</span></a><a href="#"><span scop="queryTime3" onclick="queryTime(2,4,'7')" class="newusa_ici_1">7天以内</span></a><a href="#"><span scop="queryTime3" onclick="queryTime(3,5,'30')" class="newusa_ici_1">30天以内</span></a>
 <span id="sleBG">
 <span id="sleHid">
-<select name="type" class="select" id="itemType3">
-    <option selected="selected">选择类型</option>
-    <option value="1">图书</option>
-    <option value="2">音像</option>
+<select name="type" class="select" id="itemType3" onchange="cleanInput();">
+    <option selected="selected" >选择类型</option>
+    <option value="orderId">订单号</option>
+    <option value="sku">SKU</option>
+    <option value="title">标题</option>
 </select>
 </span>
 </span>
@@ -492,7 +707,9 @@
             <div class="newsj_left">
 
                 <span class="newusa_ici_del_in"><input type="checkbox" name="checkbox" id="checkbox"></span>
-                <span class="newusa_ici_del">添加备注</span><span class="newusa_ici_del" onclick="addTabRemark();">新建文件夹</span><span onclick="downloadOrders(3);" class="newusa_ici_del">下载订单</span></div>
+                <span class="newusa_ici_del" onclick="addComment(3);">添加备注</span><span class="newusa_ici_del" onclick="addTabRemark();">新建文件夹</span><span onclick="downloadOrders(3);" class="newusa_ici_del">下载订单</span>
+                <span onclick="moveFolder(3);" class="newusa_ici_del">移动到文件夹</span>
+            </div>
             <div>
                 <div id="newtipi">
                 </div></div>
@@ -507,16 +724,17 @@
 <div style="display: none;" id="con_menu_4">
     <!--综合开始 -->
     <div class="new_usa" style="margin-top:20px;">
-        <li class="new_usa_list"><span class="newusa_i">收件人国家：</span><a href="#"><span class="newusa_ici_1" scop="queryCountry4"  onclick="queryCountry(4,1,null);">全部</span></a><a href="#"><span class="newusa_ic_!" scop="queryCountry4"  onclick="queryCountry(4,2,'US');"><img src="/img/usa_1.png" >美国</span></a><a href="#"><span class="newusa_ic_1" scop="queryCountry4"  onclick="queryCountry(4,3,'UK');"><img src="../../img/usa_2.png">英国</span></a><a href="#"><span class="newusa_ic_1" scop="queryCountry4"  onclick="queryCountry(4,4,'DE');"><img src="../../img/usa_2.png">德国</span></a><a href="#"><span class="newusa_ic_1" scop="queryCountry4"  onclick="queryCountry(4,5,'AU');"><img src="../../img/usa_2.png">澳大利亚</span></a></li>
+        <li class="new_usa_list"><span class="newusa_i">收件人国家：</span><a href="#"><span class="newusa_ici_1" scop="queryCountry4"  onclick="queryCountry(4,1,null);">全部</span></a><a href="#"><span class="newusa_ic_1" scop="queryCountry4"  onclick="queryCountry(4,2,'US');"><img src="<c:url value ="/img/usa_1.png"/> " >美国</span></a><a href="#"><span class="newusa_ic_1" scop="queryCountry4"  onclick="queryCountry(4,3,'UK');"><img src="<c:url value ="/img/UK.jpg"/> ">英国</span></a><a href="#"><span class="newusa_ic_1" scop="queryCountry4"  onclick="queryCountry(4,4,'DE');"><img src="<c:url value ="/img/DE.png"/> ">德国</span></a><a href="#"><span class="newusa_ic_1" scop="queryCountry4"  onclick="queryCountry(4,5,'AU');"><img src="<c:url value ="/img/AU.jpg"/> ">澳大利亚</span></a></li>
         <li class="new_usa_list"><span class="newusa_i">刊登类型：</span><a href="#"><span class="newusa_ici_1" scop="queryAttr4" onclick="queryAttr(4,1,null);">全部</span></a><a href="#"><span class="newusa_ici_1" scop="queryAttr4" onclick="queryAttr(4,2,'fixation');">固价</span></a><a href="#"><span class="newusa_ici_1" scop="queryAttr4" onclick="queryAttr(4,3,'auction');">拍卖</span></a><a href="#"><span class="newusa_ici_1" scop="queryAttr4" onclick="queryAttr(4,4,'multiattribute');">多属性</span></a></li>
         <div class="newsearch">
             <span class="newusa_i">刊登类型：</span><a href="#"><span scop="queryTime4" onclick="queryTime(4,1,null)" class="newusa_ici_1">全部</span></a><a href="#"><span scop="queryTime4" onclick="queryTime(4,2,'1')" class="newusa_ici_1">今天</span></a><a href="#"><span scop="queryTime4" onclick="queryTime(4,3,'2')" class="newusa_ici_1">昨天</span></a><a href="#"><span scop="queryTime4" onclick="queryTime(4,4,'7')" class="newusa_ici_1">7天以内</span></a><a href="#"><span scop="queryTime4" onclick="queryTime(4,5,'30')" class="newusa_ici_1">30天以内</span></a>
 <span id="sleBG">
 <span id="sleHid">
-<select name="type" class="select" id="itemType4">
-    <option selected="selected">选择类型</option>
-    <option value="1">图书</option>
-    <option value="2">音像</option>
+<select name="type" class="select" id="itemType4" onchange="cleanInput();">
+    <option selected="selected" >选择类型</option>
+    <option value="orderId">订单号</option>
+    <option value="sku">SKU</option>
+    <option value="title">标题</option>
 </select>
 </span>
 </span>
@@ -527,7 +745,9 @@
             <div class="newsj_left">
 
                 <span class="newusa_ici_del_in"><input type="checkbox" name="checkbox" id="checkbox"></span>
-                <span class="newusa_ici_del">添加备注</span><span class="newusa_ici_del" onclick="addTabRemark();">新建文件夹</span><span onclick="downloadOrders(4);" class="newusa_ici_del">下载订单</span></div>
+                <span id="addComment" class="newusa_ici_del" onclick="addComment(4);">添加备注</span><span id="addtabRemark" class="newusa_ici_del" onclick="addTabRemark();">新建文件夹</span><span id="downloadOrder4" onclick="downloadOrders(4);" class="newusa_ici_del">下载订单</span>
+                <span id="moveFolder" onclick="moveFolder(4);" class="newusa_ici_del">移动到文件夹</span>
+            </div>
             <div>
                 <div id="newtipi">
                 </div></div>

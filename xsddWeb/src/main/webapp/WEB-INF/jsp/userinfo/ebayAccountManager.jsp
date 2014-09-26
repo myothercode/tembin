@@ -32,7 +32,7 @@
         <div class=Contentbox>
             <div>
                 <div id=con_menu_1 class=hover>
-                    <div class="new_usa"><div class="tbbay" style="margin-top:20px;"><a data-toggle="modal" href="#myModal" class="">添加ebay帐号</a></div>
+                    <div class="new_usa"><div class="tbbay" style="margin-top:20px;"><a data-toggle="modal" onclick="openBindEbayWindow()" href="javascript:void(0)" class="">添加ebay帐号</a></div>
                         <div class="tbbay" style="margin-top:20px;"><a data-toggle="modal" href="#myModal" class="">E邮宝授权</a></div>
                     </div>
                     <div id="ebayManager"></div>

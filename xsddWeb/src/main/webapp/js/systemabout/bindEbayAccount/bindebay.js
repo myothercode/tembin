@@ -1,10 +1,16 @@
 /**
  * Created by Administrator on 2014/9/25.
  */
+
+$(document).ready(function(){
+    //getAllDevSelect();
+});
+
+
 /**打开*/
 function getBindParm(){
     var devAccountID=$('#devSelect').val();
-    if(devAccountID==null || devAccountID ==0){alert('请选择开发帐号');return;}
+    //if(devAccountID==null || devAccountID ==0){alert('请选择开发帐号');return;}
     var url=path+"/user/apiGetSessionID.do";
     var data={id:devAccountID};
     $().invoke(
@@ -24,13 +30,13 @@ function getBindParm(){
 
 /**获取token*/
 function fetchToken(){
-    var devAccountID=$('#devSelect').val();
-    if(devAccountID==null || devAccountID ==0){alert('请选择开发帐号');return;}
+    //var devAccountID=$('#devSelect').val();
+    //if(devAccountID==null || devAccountID ==0){alert('请选择开发帐号');return;}
     var url=path+"/user/apiFetchToken.do";
     var name=$('#bm').val();//别名
     var code = $('#code').val();//别名代码缩写
 
-    var data={strV1:sessid,id:devAccountID,strV3:code,strV2:name};
+    var data={strV1:sessid,id:"0",strV3:code,strV2:name};
     $().invoke(
         url,
         data,

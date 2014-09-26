@@ -5,6 +5,7 @@ import com.base.database.trading.model.*;
 import com.base.domains.CommonParmVO;
 import com.base.domains.SessionVO;
 import com.base.domains.querypojos.ItemQuery;
+import com.base.domains.querypojos.ListingDataAmendQuery;
 import com.base.domains.querypojos.PaypalQuery;
 import com.base.domains.userinfo.UsercontrollerDevAccountExtend;
 import com.base.mybatis.page.Page;
@@ -61,6 +62,7 @@ public class ListingItemController extends BaseAction {
     @Autowired
     private IUsercontrollerEbayAccount iUsercontrollerEbayAccount;
 
+
     @RequestMapping("/getListingItemList.do")
     public ModelAndView getListingItemList(HttpServletRequest request, HttpServletResponse response, ModelMap modelMap) throws Exception {
         /*String colStr="<?xml version=\"1.0\" encoding=\"utf-8\"?>\n" +
@@ -105,7 +107,92 @@ public class ListingItemController extends BaseAction {
         if(selectValue!=null&&!"".equals(selectValue)){
             modelMap.put("selectValue",selectValue);
         }
+
         return forword("listingitem/listingitemList",modelMap);
+    }
+
+    @RequestMapping("/getListItemDataAmend.do")
+    public ModelAndView getListItemDataAmend(HttpServletRequest request, HttpServletResponse response, ModelMap modelMap) throws Exception {
+        String flag=request.getParameter("flag");
+        if(flag!=null&&!"".equals(flag)){
+            modelMap.put("flag",flag);
+        }
+        String county = request.getParameter("county");
+        if(county!=null&&!"".equals(county)){
+            modelMap.put("county",county);
+        }
+        String listingtype = request.getParameter("listingtype");
+        if(listingtype!=null&&!"".equals(listingtype)){
+            modelMap.put("listingtype",listingtype);
+        }
+        String ebayaccount = request.getParameter("ebayaccount");
+        if(ebayaccount!=null&&!"".equals(ebayaccount)){
+            modelMap.put("ebayaccount",ebayaccount);
+        }
+        String selectType = request.getParameter("selectType");
+        if(selectType!=null&&!"".equals(selectType)){
+            modelMap.put("selectType",selectType);
+        }
+        String selectValue = request.getParameter("selectValue");
+        if(selectValue!=null&&!"".equals(selectValue)){
+            modelMap.put("selectValue",selectValue);
+        }
+        String amendType = request.getParameter("amendType");
+        if(amendType!=null&&!"".equals(amendType)){
+            modelMap.put("amendType",amendType);
+        }
+        String amendFlag = request.getParameter("amendFlag");
+        if(amendFlag!=null&&!"".equals(amendFlag)){
+            modelMap.put("amendFlag",amendFlag);
+        }
+        return forword("listingitem/listingdataAmend",modelMap);
+    }
+
+    @RequestMapping("/ajax/getListItemDataAmend.do")
+    @ResponseBody
+    public void getListItemDataAmend(HttpServletRequest request,ModelMap modelMap,CommonParmVO commonParmVO) throws Exception {
+        Map map = new HashMap();
+        SessionVO c= SessionCacheSupport.getSessionVO();
+        map.put("userid",c.getId());
+        String flag = request.getParameter("flag");
+        if(flag!=null&&!"".equals(flag)){
+            map.put("flag",flag);
+        }
+        String county = request.getParameter("county");
+        if(county!=null&&!"".equals(county)){
+            map.put("county",county);
+        }
+        String listingtype = request.getParameter("listingtype");
+        if(listingtype!=null&&!"".equals(listingtype)){
+            map.put("listingtype",listingtype);
+        }
+        String ebayaccount = request.getParameter("ebayaccount");
+        if(ebayaccount!=null&&!"".equals(ebayaccount)){
+            map.put("ebayaccount",ebayaccount);
+        }
+        String selectType = request.getParameter("selectType");
+        if(selectType!=null&&!"".equals(selectType)){
+            map.put("selectType",selectType);
+        }
+        String selectValue = request.getParameter("selectValue");
+        if(selectValue!=null&&!"".equals(selectValue)){
+            map.put("selectValue",selectValue);
+        }
+        String amendType = request.getParameter("amendType");
+        if(amendType!=null&&!"".equals(amendType)){
+            map.put("amendType",amendType);
+        }
+        String amendFlag = request.getParameter("amendFlag");
+        if(amendFlag!=null&&!"".equals(amendFlag)){
+            map.put("amendFlag",amendFlag);
+        }
+        /**分页组装*/
+        PageJsonBean jsonBean=commonParmVO.getJsonBean();
+        Page page=jsonBean.toPage();
+        List<ListingDataAmendQuery> paypalli = this.iTradingListingData.selectAmendData(map, page);
+        jsonBean.setList(paypalli);
+        jsonBean.setTotal((int)page.getTotalCount());
+        AjaxSupport.sendSuccessText("",jsonBean);
     }
 
     @RequestMapping("/listingdataManager.do")
@@ -318,39 +405,80 @@ public class ListingItemController extends BaseAction {
                 this.iTradingItem.updateTradingItem(item,tradingItem1);
             }
         }
+        TradingListingData tld = this.iTradingListingData.selectByItemid(item.getItemID());
+
         Item ite = new Item();
+        List litla = new ArrayList();
         for(String str : selectType){
+            TradingListingAmend tla = new TradingListingAmend();
+            tla.setItem(Long.parseLong(tld.getItemId()));
+            tla.setParentId(tld.getId());
+
            if(str.equals("StartPrice")){//改价格
+               tla.setAmendType("StartPrice");
+               tla.setContent("将价格从" + tld.getPrice() + "修改为" + item.getStartPrice().getValue());
                ite.setStartPrice(item.getStartPrice());
+               tld.setPrice(item.getStartPrice().getValue());
            }else if(str.equals("Quantity")){//改数量
+               tla.setAmendType("Quantity");
+               tla.setContent("将数量从" + tld.getQuantity() + "修改为" + item.getQuantity());
                ite.setQuantity(item.getQuantity());
+               tld.setQuantity(item.getQuantity().longValue());
            }else if(str.equals("PictureDetails")){//改图片
+               tla.setAmendType("PictureDetails");
+               tla.setContent("图片修改");
                ite.setPictureDetails(item.getPictureDetails());
            }else if(str.equals("PayPal")){//改支付方式
+               tla.setAmendType("PayPal");
+               tla.setContent("支付方式修改");
                ite.setPayPalEmailAddress(item.getPayPalEmailAddress());
            }else if(str.equals("ReturnPolicy")){//改退货政策
+               tla.setAmendType("ReturnPolicy");
+               tla.setContent("退货政策修改");
                ite.setReturnPolicy(item.getReturnPolicy());
            }else if(str.equals("Title")){//改标题　
+               tla.setAmendType("Title");
+               tla.setContent("标题修改为："+item.getTitle());
                ite.setTitle(item.getTitle());
+               tld.setTitle(item.getTitle());
            }else if(str.equals("Buyer")){//改买家要求
+               tla.setAmendType("Buyer");
+               tla.setContent("修改买家要求");
                ite.setBuyerRequirementDetails(item.getBuyerRequirementDetails());
            }else if(str.equals("SKU")){//改ＳＫＵ
+               tla.setAmendType("SKU");
+               tla.setContent("SKU修改为："+item.getSKU());
                ite.setSKU(item.getSKU());
+               tld.setSku(item.getSKU());
            }else if(str.equals("PrimaryCategory")){//改分类
+               tla.setAmendType("PrimaryCategory");
+               tla.setContent("商品分类修改为:"+item.getPrimaryCategory().getCategoryID());
                ite.setPrimaryCategory(item.getPrimaryCategory());
            }else if(str.equals("ConditionID")){//改商品状态
+               tla.setAmendType("ConditionID");
+               tla.setContent("修改商品状态");
                ite.setConditionID(item.getConditionID());
            }else if(str.equals("Location")){//改运输到的地址
+               tla.setAmendType("Location");
                ite.setLocation(item.getLocation());
            }else if(str.equals("DispatchTimeMax")){//最快处理时间
+               tla.setAmendType("DispatchTimeMax");
+               tla.setContent("修改处理时间");
                ite.setDispatchTimeMax(item.getDispatchTimeMax());
            }else if(str.equals("PrivateListing")){//改是否允许私人买
+               tla.setAmendType("PrivateListing");
                ite.setPrivateListing(item.getPrivateListing());
            }else if(str.equals("ListingDuration")){//改刊登天数
+               tla.setAmendType("ListingDuration");
+               tla.setContent("修改刊登天数为："+item.getListingDuration());
                ite.setListingDuration(item.getListingDuration());
            }else if(str.equals("Description")){//改商品描述
+               tla.setContent("修改商品描述");
+               tla.setAmendType("Description");
                ite.setDescription(item.getDescription());
            }else if(str.equals("ShippingDetails")){//改运输详情
+               tla.setAmendType("ShippingDetails");
+               tla.setContent("修改运输详情");
                ShippingDetails sdf = item.getShippingDetails();
                String nottoLocation = request.getParameter("notLocationValue");
                if(!ObjectUtils.isLogicalNull(nottoLocation)){
@@ -363,6 +491,7 @@ public class ListingItemController extends BaseAction {
                }
                ite.setShippingDetails(sdf);
            }
+            litla.add(tla);
         }
         ite.setItemID(item.getItemID());
         String xml = "";
@@ -384,8 +513,11 @@ public class ListingItemController extends BaseAction {
         String returnString = this.cosPostXml(xml,APINameStatic.ReviseItem);
         String ack = SamplePaseXml.getVFromXmlString(returnString,"Ack");
         if("Success".equalsIgnoreCase(ack)||"Warning".equalsIgnoreCase(ack)){
+            this.saveAmend(litla,"1");
+            this.iTradingListingData.updateTradingListingData(tld);
             AjaxSupport.sendSuccessText("message", "操作成功！");
         }else{
+            this.saveAmend(litla,"0");
             Document document= DocumentHelper.parseText(returnString);
             Element rootElt = document.getRootElement();
             Element tl = rootElt.element("Errors");
@@ -398,5 +530,11 @@ public class ListingItemController extends BaseAction {
 
     }
 
-
+    public void saveAmend(List<TradingListingAmend> litlam,String isflag) throws Exception {
+        for(TradingListingAmend tla : litlam){
+            ObjectUtils.toInitPojoForInsert(tla);
+            tla.setIsFlag(isflag);
+            this.iTradingListingData.insertTradingListingAmend(tla);
+        }
+    }
 }
