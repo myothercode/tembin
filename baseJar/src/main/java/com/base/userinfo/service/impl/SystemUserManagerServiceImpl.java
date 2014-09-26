@@ -100,9 +100,9 @@ public class SystemUserManagerServiceImpl implements SystemUserManagerService {
     public List<UsercontrollerEbayAccountExtend> queryCurrAllEbay(Map map){
         if(!map.containsKey("userId")){
             SessionVO sessionVO=SessionCacheSupport.getSessionVO();
-            map.put("userId",sessionVO.getId());
+            map.put("userID",sessionVO.getId());
         }
-        List<UsercontrollerEbayAccountExtend> ebays = userInfoServiceMapper.queryEbayAccountForUser((Long) map.get("userId"));
+        List<UsercontrollerEbayAccountExtend> ebays = userInfoServiceMapper.queryEbayAccountForUser(map);
         for (UsercontrollerEbayAccountExtend ebayAccountExtend : ebays){
             ebayAccountExtend.setEbayToken("");
         }

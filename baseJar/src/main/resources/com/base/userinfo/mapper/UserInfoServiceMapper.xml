@@ -43,7 +43,8 @@
     </select>
 
 
-    <select id="queryEbayAccountForUser" parameterType="java.lang.Long" resultType="com.base.domains.userinfo.UsercontrollerEbayAccountExtend">
+    <select id="queryEbayAccountForUser" parameterType="map" resultType="com.base.domains.userinfo.UsercontrollerEbayAccountExtend">
+        select * from (
         select DISTINCT ebay.id id, ebay.user_id userId, ebay.ebay_name ebayName,
         ebay.paypal_account_id paypalAccountId, ebay.create_user createUser,
         ebay.create_time createTime, ebay.uuid uuid,ebay.ebay_token ebayToken,
@@ -52,7 +53,11 @@
         from usercontroller_user_ebay ue
         left join usercontroller_ebay_account ebay on ebay.id=ue.ebay_id
         left join usercontroller_paypal_account paypal on ebay.paypal_account_id =  paypal.id
-        where ue.user_id=#{userID} and ebay.ebay_status=1
+        where ue.user_id=#{userID} 
+        <if test="resultNum==null">
+            and ebay.ebay_status=1
+        </if>
+        ) aa where aa.id is not null
     </select>
     
     

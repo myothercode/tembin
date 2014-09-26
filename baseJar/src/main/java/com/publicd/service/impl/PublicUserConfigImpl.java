@@ -54,6 +54,13 @@ public class PublicUserConfigImpl implements com.publicd.service.IPublicUserConf
     }
 
     @Override
+    public void deleteUserConfig(PublicUserConfig UserConfig) throws Exception {
+        if(UserConfig!=null&&UserConfig.getId()!=null){
+            publicUserConfigMapper.deleteByPrimaryKey(UserConfig.getId());
+        }
+    }
+
+    @Override
     public PublicUserConfig selectUserConfigByItemTypeName(String configType, String name) {
         PublicUserConfigExample example=new PublicUserConfigExample();
         PublicUserConfigExample.Criteria cr=example.createCriteria();

@@ -94,12 +94,20 @@ public class UserInfoServiceImpl implements com.base.userinfo.service.UserInfoSe
         userEbay.setEbayId(ebayAccount.getId());
         userEbayMapper.insertSelective(userEbay);
     }
+    @Override
+    /**更新将获取到的ebay帐号更新到表*/
+    public void updateEbayAccount(UsercontrollerEbayAccount ebayAccount){
+        usercontrollerEbayAccountMapper.updateByPrimaryKeySelective(ebayAccount);
+    }
 
     @Override
     /**查询当前系统账户绑定了哪些ebay账户*/
     public List<UsercontrollerEbayAccountExtend> getEbayAccountForCurrUser(){
         SessionVO sessionVO = SessionCacheSupport.getSessionVO();
-        List<UsercontrollerEbayAccountExtend> ebayAccounts=userInfoServiceMapper.queryEbayAccountForUser(sessionVO.getId());
+        Map map =new HashMap();
+        map.put("userID",sessionVO.getId());
+        map.put("resultNum","all");
+        List<UsercontrollerEbayAccountExtend> ebayAccounts=userInfoServiceMapper.queryEbayAccountForUser(map);
         return ebayAccounts;
     }
 

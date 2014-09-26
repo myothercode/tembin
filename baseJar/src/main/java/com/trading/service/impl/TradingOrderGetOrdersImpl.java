@@ -5,6 +5,7 @@ import com.base.database.trading.mapper.TradingOrderGetOrdersMapper;
 import com.base.database.trading.model.TradingOrderGetOrders;
 import com.base.database.trading.model.TradingOrderGetOrdersExample;
 import com.base.domains.querypojos.OrderGetOrdersQuery;
+import com.base.domains.userinfo.UsercontrollerEbayAccountExtend;
 import com.base.mybatis.page.Page;
 import com.base.utils.common.ObjectUtils;
 import com.base.utils.exception.Asserts;
@@ -43,7 +44,7 @@ public class TradingOrderGetOrdersImpl implements com.trading.service.ITradingOr
             TradingOrderGetOrders t=tradingOrderGetOrdersMapper.selectByPrimaryKey(OrderGetOrders.getId());
             Asserts.assertTrue(t != null && t.getCreateUser() != null, "没有找到记录或者记录创建者为空");
             ObjectUtils.valiUpdate(t.getCreateUser(),TradingOrderGetOrdersMapper.class,OrderGetOrders.getId(),"Synchronize");
-            tradingOrderGetOrdersMapper.updateByPrimaryKeySelective(OrderGetOrders);
+            tradingOrderGetOrdersMapper.updateByPrimaryKey(OrderGetOrders);
         }
     }
 
@@ -71,12 +72,25 @@ public class TradingOrderGetOrdersImpl implements com.trading.service.ITradingOr
     }
 
     @Override
-    public List<TradingOrderGetOrders> selectOrderGetOrdersByPaypalStatus(String status) {
+    public List<TradingOrderGetOrders> selectOrderGetOrdersByPaypalStatus(String status,List<String> ebays) {
         TradingOrderGetOrdersExample example=new TradingOrderGetOrdersExample();
         TradingOrderGetOrdersExample.Criteria cr=example.createCriteria();
         if(status!=null){
             cr.andStatusEqualTo(status);
         }
+        cr.andSelleruseridIn(ebays);
+        List<TradingOrderGetOrders> list=tradingOrderGetOrdersMapper.selectByExample(example);
+        return list;
+    }
+
+    @Override
+    public List<TradingOrderGetOrders> selectOrderGetOrdersByFolder(String folderId,List<String> ebays) {
+        TradingOrderGetOrdersExample example=new TradingOrderGetOrdersExample();
+        TradingOrderGetOrdersExample.Criteria cr=example.createCriteria();
+        if(folderId!=null){
+            cr.andFolderEqualTo(folderId);
+        }
+        cr.andSelleruseridIn(ebays);
         List<TradingOrderGetOrders> list=tradingOrderGetOrdersMapper.selectByExample(example);
         return list;
     }

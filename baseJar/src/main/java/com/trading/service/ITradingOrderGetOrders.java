@@ -21,7 +21,9 @@ public interface ITradingOrderGetOrders {
 
     List<TradingOrderGetOrders> selectOrderGetOrdersByTransactionId(String TransactionId);
 
-    List<TradingOrderGetOrders> selectOrderGetOrdersByPaypalStatus(String status);
+    List<TradingOrderGetOrders> selectOrderGetOrdersByPaypalStatus(String status,List<String> ebays);
+
+    List<TradingOrderGetOrders> selectOrderGetOrdersByFolder(String folderId,List<String> ebays);
 
     void downloadOrders(List<TradingOrderGetOrders> list,String outputFile,ServletOutputStream outputStream) throws Exception;
 }

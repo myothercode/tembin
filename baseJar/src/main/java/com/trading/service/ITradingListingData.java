@@ -1,6 +1,8 @@
 package com.trading.service;
 
+import com.base.database.trading.model.TradingListingAmend;
 import com.base.database.trading.model.TradingListingData;
+import com.base.domains.querypojos.ListingDataAmendQuery;
 import com.base.mybatis.page.Page;
 
 import java.util.List;
@@ -12,4 +14,13 @@ import java.util.Map;
 public interface ITradingListingData {
 
     List<TradingListingData> selectData(Map map, Page page);
+
+    List<ListingDataAmendQuery> selectAmendData(Map map, Page page);
+
+
+    TradingListingData selectByItemid(String itemid);
+
+    void updateTradingListingData(TradingListingData tld);
+
+    void insertTradingListingAmend(TradingListingAmend tla);
 }

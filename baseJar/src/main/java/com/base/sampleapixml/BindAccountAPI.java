@@ -33,7 +33,7 @@ public class BindAccountAPI {
         "</GetSessionIDRequest>​";
         return xml;
     }
-
+/**获取token*/
     public static String getFetchToken(String sessionID){
         String xml="<?xml version=\"1.0\" encoding=\"utf-8\"?>" +
                 "<FetchTokenRequest xmlns=\"urn:ebay:apis:eBLBaseComponents\">" +
@@ -41,6 +41,18 @@ public class BindAccountAPI {
                 "</FetchTokenRequest>​";
         return xml;
     }
+
+    /**获取ebay帐号名*/
+    public static String getEbayUserInfo(String token){
+        String xml="<?xml version=\"1.0\" encoding=\"utf-8\"?>\n" +
+                "<GetUserRequest xmlns=\"urn:ebay:apis:eBLBaseComponents\">\n" +
+                "<RequesterCredentials>\n" +
+                "<eBayAuthToken>"+token+"</eBayAuthToken>\n" +
+                "</RequesterCredentials>\n" +
+                "</GetUserRequest>​";
+        return xml;
+    }
+
     public static String getGetMyMessages(Map map){
         String xml="<?xml version=\"1.0\" encoding=\"utf-8\"?>" +
                 "<GetMyMessagesRequest xmlns=\"urn:ebay:apis:eBLBaseComponents\">" +

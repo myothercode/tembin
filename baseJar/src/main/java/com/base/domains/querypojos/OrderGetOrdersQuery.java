@@ -2,6 +2,7 @@ package com.base.domains.querypojos;
 
 import com.base.database.trading.model.TradingOrderGetOrders;
 
+import java.util.Date;
 import java.util.Map;
 
 /**
@@ -17,7 +18,47 @@ public class OrderGetOrdersQuery extends TradingOrderGetOrders{
 
     private String message;
 
+    private String imgUrl;
+
+    public String getImgUrl() {
+        return imgUrl;
+    }
+
+    public void setImgUrl(String imgUrl) {
+        this.imgUrl = imgUrl;
+    }
+
     private Map<String,String> variationspecifics;
+
+    private Date paypalPaidTime;
+
+    private Date paypalPaymentTime;
+
+    private String externalTransactionID;
+
+    public String getExternalTransactionID() {
+        return externalTransactionID;
+    }
+
+    public void setExternalTransactionID(String externalTransactionID) {
+        this.externalTransactionID = externalTransactionID;
+    }
+
+    public Date getPaypalPaidTime() {
+        return paypalPaidTime;
+    }
+
+    public void setPaypalPaidTime(Date paypalPaidTime) {
+        this.paypalPaidTime = paypalPaidTime;
+    }
+
+    public Date getPaypalPaymentTime() {
+        return paypalPaymentTime;
+    }
+
+    public void setPaypalPaymentTime(Date paypalPaymentTime) {
+        this.paypalPaymentTime = paypalPaymentTime;
+    }
 
     public Map<String, String> getVariationspecifics() {
         return variationspecifics;

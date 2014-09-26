@@ -32,22 +32,30 @@ public class AddApiTask {
         /**根据新逻辑，重新查询开发帐号取得用量最少的*/
         UserInfoService userInfoService = (UserInfoService) ApplicationContextUtil.getBean(UserInfoService.class);
         UsercontrollerDevAccountExtend dt=null;
-        try {
-            dt = userInfoService.getDevByOrder(new HashMap());
-            Map map1 = new HashMap();
-            map1.put("id",dt.getId());
-            userInfoService.addUseNum(map1);//累计一次调用量
-        } catch (Exception e) {
-            logger.error("获取开发帐号失败!"+xml,e);
+        if(APINameStatic.FetchToken.equalsIgnoreCase(d.getApiCallName()) ||
+                APINameStatic.GetSessionID.equalsIgnoreCase(d.getApiCallName())){
+
+        }else {
+            try {
+                dt = userInfoService.getDevByOrder(new HashMap());
+                Map map1 = new HashMap();
+                map1.put("id",dt.getId());
+                userInfoService.addUseNum(map1);//累计一次调用量
+
+                if(dt!=null){
+                    d.setRunname(dt.getRunname());
+                    d.setApiAppName(dt.getApiAppName());
+                    d.setApiDevName(dt.getApiDevName());
+                    d.setApiCertName(dt.getApiCertName());
+                    d.setApiCompatibilityLevel(dt.getApiCompatibilityLevel());
+                }
+            } catch (Exception e) {
+                logger.error("获取开发帐号失败!"+xml,e);
+            }
         }
 
-        if(dt!=null){
-            d.setRunname(dt.getRunname());
-            d.setApiAppName(dt.getApiAppName());
-            d.setApiDevName(dt.getApiDevName());
-            d.setApiCertName(dt.getApiCertName());
-            d.setApiCompatibilityLevel(dt.getApiCompatibilityLevel());
-        }
+
+
         if(APINameStatic.GetSessionID.equalsIgnoreCase(d.getApiCallName())){
                 xml = StringUtils.replace(xml,"<RuName>runName</RuName>","<RuName>"+d.getRunname()+"</RuName>");
         }

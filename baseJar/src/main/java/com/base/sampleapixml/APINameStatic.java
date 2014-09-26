@@ -15,6 +15,8 @@ public class APINameStatic {
     public static final String GeteBayDetails = "GeteBayDetails";
     /**获取token*/
     public static final String FetchToken = "FetchToken";
+    /**获取帐号信息*/
+    public static final String GetUser = "GetUser";
     /**取得不同站点的分类*/
     public static final String GetCategories = "GetCategories";
     /**

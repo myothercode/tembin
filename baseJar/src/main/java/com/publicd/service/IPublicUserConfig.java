@@ -15,6 +15,7 @@ public interface IPublicUserConfig {
 
     PublicUserConfig selectUserConfigById(Long id);
 
+    void deleteUserConfig(PublicUserConfig UserConfig) throws Exception;
 
    PublicUserConfig selectUserConfigByItemTypeName(String configType,String name);
 

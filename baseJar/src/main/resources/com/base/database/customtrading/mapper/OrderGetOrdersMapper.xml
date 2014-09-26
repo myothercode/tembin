@@ -62,18 +62,29 @@
             left join trading_order_variation variation on item.id=variation.orderItem_id
         </if>
         where 1=1
-        <if test="content!=null">
-            and OrderGetOrders.title like "%"#{content}"%"
+        <if test="folderId!=null">
+            and OrderGetOrders.folder=#{folderId}
+        </if>
+        <if test="itemType!=null">
+            <if test="itemType=='orderId'">
+                and OrderGetOrders.orderID=#{content}
+            </if>
+            <if test="itemType=='sku'">
+                and OrderGetOrders.sKU=#{content}
+            </if>
+            <if test="itemType=='title'">
+                and OrderGetOrders.title like "%"#{content}"%"
+            </if>
         </if>
         <if test="typeQ!=null">
             <if test="typeQ=='fixation'">
-                and item.listingType="FixedPriceItem" and variation.orderItem_id is not null
+                and item.listingType="FixedPriceItem" and variation.orderItem_id is  null
             </if>
             <if test="typeQ=='auction'">
                 and item.listingType="Chinese"
             </if>
             <if test="typeQ=='multiattribute'">
-                and item.listingType="FixedPriceItem" and variation.orderItem_id is  null
+                and item.listingType="FixedPriceItem" and variation.orderItem_id is not  null
             </if>
         </if>
         <if test="status!=null">

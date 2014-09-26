@@ -165,6 +165,10 @@ public class TradingDataDictionaryExample {
             return criteria.size() > 0;
         }
 
+        public List<Criterion> getAllCriteria() {
+            return criteria;
+        }
+
         public List<Criterion> getCriteria() {
             return criteria;
         }
@@ -660,6 +664,76 @@ public class TradingDataDictionaryExample {
             return (Criteria) this;
         }
 
+        public Criteria andImgurlIsNull() {
+            addCriterion("imgUrl is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andImgurlIsNotNull() {
+            addCriterion("imgUrl is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andImgurlEqualTo(String value) {
+            addCriterion("imgUrl =", value, "imgurl");
+            return (Criteria) this;
+        }
+
+        public Criteria andImgurlNotEqualTo(String value) {
+            addCriterion("imgUrl <>", value, "imgurl");
+            return (Criteria) this;
+        }
+
+        public Criteria andImgurlGreaterThan(String value) {
+            addCriterion("imgUrl >", value, "imgurl");
+            return (Criteria) this;
+        }
+
+        public Criteria andImgurlGreaterThanOrEqualTo(String value) {
+            addCriterion("imgUrl >=", value, "imgurl");
+            return (Criteria) this;
+        }
+
+        public Criteria andImgurlLessThan(String value) {
+            addCriterion("imgUrl <", value, "imgurl");
+            return (Criteria) this;
+        }
+
+        public Criteria andImgurlLessThanOrEqualTo(String value) {
+            addCriterion("imgUrl <=", value, "imgurl");
+            return (Criteria) this;
+        }
+
+        public Criteria andImgurlLike(String value) {
+            addCriterion("imgUrl like", value, "imgurl");
+            return (Criteria) this;
+        }
+
+        public Criteria andImgurlNotLike(String value) {
+            addCriterion("imgUrl not like", value, "imgurl");
+            return (Criteria) this;
+        }
+
+        public Criteria andImgurlIn(List<String> values) {
+            addCriterion("imgUrl in", values, "imgurl");
+            return (Criteria) this;
+        }
+
+        public Criteria andImgurlNotIn(List<String> values) {
+            addCriterion("imgUrl not in", values, "imgurl");
+            return (Criteria) this;
+        }
+
+        public Criteria andImgurlBetween(String value1, String value2) {
+            addCriterion("imgUrl between", value1, value2, "imgurl");
+            return (Criteria) this;
+        }
+
+        public Criteria andImgurlNotBetween(String value1, String value2) {
+            addCriterion("imgUrl not between", value1, value2, "imgurl");
+            return (Criteria) this;
+        }
+
         public Criteria andUuidIsNull() {
             addCriterion("uuid is null");
             return (Criteria) this;
@@ -835,6 +909,8 @@ public class TradingDataDictionaryExample {
 
         private boolean listValue;
 
+        private String typeHandler;
+
         public String getCondition() {
             return condition;
         }
@@ -863,16 +939,22 @@ public class TradingDataDictionaryExample {
             return listValue;
         }
 
+        public String getTypeHandler() {
+            return typeHandler;
+        }
+
         protected Criterion(String condition) {
             super();
             this.condition = condition;
+            this.typeHandler = null;
             this.noValue = true;
         }
 
-        protected Criterion(String condition, Object value) {
+        protected Criterion(String condition, Object value, String typeHandler) {
             super();
             this.condition = condition;
             this.value = value;
+            this.typeHandler = typeHandler;
             if (value instanceof List<?>) {
                 this.listValue = true;
             } else {
@@ -880,12 +962,21 @@ public class TradingDataDictionaryExample {
             }
         }
 
-        protected Criterion(String condition, Object value, Object secondValue) {
+        protected Criterion(String condition, Object value) {
+            this(condition, value, null);
+        }
+
+        protected Criterion(String condition, Object value, Object secondValue, String typeHandler) {
             super();
             this.condition = condition;
             this.value = value;
             this.secondValue = secondValue;
+            this.typeHandler = typeHandler;
             this.betweenValue = true;
+        }
+
+        protected Criterion(String condition, Object value, Object secondValue) {
+            this(condition, value, secondValue, null);
         }
     }
 }

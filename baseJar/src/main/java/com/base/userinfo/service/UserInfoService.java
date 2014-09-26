@@ -23,6 +23,9 @@ public interface UserInfoService {
     /**保存绑定帐号过后的token*/
     void saveToken(UsercontrollerEbayAccount ebayAccount, CommonParmVO commonParmVO) throws Exception;
 
+    /**更新将获取到的ebay帐号更新到表*/
+    void updateEbayAccount(UsercontrollerEbayAccount ebayAccount);
+
     /**查询当前系统账户绑定了哪些ebay账户*/
     List<UsercontrollerEbayAccountExtend> getEbayAccountForCurrUser();
 
