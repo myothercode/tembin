@@ -29,6 +29,15 @@ public class TradingFeedBackDetailImpl implements com.trading.service.ITradingFe
     }
 
     @Override
+    public TradingFeedBackDetail selectFeedBackDetailByTransactionId(String transactionId) {
+        TradingFeedBackDetailExample example=new TradingFeedBackDetailExample();
+        TradingFeedBackDetailExample.Criteria cr=example.createCriteria();
+        cr.andTransactionidEqualTo(transactionId);
+        List<TradingFeedBackDetail> list=tradingFeedBackDetailMapper.selectByExample(example);
+        return list!=null&&list.size()>0?list.get(0):null;
+    }
+
+    @Override
     public int selectByCount(Map m){
         TradingFeedBackDetailExample tfb = new TradingFeedBackDetailExample();
         TradingFeedBackDetailExample.Criteria c = tfb.createCriteria();

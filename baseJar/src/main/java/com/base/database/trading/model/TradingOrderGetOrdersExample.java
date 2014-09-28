@@ -3665,6 +3665,76 @@ public class TradingOrderGetOrdersExample {
             return (Criteria) this;
         }
 
+        public Criteria andVariationskuIsNull() {
+            addCriterion("variationSKU is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andVariationskuIsNotNull() {
+            addCriterion("variationSKU is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andVariationskuEqualTo(String value) {
+            addCriterion("variationSKU =", value, "variationsku");
+            return (Criteria) this;
+        }
+
+        public Criteria andVariationskuNotEqualTo(String value) {
+            addCriterion("variationSKU <>", value, "variationsku");
+            return (Criteria) this;
+        }
+
+        public Criteria andVariationskuGreaterThan(String value) {
+            addCriterion("variationSKU >", value, "variationsku");
+            return (Criteria) this;
+        }
+
+        public Criteria andVariationskuGreaterThanOrEqualTo(String value) {
+            addCriterion("variationSKU >=", value, "variationsku");
+            return (Criteria) this;
+        }
+
+        public Criteria andVariationskuLessThan(String value) {
+            addCriterion("variationSKU <", value, "variationsku");
+            return (Criteria) this;
+        }
+
+        public Criteria andVariationskuLessThanOrEqualTo(String value) {
+            addCriterion("variationSKU <=", value, "variationsku");
+            return (Criteria) this;
+        }
+
+        public Criteria andVariationskuLike(String value) {
+            addCriterion("variationSKU like", value, "variationsku");
+            return (Criteria) this;
+        }
+
+        public Criteria andVariationskuNotLike(String value) {
+            addCriterion("variationSKU not like", value, "variationsku");
+            return (Criteria) this;
+        }
+
+        public Criteria andVariationskuIn(List<String> values) {
+            addCriterion("variationSKU in", values, "variationsku");
+            return (Criteria) this;
+        }
+
+        public Criteria andVariationskuNotIn(List<String> values) {
+            addCriterion("variationSKU not in", values, "variationsku");
+            return (Criteria) this;
+        }
+
+        public Criteria andVariationskuBetween(String value1, String value2) {
+            addCriterion("variationSKU between", value1, value2, "variationsku");
+            return (Criteria) this;
+        }
+
+        public Criteria andVariationskuNotBetween(String value1, String value2) {
+            addCriterion("variationSKU not between", value1, value2, "variationsku");
+            return (Criteria) this;
+        }
+
         public Criteria andCreateUserIsNull() {
             addCriterion("create_user is null");
             return (Criteria) this;

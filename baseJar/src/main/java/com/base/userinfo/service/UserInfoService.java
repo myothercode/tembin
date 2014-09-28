@@ -49,4 +49,13 @@ public interface UserInfoService {
 
     /**初清零开发帐号的使用次数*/
     void initUseNum(Map map);
+
+    /**启用或者停用指定ebay账户*/
+    void startOrStopEbayAccount(Map map);
+
+    /**修改ebay账户*/
+    void editEbayAccount(Map map);
+
+    /**根据id查询ebay信息*/
+    UsercontrollerEbayAccount queryEbayInfoById(Map map);
 }

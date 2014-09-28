@@ -11,5 +11,7 @@ import java.util.Map;
 public interface ITradingFeedBackDetail {
     void saveFeedBackDetail(List<TradingFeedBackDetail> lifb) throws Exception;
 
+    TradingFeedBackDetail selectFeedBackDetailByTransactionId(String transactionId);
+
     int selectByCount(Map m);
 }

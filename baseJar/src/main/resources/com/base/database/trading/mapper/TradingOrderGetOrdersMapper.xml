@@ -57,6 +57,7 @@
     <result column="comment" jdbcType="VARCHAR" property="comment" />
     <result column="folder" jdbcType="VARCHAR" property="folder" />
     <result column="sellerUserID" jdbcType="VARCHAR" property="selleruserid" />
+    <result column="variationSKU" jdbcType="VARCHAR" property="variationsku" />
     <result column="create_user" jdbcType="BIGINT" property="createUser" />
     <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
     <result column="uuid" jdbcType="VARCHAR" property="uuid" />
@@ -140,7 +141,7 @@
     subtotal, total, digitalDelivery, buyerEmail, sellerEmail, sellingManagerSales, itemID, 
     sKU, title, quantityPurchased, transactionID, sellingManagerSalesRecordNumber, transactionPrice, 
     paidTime, shippedTime, actualShippingCost, actualHandlingCost, buyerUserID, comment, 
-    folder, sellerUserID, create_user, create_time, uuid
+    folder, sellerUserID, variationSKU, create_user, create_time, uuid
   </sql>
   <select id="selectByExample" parameterType="com.base.database.trading.model.TradingOrderGetOrdersExample" resultMap="BaseResultMap">
     <!--
@@ -211,8 +212,8 @@
       transactionPrice, paidTime, shippedTime, 
       actualShippingCost, actualHandlingCost, buyerUserID, 
       comment, folder, sellerUserID, 
-      create_user, create_time, uuid
-      )
+      variationSKU, create_user, create_time, 
+      uuid)
     values (#{id,jdbcType=BIGINT}, #{orderid,jdbcType=VARCHAR}, #{orderstatus,jdbcType=VARCHAR}, 
       #{adjustmentamount,jdbcType=VARCHAR}, #{amountsaved,jdbcType=VARCHAR}, #{amountpaid,jdbcType=VARCHAR}, 
       #{ebaypaymentstatus,jdbcType=VARCHAR}, #{lastmodifiedtime,jdbcType=TIMESTAMP}, 
@@ -231,8 +232,8 @@
       #{transactionprice,jdbcType=VARCHAR}, #{paidtime,jdbcType=TIMESTAMP}, #{shippedtime,jdbcType=TIMESTAMP}, 
       #{actualshippingcost,jdbcType=DOUBLE}, #{actualhandlingcost,jdbcType=DOUBLE}, #{buyeruserid,jdbcType=VARCHAR}, 
       #{comment,jdbcType=VARCHAR}, #{folder,jdbcType=VARCHAR}, #{selleruserid,jdbcType=VARCHAR}, 
-      #{createUser,jdbcType=BIGINT}, #{createTime,jdbcType=TIMESTAMP}, #{uuid,jdbcType=VARCHAR}
-      )
+      #{variationsku,jdbcType=VARCHAR}, #{createUser,jdbcType=BIGINT}, #{createTime,jdbcType=TIMESTAMP}, 
+      #{uuid,jdbcType=VARCHAR})
   </insert>
   <insert id="insertSelective" parameterType="com.base.database.trading.model.TradingOrderGetOrders">
     <!--
@@ -393,6 +394,9 @@
       </if>
       <if test="selleruserid != null">
         sellerUserID,
+      </if>
+      <if test="variationsku != null">
+        variationSKU,
       </if>
       <if test="createUser != null">
         create_user,
@@ -557,6 +561,9 @@
       </if>
       <if test="selleruserid != null">
         #{selleruserid,jdbcType=VARCHAR},
+      </if>
+      <if test="variationsku != null">
+        #{variationsku,jdbcType=VARCHAR},
       </if>
       <if test="createUser != null">
         #{createUser,jdbcType=BIGINT},
@@ -739,6 +746,9 @@
       <if test="record.selleruserid != null">
         sellerUserID = #{record.selleruserid,jdbcType=VARCHAR},
       </if>
+      <if test="record.variationsku != null">
+        variationSKU = #{record.variationsku,jdbcType=VARCHAR},
+      </if>
       <if test="record.createUser != null">
         create_user = #{record.createUser,jdbcType=BIGINT},
       </if>
@@ -810,6 +820,7 @@
       comment = #{record.comment,jdbcType=VARCHAR},
       folder = #{record.folder,jdbcType=VARCHAR},
       sellerUserID = #{record.selleruserid,jdbcType=VARCHAR},
+      variationSKU = #{record.variationsku,jdbcType=VARCHAR},
       create_user = #{record.createUser,jdbcType=BIGINT},
       create_time = #{record.createTime,jdbcType=TIMESTAMP},
       uuid = #{record.uuid,jdbcType=VARCHAR}
@@ -974,6 +985,9 @@
       <if test="selleruserid != null">
         sellerUserID = #{selleruserid,jdbcType=VARCHAR},
       </if>
+      <if test="variationsku != null">
+        variationSKU = #{variationsku,jdbcType=VARCHAR},
+      </if>
       <if test="createUser != null">
         create_user = #{createUser,jdbcType=BIGINT},
       </if>
@@ -1042,6 +1056,7 @@
       comment = #{comment,jdbcType=VARCHAR},
       folder = #{folder,jdbcType=VARCHAR},
       sellerUserID = #{selleruserid,jdbcType=VARCHAR},
+      variationSKU = #{variationsku,jdbcType=VARCHAR},
       create_user = #{createUser,jdbcType=BIGINT},
       create_time = #{createTime,jdbcType=TIMESTAMP},
       uuid = #{uuid,jdbcType=VARCHAR}

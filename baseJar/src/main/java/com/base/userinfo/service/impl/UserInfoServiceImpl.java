@@ -121,7 +121,7 @@ public class UserInfoServiceImpl implements com.base.userinfo.service.UserInfoSe
         return ebayAccount.getEbayToken();
     }
     @Override
-    /**根据ebay帐号id 查询UsercontrollerEbayAccount*/
+    /**根据ebay帐号id 查询UsercontrollerEbayAccount tiken*/
     public UsercontrollerEbayAccount getEbayAccountByEbayID(Long ebayID){
         //boolean b=ebayIsBindDev(ebayID);
         //if(!b){return null;}//返回1，代表当前ebay帐号没绑定当前设定的默认开发帐号
@@ -168,5 +168,41 @@ public class UserInfoServiceImpl implements com.base.userinfo.service.UserInfoSe
     /**初清零开发帐号的使用次数*/
     public void initUseNum(Map map){
         userInfoServiceMapper.initUseNum(map);
+    }
+
+    @Override
+    /**启用或者停用指定ebay账户*/
+    public void startOrStopEbayAccount(Map map){
+        Long ebayId= (Long) map.get("ebayId");
+        String act = (String) map.get("act");
+        if("stop".equalsIgnoreCase(act)){
+            act="0";
+        }else if ("start".equalsIgnoreCase(act)){
+            act="1";
+        }
+        UsercontrollerEbayAccount e = usercontrollerEbayAccountMapper.selectByPrimaryKey(ebayId);
+        SessionVO sessionVO = SessionCacheSupport.getSessionVO();
+        Asserts.assertTrue(sessionVO.getId()==e.getCreateUser().longValue(),"没有权限修改此记录！");
+        e.setEbayStatus(act);
+        usercontrollerEbayAccountMapper.updateByPrimaryKey(e);
+    }
+    @Override
+    /**修改ebay账户*/
+    public void editEbayAccount(Map map){
+        Long ebayId= (Long) map.get("id");
+        String name= (String) map.get("name");
+        String code= (String) map.get("code");
+        UsercontrollerEbayAccount e = usercontrollerEbayAccountMapper.selectByPrimaryKey(ebayId);
+        SessionVO sessionVO = SessionCacheSupport.getSessionVO();
+        Asserts.assertTrue(sessionVO.getId()==e.getCreateUser().longValue(),"没有权限修改此记录！");
+        e.setEbayName(name);
+        e.setEbayNameCode(code);
+        usercontrollerEbayAccountMapper.updateByPrimaryKey(e);
+    }
+
+    @Override
+    /**根据id查询ebay信息*/
+    public UsercontrollerEbayAccount queryEbayInfoById(Map map){
+        return usercontrollerEbayAccountMapper.selectByPrimaryKey((Long) map.get("ebayId"));
     }
 }

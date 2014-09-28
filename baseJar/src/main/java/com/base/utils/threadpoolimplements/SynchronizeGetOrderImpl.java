@@ -69,6 +69,8 @@ public class SynchronizeGetOrderImpl implements ThreadPoolBaseInterFace {
     private  ITradingOrderPictures iTradingOrderPictures;
     @Autowired
     private  ITradingOrderGetSellerTransactions iTradingOrderGetSellerTransactions;
+    @Autowired
+    private ITradingOrderOrderVariationSpecifics iTradingOrderOrderVariationSpecifics;
     @Override
     public <T> void doWork(String res, T... t) {
         if(StringUtils.isEmpty(res)){return;}
@@ -79,8 +81,8 @@ public class SynchronizeGetOrderImpl implements ThreadPoolBaseInterFace {
             Map map=new HashMap();
            /* Date startTime2= DateUtils.subDays(new Date(), 9);
             Date endTime= DateUtils.addDays(startTime2, 9);*/
-            Date startTime2= DateUtils.subDays(new Date(), 30);
-            Date endTime= DateUtils.addDays(startTime2, 30);
+            Date startTime2= DateUtils.subDays(new Date(), 40);
+            Date endTime= DateUtils.addDays(startTime2, 40);
             Date end1= com.base.utils.common.DateUtils.turnToDateEnd(endTime);
             String start= DateUtils.DateToString(startTime2);
             String end=DateUtils.DateToString(end1);
@@ -95,6 +97,7 @@ public class SynchronizeGetOrderImpl implements ThreadPoolBaseInterFace {
             AddApiTask addApiTask = new AddApiTask();
             ack = SamplePaseXml.getVFromXmlString(res, "Ack");
             if ("Success".equalsIgnoreCase(ack)) {
+
                 Map<String,Object> mapOrder= GetOrdersAPI.parseXMLAndSave(res);
                 String totalPage1= (String) mapOrder.get("totalPage");
                 String page1= (String) mapOrder.get("page");
@@ -118,6 +121,16 @@ public class SynchronizeGetOrderImpl implements ThreadPoolBaseInterFace {
                     }
 
                     List<TradingOrderGetOrders> orders = (List<TradingOrderGetOrders>) mapOrder.get("OrderList");
+                    List<List<TradingOrderOrderVariationSpecifics>> OrderVariationSpecificses= (List<List<TradingOrderOrderVariationSpecifics>>) mapOrder.get("OrderVariation");
+                    for(List<TradingOrderOrderVariationSpecifics> orderVariationSpecificses:OrderVariationSpecificses){
+                        for(TradingOrderOrderVariationSpecifics orderOrderVariationSpecifics:orderVariationSpecificses){
+                            List<TradingOrderOrderVariationSpecifics> list=iTradingOrderOrderVariationSpecifics.selectOrderOrderVariationSpecificsByAll(orderOrderVariationSpecifics.getSku(),orderOrderVariationSpecifics.getName(),orderOrderVariationSpecifics.getValue());
+                            if(list==null||list.size()==0){
+                                orderOrderVariationSpecifics.setCreateUser(taskMessageVO.getMessageTo());
+                                iTradingOrderOrderVariationSpecifics.saveOrderOrderVariationSpecifics(orderOrderVariationSpecifics);
+                            }
+                        }
+                    }
                     for (TradingOrderGetOrders order : orders) {
                         List<TradingOrderGetOrders> ls = iTradingOrderGetOrders.selectOrderGetOrdersByOrderId(order.getOrderid());
                         for (TradingOrderGetOrders l : ls) {

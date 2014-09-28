@@ -3,7 +3,7 @@ package com.base.domains.querypojos;
 import com.base.database.trading.model.TradingOrderGetOrders;
 
 import java.util.Date;
-import java.util.Map;
+import java.util.List;
 
 /**
  * Created by cz on 2014/7/28.
@@ -20,6 +20,16 @@ public class OrderGetOrdersQuery extends TradingOrderGetOrders{
 
     private String imgUrl;
 
+    private String feedbackMessage;
+
+    public String getFeedbackMessage() {
+        return feedbackMessage;
+    }
+
+    public void setFeedbackMessage(String feedbackMessage) {
+        this.feedbackMessage = feedbackMessage;
+    }
+
     public String getImgUrl() {
         return imgUrl;
     }
@@ -28,13 +38,41 @@ public class OrderGetOrdersQuery extends TradingOrderGetOrders{
         this.imgUrl = imgUrl;
     }
 
-    private Map<String,String> variationspecifics;
+    private List<String> variationspecificsMap;
+
+    public List<String> getVariationspecificsMap() {
+        return variationspecificsMap;
+    }
+
+    public void setVariationspecificsMap(List<String> variationspecificsMap) {
+        this.variationspecificsMap = variationspecificsMap;
+    }
 
     private Date paypalPaidTime;
 
     private Date paypalPaymentTime;
 
     private String externalTransactionID;
+
+    private boolean flagNotAllComplete;
+
+    private String itemSite;
+
+    public String getItemSite() {
+        return itemSite;
+    }
+
+    public void setItemSite(String itemSite) {
+        this.itemSite = itemSite;
+    }
+
+    public boolean isFlagNotAllComplete() {
+        return flagNotAllComplete;
+    }
+
+    public void setFlagNotAllComplete(boolean flagNotAllComplete) {
+        this.flagNotAllComplete = flagNotAllComplete;
+    }
 
     public String getExternalTransactionID() {
         return externalTransactionID;
@@ -58,14 +96,6 @@ public class OrderGetOrdersQuery extends TradingOrderGetOrders{
 
     public void setPaypalPaymentTime(Date paypalPaymentTime) {
         this.paypalPaymentTime = paypalPaymentTime;
-    }
-
-    public Map<String, String> getVariationspecifics() {
-        return variationspecifics;
-    }
-
-    public void setVariationspecifics(Map<String, String> variationspecifics) {
-        this.variationspecifics = variationspecifics;
     }
 
     public String getMessage() {

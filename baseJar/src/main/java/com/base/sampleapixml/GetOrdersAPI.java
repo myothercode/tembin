@@ -1,6 +1,7 @@
 package com.base.sampleapixml;
 
 import com.base.database.trading.model.TradingOrderGetOrders;
+import com.base.database.trading.model.TradingOrderOrderVariationSpecifics;
 import com.base.database.trading.model.TradingOrderShippingDetails;
 import com.base.utils.common.DateUtils;
 import com.base.utils.xmlutils.SamplePaseXml;
@@ -22,6 +23,7 @@ public class GetOrdersAPI {
         Element orderArray=root.element("OrderArray");
         String totalPage=SamplePaseXml.getSpecifyElementText(root,"PaginationResult","TotalNumberOfPages");
         List<TradingOrderGetOrders> lists=new ArrayList<TradingOrderGetOrders>();
+        List<List<TradingOrderOrderVariationSpecifics>> OrderVariationSpecificses=new ArrayList<List<TradingOrderOrderVariationSpecifics>>();
         Map<String,Object> map=new HashMap();
         map.put("totalPage",totalPage);
         if(orderArray!=null){
@@ -140,6 +142,25 @@ public class GetOrdersAPI {
                         if(ActualHandlingCost!=null){
                             getorder.setActualhandlingcost(Double.valueOf(ActualHandlingCost));
                         }
+                        Element Variation=transaction.element("Variation");
+                        if(Variation!=null){
+                            Element VariationSpecifics=Variation.element("VariationSpecifics");
+                            if(VariationSpecifics!=null){
+                                Iterator NameValueList=VariationSpecifics.elementIterator("NameValueList");
+                                List<TradingOrderOrderVariationSpecifics> orderOrderVariationSpecificses=new ArrayList<TradingOrderOrderVariationSpecifics>();
+                                while(NameValueList.hasNext()){
+                                    Element nameValueList= (Element) NameValueList.next();
+                                    TradingOrderOrderVariationSpecifics orderVariationSpecifics=new TradingOrderOrderVariationSpecifics();
+                                    orderVariationSpecifics.setSku(SamplePaseXml.getSpecifyElementText(Variation,"SKU"));
+                                    orderVariationSpecifics.setName(SamplePaseXml.getSpecifyElementText(nameValueList,"Name"));
+                                    orderVariationSpecifics.setValue(SamplePaseXml.getSpecifyElementText(nameValueList,"Value"));
+                                    orderOrderVariationSpecificses.add(orderVariationSpecifics);
+                                }
+                                OrderVariationSpecificses.add(orderOrderVariationSpecificses);
+                                getorder.setVariationsku(SamplePaseXml.getSpecifyElementText(Variation,"SKU"));
+                            }
+
+                        }
                         getorder.setShipmenttrackingnumber(SamplePaseXml.getSpecifyElementText(transaction,"ShippingDetails","ShipmentTrackingDetails","ShipmentTrackingNumber"));
                         getorder.setShippingcarrierused(SamplePaseXml.getSpecifyElementText(transaction,"ShippingDetails","ShipmentTrackingDetails","ShippingCarrierUsed"));
                         lists.add(getorder);
@@ -148,6 +169,7 @@ public class GetOrdersAPI {
 
             }
         }
+        map.put("OrderVariation",OrderVariationSpecificses);
         map.put("OrderList",lists);
         return map;
     }

@@ -11,19 +11,14 @@
       <result column="orderStatus" jdbcType="VARCHAR" property="orderstatus" />
       <result column="adjustmentAmount" jdbcType="VARCHAR" property="adjustmentamount" />
       <result column="amountSaved" jdbcType="VARCHAR" property="amountsaved" />
+      <result column="amountPaid" jdbcType="VARCHAR" property="amountpaid" />
       <result column="ebayPaymentStatus" jdbcType="VARCHAR" property="ebaypaymentstatus" />
       <result column="lastModifiedTime" jdbcType="TIMESTAMP" property="lastmodifiedtime" />
       <result column="paymentMethod" jdbcType="VARCHAR" property="paymentmethod" />
       <result column="status" jdbcType="VARCHAR" property="status" />
-      <result column="salesTaxPercent" jdbcType="VARCHAR" property="salestaxpercent" />
-      <result column="salesTaxState" jdbcType="VARCHAR" property="salestaxstate" />
-      <result column="shippingIncludedInTax" jdbcType="VARCHAR" property="shippingincludedintax" />
-      <result column="salesTaxAmount" jdbcType="VARCHAR" property="salestaxamount" />
-      <result column="shippingService" jdbcType="VARCHAR" property="shippingservice" />
-      <result column="shippingServicePriority" jdbcType="VARCHAR" property="shippingservicepriority" />
-      <result column="expeditedService" jdbcType="VARCHAR" property="expeditedservice" />
-      <result column="sellingManagerSalesRecordNumber" jdbcType="VARCHAR" property="sellingmanagersalesrecordnumber" />
-      <result column="getItFast" jdbcType="VARCHAR" property="getitfast" />
+      <result column="shippingdetails_id" jdbcType="BIGINT" property="shippingdetailsId" />
+      <result column="selectedShippingService" jdbcType="VARCHAR" property="selectedshippingservice" />
+      <result column="selectedShippingServiceCost" jdbcType="DOUBLE" property="selectedshippingservicecost" />
       <result column="creatingUserRole" jdbcType="VARCHAR" property="creatinguserrole" />
       <result column="createdTime" jdbcType="TIMESTAMP" property="createdtime" />
       <result column="paymentMethods" jdbcType="VARCHAR" property="paymentmethods" />
@@ -38,18 +33,31 @@
       <result column="postalCode" jdbcType="VARCHAR" property="postalcode" />
       <result column="addressID" jdbcType="VARCHAR" property="addressid" />
       <result column="addressOwner" jdbcType="VARCHAR" property="addressowner" />
+      <result column="shippingCarrierUsed" jdbcType="VARCHAR" property="shippingcarrierused" />
+      <result column="shipmentTrackingNumber" jdbcType="VARCHAR" property="shipmenttrackingnumber" />
       <result column="externalAddressID" jdbcType="VARCHAR" property="externaladdressid" />
       <result column="subtotal" jdbcType="VARCHAR" property="subtotal" />
       <result column="total" jdbcType="VARCHAR" property="total" />
       <result column="digitalDelivery" jdbcType="VARCHAR" property="digitaldelivery" />
       <result column="buyerEmail" jdbcType="VARCHAR" property="buyeremail" />
+      <result column="sellerEmail" jdbcType="VARCHAR" property="selleremail" />
       <result column="sellingManagerSales" jdbcType="VARCHAR" property="sellingmanagersales" />
       <result column="itemID" jdbcType="VARCHAR" property="itemid" />
+      <result column="sKU" jdbcType="VARCHAR" property="sku" />
+      <result column="title" jdbcType="VARCHAR" property="title" />
       <result column="quantityPurchased" jdbcType="VARCHAR" property="quantitypurchased" />
       <result column="transactionID" jdbcType="VARCHAR" property="transactionid" />
+      <result column="sellingManagerSalesRecordNumber" jdbcType="INTEGER" property="sellingmanagersalesrecordnumber" />
       <result column="transactionPrice" jdbcType="VARCHAR" property="transactionprice" />
+      <result column="paidTime" jdbcType="TIMESTAMP" property="paidtime" />
+      <result column="shippedTime" jdbcType="TIMESTAMP" property="shippedtime" />
+      <result column="actualShippingCost" jdbcType="DOUBLE" property="actualshippingcost" />
+      <result column="actualHandlingCost" jdbcType="DOUBLE" property="actualhandlingcost" />
       <result column="buyerUserID" jdbcType="VARCHAR" property="buyeruserid" />
+      <result column="comment" jdbcType="VARCHAR" property="comment" />
+      <result column="folder" jdbcType="VARCHAR" property="folder" />
       <result column="sellerUserID" jdbcType="VARCHAR" property="selleruserid" />
+      <result column="variationSKU" jdbcType="VARCHAR" property="variationsku" />
       <result column="create_user" jdbcType="BIGINT" property="createUser" />
       <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
       <result column="uuid" jdbcType="VARCHAR" property="uuid" />
@@ -88,7 +96,13 @@
             </if>
         </if>
         <if test="status!=null">
+            <if test="status=='notAllComplete'">
+                and OrderGetOrders.status = "Incomplete" and OrderGetOrders.orderID
+                IN (SELECT distinct orderID from trading_order_get_orders where status = "Complete")
+            </if>
+            <if test="status!='notAllComplete'">
               and OrderGetOrders.status = #{status}
+            </if>
         </if>
         <if test="starttime!=null">
             and OrderGetOrders.lastModifiedTime>= #{starttime}
