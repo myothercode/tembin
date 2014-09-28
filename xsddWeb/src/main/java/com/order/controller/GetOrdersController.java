@@ -68,7 +68,9 @@ public class GetOrdersController extends BaseAction {
     @Autowired
     private IPublicUserConfig iPublicUserConfig;
     @Autowired
-    private ITradingDataDictionary iTradingDataDictionary;
+    private ITradingOrderOrderVariationSpecifics iTradingOrderOrderVariationSpecifics;
+    @Autowired
+    private ITradingFeedBackDetail iTradingFeedBackDetail ;
    /* @Autowired
     private ITradingOrderVariation iTradingOrderVariation;
     @Autowired
@@ -295,6 +297,19 @@ public class GetOrdersController extends BaseAction {
                     list.setPictrue(pictureDetailses.get(0).getPictureurl());
                 }
              /*   List<TradingDataDictionary> dictionaries=iTradingDataDictionary.s()*/
+                list.setItemSite(itemList.get(0).getSite());
+            }
+            String variationSKU=list.getVariationsku();
+            if(StringUtils.isNotBlank(variationSKU)){
+                List<TradingOrderOrderVariationSpecifics> specificses=iTradingOrderOrderVariationSpecifics.selectOrderOrderVariationSpecificsBySku(variationSKU);
+                List<String> s=new ArrayList<String>();
+                if(specificses!=null&&specificses.size()>0){
+                    for(TradingOrderOrderVariationSpecifics specificse:specificses){
+                        String va=specificse.getName()+":"+specificse.getValue();
+                        s.add(va);
+                    }
+                }
+                list.setVariationspecificsMap(s);
             }
             List<TradingOrderAddMemberMessageAAQToPartner> partners=iTradingOrderAddMemberMessageAAQToPartner.selectTradingOrderAddMemberMessageAAQToPartnerByTransactionId(list.getTransactionid(),3);
             if(partners!=null&&partners.size()>0){
@@ -309,6 +324,15 @@ public class GetOrdersController extends BaseAction {
             }
             String url="http://www.sandbox.ebay.com/itm/"+list.getItemid();
             list.setItemUrl(url);
+            if("notAllComplete".equals(status)){
+                list.setFlagNotAllComplete(true);
+            }else{
+                list.setFlagNotAllComplete(false);
+            }
+            TradingFeedBackDetail feedBackDetail=iTradingFeedBackDetail.selectFeedBackDetailByTransactionId(list.getTransactionid());
+            if(feedBackDetail!=null){
+                list.setFeedbackMessage("true");
+            }
         }
         jsonBean.setList(lists);
         jsonBean.setTotal((int)page.getTotalCount());
@@ -659,7 +683,7 @@ public class GetOrdersController extends BaseAction {
         return forword("/orders/order/orderSendEvaluateMessage",modelMap);
     }
      /*
-     *买家评价和该状态
+     *给买家评价和该状态
     */
      @RequestMapping("/apiGetOrdersEvaluteSendMessage.do")
      @AvoidDuplicateSubmission(needRemoveToken = true)

@@ -22,6 +22,7 @@
             $("#sendMessageTable").initTable({
                 url:path + "/sendMessage/ajax/loadSendMessageList.do?",
                 columnData:[
+                    {title:"",name:"pictureUrl",width:"2%",align:"left",format:makeOption3},
                     {title:"标题",name:"subject",width:"8%",align:"left"},
                     {title:"主题",name:"body",width:"8%",align:"left"},
                     {title:"类型",name:"messagetype",width:"8%",align:"left",format:makeOption2},
@@ -40,6 +41,10 @@
         /**查看发送消息*/
         function makeOption1(json){
             var htm="<div class=\"ui-select\" style=\"width:8px\"><a href=\"javascript:void(0)\" onclick=\"deleteSendMessage("+json.transactionid+","+json.messagetype+");\">删除</a></div>";
+            return htm;
+        }
+        function makeOption3(json){
+            var htm = "<input type=\"checkbox\"  name=\"templateId\" value=" + json.id + ">";
             return htm;
         }
         function deleteSendMessage(transactionid,messagetype){
@@ -70,6 +75,18 @@
                 return "ebay累发送消息";
             }
         }
+        function Allchecked(obj){
+            var checkboxs=$("input[type=checkbox][name=templateId]");
+            if(obj.checked){
+                for(var i=0;i<checkboxs.length;i++){
+                    checkboxs[i].checked=true;
+                }
+            }else{
+                for(var i=0;i<checkboxs.length;i++){
+                    checkboxs[i].checked=false;
+                }
+            }
+        }
     </script>
 </head>
 <body>
@@ -84,8 +101,8 @@
                     <div class="new_usa">
                         <div class="newds">
                             <div class="newsj_left">
-                                <%--<span class="newusa_ici_del_in"><input type="checkbox" name="checkbox" id="checkbox"></span>--%>
-                                <%--<span class="newusa_ici_del">检查eBay费</span><div class="page_num">显示20条</div>--%>
+                                <span class="newusa_ici_del_in"><input type="checkbox" name="checkbox" id="checkbox" onclick="Allchecked(this);"></span>
+                                <span class="newusa_ici_del">检查eBay费</span><%--<div class="page_num">显示20条</div>--%>
                             </div>
                         </div>
                         <div class="tbbay"><a href="#">添加模板</a></div>

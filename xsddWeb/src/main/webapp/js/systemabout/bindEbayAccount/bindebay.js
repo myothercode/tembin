@@ -4,9 +4,14 @@
 
 $(document).ready(function(){
     //getAllDevSelect();
+    if(ebayId!=null && ebayId!=""){
+        $('#pageTitle').html("ebay账户编辑");
+        $("div[id^='action']").hide();
+        $("#action3").show();
+    }
 });
 
-
+var api = frameElement.api, W = api.opener;
 /**打开*/
 function getBindParm(){
     var devAccountID=$('#devSelect').val();
@@ -23,26 +28,49 @@ function getBindParm(){
             runName=rr.runName;
             tokenParm="?SignIn&RuName="+rr.runName+"&SessID="+rr.sessionid;
             window.open(tokenPageUrl+tokenParm);
+
+            $.dialog({title: '警告',
+                id: 'Alert',
+                zIndex: 99999999999999999999,
+                icon: 'alert.gif',
+                fixed: true,
+             //   lock: true,
+                content: "请确认授权成功后继续！",
+                ok: true,
+                resize: false,
+                close: function(){$('#action1').hide();$('#action2').show()},
+                parent: api || null}
+            );
         },function(m,r){Base.token();alert(r)}],
         {async:false}
     );
 }
 
 /**获取token*/
-function fetchToken(){
-    //var devAccountID=$('#devSelect').val();
-    //if(devAccountID==null || devAccountID ==0){alert('请选择开发帐号');return;}
-    var url=path+"/user/apiFetchToken.do";
+function fetchToken(a){
     var name=$('#bm').val();//别名
     var code = $('#code').val();//别名代码缩写
+    if(name==null || code==null){alert("请填入别名和简写代码！");return;}
+    //var devAccountID=$('#devSelect').val();
+    //if(devAccountID==null || devAccountID ==0){alert('请选择开发帐号');return;}
+    var url=path+"/user/";
+    var data;
+    if(a==null){
+        url+="apiFetchToken.do";
+        data={strV1:sessid,id:"0",strV3:code,strV2:name};
+    }else if(a=="edit"){
+        url+="doEditEbayAccount.do";
+        data={id:ebayId,strV3:code,strV2:name};
+    }
 
-    var data={strV1:sessid,id:"0",strV3:code,strV2:name};
+
     $().invoke(
         url,
         data,
         [function(m,r){
-            Base.token();
-            alert(r)
+            alert(r);
+            W.refreshRoleTable({});
+            W.bindEbayWindow.close();
         },function(m,r){Base.token();alert(r)}],
         {async:false}
     );

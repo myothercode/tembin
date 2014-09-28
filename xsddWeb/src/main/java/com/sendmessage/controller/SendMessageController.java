@@ -20,6 +20,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -106,6 +107,35 @@ public class SendMessageController extends BaseAction{
             AjaxSupport.sendSuccessText("", "删除成功!");
         }else{
             AjaxSupport.sendFailText("fail","发送消息不存在");
+        }
+    }
+    /*
+    *删除自动发送消息
+    */
+    @RequestMapping("/ajax/removeAutoSendMessage.do")
+    @AvoidDuplicateSubmission(needRemoveToken = true)
+    @ResponseBody
+    public void removeAutoSendMessage(HttpServletRequest request) throws Exception {
+        int i=0;
+        List<Long> idList=new ArrayList<Long>();
+        while(i>=0) {
+            String id = request.getParameter("id[" + i + "]");
+            if(!StringUtils.isNotBlank(id)&&i==0){
+                i=-2;
+            }else if(StringUtils.isNotBlank(id)){
+                idList.add(Long.valueOf(id));
+                i++;
+            }else{
+                i=-1;
+            }
+        }
+        if(idList.size()>0){
+            for(Long id:idList){
+                iTradingOrderAddMemberMessageAAQToPartner.deleteTradingOrderAddMemberMessageAAQToPartner(id);
+            }
+            AjaxSupport.sendSuccessText("", "删除成功!");
+        }else{
+            AjaxSupport.sendFailText("fail","该消息不存在");
         }
     }
 }

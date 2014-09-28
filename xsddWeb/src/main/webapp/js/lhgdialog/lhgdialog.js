@@ -1595,7 +1595,7 @@ window.lhgdialog = $.dialog = lhgdialog;
 
 var _zIndex = function()
 {
-    return lhgdialog.setting.zIndex;
+    return lhgdialog.setting.zIndex+1000000;
 };
 
 /**

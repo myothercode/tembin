@@ -24,7 +24,7 @@
             $("#ItemInformationListTable").initTable({
                 url:path + "/information/ajax/loadItemInformationList.do?",
                 columnData:[
-                    {title:"",name:"pictureUrl",width:"8%",align:"left",format:makeOption4},
+                    {title:"",name:"pictureUrl",width:"2%",align:"left",format:makeOption4},
                     {title:"图片",name:"pictureUrl",width:"8%",align:"left",format:makeOption2},
                     {title:"商品 / SKU",name:"sku",width:"8%",align:"left"},
                     {title:"商品名称",name:"name",width:"8%",align:"left"},
@@ -75,7 +75,6 @@
             var id=$("input[type='checkbox'][name='templateId']:checked");
             if(id.length>0){
                 var str="";
-
                 for(var i=0;i<id.length;i++){
                     if(i!=id.length-1){
                         str+="\"id["+i+"]\":"+$(id[i]).val()+",";
@@ -85,7 +84,6 @@
                 }
                 var data1= "{"+str+"}";
                 var data= eval('(' + data1 + ')');
-                console.debug(data);
                 var url=path+"/information/ajax/removeItemInformation.do";
                 $().invoke(url,data,
                         [function(m,r){
@@ -267,6 +265,18 @@
                 lock:true
             });
         }
+        function Allchecked(obj){
+            var checkboxs=$("input[type=checkbox][name=templateId]");
+            if(obj.checked){
+                for(var i=0;i<checkboxs.length;i++){
+                    checkboxs[i].checked=true;
+                }
+            }else{
+                for(var i=0;i<checkboxs.length;i++){
+                    checkboxs[i].checked=false;
+                }
+            }
+        }
     </script>
 </head>
 <body>
@@ -317,7 +327,7 @@
                             </div>
                             <div class="newds">
                                 <div class="newsj_left">
-                                    <span class="newusa_ici_del_in"><input type="checkbox" name="checkbox" id="checkbox"></span>
+                                    <span class="newusa_ici_del_in"><input type="checkbox" name="checkbox" id="checkbox" onclick="Allchecked(this);"></span>
                                     <span class="newusa_ici_del" onclick="addItemInformation();">添加商品</span>
                                     <span class="newusa_ici_del" onclick="importItemInformation();">导入商品</span>
                                     <span class="newusa_ici_del" onclick="exportItemInformation();">导出商品</span>

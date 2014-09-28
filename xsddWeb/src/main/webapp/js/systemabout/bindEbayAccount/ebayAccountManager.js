@@ -16,7 +16,7 @@ function queryEbayList(){
             {title:"ebay账户",name:"ebayName",width:"8%",align:"left"},
             {title:"密钥有效期",name:"op",width:"8%",align:"left",format:mCanUseDate},
             {title:"状态",name:"op",width:"8%",align:"left",format:makeStatus},
-            {title:"操作",name:"op1",width:"8%",align:"left",format:function(){}}
+            {title:"操作",name:"op1",width:"8%",align:"left",format:makeOptionEbay}
         ],
         selectDataNow:false,
         isrowClick:false,
@@ -24,6 +24,51 @@ function queryEbayList(){
         onlyFirstPage:true
     });
     refreshRoleTable({});
+}
+/**组装操作下拉*/
+function makeOptionEbay(json){
+    var select1="<div class=\"ui-select\" style=\"width:8px\">" +
+        "<select onchange='doEbayAccount(this)'>" ;
+    select1+= "<option  value='x'>请选择</option>" ;
+    if(json.ebayStatus==1 || json.ebayStatus=='1'){
+        select1+= "<option  value='"+json.id+"' doaction=\"stop\">停用</option>" ;
+    }else if(json.ebayStatus==0 || json.ebayStatus=='0'){
+        select1+= "<option  value='"+json.id+"' doaction=\"start\">启用</option>" ;
+    }
+    select1+= "<option  value='"+json.id+"' doaction=\"edit\">编辑</option>" ;
+    select1+= "</select></div>";
+    return select1;
+}
+/**选择操作后要执行的动作*/
+function doEbayAccount(obj){
+    var optionV=$(obj).find("option:selected");
+    var v=$(optionV).attr('value');
+    if(v=='x'){return;}
+    var d=$(optionV).attr('doaction');
+    if(d=="stop" || d=="start"){
+        var data={"act":d,"ebayId":v};
+        startOrStop(data);
+    }else if(d=='edit'){
+        openBindEbayWindow(v);
+    }
+
+}
+function startOrStop(data){
+    var url=path+"/user/startOrStopEbayAccount.do";
+    $().invoke(
+        url,
+        data,
+        [function(m,r){
+            alert(r);
+            refreshRoleTable({});
+            Base.token();
+        },
+            function(m,r){
+                alert(r);
+                refreshRoleTable({});
+                Base.token();
+            }]
+    );
 }
 /**组装密钥有效期*/
 function mCanUseDate(json){
@@ -65,8 +110,13 @@ function setTab(name,cursel,n){
 
 /**打开ebay帐号绑定窗口!*/
 var bindEbayWindow;
-function openBindEbayWindow(){
-    var url=path+"/user/bindEbayAccount.do"
+function openBindEbayWindow(ebayId){
+    var url=path+"/user/";
+    if(ebayId==null || ebayId.length==0){
+        url+="bindEbayAccount.do";
+    }else{
+        url+="editEbayAccount.do?id="+ebayId;
+    }
     bindEbayWindow=$.dialog({
         title:'',
         id : "dig" + (new Date()).getTime(),

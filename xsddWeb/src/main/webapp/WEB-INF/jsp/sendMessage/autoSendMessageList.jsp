@@ -22,6 +22,7 @@
             $("#autoSendMessageTable").initTable({
                 url:path + "/sendMessage/ajax/loadAutoSendMessageList.do?",
                 columnData:[
+                    {title:"",name:"pictureUrl",width:"2%",align:"left",format:makeOption3},
                     {title:"标题",name:"subject",width:"8%",align:"left"},
                     {title:"类型",name:"messagetype",width:"8%",align:"left",format:makeOption2},
                     {title:"ebay账号",name:"recipientid",width:"8%",align:"left"},
@@ -40,6 +41,10 @@
         /**查看发送消息*/
         function makeOption1(json){
             var htm="<div class=\"ui-select\" style=\"width:8px\"><a href=\"javascript:void(0)\" onclick=\"deleteAutoSendMessage("+json.transactionid+","+json.messagetype+","+json.messageflag+");\">删除</a></div>";
+            return htm;
+        }
+        function makeOption3(json){
+            var htm = "<input type=\"checkbox\"  name=\"templateId\" value=" + json.id + ">";
             return htm;
         }
         function deleteAutoSendMessage(transactionid,messagetype,messageflag){
@@ -68,6 +73,48 @@
             }
 
         }
+        function Allchecked(obj){
+            var checkboxs=$("input[type=checkbox][name=templateId]");
+            if(obj.checked){
+                for(var i=0;i<checkboxs.length;i++){
+                    checkboxs[i].checked=true;
+                }
+            }else{
+                for(var i=0;i<checkboxs.length;i++){
+                    checkboxs[i].checked=false;
+                }
+            }
+        }
+        function removeAutoSendMessage(){
+            var id=$("input[type=checkbox][name=templateId]:checked");
+            if(id.length>0){
+                var str="";
+                for(var i=0;i<id.length;i++){
+                    if(i!=id.length-1){
+                        str+="\"id["+i+"]\":"+$(id[i]).val()+",";
+                    }else{
+                        str+="\"id["+i+"]\":"+$(id[i]).val();
+                    }
+                }
+                var data1= "{"+str+"}";
+                var data= eval('(' + data1 + ')');
+                console.debug(data);
+                var url=path+"/sendMessage/ajax/removeAutoSendMessage.do";
+                $().invoke(url,data,
+                        [function(m,r){
+                            alert(r);
+                            refreshTable();
+                            Base.token();
+                        },
+                            function(m,r){
+                                alert(r);
+                                Base.token();
+                            }]
+                );
+            }else{
+                alert("请选择要删除的数据");
+            }
+        }
     </script>
 </head>
 <body>
@@ -82,8 +129,8 @@
                     <div id="con_menu_1" class="hover">
                         <div class="new_usa" style="margin-top:20px;">
                             <div class="newds">
-                                <div class="newsj_left"><span class="newusa_ici_del_in"><%--<input type="checkbox" name="checkbox" id="checkbox"></span>
-                                    <span class="newusa_ici_del">删除</span><div class="page_num">显示20条</div>--%>
+                                <div class="newsj_left"><span class="newusa_ici_del_in"><input type="checkbox" name="checkbox" id="checkbox" onclick="Allchecked(this);"></span>
+                                    <span class="newusa_ici_del" onclick="removeAutoSendMessage();">删除</span><%--<div class="page_num">显示20条</div>--%>
                                 </div><div class="tbbay"><a href="#">添加模板</a></div>
                             </div>
                         </div>

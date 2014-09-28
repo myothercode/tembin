@@ -85,7 +85,7 @@ function getRoleInfoWhenEdit(){
 
 /**提交新增角色*/
 function submitRole(){
-if(roleName==null || roleName==''){alert('请输入角色名!');return;}
+if($('#roleName').val()==null || $('#roleName').val()==''){alert('请输入角色名!');return;}
 
     if($('#alreadChecked').find("input").length==0){alert("请至少选择一个权限！");return;}
 

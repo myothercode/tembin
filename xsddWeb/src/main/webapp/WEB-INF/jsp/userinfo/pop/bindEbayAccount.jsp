@@ -14,6 +14,7 @@
         var tokenPageUrl="${tokenPageUrl}";
         var sessid;
         var tokenParm;
+        var ebayId="${ebayId}";
 
 
     </script>
@@ -26,7 +27,7 @@
     <form class="form-horizontal">
         <fieldset>
             <div id="legend" class="">
-                <legend class="">ebay账户绑定</legend>
+                <legend id="pageTitle" class="">ebay账户绑定</legend>
             </div>
 
 
@@ -35,7 +36,7 @@
                 <!-- Text input-->
                 <label class="control-label" for="input01">ebay账户名</label>
                 <div class="controls">
-                    <input id="bm" onblur="getShortName(this)" type="text" placeholder="" class="input-xlarge">
+                    <input id="bm" value="${ebay.ebayName}" onblur="getShortName(this)" type="text" placeholder="" class="input-xlarge">
                     <p class="help-block"></p>
                 </div>
             </div>
@@ -45,14 +46,14 @@
                 <!-- Text input-->
                 <label class="control-label" for="input01">简写代码</label>
                 <div class="controls">
-                    <input id="code" type="text" placeholder="" class="input-xlarge">
+                    <input id="code" value="${ebay.ebayNameCode}" type="text" placeholder="" class="input-xlarge">
                     <p class="help-block"></p>
                 </div>
             </div>
         </fieldset>
     </form>
 
-    <div class="control-group" style="text-align: center;">
+    <div id="action1" class="control-group" style="text-align: center;">
         <label class="control-label"></label>
         <!-- Button -->
         <div class="controls">
@@ -60,11 +61,19 @@
         </div>
     </div>
 
-    <div class="control-group" style="text-align: center;">
+    <div id="action2" class="control-group" style="text-align: center;display: none">
         <label class="control-label"></label>
         <!-- Button -->
         <div class="controls">
             <button class="btn btn-info" onclick="fetchToken()">确定授权完成</button>
+        </div>
+    </div>
+
+    <div id="action3" class="control-group" style="text-align: center;display: none">
+        <label class="control-label"></label>
+        <!-- Button -->
+        <div class="controls">
+            <button class="btn btn-info" onclick="fetchToken('edit')">确定修改</button>
         </div>
     </div>
 </div>

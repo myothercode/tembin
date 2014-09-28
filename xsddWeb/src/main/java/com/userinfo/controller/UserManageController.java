@@ -55,12 +55,23 @@ public class UserManageController extends BaseAction {
     private UserInfoService userInfoService;
 
 
-    /**绑定ebay帐号的弹出主页面*/
+    /**绑定新增ebay帐号的弹出主页面*/
     @RequestMapping("bindEbayAccount.do")
     @AvoidDuplicateSubmission(needSaveToken = true)
     public ModelAndView bindEbayAccount(@ModelAttribute( "initSomeParmMap" )ModelMap modelMap,
                                         CommonParmVO commonParmVO) throws Exception {
         modelMap.put("tokenPageUrl",tokenPageUrl);
+        return   forword("/userinfo/pop/bindEbayAccount",modelMap);
+    }
+    /**编辑ebay帐号页面初始化*/
+    @RequestMapping("editEbayAccount.do")
+    @AvoidDuplicateSubmission(needSaveToken = true)
+    public ModelAndView editEbayAccount(@ModelAttribute( "initSomeParmMap" )ModelMap modelMap,
+                                        CommonParmVO commonParmVO) throws Exception {
+        modelMap.put("tokenPageUrl",tokenPageUrl);
+        modelMap.put("ebayId",commonParmVO.getId());
+        UsercontrollerEbayAccount e = userInfoService.queryEbayInfoById(modelMap);
+        modelMap.put("ebay",e);
         return   forword("/userinfo/pop/bindEbayAccount",modelMap);
     }
 
@@ -70,6 +81,30 @@ public class UserManageController extends BaseAction {
     public ModelAndView ebayAccountManager(@ModelAttribute( "initSomeParmMap" )ModelMap modelMap,
                                         CommonParmVO commonParmVO) throws Exception {
         return   forword("/userinfo/ebayAccountManager",modelMap);
+    }
+
+    /**启用或者停用ebay帐号*/
+    @RequestMapping("startOrStopEbayAccount")
+    @AvoidDuplicateSubmission(needRemoveToken = true)
+    @ResponseBody
+    public void startOrStopEbayAccount(String act,Long ebayId){
+        Map map =new HashMap();
+        map.put("act",act);
+        map.put("ebayId",ebayId);
+        userInfoService.startOrStopEbayAccount(map);
+        AjaxSupport.sendSuccessText("","操作成功");
+    }
+    /**编辑ebay帐号*/
+    @RequestMapping("doEditEbayAccount.do")
+    @AvoidDuplicateSubmission(needRemoveToken = true)
+    @ResponseBody
+    public void doEditEbayAccount(CommonParmVO commonParmVO){
+        Map map =new HashMap();
+        map.put("id",commonParmVO.getId());
+        map.put("name",commonParmVO.getStrV2());
+        map.put("code",commonParmVO.getStrV3());
+        userInfoService.editEbayAccount(map);
+        AjaxSupport.sendSuccessText("","操作成功");
     }
 
     @RequestMapping("apiGetSessionID")

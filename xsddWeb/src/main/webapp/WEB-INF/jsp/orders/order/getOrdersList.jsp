@@ -25,7 +25,7 @@
                     {title:"",name:"ch",width:"2%",align:"top",format:makeOption5},
                     {title:"订单号 / 源订单号",name:"orderid",width:"8%",align:"left",format:makeOption2},
                     {title:"物品 / SKU / 承运商 / 追踪号",name:"orderid",width:"8%",align:"left",format:makeOption3},
-                    {title:"站点",name:"country",width:"8%",align:"left"},
+                    {title:"站点",name:"itemSite",width:"8%",align:"left"},
                     {title:"售价",name:"itemUrl",width:"8%",align:"left",format:makeOption6},
                     {title:"售出日期",name:"createdtime",width:"8%",align:"left"},
                     {title:"发货日期",name:"shippedtime",width:"8%",align:"left"},
@@ -42,7 +42,7 @@
                     {title:"",name:"ch",width:"2%",align:"top",format:makeOption5},
                     {title:"订单号 / 源订单号",name:"orderid",width:"8%",align:"left",format:makeOption2},
                     {title:"物品 / SKU / 承运商 / 追踪号",name:"orderid",width:"8%",align:"left",format:makeOption3},
-                    {title:"站点",name:"country",width:"8%",align:"left"},
+                    {title:"站点",name:"itemSite",width:"8%",align:"left"},
                     {title:"售价",name:"itemUrl",width:"8%",align:"left",format:makeOption6},
                     {title:"售出日期",name:"createdtime",width:"8%",align:"left"},
                     {title:"发货日期",name:"shippedtime",width:"8%",align:"left"},
@@ -59,7 +59,7 @@
                     {title:"",name:"ch",width:"2%",align:"top",format:makeOption5},
                     {title:"订单号 / 源订单号",name:"orderid",width:"8%",align:"left",format:makeOption2},
                     {title:"物品 / SKU / 承运商 / 追踪号",name:"orderid",width:"8%",align:"left",format:makeOption3},
-                    {title:"站点",name:"country",width:"8%",align:"left"},
+                    {title:"站点",name:"itemSite",width:"8%",align:"left"},
                     {title:"售价",name:"itemUrl",width:"8%",align:"left",format:makeOption6},
                     {title:"售出日期",name:"createdtime",width:"8%",align:"left"},
                     {title:"发货日期",name:"shippedtime",width:"8%",align:"left"},
@@ -76,7 +76,7 @@
                     {title:"",name:"ch",width:"2%",align:"top",format:makeOption5},
                     {title:"订单号 / 源订单号",name:"orderid",width:"8%",align:"left",format:makeOption2},
                     {title:"物品 / SKU / 承运商 / 追踪号",name:"orderid",width:"8%",align:"left",format:makeOption3},
-                    {title:"站点",name:"country",width:"8%",align:"left"},
+                    {title:"站点",name:"itemSite",width:"8%",align:"left"},
                     {title:"售价",name:"itemUrl",width:"8%",align:"left",format:makeOption6},
                     {title:"售出日期",name:"createdtime",width:"8%",align:"left"},
                     {title:"发货日期",name:"shippedtime",width:"8%",align:"left"},
@@ -127,6 +127,11 @@
         function makeOption3(json){
             var imgurl=path+"/img/";
             var imgurl1=path+"/img/";
+            var vas=json.variationspecificsMap;
+            var con="";
+            for(var i=0;i<vas.length;i++){
+                con=con+vas[i]+"<br/>"
+            }
             if(json.message==null||json.message==""){
                 imgurl1=imgurl1+"f.png";
             }else{
@@ -137,7 +142,8 @@
             "<span class=\"newbgspan_3\">"+json.shipmenttrackingnumber+"</span>&nbsp;<span class=\"newbgspan_3\">"+json.shippingcarrierused+"</span>" +
             "<span style=\"width:100%; float:left\"><font color=\"#5F93D7\">"+json.title+"</font><br>("+json.itemid+")</span>" +
             "<span style=\"width:100%; float:left; color:#8BB51B\">"+json.sku+"</span>" +
-            "<span style=\"width:100%; float:left\"><font color=\"#5F93D7\">Color：</font>Black;</span>" +
+            "<span style=\"width:100%; float:left\"><font color=\"#5F93D7\">" +con +
+            "</span>" +
             "<span style=\"width:100%; float:left\"><font color=\"#5F93D7\">B：</font><img src=\""+imgurl+"f.png\" width=\"14\" height=\"14\"></span>"+
             "<span style=\"width:100%; float:left\"><font color=\"#5F93D7\">S：" +
             "</font><img src=\""+imgurl1+"\" width=\"12\" height=\"12\">"+json.message+"</span>" +
@@ -150,15 +156,22 @@
         function makeOption4(json){
             var imgurl1=path+"/img/";
             var htm="";
-            if(json.status=='Incomplete'){
-                htm=htm+"<img src=\""+imgurl1+"money.gif \" onmousemove='showInformation();'>"/*"<img src=\""+imgurl1+"money.gif\">"*/;
-                /*"<img onmousemove='showInformation();'>"*/
-            }
-            if(json.status=='Complete'){
-                htm=htm+"<img src=\""+imgurl1+"money.png\" >";
+            if(json.flagNotAllComplete){
+                htm=htm+"<img src=\""+imgurl1+"money_no.png\" >";
+            }else{
+                if(json.status=='Incomplete'){
+                    htm=htm+"<img src=\""+imgurl1+"money.gif \" onmousemove='showInformation();'>"/*"<img src=\""+imgurl1+"money.gif\">"*/;
+                    /*"<img onmousemove='showInformation();'>"*/
+                }
+                if(json.status=='Complete'){
+                    htm=htm+"<img src=\""+imgurl1+"money.png\" >";
+                }
             }
             if(json.shipmenttrackingnumbe!=""&&json.shippingcarrierused!=""){
                 htm=htm+"<img src=\""+imgurl1+"car.png\" >"
+            }
+            if(json.feedbackMessage&&json.feedbackMessage!=""){
+                htm=htm+"<img src=\""+imgurl1+"box.png\" >"
             }
             return htm;
         }
@@ -180,7 +193,7 @@
                 columnData:[
                     {title:"订单号 / 源订单号",name:"pictrue",width:"8%",align:"left",format:makeOption2},
                     {title:"物品 / SKU / 承运商 / 追踪号",name:"orderid",width:"8%",align:"left"},
-                    {title:"站点",name:"country",width:"8%",align:"left"},
+                    {title:"站点",name:"itemSite",width:"8%",align:"left"},
                     {title:"售价",name:"itemUrl",width:"8%",align:"left",format:makeOption3},
                     {title:"售出日期",name:"buyeruserid",width:"8%",align:"left"},
                     {title:"发货日期",name:"selleruserid",width:"8%",align:"left"},
@@ -248,7 +261,7 @@
             var itemType=$("#itemType3").val();
             var content=$("#content3").val();
             var table="#OrderGetOrdersListTable3";
-            refreshTable5(table,countryQ,typeQ,daysQ,itemType,content,null);
+            refreshTable5(table,countryQ,typeQ,daysQ,itemType,content,"notAllComplete");
         }
         function query4(){
             var daysQ=$("#daysQ").val();
@@ -267,7 +280,7 @@
                     {title:"",name:"ch",width:"2%",align:"top",format:makeOption5},
                     {title:"订单号 / 源订单号",name:"orderid",width:"8%",align:"left",format:makeOption2},
                     {title:"物品 / SKU / 承运商 / 追踪号",name:"orderid",width:"8%",align:"left",format:makeOption3},
-                    {title:"站点",name:"country",width:"8%",align:"left"},
+                    {title:"站点",name:"itemSite",width:"8%",align:"left"},
                     {title:"售价",name:"itemUrl",width:"8%",align:"left",format:makeOption6},
                     {title:"售出日期",name:"createdtime",width:"8%",align:"left"},
                     {title:"发货日期",name:"shippedtime",width:"8%",align:"left"},
@@ -359,6 +372,19 @@
             alert("请选择一个需要添加备注的订单");
         }
     }
+        function selectAllCheck(i,obj){
+            var table="#OrderGetOrdersListTable"+i;
+            var checkboxs=$(table).find("input[name=checkbox]");
+            if(obj.checked){
+                for(var j=0;j<checkboxs.length;j++){
+                    checkboxs[j].checked=true;
+                }
+            }else{
+                for(var j=0;j<checkboxs.length;j++){
+                    checkboxs[j].checked=false;
+                }
+            }
+        }
         function moveFolder(i){
             var table="#OrderGetOrdersListTable"+i;
             var checkboxs=$(table).find("input[name=checkbox]:checked");
@@ -438,7 +464,7 @@
                         {title:"",name:"ch",width:"2%",align:"top",format:makeOption5},
                         {title:"订单号 / 源订单号",name:"orderid",width:"8%",align:"left",format:makeOption2},
                         {title:"物品 / SKU / 承运商 / 追踪号",name:"orderid",width:"8%",align:"left",format:makeOption3},
-                        {title:"站点",name:"country",width:"8%",align:"left"},
+                        {title:"站点",name:"itemSite",width:"8%",align:"left"},
                         {title:"售价",name:"itemUrl",width:"8%",align:"left",format:makeOption6},
                         {title:"售出日期",name:"createdtime",width:"8%",align:"left"},
                         {title:"发货日期",name:"shippedtime",width:"8%",align:"left"},
@@ -536,6 +562,11 @@
                 $(movefolder).click(function(){
                     moveFolder(i-1);
                 });
+                var checkall=$(lastdiv).find("input[id=allCheckbox]");
+                $(checkall).removeAttr("onclick");
+                $(checkall).click(function(){
+                    selectAllCheck(i-1,this);
+                });
                 $("#ContentboxDiv").append($(lastdiv));
               /*  lastdiv.setAttribute("id","con_menu_")*/
             }
@@ -551,7 +582,7 @@
                 {title:"",name:"ch",width:"2%",align:"top",format:makeOption5},
                 {title:"订单号 / 源订单号",name:"orderid",width:"8%",align:"left",format:makeOption2},
                 {title:"物品 / SKU / 承运商 / 追踪号",name:"orderid",width:"8%",align:"left",format:makeOption3},
-                {title:"站点",name:"country",width:"8%",align:"left"},
+                {title:"站点",name:"itemSite",width:"8%",align:"left"},
                 {title:"售价",name:"itemUrl",width:"8%",align:"left",format:makeOption6},
                 {title:"售出日期",name:"createdtime",width:"8%",align:"left"},
                 {title:"发货日期",name:"shippedtime",width:"8%",align:"left"},
@@ -634,7 +665,7 @@
         <div class="newds">
             <div class="newsj_left">
 
-                <span class="newusa_ici_del_in"><input type="checkbox" name="checkbox" id="checkbox"></span>
+                <span class="newusa_ici_del_in"><input type="checkbox" name="checkbox" id="allCheckbox"  onclick="selectAllCheck(1,this);"></span>
                 <span class="newusa_ici_del" onclick="addComment(1);">添加备注</span><span class="newusa_ici_del" onclick="addTabRemark();">新建文件夹</span><span onclick="downloadOrders(1);" class="newusa_ici_del">下载订单</span>
                 <span onclick="moveFolder(1);" class="newusa_ici_del">移动到文件夹</span>
             </div>
@@ -670,7 +701,7 @@
         <div class="newds">
             <div class="newsj_left">
 
-                <span class="newusa_ici_del_in"><input type="checkbox" name="checkbox" id="checkbox"></span>
+                <span class="newusa_ici_del_in"><input type="checkbox" name="checkbox" id="allCheckbox" onclick="selectAllCheck(2,this);"></span>
                 <span class="newusa_ici_del" onclick="addComment(2);">添加备注</span><span class="newusa_ici_del" onclick="addTabRemark();">新建文件夹</span><span onclick="downloadOrders(2);" class="newusa_ici_del">下载订单</span>
                 <span onclick="moveFolder(2);" class="newusa_ici_del">移动到文件夹</span>
             </div>
@@ -689,7 +720,7 @@
         <li class="new_usa_list"><span class="newusa_i">收件人国家：</span><a href="#"><span class="newusa_ici_1" scop="queryCountry3"  onclick="queryCountry(3,1,null);">全部</span></a><a href="#"><span class="newusa_ic_1" scop="queryCountry3"  onclick="queryCountry(3,2,'US');"><img src="<c:url value ="/img/usa_1.png"/> " >美国</span></a><a href="#"><span class="newusa_ic_1" scop="queryCountry3"  onclick="queryCountry(3,3,'UK');"><img src="<c:url value ="/img/UK.jpg"/> ">英国</span></a><a href="#"><span class="newusa_ic_1" scop="queryCountry3"  onclick="queryCountry(3,4,'DE');"><img src="<c:url value ="/img/DE.png"/> ">德国</span></a><a href="#"><span class="newusa_ic_1" scop="queryCountry3"  onclick="queryCountry(3,5,'AU');"><img src="<c:url value ="/img/AU.jpg"/> ">澳大利亚</span></a></li>
         <li class="new_usa_list"><span class="newusa_i">刊登类型：</span><a href="#"><span class="newusa_ici_1" scop="queryAttr3" onclick="queryAttr(3,1,null);">全部</span></a><a href="#"><span class="newusa_ici_1" scop="queryAttr3" onclick="queryAttr(3,2,'fixation');">固价</span></a><a href="#"><span class="newusa_ici_1" scop="queryAttr3" onclick="queryAttr(3,3,'auction');">拍卖</span></a><a href="#"><span class="newusa_ici_1" scop="queryAttr3" onclick="queryAttr(3,4,'multiattribute');">多属性</span></a></li>
         <div class="newsearch">
-            <span class="newusa_i">刊登类型：</span><a href="#"><span scop="queryTime3" onclick="queryTime(3,1,null)" class="newusa_ici_1">全部</span></a><a href="#"><span scop="queryTime3" onclick="queryTime(3,2,'1')" class="newusa_ici_1">今天</span></a><a href="#"><span scop="queryTime3" onclick="queryTime(3,3,'2')" class="newusa_ici_1">昨天</span></a><a href="#"><span scop="queryTime3" onclick="queryTime(2,4,'7')" class="newusa_ici_1">7天以内</span></a><a href="#"><span scop="queryTime3" onclick="queryTime(3,5,'30')" class="newusa_ici_1">30天以内</span></a>
+            <span class="newusa_i">刊登类型：</span><a href="#"><span scop="queryTime3" onclick="queryTime(3,1,null)" class="newusa_ici_1">全部</span></a><a href="#"><span scop="queryTime3" onclick="queryTime(3,2,'1')" class="newusa_ici_1">今天</span></a><a href="#"><span scop="queryTime3" onclick="queryTime(3,3,'2')" class="newusa_ici_1">昨天</span></a><a href="#"><span scop="queryTime3" onclick="queryTime(3,4,'7')" class="newusa_ici_1">7天以内</span></a><a href="#"><span scop="queryTime3" onclick="queryTime(3,5,'30')" class="newusa_ici_1">30天以内</span></a>
 <span id="sleBG">
 <span id="sleHid">
 <select name="type" class="select" id="itemType3" onchange="cleanInput();">
@@ -706,7 +737,7 @@
         <div class="newds">
             <div class="newsj_left">
 
-                <span class="newusa_ici_del_in"><input type="checkbox" name="checkbox" id="checkbox"></span>
+                <span class="newusa_ici_del_in"><input type="checkbox" name="checkbox" id="checkbox" id="allCheckbox" onclick="selectAllCheck(3,this);"></span>
                 <span class="newusa_ici_del" onclick="addComment(3);">添加备注</span><span class="newusa_ici_del" onclick="addTabRemark();">新建文件夹</span><span onclick="downloadOrders(3);" class="newusa_ici_del">下载订单</span>
                 <span onclick="moveFolder(3);" class="newusa_ici_del">移动到文件夹</span>
             </div>
@@ -744,7 +775,7 @@
         <div class="newds">
             <div class="newsj_left">
 
-                <span class="newusa_ici_del_in"><input type="checkbox" name="checkbox" id="checkbox"></span>
+                <span class="newusa_ici_del_in"><input type="checkbox" name="checkbox" id="allCheckbox" onclick="selectAllCheck(4,this);"></span>
                 <span id="addComment" class="newusa_ici_del" onclick="addComment(4);">添加备注</span><span id="addtabRemark" class="newusa_ici_del" onclick="addTabRemark();">新建文件夹</span><span id="downloadOrder4" onclick="downloadOrders(4);" class="newusa_ici_del">下载订单</span>
                 <span id="moveFolder" onclick="moveFolder(4);" class="newusa_ici_del">移动到文件夹</span>
             </div>
