@@ -17,6 +17,7 @@
         }
     </style>
     <script type="text/javascript" src=<c:url value ="/js/systemabout/bindEbayAccount/ebayAccountManager.js" /> ></script>
+    <script type="text/javascript" src=<c:url value ="/js/systemabout/bindEbayAccount/paypalAccountManager.js" /> ></script>
 </head>
 <body>
 <div >
@@ -42,47 +43,10 @@
 
                 <div style="DISPLAY: none" id=con_menu_2>
                     <div class="new_usa">
-                        <div class="tbbay" style="margin-top:20px;"><a data-toggle="modal" href="#myModal" class="">添加帐号</a></div>
+                        <div class="tbbay" style="margin-top:20px;">
+                            <a onclick="opAddPaypalPage()" data-toggle="modal" href="javascript:void(0)" class="">添加paypal帐号</a></div>
                     </div>
-                    <table width="100%" border="0" align="left" cellspacing="0" style="margin-top:20px;">
-                        <tr>
-                            <td width="40%" height="30" bgcolor="#F7F7F7"><strong>Paypal帐号</strong></td>
-                            <td width="40%" align="center" bgcolor="#F7F7F7">状态</td>
-                            <td width="20%" align="" bgcolor="#F7F7F7"><strong>操作</strong></td>
-                        </tr>
-                        <tr>
-                            <td style="color:#5E93D5">topenjoyed@gmail.com</td>
-                            <td align="center"><img src="../../img/new_yes.png" width="22" height="22"></td>
-
-                            <td align="center"><span class="newusa_ici"><b style="color:#FF6060;font-weight: normal;">停用</b>帐号</span></td>
-                        </tr>
-                        <tr>
-                            <td style="color:#5E93D5">topenjoyed@gmail.com</td>
-                            <td align="center"><img src="../../img/new_no.png" width="22" height="22"></td>
-
-                            <td align="center"><span class="newusa_ici"><b style="color:#93B937;font-weight: normal;">启用</b>帐号</span></td>
-                        </tr>
-                    </table>
-                    <div class="page_newlist">
-                        <div>
-                            <div id="newtipi">
-                                <li><a href="#">显示20条</a>
-                                    <ul>
-                                        <li><a href="#">自定义显示</a></li>
-                                        <li><a href="#">自定义显示</a></li>
-                                        <li><a href="#">自定义显示</a></li>
-                                    </ul>
-                                </li>
-                            </div></div> 共 <span style="color:#F00">3000</span> 条记录 <span style="color:#F00">300</span> 页
-                    </div>
-                    <div class="maage_page">
-                        <li><</li>
-                        <li class="page_cl">1</li>
-                        <li>2</li>
-                        <li>3</li>
-                        <li>4</li>
-                        <dt>></dt>
-                    </div>
+                    <div id="paypalManager"></div>
                 </div>
                 </form>
             </div>

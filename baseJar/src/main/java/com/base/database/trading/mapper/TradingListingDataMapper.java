@@ -3,8 +3,6 @@ package com.base.database.trading.mapper;
 import com.base.database.trading.model.TradingListingData;
 import com.base.database.trading.model.TradingListingDataExample;
 import java.util.List;
-
-import com.base.mybatis.page.Page;
 import org.apache.ibatis.annotations.Param;
 
 public interface TradingListingDataMapper {

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.base.aboutpaypal.mapper.AboutPaypalMapper" >
+
+<select id="queryPayPalsByUserId" parameterType="map" resultType="com.base.database.trading.model.UsercontrollerPaypalAccount">
+    select p.id,p.paypal_account payPalAccount,p.`status`,p.email from usercontroller_paypal_account p
+    where p.create_user = #{userId}
+    ORDER BY p.id
+</select>
+    
+    <update id="clearEbayPaypal" parameterType="map">
+        UPDATE usercontroller_ebay_account ea set ea.paypal_account_id=null
+        WHERE ea.paypal_account_id=#{paypalId}
+    </update>
+
+</mapper>

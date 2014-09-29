@@ -4,6 +4,7 @@
 
 $(document).ready(function(){
     queryEbayList();
+    //queryPaypalList();
 });
 
 
@@ -105,6 +106,8 @@ function setTab(name,cursel,n){
     }
     if(cursel==1){
         refreshRoleTable({});
+    }else if(cursel==2){
+        queryPaypalList();
     }
     }
 

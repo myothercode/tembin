@@ -31,7 +31,10 @@ public class APINameStatic {
      * 拍买商品用
      */
     public static final String AddItem = "AddItem";
-
+    /**
+     * 商品下架
+     */
+    public static final String EndItem = "EndItem";
     /**
      * 买家对卖家反馈信息
      */

@@ -153,6 +153,7 @@ public class TradingItemImpl implements com.trading.service.ITradingItem {
         HttpServletRequest request = RequestResponseContext.getRequest();
         String [] paypals = request.getParameterValues("ebayAccounts");
         Map itemMap = new HashMap();
+        String mouth = request.getParameter("dataMouth");//刊登方式
         //String [] dicUrl =
         for(int is =0;is<paypals.length;is++) {
             TradingItem tradingItem = new TradingItem();
@@ -170,7 +171,11 @@ public class TradingItemImpl implements com.trading.service.ITradingItem {
             if(request.getParameter("StartPrice.value_"+paypals[is])!=null&&!"".equals(request.getParameter("StartPrice.value_"+paypals[is]))){
                 tradingItem.setStartprice(Double.parseDouble(request.getParameter("StartPrice.value_"+paypals[is])));
             }
-
+            if("timeSave".equals(mouth)){
+                tradingItem.setListingWay("1");//表示为定时刊登
+            }else{
+                tradingItem.setListingWay("0");//表示为正常刊登
+            }
 
 
             this.saveTradingItem(tradingItem);

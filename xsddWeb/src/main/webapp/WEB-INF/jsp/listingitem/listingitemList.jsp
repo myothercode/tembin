@@ -40,6 +40,7 @@
             $("#itemTable").initTable({
                 url:path + urls,
                 columnData:[
+                    {title:"选择",name:"itemName",width:"8%",align:"left",format:makeOption0},
                     {title:"图片",name:"Option1",width:"8%",align:"left",format:picUrl},
                     {title:"物品标题",name:"title",width:"8%",align:"left"},
                     {title:"SKU",name:"sku",width:"8%",align:"left"},
@@ -58,6 +59,11 @@
             });
             refreshTable();
         });
+        /**组装操作选项*/
+        function makeOption0(json){
+            var htm="<input type=checkbox name='listingitemid' value='"+json.itemId+"' />";
+            return htm;
+        }
         function picUrl(json){
             var htm="<img width='50px' height='50px' src='"+json.picUrl+"'>";
             return htm;

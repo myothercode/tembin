@@ -33,16 +33,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by Administrtor on 2014/8/18.
@@ -61,7 +59,8 @@ public class ListingItemController extends BaseAction {
     private ITradingListingData iTradingListingData;
     @Autowired
     private IUsercontrollerEbayAccount iUsercontrollerEbayAccount;
-
+    @Autowired
+    public ITradingListingAmend iTradingListingAmend;
 
     @RequestMapping("/getListingItemList.do")
     public ModelAndView getListingItemList(HttpServletRequest request, HttpServletResponse response, ModelMap modelMap) throws Exception {
@@ -148,6 +147,7 @@ public class ListingItemController extends BaseAction {
         return forword("listingitem/listingdataAmend",modelMap);
     }
 
+
     @RequestMapping("/ajax/getListItemDataAmend.do")
     @ResponseBody
     public void getListItemDataAmend(HttpServletRequest request,ModelMap modelMap,CommonParmVO commonParmVO) throws Exception {
@@ -193,6 +193,84 @@ public class ListingItemController extends BaseAction {
         jsonBean.setList(paypalli);
         jsonBean.setTotal((int)page.getTotalCount());
         AjaxSupport.sendSuccessText("",jsonBean);
+    }
+
+    @RequestMapping("/ajax/endItem.do")
+    @ResponseBody
+    public void endItem(HttpServletRequest request,HttpServletResponse response,@ModelAttribute( "initSomeParmMap" )ModelMap modelMap) throws Exception {
+        SessionVO c= SessionCacheSupport.getSessionVO();
+        //List<PublicUserConfig> ebayList = DataDictionarySupport.getPublicUserConfigByType(DataDictionarySupport.PUBLIC_DATA_DICT_PAYPAL, c.getId());
+        List<UsercontrollerEbayAccount> ebay = this.iUsercontrollerEbayAccount.selectUsercontrollerEbayAccountByUserId(c.getId());
+        String ebayAccount = request.getParameter("ebayAccount");
+        String token = "";
+        List<TradingDataDictionary> lisite = DataDictionarySupport.getTradingDataDictionaryByType("site");
+        String siteid = "0";
+
+
+        String itemidstr = request.getParameter("itemidStr");
+        String reason = request.getParameter("reason");
+        String [] itemids = itemidstr.split(",");
+        UsercontrollerDevAccountExtend dt = userInfoService.getDevByOrder(new HashMap());
+
+        dt.setApiCallName(APINameStatic.EndItem);
+        AddApiTask addApiTask = new AddApiTask();
+        for(String itemid:itemids){
+            TradingListingAmend tlaold = this.iTradingListingAmend.selectByItemID(itemid,"EndItem");
+            if(tlaold!=null){
+                continue;
+            }
+            TradingListingData tld = this.iTradingListingData.selectByItemid(itemid);
+
+            for(UsercontrollerEbayAccount eb : ebay){
+                if(eb.getEbayAccount()!=null&&tld.getEbayAccount().equals(eb.getEbayAccount())){
+                    token = this.iUsercontrollerEbayAccount.selectById(eb.getId()).getEbayToken();
+                    break;
+                }else{
+                    if(tld.getEbayAccount().equals(eb.getEbayName())){
+                        token = this.iUsercontrollerEbayAccount.selectById(eb.getId()).getEbayToken();
+                        break;
+                    }
+                }
+            }
+
+            for(TradingDataDictionary tdd : lisite){
+                if(tld.getSite().equals(tdd.getValue())){
+                    siteid=tdd.getName1();
+                }
+            }
+            dt.setApiSiteid(siteid);
+            String xml = this.costXml(itemid,reason,token);
+            TradingListingAmend tla = new TradingListingAmend();
+            tla.setItem(Long.parseLong(tld.getItemId()));
+            tla.setParentId(tld.getId());
+            tla.setAmendType("EndItem");
+            tla.setContent("商品下架，下架原因：" + reason);
+            tla.setCreateUser(c.getId());
+            tla.setCreateTime(new Date());
+            Map<String, String> resMap = addApiTask.exec(dt, xml, apiUrl);
+            String res = resMap.get("message");
+            String ack = SamplePaseXml.getVFromXmlString(res, "Ack");
+            if ("Success".equalsIgnoreCase(ack) || "Warning".equalsIgnoreCase(ack)) {
+                tla.setIsFlag("1");
+            }else{
+                tla.setIsFlag("0");
+            }
+            this.iTradingListingData.insertTradingListingAmend(tla);
+        }
+        AjaxSupport.sendSuccessText("","操作成功!");
+    }
+
+    public String costXml(String itemid,String reason,String token){
+        String xml = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n" +
+                "<EndItemRequest xmlns=\"urn:ebay:apis:eBLBaseComponents\">\n" +
+                "<RequesterCredentials>\n" +
+                "<eBayAuthToken>"+token+"</eBayAuthToken>\n" +
+                "</RequesterCredentials>\n" +
+                "<ItemID ComplexType=\"ItemIDType\">"+itemid+"</ItemID>\n" +
+                "<EndingReason EnumType=\"EndReasonCodeType\">"+reason+"</EndingReason>\n" +
+                "<Version>893</Version>\n" +
+                "</EndItemRequest>​";
+        return xml;
     }
 
     @RequestMapping("/listingdataManager.do")

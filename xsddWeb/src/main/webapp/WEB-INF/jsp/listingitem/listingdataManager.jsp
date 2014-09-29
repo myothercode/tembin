@@ -101,7 +101,7 @@
             var selectType = $("select[name='selecttype']").find("option:selected").val();
             var selectValue = $("input[name='selectvalue']").val();
             if(urls.indexOf(selectStr)>0){
-                urls.replace(selectStr,"");
+                urls=urls.replace(selectStr,"");
                 urls=urls+"&selectType="+selectType+"&selectValue="+selectValue;
             }else{
                 urls=urls+"&selectType="+selectType+"&selectValue="+selectValue;
@@ -154,6 +154,73 @@
             }
             amendFlag="&amendFlag="+$(obj).attr("value");
             $("#listing_frame").attr("src",urls);
+        }
+        function getCentents(){
+            alert($("#centents").val());
+        }
+        function endItem(obj) {
+            $("obj").attr({style:"color:red"});
+            var item = $(document.getElementById('listing_frame').contentWindow.document.body).find("input[name='listingitemid']");
+            var itemidStr = "";
+            for (var i = 0; i < item.length; i++) {
+                if ($(item[i])[0].checked) {
+                    itemidStr += $(item[i])[0].value + ",";
+                }
+            }
+            if(itemidStr==""){
+                alert("请选择需结束的商品！");
+                return ;
+            }
+
+            var tent = "<div>原因<select id='centents' name='centents'><option value='Incorrect'>Incorrect</option>" +
+                    "<option value='LostOrBroken'>LostOrBroken</option>" +
+                    "<option value='NotAvailable'>NotAvailable</option>" +
+                    "<option value='OtherListingError'>OtherListingError</option>" +
+                    "<option value='SellToHighBidder'>SellToHighBidder</option>" +
+                    "<option value='Sold'>Sold</option></select></div>";
+            var editPage = $.dialog({title: '提前结束原因',
+                content: tent,
+                icon: 'succeed',
+                width: 400,
+                button: [
+                    {
+                        name: '确定',
+                        callback: function (iwins, enter) {
+                            var reason = "";
+                            if (iwins.parent.document.getElementById("centents").value == "") {
+                                alert("结束原因必填！");
+                                return false;
+                            } else {
+                                alert(iwins.parent.document.getElementById("centents").selectedIndex);
+                                reason = iwins.parent.document.getElementById("centents").options[iwins.parent.document.getElementById("centents").selectedIndex].value;
+                                alert(reason);
+                                var url = path + "/ajax/endItem.do?itemidStr=" + itemidStr+"&reason="+reason;
+                                $().invoke(url, {},
+                                        [function (m, r) {
+                                            alert(r);
+                                            Base.token();
+                                            refreshTable();
+                                        },
+                                            function (m, r) {
+                                                alert(r);
+                                                Base.token();
+                                            }]
+                                );
+                            }
+                        }
+                    }
+                ]
+            });
+            alert(reason);
+
+        }
+        function addTabRemark(){
+            var url=path+"/order/selectTabRemark.do?folderType=listingFolder";
+            OrderGetOrders=$.dialog({title: '选择文件夹',
+                content: 'url:'+url,
+                icon: 'succeed',
+                width:800
+            });
         }
     </script>
 </head>
@@ -242,9 +309,9 @@
                                 </select>
                             </div>
                         </div>
-                        <span class="newusa_ici_del">提前结束</span><span class="newusa_ici_del"
-                                                                      style="color:#F90">表格调价</span><span
-                            class="newusa_ici_del">新建文件夹</span></div>
+                        <span class="newusa_ici_del" onclick="endItem(this)">提前结束</span><span class="newusa_ici_del"
+                                                                      >表格调价</span><span
+                            class="newusa_ici_del">管理文件夹</span></div>
                     <div class="tbbay"><a data-toggle="modal" href="#myModal" class="">同步eBay</a></div>
                 </div>
             </div>

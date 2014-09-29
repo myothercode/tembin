@@ -681,52 +681,52 @@ public class TradingListingDataExample {
             return (Criteria) this;
         }
 
-        public Criteria andPriceEqualTo(Long value) {
+        public Criteria andPriceEqualTo(Double value) {
             addCriterion("price =", value, "price");
             return (Criteria) this;
         }
 
-        public Criteria andPriceNotEqualTo(Long value) {
+        public Criteria andPriceNotEqualTo(Double value) {
             addCriterion("price <>", value, "price");
             return (Criteria) this;
         }
 
-        public Criteria andPriceGreaterThan(Long value) {
+        public Criteria andPriceGreaterThan(Double value) {
             addCriterion("price >", value, "price");
             return (Criteria) this;
         }
 
-        public Criteria andPriceGreaterThanOrEqualTo(Long value) {
+        public Criteria andPriceGreaterThanOrEqualTo(Double value) {
             addCriterion("price >=", value, "price");
             return (Criteria) this;
         }
 
-        public Criteria andPriceLessThan(Long value) {
+        public Criteria andPriceLessThan(Double value) {
             addCriterion("price <", value, "price");
             return (Criteria) this;
         }
 
-        public Criteria andPriceLessThanOrEqualTo(Long value) {
+        public Criteria andPriceLessThanOrEqualTo(Double value) {
             addCriterion("price <=", value, "price");
             return (Criteria) this;
         }
 
-        public Criteria andPriceIn(List<Long> values) {
+        public Criteria andPriceIn(List<Double> values) {
             addCriterion("price in", values, "price");
             return (Criteria) this;
         }
 
-        public Criteria andPriceNotIn(List<Long> values) {
+        public Criteria andPriceNotIn(List<Double> values) {
             addCriterion("price not in", values, "price");
             return (Criteria) this;
         }
 
-        public Criteria andPriceBetween(Long value1, Long value2) {
+        public Criteria andPriceBetween(Double value1, Double value2) {
             addCriterion("price between", value1, value2, "price");
             return (Criteria) this;
         }
 
-        public Criteria andPriceNotBetween(Long value1, Long value2) {
+        public Criteria andPriceNotBetween(Double value1, Double value2) {
             addCriterion("price not between", value1, value2, "price");
             return (Criteria) this;
         }
@@ -741,52 +741,52 @@ public class TradingListingDataExample {
             return (Criteria) this;
         }
 
-        public Criteria andShippingPriceEqualTo(Long value) {
+        public Criteria andShippingPriceEqualTo(Double value) {
             addCriterion("shipping_price =", value, "shippingPrice");
             return (Criteria) this;
         }
 
-        public Criteria andShippingPriceNotEqualTo(Long value) {
+        public Criteria andShippingPriceNotEqualTo(Double value) {
             addCriterion("shipping_price <>", value, "shippingPrice");
             return (Criteria) this;
         }
 
-        public Criteria andShippingPriceGreaterThan(Long value) {
+        public Criteria andShippingPriceGreaterThan(Double value) {
             addCriterion("shipping_price >", value, "shippingPrice");
             return (Criteria) this;
         }
 
-        public Criteria andShippingPriceGreaterThanOrEqualTo(Long value) {
+        public Criteria andShippingPriceGreaterThanOrEqualTo(Double value) {
             addCriterion("shipping_price >=", value, "shippingPrice");
             return (Criteria) this;
         }
 
-        public Criteria andShippingPriceLessThan(Long value) {
+        public Criteria andShippingPriceLessThan(Double value) {
             addCriterion("shipping_price <", value, "shippingPrice");
             return (Criteria) this;
         }
 
-        public Criteria andShippingPriceLessThanOrEqualTo(Long value) {
+        public Criteria andShippingPriceLessThanOrEqualTo(Double value) {
             addCriterion("shipping_price <=", value, "shippingPrice");
             return (Criteria) this;
         }
 
-        public Criteria andShippingPriceIn(List<Long> values) {
+        public Criteria andShippingPriceIn(List<Double> values) {
             addCriterion("shipping_price in", values, "shippingPrice");
             return (Criteria) this;
         }
 
-        public Criteria andShippingPriceNotIn(List<Long> values) {
+        public Criteria andShippingPriceNotIn(List<Double> values) {
             addCriterion("shipping_price not in", values, "shippingPrice");
             return (Criteria) this;
         }
 
-        public Criteria andShippingPriceBetween(Long value1, Long value2) {
+        public Criteria andShippingPriceBetween(Double value1, Double value2) {
             addCriterion("shipping_price between", value1, value2, "shippingPrice");
             return (Criteria) this;
         }
 
-        public Criteria andShippingPriceNotBetween(Long value1, Long value2) {
+        public Criteria andShippingPriceNotBetween(Double value1, Double value2) {
             addCriterion("shipping_price not between", value1, value2, "shippingPrice");
             return (Criteria) this;
         }
@@ -1408,6 +1408,76 @@ public class TradingListingDataExample {
 
         public Criteria andCreateUserNotBetween(Long value1, Long value2) {
             addCriterion("create_user not between", value1, value2, "createUser");
+            return (Criteria) this;
+        }
+
+        public Criteria andFolderIdIsNull() {
+            addCriterion("folder_id is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andFolderIdIsNotNull() {
+            addCriterion("folder_id is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andFolderIdEqualTo(String value) {
+            addCriterion("folder_id =", value, "folderId");
+            return (Criteria) this;
+        }
+
+        public Criteria andFolderIdNotEqualTo(String value) {
+            addCriterion("folder_id <>", value, "folderId");
+            return (Criteria) this;
+        }
+
+        public Criteria andFolderIdGreaterThan(String value) {
+            addCriterion("folder_id >", value, "folderId");
+            return (Criteria) this;
+        }
+
+        public Criteria andFolderIdGreaterThanOrEqualTo(String value) {
+            addCriterion("folder_id >=", value, "folderId");
+            return (Criteria) this;
+        }
+
+        public Criteria andFolderIdLessThan(String value) {
+            addCriterion("folder_id <", value, "folderId");
+            return (Criteria) this;
+        }
+
+        public Criteria andFolderIdLessThanOrEqualTo(String value) {
+            addCriterion("folder_id <=", value, "folderId");
+            return (Criteria) this;
+        }
+
+        public Criteria andFolderIdLike(String value) {
+            addCriterion("folder_id like", value, "folderId");
+            return (Criteria) this;
+        }
+
+        public Criteria andFolderIdNotLike(String value) {
+            addCriterion("folder_id not like", value, "folderId");
+            return (Criteria) this;
+        }
+
+        public Criteria andFolderIdIn(List<String> values) {
+            addCriterion("folder_id in", values, "folderId");
+            return (Criteria) this;
+        }
+
+        public Criteria andFolderIdNotIn(List<String> values) {
+            addCriterion("folder_id not in", values, "folderId");
+            return (Criteria) this;
+        }
+
+        public Criteria andFolderIdBetween(String value1, String value2) {
+            addCriterion("folder_id between", value1, value2, "folderId");
+            return (Criteria) this;
+        }
+
+        public Criteria andFolderIdNotBetween(String value1, String value2) {
+            addCriterion("folder_id not between", value1, value2, "folderId");
             return (Criteria) this;
         }
     }

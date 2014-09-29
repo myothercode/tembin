@@ -4377,6 +4377,76 @@ public class TradingItemExample {
             addCriterion("template_id not between", value1, value2, "templateId");
             return (Criteria) this;
         }
+
+        public Criteria andListingWayIsNull() {
+            addCriterion("listing_way is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andListingWayIsNotNull() {
+            addCriterion("listing_way is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andListingWayEqualTo(String value) {
+            addCriterion("listing_way =", value, "listingWay");
+            return (Criteria) this;
+        }
+
+        public Criteria andListingWayNotEqualTo(String value) {
+            addCriterion("listing_way <>", value, "listingWay");
+            return (Criteria) this;
+        }
+
+        public Criteria andListingWayGreaterThan(String value) {
+            addCriterion("listing_way >", value, "listingWay");
+            return (Criteria) this;
+        }
+
+        public Criteria andListingWayGreaterThanOrEqualTo(String value) {
+            addCriterion("listing_way >=", value, "listingWay");
+            return (Criteria) this;
+        }
+
+        public Criteria andListingWayLessThan(String value) {
+            addCriterion("listing_way <", value, "listingWay");
+            return (Criteria) this;
+        }
+
+        public Criteria andListingWayLessThanOrEqualTo(String value) {
+            addCriterion("listing_way <=", value, "listingWay");
+            return (Criteria) this;
+        }
+
+        public Criteria andListingWayLike(String value) {
+            addCriterion("listing_way like", value, "listingWay");
+            return (Criteria) this;
+        }
+
+        public Criteria andListingWayNotLike(String value) {
+            addCriterion("listing_way not like", value, "listingWay");
+            return (Criteria) this;
+        }
+
+        public Criteria andListingWayIn(List<String> values) {
+            addCriterion("listing_way in", values, "listingWay");
+            return (Criteria) this;
+        }
+
+        public Criteria andListingWayNotIn(List<String> values) {
+            addCriterion("listing_way not in", values, "listingWay");
+            return (Criteria) this;
+        }
+
+        public Criteria andListingWayBetween(String value1, String value2) {
+            addCriterion("listing_way between", value1, value2, "listingWay");
+            return (Criteria) this;
+        }
+
+        public Criteria andListingWayNotBetween(String value1, String value2) {
+            addCriterion("listing_way not between", value1, value2, "listingWay");
+            return (Criteria) this;
+        }
     }
 
     /**

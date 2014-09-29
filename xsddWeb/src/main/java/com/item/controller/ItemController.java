@@ -109,6 +109,10 @@ public class ItemController extends BaseAction{
      */
     @RequestMapping("/itemManager.do")
     public ModelAndView itemManager(HttpServletRequest request,HttpServletResponse response,@ModelAttribute( "initSomeParmMap" )ModelMap modelMap){
+        SessionVO c= SessionCacheSupport.getSessionVO();
+        //List<PublicUserConfig> ebayList = DataDictionarySupport.getPublicUserConfigByType(DataDictionarySupport.PUBLIC_DATA_DICT_PAYPAL, c.getId());
+        List<UsercontrollerEbayAccount> ebayList = this.iUsercontrollerEbayAccount.selectUsercontrollerEbayAccountByUserId(c.getId());
+        modelMap.put("ebayList",ebayList);
         return forword("item/itemManager",modelMap);
     }
 
@@ -125,8 +129,31 @@ public class ItemController extends BaseAction{
         if(flag!=null&&!"".equals(flag)){
             modelMap.put("flag",flag);
         }
+
+        String county = request.getParameter("county");
+        if(county!=null&&!"".equals(county)){
+            modelMap.put("county",county);
+        }
+        String listingtype = request.getParameter("listingtype");
+        if(listingtype!=null&&!"".equals(listingtype)){
+            modelMap.put("listingtype",listingtype);
+        }
+        String ebayaccount = request.getParameter("ebayaccount");
+        if(ebayaccount!=null&&!"".equals(ebayaccount)){
+            modelMap.put("ebayaccount",ebayaccount);
+        }
+        String selectType = request.getParameter("selectType");
+        if(selectType!=null&&!"".equals(selectType)){
+            modelMap.put("selectType",selectType);
+        }
+        String selectValue = request.getParameter("selectValue");
+        if(selectValue!=null&&!"".equals(selectValue)){
+            modelMap.put("selectValue",selectValue);
+        }
         return forword("item/itemList",modelMap);
     }
+
+
 
     @RequestMapping("/ajax/loadItemList.do")
     @ResponseBody
@@ -137,6 +164,26 @@ public class ItemController extends BaseAction{
         String flag=request.getParameter("flag");
         if(flag!=null&&!"".equals(flag)){
             m.put("flag",flag);
+        }
+        String county = request.getParameter("county");
+        if(county!=null&&!"".equals(county)){
+            m.put("county",county);
+        }
+        String listingtype = request.getParameter("listingtype");
+        if(listingtype!=null&&!"".equals(listingtype)){
+            m.put("listingtype",listingtype);
+        }
+        String ebayaccount = request.getParameter("ebayaccount");
+        if(ebayaccount!=null&&!"".equals(ebayaccount)){
+            m.put("ebayaccount",ebayaccount);
+        }
+        String selectType = request.getParameter("selectType");
+        if(selectType!=null&&!"".equals(selectType)){
+            m.put("selectType",selectType);
+        }
+        String selectValue = request.getParameter("selectValue");
+        if(selectValue!=null&&!"".equals(selectValue)){
+            m.put("selectValue",selectValue);
         }
         /**分页组装*/
         PageJsonBean jsonBean=commonParmVO.getJsonBean();

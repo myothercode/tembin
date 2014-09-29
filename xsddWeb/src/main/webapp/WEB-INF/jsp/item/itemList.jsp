@@ -35,9 +35,29 @@
 
         $(document).ready(function(){
             var flag='${flag}';
-            var urls="/ajax/loadItemList.do";
+            var county='${county}';
+            var listingtype='${listingtype}';
+            var ebayaccount='${ebayaccount}';
+            var selectType = '${selectType}';
+            var selectValue = '${selectValue}';
+            var urls="/ajax/loadItemList.do?1=1";
             if(flag!=null&&flag!=""){
                 urls="/ajax/loadItemList.do?flag="+flag;
+            }
+            if(county!=null&&county!=""){
+                urls+="&county="+county;
+            }
+            if(listingtype!=null&&listingtype!=""){
+                urls+="&listingtype="+listingtype;
+            }
+            if(ebayaccount!=null&&ebayaccount!=""){
+                urls+="&ebayaccount="+ebayaccount;
+            }
+            if(selectType!=null&&selectType!=""){
+                urls+="&selectType="+selectType;
+            }
+            if(selectValue!=null&&selectValue!=""){
+                urls+="&selectValue="+selectValue;
             }
             $("#itemTable").initTable({
                 url:path + urls,
@@ -61,6 +81,7 @@
             var htm="<a target=\"_blank\" href=\"javascript:void(0)\" onclick=\"editItem('"+json.id+"');\">编辑</a>";
             return htm;
         }
+
         function  refreshTable(){
             $("#itemTable").selectDataAfterSetParm({"bedDetailVO.deptId":"", "isTrue":0});
         }

@@ -68,6 +68,7 @@
     <result column="is_flag" jdbcType="VARCHAR" property="isFlag" />
     <result column="item_id" jdbcType="VARCHAR" property="itemId" />
     <result column="site_name" jdbcType="VARCHAR" property="siteName" />
+    <result column="listing_way" jdbcType="VARCHAR" property="listingWay" />
   </resultMap>
     <select id="selectByItemList" resultMap="BaseResultMap" parameterType="map">
         select item.*,dic.`name` site_name from trading_item item left join trading_data_dictionary dic on item.Site=dic.id
@@ -83,6 +84,21 @@
         </if>
         <if test="flag==2">
             and item.is_flag is null
+        </if>
+        <if test="flag==3">
+            and item.listing_way = '1'
+        </if>
+        <if test="county!=null">
+            and item.site = #{county}
+        </if>
+        <if test="listingtype!=null">
+            and item.listingtype = #{listingtype}
+        </if>
+        <if test="ebayaccount!=null">
+            and item.ebay_account = #{ebayaccount}
+        </if>
+        <if test="selectType!=null">
+            and item.${selectType} =#{selectValue}
         </if>
     </select>
 </mapper>

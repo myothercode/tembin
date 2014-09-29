@@ -13,8 +13,8 @@
     <result column="ebay_account" jdbcType="VARCHAR" property="ebayAccount" />
     <result column="site" jdbcType="VARCHAR" property="site" />
     <result column="listing_type" jdbcType="VARCHAR" property="listingType" />
-    <result column="price" jdbcType="BIGINT" property="price" />
-    <result column="shipping_price" jdbcType="BIGINT" property="shippingPrice" />
+    <result column="price" jdbcType="DOUBLE" property="price" />
+    <result column="shipping_price" jdbcType="DOUBLE" property="shippingPrice" />
     <result column="Quantity" jdbcType="BIGINT" property="quantity" />
     <result column="QuantitySold" jdbcType="BIGINT" property="quantitysold" />
     <result column="ListingDuration" jdbcType="VARCHAR" property="listingduration" />
@@ -25,6 +25,7 @@
     <result column="update_date" jdbcType="TIMESTAMP" property="updateDate" />
     <result column="title" jdbcType="VARCHAR" property="title" />
     <result column="create_user" jdbcType="BIGINT" property="createUser" />
+    <result column="folder_id" jdbcType="VARCHAR" property="folderId" />
   </resultMap>
   <sql id="Example_Where_Clause">
     <!--
@@ -99,7 +100,7 @@
     -->
     id, item_id, pic_url, sku, ebay_account, site, listing_type, price, shipping_price, 
     Quantity, QuantitySold, ListingDuration, StartTime, EndTime, do_rate, create_date, 
-    update_date, title, create_user
+    update_date, title, create_user, folder_id
   </sql>
   <select id="selectByExample" parameterType="com.base.database.trading.model.TradingListingDataExample" resultMap="BaseResultMap">
     <!--
@@ -158,14 +159,17 @@
       Quantity, QuantitySold, ListingDuration, 
       StartTime, EndTime, do_rate, 
       create_date, update_date, title, 
-      create_user)
+      create_user, folder_id)
     values (#{id,jdbcType=BIGINT}, #{itemId,jdbcType=VARCHAR}, #{picUrl,jdbcType=VARCHAR}, 
       #{sku,jdbcType=VARCHAR}, #{ebayAccount,jdbcType=VARCHAR}, #{site,jdbcType=VARCHAR}, 
-      #{listingType,jdbcType=VARCHAR}, #{price,jdbcType=BIGINT}, #{shippingPrice,jdbcType=BIGINT}, 
+      #{listingType,jdbcType=VARCHAR}, #{price,jdbcType=DOUBLE}, #{shippingPrice,jdbcType=DOUBLE}, 
       #{quantity,jdbcType=BIGINT}, #{quantitysold,jdbcType=BIGINT}, #{listingduration,jdbcType=VARCHAR}, 
       #{starttime,jdbcType=TIMESTAMP}, #{endtime,jdbcType=TIMESTAMP}, #{doRate,jdbcType=BIGINT}, 
       #{createDate,jdbcType=TIMESTAMP}, #{updateDate,jdbcType=TIMESTAMP}, #{title,jdbcType=VARCHAR}, 
-      #{createUser,jdbcType=BIGINT})
+      #{createUser,jdbcType=BIGINT}, #{folderId,jdbcType=VARCHAR})
+      <selectKey resultType="long" keyProperty="id" order="AFTER">
+          SELECT LAST_INSERT_ID()
+      </selectKey>
   </insert>
   <insert id="insertSelective" parameterType="com.base.database.trading.model.TradingListingData">
     <!--
@@ -231,6 +235,9 @@
       <if test="createUser != null">
         create_user,
       </if>
+      <if test="folderId != null">
+        folder_id,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
       <if test="id != null">
@@ -255,10 +262,10 @@
         #{listingType,jdbcType=VARCHAR},
       </if>
       <if test="price != null">
-        #{price,jdbcType=BIGINT},
+        #{price,jdbcType=DOUBLE},
       </if>
       <if test="shippingPrice != null">
-        #{shippingPrice,jdbcType=BIGINT},
+        #{shippingPrice,jdbcType=DOUBLE},
       </if>
       <if test="quantity != null">
         #{quantity,jdbcType=BIGINT},
@@ -290,7 +297,13 @@
       <if test="createUser != null">
         #{createUser,jdbcType=BIGINT},
       </if>
+      <if test="folderId != null">
+        #{folderId,jdbcType=VARCHAR},
+      </if>
     </trim>
+      <selectKey resultType="long" keyProperty="id" order="AFTER">
+          SELECT LAST_INSERT_ID()
+      </selectKey>
   </insert>
   <select id="countByExample" parameterType="com.base.database.trading.model.TradingListingDataExample" resultType="java.lang.Integer">
     <!--
@@ -331,10 +344,10 @@
         listing_type = #{record.listingType,jdbcType=VARCHAR},
       </if>
       <if test="record.price != null">
-        price = #{record.price,jdbcType=BIGINT},
+        price = #{record.price,jdbcType=DOUBLE},
       </if>
       <if test="record.shippingPrice != null">
-        shipping_price = #{record.shippingPrice,jdbcType=BIGINT},
+        shipping_price = #{record.shippingPrice,jdbcType=DOUBLE},
       </if>
       <if test="record.quantity != null">
         Quantity = #{record.quantity,jdbcType=BIGINT},
@@ -366,6 +379,9 @@
       <if test="record.createUser != null">
         create_user = #{record.createUser,jdbcType=BIGINT},
       </if>
+      <if test="record.folderId != null">
+        folder_id = #{record.folderId,jdbcType=VARCHAR},
+      </if>
     </set>
     <if test="_parameter != null">
       <include refid="Update_By_Example_Where_Clause" />
@@ -384,8 +400,8 @@
       ebay_account = #{record.ebayAccount,jdbcType=VARCHAR},
       site = #{record.site,jdbcType=VARCHAR},
       listing_type = #{record.listingType,jdbcType=VARCHAR},
-      price = #{record.price,jdbcType=BIGINT},
-      shipping_price = #{record.shippingPrice,jdbcType=BIGINT},
+      price = #{record.price,jdbcType=DOUBLE},
+      shipping_price = #{record.shippingPrice,jdbcType=DOUBLE},
       Quantity = #{record.quantity,jdbcType=BIGINT},
       QuantitySold = #{record.quantitysold,jdbcType=BIGINT},
       ListingDuration = #{record.listingduration,jdbcType=VARCHAR},
@@ -395,7 +411,8 @@
       create_date = #{record.createDate,jdbcType=TIMESTAMP},
       update_date = #{record.updateDate,jdbcType=TIMESTAMP},
       title = #{record.title,jdbcType=VARCHAR},
-      create_user = #{record.createUser,jdbcType=BIGINT}
+      create_user = #{record.createUser,jdbcType=BIGINT},
+      folder_id = #{record.folderId,jdbcType=VARCHAR}
     <if test="_parameter != null">
       <include refid="Update_By_Example_Where_Clause" />
     </if>
@@ -426,10 +443,10 @@
         listing_type = #{listingType,jdbcType=VARCHAR},
       </if>
       <if test="price != null">
-        price = #{price,jdbcType=BIGINT},
+        price = #{price,jdbcType=DOUBLE},
       </if>
       <if test="shippingPrice != null">
-        shipping_price = #{shippingPrice,jdbcType=BIGINT},
+        shipping_price = #{shippingPrice,jdbcType=DOUBLE},
       </if>
       <if test="quantity != null">
         Quantity = #{quantity,jdbcType=BIGINT},
@@ -461,6 +478,9 @@
       <if test="createUser != null">
         create_user = #{createUser,jdbcType=BIGINT},
       </if>
+      <if test="folderId != null">
+        folder_id = #{folderId,jdbcType=VARCHAR},
+      </if>
     </set>
     where id = #{id,jdbcType=BIGINT}
   </update>
@@ -476,8 +496,8 @@
       ebay_account = #{ebayAccount,jdbcType=VARCHAR},
       site = #{site,jdbcType=VARCHAR},
       listing_type = #{listingType,jdbcType=VARCHAR},
-      price = #{price,jdbcType=BIGINT},
-      shipping_price = #{shippingPrice,jdbcType=BIGINT},
+      price = #{price,jdbcType=DOUBLE},
+      shipping_price = #{shippingPrice,jdbcType=DOUBLE},
       Quantity = #{quantity,jdbcType=BIGINT},
       QuantitySold = #{quantitysold,jdbcType=BIGINT},
       ListingDuration = #{listingduration,jdbcType=VARCHAR},
@@ -487,7 +507,8 @@
       create_date = #{createDate,jdbcType=TIMESTAMP},
       update_date = #{updateDate,jdbcType=TIMESTAMP},
       title = #{title,jdbcType=VARCHAR},
-      create_user = #{createUser,jdbcType=BIGINT}
+      create_user = #{createUser,jdbcType=BIGINT},
+      folder_id = #{folderId,jdbcType=VARCHAR}
     where id = #{id,jdbcType=BIGINT}
   </update>
 </mapper>
