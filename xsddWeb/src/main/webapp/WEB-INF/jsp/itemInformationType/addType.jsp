@@ -35,8 +35,9 @@
     </script>
 </head>
 <body>
-    <form id="addTypeForm">
-        <table align="center">
+<div class="modal-body">
+    <form class="form-horizontal" role="form" id="addTypeForm">
+        <table>
             <tr>
                 <td>分类名称:</td>
                 <td><input type="text" name="typeName"/></td>
@@ -48,8 +49,8 @@
                         <select name="parent" disabled>
                     </c:if>
                     <c:if test="${id==null}">--%>
-                        <select name="parent">
-                    <%--</c:if>--%>
+                    <select name="parent">
+                        <%--</c:if>--%>
                         <option value="0">无上级分类</option>
                         <c:forEach items="${types}" var="type">
                             <c:if test="${id==type.id}">
@@ -63,10 +64,12 @@
                 </td>
             </tr>
         </table>
-    </form>
-    <div align="right">
-        <input type="button" value="保存" onclick="submitCommit();"/>
-        <input type="button" value="关闭" onclick="closedialog();"/>
-    </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-primary" onclick="submitCommit();">保存</button>
+            <button type="button" class="btn btn-default" data-dismiss="modal" onclick="closedialog();">关闭</button>
+        </div>
+    </form></div>
+
+
 </body>
 </html>

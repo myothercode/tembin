@@ -1,5 +1,6 @@
 package com.listingitem.controller;
 
+import com.baidu.ueditor.upload.StorageManager;
 import com.base.database.publicd.model.PublicUserConfig;
 import com.base.database.trading.model.*;
 import com.base.domains.CommonParmVO;
@@ -7,6 +8,7 @@ import com.base.domains.SessionVO;
 import com.base.domains.querypojos.ItemQuery;
 import com.base.domains.querypojos.ListingDataAmendQuery;
 import com.base.domains.querypojos.PaypalQuery;
+import com.base.domains.querypojos.TablePriceQuery;
 import com.base.domains.userinfo.UsercontrollerDevAccountExtend;
 import com.base.mybatis.page.Page;
 import com.base.mybatis.page.PageJsonBean;
@@ -15,7 +17,9 @@ import com.base.userinfo.service.UserInfoService;
 import com.base.utils.annotations.AvoidDuplicateSubmission;
 import com.base.utils.cache.DataDictionarySupport;
 import com.base.utils.cache.SessionCacheSupport;
+import com.base.utils.common.MyStringUtil;
 import com.base.utils.common.ObjectUtils;
+import com.base.utils.exception.Asserts;
 import com.base.utils.threadpool.AddApiTask;
 import com.base.utils.xmlutils.PojoXmlUtil;
 import com.base.utils.xmlutils.SamplePaseXml;
@@ -23,9 +27,19 @@ import com.base.xmlpojo.trading.addproduct.Item;
 import com.base.xmlpojo.trading.addproduct.RequesterCredentials;
 import com.base.xmlpojo.trading.addproduct.ReviseItemRequest;
 import com.base.xmlpojo.trading.addproduct.ShippingDetails;
+import com.base.xmlpojo.trading.addproduct.attrclass.StartPrice;
+import com.common.base.utils.ajax.AjaxResponse;
 import com.common.base.utils.ajax.AjaxSupport;
 import com.common.base.web.BaseAction;
 import com.trading.service.*;
+import org.apache.commons.fileupload.FileItem;
+import org.apache.commons.fileupload.FileUploadException;
+import org.apache.commons.fileupload.disk.DiskFileItemFactory;
+import org.apache.commons.fileupload.servlet.ServletFileUpload;
+import org.apache.commons.lang.math.NumberUtils;
+import org.apache.poi.hssf.usermodel.*;
+import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.Row;
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
@@ -35,12 +49,18 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
+import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.*;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Created by Administrtor on 2014/8/18.
@@ -61,6 +81,8 @@ public class ListingItemController extends BaseAction {
     private IUsercontrollerEbayAccount iUsercontrollerEbayAccount;
     @Autowired
     public ITradingListingAmend iTradingListingAmend;
+    @Autowired
+    public ITradingTablePrice iTradingTablePrice;
 
     @RequestMapping("/getListingItemList.do")
     public ModelAndView getListingItemList(HttpServletRequest request, HttpServletResponse response, ModelMap modelMap) throws Exception {
@@ -106,8 +128,302 @@ public class ListingItemController extends BaseAction {
         if(selectValue!=null&&!"".equals(selectValue)){
             modelMap.put("selectValue",selectValue);
         }
-
+        String folderid = request.getParameter("folderid");
+        if(folderid!=null&&!"".equals(folderid)){
+            modelMap.put("folderid",folderid);
+        }
         return forword("listingitem/listingitemList",modelMap);
+    }
+
+    @RequestMapping("/getTablePriceList.do")
+    @AvoidDuplicateSubmission(needSaveToken = true)
+    public ModelAndView getTablePriceList(HttpServletRequest request, HttpServletResponse response, @ModelAttribute( "initSomeParmMap" )ModelMap modelMap) throws Exception {
+
+        return forword("listingitem/getTablePriceList",modelMap);
+    }
+
+    /**
+     * 导入模板数据保存
+     * @param response
+     * @throws Exception
+     */
+    @RequestMapping("/importTemplateSave.do")
+    @AvoidDuplicateSubmission(needSaveToken = true)
+    public void importTemplateSave(@RequestParam("templatename")MultipartFile[] multipartFiles,HttpServletResponse response) throws Exception {
+        response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+        response.setCharacterEncoding("UTF-8");
+        if(ObjectUtils.isLogicalNull(multipartFiles)){
+            AjaxResponse.sendText(response,"nofile");
+            return;
+        }
+        MultipartFile multipartFile = multipartFiles[0];
+        InputStream input = multipartFile.getInputStream();
+        HSSFWorkbook workbook = new HSSFWorkbook(input);
+        HSSFSheet sheet = workbook.getSheetAt(0);
+
+        SessionVO c= SessionCacheSupport.getSessionVO();
+        List<TradingTablePrice> littp = new ArrayList<TradingTablePrice>();
+        for(int i=1;i<=sheet.getLastRowNum();i++){
+            HSSFRow row = sheet.getRow(i);
+            double price=row.getCell(2).getNumericCellValue();
+            Asserts.assertTrue(NumberUtils.isNumber(price + ""), "在" + (i + 1) + "行第3列，用户输入的价格不是数字，请查看修改！");
+            TradingTablePrice ttp = new TradingTablePrice();
+            ttp.setSku(row.getCell(0).getStringCellValue());
+            ttp.setEbayAccount(row.getCell(1).getStringCellValue());
+            ttp.setPrice(price);
+            ttp.setCheckFlag("0");
+            ttp.setCreateUser(c.getId());
+            ttp.setCreateTime(new Date());
+            littp.add(ttp);
+        }
+
+        this.iTradingTablePrice.saveTablePriceList(littp);
+
+        AjaxResponse.sendText(response, "success");
+    }
+    /**
+     * 导入模板页面跳转
+     * @param request
+     * @param response
+     * @throws Exception
+     */
+    @RequestMapping("/importTemplate.do")
+    @AvoidDuplicateSubmission(needSaveToken = true)
+    public ModelAndView importTemplate(HttpServletRequest request, HttpServletResponse response, @ModelAttribute( "initSomeParmMap" )ModelMap modelMap) throws Exception {
+        return forword("listingitem/importTemplate",modelMap);
+    }
+    /*
+   *下载模板downloadTemplate
+   */
+    @RequestMapping("/downloadTemplate.do")
+    public void  downloadTemplate(HttpServletRequest request,HttpServletResponse response) throws Exception {
+        response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+        response.setCharacterEncoding("UTF-8");
+        String outputFile1= request.getSession().getServletContext().getRealPath("/");
+        String outputFile=outputFile1+"template\\template.xls";
+        response.setHeader("Content-Disposition","attachment;filename=template.xls");// 组装附件名称和格式
+        InputStream fis = new BufferedInputStream(new FileInputStream(outputFile));
+        byte[] buffer = new byte[fis.available()];
+        fis.read(buffer);
+        fis.close();
+        OutputStream toClient = new BufferedOutputStream(response.getOutputStream());
+        toClient.write(buffer);
+        toClient.flush();
+        toClient.close();
+    }
+
+    @RequestMapping("/addTablePrice.do")
+    @AvoidDuplicateSubmission(needSaveToken = true)
+    public ModelAndView addTablePrice(HttpServletRequest request, HttpServletResponse response, ModelMap modelMap) throws Exception {
+        SessionVO c= SessionCacheSupport.getSessionVO();
+        List<UsercontrollerEbayAccount> ebayList = this.iUsercontrollerEbayAccount.selectUsercontrollerEbayAccountByUserId(c.getId());
+        modelMap.put("ebayList",ebayList);
+        return forword("listingitem/addTablePrice",modelMap);
+    }
+
+    @RequestMapping("/editTablePrice.do")
+    @AvoidDuplicateSubmission(needSaveToken = true)
+    public ModelAndView editTablePrice(HttpServletRequest request, HttpServletResponse response, ModelMap modelMap) throws Exception {
+        SessionVO c= SessionCacheSupport.getSessionVO();
+        List<UsercontrollerEbayAccount> ebayList = this.iUsercontrollerEbayAccount.selectUsercontrollerEbayAccountByUserId(c.getId());
+        modelMap.put("ebayList",ebayList);
+        TradingTablePrice ttp  = this.iTradingTablePrice.selectById(Long.parseLong(request.getParameter("id")));
+        modelMap.put("ttp",ttp);
+        String type = request.getParameter("type");
+        if(type!=null&&!"".equals(type)){
+            modelMap.put("type",type);
+        }
+        return forword("listingitem/addTablePrice",modelMap);
+    }
+
+    /**
+     * 保存数据
+     * @param request
+     * @param response
+     * @param modelMap
+     * @return
+     * @throws Exception
+     */
+    @RequestMapping("/ajax/delTablePrice.do")
+    @AvoidDuplicateSubmission(needRemoveToken = true)
+    @ResponseBody
+    public void delTablePrice(HttpServletRequest request,HttpServletResponse response,@ModelAttribute( "initSomeParmMap" )ModelMap modelMap) throws Exception {
+        String id = request.getParameter("id");
+        TradingTablePrice ttp  = this.iTradingTablePrice.selectById(Long.parseLong(request.getParameter("id")));
+        ttp.setCheckFlag("1");
+        this.iTradingTablePrice.saveTablePrice(ttp);
+        AjaxSupport.sendSuccessText("","操作成功!");
+    }
+
+    /**
+     * 执行表格调价
+     * @param request
+     * @param response
+     * @param modelMap
+     * @return
+     * @throws Exception
+     */
+    @RequestMapping("/ajax/runPrice.do")
+    @AvoidDuplicateSubmission(needRemoveToken = true)
+    @ResponseBody
+    public void runPrice(HttpServletRequest request,HttpServletResponse response,@ModelAttribute( "initSomeParmMap" )ModelMap modelMap) throws Exception {
+        SessionVO c= SessionCacheSupport.getSessionVO();
+        List<UsercontrollerEbayAccount> ebay = this.iUsercontrollerEbayAccount.selectUsercontrollerEbayAccountByUserId(c.getId());
+        String ebayAccount = request.getParameter("ebayAccount");
+        String token = "";
+        String currencyID = "";
+        List<TradingDataDictionary> lisite = DataDictionarySupport.getTradingDataDictionaryByType("site");
+        String siteid = "0";
+
+        String price = request.getParameter("price");
+        String sku = request.getParameter("sku");
+        String ebayaccount = request.getParameter("ebayaccount");
+
+        String [] prices = price.split(",");
+        String [] skus = sku.split(",");
+        String [] ebayaccounts = ebayaccount.split(",");
+        String xml = "";
+        ReviseItemRequest rir = new ReviseItemRequest();
+        rir.setXmlns("urn:ebay:apis:eBLBaseComponents");
+        rir.setErrorLanguage("en_US");
+        rir.setWarningLevel("High");
+        AddApiTask addApiTask = new AddApiTask();
+        UsercontrollerDevAccountExtend dt = userInfoService.getDevByOrder(new HashMap());
+        dt.setApiCallName(APINameStatic.ReviseItem);
+        for(int i=0;i<skus.length;i++){
+            List<TradingListingData> litld = this.iTradingListingData.selectByList(skus[i],ebayaccounts[i]);
+            for(TradingListingData tld:litld){
+                //取得当前数据的token
+                for(UsercontrollerEbayAccount eb : ebay){
+                    if(eb.getEbayAccount()!=null&&tld.getEbayAccount().equals(eb.getEbayAccount())){
+                        token = this.iUsercontrollerEbayAccount.selectById(eb.getId()).getEbayToken();
+                        break;
+                    }else{
+                        if(tld.getEbayAccount().equals(eb.getEbayName())){
+                            token = this.iUsercontrollerEbayAccount.selectById(eb.getId()).getEbayToken();
+                            break;
+                        }
+                    }
+                }
+                //取得站点，及货币ＩＤ
+                for(TradingDataDictionary tdd : lisite){
+                    if(tld.getSite().equals(tdd.getValue())){
+                        siteid=tdd.getName1();
+                        currencyID = tdd.getValue1();
+                        break;
+                    }
+                }
+
+                xml="";
+                dt.setApiSiteid(siteid);
+                Item ite = new Item();
+                ite.setItemID(tld.getItemId());
+                StartPrice sp = new StartPrice();
+                sp.setValue(Double.parseDouble(prices[i]));
+                ite.setStartPrice(sp);
+
+                RequesterCredentials rc = new RequesterCredentials();
+                rc.seteBayAuthToken("AgAAAA**AQAAAA**aAAAAA**vVcRVA**nY+sHZ2PrBmdj6wVnY+sEZ2PrA2dj6wFk4GhCpGGoA+dj6x9nY+seQ**cx0CAA**AAMAAA**Z2MB0OtmO4JsPFBZPcjclippjnZG4bwpcpXYRXDdc6wEppv5m/WiCvsjyTKWoVXCMxQl2se3U6Vn93oBL6zg8EcR3GCXCC3ZbTpEQ3lBX8avBrME9VHo0RcfcE7oLVtnBAuSffy3Dk5ICUNyU7g57/rHw8d5DnO3JeitpQcTLKAInt+sEZslri3wa4Mx0xgyFW5OF3w8mNK8ib8+57PTHcApnp8xRTAlIVuwW3F/fGbSFVReS07/MulzlFXBoW/ZPLq+L2aLFpn5s+IB5/gB0HoDo5uGzRnALmXxUz8BuwJMrUE29830W7xVSEaYSYsOcJyue6PjJKyZt0rXf8TNHusXCHX240dWllrjMVxS7pEHgKb/FKfd/79PH3rXTFmuexesXS6H1lRmHBBE1iknFwtzzS+UeN22Rd6W+hjSjuOHB33o2gMS5cOdVXHuHyOQ6VJU3bJL/eNDgyB+wz3HhZmz6sF+lmLIRKP82H1QXdlwdGdpVhAhyqnE4FH4qTgPBMxv6c4jRL5BRuyUZDLeJI1WXmaZ4pNMss+MiME7Qu+7bP7S2TZhmValbfW/FvqSrxR9LlHji7iQSsz2m56x5TLjOtkFWjRxmB6C1wzBVtzdILzbvmA/1+9RlMevalW6bg22irusiv7iuD/AnC9pZ0Sju2XK/7WpjVW4/lZyBmRbqHQJPbU/5MU3xrM8pTV8rZmPfQrRh2araaWGIBE5IW3gsTrETpRUQybXd/a107ee61GwXEUqVat1EfznFpIs");
+                rir.setRequesterCredentials(rc);
+                rir.setItem(ite);
+                xml = PojoXmlUtil.pojoToXml(rir);
+                xml = "<?xml version=\"1.0\" encoding=\"utf-8\"?>"+xml;
+                System.out.println(xml);
+
+                Map<String, String> resMap = addApiTask.exec(dt, xml, apiUrl);
+                String res = resMap.get("message");
+                String ack = SamplePaseXml.getVFromXmlString(res, "Ack");
+                TradingListingAmend tla = new TradingListingAmend();
+                tla.setItem(Long.parseLong(tld.getItemId()));
+                tla.setParentId(tld.getId());
+                tla.setAmendType("EndItem");
+                tla.setContent("商品调价：从"+tld.getPrice()+"调整为"+prices[i] );
+                tla.setCreateUser(c.getId());
+                tla.setCreateTime(new Date());
+
+                if("Success".equalsIgnoreCase(ack)||"Warning".equalsIgnoreCase(ack)){
+                    tla.setIsFlag("1");
+                    this.iTradingListingAmend.saveListingAmend(tla);
+                    AjaxSupport.sendSuccessText("message", "操作成功！");
+                }else{
+                    tla.setIsFlag("0");
+                    this.iTradingListingAmend.saveListingAmend(tla);
+                    AjaxSupport.sendFailText("fail","操作失败！");
+                }
+            }
+        }
+        AjaxSupport.sendSuccessText("","操作成功!");
+    }
+
+    /**
+     * 获取用户自定义的文件夹
+     * @param request
+     * @param modelMap
+     * @param commonParmVO
+     * @throws Exception
+     */
+    @RequestMapping("/ajax/selfFolder.do")
+    @ResponseBody
+    public void selfFolder(HttpServletRequest request,ModelMap modelMap,CommonParmVO commonParmVO) throws Exception {
+        SessionVO c= SessionCacheSupport.getSessionVO();
+        DataDictionarySupport.removePublicUserConfig(c.getId());
+        List<PublicUserConfig> lipuc = DataDictionarySupport.getPublicUserConfigByType("listingFolder",c.getId());
+        List<PublicUserConfig> li = new ArrayList<PublicUserConfig>();
+        for(PublicUserConfig puc:lipuc){
+            if(puc.getConfigValue().equals("true")){
+                li.add(puc);
+            }
+        }
+        AjaxSupport.sendSuccessText("",li);
+    }
+    /**
+     * 刊登商品
+     * @param request
+     * @throws Exception
+     */
+    @RequestMapping("/ajax/saveTablePrice.do")
+    @AvoidDuplicateSubmission(needRemoveToken = true)
+    @ResponseBody
+    public void saveTablePrice(HttpServletRequest request,Item item,TradingItem tradingItem,Date timerListing) throws Exception {
+        String sku = request.getParameter("sku");
+        String price = request.getParameter("price");
+        String [] ebayAccounts = request.getParameterValues("ebayAccounts");
+        String id = request.getParameter("id");
+        SessionVO c= SessionCacheSupport.getSessionVO();
+
+        if(ebayAccounts!=null&&ebayAccounts.length>0){
+            for(String ebayaccount:ebayAccounts){
+                TradingTablePrice ttp  = new TradingTablePrice();
+                if(id!=null&&!"".equals(id)){
+                    ttp.setId(Long.parseLong(id));
+                }
+                ttp.setEbayAccount(ebayaccount);
+                ttp.setPrice(Double.parseDouble(price));
+                ttp.setSku(sku);
+                ttp.setCreateTime(new Date());
+                ttp.setCreateUser(c.getId());
+                ttp.setCheckFlag("0");
+                this.iTradingTablePrice.saveTablePrice(ttp);
+            }
+        }
+        AjaxSupport.sendSuccessText("","操作成功!");
+    }
+
+
+    @RequestMapping("/ajax/ajaxTablePriceList.do")
+    @ResponseBody
+    public void getAjaxTablePriceList(HttpServletRequest request,ModelMap modelMap,CommonParmVO commonParmVO) throws Exception {
+        Map map = new HashMap();
+        SessionVO c= SessionCacheSupport.getSessionVO();
+        map.put("userid",c.getId());
+        map.put("checkflag","0");
+        /**分页组装*/
+        PageJsonBean jsonBean=commonParmVO.getJsonBean();
+        Page page=jsonBean.toPage();
+        List<TablePriceQuery> paypalli = this.iTradingTablePrice.selectByList(map, page);
+        jsonBean.setList(paypalli);
+        jsonBean.setTotal((int)page.getTotalCount());
+        AjaxSupport.sendSuccessText("",jsonBean);
     }
 
     @RequestMapping("/getListItemDataAmend.do")
@@ -409,6 +725,10 @@ public class ListingItemController extends BaseAction {
         if(selectValue!=null&&!"".equals(selectValue)){
             map.put("selectValue",selectValue);
         }
+        String folderid = request.getParameter("folderid");
+        if(folderid!=null&&!"".equals(folderid)){
+            map.put("folderid",folderid);
+        }
         /**分页组装*/
         PageJsonBean jsonBean=commonParmVO.getJsonBean();
         Page page=jsonBean.toPage();
@@ -477,6 +797,7 @@ public class ListingItemController extends BaseAction {
     public void saveListingItem(HttpServletRequest request,Item item,TradingItem tradingItem) throws Exception {
         String [] selectType = request.getParameterValues("selectType");
         String isUpdateFlag = request.getParameter("isUpdateFlag");
+        String listingType = request.getParameter("listingType");
         if("1".equals(isUpdateFlag)){//需要更新范本
             TradingItem tradingItem1=this.iTradingItem.selectByItemId(item.getItemID());
             if(tradingItem1!=null){//更新数据库中的范本
@@ -494,9 +815,20 @@ public class ListingItemController extends BaseAction {
 
            if(str.equals("StartPrice")){//改价格
                tla.setAmendType("StartPrice");
-               tla.setContent("将价格从" + tld.getPrice() + "修改为" + item.getStartPrice().getValue());
-               ite.setStartPrice(item.getStartPrice());
-               tld.setPrice(item.getStartPrice().getValue());
+
+               if("FixedPriceItem".equals(listingType)) {
+                   ite.setStartPrice(item.getStartPrice());
+                   tla.setContent("将价格从" + tld.getPrice() + "修改为" + item.getStartPrice().getValue());
+                   tld.setPrice(item.getStartPrice().getValue());
+               }else if("2".equals(listingType)){
+                   tla.setContent("多属性价格调整！");
+                   ite.setVariations(item.getVariations());
+               }else if("Chinese".equals(listingType)){
+                   tla.setContent("将价格从" + tld.getPrice() + "修改为" + item.getStartPrice().getValue());
+                   tld.setPrice(item.getStartPrice().getValue());
+                   item.setBuyItNowPrice(item.getStartPrice().getValue());
+               }
+
            }else if(str.equals("Quantity")){//改数量
                tla.setAmendType("Quantity");
                tla.setContent("将数量从" + tld.getQuantity() + "修改为" + item.getQuantity());

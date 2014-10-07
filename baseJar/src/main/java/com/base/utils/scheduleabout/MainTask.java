@@ -68,7 +68,7 @@ public class MainTask {
     }
 
     /**spring启动后执行一次任务*/
-    @Scheduled(cron="0/30 * *  * * ?")
+    @Scheduled(cron="0/40 * *  * * ?")
     private void DoItAfterBoot() throws SchedulerException {
         if("no".equalsIgnoreCase(isDongInitMethod)){
             isDongInitMethod="yes";

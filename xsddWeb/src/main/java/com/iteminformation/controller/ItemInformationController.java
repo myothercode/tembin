@@ -6,6 +6,7 @@ import com.base.domains.SessionVO;
 import com.base.domains.querypojos.ItemInformationQuery;
 import com.base.mybatis.page.Page;
 import com.base.mybatis.page.PageJsonBean;
+import com.base.userinfo.service.SystemUserManagerService;
 import com.base.utils.annotations.AvoidDuplicateSubmission;
 import com.base.utils.cache.DataDictionarySupport;
 import com.base.utils.cache.SessionCacheSupport;
@@ -51,6 +52,8 @@ public class ItemInformationController extends BaseAction {
     private IPublicItemInventory iPublicItemInventory;
     @Autowired
     private IPublicItemPictureaddrAndAttr iPublicItemPictureaddrAndAttr;
+    @Autowired
+    private SystemUserManagerService systemUserManagerService;
     /*
    *纠纷列表
    */
@@ -85,10 +88,16 @@ public class ItemInformationController extends BaseAction {
             content=null;
         }
         Map m = new HashMap();
+        SessionVO sessionVO=SessionCacheSupport.getSessionVO();
         m.put("remark",remark);
         m.put("information",information);
         m.put("itemType",itemType);
         m.put("content",content);
+        if(sessionVO!=null){
+            m.put("userID",sessionVO.getId());
+        }else{
+            m.put("userID",null);
+        }
         PageJsonBean jsonBean=commonParmVO.getJsonBean();
         Page page=jsonBean.toPage();
         List<ItemInformationQuery> lists=iPublicItemInformation.selectItemInformation(m,page);

@@ -11,6 +11,11 @@
 <html>
 <head>
     <title></title>
+    <style type="text/css">
+        body {
+            background-color: #ffffff;
+        }
+    </style>
     <script type="text/javascript" src=<c:url value ="/js/batchAjaxUtil.js" /> ></script>
     <script type="text/javascript">
     var api = frameElement.api, W = api.opener;
@@ -33,30 +38,33 @@
         W.refreshTable();
         W.OrderGetOrders.close();
     }
+    function closedialog(){
+        W.OrderGetOrders.close();
+    }
     </script>
 </head>
 <body>
-<form id="orderForm">
-    <table>
-        <tr>
-            <td>请选择需要同步的ebay账号:</td>
-            <td></td>
-        </tr>
-        <tr>
-            <td></td>
-            <td>
-                <c:forEach items="${ebays}" var="ebay">
-                    <input type="checkbox" scope="checkbox" value="${ebay.id}"/>${ebay.ebayName}<br/>
-                </c:forEach>
-            </td>
-        </tr>
-        <tr>
-            <td></td>
-            <td>
-                <input type="button" value="同步" onclick="submitForm1();"/>
-            </td>
-        </tr>
-    </table>
-</form>
+<div class="modal-body" style="height: 400px;">
+    <form id="orderForm" class="form-horizontal" role="form">
+        <table>
+            <tr>
+                <td>请选择需要同步的ebay账号:</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td></td>
+                <td>
+                    <c:forEach items="${ebays}" var="ebay">
+                        <input type="checkbox" scope="checkbox" value="${ebay.id}"/>${ebay.ebayName}<br/>
+                    </c:forEach>
+                </td>
+            </tr>
+        </table>
+    </form>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-primary" onclick="submitForm1();">同步</button>
+        <button type="button" class="btn btn-default" data-dismiss="modal" onclick="closedialog();">关闭</button>
+    </div>
+</div>
 </body>
 </html>

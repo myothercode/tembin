@@ -11,6 +11,11 @@
 <html>
 <head>
     <title></title>
+    <style type="text/css">
+        body {
+            background-color: #ffffff;
+        }
+    </style>
     <script type="text/javascript">
         function ebayurl(){
             window.top.location.href="http://www.sandbox.ebay.com/itm/${order.itemid}";

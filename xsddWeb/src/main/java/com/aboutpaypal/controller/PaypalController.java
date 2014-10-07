@@ -36,6 +36,12 @@ public class PaypalController extends BaseAction {
         return   forword("/userinfo/pop/addPayPalPage",modelMap);
     }
 
+    @RequestMapping("selectPayPalPage.do")
+    /**选择绑定paypal帐号页面*/
+    public ModelAndView selectPayPalPage(@ModelAttribute( "initSomeParmMap" )ModelMap modelMap){
+        return   forword("/userinfo/pop/paypalListPage",modelMap);
+    }
+
 
     @RequestMapping("getPaypalBalance")
     @ResponseBody

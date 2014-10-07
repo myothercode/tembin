@@ -10,5 +10,7 @@ import java.util.List;
 public interface ITradingCaseResponseHistory {
     void saveCaseResponseHistory(TradingCaseResponseHistory CaseResponseHistory) throws Exception;
 
-    List<TradingCaseResponseHistory> selectCaseResponseHistoryById(Long Id);
+    List<TradingCaseResponseHistory> selectCaseResponseHistoryByEBPId(Long Id);
+
+    void deleteCaseResponseHistory(TradingCaseResponseHistory CaseResponseHistory) throws Exception;
 }

@@ -31,7 +31,12 @@
             $("#ItemInformationTypeListTable").selectDataAfterSetParm({"bedDetailVO.deptId":"", "isTrue":0});
         }
         function makeOption1(json){
-            var htm="<a target=\"_blank\" href=\"javascript:void(0)\" onclick=\"addChildType('"+json.typeId+"');\">添加子分类</a>";
+         /*   var htm="<a target=\"_blank\" href=\"javascript:void(0)\" onclick=\"addChildType('"+json.typeId+"');\">添加子分类</a>";*/
+            var htm="<div class=\"ui-select\" style=\"margin-top:1px; width:120px\">" +
+            "<select onclick=\"addChildType('"+json.typeId+"');\">" +
+            "<option value=\"1\">添加子分类</option>" +
+            "</select>" +
+            "</div>";
             return htm;
         }
 

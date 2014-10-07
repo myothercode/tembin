@@ -114,9 +114,40 @@
         }
         /**查看消息*/
         function makeOption1(json){
-            var htm="<a target=\"_blank\" href=\"javascript:void(0)\" onclick=\"viewOrder('"+json.orderid+"');\">查看详情</a>";
-            var htm1="|<a target=\"_blank\" href=\"javascript:void(0)\" onclick=\"modifyOrderStatus('"+json.transactionid+"');\">修改发货状态</a>";
-            return htm+htm1;
+           /* var htm="<a target=\"_blank\" href=\"javascript:void(0)\" onclick=\"viewOrder('"+json.orderid+"');\">查看详情</a>";
+            var htm1="|<a target=\"_blank\" href=\"javascript:void(0)\" onclick=\"modifyOrderStatus('"+json.transactionid+"');\">修改发货状态</a>";*/
+            var htm="<div class=\"ui-select\" style=\"width:106px\" >" +
+            "<select onchange=\"selectOperation('"+json.orderid+"','"+json.transactionid+"',this); \" name=\"ui-select\" style=\"margin-left:-3px;\">" +
+                    "<option value=\"0\"><a href=\"javascript:#\">--请选择--</a></option>" +
+                    "<option value=\"1\"><a href=\"javascript:#\">查看详情</a></option>" +
+                    "<option value=\"2\"><a href=\"javascript:#\">修改发货状态</a></option>" +
+                    "<option value=\"3\"><a href=\"javascript:#\">发送消息</a></option>" +
+                    "<option value=\"4\"><a href=\"javascript:#\">退款功能</a></option>" +
+            "</select>" +
+            "</div>";
+            return htm;
+        }
+        function selectOperation(orderid,transactionid,obj){
+            var value=$(obj).val();
+            if(value=="1"){
+                viewOrder(orderid);
+            }
+            if(value=="2"){
+                modifyOrderStatus(transactionid);
+            }
+            if(value=="3"){
+                sendMessage(orderid);
+            }
+        }
+        function sendMessage(orderid){
+            var url=path+'/order/initOrdersSendMessage.do?orderid='+orderid;
+            viewsendMessage=$.dialog({title: '发送消息',
+                content: 'url:'+url,
+                icon: 'succeed',
+                width:800,
+                height:500,
+                lock:true
+            });
         }
         function makeOption2(json){
             var imgurl=path+"/img/error.png";
@@ -212,8 +243,8 @@
             OrderGetOrders=$.dialog({title: '查看订单详情',
                 content: 'url:'+url,
                 icon: 'succeed',
-                width:1050,
-                height:1050
+                width:1200,
+                height:850
             });
         }
         function modifyOrderStatus(id){
@@ -351,7 +382,7 @@
             window.open(url);
         }
         function addTabRemark(){
-            var url=path+"/order/selectTabRemark.do?";
+            var url=path+"/order/selectTabRemark.do?folderType=orderFolder";
             OrderGetOrders=$.dialog({title: '选择文件夹',
                 content: 'url:'+url,
                 icon: 'succeed',

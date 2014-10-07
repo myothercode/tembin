@@ -57,5 +57,5 @@ public interface UserInfoService {
     void editEbayAccount(Map map);
 
     /**根据id查询ebay信息*/
-    UsercontrollerEbayAccount queryEbayInfoById(Map map);
+    UsercontrollerEbayAccountExtend queryEbayInfoById(Map map);
 }

@@ -11,6 +11,11 @@
 <html>
 <head>
     <title></title>
+    <style type="text/css">
+        body {
+            background-color: #ffffff;
+        }
+    </style>
     <link rel="stylesheet" type="text/css" href="<c:url value ="/js/jquery-easyui/themes/default/easyui.css" />"/>
     <link rel="stylesheet" type="text/css" href="<c:url value ="/js/jquery-easyui/themes/icon.css" />"/>
     <script type="text/javascript" src=<c:url value ="/js/jquery-easyui/jquery.easyui.min.js" /> ></script>
@@ -161,6 +166,301 @@
     </style>
 </head>
 <body>
+<div class="modal-body">
+<script type="text/javascript">
+    function setvTab(name,cursel,n){
+        for(i=1;i<=n;i++){
+            var svt=document.getElementById(name+i);
+            var con=document.getElementById("new_"+name+"_"+i);
+            svt.className=i==cursel?"new_ic_1":"";
+            con.style.display=i==cursel?"block":"none";
+        }
+    }
+</script>
+<div class="modal-header">
+<table width="100%" border="0" style="margin-top:-20px;">
+    <tbody><tr>
+        <td style="line-height:30px;"><span style=" color:#2395F3; font-size:24px; font-family:Arial, Helvetica, sans-serif">aasla_karih</span> [来自eBay账号：containyou 的买家]</td>
+    </tr>
+    <tr>
+        <td><div class="new_tab">
+            <div class="new_tab_left"></div>
+            <div class="new_tab_right"></div>
+            <dt id="svt1" class="new_ic_1" onclick="setvTab('svt',1,4)">订单摘要</dt>
+            <dt id="svt2" onclick="setvTab('svt',2,4)" class="">回复消息</dt>
+        </div></td>
+    </tr>
+
+    </tbody></table>
+<div id="new_svt_1" class="hover" style="display: block;">
+    <link href="../../css/compiled/layout.css" rel="stylesheet" type="text/css">
+    <c:forEach items="${orders}" var="orders1">
+    <table width="100%" border="0">
+        <tbody><tr>
+            <td width="772"></td>
+            <td width="9" rowspan="7" valign="top">&nbsp;</td>
+            <td rowspan="7" valign="top" style="margin-left:20px; padding-left:15px; padding-top:20px; padding-right:20px; line-height:25px;background:#F4F4F4">
+                <table width="100%" border="0">
+                    <tbody><tr class="ebay">
+                        <td><strong>eBay地址</strong><br>
+                            ${orders1.street1}<br>
+                            ${orders1.postalcode}<br>
+                            ${orders1.countryname}<br>
+                            ${orders1.phone}<br>
+                            ${orders1.buyeremail}</td>
+                    </tr>
+                    </tbody></table>
+                <span class="voknet"></span>
+                <table width="100%" border="0">
+                    <tbody><tr class="Paypal">
+                        <td><strong>Paypal 地址</strong><br>
+                                ${orders1.street1}<br>
+                                ${orders1.postalcode}<br>
+                                ${orders1.countryname}<br>
+                                ${orders1.phone}<br>
+                                ${orders1.buyeremail}</td>
+                    </tr>
+                    </tbody></table>
+                <span class="voknet"></span>
+                <table width="100%" border="0">
+                    <tbody><tr>
+                        <td><strong>发货信息</strong><br>
+                                ${orders1.street1}<br>
+                                ${orders1.postalcode}<br>
+                                ${orders1.countryname}<br>
+                                ${orders1.phone}<br>
+                                ${orders1.buyeremail}</td>
+                    </tr>
+                    </tbody></table><span class="moneyok">
+                        <c:if test="${orders1.status=='Complete'}">
+                            已付款
+                        </c:if>
+                        <c:if test="${orders1.status=='Incomplete'}">
+                            未付款
+                        </c:if>
+                    </span>
+                <span class="voknet"></span>
+                <table width="100%" border="0">
+                    <tbody><tr>
+                        <td><strong>备注</strong><br>
+                            ${orders1.title}</td>
+                    </tr>
+                    </tbody></table>
+            </td>
+        </tr>
+        <tr>
+            <td width="772" height="30"><span style="color:#2395F3; font-size:16px; font-family:Arial, Helvetica, sans-serif">1</span>  &nbsp; &nbsp;<strong>销售编号</strong>：53307  &nbsp; &nbsp;eBayx &nbsp; &nbsp;<strong> 销售编号</strong>：53307_5135 &nbsp; &nbsp; <font color="#2395F3">${orders1.buyeruserid} ( ${orders1.buyeremail} )</font></td>
+        </tr>
+        <tr>
+            <td height="40" bgcolor="#F4F4F4" style="font-size:18px; font-family:'微软雅黑', '宋体', Arial">&nbsp;交易信息</td>
+        </tr>
+        <tr>
+            <td><table width="100%" border="0">
+                <tbody><tr>
+                    <td width="41%" rowspan="10"><img src="../../img/admin_nopic.jpg" width="297" height="247"></td>
+                    <td width="21%" height="30"><strong>Item No.</strong><br></td>
+                    <td width="38%" height="30">${orders1.itemid}</td>
+                </tr>
+                <tr>
+                    <td height="30"><strong>售出日期</strong><br></td>
+                    <td width="38%" height="30"><fmt:formatDate value="${orders1.createdtime}" pattern="yyyy-MM-dd HH:mm"/></td>
+                </tr>
+                <tr>
+                    <td height="30"><strong>销售数量</strong><br></td>
+                    <td width="38%" height="30">${orders1.quantitypurchased}</td>
+                </tr>
+                <tr>
+                    <td height="30"><strong>售价</strong><br></td>
+                    <td width="38%" height="30">${orders1.transactionprice} USD</td>
+                </tr>
+                <tr>
+                    <td height="30"><strong>成交费</strong><br></td>
+                    <td width="38%" height="30">${grossdetailamount}USD</td>
+                </tr>
+                <tr>
+                    <td height="30"><strong>SKU</strong><br></td>
+                    <td width="38%" height="30">${orders1.sku}</td>
+                </tr>
+                <tr>
+                    <td height="30"><strong>买家选择运输</strong><br></td>
+                    <td width="38%" height="30"> ${orders1.selectedshippingservice}</td>
+                </tr>
+                <tr>
+                    <td height="30"><strong>买家选择运输费用</strong><br></td>
+                    <td width="38%" height="30">${orders1.selectedshippingservicecost}</td>
+                </tr>
+                <tr>
+                    <td height="30"><strong>保险费</strong><br></td>
+                    <td width="38%" height="30">--包括在运输中--</td>
+                </tr>
+                <tr>
+                    <td height="30"><strong>付款状态</strong><br></td>
+                    <td width="38%" height="30">
+                        <c:if test="${orders1.status=='Complete'}">
+                            已付款
+                         </c:if>
+                        <c:if test="${orders1.status=='Incomplete'}">
+                            未付款
+                        </c:if></td>
+                </tr>
+                <tr>
+                    <td><font color="#2395F3">${orders1.buyeruserid} ( ${orders1.buyeremail} )</font></td>
+                    <td height="30"><strong>付款方式</strong></td>
+                    <td height="30">${orders1.paymentmethod}</td>
+                </tr>
+                </tbody></table></td>
+        </tr>
+        <tr>
+            <td height="40" bgcolor="#F4F4F4" style="font-size:18px; font-family:'微软雅黑', '宋体', Arial">&nbsp;PayPal付款</td>
+        </tr>
+        <tr>
+            <td><table width="100%" border="0">
+                <tbody><tr>
+                    <td height="30"><strong>PayPal交易号</strong></td>
+                    <td height="30"> <strong>付款日期</strong></td>
+                    <td width="8%" height="30" align="center"> <strong>状态</strong></td>
+                    <td width="15%" height="30"> <strong>总额</strong></td>
+                    <td width="15%" height="30"> <strong>PayPal费用</strong></td>
+                    <td width="15%" height="30"> <strong>净额</strong></td>
+                </tr>
+                <c:if test="${orders1.status=='Complete'}">
+                <tr>
+                    <td height="30">${paypal}</td>
+                    <td height="30"><fmt:formatDate value="${orders1.paidtime}" pattern="yyyy-MM-dd HH:mm"/></td>
+                    <td height="30" align="center"><img src="../../img/new_yes.png" width="22" height="22"></td>
+                    <td width="15%" height="30">${orders1.total} USD</td>
+                    <td width="15%" height="30">0.85--</td>
+                    <td width="15%" height="30">13.17--</td>
+                </tr>
+                <c:if test="${orders1.status=='Incomplete'}">
+                    <tr>
+                        <td height="30"></td>
+                        <td height="30"></td>
+                        <td height="30" align="center"></td>
+                        <td width="15%" height="30"></td>
+                        <td width="15%" height="30"></td>
+                        <td width="15%" height="30"></td>
+                    </tr>
+                </c:if>
+                </c:if>
+                <tr>
+                    <td height="30" colspan="6" style="color:#F00"><span class="voknet"></span>PA Note:   PayPal payment Staus:[${orders1.status}],Type:[instant],Amount:[USD${orders1.amountpaid}] recelved on <fmt:formatDate value="${orders1.paidtime}" pattern="yyyy-MM-dd HH:mm"/>,Paypal transaction ID:<br>
+                            ${paypal}</td>
+                </tr>
+                </tbody></table></td>
+        </tr>
+        </tbody></table>
+        <hr/>
+    </c:forEach>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+    </div>
+</div>
+<div style="display: none;" id="new_svt_2">
+    <link href="../../css/compiled/layout.css" rel="stylesheet" type="text/css">
+    <table width="100%" border="0">
+        <tbody><tr>
+            <td width="772"></td>
+            <td width="9" rowspan="5" valign="top">&nbsp;</td>
+            <td rowspan="5" valign="top" style="margin-left:20px; padding-left:15px; padding-top:20px; padding-right:20px; line-height:25px;background:#F4F4F4"><strong>订单号</strong><br>
+                CO-9798-R1(已配货)<br>
+                <strong>物流跟踪号</strong><br>
+                RI123885807CN<br>
+                <strong>发货时间：</strong><br>
+                2017-07-22<br>
+                <strong>付款时间：</strong><br>
+                2017-07-22<br>
+                <strong>运输方式：</strong><br>
+                海运
+                <span class="voknet"></span>
+                <table width="100%" border="0">
+                    <tbody><tr>
+                        <td width="56"><strong>商品2</strong></td>
+                        <td style="color:#63B300">CNDL</td>
+                    </tr>
+                    <tr>
+                        <td><img src="../../img/no_pic_1.png" width="46" height="46"></td>
+                        <td style=" color:#5F93D7">标题标题标题标题标题标题标题标题标题标题标题<br>
+                            标题标题标题标题标题...</td>
+                    </tr>
+                    </tbody></table>
+                <span class="voknet"></span>
+
+                <table width="100%" border="0">
+                    <tbody><tr>
+                        <td width="56"><strong>商品2</strong></td>
+                        <td style="color:#63B300">CNDL</td>
+                    </tr>
+                    <tr>
+                        <td><img src="../../img/no_pic_1.png" width="46" height="46"></td>
+                        <td style=" color:#5F93D7">标题标题标题标题标题标题标题标题标题标题标题<br>
+                            标题标题标题标题标题...</td>
+                    </tr>
+                    </tbody></table>
+            </td>
+        </tr>
+        <tr>
+            <td width="772" align="center" bgcolor="#F6F6F6" style="color:#2395F3">查看更多历史信息...</td>
+        </tr>
+        <tr>
+            <td><div class="newbook">
+                <p style="text-align: right;">aasla_karih 2014-08-20 22:38</p>
+                <p class="user">containyou，您好！</p>
+                <div class="user_co">
+                    <div class="user_co_1"></div>
+                    <ul>Hi again.: )
+                        <span>发送与:2014-08-20 22:38</span>
+                    </ul>
+                    <div class="user_co_2"></div>
+                </div>
+                <div class="dpan"></div>
+                <p class="admin">携宇科技</p>
+
+                <div class="admin_co">
+                    <div class="admin_co_1"></div>
+                    <ul>Hi again.: )
+                        <span>发送与:2014-08-20 22:38</span>
+                    </ul>
+                    <div class="admin_co_2"></div>
+                </div>
+                <p class="user">containyou，您好！</p>
+                <div class="user_co">
+                    <div class="user_co_1"></div>
+                    <ul>Hi again.: )
+                        <span>发送与:2014-08-20 22:38</span>
+                    </ul>
+                    <div class="user_co_2"></div>
+                </div>
+                <div class="dpan"></div>
+                <p class="admin">携宇科技</p>
+
+                <div class="admin_co">
+                    <div class="admin_co_1"></div>
+                    <ul>Hi again.: )
+                        <span>发送与:2014-08-20 22:38</span>
+                    </ul>
+                    <div class="admin_co_2"></div>
+                </div>
+            </div></td>
+        </tr>
+        <tr>
+            <td><textarea name="textarea" id="textarea" style="width:772px;" rows="5" class="newco_one">Additional comments:(optional)</textarea><div class="modal-footer" style="margin-top:20px; float:left; width:100%;">
+                <button type="button" class="btn btn-primary">保存</button>
+                <button type="button" class="btn btn-newco">回复</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+            </div></td>
+        </tr>
+        <tr>
+            <td width="772"> </td>
+        </tr>
+        </tbody></table>
+
+</div></div>
+<script src="../../js/jquery-latest.js"></script>
+<script src="../../js/bootstrap.min.js"></script>
+<script src="../../js/theme.js"></script>
+
+</div>
 <div class="easyui-tabs" border="0" style="width:1020px;">
 <%-------------------------------------------------------------------------------------------%>
     <div title="摘要" style="padding:10px" >

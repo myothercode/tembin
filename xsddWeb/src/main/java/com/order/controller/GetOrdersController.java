@@ -11,6 +11,7 @@ import com.base.mybatis.page.Page;
 import com.base.mybatis.page.PageJsonBean;
 import com.base.sampleapixml.APINameStatic;
 import com.base.sampleapixml.BindAccountAPI;
+import com.base.userinfo.service.SystemUserManagerService;
 import com.base.userinfo.service.UserInfoService;
 import com.base.utils.annotations.AvoidDuplicateSubmission;
 import com.base.utils.cache.SessionCacheSupport;
@@ -50,6 +51,8 @@ public class GetOrdersController extends BaseAction {
     @Autowired
     private UserInfoService userInfoService;
     @Autowired
+    private SystemUserManagerService systemUserManagerService;
+    @Autowired
     private ITradingOrderGetOrders iTradingOrderGetOrders;
     @Autowired
     private ITradingOrderGetItem iTradingOrderGetItem;
@@ -81,7 +84,7 @@ public class GetOrdersController extends BaseAction {
     @RequestMapping("/getOrdersList.do")
     public ModelAndView OrdersList(HttpServletRequest request,HttpServletResponse response,ModelMap modelMap){
         List<PublicUserConfig> configs=new ArrayList<PublicUserConfig>();
-        List<PublicUserConfig> list=iPublicUserConfig.selectUserConfigByItemType("folder");
+        List<PublicUserConfig> list=iPublicUserConfig.selectUserConfigByItemType("orderFolder");
         for(PublicUserConfig config:list){
             String value=config.getConfigValue();
             if(StringUtils.isNotBlank(value)){
@@ -94,8 +97,10 @@ public class GetOrdersController extends BaseAction {
     //选择文件夹
     @RequestMapping("/selectTabRemark.do")
     public ModelAndView selectTabRemark(HttpServletRequest request,HttpServletResponse response,ModelMap modelMap){
-        List<PublicUserConfig> list=iPublicUserConfig.selectUserConfigByItemType("folder");
+        String folderType=request.getParameter("folderType");
+        List<PublicUserConfig> list=iPublicUserConfig.selectUserConfigByItemType(folderType);
         modelMap.put("folders",list);
+        modelMap.put("folderType",folderType);
         return forword("/orders/order/selectTabRemark",modelMap);
     }
     //将文件夹设置到order中
@@ -141,6 +146,8 @@ public class GetOrdersController extends BaseAction {
     //新建文件夹
     @RequestMapping("/addTabRemark.do")
     public ModelAndView addTabRemark(HttpServletRequest request,HttpServletResponse response,ModelMap modelMap){
+        String folderType=request.getParameter("folderType");
+        modelMap.put("folderType",folderType);
         return forword("/orders/order/addTabRemark",modelMap);
     }
     //添加备注
@@ -164,7 +171,7 @@ public class GetOrdersController extends BaseAction {
                 i=-1;
             }
         }
-        List<PublicUserConfig> list=iPublicUserConfig.selectUserConfigByItemType("folder");
+        List<PublicUserConfig> list=iPublicUserConfig.selectUserConfigByItemType("orderFolder");
         List<PublicUserConfig> configs=new ArrayList<PublicUserConfig>();
         for(PublicUserConfig config:list){
             if(StringUtils.isNotBlank(config.getConfigValue())){
@@ -222,12 +229,13 @@ public class GetOrdersController extends BaseAction {
     @RequestMapping("/saveTabremark.do")
     public void saveTabremark(HttpServletRequest request,HttpServletResponse response,ModelMap modelMap) throws Exception {
         String tabName=request.getParameter("tabName");
+        String folderType=request.getParameter("folderType");
         if(!StringUtils.isNotBlank(tabName)){
             AjaxSupport.sendFailText("fail","文件夹名称不能为空");
             return;
         }
         PublicUserConfig config=new PublicUserConfig();
-        config.setConfigType("folder");
+        config.setConfigType(folderType);
         config.setConfigName(tabName);
         iPublicUserConfig.saveUserConfig(config);
         AjaxSupport.sendSuccessText("", "文件夹保存成功");
@@ -246,7 +254,8 @@ public class GetOrdersController extends BaseAction {
         /**分页组装*/
         PageJsonBean jsonBean=commonParmVO.getJsonBean();
         Page page=jsonBean.toPage();
-        List<UsercontrollerEbayAccountExtend> ebays=userInfoService.getEbayAccountForCurrUser();
+        Map ebayMap=new HashMap();
+        List<UsercontrollerEbayAccountExtend> ebays=systemUserManagerService.queryCurrAllEbay(ebayMap);
         Map map=new HashMap();
         Date starttime=null;
         Date endtime=null;
@@ -847,10 +856,10 @@ public class GetOrdersController extends BaseAction {
         d.setApiCallName(APINameStatic.GetOrders);
         request.getSession().setAttribute("dveId", d);*/
         Map map=new HashMap();
-  /*      Date startTime2=DateUtils.subDays(new Date(),9);
-        Date endTime= DateUtils.addDays(startTime2, 9);*/
-        Date startTime2=DateUtils.subDays(new Date(),40);
-        Date endTime= DateUtils.addDays(startTime2, 40);
+        Date startTime2=DateUtils.subDays(new Date(),9);
+        Date endTime= DateUtils.addDays(startTime2, 9);
+      /*  Date startTime2=DateUtils.subDays(new Date(),40);
+        Date endTime= DateUtils.addDays(startTime2, 40);*/
         Date end1= com.base.utils.common.DateUtils.turnToDateEnd(endTime);
         String start= DateUtils.DateToString(startTime2);
         String end=DateUtils.DateToString(end1);

@@ -92,12 +92,51 @@ public class UserCasesController extends BaseAction{
     @ResponseBody
     public void loadUserCasesList(CommonParmVO commonParmVO,HttpServletRequest request) throws Exception {
         /**分页组装*/
+        String account=request.getParameter("account");
         String type=request.getParameter("type");
-        if("all".equals(type)){
+        String status=request.getParameter("status");
+        String days=request.getParameter("days");
+        String name=request.getParameter("name");
+        String content=request.getParameter("content");
+        if(!StringUtils.isNotBlank(account)){
+            account=null;
+        }
+        if(!StringUtils.isNotBlank(type)){
             type=null;
         }
+        if(!StringUtils.isNotBlank(status)){
+            status=null;
+        }
+        Date starttime=null;
+        Date endtime=null;
+        if(!StringUtils.isNotBlank(days)){
+            days=null;
+        }else{
+            if("2".equals(days)){
+                starttime=DateUtils.subDays(new Date(),1);
+                Date endTime= DateUtils.addDays(starttime, 0);
+                endtime= com.base.utils.common.DateUtils.turnToDateEnd(endTime);
+            }else{
+                int day=Integer.parseInt(days);
+                starttime=DateUtils.subDays(new Date(),day-1);
+                Date endTime= DateUtils.addDays(starttime,day-1);
+                endtime= com.base.utils.common.DateUtils.turnToDateEnd(endTime);
+            }
+        }
+        if(!StringUtils.isNotBlank(name)){
+            name=null;
+        }
+        if(!StringUtils.isNotBlank(content)){
+            content=null;
+        }
         Map m = new HashMap();
-        m.put("caseType",type);
+        m.put("account",account);
+        m.put("type",type);
+        m.put("status",status);
+        m.put("starttime",starttime);
+        m.put("endtime",endtime);
+        m.put("name",name);
+        m.put("content",content);
         PageJsonBean jsonBean=commonParmVO.getJsonBean();
         Page page=jsonBean.toPage();
         List<UserCasesQuery> list=iTradingGetUserCases.selectGetUserCases(m, page);
@@ -106,7 +145,7 @@ public class UserCasesController extends BaseAction{
         AjaxSupport.sendSuccessText("", jsonBean);
     }
     /**获取list数据的ajax方法*/
-    @RequestMapping("/sendMessage.do")
+   /* @RequestMapping("/sendMessage.do")
     @ResponseBody
     public void sendMessage(CommonParmVO commonParmVO,HttpServletRequest request) throws Exception {
         String number=request.getParameter("number");
@@ -139,9 +178,9 @@ public class UserCasesController extends BaseAction{
                 AjaxSupport.sendSuccessText("", map.get("message"));
             }
         }
-    }
+    }*/
     /**获取list数据的ajax方法*/
-    @RequestMapping("/sendMessage2.do")
+   /* @RequestMapping("/sendMessage2.do")
     @ResponseBody
     public void sendMessage2(CommonParmVO commonParmVO,HttpServletRequest request) throws Exception {
         String transactionid=request.getParameter("transactionid");
@@ -152,7 +191,7 @@ public class UserCasesController extends BaseAction{
         }else{
             AjaxSupport.sendSuccessText("", map.get("message"));
         }
-    }
+    }*/
     /*
      * 同步纠纷详情初始化
      */
@@ -204,7 +243,7 @@ public class UserCasesController extends BaseAction{
     /*
    * 处理纠纷
    */
-    @RequestMapping("/handleDispute.do")
+  /*  @RequestMapping("/handleDispute.do")
     @AvoidDuplicateSubmission(needSaveToken = true)
     public ModelAndView handleDispute(HttpServletRequest request,@ModelAttribute( "initSomeParmMap" )ModelMap modelMap) throws Exception {
         String transactionid=request.getParameter("transactionid");
@@ -213,9 +252,10 @@ public class UserCasesController extends BaseAction{
         TradingGetEBPCaseDetail ebpCaseDetail=new TradingGetEBPCaseDetail();
         TradingGetUserCases cases=new TradingGetUserCases();
         List<TradingCaseResponseHistory> responses=new ArrayList<TradingCaseResponseHistory>();
+
         if(EBPlist!=null&&EBPlist.size()>0){
             ebpCaseDetail=EBPlist.get(0);
-            responses=iTradingCaseResponseHistory.selectCaseResponseHistoryById(ebpCaseDetail.getId());
+            responses=iTradingCaseResponseHistory.selectCaseResponseHistoryByEBPId(ebpCaseDetail.getId());
         }
         if(casesList!=null&&casesList.size()>0){
             cases=casesList.get(0);
@@ -230,7 +270,7 @@ public class UserCasesController extends BaseAction{
         modelMap.put("responses",responses);
         modelMap.put("order",order);
         return forword("usercases/handleDispute",modelMap);
-    }
+    }*/
     /*
   * 响应纠纷
   */
@@ -239,11 +279,57 @@ public class UserCasesController extends BaseAction{
     public ModelAndView responseDispute(HttpServletRequest request,@ModelAttribute( "initSomeParmMap" )ModelMap modelMap) throws Exception {
         String transactionid=request.getParameter("transactionid");
         TradingOrderGetOrders order=new TradingOrderGetOrders();
+        TradingGetUserCases cases=new TradingGetUserCases();
+        List<TradingOrderGetItem> items=new ArrayList<TradingOrderGetItem>();
+        List<String> pics=new ArrayList<String>();
         List<TradingOrderGetOrders> orders=iTradingOrderGetOrders.selectOrderGetOrdersByTransactionId(transactionid);
+        List<TradingGetUserCases> casesList=iTradingGetUserCases.selectGetUserCasesByTransactionId(transactionid);
+        String reason="";
+        String content="";
+        String information="";
+        if(casesList!=null&&casesList.size()>0){
+            cases=casesList.get(0);
+            String caseType=cases.getCasetype();
+            if(caseType.contains("EBP")){
+                List<TradingGetEBPCaseDetail> details=iTradingGetEBPCaseDetail.selectGetEBPCaseDetailByTransactionId(cases.getTransactionid());
+                if(details!=null&&details.size()>0){
+                    reason=details.get(0).getOpenreason();
+                    content=details.get(0).getAppealdecision();
+                    information=details.get(0).getInitialbuyerexpectationdetail();
+                }
+            }else{
+                List<TradingGetDispute> disputes=iTradingGetDispute.selectGetDisputeByTransactionId(cases.getTransactionid());
+                if(disputes!=null&&disputes.size()>0){
+                    reason=disputes.get(0).getDisputereason();
+                    content=disputes.get(0).getDisputereason();
+                }
+            }
+        }
         if(orders!=null&&orders.size()>0){
             order=orders.get(0);
+            List<TradingOrderGetOrders> lists=iTradingOrderGetOrders.selectOrderGetOrdersByOrderId(order.getOrderid());
+            for(TradingOrderGetOrders list:lists){
+                List<TradingOrderGetItem> item= iTradingOrderGetItem.selectOrderGetItemByItemId(list.getItemid());
+                if(item!=null&&item.size()>0){
+                    List<TradingOrderPictureDetails> pictureDetailses=iTradingOrderPictureDetails.selectOrderGetItemById(item.get(0).getPicturedetailsId());
+                    items.add(item.get(0));
+                    String pic="";
+                    if(pictureDetailses!=null&&pictureDetailses.size()>0){
+                        pic=pictureDetailses.get(0).getPictureurl();
+                    }
+                    pics.add(pic);
+                }
+            }
+
         }
+        modelMap.put("order",order);
+        modelMap.put("cases",cases);
         modelMap.put("transactionid",transactionid);
+        modelMap.put("items",items);
+        modelMap.put("pics",pics);
+        modelMap.put("reason",reason);
+        modelMap.put("content",content);
+        modelMap.put("information",information);
         return forword("usercases/responseDispute",modelMap);
     }
     /*
@@ -278,7 +364,7 @@ public class UserCasesController extends BaseAction{
             Map ebpMap=new HashMap();
             ebpMap.put("token",token);
             ebpMap.put("caseId", caseId);
-            ebpMap.put("caseType",sellerId);
+            ebpMap.put("caseType",caseType);
             String ebpXml = BindAccountAPI.getEBPCase(ebpMap);
             //---修改前---
            /* Map<String, String> resEbpMap = addApiTask.exec(d, ebpXml, "https://svcs.ebay.com/services/resolution/ResolutionCaseManagementService/v1");
@@ -394,8 +480,10 @@ public class UserCasesController extends BaseAction{
         d.setHeaderType("DisputeApiHeader");
      /*   d.setSoaResponseDataformat("XML");*/
         Map map=new HashMap();
+       /* Date startTime2= DateUtils.subDays(new Date(), 60);
+        Date endTime= DateUtils.addDays(startTime2, 60);*/
         Date startTime2= DateUtils.subDays(new Date(), 9);
-        Date endTime= DateUtils.addDays(startTime2, 9);
+        Date endTime= DateUtils.addDays(startTime2,9);
         Date end1= com.base.utils.common.DateUtils.turnToDateEnd(endTime);
         String start= DateUtils.DateToString(startTime2);
         String end=DateUtils.DateToString(end1);
@@ -417,8 +505,8 @@ public class UserCasesController extends BaseAction{
             Map<String,Object> map1= UserCasesAPI.parseXMLAndSave(res);
             String totalPages= (String) map1.get("totalPages");
             int totalPage= Integer.parseInt(totalPages);
-            for(int i=1;i<=totalPage;i++){*/
-                /*if(i!=1){
+            for(int i=1;i<=totalPage;i++){
+                if(i!=1){
                     map.put("page",i+"");
                     xml = BindAccountAPI.getUserCases(map);
                     resMap = addApiTask.exec(d, xml, "https://svcs.ebay.com/services/resolution/ResolutionCaseManagementService/v1?REST-PAYLOAD");
@@ -435,8 +523,8 @@ public class UserCasesController extends BaseAction{
                         return;
                     }
                     map1= UserCasesAPI.parseXMLAndSave(res);
-                }*/
-             /*   List<TradingGetUserCases> userCasesList= (List<TradingGetUserCases>) map1.get("cases");
+                }
+                List<TradingGetUserCases> userCasesList= (List<TradingGetUserCases>) map1.get("cases");
                 for(TradingGetUserCases userCases:userCasesList){
                     List<TradingGetUserCases> casesList=iTradingGetUserCases.selectGetUserCasesByTransactionId(userCases.getTransactionid());
                     if(casesList!=null&&casesList.size()>0){
@@ -453,7 +541,6 @@ public class UserCasesController extends BaseAction{
             AjaxSupport.sendFailText("fail", "获取必要的参数失败！请稍后重试");
         }*/
         //---修改后--
-
         TaskMessageVO taskMessageVO=new TaskMessageVO();
         taskMessageVO.setMessageContext("纠纷");
         taskMessageVO.setMessageTitle("同步纠纷");
@@ -462,10 +549,11 @@ public class UserCasesController extends BaseAction{
         taskMessageVO.setMessageFrom("system");
         SessionVO sessionVO= SessionCacheSupport.getSessionVO();
         taskMessageVO.setMessageTo(sessionVO.getId());
+        taskMessageVO.setObjClass(d);
         addApiTask.execDelayReturn(d, xml,"https://svcs.ebay.com/services/resolution/ResolutionCaseManagementService/v1?REST-PAYLOAD", taskMessageVO);
         AjaxSupport.sendSuccessText("message", "操作成功！结果请稍后查看消息！");
     }
-    private Map<String,String> sendMessage1(TradingOrderGetOrders order,String subject,String body) throws Exception {
+    /*private Map<String,String> sendMessage1(TradingOrderGetOrders order,String subject,String body) throws Exception {
         UsercontrollerDevAccountExtend d = userInfoService.getDevInfo(null);//开发者帐号id
         d.setApiSiteid("0");
         d.setApiCallName(APINameStatic.AddMemberMessageAAQToPartner);
@@ -486,7 +574,7 @@ public class UserCasesController extends BaseAction{
         map.put("buyeruserid",order.getBuyeruserid());
         String xml = BindAccountAPI.getAddMemberMessageAAQToPartner(map);//获取接受消息
         AddApiTask addApiTask = new AddApiTask();
-          /*  Map<String, String> resMap = addApiTask.exec(d, xml, "https://api.ebay.com/ws/api.dll");*/
+          *//*  Map<String, String> resMap = addApiTask.exec(d, xml, "https://api.ebay.com/ws/api.dll");*//*
         Map<String, String> resMap = addApiTask.exec(d, xml, apiUrl);
         String r1 = resMap.get("stat");
         String res = resMap.get("message");
@@ -513,5 +601,213 @@ public class UserCasesController extends BaseAction{
             returnMap.put("message","获取必要的参数失败！请稍后重试");
         }
         return returnMap;
+    }*/
+    //提供运输信息provideShippingInfo
+    @RequestMapping("/sendTrackNum.do")
+    @ResponseBody
+    public void sendTrackNum(CommonParmVO commonParmVO,HttpServletRequest request) throws Exception {
+        String trackingNum=request.getParameter("trackingNum");
+        String carrier=request.getParameter("carrier");
+        String message=request.getParameter("textarea");
+        String transactionId=request.getParameter("transactionId");
+        UsercontrollerDevAccountExtend d=new UsercontrollerDevAccountExtend();
+        d.setSoaOperationName("provideShippingInfo");
+        String token="AgAAAA**AQAAAA**aAAAAA**CLSRUQ**nY+sHZ2PrBmdj6wVnY+sEZ2PrA2dj6AFlYCjDJGCqA+dj6x9nY+seQ**FdYBAA**AAMAAA**w2sMbwlQ7TBHWxj9EsVedHQRI3+lonY9MDfiyayQbnFkjEanjL/yMCpS/D2B9xHRzRx+ppxWZkRPgeAKJvNotPLLrVTuEzOl5M7pi6Tw8+pzcmIEsOh7HQO78JlyFlvLc/ruE6/hG0E/HO1UX76YBwxp00N9f1NNUpo5u36D/TYsx5O2jXFTKkCOHwz6RW9vtN6TU39aLm+JQme2+NfFFXnbX8MHzoUiX7Sty0R88ZpX5wLp8ZdgXCEc5zZDQziYB1MSXF9hsmby5wKbxFF+OvW/zKADThk1gprgAgnEOucyoao+cUMHopLlYgMbjnLzdCXP5F9z+fkYTnKF6AEl5eHBpcKQGbPzswnKebRoBVw+bI2I1C/iq+PvBUyndFAexjrvlDQbEKr6qb6AWRVTTfkW2ce6a0ixRuCTq35zEpWpfAqkSKo+X23d/Q4V8R30rDXotOWDZL6o408cMO+UQ17uVA2arA1JNkYfc/AZ0T0z7ze5o/yp93jJPlDgi05Ut4fpCAMZw3X85GxrTlbEtawWgoyUbmMuv4f6QHZLZAerOaJA8DRJkzkzjJJ025bp1HvAECOc4ggdv0cofu4q96shssgNYYZJUPM+q4+0fnGK0pxQTNY9SV6vSaVCVoTZJo6vefW7OiHX2/eLoPKFuUfsKXXEv9OY71gD1xzYg/rpCMAqCTq1dKqqyT1R5fxANnoRX7vwkq+7jkCj2fAfKTnHi9mSuBFsilKLmnsqqWy3IGShMgdxiQwBEk6IWi9C";
+        d.setSoaSecurityToken(token);
+        d.setHeaderType("DisputeApiHeader");
+        List<TradingGetUserCases> caseses= iTradingGetUserCases.selectGetUserCasesByTransactionId(transactionId);
+        List<TradingOrderGetOrders> orderses=iTradingOrderGetOrders.selectOrderGetOrdersByTransactionId(transactionId);
+        Date shippedTime=null;
+        if(orderses!=null&&orderses.size()>0){
+            shippedTime=orderses.get(0).getShippedtime();
+        }else{
+            AjaxSupport.sendFailText("fail","该商品没发货");
+            return;
+        }
+        if(caseses!=null&&caseses.size()>0){
+            String caseId=caseses.get(0).getCaseid();
+            String caseType=caseses.get(0).getCasetype();
+            String shippedTime1=DateUtils.DateToString(shippedTime);
+            String xml = BindAccountAPI.ProvideShippingInfo(token,caseId,caseType,carrier,shippedTime1,shippedTime);
+            AddApiTask addApiTask = new AddApiTask();
+            Map<String, String> resEbpMap = addApiTask.exec(d, xml, "https://svcs.ebay.com/services/resolution/ResolutionCaseManagementService/v1");
+            String r1 = resEbpMap.get("stat");
+            String res = resEbpMap.get("message");
+            if ("fail".equalsIgnoreCase(r1)) {
+                AjaxSupport.sendFailText("fail", res);
+                return;
+            }
+            String ack = SamplePaseXml.getVFromXmlString(res, "ack");
+            if ("Success".equalsIgnoreCase(ack)) {
+                TradingGetUserCases cases=caseses.get(0);
+                cases.setHandled(1);
+                iTradingGetUserCases.saveGetUserCases(cases);
+                AjaxSupport.sendSuccessText("message", "提供运输信息成功!");
+            }else{
+                String errors = SamplePaseXml.getVFromXmlString(res, "Errors");
+                logger.error("提供运输信息失败!" + errors);
+                AjaxSupport.sendFailText("fail", "提供运输信息失败！请稍后重试");
+            }
+        }else{
+            AjaxSupport.sendFailText("fail","纠纷不存在");
+        }
+    }
+    //提供跟踪信息provideTrackingInfo
+    @RequestMapping("/sendWithoutNum.do")
+    @ResponseBody
+    public void sendWithoutNum(CommonParmVO commonParmVO,HttpServletRequest request) throws Exception {
+        String message=request.getParameter("textarea");
+        String message2=request.getParameter("textarea2");
+        String transactionId=request.getParameter("transactionId");
+        UsercontrollerDevAccountExtend d=new UsercontrollerDevAccountExtend();
+        d.setSoaOperationName("provideTrackingInfo");
+        String token="AgAAAA**AQAAAA**aAAAAA**CLSRUQ**nY+sHZ2PrBmdj6wVnY+sEZ2PrA2dj6AFlYCjDJGCqA+dj6x9nY+seQ**FdYBAA**AAMAAA**w2sMbwlQ7TBHWxj9EsVedHQRI3+lonY9MDfiyayQbnFkjEanjL/yMCpS/D2B9xHRzRx+ppxWZkRPgeAKJvNotPLLrVTuEzOl5M7pi6Tw8+pzcmIEsOh7HQO78JlyFlvLc/ruE6/hG0E/HO1UX76YBwxp00N9f1NNUpo5u36D/TYsx5O2jXFTKkCOHwz6RW9vtN6TU39aLm+JQme2+NfFFXnbX8MHzoUiX7Sty0R88ZpX5wLp8ZdgXCEc5zZDQziYB1MSXF9hsmby5wKbxFF+OvW/zKADThk1gprgAgnEOucyoao+cUMHopLlYgMbjnLzdCXP5F9z+fkYTnKF6AEl5eHBpcKQGbPzswnKebRoBVw+bI2I1C/iq+PvBUyndFAexjrvlDQbEKr6qb6AWRVTTfkW2ce6a0ixRuCTq35zEpWpfAqkSKo+X23d/Q4V8R30rDXotOWDZL6o408cMO+UQ17uVA2arA1JNkYfc/AZ0T0z7ze5o/yp93jJPlDgi05Ut4fpCAMZw3X85GxrTlbEtawWgoyUbmMuv4f6QHZLZAerOaJA8DRJkzkzjJJ025bp1HvAECOc4ggdv0cofu4q96shssgNYYZJUPM+q4+0fnGK0pxQTNY9SV6vSaVCVoTZJo6vefW7OiHX2/eLoPKFuUfsKXXEv9OY71gD1xzYg/rpCMAqCTq1dKqqyT1R5fxANnoRX7vwkq+7jkCj2fAfKTnHi9mSuBFsilKLmnsqqWy3IGShMgdxiQwBEk6IWi9C";
+        d.setSoaSecurityToken(token);
+        d.setHeaderType("DisputeApiHeader");
+        List<TradingGetUserCases> caseses= iTradingGetUserCases.selectGetUserCasesByTransactionId(transactionId);
+        List<TradingOrderGetOrders> orderses=iTradingOrderGetOrders.selectOrderGetOrdersByTransactionId(transactionId);
+        String trackingNum="";
+        String carrier="";
+        if(orderses!=null&&orderses.size()>0){
+            trackingNum=orderses.get(0).getShipmenttrackingnumber();
+            carrier=orderses.get(0).getShippingcarrierused();
+        }else{
+            AjaxSupport.sendFailText("fail","该商品没发货");
+            return;
+        }
+        if(caseses!=null&&caseses.size()>0){
+            String caseId=caseses.get(0).getCaseid();
+            String caseType=caseses.get(0).getCasetype();
+            String xml="";
+            if(StringUtils.isNotBlank(message)){
+                xml = BindAccountAPI.provideTrackingInfo(token,caseId,caseType,trackingNum,carrier,message);
+            }else if(StringUtils.isNotBlank(message2)){
+                xml=BindAccountAPI.provideTrackingInfo(token,caseId,caseType,trackingNum,carrier,message2);
+            }
+            AddApiTask addApiTask = new AddApiTask();
+            Map<String, String> resEbpMap = addApiTask.exec(d, xml, "https://svcs.ebay.com/services/resolution/ResolutionCaseManagementService/v1");
+            String r1 = resEbpMap.get("stat");
+            String res = resEbpMap.get("message");
+            if ("fail".equalsIgnoreCase(r1)) {
+                AjaxSupport.sendFailText("fail", res);
+                return;
+            }
+            String ack = SamplePaseXml.getVFromXmlString(res, "ack");
+            if ("Success".equalsIgnoreCase(ack)) {
+                TradingGetUserCases cases=caseses.get(0);
+                cases.setHandled(1);
+                iTradingGetUserCases.saveGetUserCases(cases);
+                AjaxSupport.sendSuccessText("message", "提供跟踪信息成功!");
+            }else{
+                String errors = SamplePaseXml.getVFromXmlString(res, "Errors");
+                logger.error("提供跟踪信息失败!" + errors);
+                AjaxSupport.sendFailText("fail", "提供跟踪信息失败！请稍后重试");
+            }
+        }else{
+            AjaxSupport.sendFailText("fail","纠纷不存在");
+        }
+    }
+    @RequestMapping("/sendRefund.do")
+    @ResponseBody
+    public void sendRefund(CommonParmVO commonParmVO,HttpServletRequest request) throws Exception {
+        String fullRefund=request.getParameter("fullRefund");
+        String partialRefund=request.getParameter("partialRefund");
+        String amout=request.getParameter("amout");
+        String transactionId=request.getParameter("transactionId");
+        String textarea=request.getParameter("textarea");
+        if(StringUtils.isNotBlank(fullRefund)&&StringUtils.isNotBlank(partialRefund)){
+            AjaxSupport.sendFailText("fail","请选择一个");
+            return;
+        }
+        UsercontrollerDevAccountExtend d=new UsercontrollerDevAccountExtend();
+        String token="AgAAAA**AQAAAA**aAAAAA**CLSRUQ**nY+sHZ2PrBmdj6wVnY+sEZ2PrA2dj6AFlYCjDJGCqA+dj6x9nY+seQ**FdYBAA**AAMAAA**w2sMbwlQ7TBHWxj9EsVedHQRI3+lonY9MDfiyayQbnFkjEanjL/yMCpS/D2B9xHRzRx+ppxWZkRPgeAKJvNotPLLrVTuEzOl5M7pi6Tw8+pzcmIEsOh7HQO78JlyFlvLc/ruE6/hG0E/HO1UX76YBwxp00N9f1NNUpo5u36D/TYsx5O2jXFTKkCOHwz6RW9vtN6TU39aLm+JQme2+NfFFXnbX8MHzoUiX7Sty0R88ZpX5wLp8ZdgXCEc5zZDQziYB1MSXF9hsmby5wKbxFF+OvW/zKADThk1gprgAgnEOucyoao+cUMHopLlYgMbjnLzdCXP5F9z+fkYTnKF6AEl5eHBpcKQGbPzswnKebRoBVw+bI2I1C/iq+PvBUyndFAexjrvlDQbEKr6qb6AWRVTTfkW2ce6a0ixRuCTq35zEpWpfAqkSKo+X23d/Q4V8R30rDXotOWDZL6o408cMO+UQ17uVA2arA1JNkYfc/AZ0T0z7ze5o/yp93jJPlDgi05Ut4fpCAMZw3X85GxrTlbEtawWgoyUbmMuv4f6QHZLZAerOaJA8DRJkzkzjJJ025bp1HvAECOc4ggdv0cofu4q96shssgNYYZJUPM+q4+0fnGK0pxQTNY9SV6vSaVCVoTZJo6vefW7OiHX2/eLoPKFuUfsKXXEv9OY71gD1xzYg/rpCMAqCTq1dKqqyT1R5fxANnoRX7vwkq+7jkCj2fAfKTnHi9mSuBFsilKLmnsqqWy3IGShMgdxiQwBEk6IWi9C";
+        d.setSoaSecurityToken(token);
+        d.setHeaderType("DisputeApiHeader");
+        List<TradingGetUserCases> caseses= iTradingGetUserCases.selectGetUserCasesByTransactionId(transactionId);
+        if(caseses!=null&&caseses.size()>0){
+            String caseId=caseses.get(0).getCaseid();
+            String caseType=caseses.get(0).getCasetype();
+            String xml="";
+            //issueFullRefund退全款
+            if(fullRefund!=null){
+                d.setSoaOperationName("issueFullRefund");
+                xml=BindAccountAPI.issueFullRefund(token,caseId,caseType,textarea);
+            }
+            //issuePartialRefund退半款
+            if(partialRefund!=null){
+                d.setSoaOperationName("issuePartialRefund");
+                xml=BindAccountAPI.issuePartialRefund(token,caseId,caseType,textarea,amout);
+            }
+            AddApiTask addApiTask = new AddApiTask();
+            Map<String, String> resEbpMap = addApiTask.exec(d, xml, "https://svcs.ebay.com/services/resolution/ResolutionCaseManagementService/v1");
+            String r1 = resEbpMap.get("stat");
+            String res = resEbpMap.get("message");
+            if ("fail".equalsIgnoreCase(r1)) {
+                AjaxSupport.sendFailText("fail", res);
+                return;
+            }
+            String ack = SamplePaseXml.getVFromXmlString(res, "ack");
+            if ("Success".equalsIgnoreCase(ack)) {
+                TradingGetUserCases cases=caseses.get(0);
+                cases.setHandled(1);
+                iTradingGetUserCases.saveGetUserCases(cases);
+                AjaxSupport.sendSuccessText("message", "退款成功!");
+            }else{
+                String errors = SamplePaseXml.getVFromXmlString(res, "Errors");
+                logger.error("退款失败!" + errors);
+                AjaxSupport.sendFailText("fail", "退款失败！请稍后重试");
+            }
+        }else{
+            AjaxSupport.sendFailText("fail","纠纷不存在");
+        }
+        AjaxSupport.sendSuccessText("message", "sendRefund");
+    }
+    //offerOtherSolution 发送消息
+    @RequestMapping("/sendMessageForm.do")
+    @ResponseBody
+    public void sendMessageForm(CommonParmVO commonParmVO,HttpServletRequest request) throws Exception {
+        String transactionId=request.getParameter("transactionId");
+        String textarea=request.getParameter("textarea");
+        UsercontrollerDevAccountExtend d=new UsercontrollerDevAccountExtend();
+        String token="AgAAAA**AQAAAA**aAAAAA**CLSRUQ**nY+sHZ2PrBmdj6wVnY+sEZ2PrA2dj6AFlYCjDJGCqA+dj6x9nY+seQ**FdYBAA**AAMAAA**w2sMbwlQ7TBHWxj9EsVedHQRI3+lonY9MDfiyayQbnFkjEanjL/yMCpS/D2B9xHRzRx+ppxWZkRPgeAKJvNotPLLrVTuEzOl5M7pi6Tw8+pzcmIEsOh7HQO78JlyFlvLc/ruE6/hG0E/HO1UX76YBwxp00N9f1NNUpo5u36D/TYsx5O2jXFTKkCOHwz6RW9vtN6TU39aLm+JQme2+NfFFXnbX8MHzoUiX7Sty0R88ZpX5wLp8ZdgXCEc5zZDQziYB1MSXF9hsmby5wKbxFF+OvW/zKADThk1gprgAgnEOucyoao+cUMHopLlYgMbjnLzdCXP5F9z+fkYTnKF6AEl5eHBpcKQGbPzswnKebRoBVw+bI2I1C/iq+PvBUyndFAexjrvlDQbEKr6qb6AWRVTTfkW2ce6a0ixRuCTq35zEpWpfAqkSKo+X23d/Q4V8R30rDXotOWDZL6o408cMO+UQ17uVA2arA1JNkYfc/AZ0T0z7ze5o/yp93jJPlDgi05Ut4fpCAMZw3X85GxrTlbEtawWgoyUbmMuv4f6QHZLZAerOaJA8DRJkzkzjJJ025bp1HvAECOc4ggdv0cofu4q96shssgNYYZJUPM+q4+0fnGK0pxQTNY9SV6vSaVCVoTZJo6vefW7OiHX2/eLoPKFuUfsKXXEv9OY71gD1xzYg/rpCMAqCTq1dKqqyT1R5fxANnoRX7vwkq+7jkCj2fAfKTnHi9mSuBFsilKLmnsqqWy3IGShMgdxiQwBEk6IWi9C";
+        d.setSoaSecurityToken(token);
+        d.setHeaderType("DisputeApiHeader");
+        d.setSoaOperationName("offerOtherSolution");
+        List<TradingGetUserCases> caseses= iTradingGetUserCases.selectGetUserCasesByTransactionId(transactionId);
+        if(caseses!=null&&caseses.size()>0) {
+            String caseId = caseses.get(0).getCaseid();
+            String caseType = caseses.get(0).getCasetype();
+            String xml=BindAccountAPI.offerOtherSolution(token,caseId,caseType,textarea);
+            AddApiTask addApiTask = new AddApiTask();
+            Map<String, String> resEbpMap = addApiTask.exec(d, xml, "https://svcs.ebay.com/services/resolution/ResolutionCaseManagementService/v1");
+            String r1 = resEbpMap.get("stat");
+            String res = resEbpMap.get("message");
+            if ("fail".equalsIgnoreCase(r1)) {
+                AjaxSupport.sendFailText("fail", res);
+                return;
+            }
+            String ack = SamplePaseXml.getVFromXmlString(res, "ack");
+            if ("Success".equalsIgnoreCase(ack)) {
+                TradingGetUserCases cases=caseses.get(0);
+                cases.setHandled(1);
+                iTradingGetUserCases.saveGetUserCases(cases);
+                TradingOrderAddMemberMessageAAQToPartner partner=new TradingOrderAddMemberMessageAAQToPartner();
+                partner.setSender(cases.getSellerid());
+                partner.setBody(textarea);
+                partner.setTransactionid(cases.getTransactionid());
+                partner.setItemid(cases.getItemid());
+                partner.setRecipientid(cases.getBuyerid());
+                partner.setMessagetype(1);
+                iTradingOrderAddMemberMessageAAQToPartner.saveOrderAddMemberMessageAAQToPartner(partner);
+                AjaxSupport.sendSuccessText("message", "发送消息成功!");
+            }else{
+                String errors = SamplePaseXml.getVFromXmlString(res, "Errors");
+                logger.error("发送消息失败!" + errors);
+                AjaxSupport.sendFailText("fail", "发送消息失败！请稍后重试");
+            }
+        }else{
+            AjaxSupport.sendFailText("fail","纠纷不存在");
+        }
+        AjaxSupport.sendSuccessText("message", "sendMessageForm");
     }
 }

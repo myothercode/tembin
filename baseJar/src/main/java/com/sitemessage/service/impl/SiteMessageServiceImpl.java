@@ -6,7 +6,9 @@ import com.base.database.sitemessage.model.CustomPublicSitemessage;
 import com.base.database.sitemessage.model.PublicSitemessage;
 import com.base.database.sitemessage.model.PublicSitemessageExample;
 import com.base.database.sitemessage.model.SiteMessageCountVO;
+import com.base.domains.SessionVO;
 import com.base.mybatis.page.Page;
+import com.base.utils.cache.SessionCacheSupport;
 import com.base.utils.common.ObjectUtils;
 import com.base.utils.threadpool.TaskMessageVO;
 import com.sitemessage.service.SiteMessageService;
@@ -14,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -32,13 +35,21 @@ public class SiteMessageServiceImpl implements SiteMessageService {
     @Override
     /**根据信息的读取与否获取信息list*/
     public List<CustomPublicSitemessage> querySiteMessage(PublicSitemessage sitemessage, Page page) {
-        List<CustomPublicSitemessage> customPublicSitemessages = customPublicSitemessageMapper.selectSiteMessageList(sitemessage, page);
+        SessionVO sessionVO = SessionCacheSupport.getSessionVO();
+        Map map=new HashMap();
+        map.put("messageTo",sessionVO.getId());
+        map.put("messageType",sitemessage.getMessageType());
+        List<CustomPublicSitemessage> customPublicSitemessages = customPublicSitemessageMapper.selectSiteMessageList(map, page);
         return customPublicSitemessages;
     }
 
+    /**填写相应的消息类型*/
+
     @Override
-    /**读取信息，并标记为已读*/
+    /**读取一条信息，并标记为已读*/
     public CustomPublicSitemessage fetchSiteMessage(PublicSitemessage publicSitemessage) {
+        SessionVO sessionVO = SessionCacheSupport.getSessionVO();
+        publicSitemessage.setMessageTo(sessionVO.getId());
         CustomPublicSitemessage customPublicSitemessage = customPublicSitemessageMapper.fetchSiteMessageById(publicSitemessage);
         if (customPublicSitemessage != null &&
                 ("0".equals(customPublicSitemessage.getReaded()) || ObjectUtils.isLogicalNull(customPublicSitemessage.getReaded()))) {
@@ -48,6 +59,13 @@ public class SiteMessageServiceImpl implements SiteMessageService {
             publicSitemessageMapper.updateByPrimaryKeySelective(h);
         }
         return customPublicSitemessage;
+    }
+
+    @Override
+    /**批量标记为已读*/
+    public void batchSetReaded(Map map){
+        //Long[] ids= (Long[]) map.get("idArray");
+        customPublicSitemessageMapper.updateReadedMessage(map);
     }
 
     @Override

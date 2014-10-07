@@ -11,6 +11,11 @@
 <html>
 <head>
     <title></title>
+    <style type="text/css">
+        body {
+            background-color: #ffffff;
+        }
+    </style>
     <style>
         .table-a table{border:1px solid rgba(0, 0, 0, 0.23)
         }

@@ -2,11 +2,13 @@ package com.iteminformation.controller;
 
 import com.base.database.publicd.model.PublicUserConfig;
 import com.base.domains.CommonParmVO;
+import com.base.domains.SessionVO;
 import com.base.domains.querypojos.ItemInformationQuery;
 import com.base.mybatis.page.Page;
 import com.base.mybatis.page.PageJsonBean;
 import com.base.utils.annotations.AvoidDuplicateSubmission;
 import com.base.utils.cache.DataDictionarySupport;
+import com.base.utils.cache.SessionCacheSupport;
 import com.common.base.utils.ajax.AjaxSupport;
 import com.common.base.web.BaseAction;
 import com.publicd.service.IPublicItemInformation;
@@ -50,6 +52,12 @@ public class ItemInformationTypeController extends BaseAction {
         Map m = new HashMap();
         PageJsonBean jsonBean=commonParmVO.getJsonBean();
         Page page=jsonBean.toPage();
+        SessionVO sessionVO= SessionCacheSupport.getSessionVO();
+        if(sessionVO!=null){
+            m.put("userID",sessionVO.getId());
+        }else{
+            m.put("userID",null);
+        }
         List<ItemInformationQuery> list=iPublicItemInformation.selectItemInformationByType(m, page);
         jsonBean.setList(list);
         jsonBean.setTotal((int)page.getTotalCount());

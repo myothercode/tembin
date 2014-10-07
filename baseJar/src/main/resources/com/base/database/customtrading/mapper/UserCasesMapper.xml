@@ -20,28 +20,54 @@
       <result column="respondByDate" jdbcType="TIMESTAMP" property="respondbydate" />
       <result column="creationDate" jdbcType="TIMESTAMP" property="creationdate" />
       <result column="lastModifiedDate" jdbcType="TIMESTAMP" property="lastmodifieddate" />
+      <result column="handled" jdbcType="INTEGER" property="handled" />
       <result column="create_user" jdbcType="BIGINT" property="createUser" />
       <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
       <result column="uuid" jdbcType="VARCHAR" property="uuid" />
+      <result column="ebpReason" jdbcType="VARCHAR" property="ebpReason" />
+      <result column="disputeReason" jdbcType="VARCHAR" property="disputeReason" />
   </resultMap>
 
     <select id="selectUserCases" resultMap="BaseResultMap" parameterType="map">
-        select UserCases.* from trading_get_user_cases UserCases where 1=1
+        select UserCases.*,ebp.openReason ebpReason,dis.disputeReason disputeReason from trading_get_user_cases UserCases
+        left join trading_get_ebpcase_detail ebp on ebp.transactionId=UserCases.transactionId
+        left join trading_get_dispute dis on  dis.disputeID=UserCases.caseId
+        where 1=1
         <if test="id!=null">
             and UserCases.id = #{id}
         </if>
-        <if test="caseType!=null">
-            <if test="caseType=='EBP'">
-                and UserCases.caseType like "%EBP%"
+        <if test="status!=null">
+            and UserCases.handled=#{status}
+        </if>
+        <if test="starttime!=null">
+            and UserCases.creationDate>= #{starttime}
+        </if>
+        <if test="endtime!=null">
+            and UserCases.creationDate &lt; #{endtime}
+        </if>
+        <if test="name!=null">
+            <if test="name==1">
+                and UserCases.caseType like "EBP%"
             </if>
-            <if test="caseType=='CANCEL'">
-                and UserCases.caseType like "%CANCEL%"
+            <if test="name==2">
+                and UserCases.caseType not like "EBP%"
             </if>
-            <if test="caseType!='EBP'">
-                and UserCases.caseType not like "%EBP%"
+            <if test="name==3">
+                and UserCases.buyerId like "%"#{content}"%"
             </if>
-            <if test="caseType!='CANCEL'">
-                and UserCases.caseType not like "%CANCEL%"
+            <if test="name==4">
+                and UserCases.sellerId like "%"#{content}"%"
+            </if>
+        </if>
+        <if test="type!=null">
+            <if test="type=='BuyerHasNotPaid'">
+                and (dis.disputeReason=#{type})
+            </if>
+            <if test="type=='ItemNotReceived'">
+                and (dis.disputeReason=#{type} or ebp.openReason="Item not received")
+            </if>
+            <if test="type=='SignificantlyNotAsDescribed'">
+                and (dis.disputeReason=#{type} or (ebp.appealDecision like "%didn't match the description%"))
             </if>
         </if>
     </select>

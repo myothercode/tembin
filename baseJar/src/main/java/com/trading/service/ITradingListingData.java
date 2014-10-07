@@ -23,4 +23,6 @@ public interface ITradingListingData {
     void updateTradingListingData(TradingListingData tld);
 
     void insertTradingListingAmend(TradingListingAmend tla);
+
+    List<TradingListingData> selectByList(String sku, String ebayAccount);
 }

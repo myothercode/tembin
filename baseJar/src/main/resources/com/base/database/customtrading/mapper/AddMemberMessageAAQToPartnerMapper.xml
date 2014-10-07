@@ -31,6 +31,12 @@
         <if test="sendMessage==null">
             and AddMemberMessageAAQToPartner.messagetype=2
         </if>
+        <if test="ebays!=null">
+            and AddMemberMessageAAQToPartner.sender in
+            <foreach collection="ebays" item="ebay" index="index" open="(" separator="," close=")">
+                #{ebay.ebayName}
+            </foreach>
+        </if>
         group by AddMemberMessageAAQToPartner.messagetype,AddMemberMessageAAQToPartner.transactionId
     </select>
 </mapper>

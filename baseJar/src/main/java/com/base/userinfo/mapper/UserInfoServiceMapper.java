@@ -30,6 +30,9 @@ public interface UserInfoServiceMapper {
     /**查询指定用户帐号绑定的ebay帐号*/
     public List<UsercontrollerEbayAccountExtend> queryEbayAccountForUser(Map map);
 
+    /**查询指定用户帐号绑定的ebay帐号*/
+    public List<UsercontrollerEbayAccountExtend> queryAllEbayAccountForUser(Map map);
+
     /**根据ebay账户id查找token*/
     public UsercontrollerEbayAccount getTokenByEbayID(Long id);
 

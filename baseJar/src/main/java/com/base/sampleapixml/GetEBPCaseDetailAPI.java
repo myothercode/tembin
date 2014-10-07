@@ -28,7 +28,7 @@ public class GetEBPCaseDetailAPI {
         ebpCaseDetail.setDecisiondate(DateUtils.returnDate(decisionDate));
         ebpCaseDetail.setDecision(SamplePaseXml.getSpecifyElementText(caseDetail,"decision"));
         ebpCaseDetail.setGlobalid(SamplePaseXml.getSpecifyElementText(caseDetail,"globalId"));
-        ebpCaseDetail.setAppealdecision(SamplePaseXml.getSpecifyElementText(caseDetail,"appeal","decision"));
+        ebpCaseDetail.setAppealdecision(SamplePaseXml.getSpecifyElementText(caseDetail,"decisionReasonDetail","content"));
         String appealDecisionDate=SamplePaseXml.getSpecifyElementText(caseDetail,"appeal","decisionDate");
         ebpCaseDetail.setAppealdecisiondate(DateUtils.returnDate(appealDecisionDate));
         String creationDate=SamplePaseXml.getSpecifyElementText(caseDetail,"appeal","creationDate");
@@ -38,6 +38,7 @@ public class GetEBPCaseDetailAPI {
         ebpCaseDetail.setAgreedrefundamount(SamplePaseXml.getSpecifyElementText(caseDetail,"agreedRefundAmount"));
         ebpCaseDetail.setDetailstatusinfodescription(SamplePaseXml.getSpecifyElementText(caseDetail,"detailStatusInfo","description"));
         ebpCaseDetail.setInitialbuyerexpectationdetail(SamplePaseXml.getSpecifyElementText(caseDetail,"initialBuyerExpectationDetail","description"));
+        ebpCaseDetail.setTransactionid(SamplePaseXml.getSpecifyElementText(root,"caseSummary","item","transactionId"));
         Iterator history=caseDetail.elementIterator("responseHistory");
         while(history.hasNext()){
             Element response= (Element) history.next();

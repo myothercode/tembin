@@ -16,7 +16,7 @@ public class ShippingServiceCost {
 
     }
 
-    public ShippingServiceCost(String currencyID,double value){
+    public ShippingServiceCost(String currencyID,Double value){
         this.currencyID = currencyID;
         this.value = value;
     }
@@ -28,7 +28,7 @@ public class ShippingServiceCost {
     /**
      * 设置值
      */
-    private double value;
+    private Double value;
 
     public String getCurrencyID() {
         return currencyID;
@@ -38,11 +38,11 @@ public class ShippingServiceCost {
         this.currencyID = currencyID;
     }
 
-    public double getValue() {
+    public Double getValue() {
         return value;
     }
 
-    public void setValue(double value) {
+    public void setValue(Double value) {
         this.value = value;
     }
 }

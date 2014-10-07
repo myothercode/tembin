@@ -62,4 +62,10 @@ public class TradingListingDataImpl implements com.trading.service.ITradingListi
     public void insertTradingListingAmend(TradingListingAmend tla){
         this.tradingListingAmendMapper.insertSelective(tla);
     }
+    @Override
+    public List<TradingListingData> selectByList(String sku,String ebayAccount){
+        TradingListingDataExample tlde = new TradingListingDataExample();
+        tlde.createCriteria().andSkuEqualTo(sku).andEbayAccountEqualTo(ebayAccount);
+        return this.tradingListingDataMapper.selectByExample(tlde);
+    }
 }

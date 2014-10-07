@@ -30,6 +30,12 @@
     <select id="selectByExample" resultMap="BaseResultMap" parameterType="map">
         select * from trading_listing_data tion
         where 1=1
+        <if test="folderid==null">
+            and tion.folder_id is null
+        </if>
+        <if test="folderid!=null">
+            and tion.folder_id = #{folderid}
+        </if>
         <if test="userid!=null">
             and tion.create_user = #{userid}
         </if>

@@ -6,6 +6,7 @@ import org.apache.commons.lang.StringUtils;
 import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.Date;
 import java.util.Map;
 
 /**
@@ -101,19 +102,15 @@ public class BindAccountAPI {
     public static String getUserCases(Map map){
         String xml="<?xml version=\"1.0\" encoding=\"utf-8\"?>" +
                 "<getUserCasesRequest xmlns:ser=\"http://www.ebay.com/marketplace/resolution/v1/services\" xmlns:soap=\"http://www.w3.org/2003/05/soap-envelope\">" +
-                "<creationDateRangeFilter>" +
-                "<fromDate>"+map.get("fromTime")+"</fromDate>" +
-                "<toDate>"+map.get("toTime")+"</toDate>" +
-                "</creationDateRangeFilter>" +
-               /* "<paginationInput>" +
-                "<pageNumber>"+map.get("page")+"</pageNumber>" +
-                "<entriesPerPage>100</entriesPerPage>" +
-                "</paginationInput>" +*/
-                "<paginationInput>" +
-                "<pageNumber>1</pageNumber>" +
-                "<entriesPerPage>100</entriesPerPage>" +
-                "</paginationInput>"+
-                "</getUserCasesRequest>";
+                "<ser:creationDateRangeFilter>" +
+                "<ser:fromDate>"+map.get("fromTime")+"</ser:fromDate>" +
+                "<ser:toDate>"+map.get("toTime")+"</ser:toDate>" +
+                "</ser:creationDateRangeFilter>" +
+                "<ser:paginationInput>" +
+                "<ser:pageNumber>"+map.get("page")+"</ser:pageNumber>" +
+                "<ser:entriesPerPage>100</ser:entriesPerPage>" +
+                "</ser:paginationInput>"+
+              "</getUserCasesRequest>";
               return xml;
     }
     public static String getGetOrders(Map<String,String> map){
@@ -254,7 +251,8 @@ public class BindAccountAPI {
    */
     public static  String getEBPCase(Map map){
         String xml="<?xml version=\"1.0\" encoding=\"utf-8\"?>" +
-                "<getEBPCaseDetailRequest xmlns:soap=\"http://www.ebay.com/marketplace/resolution/v1/services\">" +
+               /* "<getEBPCaseDetailRequest xmlns:soap=\"http://www.ebay.com/marketplace/resolution/v1/services\">" +*/
+                "<getEBPCaseDetailRequest xmlns=\"http://www.ebay.com/marketplace/resolution/v1/services\">"+
                 "<RequesterCredentials>" +
                 "<eBayAuthToken>"+map.get("token")+"</eBayAuthToken>" +
                 "</RequesterCredentials>" +
@@ -320,6 +318,88 @@ public class BindAccountAPI {
                 "    </AddOrder>" +
                 "  </soap:Body>" +
                 "</soap:Envelope>";
+        return xml;
+    }
+    //提供运输信息provideShippingInfo
+    public static  String ProvideShippingInfo(String token,String caseId,String caseType,String carrier,String shippedTime1,Date shippedTime){
+        String xml="<?xml version=\"1.0\" encoding=\"utf-8\"?>" +
+                "<provideShippingInfoRequest xmlns:\"http://www.ebay.com/marketplace/resolution/v1/services\">" +
+                "  <RequesterCredentials>" +
+                "    <eBayAuthToken>"+token+"</eBayAuthToken>" +
+                "  </RequesterCredentials>" +
+                "  <caseId>" +
+                "    <id>"+caseId+"</id>" +
+                "    <type>"+caseType+"</type>" +
+                "  </caseId>" +
+                "  <carrierUsed>"+carrier+"</carrierUsed>" +
+                "  <shippedDate>"+shippedTime1+"</shippedDate>" +
+                "  <!--Optional:-->" +
+                "  <comments>Your item was shipped with USPS on "+shippedTime+".</comments>" +
+                "</provideShippingInfoRequest>";
+        return xml;
+    }
+    //提供跟踪信息provideTrackingInfo
+    public static  String provideTrackingInfo(String token,String caseId,String caseType,String trackingNum,String carrier,String message){
+        String xml="<?xml version=\"1.0\" encoding=\"utf-8\"?>" +
+                "<provideTrackingInfoRequest xmlns:\"http://www.ebay.com/marketplace/resolution/v1/services\">" +
+                "   <RequesterCredentials>" +
+                "        <eBayAuthToken>"+token+"</eBayAuthToken>" +
+                "   </RequesterCredentials>" +
+                "   <caseId>" +
+                "      <id>"+caseId+"</id>" +
+                "      <type>"+caseType+"</type>" +
+                "   </caseId>" +
+                "   <trackingNumber>"+trackingNum+"</trackingNumber>" +
+                "   <carrierUsed>"+carrier+"</carrierUsed>" +
+                "   <!--Optional:-->" +
+                "   <comments>Here is your "+carrier+" tracking number</comments>" +
+                "</provideTrackingInfoRequest>";
+        return xml;
+    }
+    //退全款issueFullRefund
+    public static  String issueFullRefund(String token,String caseId,String caseType,String message){
+        String xml="<?xml version=\"1.0\" encoding=\"utf-8\"?>" +
+                "<issueFullRefundRequest xmlns:\"http://www.ebay.com/marketplace/resolution/v1/services\">" +
+                "   <RequesterCredentials>" +
+                "        <eBayAuthToken>"+token+"</eBayAuthToken>" +
+                "   </RequesterCredentials>" +
+                "   <caseId>" +
+                "      <id>"+caseId+"</id>" +
+                "      <type>"+caseType+"</type>" +
+                "   </caseId>" +
+                "   <comments>"+message+"</comments>" +
+                "</issueFullRefundRequest>";
+        return xml;
+    }
+    //退半款issuePartialRefund
+    public static  String issuePartialRefund(String token,String caseId,String caseType,String message,String amount){
+        String xml="<?xml version=\"1.0\" encoding=\"utf-8\"?>" +
+                "<issuePartialRefundRequest xmlns:\"http://www.ebay.com/marketplace/resolution/v1/services\">" +
+                "  <RequesterCredentials>" +
+                "    <eBayAuthToken>"+token+"</eBayAuthToken>" +
+                "  </RequesterCredentials>" +
+                "  <caseId>" +
+                "    <id>"+caseId+"</id>" +
+                "    <type>"+caseType+"</type>" +
+                "  </caseId>" +
+                "  <amount currencyCode=\"USD\">"+amount+"</amount>" +
+                "  <comments>"+message+"</comments>" +
+                "</issuePartialRefundRequest>";
+        return xml;
+    }
+    //offerOtherSolution 发送消息
+    public static  String offerOtherSolution(String token,String caseId,String caseType,String message){
+        String xml="<?xml version=\"1.0\" encoding=\"utf-8\"?>" +
+                "<offerOtherSolutionRequest  xmlns:\"http://www.ebay.com/marketplace/resolution/v1/services\">" +
+                "   <RequesterCredentials>" +
+                "        <eBayAuthToken>"+token+"</eBayAuthToken>" +
+                "   </RequesterCredentials>" +
+                "   <caseId>" +
+                "      <id>"+caseId+"</id>" +
+                "      <type>"+caseType+"</type>" +
+                "   </caseId>" +
+                "   <messageToBuyer>"+message+"</messageToBuyer>" +
+                "</offerOtherSolutionRequest>";
         return xml;
     }
     /*

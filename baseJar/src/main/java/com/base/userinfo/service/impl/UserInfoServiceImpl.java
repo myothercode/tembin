@@ -3,6 +3,7 @@ package com.base.userinfo.service.impl;
 import com.base.database.trading.mapper.UsercontrollerDevAccountMapper;
 import com.base.database.trading.mapper.UsercontrollerEbayAccountMapper;
 import com.base.database.trading.mapper.UsercontrollerEbayDevMapper;
+import com.base.database.trading.mapper.UsercontrollerPaypalAccountMapper;
 import com.base.database.trading.model.*;
 import com.base.database.userinfo.mapper.UsercontrollerUserEbayMapper;
 import com.base.database.userinfo.mapper.UsercontrollerUserMapper;
@@ -43,6 +44,8 @@ public class UserInfoServiceImpl implements com.base.userinfo.service.UserInfoSe
     private UsercontrollerUserMapper userMapper;
     @Autowired
     private UsercontrollerUserEbayMapper userEbayMapper;
+    @Autowired
+    private UsercontrollerPaypalAccountMapper paypalAccountMapper;
 
 
     @Override
@@ -107,7 +110,7 @@ public class UserInfoServiceImpl implements com.base.userinfo.service.UserInfoSe
         Map map =new HashMap();
         map.put("userID",sessionVO.getId());
         map.put("resultNum","all");
-        List<UsercontrollerEbayAccountExtend> ebayAccounts=userInfoServiceMapper.queryEbayAccountForUser(map);
+        List<UsercontrollerEbayAccountExtend> ebayAccounts=userInfoServiceMapper.queryAllEbayAccountForUser(map);
         return ebayAccounts;
     }
 
@@ -192,17 +195,31 @@ public class UserInfoServiceImpl implements com.base.userinfo.service.UserInfoSe
         Long ebayId= (Long) map.get("id");
         String name= (String) map.get("name");
         String code= (String) map.get("code");
+        String payPalId= (String) map.get("payPalId");
         UsercontrollerEbayAccount e = usercontrollerEbayAccountMapper.selectByPrimaryKey(ebayId);
         SessionVO sessionVO = SessionCacheSupport.getSessionVO();
         Asserts.assertTrue(sessionVO.getId()==e.getCreateUser().longValue(),"没有权限修改此记录！");
         e.setEbayName(name);
         e.setEbayNameCode(code);
+        e.setPaypalAccountId(Long.valueOf(payPalId));
         usercontrollerEbayAccountMapper.updateByPrimaryKey(e);
     }
 
     @Override
     /**根据id查询ebay信息*/
-    public UsercontrollerEbayAccount queryEbayInfoById(Map map){
-        return usercontrollerEbayAccountMapper.selectByPrimaryKey((Long) map.get("ebayId"));
+    public UsercontrollerEbayAccountExtend queryEbayInfoById(Map map){
+        UsercontrollerEbayAccount ea=usercontrollerEbayAccountMapper.selectByPrimaryKey((Long) map.get("ebayId"));
+        UsercontrollerEbayAccountExtend eae=new UsercontrollerEbayAccountExtend();
+        eae.setEbayName(ea.getEbayName());
+        eae.setEbayNameCode(ea.getEbayNameCode());
+        eae.setPaypalAccountId(ea.getPaypalAccountId());
+
+        if(ea.getPaypalAccountId()!=null){
+            UsercontrollerPaypalAccount s= paypalAccountMapper.selectByPrimaryKey(ea.getPaypalAccountId());
+            eae.setPaypalName(s.getPaypalAccount());
+        }
+
+
+        return eae;
     }
 }

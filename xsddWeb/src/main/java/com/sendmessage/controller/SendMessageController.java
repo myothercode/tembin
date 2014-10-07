@@ -3,8 +3,10 @@ package com.sendmessage.controller;
 import com.base.database.trading.model.TradingOrderAddMemberMessageAAQToPartner;
 import com.base.domains.CommonParmVO;
 import com.base.domains.querypojos.TradingOrderAddMemberMessageAAQToPartnerQuery;
+import com.base.domains.userinfo.UsercontrollerEbayAccountExtend;
 import com.base.mybatis.page.Page;
 import com.base.mybatis.page.PageJsonBean;
+import com.base.userinfo.service.SystemUserManagerService;
 import com.base.userinfo.service.UserInfoService;
 import com.base.utils.annotations.AvoidDuplicateSubmission;
 import com.common.base.utils.ajax.AjaxSupport;
@@ -35,6 +37,8 @@ public class SendMessageController extends BaseAction{
     private UserInfoService userInfoService;
     @Autowired
     private ITradingOrderAddMemberMessageAAQToPartner iTradingOrderAddMemberMessageAAQToPartner;
+    @Autowired
+    private SystemUserManagerService systemUserManagerService;
     @RequestMapping("/sendMessageList.do")
     public ModelAndView sendMessageList(HttpServletRequest request,HttpServletResponse response,ModelMap modelMap){
         return forword("sendMessage/sendMessageList",modelMap);
@@ -52,6 +56,9 @@ public class SendMessageController extends BaseAction{
         m.put("sendMessage","notAutoSendMessage");
         PageJsonBean jsonBean=commonParmVO.getJsonBean();
         Page page=jsonBean.toPage();
+        Map ebayMap=new HashMap();
+        List<UsercontrollerEbayAccountExtend> ebays=systemUserManagerService.queryCurrAllEbay(ebayMap);
+        m.put("ebays",ebays);
         List<TradingOrderAddMemberMessageAAQToPartnerQuery> lists= iTradingOrderAddMemberMessageAAQToPartner.selectTradingOrderAddMemberMessageAAQToPartner(m, page);
         jsonBean.setList(lists);
         jsonBean.setTotal((int)page.getTotalCount());
@@ -65,6 +72,9 @@ public class SendMessageController extends BaseAction{
         /**分页组装*/
         PageJsonBean jsonBean=commonParmVO.getJsonBean();
         Page page=jsonBean.toPage();
+        Map ebayMap=new HashMap();
+        List<UsercontrollerEbayAccountExtend> ebays=systemUserManagerService.queryCurrAllEbay(ebayMap);
+        m.put("ebays",ebays);
         List<TradingOrderAddMemberMessageAAQToPartnerQuery> lists= iTradingOrderAddMemberMessageAAQToPartner.selectTradingOrderAddMemberMessageAAQToPartner(m, page);
         jsonBean.setList(lists);
         jsonBean.setTotal((int)page.getTotalCount());

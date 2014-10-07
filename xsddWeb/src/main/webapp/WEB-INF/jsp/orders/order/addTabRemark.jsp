@@ -11,10 +11,15 @@
 <html>
 <head>
     <title></title>
+    <style type="text/css">
+        body {
+            background-color: #ffffff;
+        }
+    </style>
     <script type="text/javascript">
         var api = frameElement.api, W = api.opener;
         function submitCommit(){
-            var url=path+"/order/saveTabremark.do?";
+            var url=path+"/order/saveTabremark.do?folderType=${folderType}";
             var data=$("#addRemarkForm").serialize();
             $().invoke(url,data,
                     [function(m,r){

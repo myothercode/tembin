@@ -60,6 +60,9 @@
         <if test="content!=null">
             and itemInformation.name like "%"#{content}"%"
         </if>
+        <if test="userID!=null">
+            and itemInformation.create_user=#{userID}
+        </if>
         group by itemInformation.id
     </select>
     <select id="selectItemInformationByType" resultMap="BaseResultMap" parameterType="map">
@@ -69,6 +72,12 @@
         where 1=1
         <if test="id!=null">
             and itemInformation.id = #{id}
+        </if>
+        <if test="userID!=null">
+            and itemInformation.create_user=#{userID}
+        </if>
+        <if test="userID!=null">
+            and itemInformation.create_user=#{userID}
         </if>
         group by dic.id
     </select>

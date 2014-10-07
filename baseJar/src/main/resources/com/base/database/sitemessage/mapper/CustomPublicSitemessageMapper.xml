@@ -10,10 +10,11 @@
     <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
     <result column="readed" property="readed" jdbcType="VARCHAR" />
     <result column="message" property="message" jdbcType="LONGVARCHAR" />
+      <result column="message_title" property="messageTitle" jdbcType="VARCHAR" />
   </resultMap>
 
-<select id="selectSiteMessageList" parameterType="com.base.database.sitemessage.model.PublicSitemessage" resultMap="BaseResultMap">
-    select m.id,m.message_to,m.message_from,m.message_type,m.create_time,m.readed,
+<select id="selectSiteMessageList" parameterType="map" resultMap="BaseResultMap">
+    select m.id,m.message_to,m.message_from,m.message_type,m.create_time,m.readed,m.message_title,m.message,
     fu.user_name fromName,tu.user_name toName from public_sitemessage m
     LEFT JOIN usercontroller_user fu on fu.user_id=m.message_from
     LEFT JOIN usercontroller_user tu on tu.user_id=m.message_to
@@ -22,7 +23,7 @@
        and m.message_to = #{messageTo}
     </if>
     <if test="messageType!=null">
-        and m.message_type = #{messageType}
+        and (m.message_type = CONCAT(#{messageType},'_SUCCESS'),m.message_type = CONCAT(#{messageType},'_Fail'))
     </if>
     <if test="messageFrom!=null">
         and m.message_from = #{messageFrom}
@@ -34,7 +35,7 @@
         fu.user_name fromName,tu.user_name toName from public_sitemessage m
         LEFT JOIN usercontroller_user fu on fu.user_id=m.message_from
         LEFT JOIN usercontroller_user tu on tu.user_id=m.message_to
-        where m.id = #{id}
+        where m.id = #{id} and m.message_to = #{messageTo}
     </select>
     
     <select id="countSiteMessage" parameterType="map" resultType="com.base.database.sitemessage.model.SiteMessageCountVO">
@@ -42,5 +43,18 @@
         where (m.readed is null or m.readed='0') and m.message_to=#{mToId}
         GROUP BY m.message_type
     </select>
+    
+    <update id="updateReadedMessage" parameterType="map">
+        update public_sitemessage ps set ps.readed=1
+        where ps.message_to=#{mToId} and ps.readed=0
+
+        <if test="idArray!=null">
+          and ps.id in
+            <foreach item="item" index="index" collection="idArray" open="("	separator="," close=")">
+              #{item,jdbcType=DECIMAL}
+            </foreach>
+        </if>
+
+    </update>
 
 </mapper>

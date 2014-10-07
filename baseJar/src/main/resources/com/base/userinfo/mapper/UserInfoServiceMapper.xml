@@ -53,7 +53,24 @@
         from usercontroller_user_ebay ue
         left join usercontroller_ebay_account ebay on ebay.id=ue.ebay_id
         left join usercontroller_paypal_account paypal on ebay.paypal_account_id =  paypal.id
-        where ue.user_id=#{userID} 
+        where ue.user_id=#{userID}
+        <if test="resultNum==null">
+            and ebay.ebay_status=1
+        </if>
+        ) aa where aa.id is not null
+    </select>
+
+    <select id="queryAllEbayAccountForUser" parameterType="map" resultType="com.base.domains.userinfo.UsercontrollerEbayAccountExtend">
+        select * from (
+        select DISTINCT ebay.id id, ebay.user_id userId, ebay.ebay_name ebayName,
+        ebay.paypal_account_id paypalAccountId, ebay.create_user createUser,
+        ebay.create_time createTime, ebay.uuid uuid,ebay.ebay_token ebayToken,
+        paypal.paypal_account paypalName,ebay.ebay_name_code ebayNameCode,ebay.ebay_status ebayStatus,
+        ebay.use_time_start useTimeStart,ebay.use_time_end useTimeEnd
+        from usercontroller_ebay_account ebay
+        left join usercontroller_user_ebay ue on ebay.id=ue.ebay_id
+        left join usercontroller_paypal_account paypal on ebay.paypal_account_id =  paypal.id
+        where ebay.user_id=#{userID}
         <if test="resultNum==null">
             and ebay.ebay_status=1
         </if>

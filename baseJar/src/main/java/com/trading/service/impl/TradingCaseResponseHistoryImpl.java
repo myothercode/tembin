@@ -30,17 +30,24 @@ public class TradingCaseResponseHistoryImpl implements com.trading.service.ITrad
         }else{
             TradingCaseResponseHistory t=tradingCaseResponseHistoryMapper.selectByPrimaryKey(CaseResponseHistory.getId());
             Asserts.assertTrue(t != null && t.getCreateUser() != null, "没有找到记录或者记录创建者为空");
-            ObjectUtils.valiUpdate(t.getCreateUser(),TradingCaseResponseHistoryMapper.class,CaseResponseHistory.getId());
+            ObjectUtils.valiUpdate(t.getCreateUser(),TradingCaseResponseHistoryMapper.class,CaseResponseHistory.getId(),"Synchronize");
             tradingCaseResponseHistoryMapper.updateByPrimaryKeySelective(CaseResponseHistory);
         }
     }
 
     @Override
-    public List<TradingCaseResponseHistory> selectCaseResponseHistoryById(Long Id) {
+    public List<TradingCaseResponseHistory> selectCaseResponseHistoryByEBPId(Long Id) {
         TradingCaseResponseHistoryExample example=new TradingCaseResponseHistoryExample();
         TradingCaseResponseHistoryExample.Criteria cr=example.createCriteria();
         cr.andEbpcasedetailIdEqualTo(Id);
         List<TradingCaseResponseHistory> list=tradingCaseResponseHistoryMapper.selectByExample(example);
         return list;
+    }
+
+    @Override
+    public void deleteCaseResponseHistory(TradingCaseResponseHistory CaseResponseHistory) throws Exception {
+        if(CaseResponseHistory!=null&&CaseResponseHistory.getId()!=null){
+            tradingCaseResponseHistoryMapper.deleteByPrimaryKey(CaseResponseHistory.getId());
+        }
     }
 }

@@ -11,6 +11,11 @@
 <html>
 <head>
     <title></title>
+    <style type="text/css">
+        body {
+            background-color: #ffffff;
+        }
+    </style>
     <script type="text/javascript">
         var api = frameElement.api, W = api.opener;
         var selectTabRemark;
@@ -35,7 +40,7 @@
             $("#selectRemark").selectDataAfterSetParm({"bedDetailVO.deptId":"", "isTrue":0});
         }*/
         function addRemark(){
-            var url=path+"/order/addTabRemark.do";
+            var url=path+"/order/addTabRemark.do?folderType=${folderType}";
             selectTabRemark=$.dialog({title: '新建文件夹',
                 content: 'url:'+url,
                 icon: 'succeed',

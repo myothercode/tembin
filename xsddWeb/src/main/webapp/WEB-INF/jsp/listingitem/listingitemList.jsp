@@ -18,6 +18,7 @@
             var ebayaccount='${ebayaccount}';
             var selectType = '${selectType}';
             var selectValue = '${selectValue}';
+            var folderid = '${folderid}';
             var urls="/ajax/ListingItemList.do?1=1";
             if(flag!=null&&flag!=""){
                 urls="/ajax/ListingItemList.do?flag="+flag;
@@ -36,6 +37,9 @@
             }
             if(selectValue!=null&&selectValue!=""){
                 urls+="&selectValue="+selectValue;
+            }
+            if(folderid!=null&&folderid!=""){
+                urls+="&folderid="+folderid;
             }
             $("#itemTable").initTable({
                 url:path + urls,

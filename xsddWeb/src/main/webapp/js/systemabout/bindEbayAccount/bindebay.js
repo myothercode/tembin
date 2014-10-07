@@ -50,6 +50,7 @@ function getBindParm(){
 function fetchToken(a){
     var name=$('#bm').val();//别名
     var code = $('#code').val();//别名代码缩写
+    var payPalId=$("#paypalAccountId").val();
     if(name==null || code==null){alert("请填入别名和简写代码！");return;}
     //var devAccountID=$('#devSelect').val();
     //if(devAccountID==null || devAccountID ==0){alert('请选择开发帐号');return;}
@@ -57,10 +58,10 @@ function fetchToken(a){
     var data;
     if(a==null){
         url+="apiFetchToken.do";
-        data={strV1:sessid,id:"0",strV3:code,strV2:name};
+        data={strV1:sessid,id:"0",strV3:code,strV2:name,payPalId:payPalId};
     }else if(a=="edit"){
         url+="doEditEbayAccount.do";
-        data={id:ebayId,strV3:code,strV2:name};
+        data={id:ebayId,strV3:code,strV2:name,payPalId:payPalId};
     }
 
 
@@ -96,6 +97,24 @@ function getAllDevSelect(){
             }
         }]
     );
+}
+
+/**弹出选择绑定paypal帐号提示框*/
+var selectPayPalPage;
+function selectPaypalWindow(){
+   var url=path+"/paypal/selectPayPalPage.do";
+    selectPayPalPage=$.dialog({
+        title:'选择PayPal帐号',
+        id : "dig" + (new Date()).getTime(),
+        content:"url:"+url,
+        width : 700,
+        height : 500,
+        max:false,
+        min:false,
+        lock : true,
+        zIndex: 9999,
+        parent:api
+    });
 }
 
 /**将填入的别名进行缩写处理规则为提取字符串中的大写字母和数字的最后一位*/

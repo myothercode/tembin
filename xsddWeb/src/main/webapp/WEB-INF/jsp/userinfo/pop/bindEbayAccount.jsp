@@ -16,7 +16,6 @@
         var tokenParm;
         var ebayId="${ebayId}";
 
-
     </script>
     <script type="text/javascript" src=<c:url value ="/js/systemabout/bindEbayAccount/bindebay.js" /> ></script>
 </head>
@@ -42,7 +41,6 @@
             </div>
 
             <div class="control-group">
-
                 <!-- Text input-->
                 <label class="control-label" for="input01">简写代码</label>
                 <div class="controls">
@@ -50,6 +48,24 @@
                     <p class="help-block"></p>
                 </div>
             </div>
+
+            <div class="control-group">
+
+                <!-- Appended input-->
+                <label class="control-label">绑定paypal帐号</label>
+                <div class="controls">
+                    <div class="input-append">
+                        <input id="paypalAccount" value="${ebay.paypalName}" type="text" placeholder="" class="span2">
+                        <input id="paypalAccountId" value="${ebay.paypalAccountId}" type="hidden" placeholder="" class="input-xlarge">
+                        <span onclick="selectPaypalWindow()" class="add-on" style="cursor: pointer">选择</span>
+                    </div>
+                    <p class="help-block"></p>
+                </div>
+
+            </div>
+
+
+
         </fieldset>
     </form>
 
@@ -76,6 +92,7 @@
             <button class="btn btn-info" onclick="fetchToken('edit')">确定修改</button>
         </div>
     </div>
+
 </div>
 
 

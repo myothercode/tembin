@@ -29,6 +29,9 @@ public interface SystemUserManagerService {
     List<UsercontrollerEbayAccountExtend> queryCurrAllEbay(Map map);
 
 
+    /**查询账户绑定了哪些ebay账户*/
+    List<UsercontrollerEbayAccountExtend> queryACurrAllEbay(Map map);
+
     /**编辑页面综合查询用户信息*/
     AddSubUserVO queryAllUserAccountInfo(Long userID);
 

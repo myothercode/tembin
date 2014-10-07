@@ -42,7 +42,12 @@
                     $(d).find("span").attr("class","newusa_ici_1");
                 }
             });
-            $("#listing_frame").attr("src", map.get(name));
+            if(name.indexOf("myFolder_")==-1){
+                $("#listing_frame").attr("src", map.get(name));
+            }else{
+                $("#listing_frame").attr("src", path + "/getListingItemList.do?1=1&folderid="+$(obj).attr("val"));
+            }
+
 
         }
         function selectCounty(obj){
@@ -191,9 +196,9 @@
                                 alert("结束原因必填！");
                                 return false;
                             } else {
-                                alert(iwins.parent.document.getElementById("centents").selectedIndex);
+                                //alert(iwins.parent.document.getElementById("centents").selectedIndex);
                                 reason = iwins.parent.document.getElementById("centents").options[iwins.parent.document.getElementById("centents").selectedIndex].value;
-                                alert(reason);
+                                //alert(reason);
                                 var url = path + "/ajax/endItem.do?itemidStr=" + itemidStr+"&reason="+reason;
                                 $().invoke(url, {},
                                         [function (m, r) {
@@ -222,6 +227,39 @@
                 width:800
             });
         }
+
+        /**
+        *表格调 价
+         */
+        var tablePricewin=null;
+        function tablePrice(obj){
+            var url=path+"/getTablePriceList.do";
+            tablePricewin=$.dialog({title: '表格调价列表',
+                content: 'url:'+url,
+                icon: 'succeed',
+                width:800,
+                height:400
+            });
+        }
+        $(document).ready(function(){
+            var url=path+"/ajax/selfFolder.do";
+            $().invoke(url,{},
+                    [function(m,r){
+                        var htmlstr='<dt name="listing" class=new_tab_1 onclick="setTab(this)">在线</dt>'
+                                +'<dt name="sold" class=new_tab_2 onclick="setTab(this)">已售</dt>'
+                                +'<dt name="unsold" class=new_tab_2 onclick="setTab(this)">未卖出</dt>'
+                                +'<dt name="updatelog" class=new_tab_2 onclick="setTab(this)">在线修改日志</dt>';
+                        for(var i = 0;i < r.length;i++){
+                            htmlstr+="<dt name='myFolder_"+i+"' val='"+r[i].id+"' class=new_tab_2 onclick='setTab(this)'>"+r[i].configName+"</dt>";
+                        }
+                        $("#tab").html(htmlstr);
+                    },
+                        function(m,r){
+                            alert(r);
+                        }]
+            );
+        });
+
     </script>
 </head>
 <body>
@@ -229,11 +267,8 @@
     <div class="here">当前位置：首页 > 刊登管理 > <b>刊登</b></div>
     <div class="a_bal"></div>
     <div class="new">
-        <div class="new_tab_ls">
-            <dt name="listing" class=new_tab_1 onclick="setTab(this)">在线</dt>
-            <dt name="sold" class=new_tab_2 onclick="setTab(this)">已售</dt>
-            <dt name="unsold" class=new_tab_2 onclick="setTab(this)">未卖出</dt>
-            <dt name="updatelog" class=new_tab_2 onclick="setTab(this)">在线修改日志</dt>
+        <div class="new_tab_ls" id="tab">
+
         </div>
         <div class=Contentbox>
             <div class="new_usa" style="margin-top:20px;">
@@ -309,9 +344,9 @@
                                 </select>
                             </div>
                         </div>
-                        <span class="newusa_ici_del" onclick="endItem(this)">提前结束</span><span class="newusa_ici_del"
-                                                                      >表格调价</span><span
-                            class="newusa_ici_del">管理文件夹</span></div>
+                        <span class="newusa_ici_del" onclick="endItem(this)">提前结束</span>
+                        <span class="newusa_ici_del" onclick="tablePrice(this)">表格调价</span><span
+                            class="newusa_ici_del"  onclick="addTabRemark();">管理文件夹</span></div>
                     <div class="tbbay"><a data-toggle="modal" href="#myModal" class="">同步eBay</a></div>
                 </div>
             </div>

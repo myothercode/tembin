@@ -12,7 +12,8 @@ import java.util.Map;
  * Created by Administrtor on 2014/9/4.
  */
 public interface CustomPublicSitemessageMapper {
-    List<CustomPublicSitemessage> selectSiteMessageList(PublicSitemessage publicSitemessage,Page page);
+    List<CustomPublicSitemessage> selectSiteMessageList(Map map,Page page);
     CustomPublicSitemessage fetchSiteMessageById(PublicSitemessage publicSitemessage);
     List<SiteMessageCountVO> countSiteMessage(Map map);
+    void updateReadedMessage(Map map);
 }

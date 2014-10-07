@@ -98,11 +98,22 @@ public class SystemUserManagerServiceImpl implements SystemUserManagerService {
     @Override
     /**查询账户绑定了哪些ebay账户*/
     public List<UsercontrollerEbayAccountExtend> queryCurrAllEbay(Map map){
-        if(!map.containsKey("userId")){
+        if(!map.containsKey("userID") && !map.containsKey("AllEbay")){
             SessionVO sessionVO=SessionCacheSupport.getSessionVO();
             map.put("userID",sessionVO.getId());
         }
         List<UsercontrollerEbayAccountExtend> ebays = userInfoServiceMapper.queryEbayAccountForUser(map);
+        for (UsercontrollerEbayAccountExtend ebayAccountExtend : ebays){
+            ebayAccountExtend.setEbayToken("");
+        }
+        return ebays;
+    }
+    @Override
+    /**查询账户绑定了哪些ebay账户*/
+    public List<UsercontrollerEbayAccountExtend> queryACurrAllEbay(Map map){
+        SessionVO sessionVO=SessionCacheSupport.getSessionVO();
+        map.put("userID",sessionVO.getId());
+        List<UsercontrollerEbayAccountExtend> ebays = userInfoServiceMapper.queryAllEbayAccountForUser(map);
         for (UsercontrollerEbayAccountExtend ebayAccountExtend : ebays){
             ebayAccountExtend.setEbayToken("");
         }
@@ -115,7 +126,9 @@ public class SystemUserManagerServiceImpl implements SystemUserManagerService {
         AddSubUserVO addSubUserVO=new AddSubUserVO();
         Map map=new HashMap();
         map.put("userId",userID);
-        addSubUserVO.setEbays(queryCurrAllEbay(map));
+        map.put("userID",userID);
+        List<UsercontrollerEbayAccountExtend> es=queryCurrAllEbay(map);
+        addSubUserVO.setEbays(es);
 
         addSubUserVO.setRoles(systemUserManagerServiceMapper.queryUserRoleByUserID(map));
 

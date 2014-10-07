@@ -72,7 +72,17 @@ public class SamplePaseXml {
         PrimaryCategory pc = new PrimaryCategory();
         pc.setCategoryID(element.element("PrimaryCategory").elementText("CategoryID"));
         item.setPrimaryCategory(pc);
-        item.setListingType(element.elementText("ListingType"));
+        String listType = "";
+        if("FixedPriceItem".equals(element.elementText("ListingType"))){
+            if(element.element("Variations")!=null){
+                listType = "2";
+            }else{
+                listType = element.elementText("ListingType");
+            }
+        }else{
+            listType = element.elementText("ListingType");
+        }
+        item.setListingType(listType);
         //自定义属性
         Element elspe = element.element("ItemSpecifics");
         if(elspe!=null){
@@ -164,7 +174,9 @@ public class SamplePaseXml {
             Element shipping = itershipping.next();
             ShippingServiceOptions sso = new ShippingServiceOptions();
             sso.setShippingService(shipping.elementText("ShippingService"));
-            sso.setShippingServiceCost(new ShippingServiceCost(shipping.attributeValue("currencyID"),Double.parseDouble(shipping.elementText("ShippingServiceCost"))));
+            if(shipping.elementText("ShippingServiceCost")!=null){
+                sso.setShippingServiceCost(new ShippingServiceCost(shipping.attributeValue("currencyID"),Double.parseDouble(shipping.elementText("ShippingServiceCost"))));
+            }
             sso.setShippingServicePriority(Integer.parseInt(shipping.elementText("ShippingServicePriority")));
             if(shipping.elementText("FreeShipping")!=null){
                 sso.setFreeShipping(shipping.elementText("FreeShipping").equals("true")?true:false);
@@ -312,6 +324,7 @@ public class SamplePaseXml {
         Element rootElt = document.getRootElement();
         Element recommend = rootElt.element("ItemArray");
         Iterator<Element> iter = recommend.elementIterator("Item");
+        String listType = "";
         while(iter.hasNext()){
             TradingListingData item = new TradingListingData();
             Element element = iter.next();
@@ -320,7 +333,16 @@ public class SamplePaseXml {
             item.setSite(element.elementText("Site"));
             item.setSku(element.elementText("SKU"));
             item.setEbayAccount(ebayAccount);
-            item.setListingType(element.elementText("ListingType"));
+            if("FixedPriceItem".equals(element.elementText("ListingType"))){
+                if(element.element("Variations")!=null){
+                    listType = "2";
+                }else{
+                    listType = element.elementText("ListingType");
+                }
+            }else{
+                listType = element.elementText("ListingType");
+            }
+            item.setListingType(listType);
             item.setPrice(Double.parseDouble(element.element("SellingStatus").elementText("CurrentPrice")));
             //item.setShippingPrice(Long.parseLong());
             item.setQuantity(Long.parseLong(element.elementText("Quantity")));

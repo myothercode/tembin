@@ -1135,6 +1135,66 @@ public class TradingGetUserCasesExample {
             return (Criteria) this;
         }
 
+        public Criteria andHandledIsNull() {
+            addCriterion("handled is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andHandledIsNotNull() {
+            addCriterion("handled is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andHandledEqualTo(Integer value) {
+            addCriterion("handled =", value, "handled");
+            return (Criteria) this;
+        }
+
+        public Criteria andHandledNotEqualTo(Integer value) {
+            addCriterion("handled <>", value, "handled");
+            return (Criteria) this;
+        }
+
+        public Criteria andHandledGreaterThan(Integer value) {
+            addCriterion("handled >", value, "handled");
+            return (Criteria) this;
+        }
+
+        public Criteria andHandledGreaterThanOrEqualTo(Integer value) {
+            addCriterion("handled >=", value, "handled");
+            return (Criteria) this;
+        }
+
+        public Criteria andHandledLessThan(Integer value) {
+            addCriterion("handled <", value, "handled");
+            return (Criteria) this;
+        }
+
+        public Criteria andHandledLessThanOrEqualTo(Integer value) {
+            addCriterion("handled <=", value, "handled");
+            return (Criteria) this;
+        }
+
+        public Criteria andHandledIn(List<Integer> values) {
+            addCriterion("handled in", values, "handled");
+            return (Criteria) this;
+        }
+
+        public Criteria andHandledNotIn(List<Integer> values) {
+            addCriterion("handled not in", values, "handled");
+            return (Criteria) this;
+        }
+
+        public Criteria andHandledBetween(Integer value1, Integer value2) {
+            addCriterion("handled between", value1, value2, "handled");
+            return (Criteria) this;
+        }
+
+        public Criteria andHandledNotBetween(Integer value1, Integer value2) {
+            addCriterion("handled not between", value1, value2, "handled");
+            return (Criteria) this;
+        }
+
         public Criteria andCreateUserIsNull() {
             addCriterion("create_user is null");
             return (Criteria) this;

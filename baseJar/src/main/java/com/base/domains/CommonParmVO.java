@@ -11,7 +11,16 @@ public class CommonParmVO {
     private String strV1;
     private String strV2;
     private String strV3;
+    private String payPalId;
 
+
+    public String getPayPalId() {
+        return payPalId;
+    }
+
+    public void setPayPalId(String payPalId) {
+        this.payPalId = payPalId;
+    }
 
     public String getStrV3() {
         return strV3;

@@ -11,6 +11,11 @@
 <html>
 <head>
     <title></title>
+    <style type="text/css">
+        body {
+            background-color: #ffffff;
+        }
+    </style>
     <script type="text/javascript">
         var api = frameElement.api, W = api.opener;
         function submitCommit(){
@@ -27,7 +32,7 @@
                         [function(m,r){
                             alert(r);
                             var divs= W.document.getElementsByName("newbut");
-                            for(var v=5;v<divs.length;v++){
+                            for(var v=5;v<=divs.length;v++){
                                 var vv="#OrderGetOrdersListTable"+v;
                                 var table= W.document.getElementById(vv);
                                 var me= W.document.getElementById("con_menu_"+v);

@@ -1,10 +1,24 @@
 package com.sitemessage.service;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * Created by Administrtor on 2014/9/5.
  * 站内消息类型
  */
 public class SiteMessageStatic {
+    /**每种消息类型请添加进map*/
+    public static final Map messageMap=new HashMap();
+    static {
+        messageMap.put("listing_message","刊登结果");
+        messageMap.put("listing_get_message_type","系统消息");
+        messageMap.put("synchronize_user_case_type","同步纠纷");
+        messageMap.put("synchronize_user_case_dispute_type","同步一般纠纷");
+        messageMap.put("synchronize_user_case_ebp_type","同步EBP纠纷");
+        messageMap.put("synchronize_get_order_type","同步订单");
+    }
+
     /**刊登的消息类型*/
     public static final String LISTING_MESSAGE_TYPE="listing_message";
     /**刊登成功的消息类型

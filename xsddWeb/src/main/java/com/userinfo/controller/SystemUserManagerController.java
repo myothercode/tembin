@@ -104,8 +104,8 @@ public class SystemUserManagerController extends BaseAction {
     /**获取当前登录用户定义的所有ebay账户*/
     public void queryMySpecAllEbay(Long userID){
         Map map =new HashMap();
-
-        List<UsercontrollerEbayAccountExtend> roleVOs = systemUserManagerService.queryCurrAllEbay(map);
+        map.put("AllEbay","");
+        List<UsercontrollerEbayAccountExtend> roleVOs = systemUserManagerService.queryACurrAllEbay(map);
         AjaxSupport.sendSuccessText("",roleVOs);
     }
 

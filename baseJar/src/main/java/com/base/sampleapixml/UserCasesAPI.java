@@ -25,17 +25,27 @@ public class UserCasesAPI {
             TradingGetUserCases userCases=new TradingGetUserCases();
             Element summary= (Element) caseSummary.next();
             userCases.setCaseid(SamplePaseXml.getSpecifyElementText(summary,"caseId","id"));
-            userCases.setCasetype(SamplePaseXml.getSpecifyElementText(summary,"caseId","type"));
-            userCases.setSellerid(SamplePaseXml.getSpecifyElementText(summary,"user","userId"));
-            userCases.setBuyerid(SamplePaseXml.getSpecifyElementText(summary,"otherParty","userId"));
-            String UPIStatus=SamplePaseXml.getSpecifyElementText(summary,"status","UPIStatus");
-            if(UPIStatus!=null){
-                userCases.setStatus(UPIStatus);
+            userCases.setCasetype(SamplePaseXml.getSpecifyElementText(summary, "caseId", "type"));
+            String seller=SamplePaseXml.getSpecifyElementText(summary,"user","role");
+            if("SELLER".equals(seller)){
+                userCases.setSellerid(SamplePaseXml.getSpecifyElementText(summary,"user","userId"));
             }else{
-                userCases.setStatus(SamplePaseXml.getSpecifyElementText(summary,"status","EBPSNADStatus"));
+                userCases.setBuyerid(SamplePaseXml.getSpecifyElementText(summary,"user","userId"));
             }
-            userCases.setItemid(SamplePaseXml.getSpecifyElementText(summary,"item","itemId"));
-            userCases.setItemtitle(SamplePaseXml.getSpecifyElementText(summary,"item","itemTitle"));
+            String buyer=SamplePaseXml.getSpecifyElementText(summary,"otherParty","role");
+            if("BUYER".equals(buyer)){
+                userCases.setBuyerid(SamplePaseXml.getSpecifyElementText(summary,"otherParty","userId"));
+            }else{
+                userCases.setSellerid(SamplePaseXml.getSpecifyElementText(summary,"otherParty","userId"));
+            }
+            Element status=summary.element("status");
+            Iterator DisStatus=status.elementIterator();
+            while(DisStatus.hasNext()){
+                Element disStatus= (Element) DisStatus.next();
+                userCases.setStatus(disStatus.getTextTrim());
+            }
+            userCases.setItemid(SamplePaseXml.getSpecifyElementText(summary, "item", "itemId"));
+            userCases.setItemtitle(SamplePaseXml.getSpecifyElementText(summary, "item", "itemTitle"));
             userCases.setTransactionid(SamplePaseXml.getSpecifyElementText(summary,"item","transactionId"));
             userCases.setCasequantity(SamplePaseXml.getSpecifyElementText(summary,"caseQuantity"));
             userCases.setCaseamount(SamplePaseXml.getSpecifyElementText(summary,"caseAmount"));

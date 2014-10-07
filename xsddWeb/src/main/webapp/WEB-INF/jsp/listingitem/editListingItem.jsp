@@ -17,7 +17,7 @@
     <script type="text/javascript" src=<c:url value ="/js/item/addItem.js" /> ></script>
     <script>
         var myDescription=null;
-        function nextShows(obj){
+        function nextShowss(obj){
             if(obj.value=="下一步"){
                 var j=1;
                 $("input[type='checkbox'][name='selectType']").each(function(i,d){
@@ -261,6 +261,7 @@
 <body>
 <form id="form">
     <input type="hidden" name="ItemID" value="${item.itemID}">
+    <input type="hidden" name="listingType" value="${item.listingType}">
     <div id="selectId">
         <table width="70%">
             <tr>
@@ -677,7 +678,7 @@
         </table>
     </div>
     <div>
-        <input type="button" value="下一步" onclick="nextShows(this)" id="nextShow">
+        <input type="button" value="下一步" onclick="nextShowss(this)" id="nextShow">
         <input type="button" value="上一步" onclick="previousShows(this)" id="previousShow" style="display: none;">
         <input type="button" value="关闭" onclick="closeWin()">
     </div>

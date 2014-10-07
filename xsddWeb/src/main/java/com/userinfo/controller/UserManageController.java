@@ -70,7 +70,7 @@ public class UserManageController extends BaseAction {
                                         CommonParmVO commonParmVO) throws Exception {
         modelMap.put("tokenPageUrl",tokenPageUrl);
         modelMap.put("ebayId",commonParmVO.getId());
-        UsercontrollerEbayAccount e = userInfoService.queryEbayInfoById(modelMap);
+        UsercontrollerEbayAccountExtend e = userInfoService.queryEbayInfoById(modelMap);
         modelMap.put("ebay",e);
         return   forword("/userinfo/pop/bindEbayAccount",modelMap);
     }
@@ -103,6 +103,7 @@ public class UserManageController extends BaseAction {
         map.put("id",commonParmVO.getId());
         map.put("name",commonParmVO.getStrV2());
         map.put("code",commonParmVO.getStrV3());
+        map.put("payPalId",commonParmVO.getPayPalId());
         userInfoService.editEbayAccount(map);
         AjaxSupport.sendSuccessText("","操作成功");
     }
