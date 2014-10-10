@@ -3,6 +3,7 @@ package com.test.controller;
 import com.base.database.publicd.model.PublicDataDict;
 import com.base.database.publicd.model.PublicUserConfig;
 import com.base.database.trading.model.TradingDataDictionary;
+import com.base.database.userinfo.model.UsercontrollerUser;
 import com.base.domains.LoginVO;
 import com.base.domains.SessionVO;
 import com.base.userinfo.service.UserInfoService;
@@ -72,6 +73,13 @@ public class TextContraller extends BaseAction {
         SessionVO sessionVO = SessionCacheSupport.getSessionVO();
         modelMap.put("ccc",sessionVO.getUserName());
         return forword("mainFrame",modelMap);
+    }
+
+    /**注册用户*/
+    public ModelAndView doReg(UsercontrollerUser user,HttpServletRequest request,HttpServletResponse response,
+                              @ModelAttribute( "initSomeParmMap" )ModelMap modelMap){
+
+
     }
 
     /**登录操作*/

@@ -132,3 +132,40 @@ if(url.indexOf("?")==-1){
 
 
 
+/**提供组装好的ul 下拉 {liString,ulid,showname,inputid,inputval}
+ * */
+function getULSelect(par){
+    var lis=par["liString"];
+    var ulid_=par["ulid"]==null?"":("id="+par["ulid"]);
+    var inputid_=par["inputid"]==null?"":("id="+par["inputid"]);
+    var inputval_=par["inputval"]==null?"":(par["inputval"]);
+    var showname_=par["showname"]==null?"请选择...":(par["showname"]);
+
+    var hs="<ul "+ulid_+"><li style='width: 90px;height: 25px;' class=\"select_box\"><span>"+showname_+"</span><ul class=\"son_ul\">";
+    hs+="<input type='hidden' "+inputid_+" value="+inputval_+"  />";
+    hs+=lis;
+    hs+="</ul></li></ul>";
+
+    return hs;
+}
+
+function initULSelect(){
+    $('.son_ul').hide(); //初始ul隐藏
+    $('.select_box span').hover(function(){ //鼠标移动函数
+            $(this).parent().find('ul.son_ul').slideDown();  //找到ul.son_ul显示
+            $(this).parent().find('li').hover(function(){$(this).addClass('hover')},function(){$(this).removeClass('hover')}); //li的hover效果
+            $(this).parent().hover(function(){},
+                function(){
+                    $(this).parent().find("ul.son_ul").slideUp();
+                }
+            );
+        },function(){}
+    );
+    $('ul.son_ul li').click(function(){
+        $(this).parents('li').find('span').html($(this).html());
+        $(this).parents('li').find('ul').slideUp();
+    });
+}
+
+
+

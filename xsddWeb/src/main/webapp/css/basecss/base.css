@@ -1,6 +1,6 @@
 /*表格样式*/
 .tab_ZY { text-align:left; border-collapse:collapse;}
-.tab_ZY th { border-top:1px solid #b7c0c7; border-bottom:1px solid #b7c0c7;text-align:left; padding:7px 0 7px 10px; background:#F7F7F7;font-weight: bold}
+.tab_ZY th { height: 50px;border-top:1px solid #b7c0c7; border-bottom:1px solid #b7c0c7;text-align:left; padding:7px 0 7px 10px; background:#F7F7F7;font-weight: bold}
 .tab_ZY td { padding:9px 10px; border-bottom:1px solid #dddddd; color:#111111;background:#ffffff}
 .tab_ZY tr.alt td{background:#ffffff}
 .tab_ZY tr.over td{background:#e8f1ff; border-bottom:1px solid #bfd9ff; border-top:1px solid #bfd9ff;}
@@ -86,3 +86,12 @@
     background-position: center center;
     cursor: move;
 }
+
+
+/**用ul和li模拟的下拉框的样式*/
+.select_box {list-style: none;width:90px; border:0px solid #ccc; padding-right:20px; padding-left:10px; background:url(../../img/107.gif) no-repeat 70px center; position:relative;}
+.select_box span {cursor:pointer; display:block; line-height:25px; width:100%; height:25px; overflow:hidden;}
+.select_box ul li {cursor:pointer;list-style: none}
+.son_ul {z-index: 999;margin:0;padding:0;width:83px; position:absolute; left:0; top:25px; border:1px dashed #ccc; background:#fff;}
+.son_ul li {margin:0;padding:0;display:block; line-height:25px; padding-left:10px; width:75px;list-style: none; }
+.hover {background:#ccc;}

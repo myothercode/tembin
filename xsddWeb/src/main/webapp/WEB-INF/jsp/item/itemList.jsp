@@ -25,7 +25,7 @@
         }
 
         function editItem(id){
-            document.location = path+"/editItem.do?id="+id;
+            parent.document.location = path+"/editItem.do?id="+id;
             /*returnItem=$.dialog({title: '编辑商品',
                 content: 'url:/xsddWeb/editItem.do?id='+id,
                 icon: 'succeed',
@@ -40,6 +40,7 @@
             var ebayaccount='${ebayaccount}';
             var selectType = '${selectType}';
             var selectValue = '${selectValue}';
+            var folderid = '${folderid}';
             var urls="/ajax/loadItemList.do?1=1";
             if(flag!=null&&flag!=""){
                 urls="/ajax/loadItemList.do?flag="+flag;
@@ -59,9 +60,13 @@
             if(selectValue!=null&&selectValue!=""){
                 urls+="&selectValue="+selectValue;
             }
+            if(folderid!=null&&folderid!=""){
+                urls+="&folderid="+folderid;
+            }
             $("#itemTable").initTable({
                 url:path + urls,
                 columnData:[
+                    {title:"选择",name:"itemName",width:"8%",align:"left",format:makeOption0},
                     {title:"商品名称",name:"itemName",width:"8%",align:"left"},
                     {title:"站点",name:"siteName",width:"8%",align:"left"},
                     {title:"标题",name:"title",width:"8%",align:"left"},
@@ -72,10 +77,15 @@
                 ],
                 selectDataNow:false,
                 isrowClick:false,
-                showIndex:true
+                showIndex:false
             });
             refreshTable();
         });
+        /**组装操作选项*/
+        function makeOption0(json){
+            var htm="<input type=checkbox name='modelid' value='"+json.itemId+"' isFlag='"+json.isFlag+"' val='"+json.id+"' />";
+            return htm;
+        }
         /**组装操作选项*/
         function makeOption1(json){
             var htm="<a target=\"_blank\" href=\"javascript:void(0)\" onclick=\"editItem('"+json.id+"');\">编辑</a>";
@@ -88,10 +98,6 @@
     </script>
 </head>
 <body>
-<div style="text-align: right;">
-    <input type="button" id="addItembutton" value="新增范本" onclick="addItem()">
-</div>
-
 <div id="itemTable">
 
 </div>

@@ -26,7 +26,16 @@ function accountManagerTab(){
 }
 /**操作*/
 function makeOption1(json){
-    var select1="<div class=\"ui-select\" style=\"width:8px\">" +
+    var select1="" ;
+    if(json.status==1 || json.status=='1'){
+        select1+= "<li style='height:25px' onclick=doAccount(this) value='"+json.userId+"' doaction=\"stop\">停用</li>" ;
+    }else if(json.status==0 || json.status=='0'){
+        select1+= "<li style='height:25px' onclick=doAccount(this) value='"+json.userId+"' doaction=\"start\">启用</li>" ;
+    }
+    select1+= "<li style='height:25px' onclick=doAccount(this) value='"+json.userId+"' doaction=\"edit\">编辑</li>" ;
+    var pp={"liString":select1};
+    return getULSelect(pp);
+    /*var select1="<div class=\"ui-select\" style=\"width:8px\">" +
         "<select onchange='doAccount(this)'>" ;
     select1+= "<option  value='x'>请选择</option>" ;
     if(json.status==1 || json.status=='1'){
@@ -36,11 +45,11 @@ function makeOption1(json){
     }
     select1+= "<option  value='"+json.userId+"' doaction=\"edit\">编辑</option>" ;
     select1+= "</select></div>";
-    return select1;
+    return select1;*/
 }
 /**关于列表操作的下拉======================*/
 function doAccount(obj){
-    var optionV=$(obj).find("option:selected");
+    var optionV=obj//$(obj).find("option:selected");
     var v=$(optionV).attr('value');
     if(v=='x'){return;}
     var d=$(optionV).attr('doaction');

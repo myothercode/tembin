@@ -19,6 +19,8 @@ public interface PayPalService {
     /**获取paypal账户列表*/
     List<UsercontrollerPaypalAccount> queryPayPalList(Map map, Page page);
 
+    UsercontrollerPaypalAccount selectById(Long id);
+
     /**启用或者停用paypal账户*/
     void operationPayPalAccount(Map map);
 

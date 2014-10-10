@@ -6,6 +6,7 @@ import com.base.database.sitemessage.model.PublicSitemessage;
 import com.base.domains.CommonParmVO;
 import com.base.mybatis.page.Page;
 import com.base.mybatis.page.PageJsonBean;
+import com.base.utils.annotations.AvoidDuplicateSubmission;
 import com.base.utils.common.ObjectUtils;
 import com.base.utils.exception.Asserts;
 import com.common.base.utils.ajax.AjaxSupport;
@@ -37,6 +38,7 @@ public class SiteMessageController extends BaseAction {
 
     /**消息列表页面*/
     @RequestMapping("siteMessagePage.do")
+    @AvoidDuplicateSubmission(needSaveToken = true)
     public ModelAndView siteMessagePage(@ModelAttribute( "initSomeParmMap" )ModelMap modelMap){
         modelMap.put("mtype", SiteMessageStatic.messageMap);
         return forword("/sitemessage/siteMessagePage",modelMap);
@@ -57,8 +59,14 @@ public class SiteMessageController extends BaseAction {
     public void selectSiteMessage(CommonParmVO commonParmVO,PublicSitemessage publicSitemessage){
         PageJsonBean jsonBean=commonParmVO.getJsonBean();
         Page page=jsonBean.toPage();
+
         List<CustomPublicSitemessage> customPublicSitemessages = siteMessageService.querySiteMessage(publicSitemessage, page);
 
+        if("num".equalsIgnoreCase(commonParmVO.getStrV1())){
+            String r="{\"systemMessageNum\":\""+page.getTotalCount()+"\",\"ebayMessageNum\":\""+0+"\"}";
+            AjaxSupport.sendSuccessText("",r);
+            return;
+        }
         if(customPublicSitemessages!=null){
             for (CustomPublicSitemessage c : customPublicSitemessages){
                 if(StringUtils.isNotEmpty(c.getMessageType())){
@@ -85,6 +93,7 @@ public class SiteMessageController extends BaseAction {
 
     @RequestMapping("markReaded.do")
     @ResponseBody
+    @AvoidDuplicateSubmission(needRemoveToken = true)
     /**标记*/
     public void markReaded(String[] ids){
         Map map=new HashMap();
@@ -92,5 +101,6 @@ public class SiteMessageController extends BaseAction {
             map.put("idArray",ids);
         }
         siteMessageService.batchSetReaded(map);
+        AjaxSupport.sendSuccessText("","标记成功！");
     }
 }

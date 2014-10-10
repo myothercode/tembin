@@ -7,7 +7,8 @@
 --%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%@include file= "/WEB-INF/jsp/commonImport.jsp" %>
+<%--<%@include file= "/WEB-INF/jsp/commonImport.jsp" %>--%>
+<%@include file= "/WEB-INF/jsp/smallFormImport.jsp" %>
 <html>
 <head>
     <title></title>
@@ -22,7 +23,6 @@
             $().invoke(url,data,
                     [function(m,r){
                         alert(r);
-                        Base.token();
                         W.refreshTable();
                         W.itemAddressList.close();
                     },
@@ -43,47 +43,76 @@
                     $(d).attr("disabled",true);
                 });
                 $("textarea").attr("disabled",true);
+                $("button").attr("disabled",true);
             }
         });
     </script>
 </head>
 <c:set value="${itemAddress}" var="item" />
 <body>
-<form id="itemAddressForm">
-    <table>
-        <tr>
-            <td>名称:</td>
-            <td>
-                <input value="${item.id}" name="id" id="id" type="hidden">
-                <input type="text" name="name" id="name" value="${item.name}" class="validate[required]"></td>
-        </tr>
-        <tr>
-            <td>物品所在地:</td>
-            <td><input type="text" name="address" id="address" value="${item.address}"  class="validate[required]"></td>
-        </tr>
-        <tr>
-            <td>国家:</td>
-            <td>
-                <select name="countryList">
-                    <c:forEach items="${countryList}" var="countryList">
-                        <c:if test="${item.countryId==countryList.id}">
-                            <option value="${countryList.id}" selected="selected">${countryList.name}</option>
-                        </c:if>
-                        <c:if test="${item.countryId!=countryList.id}">
-                            <option value="${countryList.id}">${countryList.name}</option>
-                        </c:if>
-                    </c:forEach>
-                </select>
-            </td>
-        </tr>
-        <tr>
-            <td>邮编:</td>
-            <td><input type="text" name="postalCode" id="postalCode" value="${item.postalcode}"  class="validate[required]"></td>
-        </tr>
-    </table>
-    <div>
-        <div><input type="button" value="确定" onclick="submitCommit();"/></div>
+<div style="width: 400px;">
+    <form class="form-horizontal" id="itemAddressForm">
+        <fieldset>
+            <div id="legend" class="">
+                <legend class="">物品所在地</legend>
+            </div>
+            <div class="control-group">
+                <!-- Text input-->
+                <label class="control-label" for="input01">名称</label>
+                <div class="controls">
+                    <input type="text" name="name" id="name" value="${item.name}" placeholder="" class="input-xlarge validate[required]">
+                    <p class="help-block"></p>
+                    <input value="${item.id}" name="id" id="id" type="hidden">
+                </div>
+            </div>
+
+            <div class="control-group">
+
+                <!-- Text input-->
+                <label class="control-label" for="input01">物品所在地</label>
+                <div class="controls">
+                    <input type="text" placeholder="" name="address" id="address" value="${item.address}" class="input-xlarge validate[required]">
+                    <p class="help-block"></p>
+                </div>
+            </div>
+
+            <div class="control-group">
+
+                <!-- Select Basic -->
+                <label class="control-label">国家</label>
+                <div class="controls">
+                    <select name="countryList" class="input-xlarge">
+                        <c:forEach items="${countryList}" var="countryList">
+                            <c:if test="${item.countryId==countryList.id}">
+                                <option value="${countryList.id}" selected="selected">${countryList.name}</option>
+                            </c:if>
+                            <c:if test="${item.countryId!=countryList.id}">
+                                <option value="${countryList.id}">${countryList.name}</option>
+                            </c:if>
+                        </c:forEach>
+                    </select>
+                </div>
+
+            </div>
+
+            <div class="control-group">
+
+                <!-- Text input-->
+                <label class="control-label" for="input01">邮编</label>
+                <div class="controls">
+                    <input type="text" name="postalCode" id="postalCode" value="${item.postalcode}" placeholder="" class="input-xlarge validate[required]">
+                    <p class="help-block"></p>
+                </div>
+            </div>
+
+        </fieldset>
+    </form>
+
+    <div  class="control-group" style="text-align: center;">
+        <div class="controls">
+            <button class="btn btn-success" onclick="submitCommit();">确定</button>
+        </div>
     </div>
-</form>
+</div>
 </body>
 </html>

@@ -216,6 +216,11 @@
 
     });
 </script>
+<style type="text/css">
+    body {
+        background-color: #ffffff;
+    }
+</style>
 <style>
     .price_div{
         float: left;
@@ -551,13 +556,15 @@
 
     <%--<li><a href="javascript:void(0)">预览</a></li>
     <li><a href="javascript:void(0)">检查eBay费</a></li>--%>
-
-    <li><a href="javascript:void(0)" onclick="saveData(this,'all')">立即刊登</a></li>
+    <c:if test="${item.isFlag==null}">
+        <li><a href="javascript:void(0)" onclick="saveData(this,'all')">立即刊登</a></li>
+    </c:if>
     <li><a href="javascript:void(0)" onclick="saveData(this,'save')">保存范本</a></li>
-    <li><a href="javascript:void(0)" onclick="saveData(this,'timeSave')">定时</a></li>
-    <li><input name="timerListing" style="height: 24px;width: 100px" type="text"
+    <c:if test="${item.isFlag==null}">
+        <li><a href="javascript:void(0)" onclick="saveData(this,'timeSave')">定时</a></li>
+        <li><input name="timerListing" style="height: 24px;width: 100px" type="text"
                onfocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss',minDate:'%y-%M-{%d}'})"></li>
-
+    </c:if>
     <%--<li><a href="javascript:void(0)">更新在线刊登</a></li>
     <li><a href="javascript:void(0)">更新</a></li>--%>
     <li><a href="javascript:void(0)" onclick="closeWindow()">关闭</a></li>

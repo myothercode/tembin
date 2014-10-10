@@ -392,7 +392,10 @@ function getUpperChar(str){
     return str.replace(/[^A-Z]/g,"");
 }
 
-/**将指定元素内的指定name开头属性进行重新整合，如abcd[0]，将进行重新编号*/
+/**将指定元素内的指定name开头属性进行重新整合，如abcd[0]，将进行重新编号
+ * objid上一级的id
+ * nameStart名字是以什么开头的
+ * */
 function domReIndex(objid,nameStart){
     $('#'+objid).find("[name^="+nameStart+"]").each(function(i,d){
         var name1=$(d).attr("name");//对象原来的名字

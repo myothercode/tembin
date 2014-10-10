@@ -322,7 +322,7 @@ function saveData(objs,name) {
     var data = $('#form').serialize();
     var urll = "/xsddWeb/saveItem.do";
     $(objs).attr("disabled",true);
-    var api = frameElement.api, W = api.opener;
+    //var api = frameElement.api, W = api.opener;
     $().invoke(
         urll,
         data,
@@ -330,13 +330,13 @@ function saveData(objs,name) {
             //Base.token();
             alert(r);
             $(objs).attr("disabled",false);
-            document.location = path+"/itemList.do";
+            document.location = path+"/itemManager.do";
         },
             function (m, r) {
                 Base.token();
                 alert(r)
                 $(objs).attr("disabled",false);
-                document.location = path+"/itemList.do";
+                document.location = path+"/itemManager.do";
             }]
     )
 }

@@ -53,6 +53,9 @@ public class ShippingDetailsController extends BaseAction{
 
     @Autowired
     private ITradingInternationalShippingServiceOption iTradingInternationalShippingServiceOption;
+    @Autowired
+    private IUsercontrollerEbayAccount iUsercontrollerEbayAccount;
+
     /**
      * 查询数据并展示
      * @param modelMap
@@ -218,7 +221,7 @@ public class ShippingDetailsController extends BaseAction{
         modelMap.put("lipackage",lipackage);
 
         SessionVO c= SessionCacheSupport.getSessionVO();
-        List<PublicUserConfig> ebayList = DataDictionarySupport.getPublicUserConfigByType(DataDictionarySupport.PUBLIC_DATA_DICT_EBAYACCOUNT, c.getId());
+        List<UsercontrollerEbayAccount> ebayList = this.iUsercontrollerEbayAccount.selectUsercontrollerEbayAccountByUserId(c.getId());
         modelMap.put("ebayList",ebayList);
 
         return forword("module/shipping/addshippingDetails",modelMap);
@@ -262,7 +265,7 @@ public class ShippingDetailsController extends BaseAction{
         modelMap.put("lipackage",lipackage);
 
         SessionVO c= SessionCacheSupport.getSessionVO();
-        List<PublicUserConfig> ebayList = DataDictionarySupport.getPublicUserConfigByType(DataDictionarySupport.PUBLIC_DATA_DICT_EBAYACCOUNT, c.getId());
+        List<UsercontrollerEbayAccount> ebayList = this.iUsercontrollerEbayAccount.selectUsercontrollerEbayAccountByUserId(c.getId());
         modelMap.put("ebayList",ebayList);
 
         TradingShippingdetails tradingShippingdetails = this.iTradingShippingDetails.selectById(Long.parseLong(request.getParameter("id")));

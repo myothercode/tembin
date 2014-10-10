@@ -65,7 +65,7 @@
         });
         /**组装操作选项*/
         function makeOption0(json){
-            var htm="<input type=checkbox name='listingitemid' value='"+json.itemId+"' />";
+            var htm="<input type=checkbox name='listingitemid' value='"+json.itemId+"' val='"+json.id+"' />";
             return htm;
         }
         function picUrl(json){

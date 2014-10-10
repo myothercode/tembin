@@ -31,12 +31,12 @@
             $("#UserCasesListTable").initTable({
                 url:path + "/userCases/ajax/loadUserCasesList.do?",
                 columnData:[
-                    {title:"Item",name:"casetype",width:"15%",align:"left",format:makeOption2},
-                    {title:"Problem",name:"itemid",width:"12%",align:"left",format:makeOption3},
-                    {title:"Amount",name:"caseamount",width:"8%",align:"left"},
-                    {title:"Opended on",name:"lastmodifieddate",width:"12%",align:"left"},
-                    {title:"Trading Partner",name:"buyerid",width:"8%",align:"left"},
-                    {title:"Status",name:"status",width:"8%",align:"left"},
+                    {title:"Item",name:"casetype",width:"15%",align:"left",format:makeOption2,click:rowClickMethod},
+                    {title:"Problem",name:"itemid",width:"12%",align:"left",format:makeOption3,click:rowClickMethod},
+                    {title:"Amount",name:"caseamount",width:"8%",align:"left",click:rowClickMethod},
+                    {title:"Opended on",name:"lastmodifieddate",width:"12%",align:"left",click:rowClickMethod},
+                    {title:"Trading Partner",name:"buyerid",width:"8%",align:"left",click:rowClickMethod},
+                    {title:"Status",name:"status",width:"8%",align:"left",click:rowClickMethod},
                     {title:"Open requests/cases",name:"option1",width:"8%",align:"left",format:makeOption1}
                 ],
                 selectDataNow:false,
@@ -45,6 +45,9 @@
             });
             refreshTable();
         });
+        function rowClickMethod(json){
+            handleDispute(json.transactionid,json.sellerid);
+        }
         function refreshTable(){
             $("#UserCasesListTable").selectDataAfterSetParm({"bedDetailVO.deptId":"", "isTrue":0});
         }
@@ -64,25 +67,25 @@
             var h=htm+htm1+htm2;
             return h;*/
             var htm="<div class=\"ui-select\" style=\"width:106px\" >" +
-                    "<select onchange=\"selectOperation('"+json.transactionid+"','"+json.id+"',this); \" name=\"ui-select\" style=\"margin-left:-3px;\">" +
+                    "<select onchange=\"selectOperation('"+json.transactionid+"','"+json.id+"','"+json.sellerid+"',this); \" name=\"ui-select\" style=\"margin-left:-3px;\">" +
                     "<option value=\"0\"><a href=\"javascript:#\">--请选择--</a></option>" +
-                    "<option value=\"1\"><a href=\"javascript:#\">同步详情</a></option>" +
-                    "<option value=\"2\"><a href=\"javascript:#\">查看详情</a></option>" +
+                  /*  "<option value=\"1\"><a href=\"javascript:#\">同步详情</a></option>" +
+                    "<option value=\"2\"><a href=\"javascript:#\">查看详情</a></option>" +*/
                     "<option value=\"3\"><a href=\"javascript:#\">处理纠纷</a></option>" +
                     "</select>" +
                     "</div>";
             return htm;
         }
-        function selectOperation(transactionid,id,obj){
+        function selectOperation(transactionid,id,sellerid,obj){
             var value=$(obj).val();
             if(value=="1"){
                 synDetails(id);
             }
             if(value=="2"){
-                viewDetails(transactionid);
+                viewDetails(transactionid,sellerid);
             }
             if(value=="3"){
-                handleDispute(transactionid);
+                handleDispute(transactionid,sellerid);
             }
         }
         function makeOption2(json){
@@ -112,8 +115,8 @@
                 lock:true
             });
         }
-        function viewDetails(id){
-            var url=path+"/userCases/viewDetails.do?transactionid="+id;
+        function viewDetails(id,sellerid){
+            var url=path+"/userCases/viewDetails.do?transactionid="+id+"&sellerid="+sellerid;
             userCases=$.dialog({title: '查看纠纷详情',
                 content: 'url:'+url,
                 icon: 'succeed',
@@ -121,7 +124,7 @@
                 lock:true
             });
         }
-        function handleDispute(id){
+        function handleDispute(id,sellerid){
             /*var url=path+"/userCases/handleDispute.do?transactionid="+id;
             userCases=$.dialog({title: '处理纠纷',
                 content: 'url:'+url,
@@ -129,7 +132,7 @@
                 width:600,
                 height:350
             });*/
-            var url=path+"/userCases/responseDispute.do?transactionid="+id;
+            var url=path+"/userCases/responseDispute.do?transactionid="+id+"&sellerid="+sellerid;
             CaseDetails=$.dialog({title: '响应纠纷',
                 content: 'url:'+url,
                 icon: 'succeed',
@@ -148,17 +151,18 @@
             $("#UserCasesListTable").initTable({
                 url:path + "/userCases/ajax/loadUserCasesList.do?type="+type,
                 columnData:[
-                    {title:"Item",name:"casetype",width:"15%",align:"left",format:makeOption2},
-                    {title:"Problem",name:"itemid",width:"12%",align:"left",format:makeOption3},
-                    {title:"Amount",name:"caseamount",width:"8%",align:"left"},
-                    {title:"Opended on",name:"lastmodifieddate",width:"12%",align:"left"},
-                    {title:"Trading Partner",name:"buyerid",width:"8%",align:"left"},
-                    {title:"Status",name:"status",width:"8%",align:"left"},
+                    {title:"Item",name:"casetype",width:"15%",align:"left",format:makeOption2,click:rowClickMethod},
+                    {title:"Problem",name:"itemid",width:"12%",align:"left",format:makeOption3,click:rowClickMethod},
+                    {title:"Amount",name:"caseamount",width:"8%",align:"left",click:rowClickMethod},
+                    {title:"Opended on",name:"lastmodifieddate",width:"12%",align:"left",click:rowClickMethod},
+                    {title:"Trading Partner",name:"buyerid",width:"8%",align:"left",click:rowClickMethod},
+                    {title:"Status",name:"status",width:"8%",align:"left",click:rowClickMethod},
                     {title:"Open requests/cases",name:"option1",width:"8%",align:"left",format:makeOption1}
                 ],
                 selectDataNow:false,
-                isrowClick:false,
-                showIndex:false
+                isrowClick:true,
+                showIndex:false,
+                rowClickMethod:rowClickMethod
             });
             refreshTable1(account,type,status,days,name,content)
             alert("查询完成");
@@ -255,11 +259,11 @@
     </form>
     <div class="new_usa">
 
-        <li class="new_usa_list"><span class="newusa_i">选择账号：</span><a href="#"><span scop="account" onclick="selectAccount(null,0);" class="newusa_ici_1">全部</span></a><a href="#"><span scop="account" onclick="selectAccount('ebay',1);" class="newusa_ici_1">eBay账号</span></a><a href="#"><span scop="account" onclick="selectAccount(null,2);" class="newusa_ici_1">亚马逊账号</span></a><a href="#"><span scop="account" onclick="selectAccount(null,3);" class="newusa_ici_1">亚马逊账号</span></a><a href="#"><span scop="account" onclick="selectAccount(null,4);" class="newusa_ici_1">亚马逊账号</span></a><a href="#"><span scop="account" onclick="selectAccount(null,5);" class="newusa_ici_1">亚马逊账号</span></a></li>
-        <li class="new_usa_list"><span class="newusa_i">纠纷类型：</span><a href="#"><span scop="type" onclick="selectType(null,0);" class="newusa_ici_1">全部</span></a><a href="#"><span scop="type" onclick="selectType('BuyerHasNotPaid',1);" class="newusa_ici_1">未付款</span></a><a href="#"><span scop="type" onclick="selectType('ItemNotReceived',2);" class="newusa_ici_1">未收到物品</span></a><a href="#"><span scop="type" onclick="selectType('SignificantlyNotAsDescribed',3);" class="newusa_ici_1">描述不符</span></a></li>
-        <li class="new_usa_list"><span class="newusa_i">处理状态：</span><a href="#"><span scop="status" onclick="selectStatus(null,0);" class="newusa_ici_1">全部</span></a><a href="#"><span scop="status" onclick="selectStatus('1',1);" class="newusa_ici_1">已处理</span></a><a href="#"><span scop="status" onclick="selectStatus('0',2);" class="newusa_ici_1">未处理</span></a></li>
+        <li class="new_usa_list"><span class="newusa_i">选择账号：</span><a href="#"><span scop="account" onclick="selectAccount(null,0);" class="newusa_ici_1">&nbsp;全部&nbsp;&nbsp;</span></a><a href="#"><span scop="account" onclick="selectAccount('ebay',1);" class="newusa_ici_1">eBay账号&nbsp</span></a><a href="#"><span scop="account" onclick="selectAccount(null,2);" class="newusa_ici_1">亚马逊账号</span></a><a href="#"><span scop="account" onclick="selectAccount(null,3);" class="newusa_ici_1">亚马逊账号</span></a><a href="#"><span scop="account" onclick="selectAccount(null,4);" class="newusa_ici_1">亚马逊账号</span></a><a href="#"><span scop="account" onclick="selectAccount(null,5);" class="newusa_ici_1">亚马逊账号</span></a></li>
+        <li class="new_usa_list"><span class="newusa_i">纠纷类型：</span><a href="#"><span scop="type" onclick="selectType(null,0);" class="newusa_ici_1">&nbsp;全部&nbsp;&nbsp;</span></a><a href="#"><span scop="type" onclick="selectType('BuyerHasNotPaid',1);" class="newusa_ici_1">未付款&nbsp;</span></a><a href="#"><span scop="type" onclick="selectType('ItemNotReceived',2);" class="newusa_ici_1">未收到物品</span></a><a href="#"><span scop="type" onclick="selectType('SignificantlyNotAsDescribed',3);" class="newusa_ici_1">描述不符&nbsp;</span></a></li>
+        <li class="new_usa_list"><span class="newusa_i">处理状态：</span><a href="#"><span scop="status" onclick="selectStatus(null,0);" class="newusa_ici_1">&nbsp;全部&nbsp;&nbsp;</span></a><a href="#"><span scop="status" onclick="selectStatus('1',1);" class="newusa_ici_1">已处理&nbsp;</span></a><a href="#"><span scop="status" onclick="selectStatus('0',2);" class="newusa_ici_1">未处理&nbsp;</span></a></li>
         <div class="newsearch">
-            <span class="newusa_i">搜索内容：</span><a href="#"><span scop="days" onclick="selectDays(null,0);" class="newusa_ici_1">全部</span></a><a href="#"><span scop="days" onclick="selectDays('1',1);" class="newusa_ici_1">今天</span></a><a href="#"><span scop="days" onclick="selectDays('2',2);" class="newusa_ici_1">昨天</span></a><a href="#"><span scop="days" onclick="selectDays('7',3);" class="newusa_ici_1">7天以内</span></a><a href="#"><span scop="days" onclick="selectDays('30',4);" class="newusa_ici_1">30天以内</span></a>
+            <span class="newusa_i">搜索内容：</span><a href="#"><span scop="days" onclick="selectDays(null,0);" class="newusa_ici_1">&nbsp;全部&nbsp;&nbsp;</span></a><a href="#"><span scop="days" onclick="selectDays('1',1);" class="newusa_ici_1">&nbsp;今天&nbsp;&nbsp;</span></a><a href="#"><span scop="days" onclick="selectDays('2',2);" class="newusa_ici_1">&nbsp;昨天&nbsp;&nbsp;</span></a><a href="#"><span scop="days" onclick="selectDays('7',3);" class="newusa_ici_1">7天以内&nbsp;</span></a><a href="#"><span scop="days" onclick="selectDays('30',4);" class="newusa_ici_1">30天以内&nbsp;</span></a>
 <span id="sleBG">
 <span id="sleHid">
 <select id="selectName" name="type" class="select">

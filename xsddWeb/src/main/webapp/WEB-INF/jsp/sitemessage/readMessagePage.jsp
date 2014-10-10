@@ -12,6 +12,23 @@
     <title></title>
     <script type="text/javascript">
         var messageId="${messageId}";
+        var api = frameElement.api, W = api.opener;
+        $(document).ready(function(){
+            var url=path+"/sitemessage/readSiteMessage.do";
+            var data = {"id":api.data.messageId};
+            $().invoke(
+                    url,
+                    data,
+                    [function(m,r){
+                        $("#legendd").html(r.messageTitle);
+                        $("#messageText").val(r.message);
+                        W.refreshRoleTable();
+                    },
+                    function(m,r){
+                        alert(r)
+                    }]
+            );
+        });
     </script>
 </head>
 <body>
@@ -19,15 +36,15 @@
         <form class="form-horizontal">
             <fieldset>
                 <div id="legend" class="">
-                    <legend class="">表单名</legend>
+                    <legend id="legendd" class="">表单名</legend>
                 </div>
                 <div class="control-group">
 
                     <!-- Textarea -->
-                    <label class="control-label">Textarea</label>
+                    <label class="control-label">消息内容</label>
                     <div class="controls">
                         <div class="textarea">
-                            <textarea type="" class="" style="margin: 0px; width: 340px; height: 108px;"> </textarea>
+                            <textarea id="messageText" readonly="true" type="" class="" style="margin: 0px; width: 340px; height: 108px;"> </textarea>
                         </div>
                     </div>
                 </div>

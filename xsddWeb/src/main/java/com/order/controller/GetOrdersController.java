@@ -398,20 +398,48 @@ public class GetOrdersController extends BaseAction {
     @AvoidDuplicateSubmission(needSaveToken = true)
     public ModelAndView viewTemplateInitTable(HttpServletRequest request,HttpServletResponse response,@ModelAttribute( "initSomeParmMap" )ModelMap modelMap) throws Exception {
         String orderid=request.getParameter("orderid");
+        String transactionid=request.getParameter("transactionid");
+        String selleruserid=request.getParameter("selleruserid");
         List<TradingOrderGetOrders> lists=iTradingOrderGetOrders.selectOrderGetOrdersByOrderId(orderid);
-        modelMap.put("order",lists.get(0));
+        List<TradingOrderGetOrders> lists1=iTradingOrderGetOrders.selectOrderGetOrdersByTransactionId(transactionid,selleruserid);
+        modelMap.put("order",lists1.get(0));
         modelMap.put("orders",lists);
         modelMap.put("orderId",orderid);
         String rootpath=request.getContextPath();
         modelMap.put("rootpath",rootpath);
         List<TradingMessageGetmymessage> messages=new ArrayList<TradingMessageGetmymessage>();
         List<TradingOrderAddMemberMessageAAQToPartner> addMessages=new ArrayList<TradingOrderAddMemberMessageAAQToPartner>();
+        List<String> palpays=new ArrayList<String>();
+        List<String> grossdetailamounts=new ArrayList<String>();
+        List<String> pictures=new ArrayList<String>();
         for(TradingOrderGetOrders order:lists){
-            String itemid=order.getItemid();
-            List<TradingMessageGetmymessage> messageList=iTradingMessageGetmymessage.selectMessageGetmymessageByItemId(itemid);
-            List<TradingOrderAddMemberMessageAAQToPartner> addmessageList=iTradingOrderAddMemberMessageAAQToPartner.selectTradingOrderAddMemberMessageAAQToPartnerByTransactionId(order.getTransactionid(),1);
-            messages.addAll(messageList);
-            addMessages.addAll(addmessageList);
+            List<TradingOrderGetSellerTransactions> sellerTransactions=iTradingOrderGetSellerTransactions.selectTradingOrderGetSellerTransactionsByTransactionId(order.getTransactionid());
+            if(sellerTransactions!=null&&sellerTransactions.size()>0){
+                palpays.add(sellerTransactions.get(0).getExternaltransactionid());
+            }else{
+                palpays.add("");
+            }
+            List<TradingOrderGetAccount> accountlist=iTradingOrderGetAccount.selectTradingOrderGetAccountByTransactionId(order.getTransactionid());
+            if(accountlist!=null&&accountlist.size()>0){
+                for(TradingOrderGetAccount account:accountlist){
+                    if("成交費".equals(account.getDescription())){
+                        grossdetailamounts.add(account.getGrossdetailamount());
+                    }else{
+                        grossdetailamounts.add("");
+                    }
+                }
+            }
+            String ItemId=order.getItemid();
+            List<TradingOrderGetItem> itemList= iTradingOrderGetItem.selectOrderGetItemByItemId(ItemId);
+            if(itemList!=null&&itemList.size()>0){
+                Long pictureid=itemList.get(0).getPicturedetailsId();
+                List<TradingOrderPictureDetails> pictureDetailses=iTradingOrderPictureDetails.selectOrderGetItemById(pictureid);
+                if(pictureDetailses!=null&&pictureDetailses.size()>0){
+                    pictures.add(pictureDetailses.get(0).getPictureurl());
+                }else{
+                    pictures.add("");
+                }
+            }
         }
         List<TradingOrderSenderAddress> senderAddresses=iTradingOrderSenderAddress.selectOrderSenderAddressByOrderId(orderid);
         TradingOrderSenderAddress type1=new TradingOrderSenderAddress();
@@ -424,10 +452,45 @@ public class GetOrdersController extends BaseAction {
                 type2=senderAddresse;
             }
         }
+        String itemid=lists.get(0).getItemid();
+        List<TradingMessageGetmymessage> messageList=iTradingMessageGetmymessage.selectMessageGetmymessageByItemIdAndSender(itemid,lists.get(0).getBuyeruserid(),lists.get(0).getSelleruserid());
+        List<TradingOrderAddMemberMessageAAQToPartner> addmessageList=iTradingOrderAddMemberMessageAAQToPartner.selectTradingOrderAddMemberMessageAAQToPartnerByItemIdAndSender(itemid,4,lists.get(0).getSelleruserid(),lists.get(0).getBuyeruserid());
+        messages.addAll(messageList);
+        addMessages.addAll(addmessageList);
+        for(TradingMessageGetmymessage message:messages){
+            TradingOrderAddMemberMessageAAQToPartner partner=new TradingOrderAddMemberMessageAAQToPartner();
+            partner.setSender(message.getSender());
+            partner.setSubject(message.getSubject());
+            partner.setRecipientid(message.getRecipientuserid());
+            partner.setCreateTime(message.getReceivedate());
+            String text=message.getTextHtml();
+            if(StringUtils.isNotBlank(text)){
+                String[] text1=text.split("</strong><br><br>");
+                String[] text2=text1[1].split("<br/><br>");
+                partner.setBody(text2[0]);
+            }
+            addMessages.add(partner);
+        }
+        Object[] addMessages1=addMessages.toArray();
+        for(int i=0;i<addMessages1.length;i++){
+            for(int j=i+1;j<addMessages1.length;j++){
+                TradingOrderAddMemberMessageAAQToPartner l1= (TradingOrderAddMemberMessageAAQToPartner) addMessages1[i];
+                TradingOrderAddMemberMessageAAQToPartner l2= (TradingOrderAddMemberMessageAAQToPartner) addMessages1[j];
+                if(l1.getCreateTime().after(l2.getCreateTime())){
+                    addMessages1[i]=l2;
+                    addMessages1[j]=l1;
+                }
+            }
+        }
         modelMap.put("messages1", messages);
-        modelMap.put("addMessage1",addMessages);
+        modelMap.put("addMessage1",addMessages1);
         modelMap.put("addresstype1",type1);
         modelMap.put("addresstype2",type2);
+        modelMap.put("paypals",palpays);
+        modelMap.put("grossdetailamounts",grossdetailamounts);
+        modelMap.put("pictures",pictures);
+        modelMap.put("sender",lists1.get(0).getBuyeruserid());
+        modelMap.put("recipient",lists1.get(0).getSelleruserid());
         /*Map<String,String> map=new HashMap<String, String>();
         map.put("orderStatus","Completed");
         map.put("selleraccount",lists.get(0).getSelleruserid());
@@ -442,7 +505,8 @@ public class GetOrdersController extends BaseAction {
     @AvoidDuplicateSubmission(needSaveToken = true)
     public ModelAndView modifyOrderStatus(HttpServletRequest request,HttpServletResponse response,@ModelAttribute( "initSomeParmMap" )ModelMap modelMap) throws Exception {
         String transactionid=request.getParameter("transactionid");
-        List<TradingOrderGetOrders> orderList=iTradingOrderGetOrders.selectOrderGetOrdersByTransactionId(transactionid);
+        String selleruserid=request.getParameter("selleruserid");
+        List<TradingOrderGetOrders> orderList=iTradingOrderGetOrders.selectOrderGetOrdersByTransactionId(transactionid,selleruserid);
         modelMap.put("order",orderList.get(0));
         return forword("orders/order/modifyOrderStatus",modelMap);
     }
@@ -488,7 +552,7 @@ public class GetOrdersController extends BaseAction {
         }
         String ack = SamplePaseXml.getVFromXmlString(res, "Ack");
         if ("Success".equalsIgnoreCase(ack)) {
-            List<TradingOrderGetOrders> orderList=iTradingOrderGetOrders.selectOrderGetOrdersByTransactionId(transactionid);
+            List<TradingOrderGetOrders> orderList=iTradingOrderGetOrders.selectOrderGetOrdersByTransactionId(transactionid,ebayName);
             TradingOrderGetOrders order=orderList.get(0);
             order.setShipmenttrackingnumber(ShipmentTrackingNumber);
             order.setShippingcarrierused(ShippingCarrierUsed);
@@ -551,7 +615,8 @@ public class GetOrdersController extends BaseAction {
     @AvoidDuplicateSubmission(needSaveToken = true)
     public ModelAndView viewOrderAbstractLeft(HttpServletRequest request,HttpServletResponse response,@ModelAttribute( "initSomeParmMap" )ModelMap modelMap) throws Exception {
         String TransactionId=request.getParameter("TransactionId");
-        List<TradingOrderGetOrders> lists=iTradingOrderGetOrders.selectOrderGetOrdersByTransactionId(TransactionId);
+        String selleruserid=request.getParameter("selleruserid");
+        List<TradingOrderGetOrders> lists=iTradingOrderGetOrders.selectOrderGetOrdersByTransactionId(TransactionId,selleruserid);
         TradingOrderGetOrders order=lists.get(0);
         /*List<TradingOrderShippingDetails> detailsList=iTradingOrderShippingDetails.selectOrderGetItemById(order.getShippingdetailsId());*/
 /*
@@ -586,7 +651,8 @@ public class GetOrdersController extends BaseAction {
     @AvoidDuplicateSubmission(needSaveToken = true)
     public ModelAndView viewOrderAbstractRight(HttpServletRequest request,HttpServletResponse response,@ModelAttribute( "initSomeParmMap" )ModelMap modelMap) throws Exception {
         String TransactionId=request.getParameter("TransactionId");
-        List<TradingOrderGetOrders> lists=iTradingOrderGetOrders.selectOrderGetOrdersByTransactionId(TransactionId);
+        String selleruserid=request.getParameter("selleruserid");
+        List<TradingOrderGetOrders> lists=iTradingOrderGetOrders.selectOrderGetOrdersByTransactionId(TransactionId,selleruserid);
         TradingOrderGetOrders order=lists.get(0);
         modelMap.put("order",order);
         return forword("orders/order/viewOrderAbstractRight",modelMap);
@@ -598,7 +664,8 @@ public class GetOrdersController extends BaseAction {
     @AvoidDuplicateSubmission(needSaveToken = true)
     public ModelAndView viewOrderShipmentsHistory(HttpServletRequest request,HttpServletResponse response,@ModelAttribute( "initSomeParmMap" )ModelMap modelMap) throws Exception {
         String TransactionId=request.getParameter("TransactionId");
-        List<TradingOrderGetOrders> lists=iTradingOrderGetOrders.selectOrderGetOrdersByTransactionId(TransactionId);
+        String selleruserid=request.getParameter("selleruserid");
+        List<TradingOrderGetOrders> lists=iTradingOrderGetOrders.selectOrderGetOrdersByTransactionId(TransactionId,selleruserid);
         List<TradingOrderAddMemberMessageAAQToPartner> addMes=new ArrayList<TradingOrderAddMemberMessageAAQToPartner>();
         for(TradingOrderGetOrders order:lists){
             List<TradingOrderAddMemberMessageAAQToPartner> addmessageList1=iTradingOrderAddMemberMessageAAQToPartner.selectTradingOrderAddMemberMessageAAQToPartnerByTransactionId(order.getTransactionid(),1);
@@ -687,7 +754,8 @@ public class GetOrdersController extends BaseAction {
     @RequestMapping("/initSendEvaluateMessage.do")
     public ModelAndView initSendEvaluateMessage(HttpServletRequest request,HttpServletResponse response,ModelMap modelMap){
         String transactionid=request.getParameter("transactionid");
-        List<TradingOrderGetOrders> list=iTradingOrderGetOrders.selectOrderGetOrdersByTransactionId(transactionid);
+        String selleruserid=request.getParameter("selleruserid");
+        List<TradingOrderGetOrders> list=iTradingOrderGetOrders.selectOrderGetOrdersByTransactionId(transactionid,selleruserid);
         modelMap.put("order",list.get(0));
         return forword("/orders/order/orderSendEvaluateMessage",modelMap);
     }
@@ -791,6 +859,9 @@ public class GetOrdersController extends BaseAction {
         String buyeruserid=request.getParameter("buyeruserid");
         String sender=request.getParameter("selleruserid");
         String transactionid=request.getParameter("transactionid");
+        if(subject.length()>100){
+            subject=subject.substring(0,100);
+        }
         UsercontrollerDevAccountExtend d = userInfoService.getDevInfo(null);//开发者帐号id
         d.setApiSiteid("0");
         d.setApiCallName(APINameStatic.AddMemberMessageAAQToPartner);
@@ -826,7 +897,7 @@ public class GetOrdersController extends BaseAction {
             message1.setRecipientid(buyeruserid);
             message1.setSubject(subject);
             message1.setSender(sender);
-            message1.setMessagetype(1);
+            message1.setMessagetype(4);
             message1.setTransactionid(transactionid);
             iTradingOrderAddMemberMessageAAQToPartner.saveOrderAddMemberMessageAAQToPartner(message1);
             AjaxSupport.sendSuccessText("success", "发送成功");
@@ -858,7 +929,7 @@ public class GetOrdersController extends BaseAction {
         Map map=new HashMap();
         Date startTime2=DateUtils.subDays(new Date(),9);
         Date endTime= DateUtils.addDays(startTime2, 9);
-      /*  Date startTime2=DateUtils.subDays(new Date(),40);
+   /*     Date startTime2=DateUtils.subDays(new Date(),40);
         Date endTime= DateUtils.addDays(startTime2, 40);*/
         Date end1= com.base.utils.common.DateUtils.turnToDateEnd(endTime);
         String start= DateUtils.DateToString(startTime2);

@@ -4447,6 +4447,146 @@ public class TradingItemExample {
             addCriterion("listing_way not between", value1, value2, "listingWay");
             return (Criteria) this;
         }
+
+        public Criteria andFolderIdIsNull() {
+            addCriterion("folder_id is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andFolderIdIsNotNull() {
+            addCriterion("folder_id is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andFolderIdEqualTo(String value) {
+            addCriterion("folder_id =", value, "folderId");
+            return (Criteria) this;
+        }
+
+        public Criteria andFolderIdNotEqualTo(String value) {
+            addCriterion("folder_id <>", value, "folderId");
+            return (Criteria) this;
+        }
+
+        public Criteria andFolderIdGreaterThan(String value) {
+            addCriterion("folder_id >", value, "folderId");
+            return (Criteria) this;
+        }
+
+        public Criteria andFolderIdGreaterThanOrEqualTo(String value) {
+            addCriterion("folder_id >=", value, "folderId");
+            return (Criteria) this;
+        }
+
+        public Criteria andFolderIdLessThan(String value) {
+            addCriterion("folder_id <", value, "folderId");
+            return (Criteria) this;
+        }
+
+        public Criteria andFolderIdLessThanOrEqualTo(String value) {
+            addCriterion("folder_id <=", value, "folderId");
+            return (Criteria) this;
+        }
+
+        public Criteria andFolderIdLike(String value) {
+            addCriterion("folder_id like", value, "folderId");
+            return (Criteria) this;
+        }
+
+        public Criteria andFolderIdNotLike(String value) {
+            addCriterion("folder_id not like", value, "folderId");
+            return (Criteria) this;
+        }
+
+        public Criteria andFolderIdIn(List<String> values) {
+            addCriterion("folder_id in", values, "folderId");
+            return (Criteria) this;
+        }
+
+        public Criteria andFolderIdNotIn(List<String> values) {
+            addCriterion("folder_id not in", values, "folderId");
+            return (Criteria) this;
+        }
+
+        public Criteria andFolderIdBetween(String value1, String value2) {
+            addCriterion("folder_id between", value1, value2, "folderId");
+            return (Criteria) this;
+        }
+
+        public Criteria andFolderIdNotBetween(String value1, String value2) {
+            addCriterion("folder_id not between", value1, value2, "folderId");
+            return (Criteria) this;
+        }
+
+        public Criteria andCheckFlagIsNull() {
+            addCriterion("check_flag is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andCheckFlagIsNotNull() {
+            addCriterion("check_flag is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andCheckFlagEqualTo(String value) {
+            addCriterion("check_flag =", value, "checkFlag");
+            return (Criteria) this;
+        }
+
+        public Criteria andCheckFlagNotEqualTo(String value) {
+            addCriterion("check_flag <>", value, "checkFlag");
+            return (Criteria) this;
+        }
+
+        public Criteria andCheckFlagGreaterThan(String value) {
+            addCriterion("check_flag >", value, "checkFlag");
+            return (Criteria) this;
+        }
+
+        public Criteria andCheckFlagGreaterThanOrEqualTo(String value) {
+            addCriterion("check_flag >=", value, "checkFlag");
+            return (Criteria) this;
+        }
+
+        public Criteria andCheckFlagLessThan(String value) {
+            addCriterion("check_flag <", value, "checkFlag");
+            return (Criteria) this;
+        }
+
+        public Criteria andCheckFlagLessThanOrEqualTo(String value) {
+            addCriterion("check_flag <=", value, "checkFlag");
+            return (Criteria) this;
+        }
+
+        public Criteria andCheckFlagLike(String value) {
+            addCriterion("check_flag like", value, "checkFlag");
+            return (Criteria) this;
+        }
+
+        public Criteria andCheckFlagNotLike(String value) {
+            addCriterion("check_flag not like", value, "checkFlag");
+            return (Criteria) this;
+        }
+
+        public Criteria andCheckFlagIn(List<String> values) {
+            addCriterion("check_flag in", values, "checkFlag");
+            return (Criteria) this;
+        }
+
+        public Criteria andCheckFlagNotIn(List<String> values) {
+            addCriterion("check_flag not in", values, "checkFlag");
+            return (Criteria) this;
+        }
+
+        public Criteria andCheckFlagBetween(String value1, String value2) {
+            addCriterion("check_flag between", value1, value2, "checkFlag");
+            return (Criteria) this;
+        }
+
+        public Criteria andCheckFlagNotBetween(String value1, String value2) {
+            addCriterion("check_flag not between", value1, value2, "checkFlag");
+            return (Criteria) this;
+        }
     }
 
     /**

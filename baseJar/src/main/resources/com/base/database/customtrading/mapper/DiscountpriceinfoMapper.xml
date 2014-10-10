@@ -25,8 +25,8 @@
       <result column="check_flag" jdbcType="VARCHAR" property="checkFlag" />
   </resultMap>
     <select id="selectByDiscountpriceinfoList" resultMap="BaseResultMap" parameterType="map">
-        select dis.*,fig.config_name ebay_name from trading_discountpriceinfo dis
-        left join public_user_config fig on dis.ebay_account=fig.id where 1=1
+        select dis.*,ebay.ebay_name ebay_name from trading_discountpriceinfo dis
+        left join usercontroller_ebay_account ebay on dis.ebay_account=ebay.id where 1=1
         <if test="id!=null">
             and dis.id = #{id}
         </if>

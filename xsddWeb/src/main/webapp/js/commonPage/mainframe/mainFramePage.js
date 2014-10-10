@@ -70,3 +70,144 @@ function addArrow(obj){
 function logout(){
     top.location=path+'/logout.do';
 }
+
+var noticeTimerId=0;
+/**定时获取消息*/
+function getMessagesByTime(){
+    noticeTimerId = setInterval(function(){
+        getSystemMessage({"jsonBean.pageNum":1,"jsonBean.pageCount":1000,"readed":0,"strV1":"num"});
+    } ,300*1000);
+}
+/**获取ebay消息*/
+function getEbayMessage(p){
+    var url=path+"/message/noReadMessageGetmymessageList.do";
+    var data={};
+    if(p==null){
+        data={"jsonBean.pageNum":1,"jsonBean.pageCount":5,"readed":"false"};
+    }else{
+        data=p;
+    }
+    $().invoke(
+        url,
+        data,
+        [function(m,r){
+            console.debug(m);
+            console.debug(r);
+           /* if(r==null){return;}
+            if(data.strV1=="num"){
+                var re = eval("(" + r + ")");
+                //alert(re.systemMessageNum)
+                $("#systemMessageCount").html(re.systemMessageNum);
+                $("#ebayMessagesCount").html(re.ebayMessageNum);
+                $("#ebaymessageNotice").html("You have "+re.ebayMessageNum+" new notifications")
+                return;
+            }
+            var dat = r.list;
+            var ht="";
+            for(var i in dat){
+                var ddd =alySystemMessage(dat[i]);
+                ht+="<a onclick='openMessage("+dat[i]["id"]+")' href=\"javascript:void(0)\" class=\"item\">"+
+                    "<img src=\"/xsddWeb/img/contact-img.png\" class=\"display\" />"+
+                    "<div class=\"name\">"+ddd["titl"]+"</div>"+
+                    "<div class=\"msg\">"+
+                    ddd["cont"]+
+                    "</div>"+
+                    "<span class=\"time\"><i class=\"icon-time\"></i> "+dat[i]["createTime"]+"</span>"+
+                    "</a>";
+            }
+            ht+="<div class=\"footer\"><a href=\"sitemessage/siteMessagePage.do\" target='contentMain' class=\"logout\">View all messages</a></div>";
+            $("#messages").html(ht);*/
+        },
+            function(m,r){}]
+    );
+/*    $("#ebaymessageNotice").html("You have "+ 0 +" new notifications")*/
+}
+/**获取系统信息*/
+function getSystemMessage(p){
+    var url=path+"/sitemessage/selectSiteMessage.do";
+    var data={};
+    if(p==null){
+        data={"jsonBean.pageNum":1,"jsonBean.pageCount":3,"readed":0};
+    }else{
+        data=p;
+    }
+    $().invoke(
+        url,
+        data,
+        [function(m,r){
+            if(r==null){return;}
+            if(data.strV1=="num"){
+                var re = eval("(" + r + ")");
+                //alert(re.systemMessageNum)
+                $("#systemMessageCount").html(re.systemMessageNum);
+                $("#ebayMessagesCount").html(re.ebayMessageNum);
+                $("#ebaymessageNotice").html("You have "+re.ebayMessageNum+" new notifications")
+                return;
+            }
+            var dat = r.list;
+            var ht="";
+            for(var i in dat){
+                var ddd =alySystemMessage(dat[i]);
+                ht+="<a onclick='openMessage("+dat[i]["id"]+")' href=\"javascript:void(0)\" class=\"item\">"+
+                "<img src=\"/xsddWeb/img/contact-img.png\" class=\"display\" />"+
+                    "<div class=\"name\">"+ddd["titl"]+"</div>"+
+                    "<div class=\"msg\">"+
+                    ddd["cont"]+
+                "</div>"+
+                    "<span class=\"time\"><i class=\"icon-time\"></i> "+dat[i]["createTime"]+"</span>"+
+                "</a>";
+            }
+            ht+="<div class=\"footer\"><a href=\"sitemessage/siteMessagePage.do\" target='contentMain' class=\"logout\">View all messages</a></div>";
+            $("#messages").html(ht);
+        },
+        function(m,r){}]
+    );
+}
+
+
+/**打开消息查看窗口*/
+var readMessageWindow;
+function openMessage(mid){
+    readMessageWindow=$.dialog({
+        title:'查看信息',
+        id : "digMessage" ,
+        content:"url:"+path+"/sitemessage/readMessagePage.do?messageId="+mid,
+        data:{"messageId":mid},
+        width : 650,
+        height : 300,
+        max:false,
+        min:false,
+        lock : true
+
+    });
+
+    var nm = $("#systemMessageCount").html();
+    var n=(parseInt(nm)-1)>0?0:(parseInt(nm)-1);
+    $("#systemMessageCount").html(n);
+}
+
+/**解析系统消息并着色*/
+function alySystemMessage(json){
+    var titl="";
+    var cont="";
+    if(json.message!=null && json.message.length>20){
+        if(json.readed==0 || json.readed=='0'){
+            cont = json.message.substr(0,19)+"...";
+            titl = json.messageTitle;
+        }else{
+            cont = "<span style='color: #999999;'>"+json.message.substr(0,19)+"..."+"</span>";
+            titl = "<span style='color: #999999;'>"+json.messageTitle+"</span>";
+        }
+    }else{
+        if(json.readed==0 || json.readed=='0'){
+            cont= json.message;
+            titl = json.messageTitle;
+        }else{
+            cont = "<span style='color: #999999;'>"+json.message+"</span>";
+            titl = "<span style='color: #999999;'>"+json.messageTitle+"</span>";
+        }
+
+    }
+
+    return {"titl":titl,"cont":cont}
+}

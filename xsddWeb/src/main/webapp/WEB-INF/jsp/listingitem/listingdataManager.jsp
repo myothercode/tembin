@@ -216,8 +216,6 @@
                     }
                 ]
             });
-            alert(reason);
-
         }
         function addTabRemark(){
             var url=path+"/order/selectTabRemark.do?folderType=listingFolder";
@@ -242,7 +240,7 @@
             });
         }
         $(document).ready(function(){
-            var url=path+"/ajax/selfFolder.do";
+            var url=path+"/ajax/selfFolder.do?folderType=listingFolder";
             $().invoke(url,{},
                     [function(m,r){
                         var htmlstr='<dt name="listing" class=new_tab_1 onclick="setTab(this)">在线</dt>'
@@ -259,7 +257,73 @@
                         }]
             );
         });
+        function shiftToFolder(obj) {
+            $(obj).attr({style:"color:red"});
+            var item = $(document.getElementById('listing_frame').contentWindow.document.body).find("input[name='listingitemid']");
+            var idStr = "";
 
+            for (var i = 0; i < item.length; i++) {
+                if ($(item[i])[0].checked) {
+                    idStr += $($(item[i])[0]).attr("val") + ",";
+                }
+            }
+            if(idStr==""){
+                alert("请选择需要移动的商品！");
+                return ;
+            }
+
+
+            var url=path+"/ajax/selfFolder.do?folderType=listingFolder";
+            $().invoke(url,{},
+                    [function(m,r){
+                        var htmlstr = "<div>选择文件夹：</div>";
+                            htmlstr += "<div>";
+                        for(var i = 0;i < r.length;i++){
+                            htmlstr+="<div><input type='radio' name='folderid' value='"+r[i].id+"'/>"+r[i].configName+"</div>";
+                        }
+                        htmlstr += "</div>";
+                        var editPage = $.dialog({title: '选择移动到的文件夹',
+                            content: htmlstr,
+                            icon: 'succeed',
+                            width: 400,
+                            button: [
+                                {
+                                    name: '确定',
+                                    callback: function (iwins, enter) {
+                                        var folderid = "";
+                                        if (iwins.parent.document.getElementsByName("folderid").value == "") {
+                                            alert("请选择文件夹！");
+                                            return false;
+                                        } else {
+                                            for(var i =0;i<iwins.parent.document.getElementsByName("folderid").length;i++){
+                                                if(iwins.parent.document.getElementsByName("folderid")[i].checked){
+                                                    folderid = iwins.parent.document.getElementsByName("folderid")[i].value;
+                                                }
+                                            }
+                                            var url = path + "/ajax/shiftListingToFolder.do?idStr=" + idStr+"&folderid="+folderid;
+                                            $().invoke(url, {},
+                                                    [function (m, r) {
+                                                        alert(r);
+                                                        Base.token();
+                                                        $("#listing_frame").attr("src",$("#listing_frame").attr("src"));
+                                                    },
+                                                        function (m, r) {
+                                                            alert(r);
+                                                            Base.token();
+                                                        }]
+                                            );
+                                        }
+                                    }
+                                }
+                            ]
+                        });
+                    },
+                        function(m,r){
+                            alert(r);
+                        }]
+            );
+
+        }
     </script>
 </head>
 <body>
@@ -274,10 +338,10 @@
             <div class="new_usa" style="margin-top:20px;">
                 <li class="new_usa_list"><span class="newusa_i">选择国家：</span>
                     <a href="javascript:void(0)" onclick="selectCounty(this)" value=""><span class="newusa_ici">全部</span></a>
-                    <a href="javascript:void(0)" onclick="selectCounty(this)" value="US"><span class="newusa_ici_1"><img src="../../img/usa_1.png">美国</span></a>
-                    <a href="javascript:void(0)" onclick="selectCounty(this)" value="UK"><span class="newusa_ici_1"><img src="../../img/usa_2.png">英国</span></a>
-                    <a href="javascript:void(0)" onclick="selectCounty(this)" value="Germany"><span class="newusa_ici_1"><img src="../../img/usa_2.png">德国</span></a>
-                    <a href="javascript:void(0)" onclick="selectCounty(this)" value="Australia"><span class="newusa_ici_1"><img src="../../img/usa_2.png">澳大利亚</span></a>
+                    <a href="javascript:void(0)" onclick="selectCounty(this)" value="US"><span class="newusa_ici_1"><img src="<c:url value ="/img/usa_1.png"/>">美国</span></a>
+                    <a href="javascript:void(0)" onclick="selectCounty(this)" value="UK"><span class="newusa_ici_1"><img src="<c:url value ="/img/UK.jpg"/>">英国</span></a>
+                    <a href="javascript:void(0)" onclick="selectCounty(this)" value="Germany"><span class="newusa_ici_1"><img src="<c:url value ="/img/DE.png"/>">德国</span></a>
+                    <a href="javascript:void(0)" onclick="selectCounty(this)" value="Australia"><span class="newusa_ici_1"><img src="<c:url value ="/img/AU.jpg"/>">澳大利亚</span></a>
                 </li>
                 <li class="new_usa_list">
                     <span class="newusa_i">选择账号：</span>
@@ -337,13 +401,14 @@
                                     <option value="AK">动作</option>
                                 </select>
                             </div>
-                            <div class="ui-select" style="margin-top:1px; width:10px">
+                            <%--<div class="ui-select" style="margin-top:1px; width:10px">
                                 <select>
                                     <option value="AK">移动</option>
                                     <option value="AK">动作</option>
                                 </select>
-                            </div>
+                            </div>--%>
                         </div>
+                        <span class="newusa_ici_del" onclick="shiftToFolder(this)">移动</span>
                         <span class="newusa_ici_del" onclick="endItem(this)">提前结束</span>
                         <span class="newusa_ici_del" onclick="tablePrice(this)">表格调价</span><span
                             class="newusa_ici_del"  onclick="addTabRemark();">管理文件夹</span></div>

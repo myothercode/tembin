@@ -69,6 +69,8 @@
     <result column="item_id" jdbcType="VARCHAR" property="itemId" />
     <result column="template_id" jdbcType="BIGINT" property="templateId" />
     <result column="listing_way" jdbcType="VARCHAR" property="listingWay" />
+    <result column="folder_id" jdbcType="VARCHAR" property="folderId" />
+    <result column="check_flag" jdbcType="VARCHAR" property="checkFlag" />
   </resultMap>
   <resultMap extends="BaseResultMap" id="ResultMapWithBLOBs" type="com.base.database.trading.model.TradingItem">
     <!--
@@ -158,7 +160,7 @@
     StartPrice, SubTitle, TaxCategory, Title, UseRecommendedProduct, UseTaxTable, UUID, 
     VIN, VRM, create_user, create_time, local_uuid, item_location_id, buyer_id, pay_id, 
     returnpolicy_id, DiscountPriceInfo_id, Seller_item_info_id, shipping_deails_id, ebay_account, 
-    item_name, is_flag, item_id, template_id, listing_way
+    item_name, is_flag, item_id, template_id, listing_way, folder_id, check_flag
   </sql>
   <sql id="Blob_Column_List">
     <!--
@@ -262,8 +264,8 @@
       pay_id, returnpolicy_id, DiscountPriceInfo_id, 
       Seller_item_info_id, shipping_deails_id, ebay_account, 
       item_name, is_flag, item_id, 
-      template_id, listing_way, Description
-      )
+      template_id, listing_way, folder_id, 
+      check_flag, Description)
     values (#{id,jdbcType=BIGINT}, #{applicationdata,jdbcType=VARCHAR}, #{attributesetarray,jdbcType=VARCHAR}, 
       #{autopay,jdbcType=VARCHAR}, #{bestofferenabled,jdbcType=VARCHAR}, #{categorybasedattributesprefill,jdbcType=VARCHAR}, 
       #{categorymappingallowed,jdbcType=VARCHAR}, #{conditiondescription,jdbcType=VARCHAR}, 
@@ -286,8 +288,8 @@
       #{payId,jdbcType=BIGINT}, #{returnpolicyId,jdbcType=BIGINT}, #{discountpriceinfoId,jdbcType=BIGINT}, 
       #{sellerItemInfoId,jdbcType=BIGINT}, #{shippingDeailsId,jdbcType=BIGINT}, #{ebayAccount,jdbcType=VARCHAR}, 
       #{itemName,jdbcType=VARCHAR}, #{isFlag,jdbcType=VARCHAR}, #{itemId,jdbcType=VARCHAR}, 
-      #{templateId,jdbcType=BIGINT}, #{listingWay,jdbcType=VARCHAR}, #{description,jdbcType=LONGVARCHAR}
-      )
+      #{templateId,jdbcType=BIGINT}, #{listingWay,jdbcType=VARCHAR}, #{folderId,jdbcType=VARCHAR}, 
+      #{checkFlag,jdbcType=VARCHAR}, #{description,jdbcType=LONGVARCHAR})
       <selectKey resultType="long" keyProperty="id" order="AFTER">
           SELECT LAST_INSERT_ID()
       </selectKey>
@@ -488,6 +490,12 @@
       <if test="listingWay != null">
         listing_way,
       </if>
+      <if test="folderId != null">
+        folder_id,
+      </if>
+      <if test="checkFlag != null">
+        check_flag,
+      </if>
       <if test="description != null">
         Description,
       </if>
@@ -681,6 +689,12 @@
       </if>
       <if test="listingWay != null">
         #{listingWay,jdbcType=VARCHAR},
+      </if>
+      <if test="folderId != null">
+        #{folderId,jdbcType=VARCHAR},
+      </if>
+      <if test="checkFlag != null">
+        #{checkFlag,jdbcType=VARCHAR},
       </if>
       <if test="description != null">
         #{description,jdbcType=LONGVARCHAR},
@@ -896,6 +910,12 @@
       <if test="record.listingWay != null">
         listing_way = #{record.listingWay,jdbcType=VARCHAR},
       </if>
+      <if test="record.folderId != null">
+        folder_id = #{record.folderId,jdbcType=VARCHAR},
+      </if>
+      <if test="record.checkFlag != null">
+        check_flag = #{record.checkFlag,jdbcType=VARCHAR},
+      </if>
       <if test="record.description != null">
         Description = #{record.description,jdbcType=LONGVARCHAR},
       </if>
@@ -973,6 +993,8 @@
       item_id = #{record.itemId,jdbcType=VARCHAR},
       template_id = #{record.templateId,jdbcType=BIGINT},
       listing_way = #{record.listingWay,jdbcType=VARCHAR},
+      folder_id = #{record.folderId,jdbcType=VARCHAR},
+      check_flag = #{record.checkFlag,jdbcType=VARCHAR},
       Description = #{record.description,jdbcType=LONGVARCHAR}
     <if test="_parameter != null">
       <include refid="Update_By_Example_Where_Clause" />
@@ -1046,7 +1068,9 @@
       is_flag = #{record.isFlag,jdbcType=VARCHAR},
       item_id = #{record.itemId,jdbcType=VARCHAR},
       template_id = #{record.templateId,jdbcType=BIGINT},
-      listing_way = #{record.listingWay,jdbcType=VARCHAR}
+      listing_way = #{record.listingWay,jdbcType=VARCHAR},
+      folder_id = #{record.folderId,jdbcType=VARCHAR},
+      check_flag = #{record.checkFlag,jdbcType=VARCHAR}
     <if test="_parameter != null">
       <include refid="Update_By_Example_Where_Clause" />
     </if>
@@ -1244,6 +1268,12 @@
       <if test="listingWay != null">
         listing_way = #{listingWay,jdbcType=VARCHAR},
       </if>
+      <if test="folderId != null">
+        folder_id = #{folderId,jdbcType=VARCHAR},
+      </if>
+      <if test="checkFlag != null">
+        check_flag = #{checkFlag,jdbcType=VARCHAR},
+      </if>
       <if test="description != null">
         Description = #{description,jdbcType=LONGVARCHAR},
       </if>
@@ -1318,6 +1348,8 @@
       item_id = #{itemId,jdbcType=VARCHAR},
       template_id = #{templateId,jdbcType=BIGINT},
       listing_way = #{listingWay,jdbcType=VARCHAR},
+      folder_id = #{folderId,jdbcType=VARCHAR},
+      check_flag = #{checkFlag,jdbcType=VARCHAR},
       Description = #{description,jdbcType=LONGVARCHAR}
     where id = #{id,jdbcType=BIGINT}
   </update>
@@ -1388,7 +1420,9 @@
       is_flag = #{isFlag,jdbcType=VARCHAR},
       item_id = #{itemId,jdbcType=VARCHAR},
       template_id = #{templateId,jdbcType=BIGINT},
-      listing_way = #{listingWay,jdbcType=VARCHAR}
+      listing_way = #{listingWay,jdbcType=VARCHAR},
+      folder_id = #{folderId,jdbcType=VARCHAR},
+      check_flag = #{checkFlag,jdbcType=VARCHAR}
     where id = #{id,jdbcType=BIGINT}
   </update>
 </mapper>

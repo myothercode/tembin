@@ -64,4 +64,16 @@ public class TradingOrderAddMemberMessageAAQToPartnerImpl implements com.trading
             tradingOrderAddMemberMessageAAQToPartnerMapper.deleteByPrimaryKey(id);
         }
     }
+
+    @Override
+    public List<TradingOrderAddMemberMessageAAQToPartner> selectTradingOrderAddMemberMessageAAQToPartnerByItemIdAndSender(String itemid, Integer type, String sender,String recipient) {
+        TradingOrderAddMemberMessageAAQToPartnerExample example=new TradingOrderAddMemberMessageAAQToPartnerExample();
+        TradingOrderAddMemberMessageAAQToPartnerExample.Criteria cr=example.createCriteria();
+        cr.andItemidEqualTo(itemid);
+        cr.andMessagetypeEqualTo(type);
+        cr.andSenderEqualTo(sender);
+        cr.andRecipientidEqualTo(recipient);
+        List<TradingOrderAddMemberMessageAAQToPartner> list=tradingOrderAddMemberMessageAAQToPartnerMapper.selectByExample(example);
+        return list;
+    }
 }

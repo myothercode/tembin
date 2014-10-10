@@ -17,6 +17,9 @@
             W.itemInformation.close();
         }
         function submitCommit(){
+            if(!$("#remarkForm").validationEngine("validate")){
+                return;
+            }
             var url=path+"/information/ajax/saveremark.do";
             var data=$("#remarkForm").serialize();
             $().invoke(url,data,
@@ -32,13 +35,17 @@
                         }]
             );
         }
+        $(document).ready(function(){
+            $("#remarkForm").validationEngine();
+        });
     </script>
 </head>
 <body>
     <form id="remarkForm">
+        <br/><br/>
         <input type="hidden" name="id" value="${id}"/>
-        标签:&nbsp;<input type="text" name="remark" style="width: 1000px;"/><br/>
-        <select name="parentid">
+        &nbsp;&nbsp;标签:&nbsp;<input type="text" class="validate[required]" name="remark" style="width: 800px;"/><br/>
+        &nbsp;&nbsp;<select name="parentid">
             <option value="0">--请选择--</option>
             <c:forEach items="${parents}" var="parent">
                 <option value="${parent.id}">${parent.configName}</option>
@@ -46,7 +53,7 @@
 
         </select>
     </form>
-    <input type="button" value="保存" onclick="submitCommit();"/>
-    <input type="button" value="关闭" onclick="closedialog();">
+    &nbsp;&nbsp;<input type="button" value="保存" onclick="submitCommit();"/>
+    &nbsp;&nbsp;<input type="button" value="关闭" onclick="closedialog();">
 </body>
 </html>

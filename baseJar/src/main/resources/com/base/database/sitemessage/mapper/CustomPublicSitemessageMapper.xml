@@ -23,11 +23,15 @@
        and m.message_to = #{messageTo}
     </if>
     <if test="messageType!=null">
-        and (m.message_type = CONCAT(#{messageType},'_SUCCESS'),m.message_type = CONCAT(#{messageType},'_Fail'))
+        and (m.message_type = CONCAT(#{messageType},'_SUCCESS') or m.message_type = CONCAT(#{messageType},'_FAIL'))
     </if>
     <if test="messageFrom!=null">
         and m.message_from = #{messageFrom}
     </if>
+    <if test="readed!=null">
+        and m.readed = #{readed}
+    </if>
+    order by m.create_time desc
 </select>
 
     <select id="fetchSiteMessageById" parameterType="com.base.database.sitemessage.model.PublicSitemessage" resultMap="BaseResultMap">

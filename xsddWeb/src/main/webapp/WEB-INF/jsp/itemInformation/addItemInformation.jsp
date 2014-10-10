@@ -73,10 +73,13 @@
             }
         }
         function closedialog() {
-            window.parent.location.reload();
-     /*       W.itemInformation.close();*/
+            /*window.parent.location.reload();*/
+            W.itemInformation.close();
         }
         function submitCommit(){
+            if(!$("#informationForm").validationEngine("validate")){
+                return;
+            }
             var names=$("input[name=attrName]");
             var values=$("input[name=attrValue]");
             var pictures=$("input[name=Picture]");
@@ -148,6 +151,7 @@
         var afterUploadCallback = null;
         var sss;
         function addpicture(a){
+
             _sku =$("#sku").val();
             afterUploadCallback = {"imgURLS": addPictrueUrl};
             sss = a.id;
@@ -169,6 +173,9 @@
         function removeThis(a){
             $(a).parent().parent().remove();
         }
+        $(document).ready(function(){
+            $("#informationForm").validationEngine();
+        });
     </script>
 </head>
 <body>
@@ -177,9 +184,10 @@
 <input type="hidden" name="inventoryid" value="${inventory.id}"/>
 <input type="hidden" name="customid" value="${custom.id}"/>
 <input type="hidden" name="supplierid" value="${supplier.id}"/>
+    <br/><br/>
 <table style="width: 1000px;">
     <tr>
-        <td></td><td>名称:</td><td><input type="text" id="informationName" name="name" value="${itemInformation.name}"/></td>
+        <td></td><td>名称:</td><td><input type="text" class="validate[required]" id="informationName" name="name" value="${itemInformation.name}"/></td>
     </tr>
     <tr><td colspan="3"><hr/></td></tr>
     <tr>
@@ -187,7 +195,7 @@
     </tr>
     <tr><td colspan="3"><hr/></td></tr>
     <tr>
-        <td></td><td>SKU</td><td><input type="text" id="sku" name="sku" value="${itemInformation.sku}"/></td>
+        <td></td><td>SKU</td><td><input type="text" class="validate[required]" id="sku" name="sku" value="${itemInformation.sku}"/></td>
     </tr>
     <tr>
         <td></td><td></td><td>

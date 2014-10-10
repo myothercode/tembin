@@ -1,5 +1,6 @@
 package com.trading.service.impl;
 
+import com.base.aboutpaypal.service.PayPalService;
 import com.base.database.customtrading.mapper.ItemMapper;
 import com.base.database.keymove.model.KeyMoveList;
 import com.base.database.publicd.mapper.PublicUserConfigMapper;
@@ -18,6 +19,9 @@ import com.base.utils.common.*;
 import com.base.utils.ftpabout.FtpUploadFile;
 import com.base.utils.imageManage.service.ImageService;
 import com.base.xmlpojo.trading.addproduct.*;
+import com.base.xmlpojo.trading.addproduct.attrclass.MadeForOutletComparisonPrice;
+import com.base.xmlpojo.trading.addproduct.attrclass.MinimumAdvertisedPrice;
+import com.base.xmlpojo.trading.addproduct.attrclass.OriginalRetailPrice;
 import com.base.xmlpojo.trading.addproduct.attrclass.StartPrice;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Collections2;
@@ -105,6 +109,12 @@ public class TradingItemImpl implements com.trading.service.ITradingItem {
     public UsercontrollerUserMapper usercontrollerUserMapper;
     @Autowired
     public IPublicItemPictureaddrAndAttr iPublicItemPictureaddrAndAttr;
+    @Autowired
+    private ITradingDescriptionDetails iTradingDescriptionDetails;
+    @Autowired
+    private ITradingTemplateInitTable iTradingTemplateInitTable;
+    @Autowired
+    private PayPalService payPalService;
 
 
     @Override
@@ -118,6 +128,12 @@ public class TradingItemImpl implements com.trading.service.ITradingItem {
 
     }
 
+    @Override
+    public void saveTradingItemList(List<TradingItem> liti) throws Exception {
+        for(TradingItem ti:liti){
+            this.saveTradingItem(ti);
+        }
+    }
     @Override
     public TradingItem toDAOPojo(Item item) throws Exception {
         TradingItem pojo = new TradingItem();
@@ -176,6 +192,7 @@ public class TradingItemImpl implements com.trading.service.ITradingItem {
             }else{
                 tradingItem.setListingWay("0");//表示为正常刊登
             }
+            tradingItem.setSku(item.getSKU());
 
 
             this.saveTradingItem(tradingItem);
@@ -339,18 +356,22 @@ public class TradingItemImpl implements com.trading.service.ITradingItem {
             //保存图片信息
             PictureDetails picd = item.getPictureDetails();
             if(picd!=null){
+                String [] picurl = request.getParameterValues("PictureDetails_"+paypals[is]+".PictureURL");
                 TradingPicturedetails tpicd = this.iTradingPictureDetails.toDAOPojo(picd);
                 tpicd.setParentId(tradingItem.getId());
                 tpicd.setParentUuid(tradingItem.getUuid());
+                tpicd.setGallerytype("Gallery");
+                tpicd.setPhotodisplay("PicturePack");
+                if(picurl!=null&&picurl.length>0) {
+                    tpicd.setGalleryurl(picurl[0]);
+                }
                 this.iTradingPictureDetails.savePictureDetails(tpicd);
                 this.iTradingAttrMores.deleteByParentId("PictureURL",tpicd.getId());
-                String [] picurl = request.getParameterValues("PictureDetails_"+paypals[is]+".PictureURL");
                 for(int i = 0;i<picurl.length;i++){
                     TradingAttrMores tam = this.iTradingAttrMores.toDAOPojo("PictureURL",picurl[i]);
                     tam.setParentId(tpicd.getId());
                     tam.setParentUuid(tpicd.getUuid());
                     this.iTradingAttrMores.saveAttrMores(tam);
-
                 }
             }else{
                 TradingPicturedetails tpicd = this.iTradingPictureDetails.toDAOPojo(picd);
@@ -392,6 +413,252 @@ public class TradingItemImpl implements com.trading.service.ITradingItem {
             }
         }
         return itemMap;
+    }
+
+    @Override
+    public Item toItem(TradingItem tradingItem) throws Exception {
+        Item item = new Item();
+        ConvertPOJOUtil.convert(item,tradingItem);
+        if(tradingItem.getListingtype().equals("FixedPriceItem")){//固价刊登
+            StartPrice sp = new StartPrice();
+            sp.setCurrencyID(tradingItem.getCurrency());
+            sp.setValue(tradingItem.getStartprice());
+            item.setStartPrice(sp);
+        }else if(tradingItem.getListingtype().equals("2")){//多属性
+
+        }else if(tradingItem.getListingtype().equals("Chinese")){//拍买价
+            TradingAddItem tai = this.iTradingAddItem.selectParentId(tradingItem.getId());
+            item.setBuyItNowPrice(tai.getBuyitnowprice().doubleValue());
+        }
+        PrimaryCategory pc = new PrimaryCategory();
+        pc.setCategoryID(tradingItem.getCategoryid());
+        item.setPrimaryCategory(pc);
+        TradingPaypal tpay = this.iTradingPayPal.selectById(tradingItem.getPayId());
+        TradingItemAddress tadd = this.iTradingItemAddress.selectById(tradingItem.getItemLocationId());
+        TradingShippingdetails tshipping = this.iTradingShippingDetails.selectById(tradingItem.getShippingDeailsId());
+        TradingDiscountpriceinfo tdiscount = this.iTradingDiscountPriceInfo.selectById(tradingItem.getDiscountpriceinfoId());
+        TradingBuyerRequirementDetails tbuyer = this.iTradingBuyerRequirementDetails.selectById(tradingItem.getBuyerId());
+        TradingReturnpolicy treturn = this.iTradingReturnpolicy.selectById(tradingItem.getReturnpolicyId());
+
+        //组装刑登xml
+        //组装买家要求
+        if(tbuyer!=null) {
+            BuyerRequirementDetails brd = this.iTradingBuyerRequirementDetails.toXmlPojo(tradingItem.getBuyerId());
+            item.setBuyerRequirementDetails(brd);
+        }
+        //组装退货政策
+        if(treturn!=null) {
+            ReturnPolicy rp = this.iTradingReturnpolicy.toXmlPojo(tradingItem.getReturnpolicyId());
+            item.setReturnPolicy(rp);
+            item.getReturnPolicy().setReturnsAcceptedOption(DataDictionarySupport.getTradingDataDictionaryByID(Long.parseLong(item.getReturnPolicy().getReturnsAcceptedOption())).getValue());
+            item.getReturnPolicy().setReturnsWithinOption(DataDictionarySupport.getTradingDataDictionaryByID(Long.parseLong(item.getReturnPolicy().getReturnsWithinOption())).getValue());
+            item.getReturnPolicy().setRefundOption(DataDictionarySupport.getTradingDataDictionaryByID(Long.parseLong(item.getReturnPolicy().getRefundOption())).getValue());
+            item.getReturnPolicy().setShippingCostPaidByOption(DataDictionarySupport.getTradingDataDictionaryByID(Long.parseLong(item.getReturnPolicy().getShippingCostPaidByOption())).getValue());
+        }
+        //运输详情
+        if(tshipping!=null) {
+            ShippingDetails sd = this.iTradingShippingDetails.toXmlPojo(tradingItem.getShippingDeailsId());
+            item.setShippingDetails(sd);
+        }
+        String template = "";
+        if(tradingItem.getTemplateId()!=null){//如果选择了模板
+            TradingTemplateInitTable tttt = this.iTradingTemplateInitTable.selectById(tradingItem.getTemplateId());
+            template = tttt.getTemplateHtml();
+            template.replace("{ProductDetail}",item.getDescription());
+            if(tttt!=null&&tradingItem.getSellerItemInfoId()!=null){//如果选择了卖家描述
+                TradingDescriptionDetailsWithBLOBs tdd = this.iTradingDescriptionDetails.selectById(tradingItem.getSellerItemInfoId());
+                template.replace("{PaymentMethodTitle}",tdd.getPayTitle()==null?"PayTitle":tdd.getPayTitle());
+                template.replace("{PaymentMethod}",tdd.getPayInfo());
+
+                template.replace("{ShippingDetailTitle}",tdd.getShippingTitle()==null?"ShippingTitle()":tdd.getShippingTitle());
+                template.replace("{ShippingDetail}",tdd.getShippingInfo());
+
+                template.replace("{SalesPolicyTitle}",tdd.getGuaranteeTitle()==null?"GuaranteeTitle()":tdd.getGuaranteeTitle());
+                template.replace("{SalesPolicy}",tdd.getGuaranteeInfo());
+
+                template.replace("{AboutUsTitle}",tdd.getFeedbackTitle()==null?"FeedbackTitle()":tdd.getFeedbackTitle());
+                template.replace("{AboutUs}",tdd.getFeedbackInfo());
+
+                template.replace("{ContactUsTitle}",tdd.getContactTitle()==null?"ContactTitle":tdd.getContactTitle());
+                template.replace("{ContactUs}",tdd.getContactInfo());
+
+            }
+        }else{//未选择模板，
+            template+=item.getDescription()+"</br>";
+            if(tradingItem.getSellerItemInfoId()!=null){//如果选择了卖家描述
+                TradingDescriptionDetailsWithBLOBs tdd = this.iTradingDescriptionDetails.selectById(tradingItem.getSellerItemInfoId());
+
+                template+=tdd.getPayTitle()+"</br>"+tdd.getPayInfo()+"</br>";
+                template+=tdd.getShippingTitle()+"</br>"+tdd.getShippingInfo()+"</br>";
+                template+=tdd.getGuaranteeTitle()+"</br>"+tdd.getGuaranteeInfo()+"</br>";
+                template+=tdd.getFeedbackTitle()+"</br>"+tdd.getFeedbackInfo()+"</br>";
+                template+=tdd.getContactTitle()+"</br>"+tdd.getContactInfo()+"</br>";
+
+            }
+        }
+        item.setDescription(template);
+
+        TradingItemAddress tia = this.iTradingItemAddress.selectById(tradingItem.getItemLocationId());
+        item.setCountry(DataDictionarySupport.getTradingDataDictionaryByID(tia.getCountryId()).getValue());
+        item.setCurrency(DataDictionarySupport.getTradingDataDictionaryByID(Long.parseLong(item.getSite())).getValue1());
+        item.setSite(DataDictionarySupport.getTradingDataDictionaryByID(Long.parseLong(item.getSite())).getValue());
+        item.setPostalCode(tia.getPostalcode());
+
+        TradingPaypal tp = this.iTradingPayPal.selectById(tradingItem.getPayId());
+        if(tp!=null) {
+            item.setPayPalEmailAddress(payPalService.selectById(Long.parseLong(tp.getPaypal())).getEmail());
+        }
+        List<String> limo = new ArrayList();
+        limo.add("PayPal");
+        item.setPaymentMethods(limo);
+        if(item.getListingType().equals("Chinese")) {
+            item.setListingDuration(item.getListingDuration() == null ? "GTC" : item.getListingDuration());
+        }else{
+            item.setListingDuration("GTC");
+        }
+        item.setDispatchTimeMax(0);
+
+
+        if(tradingItem.getListingtype().equals("2")){//多属性
+            TradingVariations tradvars = this.iTradingVariations.selectByParentId(tradingItem.getId());
+            Variations vars = new Variations();
+            if(tradvars!=null){
+                TradingPictures tptures = this.iTradingPictures.selectParnetId(tradvars.getId());
+                if(tptures!=null){
+                    Pictures pic = new Pictures();
+                    List<TradingPublicLevelAttr> litpla = this.iTradingPublicLevelAttr.selectByParentId("VariationSpecificPictureSet",tptures.getId());
+                    List<VariationSpecificPictureSet> livss = new ArrayList<VariationSpecificPictureSet>();
+                    for(TradingPublicLevelAttr tpla:litpla){
+                        VariationSpecificPictureSet vss = new VariationSpecificPictureSet();
+                        List<TradingPublicLevelAttr> livalue = this.iTradingPublicLevelAttr.selectByParentId("VariationSpecificValue",tpla.getId());
+                        vss.setVariationSpecificValue(livalue.get(0).getValue());
+                        List<String> listr = new ArrayList<String>();
+                        List<TradingAttrMores> liname = this.iTradingAttrMores.selectByParnetid(tpla.getId(),"MuAttrPictureURL");
+                        for(TradingAttrMores tam : liname){
+                            listr.add(tam.getValue());
+                        }
+                        vss.setPictureURL(listr);
+                        livss.add(vss);
+                    }
+                    pic.setVariationSpecificPictureSet(livss);
+                    if(tptures.getVariationspecificname()!=null){
+                        pic.setVariationSpecificName(tptures.getVariationspecificname());
+                    }
+                    vars.setPictures(pic);
+                }
+
+                List<TradingPublicLevelAttr> litpla = this.iTradingPublicLevelAttr.selectByParentId("VariationSpecificsSet",tradvars.getId());
+                if(litpla!=null&&litpla.size()>0){
+                    VariationSpecificsSet vss = new VariationSpecificsSet();
+                    for(TradingPublicLevelAttr tpla : litpla){
+                        List<NameValueList> lnvl = new ArrayList<NameValueList>();
+                        List<TradingPublicLevelAttr> linvlist = this.iTradingPublicLevelAttr.selectByParentId("NameValueList",tpla.getId());
+                        for(TradingPublicLevelAttr nvlist : linvlist){
+                            NameValueList nvl = new NameValueList();
+                            List<TradingAttrMores> liname = this.iTradingAttrMores.selectByParnetid(nvlist.getId(),"Name");
+                            nvl.setName(liname.get(0).getValue());
+                            List<TradingAttrMores> lival = this.iTradingAttrMores.selectByParnetid(nvlist.getId(),"Value");
+                            List<String> listr = new ArrayList<String>();
+                            for(TradingAttrMores str : lival){
+                                listr.add(str.getValue());
+                            }
+                            nvl.setValue(listr);
+                            lnvl.add(nvl);
+                        }
+                        vss.setNameValueList(lnvl);
+                    }
+                    vars.setVariationSpecificsSet(vss);
+                }
+
+
+                List<Variation> liva = new ArrayList<Variation>();
+                List<TradingVariation> litv = this.iTradingVariation.selectByParentId(tradvars.getId());
+                if(litv!=null&&litv.size()>0){
+                    for(TradingVariation tv:litv){
+                        Variation var = new Variation();
+                        if(tv.getQuantity()!=null){
+                            var.setQuantity(tv.getQuantity().intValue());
+                        }
+                        if(tv.getStartprice()!=null){
+                            StartPrice sp  = new StartPrice();
+                            sp.setValue(tv.getStartprice());
+                            var.setStartPrice(sp);
+                        }
+                        if(tv.getSku()!=null){
+                            var.setSKU(tv.getSku());
+                        }
+                        List<TradingPublicLevelAttr> livs = this.iTradingPublicLevelAttr.selectByParentId("VariationSpecifics",tv.getId());
+                        if(livs!=null&&livs.size()>0){
+                            List<VariationSpecifics> livcs = new ArrayList<VariationSpecifics>();
+                            for(TradingPublicLevelAttr tpla : livs){
+                                VariationSpecifics vsss = new VariationSpecifics();
+                                List<NameValueList> lnvl = new ArrayList<NameValueList>();
+                                List<TradingPublicLevelAttr> linvlist = this.iTradingPublicLevelAttr.selectByParentId(null,tpla.getId());
+                                for(TradingPublicLevelAttr nvlist : linvlist){
+                                    NameValueList nvl = new NameValueList();
+                                    nvl.setName(nvlist.getName());
+                                    List<String> listr = new ArrayList<String>();
+                                    listr.add(nvlist.getValue());
+                                    nvl.setValue(listr);
+                                    lnvl.add(nvl);
+                                }
+                                vsss.setNameValueList(lnvl);
+                                livcs.add(vsss);
+                            }
+                            var.setVariationSpecifics(livcs);
+                        }
+                        if(tv.getMadeforoutletcomparisonprice()!=null||tv.getMinimumadvertisedprice()!=null||tv.getMinimumadvertisedpriceexposure()!=null||tv.getSoldoffebay()!=null||tv.getSoldonebay()!=null||tv.getOriginalretailprice()!=null){
+                            DiscountPriceInfo dpi = new DiscountPriceInfo();
+                            if(tv.getMadeforoutletcomparisonprice()!=null){
+                                MadeForOutletComparisonPrice mfocp = new MadeForOutletComparisonPrice();
+                                mfocp.setValue(tv.getMadeforoutletcomparisonprice());
+                                dpi.setMadeForOutletComparisonPrice(mfocp);
+                            }
+                            if(tv.getMinimumadvertisedprice()!=null){
+                                MinimumAdvertisedPrice map  = new MinimumAdvertisedPrice();
+                                map.setValue(tv.getMinimumadvertisedprice());
+                                dpi.setMinimumAdvertisedPrice(map);
+                            }
+                            if(tv.getMinimumadvertisedpriceexposure()!=null){
+                                dpi.setMinimumAdvertisedPriceExposure(tv.getMinimumadvertisedpriceexposure());
+                            }
+                            if(tv.getOriginalretailprice()!=null){
+                                OriginalRetailPrice orp = new OriginalRetailPrice();
+                                orp.setValue(tv.getOriginalretailprice());
+                                dpi.setOriginalRetailPrice(orp);
+                            }
+                            if(tv.getSoldonebay()!=null){
+                                dpi.setSoldOneBay(tv.getSoldonebay().equals("1")?true:false);
+                            }
+                            if(tv.getSoldoffebay()!=null){
+                                dpi.setSoldOffeBay(tv.getSoldoffebay().equals("1")?true:false);
+                            }
+                            var.setDiscountPriceInfo(dpi);
+                        }
+                        liva.add(var);
+                    }
+                    vars.setVariation(liva);
+                }
+            }
+            item.setVariations(vars);
+        }
+
+        //图片
+        List<TradingPicturedetails> litpd = this.iTradingPictureDetails.selectByParentId(tradingItem.getId());
+        if(litpd!=null&&litpd.size()>0){
+            TradingPicturedetails tpd = litpd.get(0);
+            PictureDetails pds = new PictureDetails();
+            List<TradingAttrMores> litam = this.iTradingAttrMores.selectByParnetid(tpd.getId(),"PictureURL");
+            List<String> listr = new ArrayList<String>();
+            for(TradingAttrMores tam : litam){
+                listr.add(tam.getValue());
+            }
+            pds.setPictureURL(listr);
+            item.setPictureDetails(pds);
+        }
+        item.setListingType(item.getListingType().equals("2")?"FixedPriceItem":item.getListingType());
+        item.setUUID(null);
+        return item;
     }
 
     @Override
@@ -1146,4 +1413,31 @@ public class TradingItemImpl implements com.trading.service.ITradingItem {
             DataDictionarySupport.removePublicUserConfig(kml.getUserId());
         }
    // }
+
+    /**
+     * 删除范本信息，只改变状态
+     * @param ids
+     */
+    @Override
+    public void delItem(String[] ids){
+        for(String id:ids){
+            TradingItem tradingItem = this.tradingItemMapper.selectByPrimaryKey(Long.parseLong(id));
+            tradingItem.setCheckFlag("1");
+            this.tradingItemMapper.updateByPrimaryKey(tradingItem);
+        }
+    }
+
+    /**
+     * 重命名
+     * @param ids
+     * @param fileName
+     */
+    @Override
+    public void rename(String[] ids,String fileName){
+        for(String id:ids){
+            TradingItem tradingItem = this.tradingItemMapper.selectByPrimaryKey(Long.parseLong(id));
+            tradingItem.setItemName(fileName);
+            this.tradingItemMapper.updateByPrimaryKey(tradingItem);
+        }
+    }
 }

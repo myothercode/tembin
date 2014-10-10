@@ -28,7 +28,7 @@
                    onfocus="if(this.value=='请输入密码'){this.value='';}"
                    onblur="if(this.value==''){this.value='请输入密码';}" /></li>
         <li><a href="#">忘记密码</a></li>
-        <li><input type="submit" name="button" id="button1" value="注册" class="admin_2">
+        <li><input type="button" onclick="document.location.href='reg.jsp'" name="button" id="button1" value="注册" class="admin_2">
             <button type="submit" name="button" id="button"  class="admin_1">登录 </button>
         </li>
     </ul>

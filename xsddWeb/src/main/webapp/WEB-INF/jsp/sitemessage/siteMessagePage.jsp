@@ -7,7 +7,7 @@
 --%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@include file= "/WEB-INF/jsp/commonImport.jsp" %>
-<html>
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
     <title>系统通知</title>
     <style type="text/css">
@@ -29,20 +29,21 @@
             </div>
             <div class="newds">
                 <div class="newsj_left"><br>
-
-                    <span class="newusa_ici_del_in"><input type="checkbox" name="checkbox" id="checkbox" /></span>
+                    <span class="newusa_ici_del_in">
+                        <input onclick="ckOrCancle(this)" type="checkbox" name="checkbox" id="checkbox" /></span>
 
                     <div class="numlist">
-                        <div class="ui-select" style="margin-top:1px; width:10px">
-                            <select>
+                        <div class="ui-select" style="margin-top:1px; width:10px;">
+                            <select onchange="queryBySelect(this)">
+                                <option value="all">全部</option>
                                 <c:forEach items="${mtype}" var = "ty">
                                     <option value="${ty.key}">${ty.value}</option>
                                 </c:forEach>
                             </select>
                         </div>
                         </div>
-                    <span class="newusa_ici_del">标记为已读</span>
-                    <span class="newusa_ici_del">全部为已读</span>
+                    <span onclick="markReaded('part')" class="newusa_ici_del">标记为已读</span>
+                    <span onclick="markReaded('all')" class="newusa_ici_del">全部为已读</span>
                     <%--<span class="newusa_ici_del">新建文件夹</span>--%>
                 </div>
                 <div>
@@ -50,17 +51,13 @@
                <%-- <div class="tbbay"><a data-toggle="modal" href="#myModal" class="">同步eBay</a></div>--%>
             </div>
         </div>
-<div>&nbsp;</div>
-        <div  id="siteMessageDiv">
-
-        </div>
-
-            </div>
-        </div>
+        <div>&nbsp;</div>
+        <div  id="siteMessageDiv"></div>
 
 
 
-    </div>
+
+ </div></div></div>
 
 
 

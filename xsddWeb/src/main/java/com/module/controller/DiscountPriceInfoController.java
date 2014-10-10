@@ -2,6 +2,7 @@ package com.module.controller;
 
 import com.base.database.publicd.model.PublicUserConfig;
 import com.base.database.trading.model.TradingDiscountpriceinfo;
+import com.base.database.trading.model.UsercontrollerEbayAccount;
 import com.base.domains.CommonParmVO;
 import com.base.domains.SessionVO;
 import com.base.domains.querypojos.DiscountpriceinfoQuery;
@@ -15,6 +16,7 @@ import com.base.utils.common.ObjectUtils;
 import com.common.base.utils.ajax.AjaxSupport;
 import com.common.base.web.BaseAction;
 import com.trading.service.ITradingDiscountPriceInfo;
+import com.trading.service.IUsercontrollerEbayAccount;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -37,7 +39,8 @@ public class DiscountPriceInfoController extends BaseAction {
 
     @Autowired
     private ITradingDiscountPriceInfo iTradingDiscountPriceInfo;
-
+    @Autowired
+    private IUsercontrollerEbayAccount iUsercontrollerEbayAccount;
     /**
      * 查询列表页面跳转
      * @param request
@@ -83,8 +86,8 @@ public class DiscountPriceInfoController extends BaseAction {
     @AvoidDuplicateSubmission(needSaveToken = true)
     public ModelAndView addDiscountPriceInfo(HttpServletRequest request,HttpServletResponse response,@ModelAttribute( "initSomeParmMap" )ModelMap modelMap){
         SessionVO c= SessionCacheSupport.getSessionVO();
-        List<PublicUserConfig> userLi= DataDictionarySupport.getPublicUserConfigByType(DataDictionarySupport.PUBLIC_DATA_DICT_EBAYACCOUNT, c.getId());
-        modelMap.put("userli",userLi);
+        List<UsercontrollerEbayAccount> ebayList = this.iUsercontrollerEbayAccount.selectUsercontrollerEbayAccountByUserId(c.getId());
+        modelMap.put("userli",ebayList);
         return forword("module/discountpriceinfo/adddiscountpriceinfo",modelMap);
     }
 
@@ -101,8 +104,8 @@ public class DiscountPriceInfoController extends BaseAction {
         String id = request.getParameter("id");
 
         SessionVO c= SessionCacheSupport.getSessionVO();
-        List<PublicUserConfig> userLi= DataDictionarySupport.getPublicUserConfigByType(DataDictionarySupport.PUBLIC_DATA_DICT_EBAYACCOUNT, c.getId());
-        modelMap.put("userli",userLi);
+        List<UsercontrollerEbayAccount> ebayList = this.iUsercontrollerEbayAccount.selectUsercontrollerEbayAccountByUserId(c.getId());
+        modelMap.put("userli",ebayList);
         Map m = new HashMap();
         m.put("userid",c.getId());
         m.put("id",id);

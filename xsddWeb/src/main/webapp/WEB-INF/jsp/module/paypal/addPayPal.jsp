@@ -7,7 +7,8 @@
 --%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%@include file= "/WEB-INF/jsp/commonImport.jsp" %>
+<%--<%@include file= "/WEB-INF/jsp/commonImport.jsp" %>--%>
+<%@include file= "/WEB-INF/jsp/smallFormImport.jsp" %>
 <html>
 <head>
     <title></title>
@@ -42,26 +43,33 @@
                     $(d).attr("disabled",true);
                 });
                 $("textarea").attr("disabled",true);
+                $("button").attr("disabled",true);
             }
         });
     </script>
 </head>
 <c:set value="${paypal}" var="paypal" />
 <body>
-<form id="payPalForm">
-    <br/>
-    <br/>
-    <table>
-        <tr>
-            <td>名称:</td>
-            <td>
+<div style="width: 400px;">
+<form class="form-horizontal"  id="payPalForm">
+    <fieldset>
+        <div id="legend" class="">
+            <legend class="">支付方式</legend>
+        </div>
+        <div class="control-group">
+            <!-- Text input-->
+            <label class="control-label" for="input01">名称</label>
+            <div class="controls">
+                <input type="text" name="name" id="name" value="${paypal.payName}"  placeholder="" class="input-xlarge validate[required]">
+                <p class="help-block"></p>
                 <input type="hidden" name="id" id="id" value="${paypal.id}">
-                <input type="text" name="name" id="name" value="${paypal.payName}" class="validate[required]" ></td>
-        </tr>
-        <tr>
-            <td>站点:</td>
-            <td>
-                <select name="site"  class="validate[required]">
+            </div>
+        </div>
+        <div class="control-group">
+            <!-- Select Basic -->
+            <label class="control-label">站点</label>
+            <div class="controls">
+                <select name="site"  class="input-xlarge validate[required]">
                     <c:forEach items="${siteList}" var="sites">
                         <c:if test="${paypal.site==sites.id}">
                             <option value="${sites.id}" selected="selected">${sites.name}</option>
@@ -71,30 +79,40 @@
                         </c:if>
                     </c:forEach>
                 </select>
-            </td>
-        </tr>
-        <td>paypal账号:</td>
-        <td>
-            <select name="paypal"  class="validate[required]">
-                <c:forEach items="${paypalList}" var="pay">
-                    <c:if test="${paypal.paypal==pay.id}">
-                        <option value="${pay.id}" selected="selected">${pay.configName}</option>
-                    </c:if>
-                    <c:if test="${paypal.paypal!=pay.id}">
-                        <option value="${pay.id}">${pay.configName}</option>
-                    </c:if>
-                </c:forEach>
-            </select>
-        </td>
-        </tr>
-        </tr>
-        <td>付款说明:</td>
-        <td>
-            <textarea name="paypal_desc" cols="30" rows="5">${paypal.paymentinstructions}</textarea>
-            <div><input type="button" value="确定" onclick="submitCommit();"/></div>
-        </td>
-        </tr>
-    </table>
+            </div>
+        </div>
+        <div class="control-group">
+            <!-- Select Basic -->
+            <label class="control-label">paypal账号</label>
+            <div class="controls">
+                <select name="paypal"  class="input-xlarge validate[required]">
+                    <c:forEach items="${paypalList}" var="pay">
+                        <c:if test="${paypal.paypal==pay.id}">
+                            <option value="${pay.id}" selected="selected">${pay.paypalAccount}</option>
+                        </c:if>
+                        <c:if test="${paypal.paypal!=pay.id}">
+                            <option value="${pay.id}">${pay.paypalAccount}</option>
+                        </c:if>
+                    </c:forEach>
+                </select>
+            </div>
+        </div>
+        <div class="control-group">
+            <!-- Textarea -->
+            <label class="control-label">付款说明</label>
+            <div class="controls">
+                <div class="textarea">
+                    <textarea type="" class="" name="paypal_desc" cols="30" rows="5">${paypal.paymentinstructions}</textarea>
+                </div>
+            </div>
+        </div>
+    </fieldset>
 </form>
+    <div class="control-group" style="text-align: center;">
+        <div class="controls">
+            <button class="btn btn-success" onclick="submitCommit()">确定</button>
+        </div>
+    </div>
+</div>
 </body>
 </html>

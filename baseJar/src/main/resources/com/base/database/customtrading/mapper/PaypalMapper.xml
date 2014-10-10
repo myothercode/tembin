@@ -20,9 +20,9 @@
   </resultMap>
 
     <select id="selectByPayPalList" resultMap="BaseResultMap" parameterType="map">
-        select paypal.*,dic.name site_name,dic1.config_name paypal_name from trading_paypal paypal
+        select paypal.*,dic.name site_name,dic1.paypal_account paypal_name from trading_paypal paypal
         left join trading_data_dictionary dic on paypal.site=dic.id
-        left join public_user_config dic1 on paypal.paypal=dic1.id where 1=1
+        left join usercontroller_paypal_account dic1 on paypal.paypal=dic1.id where 1=1
         <if test="id!=null">
             and paypal.id = #{id}
         </if>

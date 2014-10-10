@@ -24,12 +24,12 @@
                 columnData:[
                     {title:"",name:"ch",width:"2%",align:"top",format:makeOption5},
                     {title:"订单号 / 源订单号",name:"orderid",width:"8%",align:"left",format:makeOption2},
-                    {title:"物品 / SKU / 承运商 / 追踪号",name:"orderid",width:"8%",align:"left",format:makeOption3},
+                    {title:"物品 / SKU / 承运商 / 追踪号",name:"orderid",width:"13%",align:"left",format:makeOption3},
                     {title:"站点",name:"itemSite",width:"8%",align:"left"},
                     {title:"售价",name:"itemUrl",width:"8%",align:"left",format:makeOption6},
                     {title:"售出日期",name:"createdtime",width:"8%",align:"left"},
                     {title:"发货日期",name:"shippedtime",width:"8%",align:"left"},
-                    {title:"状态",name:"shipped",width:"8%",align:"left",format:makeOption4},
+                    {title:"状态",name:"shipped",width:"3%",align:"left",format:makeOption4},
                     {title:"操作",name:"option1",width:"8%",align:"left",format:makeOption1}
                 ],
                 selectDataNow:false,
@@ -41,12 +41,12 @@
                 columnData:[
                     {title:"",name:"ch",width:"2%",align:"top",format:makeOption5},
                     {title:"订单号 / 源订单号",name:"orderid",width:"8%",align:"left",format:makeOption2},
-                    {title:"物品 / SKU / 承运商 / 追踪号",name:"orderid",width:"8%",align:"left",format:makeOption3},
+                    {title:"物品 / SKU / 承运商 / 追踪号",name:"orderid",width:"13%",align:"left",format:makeOption3},
                     {title:"站点",name:"itemSite",width:"8%",align:"left"},
                     {title:"售价",name:"itemUrl",width:"8%",align:"left",format:makeOption6},
                     {title:"售出日期",name:"createdtime",width:"8%",align:"left"},
                     {title:"发货日期",name:"shippedtime",width:"8%",align:"left"},
-                    {title:"状态",name:"shipped",width:"8%",align:"left",format:makeOption4},
+                    {title:"状态",name:"shipped",width:"3%",align:"left",format:makeOption4},
                     {title:"操作",name:"option1",width:"8%",align:"left",format:makeOption1}
                 ],
                 selectDataNow:false,
@@ -58,12 +58,12 @@
                 columnData:[
                     {title:"",name:"ch",width:"2%",align:"top",format:makeOption5},
                     {title:"订单号 / 源订单号",name:"orderid",width:"8%",align:"left",format:makeOption2},
-                    {title:"物品 / SKU / 承运商 / 追踪号",name:"orderid",width:"8%",align:"left",format:makeOption3},
+                    {title:"物品 / SKU / 承运商 / 追踪号",name:"orderid",width:"13%",align:"left",format:makeOption3},
                     {title:"站点",name:"itemSite",width:"8%",align:"left"},
                     {title:"售价",name:"itemUrl",width:"8%",align:"left",format:makeOption6},
                     {title:"售出日期",name:"createdtime",width:"8%",align:"left"},
                     {title:"发货日期",name:"shippedtime",width:"8%",align:"left"},
-                    {title:"状态",name:"shipped",width:"8%",align:"left",format:makeOption4},
+                    {title:"状态",name:"shipped",width:"3%",align:"left",format:makeOption4},
                     {title:"操作",name:"option1",width:"8%",align:"left",format:makeOption1}
                 ],
                 selectDataNow:false,
@@ -75,12 +75,12 @@
                 columnData:[
                     {title:"",name:"ch",width:"2%",align:"top",format:makeOption5},
                     {title:"订单号 / 源订单号",name:"orderid",width:"8%",align:"left",format:makeOption2},
-                    {title:"物品 / SKU / 承运商 / 追踪号",name:"orderid",width:"8%",align:"left",format:makeOption3},
+                    {title:"物品 / SKU / 承运商 / 追踪号",name:"orderid",width:"13%",align:"left",format:makeOption3},
                     {title:"站点",name:"itemSite",width:"8%",align:"left"},
                     {title:"售价",name:"itemUrl",width:"8%",align:"left",format:makeOption6},
                     {title:"售出日期",name:"createdtime",width:"8%",align:"left"},
                     {title:"发货日期",name:"shippedtime",width:"8%",align:"left"},
-                    {title:"状态",name:"shipped",width:"8%",align:"left",format:makeOption4},
+                    {title:"状态",name:"shipped",width:"3%",align:"left",format:makeOption4},
                     {title:"操作",name:"option1",width:"8%",align:"left",format:makeOption1}
                 ],
                 selectDataNow:false,
@@ -117,7 +117,7 @@
            /* var htm="<a target=\"_blank\" href=\"javascript:void(0)\" onclick=\"viewOrder('"+json.orderid+"');\">查看详情</a>";
             var htm1="|<a target=\"_blank\" href=\"javascript:void(0)\" onclick=\"modifyOrderStatus('"+json.transactionid+"');\">修改发货状态</a>";*/
             var htm="<div class=\"ui-select\" style=\"width:106px\" >" +
-            "<select onchange=\"selectOperation('"+json.orderid+"','"+json.transactionid+"',this); \" name=\"ui-select\" style=\"margin-left:-3px;\">" +
+            "<select onchange=\"selectOperation('"+json.orderid+"','"+json.transactionid+"','"+json.selleruserid+"',this); \" name=\"ui-select\" style=\"margin-left:-3px;\">" +
                     "<option value=\"0\"><a href=\"javascript:#\">--请选择--</a></option>" +
                     "<option value=\"1\"><a href=\"javascript:#\">查看详情</a></option>" +
                     "<option value=\"2\"><a href=\"javascript:#\">修改发货状态</a></option>" +
@@ -127,13 +127,13 @@
             "</div>";
             return htm;
         }
-        function selectOperation(orderid,transactionid,obj){
+        function selectOperation(orderid,transactionid,selleruserid,obj){
             var value=$(obj).val();
             if(value=="1"){
-                viewOrder(orderid);
+                viewOrder(orderid,transactionid,selleruserid);
             }
             if(value=="2"){
-                modifyOrderStatus(transactionid);
+                modifyOrderStatus(transactionid,selleruserid);
             }
             if(value=="3"){
                 sendMessage(orderid);
@@ -151,7 +151,7 @@
         }
         function makeOption2(json){
             var imgurl=path+"/img/error.png";
-            var htm1="<img src=\""+imgurl+"\"> <font class=\"red_1\"><strong>"+json.orderid+"</strong></font><br>";
+            var htm1="<img src=\""+imgurl+"\"> <font class=\"red_1\"><strong>"+json.transactionid+"</strong></font><br>";
             var htm="<img src='"+json.pictrue+"' style='width: 50px;hidden=50px;' />";
             return htm1+htm;
         }
@@ -171,19 +171,18 @@
             /*var htm="<a target=\"_blank\" href=\"javascript:void(0)\" onclick=\"ebayurl('"+json.itemUrl+"');\">"+json.title+"</a>";*/
             var htm="<span style=\"width:100%; float:left\"><font color=\"#5F93D7\">"+json.buyeruserid+"  </font> ( "+json.buyeremail+" )</span>" +
             "<span class=\"newbgspan_3\">"+json.shipmenttrackingnumber+"</span>&nbsp;<span class=\"newbgspan_3\">"+json.shippingcarrierused+"</span>" +
-            "<span style=\"width:100%; float:left\"><font color=\"#5F93D7\">"+json.title+"</font><br>("+json.itemid+")</span>" +
+            "<span style=\"width:100%; float:left\"><font color=\"#5F93D7\"><a href='"+json.itemUrl+"' target=\"1\">"+json.title+"</a></font><br>("+json.itemid+")</span>" +
             "<span style=\"width:100%; float:left; color:#8BB51B\">"+json.sku+"</span>" +
             "<span style=\"width:100%; float:left\"><font color=\"#5F93D7\">" +con +
-            "</span>" +
+            "</span>" /*+
             "<span style=\"width:100%; float:left\"><font color=\"#5F93D7\">B：</font><img src=\""+imgurl+"f.png\" width=\"14\" height=\"14\"></span>"+
             "<span style=\"width:100%; float:left\"><font color=\"#5F93D7\">S：" +
             "</font><img src=\""+imgurl1+"\" width=\"12\" height=\"12\">"+json.message+"</span>" +
-/*            "<span class=\"newdf\"></span>" +*/
-            "<span style=\"width:100%; float:left\">" +(json.paypalPaidTime==null?"":json.paypalPaidTime)+"</span>" +/*Type: [instant],*/
-            "<span style=\"width:100%; float:left; color:#999\">PayPal payment Status: ["+json.status+"],  Amount: [USD "+json.amountpaid+"] received on UTC "+(json.paypalPaymentTime==null?"":json.paypalPaymentTime)+", PayPal transaction ID:"+json.externalTransactionID+" </span>";
+*//*            "<span class=\"newdf\"></span>" +*//*
+            "<span style=\"width:100%; float:left\">" +(json.paypalPaidTime==null?"":json.paypalPaidTime)+"</span>" +*//*Type: [instant],*//*
+            "<span style=\"width:100%; float:left; color:#999\">PayPal payment Status: ["+json.status+"],  Amount: [USD "+json.amountpaid+"] received on UTC "+(json.paypalPaymentTime==null?"":json.paypalPaymentTime)+", PayPal transaction ID:"+json.externalTransactionID+" </span>"*/;
             return htm;
         }
-
         function makeOption4(json){
             var imgurl1=path+"/img/";
             var htm="";
@@ -191,18 +190,18 @@
                 htm=htm+"<img src=\""+imgurl1+"money_no.png\" >";
             }else{
                 if(json.status=='Incomplete'){
-                    htm=htm+"<img src=\""+imgurl1+"money.gif \" onmousemove='showInformation();'>"/*"<img src=\""+imgurl1+"money.gif\">"*/;
+                    htm="<img src=\""+imgurl1+"money.gif \" onmousemove='showInformation();'>"/*"<img src=\""+imgurl1+"money.gif\">"*/;
                     /*"<img onmousemove='showInformation();'>"*/
                 }
                 if(json.status=='Complete'){
-                    htm=htm+"<img src=\""+imgurl1+"money.png\" >";
+                    htm="<img src=\""+imgurl1+"money.png\" >";
                 }
             }
             if(json.shipmenttrackingnumbe!=""&&json.shippingcarrierused!=""){
-                htm=htm+"<img src=\""+imgurl1+"car.png\" >"
+                htm="<img src=\""+imgurl1+"car.png\" >"
             }
             if(json.feedbackMessage&&json.feedbackMessage!=""){
-                htm=htm+"<img src=\""+imgurl1+"box.png\" >"
+                htm="<img src=\""+imgurl1+"box.png\" >"
             }
             return htm;
         }
@@ -223,12 +222,12 @@
                 url:path + "/order/ajax/loadOrdersList.do?",
                 columnData:[
                     {title:"订单号 / 源订单号",name:"pictrue",width:"8%",align:"left",format:makeOption2},
-                    {title:"物品 / SKU / 承运商 / 追踪号",name:"orderid",width:"8%",align:"left"},
+                    {title:"物品 / SKU / 承运商 / 追踪号",name:"orderid",width:"13%",align:"left"},
                     {title:"站点",name:"itemSite",width:"8%",align:"left"},
                     {title:"售价",name:"itemUrl",width:"8%",align:"left",format:makeOption3},
                     {title:"售出日期",name:"buyeruserid",width:"8%",align:"left"},
                     {title:"发货日期",name:"selleruserid",width:"8%",align:"left"},
-                    {title:"状态",name:"shipped",width:"8%",align:"left",format:makeOption4},
+                    {title:"状态",name:"shipped",width:"3%",align:"left",format:makeOption4},
                     {title:"操作",name:"option1",width:"8%",align:"left",format:makeOption1}
                 ],
                 selectDataNow:false,
@@ -238,8 +237,8 @@
             refreshTable();
             alert("查询完成");
         }
-        function viewOrder(id){
-            var url=path+'/order/viewOrderGetOrders.do?orderid='+id;
+        function viewOrder(id,transactionid,selleruserid){
+            var url=path+'/order/viewOrderGetOrders.do?orderid='+id+'&transactionid='+transactionid+'&selleruserid='+selleruserid;
             OrderGetOrders=$.dialog({title: '查看订单详情',
                 content: 'url:'+url,
                 icon: 'succeed',
@@ -247,8 +246,8 @@
                 height:850
             });
         }
-        function modifyOrderStatus(id){
-            var url=path+'/order/modifyOrderStatus.do?transactionid='+id;
+        function modifyOrderStatus(id,selleruserid){
+            var url=path+'/order/modifyOrderStatus.do?transactionid='+id+'&selleruserid='+selleruserid;
             OrderGetOrders=$.dialog({title: '修改订单状态',
                 content: 'url:'+url,
                 icon: 'succeed',
@@ -310,12 +309,12 @@
                 columnData:[
                     {title:"",name:"ch",width:"2%",align:"top",format:makeOption5},
                     {title:"订单号 / 源订单号",name:"orderid",width:"8%",align:"left",format:makeOption2},
-                    {title:"物品 / SKU / 承运商 / 追踪号",name:"orderid",width:"8%",align:"left",format:makeOption3},
+                    {title:"物品 / SKU / 承运商 / 追踪号",name:"orderid",width:"13%",align:"left",format:makeOption3},
                     {title:"站点",name:"itemSite",width:"8%",align:"left"},
                     {title:"售价",name:"itemUrl",width:"8%",align:"left",format:makeOption6},
                     {title:"售出日期",name:"createdtime",width:"8%",align:"left"},
                     {title:"发货日期",name:"shippedtime",width:"8%",align:"left"},
-                    {title:"状态",name:"shipped",width:"8%",align:"left",format:makeOption4},
+                    {title:"状态",name:"shipped",width:"3%",align:"left",format:makeOption4},
                     {title:"操作",name:"option1",width:"8%",align:"left",format:makeOption1}
                 ],
                 selectDataNow:false,
@@ -494,12 +493,12 @@
                     columnData:[
                         {title:"",name:"ch",width:"2%",align:"top",format:makeOption5},
                         {title:"订单号 / 源订单号",name:"orderid",width:"8%",align:"left",format:makeOption2},
-                        {title:"物品 / SKU / 承运商 / 追踪号",name:"orderid",width:"8%",align:"left",format:makeOption3},
+                        {title:"物品 / SKU / 承运商 / 追踪号",name:"orderid",width:"13%",align:"left",format:makeOption3},
                         {title:"站点",name:"itemSite",width:"8%",align:"left"},
                         {title:"售价",name:"itemUrl",width:"8%",align:"left",format:makeOption6},
                         {title:"售出日期",name:"createdtime",width:"8%",align:"left"},
                         {title:"发货日期",name:"shippedtime",width:"8%",align:"left"},
-                        {title:"状态",name:"shipped",width:"8%",align:"left",format:makeOption4},
+                        {title:"状态",name:"shipped",width:"3%",align:"left",format:makeOption4},
                         {title:"操作",name:"option1",width:"8%",align:"left",format:makeOption1}
                     ],
                     selectDataNow:false,
@@ -612,12 +611,12 @@
             columnData:[
                 {title:"",name:"ch",width:"2%",align:"top",format:makeOption5},
                 {title:"订单号 / 源订单号",name:"orderid",width:"8%",align:"left",format:makeOption2},
-                {title:"物品 / SKU / 承运商 / 追踪号",name:"orderid",width:"8%",align:"left",format:makeOption3},
+                {title:"物品 / SKU / 承运商 / 追踪号",name:"orderid",width:"13%",align:"left",format:makeOption3},
                 {title:"站点",name:"itemSite",width:"8%",align:"left"},
                 {title:"售价",name:"itemUrl",width:"8%",align:"left",format:makeOption6},
                 {title:"售出日期",name:"createdtime",width:"8%",align:"left"},
                 {title:"发货日期",name:"shippedtime",width:"8%",align:"left"},
-                {title:"状态",name:"shipped",width:"8%",align:"left",format:makeOption4},
+                {title:"状态",name:"shipped",width:"3%",align:"left",format:makeOption4},
                 {title:"操作",name:"option1",width:"8%",align:"left",format:makeOption1}
             ],
             selectDataNow:false,
@@ -676,10 +675,10 @@
 <div id="con_menu_1" class="hover" style="display: none;">
     <!--综合开始 -->
     <div class="new_usa" style="margin-top:20px;">
-        <li class="new_usa_list"><span class="newusa_i">收件人国家：</span><a href="#"><span class="newusa_ici_1" scop="queryCountry1"  onclick="queryCountry(1,1,null);">全部</span></a><a href="#"><span class="newusa_ic_1" scop="queryCountry1"  onclick="queryCountry(1,2,'US');"><img src="<c:url value ="/img/usa_1.png"/> ">美国</span></a><a href="#"><span class="newusa_ic_1" scop="queryCountry1"  onclick="queryCountry(1,3,'UK');"><img src="<c:url value ="/img/UK.jpg"/> ">英国</span></a><a href="#"><span class="newusa_ic_1" scop="queryCountry1"  onclick="queryCountry(1,4,'DE');"><img src="<c:url value ="/img/DE.png"/> ">德国</span></a><a href="#"><span class="newusa_ic_1" scop="queryCountry1"  onclick="queryCountry(1,5,'AU');"><img src="<c:url value ="/img/AU.jpg"/> ">澳大利亚</span></a></li>
-        <li class="new_usa_list"><span class="newusa_i">刊登类型：</span><a href="#"><span class="newusa_ici_1" scop="queryAttr1"  onclick="queryAttr(1,1,null);">全部</span></a><a href="#"><span class="newusa_ici_1" scop="queryAttr1"  onclick="queryAttr(1,2,'fixation');">固价</span></a><a href="#"><span class="newusa_ici_1" scop="queryAttr1"  onclick="queryAttr(1,3,'auction');">拍卖</span></a><a href="#"><span class="newusa_ici_1" scop="queryAttr1"  onclick="queryAttr(1,4,'multiattribute');">多属性</span></a></li>
+        <li class="new_usa_list"><span class="newusa_i">收件人国家：</span><a href="#"><span class="newusa_ici_1" scop="queryCountry1"  onclick="queryCountry(1,1,null);">全部&nbsp;</span></a><a href="#"><span class="newusa_ici_1" scop="queryCountry1"  onclick="queryCountry(1,2,'US');"><img src="<c:url value ="/img/usa_1.png"/> ">美国&nbsp;</span></a><a href="#"><span class="newusa_ici_1" scop="queryCountry1"  onclick="queryCountry(1,3,'UK');"><img src="<c:url value ="/img/UK.jpg"/> ">英国&nbsp;</span></a><a href="#"><span class="newusa_ici_1" scop="queryCountry1"  onclick="queryCountry(1,4,'DE');"><img src="<c:url value ="/img/DE.png"/> ">德国&nbsp;</span></a><a href="#"><span class="newusa_ici_1" scop="queryCountry1"  onclick="queryCountry(1,5,'AU');"><img src="<c:url value ="/img/AU.jpg"/>">澳大利亚</span></a></li>
+        <li class="new_usa_list"><span class="newusa_i">刊登类型：</span><a href="#"><span class="newusa_ici_1" scop="queryAttr1"  onclick="queryAttr(1,1,null);">全部&nbsp;</span></a><a href="#"><span class="newusa_ici_1" scop="queryAttr1"  onclick="queryAttr(1,2,'fixation');">固价&nbsp;</span></a><a href="#"><span class="newusa_ici_1" scop="queryAttr1"  onclick="queryAttr(1,3,'auction');">拍卖&nbsp;</span></a><a href="#"><span class="newusa_ici_1" scop="queryAttr1"  onclick="queryAttr(1,4,'multiattribute');">多属性&nbsp;</span></a></li>
         <div class="newsearch">
-            <span class="newusa_i">刊登类型：</span><a href="#"><span class="newusa_ici_1" scop="queryTime1" onclick="queryTime(1,1,null)">全部</span></a><a href="#"><span class="newusa_ici_1" scop="queryTime1" onclick="queryTime(1,2,'1')">今天</span></a><a href="#"><span scop="queryTime1" onclick="queryTime(1,3,'2')" class="newusa_ici_1">昨天</span></a><a href="#"><span scop="queryTime1" onclick="queryTime(1,4,'7');" class="newusa_ici_1">7天以内</span></a><a href="#"><span scop="queryTime1" onclick="queryTime(1,5,'30')" class="newusa_ici_1">30天以内</span></a>
+            <span class="newusa_i">刊登类型：</span><a href="#"><span class="newusa_ici_1" scop="queryTime1" onclick="queryTime(1,1,null)">全部&nbsp;</span></a><a href="#"><span class="newusa_ici_1" scop="queryTime1" onclick="queryTime(1,2,'1')">今天&nbsp;</span></a><a href="#"><span scop="queryTime1" onclick="queryTime(1,3,'2')" class="newusa_ici_1">昨天&nbsp;</span></a><a href="#"><span scop="queryTime1" onclick="queryTime(1,4,'7');" class="newusa_ici_1">7天以内&nbsp;</span></a><a href="#"><span scop="queryTime1" onclick="queryTime(1,5,'30')" class="newusa_ici_1">30天以内&nbsp;</span></a>
 <span id="sleBG">
 <span id="sleHid">
 <select name="type" class="select" id="itemType1" onchange="cleanInput();">
@@ -712,10 +711,10 @@
 <div style="display: block;" id="con_menu_2">
     <!--综合开始 -->
     <div class="new_usa" style="margin-top:20px;">
-        <li class="new_usa_list"><span class="newusa_i">收件人国家：</span><a href="#"><span class="newusa_ici_1" scop="queryCountry2"  onclick="queryCountry(2,1,null);">全部</span></a><a href="#"><span class="newusa_ic_1" scop="queryCountry2"  onclick="queryCountry(2,2,'US');"><img src="<c:url value ="/img/usa_1.png"/> " >美国</span></a><a href="#"><span class="newusa_ic_1" scop="queryCountry2"  onclick="queryCountry(2,3,'UK');"><img src="<c:url value ="/img/UK.jpg"/> ">英国</span></a><a href="#"><span class="newusa_ic_1" scop="queryCountry2"  onclick="queryCountry(2,4,'DE');"><img src="<c:url value ="/img/DE.png"/> ">德国</span></a><a href="#"><span class="newusa_ic_1" scop="queryCountry2"  onclick="queryCountry(2,5,'AU');"><img src="<c:url value ="/img/AU.jpg"/> ">澳大利亚</span></a></li>
-        <li class="new_usa_list"><span class="newusa_i">刊登类型：</span><a href="#"><span class="newusa_ici_1" scop="queryAttr2" onclick="queryAttr(2,1,null);">全部</span></a><a href="#"><span class="newusa_ici_1" scop="queryAttr2" onclick="queryAttr(2,2,'fixation');">固价</span></a><a href="#"><span class="newusa_ici_1" scop="queryAttr2" onclick="queryAttr(2,3,'auction');">拍卖</span></a><a href="#"><span class="newusa_ici_1" scop="queryAttr2" onclick="queryAttr(2,4,'multiattribute');">多属性</span></a></li>
+        <li class="new_usa_list"><span class="newusa_i">收件人国家：</span><a href="#"><span class="newusa_ici_1" scop="queryCountry2"  onclick="queryCountry(2,1,null);">全部&nbsp;</span></a><a href="#"><span class="newusa_ici_1" scop="queryCountry2"  onclick="queryCountry(2,2,'US');"><img src="<c:url value ="/img/usa_1.png"/> " >美国&nbsp;</span></a><a href="#"><span class="newusa_ici_1" scop="queryCountry2"  onclick="queryCountry(2,3,'UK');"><img src="<c:url value ="/img/UK.jpg"/> ">英国&nbsp;</span></a><a href="#"><span class="newusa_ici_1" scop="queryCountry2"  onclick="queryCountry(2,4,'DE');"><img src="<c:url value ="/img/DE.png"/> ">德国&nbsp;</span></a><a href="#"><span class="newusa_ici_1" scop="queryCountry2"  onclick="queryCountry(2,5,'AU');"><img src="<c:url value ="/img/AU.jpg"/> ">澳大利亚</span></a></li>
+        <li class="new_usa_list"><span class="newusa_i">刊登类型：</span><a href="#"><span class="newusa_ici_1" scop="queryAttr2" onclick="queryAttr(2,1,null);">全部&nbsp;</span></a><a href="#"><span class="newusa_ici_1" scop="queryAttr2" onclick="queryAttr(2,2,'fixation');">固价&nbsp;</span></a><a href="#"><span class="newusa_ici_1" scop="queryAttr2" onclick="queryAttr(2,3,'auction');">拍卖&nbsp;</span></a><a href="#"><span class="newusa_ici_1" scop="queryAttr2" onclick="queryAttr(2,4,'multiattribute');">多属性&nbsp;</span></a></li>
         <div class="newsearch">
-            <span class="newusa_i">刊登类型：</span><a href="#"><span scop="queryTime2" onclick="queryTime(2,1,null)" class="newusa_ici_1">全部</span></a><a href="#"><span scop="queryTime2" onclick="queryTime(2,2,1)" class="newusa_ici_1">今天</span></a><a href="#"><span scop="queryTime2" onclick="queryTime(2,3,'2')" class="newusa_ici_1">昨天</span></a><a href="#"><span scop="queryTime2" onclick="queryTime(2,4,'7')" class="newusa_ici_1">7天以内</span></a><a href="#"><span scop="queryTime2" onclick="queryTime(2,5,'30')" class="newusa_ici_1">30天以内</span></a>
+            <span class="newusa_i">刊登类型：</span><a href="#"><span scop="queryTime2" onclick="queryTime(2,1,null)" class="newusa_ici_1">全部&nbsp;</span></a><a href="#"><span scop="queryTime2" onclick="queryTime(2,2,1)" class="newusa_ici_1">今天&nbsp;</span></a><a href="#"><span scop="queryTime2" onclick="queryTime(2,3,'2')" class="newusa_ici_1">昨天&nbsp;</span></a><a href="#"><span scop="queryTime2" onclick="queryTime(2,4,'7')" class="newusa_ici_1">7天以内&nbsp;</span></a><a href="#"><span scop="queryTime2" onclick="queryTime(2,5,'30')" class="newusa_ici_1">30天以内&nbsp;</span></a>
 <span id="sleBG">
 <span id="sleHid">
 <select name="type" class="select" id="itemType2" onchange="cleanInput();">
@@ -748,10 +747,10 @@
 <div style="display: none;" id="con_menu_3">
     <!--综合开始 -->
     <div class="new_usa" style="margin-top:20px;">
-        <li class="new_usa_list"><span class="newusa_i">收件人国家：</span><a href="#"><span class="newusa_ici_1" scop="queryCountry3"  onclick="queryCountry(3,1,null);">全部</span></a><a href="#"><span class="newusa_ic_1" scop="queryCountry3"  onclick="queryCountry(3,2,'US');"><img src="<c:url value ="/img/usa_1.png"/> " >美国</span></a><a href="#"><span class="newusa_ic_1" scop="queryCountry3"  onclick="queryCountry(3,3,'UK');"><img src="<c:url value ="/img/UK.jpg"/> ">英国</span></a><a href="#"><span class="newusa_ic_1" scop="queryCountry3"  onclick="queryCountry(3,4,'DE');"><img src="<c:url value ="/img/DE.png"/> ">德国</span></a><a href="#"><span class="newusa_ic_1" scop="queryCountry3"  onclick="queryCountry(3,5,'AU');"><img src="<c:url value ="/img/AU.jpg"/> ">澳大利亚</span></a></li>
-        <li class="new_usa_list"><span class="newusa_i">刊登类型：</span><a href="#"><span class="newusa_ici_1" scop="queryAttr3" onclick="queryAttr(3,1,null);">全部</span></a><a href="#"><span class="newusa_ici_1" scop="queryAttr3" onclick="queryAttr(3,2,'fixation');">固价</span></a><a href="#"><span class="newusa_ici_1" scop="queryAttr3" onclick="queryAttr(3,3,'auction');">拍卖</span></a><a href="#"><span class="newusa_ici_1" scop="queryAttr3" onclick="queryAttr(3,4,'multiattribute');">多属性</span></a></li>
+        <li class="new_usa_list"><span class="newusa_i">收件人国家：</span><a href="#"><span class="newusa_ici_1" scop="queryCountry3"  onclick="queryCountry(3,1,null);">全部&nbsp;</span></a><a href="#"><span class="newusa_ici_1" scop="queryCountry3"  onclick="queryCountry(3,2,'US');"><img src="<c:url value ="/img/usa_1.png"/> " >美国&nbsp;</span></a><a href="#"><span class="newusa_ici_1" scop="queryCountry3"  onclick="queryCountry(3,3,'UK');"><img src="<c:url value ="/img/UK.jpg"/> ">英国&nbsp;</span></a><a href="#"><span class="newusa_ici_1" scop="queryCountry3"  onclick="queryCountry(3,4,'DE');"><img src="<c:url value ="/img/DE.png"/> ">德国&nbsp;</span></a><a href="#"><span class="newusa_ici_1" scop="queryCountry3"  onclick="queryCountry(3,5,'AU');"><img src="<c:url value ="/img/AU.jpg"/> ">澳大利亚</span></a></li>
+        <li class="new_usa_list"><span class="newusa_i">刊登类型：</span><a href="#"><span class="newusa_ici_1" scop="queryAttr3" onclick="queryAttr(3,1,null);">全部&nbsp;</span></a><a href="#"><span class="newusa_ici_1" scop="queryAttr3" onclick="queryAttr(3,2,'fixation');">固价&nbsp;</span></a><a href="#"><span class="newusa_ici_1" scop="queryAttr3" onclick="queryAttr(3,3,'auction');">拍卖&nbsp;</span></a><a href="#"><span class="newusa_ici_1" scop="queryAttr3" onclick="queryAttr(3,4,'multiattribute');">多属性&nbsp;</span></a></li>
         <div class="newsearch">
-            <span class="newusa_i">刊登类型：</span><a href="#"><span scop="queryTime3" onclick="queryTime(3,1,null)" class="newusa_ici_1">全部</span></a><a href="#"><span scop="queryTime3" onclick="queryTime(3,2,'1')" class="newusa_ici_1">今天</span></a><a href="#"><span scop="queryTime3" onclick="queryTime(3,3,'2')" class="newusa_ici_1">昨天</span></a><a href="#"><span scop="queryTime3" onclick="queryTime(3,4,'7')" class="newusa_ici_1">7天以内</span></a><a href="#"><span scop="queryTime3" onclick="queryTime(3,5,'30')" class="newusa_ici_1">30天以内</span></a>
+            <span class="newusa_i">刊登类型：</span><a href="#"><span scop="queryTime3" onclick="queryTime(3,1,null)" class="newusa_ici_1">全部&nbsp;</span></a><a href="#"><span scop="queryTime3" onclick="queryTime(3,2,'1')" class="newusa_ici_1">今天&nbsp;</span></a><a href="#"><span scop="queryTime3" onclick="queryTime(3,3,'2')" class="newusa_ici_1">昨天&nbsp;</span></a><a href="#"><span scop="queryTime3" onclick="queryTime(3,4,'7')" class="newusa_ici_1">7天以内&nbsp;</span></a><a href="#"><span scop="queryTime3" onclick="queryTime(3,5,'30')" class="newusa_ici_1">30天以内&nbsp;</span></a>
 <span id="sleBG">
 <span id="sleHid">
 <select name="type" class="select" id="itemType3" onchange="cleanInput();">
@@ -786,10 +785,10 @@
 <div style="display: none;" id="con_menu_4">
     <!--综合开始 -->
     <div class="new_usa" style="margin-top:20px;">
-        <li class="new_usa_list"><span class="newusa_i">收件人国家：</span><a href="#"><span class="newusa_ici_1" scop="queryCountry4"  onclick="queryCountry(4,1,null);">全部</span></a><a href="#"><span class="newusa_ic_1" scop="queryCountry4"  onclick="queryCountry(4,2,'US');"><img src="<c:url value ="/img/usa_1.png"/> " >美国</span></a><a href="#"><span class="newusa_ic_1" scop="queryCountry4"  onclick="queryCountry(4,3,'UK');"><img src="<c:url value ="/img/UK.jpg"/> ">英国</span></a><a href="#"><span class="newusa_ic_1" scop="queryCountry4"  onclick="queryCountry(4,4,'DE');"><img src="<c:url value ="/img/DE.png"/> ">德国</span></a><a href="#"><span class="newusa_ic_1" scop="queryCountry4"  onclick="queryCountry(4,5,'AU');"><img src="<c:url value ="/img/AU.jpg"/> ">澳大利亚</span></a></li>
-        <li class="new_usa_list"><span class="newusa_i">刊登类型：</span><a href="#"><span class="newusa_ici_1" scop="queryAttr4" onclick="queryAttr(4,1,null);">全部</span></a><a href="#"><span class="newusa_ici_1" scop="queryAttr4" onclick="queryAttr(4,2,'fixation');">固价</span></a><a href="#"><span class="newusa_ici_1" scop="queryAttr4" onclick="queryAttr(4,3,'auction');">拍卖</span></a><a href="#"><span class="newusa_ici_1" scop="queryAttr4" onclick="queryAttr(4,4,'multiattribute');">多属性</span></a></li>
+        <li class="new_usa_list"><span class="newusa_i">收件人国家：</span><a href="#"><span class="newusa_ici_1" scop="queryCountry4"  onclick="queryCountry(4,1,null);">全部&nbsp;</span></a><a href="#"><span class="newusa_ici_1" scop="queryCountry4"  onclick="queryCountry(4,2,'US');"><img src="<c:url value ="/img/usa_1.png"/> " >美国</span></a><a href="#"><span class="newusa_ici_1" scop="queryCountry4"  onclick="queryCountry(4,3,'UK');"><img src="<c:url value ="/img/UK.jpg"/> ">英国&nbsp;</span></a><a href="#"><span class="newusa_ici_1" scop="queryCountry4"  onclick="queryCountry(4,4,'DE');"><img src="<c:url value ="/img/DE.png"/> ">德国&nbsp;</span></a><a href="#"><span class="newusa_ici_1" scop="queryCountry4"  onclick="queryCountry(4,5,'AU');"><img src="<c:url value ="/img/AU.jpg"/> ">澳大利亚</span></a></li>
+        <li class="new_usa_list"><span class="newusa_i">刊登类型：</span><a href="#"><span class="newusa_ici_1" scop="queryAttr4" onclick="queryAttr(4,1,null);">全部&nbsp;</span></a><a href="#"><span class="newusa_ici_1" scop="queryAttr4" onclick="queryAttr(4,2,'fixation');">固价&nbsp;</span></a><a href="#"><span class="newusa_ici_1" scop="queryAttr4" onclick="queryAttr(4,3,'auction');">拍卖&nbsp;</span></a><a href="#"><span class="newusa_ici_1" scop="queryAttr4" onclick="queryAttr(4,4,'multiattribute');">多属性&nbsp;</span></a></li>
         <div class="newsearch">
-            <span class="newusa_i">刊登类型：</span><a href="#"><span scop="queryTime4" onclick="queryTime(4,1,null)" class="newusa_ici_1">全部</span></a><a href="#"><span scop="queryTime4" onclick="queryTime(4,2,'1')" class="newusa_ici_1">今天</span></a><a href="#"><span scop="queryTime4" onclick="queryTime(4,3,'2')" class="newusa_ici_1">昨天</span></a><a href="#"><span scop="queryTime4" onclick="queryTime(4,4,'7')" class="newusa_ici_1">7天以内</span></a><a href="#"><span scop="queryTime4" onclick="queryTime(4,5,'30')" class="newusa_ici_1">30天以内</span></a>
+            <span class="newusa_i">刊登类型：</span><a href="#"><span scop="queryTime4" onclick="queryTime(4,1,null)" class="newusa_ici_1">全部&nbsp;</span></a><a href="#"><span scop="queryTime4" onclick="queryTime(4,2,'1')" class="newusa_ici_1">今天&nbsp;</span></a><a href="#"><span scop="queryTime4" onclick="queryTime(4,3,'2')" class="newusa_ici_1">昨天&nbsp;</span></a><a href="#"><span scop="queryTime4" onclick="queryTime(4,4,'7')" class="newusa_ici_1">7天以内&nbsp;</span></a><a href="#"><span scop="queryTime4" onclick="queryTime(4,5,'30')" class="newusa_ici_1">30天以内&nbsp;</span></a>
 <span id="sleBG">
 <span id="sleHid">
 <select name="type" class="select" id="itemType4" onchange="cleanInput();">

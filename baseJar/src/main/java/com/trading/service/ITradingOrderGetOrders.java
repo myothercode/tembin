@@ -19,7 +19,7 @@ public interface ITradingOrderGetOrders {
 
     List<TradingOrderGetOrders> selectOrderGetOrdersByOrderId(String orderId);
 
-    List<TradingOrderGetOrders> selectOrderGetOrdersByTransactionId(String TransactionId);
+    List<TradingOrderGetOrders> selectOrderGetOrdersByTransactionId(String TransactionId,String seller);
 
     List<TradingOrderGetOrders> selectOrderGetOrdersByPaypalStatus(String status,List<String> ebays);
 

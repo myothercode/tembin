@@ -38,6 +38,7 @@
         });
         function dialogClose(){
             W.OrderGetOrders.close();
+
         }
         var viewsendMessage;
         var viewsendMessage1= W.OrderGetOrders;
@@ -155,6 +156,28 @@
                  returnAddress.innerHTML="";
              }
          }
+        function submitCommit1(){
+            if(!$("#sendForm").validationEngine("validate")){
+                return;
+            }
+            var url=path+"/order/apiGetOrdersSendMessage.do";
+            var data=$("#sendForm").serialize();
+            $().invoke(url,data,
+                    [function(m,r){
+                        alert(r);
+                        window.location.reload();
+                        Base.token;
+                    },
+                        function(m,r){
+                            alert(r);
+                            Base.token();
+                        }]
+            );
+        }
+
+        $(document).ready(function(){
+            $("#sendForm").validationEngine();
+        });
     </script>
     <style>
         .table-a table{border:1px solid rgba(0, 0, 0, 0.23)
@@ -194,7 +217,7 @@
     </tbody></table>
 <div id="new_svt_1" class="hover" style="display: block;">
     <link href="../../css/compiled/layout.css" rel="stylesheet" type="text/css">
-    <c:forEach items="${orders}" var="orders1">
+    <c:forEach items="${orders}" begin="0"  varStatus="status">
     <table width="100%" border="0">
         <tbody><tr>
             <td width="772"></td>
@@ -203,39 +226,40 @@
                 <table width="100%" border="0">
                     <tbody><tr class="ebay">
                         <td><strong>eBay地址</strong><br>
-                            ${orders1.street1}<br>
-                            ${orders1.postalcode}<br>
-                            ${orders1.countryname}<br>
-                            ${orders1.phone}<br>
-                            ${orders1.buyeremail}</td>
+                            ${orders[status.index].street1}<br>
+                            ${orders[status.index].postalcode}<br>
+                            ${orders[status.index].countryname}<br>
+                            ${orders[status.index].phone}<br>
+                            ${orders[status.index].buyeremail}</td>
                     </tr>
                     </tbody></table>
                 <span class="voknet"></span>
                 <table width="100%" border="0">
-                    <tbody><tr class="Paypal">
+                    <tbody>
+                    <tr class="Paypal">
                         <td><strong>Paypal 地址</strong><br>
-                                ${orders1.street1}<br>
-                                ${orders1.postalcode}<br>
-                                ${orders1.countryname}<br>
-                                ${orders1.phone}<br>
-                                ${orders1.buyeremail}</td>
+                                ${orders[status.index].street1}<br>
+                                ${orders[status.index].postalcode}<br>
+                                ${orders[status.index].countryname}<br>
+                                ${orders[status.index].phone}<br>
+                                ${orders[status.index].buyeremail}</td>
                     </tr>
                     </tbody></table>
                 <span class="voknet"></span>
                 <table width="100%" border="0">
                     <tbody><tr>
                         <td><strong>发货信息</strong><br>
-                                ${orders1.street1}<br>
-                                ${orders1.postalcode}<br>
-                                ${orders1.countryname}<br>
-                                ${orders1.phone}<br>
-                                ${orders1.buyeremail}</td>
+                                ${orders[status.index].street1}<br>
+                                ${orders[status.index].postalcode}<br>
+                                ${orders[status.index].countryname}<br>
+                                ${orders[status.index].phone}<br>
+                                ${orders[status.index].buyeremail}</td>
                     </tr>
                     </tbody></table><span class="moneyok">
-                        <c:if test="${orders1.status=='Complete'}">
+                        <c:if test="${orders[status.index].status=='Complete'}">
                             已付款
                         </c:if>
-                        <c:if test="${orders1.status=='Incomplete'}">
+                        <c:if test="${orders[status.index].status=='Incomplete'}">
                             未付款
                         </c:if>
                     </span>
@@ -243,13 +267,13 @@
                 <table width="100%" border="0">
                     <tbody><tr>
                         <td><strong>备注</strong><br>
-                            ${orders1.title}</td>
+                            ${orders[status.index].title}</td>
                     </tr>
                     </tbody></table>
             </td>
         </tr>
         <tr>
-            <td width="772" height="30"><span style="color:#2395F3; font-size:16px; font-family:Arial, Helvetica, sans-serif">1</span>  &nbsp; &nbsp;<strong>销售编号</strong>：53307  &nbsp; &nbsp;eBayx &nbsp; &nbsp;<strong> 销售编号</strong>：53307_5135 &nbsp; &nbsp; <font color="#2395F3">${orders1.buyeruserid} ( ${orders1.buyeremail} )</font></td>
+            <td width="772" height="30"><span style="color:#2395F3; font-size:16px; font-family:Arial, Helvetica, sans-serif">1</span>  &nbsp; &nbsp;<strong>销售编号</strong>：53307  &nbsp; &nbsp;eBayx &nbsp; &nbsp;<strong> 销售编号</strong>：53307_5135 &nbsp; &nbsp; <font color="#2395F3">${orders[status.index].buyeruserid} ( ${orders[status.index].buyeremail} )</font></td>
         </tr>
         <tr>
             <td height="40" bgcolor="#F4F4F4" style="font-size:18px; font-family:'微软雅黑', '宋体', Arial">&nbsp;交易信息</td>
@@ -257,37 +281,37 @@
         <tr>
             <td><table width="100%" border="0">
                 <tbody><tr>
-                    <td width="41%" rowspan="10"><img src="../../img/admin_nopic.jpg" width="297" height="247"></td>
+                    <td width="41%" rowspan="10"><img src="${pictures[status.index]}" width="297" height="247"></td>
                     <td width="21%" height="30"><strong>Item No.</strong><br></td>
-                    <td width="38%" height="30">${orders1.itemid}</td>
+                    <td width="38%" height="30">${orders[status.index].itemid}</td>
                 </tr>
                 <tr>
                     <td height="30"><strong>售出日期</strong><br></td>
-                    <td width="38%" height="30"><fmt:formatDate value="${orders1.createdtime}" pattern="yyyy-MM-dd HH:mm"/></td>
+                    <td width="38%" height="30"><fmt:formatDate value="${orders[status.index].createdtime}" pattern="yyyy-MM-dd HH:mm"/></td>
                 </tr>
                 <tr>
                     <td height="30"><strong>销售数量</strong><br></td>
-                    <td width="38%" height="30">${orders1.quantitypurchased}</td>
+                    <td width="38%" height="30">${orders[status.index].quantitypurchased}</td>
                 </tr>
                 <tr>
                     <td height="30"><strong>售价</strong><br></td>
-                    <td width="38%" height="30">${orders1.transactionprice} USD</td>
+                    <td width="38%" height="30">${orders[status.index].transactionprice} USD</td>
                 </tr>
                 <tr>
                     <td height="30"><strong>成交费</strong><br></td>
-                    <td width="38%" height="30">${grossdetailamount}USD</td>
+                    <td width="38%" height="30">${grossdetailamounts[status.index]}USD</td>
                 </tr>
                 <tr>
                     <td height="30"><strong>SKU</strong><br></td>
-                    <td width="38%" height="30">${orders1.sku}</td>
+                    <td width="38%" height="30">${orders[status.index].sku}</td>
                 </tr>
                 <tr>
                     <td height="30"><strong>买家选择运输</strong><br></td>
-                    <td width="38%" height="30"> ${orders1.selectedshippingservice}</td>
+                    <td width="38%" height="30"> ${orders[status.index].selectedshippingservice}</td>
                 </tr>
                 <tr>
                     <td height="30"><strong>买家选择运输费用</strong><br></td>
-                    <td width="38%" height="30">${orders1.selectedshippingservicecost}</td>
+                    <td width="38%" height="30">${orders[status.index].selectedshippingservicecost}</td>
                 </tr>
                 <tr>
                     <td height="30"><strong>保险费</strong><br></td>
@@ -296,17 +320,17 @@
                 <tr>
                     <td height="30"><strong>付款状态</strong><br></td>
                     <td width="38%" height="30">
-                        <c:if test="${orders1.status=='Complete'}">
+                        <c:if test="${orders[status.index].status=='Complete'}">
                             已付款
                          </c:if>
-                        <c:if test="${orders1.status=='Incomplete'}">
+                        <c:if test="${orders[status.index].status=='Incomplete'}">
                             未付款
                         </c:if></td>
                 </tr>
                 <tr>
-                    <td><font color="#2395F3">${orders1.buyeruserid} ( ${orders1.buyeremail} )</font></td>
+                    <td><font color="#2395F3">${orders[status.index].buyeruserid} ( ${orders[status.index].buyeremail} )</font></td>
                     <td height="30"><strong>付款方式</strong></td>
-                    <td height="30">${orders1.paymentmethod}</td>
+                    <td height="30">${orders[status.index].paymentmethod}</td>
                 </tr>
                 </tbody></table></td>
         </tr>
@@ -323,16 +347,23 @@
                     <td width="15%" height="30"> <strong>PayPal费用</strong></td>
                     <td width="15%" height="30"> <strong>净额</strong></td>
                 </tr>
-                <c:if test="${orders1.status=='Complete'}">
+                <c:if test="${orders[status.index].status=='Complete'}">
                 <tr>
-                    <td height="30">${paypal}</td>
-                    <td height="30"><fmt:formatDate value="${orders1.paidtime}" pattern="yyyy-MM-dd HH:mm"/></td>
-                    <td height="30" align="center"><img src="../../img/new_yes.png" width="22" height="22"></td>
-                    <td width="15%" height="30">${orders1.total} USD</td>
+                    <td height="30">${paypals[status.index]}</td>
+                    <td height="30"><fmt:formatDate value="${orders[status.index].paidtime}" pattern="yyyy-MM-dd HH:mm"/></td>
+                    <td height="30" align="center">
+                    <c:if test="${orders[status.index].status=='Complete'}">
+                        <img src="<c:url value ="/img/new_yes.png"/>" width="22" height="22">
+                    </c:if>
+                    <c:if test="${orders[status.index].status=='Incomplete'}">
+                        <img src="<c:url value ="/img/new_no.png"/>" width="22" height="22">
+                    </c:if>
+                    </td>
+                    <td width="15%" height="30">${orders[status.index].total} USD</td>
                     <td width="15%" height="30">0.85--</td>
                     <td width="15%" height="30">13.17--</td>
                 </tr>
-                <c:if test="${orders1.status=='Incomplete'}">
+                <c:if test="${orders[status.index].status=='Incomplete'}">
                     <tr>
                         <td height="30"></td>
                         <td height="30"></td>
@@ -344,8 +375,8 @@
                 </c:if>
                 </c:if>
                 <tr>
-                    <td height="30" colspan="6" style="color:#F00"><span class="voknet"></span>PA Note:   PayPal payment Staus:[${orders1.status}],Type:[instant],Amount:[USD${orders1.amountpaid}] recelved on <fmt:formatDate value="${orders1.paidtime}" pattern="yyyy-MM-dd HH:mm"/>,Paypal transaction ID:<br>
-                            ${paypal}</td>
+                    <td height="30" colspan="6" style="color:#F00"><span class="voknet"></span>PA Note:   PayPal payment Staus:[${orders[status.index].status}],Type:[instant],Amount:[USD${orders[status.index].amountpaid}] recelved on <fmt:formatDate value="${orders[status.index].paidtime}" pattern="yyyy-MM-dd HH:mm"/>,Paypal transaction ID:<br>
+                            ${paypals[status.index]}</td>
                 </tr>
                 </tbody></table></td>
         </tr>
@@ -353,7 +384,7 @@
         <hr/>
     </c:forEach>
     <div class="modal-footer">
-        <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+        <button type="button" class="btn btn-default" onclick="dialogClose();" data-dismiss="modal">关闭</button>
     </div>
 </div>
 <div style="display: none;" id="new_svt_2">
@@ -363,28 +394,29 @@
             <td width="772"></td>
             <td width="9" rowspan="5" valign="top">&nbsp;</td>
             <td rowspan="5" valign="top" style="margin-left:20px; padding-left:15px; padding-top:20px; padding-right:20px; line-height:25px;background:#F4F4F4"><strong>订单号</strong><br>
-                CO-9798-R1(已配货)<br>
+                ${order.orderid}(已配货)<br>
                 <strong>物流跟踪号</strong><br>
-                RI123885807CN<br>
+                ${order.shipmenttrackingnumber}<br>
                 <strong>发货时间：</strong><br>
-                2017-07-22<br>
+                ${order.shippedtime}<br>
                 <strong>付款时间：</strong><br>
-                2017-07-22<br>
+                ${order.paidtime}<br>
                 <strong>运输方式：</strong><br>
-                海运
+                ${order.selectedshippingservice}
+                <c:forEach items="${orders}" begin="0"  varStatus="status">
                 <span class="voknet"></span>
                 <table width="100%" border="0">
                     <tbody><tr>
-                        <td width="56"><strong>商品2</strong></td>
+                        <td width="56"><strong>商品${status.index+1}</strong></td>
                         <td style="color:#63B300">CNDL</td>
                     </tr>
                     <tr>
-                        <td><img src="../../img/no_pic_1.png" width="46" height="46"></td>
-                        <td style=" color:#5F93D7">标题标题标题标题标题标题标题标题标题标题标题<br>
-                            标题标题标题标题标题...</td>
+                        <td><img src="${pictures[status.index]}" width="46" height="46"></td>
+                        <td style=" color:#5F93D7">${orders[status.index].title}</td>
                     </tr>
                     </tbody></table>
-                <span class="voknet"></span>
+                </c:forEach>
+                <%--<span class="voknet"></span>
 
                 <table width="100%" border="0">
                     <tbody><tr>
@@ -396,14 +428,43 @@
                         <td style=" color:#5F93D7">标题标题标题标题标题标题标题标题标题标题标题<br>
                             标题标题标题标题标题...</td>
                     </tr>
-                    </tbody></table>
+                    </tbody></table>--%>
             </td>
         </tr>
         <tr>
             <td width="772" align="center" bgcolor="#F6F6F6" style="color:#2395F3">查看更多历史信息...</td>
         </tr>
         <tr>
-            <td><div class="newbook">
+            <td>
+                <div class="newbook">
+                    <p style="text-align: right;">aasla_karih 2014-08-20 22:38</p>
+                <c:forEach items="${addMessage1}" var="addMessage">
+                    <c:if test="${addMessage.sender==sender}">
+                        <p class="user">${addMessage.recipientid}，您好！</p>
+                        <div class="user_co">
+                            <div class="user_co_1"></div>
+                            <ul>Hi ${addMessage.recipientid}.: )<br/> ${addMessage.body}
+                                <span>发送与:<fmt:formatDate value="${addMessage.createTime}" pattern="yyyy-MM-dd HH:mm:ss"/></span>
+                            </ul>
+                            <div class="user_co_2"></div>
+                        </div>
+                        <div class="dpan"></div>
+                    </c:if>
+                    <c:if test="${addMessage.sender==recipient}">
+
+                        <p class="admin">携宇科技</p>
+
+                        <div class="admin_co">
+                            <div class="admin_co_1"></div>
+                            <ul>Hi ${addMessage.recipientid}.: )<br/>${addMessage.body}
+                                <span>发送与:<fmt:formatDate value="${addMessage.createTime}" pattern="yyyy-MM-dd HH:mm:ss"/></span>
+                            </ul>
+                            <div class="admin_co_2"></div>
+                        </div>
+                        <div class="dpan"></div>
+                    </c:if>
+                </c:forEach>
+                <%--<div class="newbook">
                 <p style="text-align: right;">aasla_karih 2014-08-20 22:38</p>
                 <p class="user">containyou，您好！</p>
                 <div class="user_co">
@@ -412,8 +473,8 @@
                         <span>发送与:2014-08-20 22:38</span>
                     </ul>
                     <div class="user_co_2"></div>
-                </div>
-                <div class="dpan"></div>
+                </div>--%>
+                <%--<div class="dpan"></div>
                 <p class="admin">携宇科技</p>
 
                 <div class="admin_co">
@@ -440,14 +501,22 @@
                         <span>发送与:2014-08-20 22:38</span>
                     </ul>
                     <div class="admin_co_2"></div>
-                </div>
+                </div>--%>
             </div></td>
         </tr>
         <tr>
-            <td><textarea name="textarea" id="textarea" style="width:772px;" rows="5" class="newco_one">Additional comments:(optional)</textarea><div class="modal-footer" style="margin-top:20px; float:left; width:100%;">
-                <button type="button" class="btn btn-primary">保存</button>
-                <button type="button" class="btn btn-newco">回复</button>
-                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+            <td>
+                <form id="sendForm">
+                    <input type="hidden" name="itemid" value="${order.itemid}">
+                    <input type="hidden" name="buyeruserid" value="${order.buyeruserid}">
+                    <input type="hidden" name="selleruserid" value="${order.selleruserid}">
+                    <input type="hidden" name="transactionid" value="${order.transactionid}">
+                    <input type="hidden" name="subject" value="${addMessage1[0].subject}">
+                <textarea name="body"  id="textarea" style="width:772px;" rows="5"  class="newco_one validate[required]"></textarea><div class="modal-footer" style="margin-top:20px; float:left; width:100%;">
+                </form>
+                <%--<button type="button" class="btn btn-primary">保存</button>--%>
+                <button type="button" class="btn btn-newco" onclick="submitCommit1();">回复</button>
+                <button type="button" class="btn btn-default" onclick="dialogClose();" data-dismiss="modal">关闭</button>
             </div></td>
         </tr>
         <tr>
@@ -461,24 +530,24 @@
 <script src="../../js/theme.js"></script>
 
 </div>
+<%--&lt;%&ndash;-----------------------------------------修改前----------------------------------------------&ndash;%&gt;
 <div class="easyui-tabs" border="0" style="width:1020px;">
-<%-------------------------------------------------------------------------------------------%>
     <div title="摘要" style="padding:10px" >
         <c:forEach items="${orders}" var="orders1">
         <div class="easyui-panel" style="width:1000px"  title="1|销售编号:|eBay销售编号:|${orders1.selleruserid}">
-            <iframe id="frameLeft" src="${rootpath}/order/viewOrderAbstractLeft.do?TransactionId=${orders1.transactionid}"  align="left"  frameborder="0" style="width: 558px;height: 690px;"></iframe>
-            <iframe id="frameRight" src="${rootpath}/order/viewOrderAbstractRight.do?TransactionId=${orders1.transactionid}"  align="right"  frameborder="0" style="width: 418px;height:690px;"></iframe>
+            <iframe id="frameLeft" src="${rootpath}/order/viewOrderAbstractLeft.do?TransactionId=${orders1.transactionid}&selleruserid=${orders1.selleruserid}"  align="left"  frameborder="0" style="width: 558px;height: 690px;"></iframe>
+            <iframe id="frameRight" src="${rootpath}/order/viewOrderAbstractRight.do?TransactionId=${orders1.transactionid}&selleruserid=${orders1.selleruserid}"  align="right"  frameborder="0" style="width: 418px;height:690px;"></iframe>
         </div>
         <div class="easyui-panel"  style="width:1000px" title="最近消息">
-            <iframe id="frameDown" src="${rootpath}/order/viewOrderAbstractDown.do?TransactionId=${orders1.transactionid}"   frameborder="0" style="width: 976px;height: 200px;"></iframe>
-          <%--  &lt;%&ndash;${addMessage.body}&ndash;%&gt;
+            <iframe id="frameDown" src="${rootpath}/order/viewOrderAbstractDown.do?TransactionId=${orders1.transactionid}&selleruserid=${orders1.selleruserid}"   frameborder="0" style="width: 976px;height: 200px;"></iframe>
+          &lt;%&ndash;  &lt;%&ndash;${addMessage.body}&ndash;%&gt;
             <c:forEach items="${addMessage}" var="addmessage">
                 ${addmessage.body}
-            </c:forEach>--%>
+            </c:forEach>&ndash;%&gt;
         </div>
         </c:forEach>
     </div>
-    <%-------------------------------------------------------------------------------------------%>
+    &lt;%&ndash;---------------------------------------------------------------------------------------&ndash;%&gt;
     <div title="运输" style="padding:10px">
         <form id="tranForm">
             <input type="hidden" name="id" value="${order.orderid}"/>
@@ -595,18 +664,18 @@
                 <td>动作</td></tr>
                 <tr><td><input type="text" name="shippedtime" value="<fmt:formatDate value="${order.shippedtime}" pattern="yyyy-MM-dd HH:mm"/>"  onfocus="WdatePicker({isShowWeek:true,dateFmt:'yyyy-MM-dd HH:mm'})" /></td>
                     <td><input type="text" name="freight" value="${order.actualshippingcost}"/>&nbsp;
-                     <%--   <select>
+                     &lt;%&ndash;   <select>
                             <c:forEach>
 
                             </c:forEach>
-                        </select>--%>
+                        </select>&ndash;%&gt;
                     </td>
                     <td>
-                        <%--<select>
+                        &lt;%&ndash;<select>
                             <c:forEach>
 
                             </c:forEach>
-                        </select>--%>
+                        </select>&ndash;%&gt;
                     </td>
                     <td></td>
                     <td><input type="text" value="${order.shipmenttrackingnumber}"/></td>
@@ -624,7 +693,7 @@
         </c:if>
 
     </div>
-    <%-------------------------------------------------------------------------------------------%>
+    &lt;%&ndash;---------------------------------------------------------------------------------------&ndash;%&gt;
     <div title="发货历史" style="padding:10px">
         <c:if test="${order.orderstatus=='Shipped'||order.orderstatus=='Completed'}">
         <table border="1" cellspacing="0" cellpadding="0" style="width: 1000px;">
@@ -649,7 +718,7 @@
         </table>
         </c:if>
     </div>
-    <%-------------------------------------------------------------------------------------------%>
+    &lt;%&ndash;---------------------------------------------------------------------------------------&ndash;%&gt;
     <div title="ebay消息" style="padding:10px">
         卖家消息:<br/>
         <table style="width: 900px;">
@@ -711,13 +780,13 @@
         </table>
 
     </div>
-    <%-------------------------------------------------------------------------------------------%>
+    &lt;%&ndash;---------------------------------------------------------------------------------------&ndash;%&gt;
     <div title="购买历史" style="padding:10px" onclick="BuyHistpry();">
         <iframe id="frameBuyHistory"  frameborder="0" style="width: 976px;height:700px;"></iframe>
     </div>
 </div>
 <div style="text-align: right">
     <input type="button" value="关闭" onclick="dialogClose();"/>
-</div>
+</div>--%>
 </body>
 </html>

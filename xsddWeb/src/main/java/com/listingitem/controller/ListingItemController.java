@@ -367,7 +367,8 @@ public class ListingItemController extends BaseAction {
     public void selfFolder(HttpServletRequest request,ModelMap modelMap,CommonParmVO commonParmVO) throws Exception {
         SessionVO c= SessionCacheSupport.getSessionVO();
         DataDictionarySupport.removePublicUserConfig(c.getId());
-        List<PublicUserConfig> lipuc = DataDictionarySupport.getPublicUserConfigByType("listingFolder",c.getId());
+        String folderType = request.getParameter("folderType");
+        List<PublicUserConfig> lipuc = DataDictionarySupport.getPublicUserConfigByType(folderType,c.getId());
         List<PublicUserConfig> li = new ArrayList<PublicUserConfig>();
         for(PublicUserConfig puc:lipuc){
             if(puc.getConfigValue().equals("true")){
@@ -463,7 +464,39 @@ public class ListingItemController extends BaseAction {
         return forword("listingitem/listingdataAmend",modelMap);
     }
 
+    /**
+     * 移到到文件夹
+     * @param request
+     * @param response
+     * @param modelMap
+     * @throws Exception
+     */
+    @RequestMapping("/ajax/shiftListingToFolder.do")
+    @ResponseBody
+    public void shiftListingToFolder(HttpServletRequest request,HttpServletResponse response,@ModelAttribute( "initSomeParmMap" )ModelMap modelMap) throws Exception {
+        String idStr = request.getParameter("idStr");
+        String [] ids =idStr.split(",");
+        String folderid = request.getParameter("folderid");
 
+        List<TradingListingData> litld = new ArrayList<TradingListingData>();
+        for(String id: ids){
+            TradingListingData tld = this.iTradingListingData.selectById(Long.parseLong(id));
+            tld.setFolderId(folderid);
+            litld.add(tld);
+        }
+        if(litld.size()>0) {
+            try {
+                this.iTradingListingData.saveTradingListingDataList(litld);
+                AjaxSupport.sendSuccessText("","操作成功!");
+            } catch (Exception e) {
+                e.printStackTrace();
+                AjaxSupport.sendSuccessText("","操作失败!");
+            }
+        }else{
+            AjaxSupport.sendSuccessText("","操作失败，你未选择商品，或你选择的商品不存在!");
+        }
+
+    }
     @RequestMapping("/ajax/getListItemDataAmend.do")
     @ResponseBody
     public void getListItemDataAmend(HttpServletRequest request,ModelMap modelMap,CommonParmVO commonParmVO) throws Exception {

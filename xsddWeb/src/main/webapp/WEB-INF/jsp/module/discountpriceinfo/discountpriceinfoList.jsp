@@ -18,7 +18,7 @@
             discountPriceInfo= $.dialog({title: '新增折扣选项',
                 content: 'url:/xsddWeb/addDiscountPriceInfo.do',
                 icon: 'succeed',
-                width:400,
+                width:600,
                 lock:true
             });
         }
@@ -27,7 +27,7 @@
             discountPriceInfo= $.dialog({title: '编辑折扣选项',
                 content: 'url:/xsddWeb/editDiscountPriceInfo.do?id='+id,
                 icon: 'succeed',
-                width:500,
+                width:600,
                 lock:true
             });
         }
@@ -108,15 +108,15 @@
             discountPriceInfo= $.dialog({title: '编辑折扣选项',
                 content: 'url:/xsddWeb/editDiscountPriceInfo.do?id='+id+'&&type=01',
                 icon: 'succeed',
-                width:500,
+                width:600,
                 lock:true
             });
         }
     </script>
 </head>
 <body>
-<div style="text-align: right;">
-    <input type="button" name="add" value="新增" onclick="adddiscountpriceinfo()">
+<div class="newds">
+    <div class="tbbay"><a data-toggle="modal" href="#myModal" class=""  onclick="adddiscountpriceinfo()">新增</a></div>
 </div>
 <div id="discountPriceInfoListTable"></div>
 <%--<div>

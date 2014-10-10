@@ -14,6 +14,9 @@
     <script type="text/javascript">
         var api = frameElement.api, W = api.opener;
         function submitCommit(){
+            if(!$("#addTypeForm").validationEngine("validate")){
+                return;
+            }
             var url=path+"/informationType/ajax/saveinformationType.do";
             var data=$("#addTypeForm").serialize();
             $().invoke(url,data,
@@ -32,15 +35,19 @@
         function closedialog(){
             W.itemInformationType.close();
         }
+        $(document).ready(function(){
+            $("#addTypeForm").validationEngine();
+        });
     </script>
 </head>
 <body>
 <div class="modal-body">
     <form class="form-horizontal" role="form" id="addTypeForm">
+        <br/>
         <table>
             <tr>
                 <td>分类名称:</td>
-                <td><input type="text" name="typeName"/></td>
+                <td><input type="text" class="validate[required]" name="typeName"/></td>
             </tr>
             <tr>
                 <td>上级分类:</td>

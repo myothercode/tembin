@@ -15,9 +15,13 @@ import java.util.Map;
 public interface ITradingItem {
     void saveTradingItem(TradingItem pojo) throws Exception;
 
+    void saveTradingItemList(List<TradingItem> liti) throws Exception;
+
     TradingItem toDAOPojo(Item item) throws Exception;
 
     Map saveItem(Item item, TradingItem tradingItem) throws Exception;
+
+    Item toItem(TradingItem tradingItem) throws Exception;
 
     List<ItemQuery> selectByItemList(Map map, Page page);
 
@@ -28,4 +32,9 @@ public interface ITradingItem {
     void updateTradingItem(Item item, TradingItem tradingItem) throws Exception;
 
     void saveListingItem(Item item, KeyMoveList kml) throws Exception;
+
+    // }
+    void delItem(String[] ids);
+
+    void rename(String[] ids, String fileName);
 }

@@ -12,12 +12,13 @@
 <head>
     <title></title>
     <script>
-        var returnShipping ="";
+        var returnShipping;
         function addshippingDetails(){
             returnShipping=$.dialog({title: '新增运送选项',
                 content: 'url:/xsddWeb/addshippingDetails.do',
                 icon: 'succeed',
-                width:1000
+                width:1000,
+                lock:true
             });
         }
 
@@ -25,7 +26,8 @@
             returnShipping=$.dialog({title: '编辑运送选项',
                 content: 'url:/xsddWeb/editshippingDetails.do?id='+id,
                 icon: 'succeed',
-                width:1000
+                width:1000,
+                lock:true
             });
         }
         $(document).ready(function(){
@@ -104,7 +106,8 @@
             returnShipping=$.dialog({title: '编辑运送选项',
                 content: 'url:/xsddWeb/editshippingDetails.do?id='+id+'&type=01',
                 icon: 'succeed',
-                width:1000
+                width:1000,
+                lock:true
             });
         }
         function showData(json){
@@ -120,8 +123,8 @@
     </script>
 </head>
 <body>
-<div style="text-align: right;">
-    <input type="button" name="add" value="新增" onclick="addshippingDetails()">
+<div class="newds">
+    <div class="tbbay"><a data-toggle="modal" href="#myModal" class=""  onclick="addshippingDetails()">新增</a></div>
 </div>
 <div id="shippingDetailsList">
 

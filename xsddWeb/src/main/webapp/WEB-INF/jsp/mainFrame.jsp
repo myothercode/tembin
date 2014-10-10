@@ -15,8 +15,27 @@
     <script type="text/javascript">
         $(document).ready(function(){
             getMenu();
+            //getSystemMessage();
+            getMessagesByTime();
         });
     </script>
+    <style type="text/css">
+        .select_ul {margin:0 5px 0 0;padding:0;list-style-type:none;}
+        .select_ul ul li{list-style-type:none;float:left;height:24px;}
+        .select_box{float:left;border-bottom:solid 1px #000;color:#444;position:relative;cursor:pointer;width:84px;background: url(../images/select_box_off.gif) no-repeat right center;}
+        .selet_open{ display:inline-block;position:absolute;right:0;top:0;width:12px;height:24px;}
+        .select_txt{display:inline-block;padding-left:2px;width:50px;line-height:24px;height:22px; cursor:pointer;overflow:hidden; color:#0474f1;}
+        .option{width:100px;border:solid 1px #444;position:absolute;top:24px;left:-1px;z-index:2;overflow:hidden;display:none;}
+        .option a{display:block;height:26px;line-height:26px;text-align:left;padding:0 10px;width:100%;background:#fff;}
+        .option a:hover{background:#ededed;}
+
+        dl { margin:0 auto; padding:0px; float:left;}
+        dl dt,dd { margin:0 auto; padding:0px; float:left; height:21px; line-height:21px;}
+        dl dt { font-weight:bold;}
+        dl dt font { font-weight:normal;}
+        dl dt span { float: right; color: #ff0000;}
+        dl .noneBold { font-weight:normal;}
+    </style>
 </head>
 <body>
 <!-- navbar -->
@@ -34,10 +53,10 @@
         <li class="hidden-xs hidden-sm">
             <input class="search" type="text" />
         </li>
-        <li class="notification-dropdown hidden-xs hidden-sm">
-            <a href="#" class="trigger">
+        <li title="ebay消息" class="notification-dropdown hidden-xs hidden-sm">
+            <a href="javascript:void(0)" id="ebayMessages"  class="trigger">
                 <i class="icon-warning-sign"></i>
-                <span class="count">8</span>
+                <span class="ebayMessagesCount"></span>
             </a>
             <div class="pop-dialog">
                 <div class="pointer right">
@@ -45,25 +64,10 @@
                     <div class="arrow_border"></div>
                 </div>
                 <div class="body">
-                    <a href="#" class="close-icon"><i class="icon-remove-sign"></i></a>
+                    <a href="javascript:void(0)" class="close-icon"><i class="icon-remove-sign"></i></a>
                     <div class="notifications">
-                        <h3>You have 6 new notifications</h3>
-                        <a href="#" class="item">
-                            <i class="icon-signin"></i> New user registration
-                            <span class="time"><i class="icon-time"></i> 13 min.</span>
-                        </a>
-                        <a href="#" class="item">
-                            <i class="icon-signin"></i> New user registration
-                            <span class="time"><i class="icon-time"></i> 18 min.</span>
-                        </a>
-                        <a href="#" class="item">
-                            <i class="icon-envelope-alt"></i> New message from Alejandra
-                            <span class="time"><i class="icon-time"></i> 28 min.</span>
-                        </a>
-                        <a href="#" class="item">
-                            <i class="icon-signin"></i> New user registration
-                            <span class="time"><i class="icon-time"></i> 49 min.</span>
-                        </a>
+                        <h3 id="ebaymessageNotice">You have 0 new notifications</h3>
+
                         <a href="#" class="item">
                             <i class="icon-download-alt"></i> New order placed
                             <span class="time"><i class="icon-time"></i> 1 day.</span>
@@ -75,9 +79,10 @@
                 </div>
             </div>
         </li>
-        <li class="notification-dropdown hidden-xs hidden-sm">
-            <a href="#" class="trigger">
+        <li title="系统消息" class="notification-dropdown hidden-xs hidden-sm">
+            <a href="javascript:void(0)" id="systemMessages" class="trigger">
                 <i class="icon-envelope"></i>
+                <span id="systemMessageCount" class="count"></span>
             </a>
             <div class="pop-dialog">
                 <div class="pointer right">
@@ -86,8 +91,8 @@
                 </div>
                 <div class="body">
                     <a href="#" class="close-icon"><i class="icon-remove-sign"></i></a>
-                    <div class="messages">
-                        <a href="#" class="item">
+                    <div class="messages" id="messages">
+                        <a href="javascript:void(0)" class="item">
                             <img src="/xsddWeb/img/contact-img.png" class="display" />
                             <div class="name">Alejandra Galván</div>
                             <div class="msg">
@@ -95,36 +100,20 @@
                             </div>
                             <span class="time"><i class="icon-time"></i> 13 min.</span>
                         </a>
-                        <a href="#" class="item">
-                            <img src="/xsddWeb/img/contact-img2.png" class="display" />
-                            <div class="name">Alejandra Galván</div>
-                            <div class="msg">
-                                There are many variations of available, have suffered alterations.
-                            </div>
-                            <span class="time"><i class="icon-time"></i> 26 min.</span>
-                        </a>
-                        <a href="#" class="item last">
-                            <img src="/xsddWeb/img/contact-img.png" class="display" />
-                            <div class="name">Alejandra Galván</div>
-                            <div class="msg">
-                                There are many variations of available, but the majority have suffered alterations.
-                            </div>
-                            <span class="time"><i class="icon-time"></i> 48 min.</span>
-                        </a>
-                        <div class="footer">
-                            <a href="#" class="logout">View all messages</a>
-                        </div>
+
+
+
                     </div>
                 </div>
             </div>
         </li>
 
-        <li class="settings hidden-xs hidden-sm">
+        <li title="配置" class="settings hidden-xs hidden-sm">
             <a href="../../personal-info.html" role="button">
                 <i class="icon-cog"></i>
             </a>
         </li>
-        <li class="settings hidden-xs hidden-sm">
+        <li title="退出" class="settings hidden-xs hidden-sm">
             <a onclick="logout()" href="javascript:void(0)" role="button">
                 <i class="icon-share-alt"></i>
             </a>

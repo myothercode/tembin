@@ -40,6 +40,10 @@ public class TradingListingDataImpl implements com.trading.service.ITradingListi
     public List<ListingDataAmendQuery> selectAmendData(Map map, Page page){
         return listingDataAmendMapper.selectByExample(map,page);
     }
+    @Override
+    public TradingListingData selectById(Long id){
+        return this.tradingListingDataMapper.selectByPrimaryKey(id);
+    }
 
     @Override
     public TradingListingData selectByItemid(String itemid){
@@ -67,5 +71,16 @@ public class TradingListingDataImpl implements com.trading.service.ITradingListi
         TradingListingDataExample tlde = new TradingListingDataExample();
         tlde.createCriteria().andSkuEqualTo(sku).andEbayAccountEqualTo(ebayAccount);
         return this.tradingListingDataMapper.selectByExample(tlde);
+    }
+
+    @Override
+    public void saveTradingListingDataList(List<TradingListingData> litld){
+        for(TradingListingData tld: litld){
+            if(tld.getId()==null){
+                this.tradingListingDataMapper.insertSelective(tld);
+            }else{
+                this.tradingListingDataMapper.updateByPrimaryKey(tld);
+            }
+        }
     }
 }

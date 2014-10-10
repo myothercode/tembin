@@ -79,6 +79,10 @@ public class PayPalServiceImpl implements PayPalService {
         return paypalAccounts;
     }
 
+    @Override
+    public UsercontrollerPaypalAccount selectById(Long id){
+        return usercontrollerPaypalAccountMapper.selectByPrimaryKey(id);
+    }
 
     @Override
     /**启用或者停用paypal账户*/

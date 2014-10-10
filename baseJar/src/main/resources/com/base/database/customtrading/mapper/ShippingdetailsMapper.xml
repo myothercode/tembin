@@ -49,9 +49,9 @@
   </resultMap>
 
     <select id="selectByShippingdetails" resultMap="BaseResultMap" parameterType="map">
-        select shipping.*,dic.`name` site_name,conf.config_name ebay_Name from trading_shippingdetails shipping
+        select shipping.*,dic.`name` site_name,ebay.ebay_Name ebay_Name from trading_shippingdetails shipping
         left join trading_data_dictionary dic on shipping.site=dic.id
-        left join public_user_config conf on shipping.ebay_account=conf.id
+        left join usercontroller_ebay_account ebay on shipping.ebay_account=ebay.id
         where 1=1
         <if test="id!=null">
             and shipping.id = #{id}

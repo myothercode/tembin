@@ -28,7 +28,17 @@ function queryEbayList(){
 }
 /**组装操作下拉*/
 function makeOptionEbay(json){
-    var select1="<div class=\"ui-select\" style=\"width:8px\">" +
+    var select1="";
+
+    if(json.ebayStatus==1 || json.ebayStatus=='1'){
+        select1+= "<li style='height:25px' onclick=doEbayAccount(this) value='"+json.id+"' doaction=\"stop\">停用</li>" ;
+    }else if(json.ebayStatus==0 || json.ebayStatus=='0'){
+        select1+= "<li style='height:25px' onclick=doEbayAccount(this) value='"+json.id+"' doaction=\"start\">启用</li>" ;
+    }
+    select1+= "<li style='height:25px' onclick=doEbayAccount(this) value='"+json.id+"' doaction=\"edit\">编辑</li>" ;
+    var pp={"liString":select1};
+    return getULSelect(pp);
+    /*var select1="<div class=\"ui-select\" style=\"width:8px\">" +
         "<select onchange='doEbayAccount(this)'>" ;
     select1+= "<option  value='x'>请选择</option>" ;
     if(json.ebayStatus==1 || json.ebayStatus=='1'){
@@ -37,12 +47,12 @@ function makeOptionEbay(json){
         select1+= "<option  value='"+json.id+"' doaction=\"start\">启用</option>" ;
     }
     select1+= "<option  value='"+json.id+"' doaction=\"edit\">编辑</option>" ;
-    select1+= "</select></div>";
-    return select1;
+    select1+= "</select></div>";*/
+    //return select1;
 }
 /**选择操作后要执行的动作*/
 function doEbayAccount(obj){
-    var optionV=$(obj).find("option:selected");
+    var optionV=obj//$(obj).find("option:selected");
     var v=$(optionV).attr('value');
     if(v=='x'){return;}
     var d=$(optionV).attr('doaction');

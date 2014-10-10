@@ -24,4 +24,6 @@ public interface ITradingMessageGetmymessage {
     List<MessageGetmymessageQuery> selectMessageGetmymessageBySender(Map map);
 
     List<TradingMessageGetmymessage> selectMessageGetmymessageByItemId(String itemid);
+
+    List<TradingMessageGetmymessage> selectMessageGetmymessageByItemIdAndSender(String itemid,String sender,String recipient );
 }

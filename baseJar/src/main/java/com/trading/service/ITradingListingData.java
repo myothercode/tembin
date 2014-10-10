@@ -18,6 +18,8 @@ public interface ITradingListingData {
     List<ListingDataAmendQuery> selectAmendData(Map map, Page page);
 
 
+    TradingListingData selectById(Long id);
+
     TradingListingData selectByItemid(String itemid);
 
     void updateTradingListingData(TradingListingData tld);
@@ -25,4 +27,6 @@ public interface ITradingListingData {
     void insertTradingListingAmend(TradingListingAmend tla);
 
     List<TradingListingData> selectByList(String sku, String ebayAccount);
+
+    void saveTradingListingDataList(List<TradingListingData> litld);
 }

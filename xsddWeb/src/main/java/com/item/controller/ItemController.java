@@ -1,5 +1,6 @@
 package com.item.controller;
 
+import com.base.aboutpaypal.service.PayPalService;
 import com.base.database.publicd.model.PublicUserConfig;
 import com.base.database.trading.model.*;
 import com.base.domains.CommonParmVO;
@@ -99,7 +100,8 @@ public class ItemController extends BaseAction{
     private ITradingTimerListing iTradingTimerListing;
     @Autowired
     private ImageService imageService;
-
+    @Autowired
+    private PayPalService payPalService;
     /**
      * 范本管理
      * @param request
@@ -108,6 +110,7 @@ public class ItemController extends BaseAction{
      * @return
      */
     @RequestMapping("/itemManager.do")
+    @AvoidDuplicateSubmission(needSaveToken = true)
     public ModelAndView itemManager(HttpServletRequest request,HttpServletResponse response,@ModelAttribute( "initSomeParmMap" )ModelMap modelMap){
         SessionVO c= SessionCacheSupport.getSessionVO();
         //List<PublicUserConfig> ebayList = DataDictionarySupport.getPublicUserConfigByType(DataDictionarySupport.PUBLIC_DATA_DICT_PAYPAL, c.getId());
@@ -124,6 +127,7 @@ public class ItemController extends BaseAction{
      * @return
      */
     @RequestMapping("/itemList.do")
+    @AvoidDuplicateSubmission(needSaveToken = true)
     public ModelAndView itemList(HttpServletRequest request,HttpServletResponse response,@ModelAttribute( "initSomeParmMap" )ModelMap modelMap){
         String flag=request.getParameter("flag");
         if(flag!=null&&!"".equals(flag)){
@@ -149,6 +153,10 @@ public class ItemController extends BaseAction{
         String selectValue = request.getParameter("selectValue");
         if(selectValue!=null&&!"".equals(selectValue)){
             modelMap.put("selectValue",selectValue);
+        }
+        String folderid = request.getParameter("folderid");
+        if(folderid!=null&&!"".equals(folderid)){
+            modelMap.put("folderid",folderid);
         }
         return forword("item/itemList",modelMap);
     }
@@ -185,6 +193,10 @@ public class ItemController extends BaseAction{
         if(selectValue!=null&&!"".equals(selectValue)){
             m.put("selectValue",selectValue);
         }
+        String folderid = request.getParameter("folderid");
+        if(folderid!=null&&!"".equals(folderid)){
+            m.put("folderid",folderid);
+        }
         /**分页组装*/
         PageJsonBean jsonBean=commonParmVO.getJsonBean();
         Page page=jsonBean.toPage();
@@ -192,6 +204,41 @@ public class ItemController extends BaseAction{
         jsonBean.setList(itemli);
         jsonBean.setTotal((int)page.getTotalCount());
         AjaxSupport.sendSuccessText("",jsonBean);
+    }
+
+    /**
+     * 移到到文件夹
+     * @param request
+     * @param response
+     * @param modelMap
+     * @throws Exception
+     */
+    @RequestMapping("/ajax/shiftModelToFolder.do")
+    @AvoidDuplicateSubmission(needSaveToken = true)
+    @ResponseBody
+    public void shiftModelToFolder(HttpServletRequest request,HttpServletResponse response,@ModelAttribute( "initSomeParmMap" )ModelMap modelMap) throws Exception {
+        String idStr = request.getParameter("idStr");
+        String [] ids =idStr.split(",");
+        String folderid = request.getParameter("folderid");
+
+        List<TradingItem> litld = new ArrayList<TradingItem>();
+        for(String id: ids){
+            TradingItem tld = this.iTradingItem.selectById(Long.parseLong(id));
+            tld.setFolderId(folderid);
+            litld.add(tld);
+        }
+        if(litld.size()>0) {
+            try {
+                this.iTradingItem.saveTradingItemList(litld);
+                AjaxSupport.sendSuccessText("","操作成功!");
+            } catch (Exception e) {
+                e.printStackTrace();
+                AjaxSupport.sendSuccessText("","操作失败!");
+            }
+        }else{
+            AjaxSupport.sendSuccessText("","操作失败，你未选择商品，或你选择的商品不存在!");
+        }
+
     }
 
     /**刊登主页面*/
@@ -398,7 +445,7 @@ public class ItemController extends BaseAction{
 
             TradingPaypal tp = this.iTradingPayPal.selectById(tradingItem.getPayId());
             if(tp!=null) {
-                item.setPayPalEmailAddress(DataDictionarySupport.getPublicUserConfigByID(Long.parseLong(tp.getPaypal())).getConfigValue());
+                item.setPayPalEmailAddress(payPalService.selectById(Long.parseLong(tp.getPaypal())).getEmail());
             }
             List<String> limo = new ArrayList();
             limo.add("PayPal");
@@ -650,5 +697,119 @@ public class ItemController extends BaseAction{
     }
 
 
+    @RequestMapping("/ajax/listingItem.do")
+    @ResponseBody
+    public void listingItem(HttpServletRequest request,HttpServletResponse response,@ModelAttribute( "initSomeParmMap" )ModelMap modelMap) throws Exception {
+        String idstr = request.getParameter("id");
+        String [] ids = idstr.split(",");
+        AddApiTask addApiTask = new AddApiTask();
+        String xml = "";
+        for(int i=0;i<ids.length;i++){
+            TradingItem tradingItem = this.iTradingItem.selectById(Long.parseLong(ids[i]));
+            Item item = this.iTradingItem.toItem(tradingItem);
+            UsercontrollerEbayAccount ua = this.iUsercontrollerEbayAccount.selectById(Long.parseLong(tradingItem.getEbayAccount()));
+            if(tradingItem.getListingtype().equals("Chinese")){
+                AddItemRequest addItem = new AddItemRequest();
+                addItem.setXmlns("urn:ebay:apis:eBLBaseComponents");
+                addItem.setErrorLanguage("en_US");
+                addItem.setWarningLevel("High");
+                RequesterCredentials rc = new RequesterCredentials();
+                rc.seteBayAuthToken(ua.getEbayToken());
+                addItem.setRequesterCredentials(rc);
+                addItem.setItem(item);
+                xml = PojoXmlUtil.pojoToXml(addItem);
+                xml = "<?xml version=\"1.0\" encoding=\"utf-8\"?>" + xml;
+            }else{
+                AddFixedPriceItemRequest addItem = new AddFixedPriceItemRequest();
+                addItem.setXmlns("urn:ebay:apis:eBLBaseComponents");
+                addItem.setErrorLanguage("en_US");
+                addItem.setWarningLevel("High");
+                RequesterCredentials rc = new RequesterCredentials();
+                rc.seteBayAuthToken(ua.getEbayToken());
+                addItem.setRequesterCredentials(rc);
+                addItem.setItem(item);
+                xml = PojoXmlUtil.pojoToXml(addItem);
+                xml = "<?xml version=\"1.0\" encoding=\"utf-8\"?>" + xml;
+            }
+            System.out.println(xml);
 
+            UsercontrollerDevAccountExtend d = new UsercontrollerDevAccountExtend();
+            d.setApiSiteid(DataDictionarySupport.getTradingDataDictionaryByID(Long.parseLong(tradingItem.getSite())).getName1());
+            if (item.getListingType().equals("Chinese")) {
+                d.setApiCallName(APINameStatic.AddItem);
+            } else {
+                d.setApiCallName(APINameStatic.AddFixedPriceItem);
+            }
+            TaskMessageVO taskMessageVO=new TaskMessageVO();
+            taskMessageVO.setMessageContext("刊登");
+            taskMessageVO.setMessageTitle("刊登操作");
+            taskMessageVO.setMessageType(SiteMessageStatic.LISTING_MESSAGE_TYPE);
+            taskMessageVO.setBeanNameType(SiteMessageStatic.LISTING_ITEM_BEAN);
+            taskMessageVO.setMessageFrom("system");
+            SessionVO sessionVO=SessionCacheSupport.getSessionVO();
+            taskMessageVO.setMessageTo(sessionVO.getId());
+            taskMessageVO.setObjClass(tradingItem);
+            addApiTask.execDelayReturn(d, xml, apiUrl, taskMessageVO);
+        }
+        AjaxSupport.sendSuccessText("message", "操作成功！结果请稍后查看消息！");
+    }
+
+    /**
+     * 删除范本
+     * @param request
+     * @param response
+     * @param modelMap
+     * @return
+     * @throws Exception
+     */
+    @RequestMapping("/ajax/delItem.do")
+    @AvoidDuplicateSubmission(needRemoveToken = true)
+    @ResponseBody
+    public void delItem(HttpServletRequest request,HttpServletResponse response,@ModelAttribute( "initSomeParmMap" )ModelMap modelMap) throws Exception {
+        String id = request.getParameter("ids");
+        String [] ids = id.split(",");
+        if(ids!=null&&ids.length>0){
+            try{
+                this.iTradingItem.delItem(ids);
+                AjaxSupport.sendSuccessText("","操作成功!");
+            }catch(Exception e){
+                e.printStackTrace();
+                AjaxSupport.sendSuccessText("","删除失败!");
+            }
+
+        }else {
+            AjaxSupport.sendSuccessText("","请选择需要删除的范本!");
+        }
+
+    }
+
+    /**
+     * 保存数据
+     * @param request
+     * @param response
+     * @param modelMap
+     * @return
+     * @throws Exception
+     */
+    @RequestMapping("/ajax/rename.do")
+    @AvoidDuplicateSubmission(needRemoveToken = true)
+    @ResponseBody
+    public void rename(HttpServletRequest request,HttpServletResponse response,@ModelAttribute( "initSomeParmMap" )ModelMap modelMap) throws Exception {
+        String id = request.getParameter("ids");
+        String [] ids = id.split(",");
+        String fileName = request.getParameter("fileName");
+        if(ids!=null&&ids.length>0){
+            try{
+                this.iTradingItem.rename(ids,fileName);
+                AjaxSupport.sendSuccessText("","操作成功!");
+            }catch(Exception e){
+                e.printStackTrace();
+                AjaxSupport.sendSuccessText("","删除失败!");
+            }
+
+        }else {
+            AjaxSupport.sendSuccessText("","请选择需要删除的范本!");
+        }
+
+    }
 }

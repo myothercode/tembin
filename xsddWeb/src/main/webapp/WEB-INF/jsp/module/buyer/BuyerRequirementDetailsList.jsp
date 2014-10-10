@@ -146,8 +146,9 @@
     </script>
 </head>
 <body>
-<div style="text-align: right;">
-    <input type="button" name="add" value="新增" onclick="addBuyer()">
+
+<div class="newds">
+    <div class="tbbay"><a data-toggle="modal" href="#myModal" class=""  onclick="addBuyer()">新增</a></div>
 </div>
 <div id="buyerRequireTable">
 

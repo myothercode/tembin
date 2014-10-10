@@ -69,10 +69,20 @@
     <result column="item_id" jdbcType="VARCHAR" property="itemId" />
     <result column="site_name" jdbcType="VARCHAR" property="siteName" />
     <result column="listing_way" jdbcType="VARCHAR" property="listingWay" />
+    <result column="folder_id" jdbcType="VARCHAR" property="folderId" />
+    <result column="galleryURL" jdbcType="VARCHAR" property="galleryURL" />
+    <result column="ebayaccountname" jdbcType="VARCHAR" property="ebayaccountname" />
   </resultMap>
     <select id="selectByItemList" resultMap="BaseResultMap" parameterType="map">
-        select item.*,dic.`name` site_name from trading_item item left join trading_data_dictionary dic on item.Site=dic.id
-        where 1=1
+        select item.*,dic.`name` site_name,pic.GalleryURL galleryURL,ebayaccount.ebay_name ebayaccountname from trading_item item left join trading_data_dictionary dic on item.Site=dic.id
+        left join trading_picturedetails pic on item.id=pic.parent_id left join usercontroller_ebay_account ebayaccount on item.ebay_account=ebayaccount.id
+        where 1=1 and item.check_flag='0'
+<!--        <if test="folderid==null">
+            and item.folder_id is null
+        </if>-->
+        <if test="folderid!=null">
+            and item.folder_id = #{folderid}
+        </if>
         <if test="id!=null">
             and item.id = #{id}
         </if>

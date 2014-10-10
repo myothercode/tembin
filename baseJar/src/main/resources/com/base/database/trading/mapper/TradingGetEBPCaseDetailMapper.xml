@@ -11,7 +11,7 @@
     <result column="decisionDate" jdbcType="TIMESTAMP" property="decisiondate" />
     <result column="decision" jdbcType="VARCHAR" property="decision" />
     <result column="globalId" jdbcType="VARCHAR" property="globalid" />
-    <result column="appealDecision" jdbcType="VARCHAR" property="appealdecision" />
+    <result column="appealDecision" jdbcType="LONGVARCHAR" property="appealdecision" />
     <result column="appealDecisionDate" jdbcType="TIMESTAMP" property="appealdecisiondate" />
     <result column="appealCreationDate" jdbcType="TIMESTAMP" property="appealcreationdate" />
     <result column="sellerShipmentAddress" jdbcType="VARCHAR" property="sellershipmentaddress" />
@@ -159,7 +159,7 @@
       initialBuyerExpectationDetail, create_user, 
       create_time, uuid)
     values (#{id,jdbcType=BIGINT}, #{openreason,jdbcType=VARCHAR}, #{decisiondate,jdbcType=TIMESTAMP}, 
-      #{decision,jdbcType=VARCHAR}, #{globalid,jdbcType=VARCHAR}, #{appealdecision,jdbcType=VARCHAR}, 
+      #{decision,jdbcType=VARCHAR}, #{globalid,jdbcType=VARCHAR}, #{appealdecision,jdbcType=LONGVARCHAR},
       #{appealdecisiondate,jdbcType=TIMESTAMP}, #{appealcreationdate,jdbcType=TIMESTAMP}, 
       #{sellershipmentaddress,jdbcType=VARCHAR}, #{buyerreturnshipmentaddress,jdbcType=VARCHAR}, 
       #{transactionid,jdbcType=VARCHAR}, #{agreedrefundamount,jdbcType=VARCHAR}, #{detailstatusinfodescription,jdbcType=VARCHAR}, 
@@ -245,7 +245,7 @@
         #{globalid,jdbcType=VARCHAR},
       </if>
       <if test="appealdecision != null">
-        #{appealdecision,jdbcType=VARCHAR},
+        #{appealdecision,jdbcType=LONGVARCHAR},
       </if>
       <if test="appealdecisiondate != null">
         #{appealdecisiondate,jdbcType=TIMESTAMP},
@@ -318,7 +318,7 @@
         globalId = #{record.globalid,jdbcType=VARCHAR},
       </if>
       <if test="record.appealdecision != null">
-        appealDecision = #{record.appealdecision,jdbcType=VARCHAR},
+        appealDecision = #{record.appealdecision,jdbcType=LONGVARCHAR},
       </if>
       <if test="record.appealdecisiondate != null">
         appealDecisionDate = #{record.appealdecisiondate,jdbcType=TIMESTAMP},
@@ -369,7 +369,7 @@
       decisionDate = #{record.decisiondate,jdbcType=TIMESTAMP},
       decision = #{record.decision,jdbcType=VARCHAR},
       globalId = #{record.globalid,jdbcType=VARCHAR},
-      appealDecision = #{record.appealdecision,jdbcType=VARCHAR},
+      appealDecision = #{record.appealdecision,jdbcType=LONGVARCHAR},
       appealDecisionDate = #{record.appealdecisiondate,jdbcType=TIMESTAMP},
       appealCreationDate = #{record.appealcreationdate,jdbcType=TIMESTAMP},
       sellerShipmentAddress = #{record.sellershipmentaddress,jdbcType=VARCHAR},
@@ -405,7 +405,7 @@
         globalId = #{globalid,jdbcType=VARCHAR},
       </if>
       <if test="appealdecision != null">
-        appealDecision = #{appealdecision,jdbcType=VARCHAR},
+        appealDecision = #{appealdecision,jdbcType=LONGVARCHAR},
       </if>
       <if test="appealdecisiondate != null">
         appealDecisionDate = #{appealdecisiondate,jdbcType=TIMESTAMP},
@@ -453,7 +453,7 @@
       decisionDate = #{decisiondate,jdbcType=TIMESTAMP},
       decision = #{decision,jdbcType=VARCHAR},
       globalId = #{globalid,jdbcType=VARCHAR},
-      appealDecision = #{appealdecision,jdbcType=VARCHAR},
+      appealDecision = #{appealdecision,jdbcType=LONGVARCHAR},
       appealDecisionDate = #{appealdecisiondate,jdbcType=TIMESTAMP},
       appealCreationDate = #{appealcreationdate,jdbcType=TIMESTAMP},
       sellerShipmentAddress = #{sellershipmentaddress,jdbcType=VARCHAR},

@@ -22,6 +22,7 @@ import com.common.base.web.BaseAction;
 import com.sitemessage.service.SiteMessageStatic;
 import com.trading.service.ITradingMessageAddmembermessage;
 import com.trading.service.ITradingMessageGetmymessage;
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -68,17 +69,62 @@ public class GetmymessageController extends BaseAction{
     public ModelAndView MessageGetmymessageList(HttpServletRequest request,HttpServletResponse response,ModelMap modelMap){
         return forword("MessageGetmymessage/MessageGetmymessageList",modelMap);
     }
+    //获取未读消息ajax方法
+    @RequestMapping("/noReadMessageGetmymessageList.do")
+    @ResponseBody
+    public void noReadMessageGetmymessageList(HttpServletRequest request,CommonParmVO commonParmVO) throws Exception {
+        String readed=request.getParameter("readed");
+        Map m = new HashMap();
+        m.put("read",readed);
+        PageJsonBean jsonBean=commonParmVO.getJsonBean();
+        Page page=jsonBean.toPage();
+        List<MessageGetmymessageQuery> lists= this.iTradingMessageGetmymessage.selectMessageGetmymessageByGroupList(m,page);
+        jsonBean.setList(lists);
+        AjaxSupport.sendSuccessText("",jsonBean);
 
+    }
     /**获取list数据的ajax方法*/
     @RequestMapping("/ajax/loadMessageGetmymessageList.do")
     @ResponseBody
-    public void loadMessageGetmymessageList(CommonParmVO commonParmVO) throws Exception {
+    public void loadMessageGetmymessageList(HttpServletRequest request,CommonParmVO commonParmVO) throws Exception {
+         /*amount,status,day,type,content*/
+        String amount=request.getParameter("amount");
+        String status=request.getParameter("status");
+        String day=request.getParameter("day");
+        String type=request.getParameter("type");
+        String content=request.getParameter("content");
+        Date starttime=null;
+        Date endtime=null;
+        if(!StringUtils.isNotBlank(amount)){
+            amount=null;
+        }
+        if(!StringUtils.isNotBlank(status)){
+            status=null;
+        }
+        if(!StringUtils.isNotBlank(day)){
+            day=null;
+        }else{
+            if("2".equals(day)){
+                starttime=DateUtils.subDays(new Date(),1);
+                Date endTime= DateUtils.addDays(starttime, 0);
+                endtime= com.base.utils.common.DateUtils.turnToDateEnd(endTime);
+            }else{
+                int days=Integer.parseInt(day);
+                starttime=DateUtils.subDays(new Date(),days-1);
+                Date endTime= DateUtils.addDays(starttime,days-1);
+                endtime= com.base.utils.common.DateUtils.turnToDateEnd(endTime);
+            }
+        }
         Map m = new HashMap();
         /**分页组装*/
         PageJsonBean jsonBean=commonParmVO.getJsonBean();
         Page page=jsonBean.toPage();
         List<UsercontrollerEbayAccountExtend> ebays=userInfoService.getEbayAccountForCurrUser();
         m.put("ebays",ebays);
+        m.put("amount",amount);
+        m.put("status",status);
+        m.put("starttime",starttime);
+        m.put("endtime",endtime);
         List<MessageGetmymessageQuery> lists= this.iTradingMessageGetmymessage.selectMessageGetmymessageByGroupList(m,page);
         jsonBean.setList(lists);
         jsonBean.setTotal((int)page.getTotalCount());
@@ -243,10 +289,10 @@ public class GetmymessageController extends BaseAction{
         d.setApiCallName(APINameStatic.GetMyMessages);
         request.getSession().setAttribute("dveId", d);
         Map map=new HashMap();
-       Date startTime2= com.base.utils.common.DateUtils.subDays(new Date(),8);
-        Date endTime= DateUtils.addDays(startTime2, 9);
-       /* Date startTime2= com.base.utils.common.DateUtils.subDays(new Date(),30);
-        Date endTime= DateUtils.addDays(startTime2, 31);*/
+    /*   Date startTime2= com.base.utils.common.DateUtils.subDays(new Date(),8);
+        Date endTime= DateUtils.addDays(startTime2, 9);*/
+        Date startTime2= com.base.utils.common.DateUtils.subDays(new Date(),60);
+        Date endTime= DateUtils.addDays(startTime2, 60);/*MutualWithdrawalAgreementLate*/
 
 
         Date end1= com.base.utils.common.DateUtils.turnToDateEnd(endTime);

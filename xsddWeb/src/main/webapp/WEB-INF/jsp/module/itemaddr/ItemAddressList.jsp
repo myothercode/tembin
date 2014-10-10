@@ -115,10 +115,9 @@
     </script>
 </head>
 <body>
-<div style="text-align: right;">
-    <input type="button" name="add" value="新增" onclick="addItemAddress()">
+<div class="newds">
+    <div class="tbbay"><a data-toggle="modal" href="#myModal" class=""  onclick="addItemAddress()">新增</a></div>
 </div>
-
 <div id="ItemAddressListTable"></div>
 
 <%--<div>

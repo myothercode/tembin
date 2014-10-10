@@ -53,7 +53,7 @@
 		this.loadDataByAjax();//加载数据
 		this.analysis().appendTo(this);//解析数据构造table整体
 		if(option.allData!=null && option.allData.length>0){
-			var paging = this.createPaging();
+			var paging = this.createPaging2();
 			if(paging != null) {
 				this.append(paging);
 			}
@@ -66,6 +66,9 @@
         if(option.afterLoadTable!=null && $.isFunction(option.afterLoadTable)){
             option['afterLoadTable']();
         }
+        this.setCurrPageNumColor();
+        try{initULSelect();}catch (e){}
+        //alert($("#newtipi").css("left"))
 	};
 
 	//加载数据
@@ -210,7 +213,40 @@
 		} else {
 			return null;
 		}
-	}
+	};
+
+    //第二种分页条
+    $.fn.createPaging2=function(){
+        //option.sysParm["jsonBean.pageNum"] 当前第几页
+        var option = this.data("option");
+        var id = this.attr("id");
+        var Previous = this.Previous();
+        var Next = this.Next();
+        var GetLastPageNum = this.getLastPageNum();
+        if(!option.onlyFirstPage && option.allData != null && option.allData.length > 0) {
+            var htmlPage="<div class=\"page_newlist\"><div><div id=\"newtipi\"><li>";
+                htmlPage+="<a onmouseout=showPageNumList2('"+id+"') onmouseover=showPageNumList2('"+id+"') id='showCount' href=\"javascript:void(0)\">显示"+option.sysParm["jsonBean.pageCount"]+"条</a>";
+                htmlPage+="<ul onmouseout=showPageNumList2('"+id+"') onmouseover=showPageNumList2('"+id+"') id='pageListUL"+id+"' style=\"visibility:hidden ;z-index: 9999;left: auto;position:relative;\">";
+            var pageNumArr=option.pageCountArray;
+            for(var i in pageNumArr){
+                htmlPage+="<li style='position: absolute;left: 0px;top: "+(i*30)+"px' ><a onclick=changeMyTablePageCount(\""+id+"\","+pageNumArr[i]+") href=\"javascript:void(0)\">显示"+pageNumArr[i]+"条</a></li>";
+            }
+            htmlPage+="</ul></li></div></div>";
+            htmlPage+="共 <span style=\"color:#F00\">"+option.total+"</span> 条记录 <span style=\"color:#F00\">"+GetLastPageNum+"</span> 页";
+            htmlPage+="</div>";
+
+            htmlPage+="<div class=\"maage_page\">";
+            htmlPage+="<li onclick=\"$('#" + this.attr("id") + "').toPage(" + 1 + ")\">|<</li>";
+            htmlPage+="<li onclick=\"$('#" + this.attr("id") + "').toPage(" + Previous + ")\"><</li>";
+            htmlPage+=this.showOtherPage2();
+            htmlPage+="<li onclick=\"$('#" + this.attr("id") + "').toPage(" + Next + ")\">></li>" ;
+            htmlPage+="<li onclick=\"$('#" + this.attr("id") + "').toPage(" + GetLastPageNum + ")\">>|</li>" ;
+            htmlPage+="</div>";
+            return htmlPage;
+        }else{
+            return null;
+        }
+    };
 
 	//绑定行或者列click事件当设置了行单击事件后，列单击时间将失效
 	$.fn.bindClick = function () {
@@ -255,6 +291,18 @@
 			});
 		}
 	};
+
+    //设置当前页数的颜色
+    $.fn.setCurrPageNumColor=function(){
+        var option = this.data("option");
+        var cur=option.sysParm["jsonBean.pageNum"];
+        $(".maage_page").find("li").each(function(i,d){
+
+            if(parseInt($(d).html()) ==cur){
+                $(d).addClass("page_cl");
+            }
+        });
+    }
 
 	//设置行样式
 	$.fn.setRowClass = function () {
@@ -316,6 +364,48 @@
 
 		return showString;
 	};
+
+    /**第二种页数样式*/
+    $.fn.showOtherPage2 = function () {
+        var option = this.data("option");
+        var showString = "";
+        var totalPageNum = this.getLastPageNum();
+        if(totalPageNum <= 5) {
+            for(var i = 1; i <= totalPageNum; i++) {
+                showString += "<li onclick=\"$('#" + this.attr("id") + "').toPage(" + i + ")\">" + i + "</li>";
+            }
+        } else {
+            var show = 0;
+            if(option.sysParm["jsonBean.pageNum"] - 2 >= -1 && option.sysParm["jsonBean.pageNum"] + 2 <= 5) {
+                for(var i = 1; i <= option.sysParm["jsonBean.pageNum"]; i++) {
+                    show++;
+                    showString += "<li onclick=\"$('#" + this.attr("id") + "').toPage(" + i + ")\">" + i + "</li>";
+                }
+                for(var i = 1; i <= (5 - show); i++) {
+                    showString += "<li onclick=\"$('#" + this.attr("id") + "').toPage(" + (option.sysParm["jsonBean.pageNum"] + i) + ")\">" + (option.sysParm["jsonBean.pageNum"] + i) + "</li>";
+                }
+            } else if(totalPageNum <= option.sysParm["jsonBean.pageNum"] + 2 && option.sysParm["jsonBean.pageNum"] > 3) {
+                show = totalPageNum - option.sysParm["jsonBean.pageNum"];
+                for(var i = (5 - show); i >= 1; i--) {
+                    showString += "<li onclick=\"$('#" + this.attr("id") + "').toPage(" + (option.sysParm["jsonBean.pageNum"] - i + 1) + ")\">" + (option.sysParm["jsonBean.pageNum"] - i + 1) + "</li>";
+                }
+                for(var i = 1; i <= show; i++) {
+                    showString += "<li onclick=\"$('#" + this.attr("id") + "').toPage(" + (option.sysParm["jsonBean.pageNum"] + i) + ")\">" + (option.sysParm["jsonBean.pageNum"] + i) + "</li>";
+                }
+            } else {
+                for(var i = 3; i >= 1; i--) {
+                    showString += "<li onclick=\"$('#" + this.attr("id") + "').toPage(" + (option.sysParm["jsonBean.pageNum"] - i + 1) + ")\">" + (option.sysParm["jsonBean.pageNum"] - i + 1) + "</li>";
+                }
+                for(var i = 1; i <= 2; i++) {
+                    showString += "<li onclick=\"$('#" + this.attr("id") + "').toPage(" + (option.sysParm["jsonBean.pageNum"] + i) + ")\">" + (option.sysParm["jsonBean.pageNum"] + i) + "</li>";
+                }
+            }
+        }
+
+        return showString;
+    };
+
+
 	//跳转到上一页
 	$.fn.Previous = function () {
 		var option = this.data("option");
@@ -459,3 +549,29 @@
 	};
 
 })(jQuery);
+
+
+function showPageNumList2(parentId){
+
+    $("#pageListUL"+parentId).css("visibility","visible");
+    //alert($("#pageListUL").css("visibility"))
+    $("body").one("mouseover",function(){
+        var e = event || window.event;
+        var elem = e.srcElement||e.target;
+        if(elem.tagName=='A' || elem.tagName=="UL" || elem.tagName=="LI" ){
+            return;
+        }else{
+            hidePageNumList2(parentId);
+        }
+    });
+}
+function hidePageNumList2(parentId){
+    $("#pageListUL"+parentId).css("visibility","hidden");
+}
+
+function changeMyTablePageCount (id,pageNum) {
+    var option = $("#"+id).data("option");
+    option.sysParm["jsonBean.pageCount"] = pageNum;
+    option.sysParm["jsonBean.pageNum"] = 1;
+    $("#"+id).refresh();
+};

@@ -25,17 +25,22 @@ function refreshRoleTable(p){
 }
 /**制作操作菜单*/
 function makeOperation(json){
-    var select1="<div class=\"ui-select\" style=\"width:8px\">" +
+    var select1="" ;
+    select1+= "<li style='height:25px' onclick=doRole(this) value='"+json.roleId+"' doaction=\"delete\">删除</li>" ;
+    select1+= "<li style='height:25px' onclick=doRole(this) value='"+json.roleId+"' doaction=\"edit\">编辑</li>" ;
+    var pp={"liString":select1};
+    return getULSelect(pp);
+    /*var select1="<div class=\"ui-select\" style=\"width:8px\">" +
         "<select onchange='doRole(this)'>" ;
     select1+= "<option  value='x'>请选择</option>" ;
     select1+= "<option  value='"+json.roleId+"' doaction=\"delete\">删除</option>" ;
     select1+= "<option  value='"+json.roleId+"' doaction=\"edit\">编辑</option>" ;
     select1+= "</select></div>";
-    return select1;
+    return select1;*/
 }
 /**操作*/
 function doRole(obj){
-    var optionV=$(obj).find("option:selected");
+    var optionV=obj//$(obj).find("option:selected");
     var v=$(optionV).attr('value');
     if(v=='x'){return;}
     var d=$(optionV).attr('doaction');

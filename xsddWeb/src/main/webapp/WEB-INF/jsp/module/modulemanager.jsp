@@ -50,7 +50,7 @@
         </div>
     </div>
     <div>
-        <iframe src="/xsddWeb/shippingDetailsList.do" id="module_frame" height="600px;" frameborder="0" width="100%">
+        <iframe src="/xsddWeb/shippingDetailsList.do" id="module_frame" height="600px" frameborder="0" width="100%">
 
         </iframe>
     </div>

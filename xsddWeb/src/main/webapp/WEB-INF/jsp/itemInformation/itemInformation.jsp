@@ -24,13 +24,13 @@
             $("#ItemInformationListTable").initTable({
                 url:path + "/information/ajax/loadItemInformationList.do?",
                 columnData:[
-                    {title:"",name:"pictureUrl",width:"2%",align:"left",format:makeOption4},
-                    {title:"图片",name:"pictureUrl",width:"8%",align:"left",format:makeOption2},
-                    {title:"商品 / SKU",name:"sku",width:"8%",align:"left"},
-                    {title:"商品名称",name:"name",width:"8%",align:"left"},
-                    {title:"标签",name:"remark",width:"8%",align:"left"},
-                    {title:"分类",name:"typeName",width:"8%",align:"left"},
-                    {title:"状态",name:"pictureUrl",width:"8%",align:"left",format:makeOption3},
+                    {title:"",name:"pictureUrl",width:"2%",align:"left",format:makeOption4,click:sellectCheckBox},
+                    {title:"图片",name:"pictureUrl",width:"8%",align:"left",format:makeOption2,click:sellectCheckBox},
+                    {title:"商品 / SKU",name:"sku",width:"8%",align:"left",click:sellectCheckBox},
+                    {title:"产品名称",name:"name",width:"8%",align:"left",click:sellectCheckBox},
+                    {title:"标签",name:"remark",width:"8%",align:"left",click:sellectCheckBox},
+                    {title:"分类",name:"typeName",width:"8%",align:"left",click:sellectCheckBox},
+                    {title:"状态",name:"pictureUrl",width:"8%",align:"left",format:makeOption3,click:sellectCheckBox},
                     {title:"操作",name:"option1",width:"8%",align:"left",format:makeOption1}
                 ],
                 selectDataNow:false,
@@ -39,17 +39,31 @@
             });
             refreshTable();
         });
+        function sellectCheckBox(json){
+            var checkbox=$("input[type=checkbox][name=templateId][value="+json.id+"]");
+            if(checkbox[0].checked){
+                checkbox[0].checked=false;
+            }else{
+                checkbox[0].checked=true;
+            }
+        }
         function refreshTable(){
             $("#ItemInformationListTable").selectDataAfterSetParm({"bedDetailVO.deptId":"", "isTrue":0});
         }
         function makeOption1(json){
-            var htm="<a target=\"_blank\" href=\"javascript:void(0)\" onclick=\"printSku('"+json.id+"');\">打印SKU</a>";
-            var htm="<div class=\"ui-select\" style=\"margin-top:1px; width:120px\">" +
-                    "<select>" +
-                    "<option value=\"1\">打印SKU</option>" +
+            var htm="<div class=\"ui-select\"  style=\"margin-top:1px; width:120px\">" +
+                    "<select onchange=\"selectOption("+json.id+",this);\">" +
+                    "<option value=\"0\">--请选择--</option>" +
+                    "<option value=\"1\">添加标签</option>" +
                     "</select>" +
                     "</div>";
             return htm;
+        }
+        function selectOption(id,obj){
+            var value=$(obj).val();
+            if(value=='1'){
+                addRemark(id);
+            }
         }
         function makeOption2(json){
             var htm="<img src="+json.pictureUrl+" style=\" width: 50px;height: 50px; \">";
@@ -120,8 +134,13 @@
                 alert("请选择需要修改的数据");
             }
         }
-        function addRemark(){
-            var id=$("input[type='checkbox'][name='templateId']:checked");
+        function addRemark(id1){
+            var id=null;
+            if(!id1){
+                 id=$("input[type='checkbox'][name='templateId']:checked");
+            }else{
+                 id=$("input[type=checkbox][name=templateId][value="+id1+"]");
+            }
             if(id.length==1){
                 var url=path+"/information/addRemark.do?id="+$(id).val();
                 itemInformation=$.dialog({title: '添加标签',
@@ -177,13 +196,13 @@
             $("#ItemInformationListTable").initTable({
                 url:path + "/information/ajax/loadItemInformationList.do?",
                 columnData:[
-                    {title:"",name:"pictureUrl",width:"8%",align:"left",format:makeOption4},
-                    {title:"图片",name:"pictureUrl",width:"8%",align:"left",format:makeOption2},
-                    {title:"商品 / SKU",name:"sku",width:"8%",align:"left"},
-                    {title:"商品名称",name:"name",width:"8%",align:"left"},
-                    {title:"标签",name:"remark",width:"8%",align:"left"},
-                    {title:"分类",name:"typeName",width:"8%",align:"left"},
-                    {title:"状态",name:"pictureUrl",width:"8%",align:"left",format:makeOption3},
+                    {title:"",name:"pictureUrl",width:"2%",align:"left",format:makeOption4,click:sellectCheckBox},
+                    {title:"图片",name:"pictureUrl",width:"8%",align:"left",format:makeOption2,click:sellectCheckBox},
+                    {title:"商品 / SKU",name:"sku",width:"8%",align:"left",click:sellectCheckBox},
+                    {title:"产品名称",name:"name",width:"8%",align:"left",click:sellectCheckBox},
+                    {title:"标签",name:"remark",width:"8%",align:"left",click:sellectCheckBox},
+                    {title:"分类",name:"typeName",width:"8%",align:"left",click:sellectCheckBox},
+                    {title:"状态",name:"pictureUrl",width:"8%",align:"left",format:makeOption3,click:sellectCheckBox},
                     {title:"操作",name:"option1",width:"8%",align:"left",format:makeOption1}
                 ],
                 selectDataNow:false,
@@ -315,8 +334,8 @@
                     <div id="con_menu_1" class="hover" style="display: none;">
                         <!--综合开始 -->
                         <div class="new_usa" style="margin-top:20px;">
-                            <li class="new_usa_list"><span class="newusa_i">按标签看：</span><span class="newusa_ici_1" scop="remark" onclick="onclickremark(null,0)">全部</span><a href="#"><span class="newusa_ici_1" scop="remark" onclick="onclickremark('null',1)">无标签</span></a><a href="#"><span class="newusa_ici_1">有电池</span></a><a href="#"><span class="newusa_ici_1">无电池</span></a></li>
-                            <li class="new_usa_list"><span class="newusa_i">信息状态：</span><span  class="newusa_ici_1" scop="information" onclick="onclickinformation(null,0)">全部</span><a href="#"><span class="newusa_ici_1" scop="information" onclick="onclickinformation('picture',1)">无图片</span></a><a href="#"><span class="newusa_ici_1" scop="information" onclick="onclickinformation('custom',2)">无报关信息</span></a><a href="#"><span class="newusa_ici_1" scop="information" onclick="onclickinformation('notAllnull',3)">信息不全</span></a></li>
+                            <li class="new_usa_list"><span class="newusa_i">按标签看：</span><span class="newusa_ici_1" scop="remark" onclick="onclickremark(null,0)">全部&nbsp;</span><a href="#"><span class="newusa_ici_1" scop="remark" onclick="onclickremark('null',1)">无标签&nbsp;</span></a><a href="#"><span class="newusa_ici_1">有电池&nbsp;</span></a><a href="#"><span class="newusa_ici_1">无电池&nbsp;</span></a></li>
+                            <li class="new_usa_list"><span class="newusa_i">信息状态：</span><span  class="newusa_ici_1" scop="information" onclick="onclickinformation(null,0)">全部&nbsp;</span><a href="#"><span class="newusa_ici_1" scop="information" onclick="onclickinformation('picture',1)">无图片&nbsp;</span></a><a href="#"><span class="newusa_ici_1" scop="information" onclick="onclickinformation('custom',2)">无报关信息&nbsp;</span></a><a href="#"><span class="newusa_ici_1" scop="information" onclick="onclickinformation('notAllnull',3)">信息不全&nbsp;</span></a></li>
                             <div class="newsearch">
                                 <span class="newusa_i">搜索内容：全部</span>
 
@@ -348,6 +367,9 @@
                             </div>
                         </div>
                         <div id="ItemInformationListTable"></div>
+                        <div class="page_newlist">
+
+                        </div>
                         <!--综合结束 -->
                     </div>
                     <div id="con_menu_2">

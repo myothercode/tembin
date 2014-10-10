@@ -79,10 +79,10 @@ public class SynchronizeGetOrderImpl implements ThreadPoolBaseInterFace {
         String ack = null;
         try {
             Map map=new HashMap();
-           /* Date startTime2= DateUtils.subDays(new Date(), 9);
-            Date endTime= DateUtils.addDays(startTime2, 9);*/
-            Date startTime2= DateUtils.subDays(new Date(), 40);
-            Date endTime= DateUtils.addDays(startTime2, 40);
+            Date startTime2= DateUtils.subDays(new Date(), 9);
+            Date endTime= DateUtils.addDays(startTime2, 9);
+        /*    Date startTime2= DateUtils.subDays(new Date(), 40);
+            Date endTime= DateUtils.addDays(startTime2, 40);*/
             Date end1= com.base.utils.common.DateUtils.turnToDateEnd(endTime);
             String start= DateUtils.DateToString(startTime2);
             String end=DateUtils.DateToString(end1);

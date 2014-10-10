@@ -58,7 +58,6 @@
                         [function(m,r){
                             alert(r);
                             W.location.reload();
-                            W.selectTabRemark.close();
                             Base.token;
                         },
                             function(m,r){
@@ -67,21 +66,22 @@
                             }]
                 );
             }else{
-                alert("请选择需要添加的文件夹");
+                W.OrderGetOrders.close();
             }
 
         }
-        function removeRemark(){
-            var redios=$("input[name=redio]:checked");
-            var folderId=redios.val();
-            if(folderId){
+        function removeRemark(folderId){
+            /*var redios=$("input[name=redio]:checked");
+            var folderId=redios.val();*/
+            /*if(folderId){*/
                 var data=null;
                 var url=path+"/order/removeOrderTabremark.do?id="+folderId;
                 $().invoke(url,data,
                         [function(m,r){
                             alert(r);
-                            W.location.reload();
-                            W.selectTabRemark.close();
+                           /* W.location.reload();*/
+                            window.location.reload();
+                            /*W.selectTabRemark.close();*/
                             Base.token;
                         },
                             function(m,r){
@@ -89,9 +89,9 @@
                                 Base.token();
                             }]
                 );
-            }else{
+            /*}else{
                 alert("请选择需要删除的文件夹");
-            }
+            }*/
         }
         function closedialog(){
             W.OrderGetOrders.close();
@@ -100,11 +100,11 @@
 </head>
 <body>
 <a href="javascript:#" onclick="addRemark();">新增文件夹</a>
-<br/><a href="javascript:#" onclick="removeRemark();">删除文件夹</a>
 <table>
     <tr>
         <td></td>
         <td>文件夹名称</td>
+        <td>操作</td>
     </tr>
     <c:forEach items="${folders}" var="folder">
             <tr>
@@ -112,6 +112,7 @@
                     <input type="radio" name="redio" value="${folder.id}"/>
                 </td>
                 <td>${folder.configName}</td>
+                <td><a href="javascript:#" onclick="removeRemark(${folder.id});">删除文件夹</a></td>
             </tr>
     </c:forEach>
 </table>

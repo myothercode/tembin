@@ -12,6 +12,7 @@ import com.base.utils.cache.SessionCacheSupport;
 import com.base.utils.common.ObjectUtils;
 import com.base.utils.threadpool.TaskMessageVO;
 import com.sitemessage.service.SiteMessageService;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -38,7 +39,12 @@ public class SiteMessageServiceImpl implements SiteMessageService {
         SessionVO sessionVO = SessionCacheSupport.getSessionVO();
         Map map=new HashMap();
         map.put("messageTo",sessionVO.getId());
-        map.put("messageType",sitemessage.getMessageType());
+        if(!"all".equalsIgnoreCase(sitemessage.getMessageType())){
+            map.put("messageType",sitemessage.getMessageType());
+        }
+        if(StringUtils.isNotEmpty(sitemessage.getReaded()) ){
+            map.put("readed",sitemessage.getReaded());
+        }
         List<CustomPublicSitemessage> customPublicSitemessages = customPublicSitemessageMapper.selectSiteMessageList(map, page);
         return customPublicSitemessages;
     }
@@ -65,11 +71,13 @@ public class SiteMessageServiceImpl implements SiteMessageService {
     /**批量标记为已读*/
     public void batchSetReaded(Map map){
         //Long[] ids= (Long[]) map.get("idArray");
+        SessionVO sessionVO = SessionCacheSupport.getSessionVO();
+        map.put("mToId",sessionVO.getId());
         customPublicSitemessageMapper.updateReadedMessage(map);
     }
 
     @Override
-    /**获取weid未读消息的数量*/
+    /**获取未读消息的数量*/
     public List<SiteMessageCountVO> countSiteMessage(Map map){
        return customPublicSitemessageMapper.countSiteMessage(map);
     }

@@ -501,7 +501,7 @@ function addb(obj) {
 function addPic(attrName, attrValue) {
     var str = "";
     str += "<div><div>" + attrName + ":" + attrValue + "</div><script type=text/plain id='" + attrName + "." + attrValue + "' />";
-    str += "<div><a href='javascript:void(0)' id=" + attrValue + " onClick='selectPic( )'>选择图片</a></div>";
+    str += "<div><a href='javascript:void(0)' id=" + attrValue + " onClick='selectPic(this)'>选择图片</a></div>";
     str += "</div>";
     return str;
 }
@@ -510,8 +510,8 @@ var afterUploadCallback = null;
 var sss;
 //当选择图片后生成图片地址
 function selectPic(a) {
-    afterUploadCallback = {"imgURLS": addPictrueUrl};
     sss = a.id;
+    afterUploadCallback = {"imgURLS": addPictrueUrl};
 }
 
 /**移除选中的图片*/
@@ -519,6 +519,7 @@ function deletePic(a){
     $(a.parentNode.parentNode).remove();
 }
 function addPictrueUrl(urls) {
+    alert(sss);
     if (sss.indexOf("apicUrls")!=-1) {//商品图片
         var str = '';
         for (var i = 0; i < urls.length; i++) {
@@ -598,15 +599,13 @@ function setTab(obj) {
     }
 }
 function closeWindow(){
-    document.location = path+"/itemList.do";
+    document.location = path+"/itemManager.do";
 }
 var selectTemplates;
 function selectTemplate() {
-    var apis = frameElement.api, W = apis.opener;
     selectTemplates = $.dialog({title: '选择模板',
         content: 'url:' + path + '/selectTemplate.do',
         icon: 'succeed',
-        parent: apis,
         lock: true,
         width: 650,
         height: 600

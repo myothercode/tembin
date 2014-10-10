@@ -107,6 +107,9 @@
             }
         }
         function sendTrackNum(){
+            if(!$("#sendTrackNum").validationEngine("validate")){
+                return;
+            }
             var url=path+"/userCases/sendTrackNum.do?";
             var data=$("#sendTrackNum").serialize();
             $().invoke(url,data,
@@ -122,6 +125,9 @@
             );
         }
         function sendWithoutNum(){
+            if(!$("#sendWithoutNum").validationEngine("validate")){
+                return;
+            }
             var url=path+"/userCases/sendWithoutNum.do?";
             var data=$("#sendWithoutNum").serialize();
             $().invoke(url,data,
@@ -137,6 +143,9 @@
             );
         }
         function sendRefund(){
+            if(!$("#sendRefund").validationEngine("validate")){
+                return;
+            }
             var url=path+"/userCases/sendRefund.do?";
             var data=$("#sendRefund").serialize();
             $().invoke(url,data,
@@ -152,6 +161,9 @@
             );
         }
         function sendMessageForm(){
+            if(!$("#sendMessageForm").validationEngine("validate")){
+                return;
+            }
             var url=path+"/userCases/sendMessageForm.do?";
             var data=$("#sendMessageForm").serialize();
             $().invoke(url,data,
@@ -169,6 +181,12 @@
         function closedialog(){
             W.CaseDetails.close();
         }
+       $(document).ready(function(){
+           $("#sendTrackNum").validationEngine();
+           $("#sendWithoutNum").validationEngine();
+           $("#sendRefund").validationEngine();
+           $("#sendMessageForm").validationEngine();
+       });
     </script>
 </head>
 <body>
@@ -273,6 +291,7 @@
         </h4>
         <div class="box" style="display: block;">
             <form id="sendTrackNum">
+                <input type="hidden" name="sellerid" value="${cases.sellerid}"/>
                 <input type="hidden" name="transactionId" value="${cases.transactionid}"/>
             <table width="100%" border="0">
                 <tbody><tr>
@@ -306,9 +325,9 @@
                         <tr>
                             <td>${order.shipmenttrackingnumber}</td>
                             <td>${order.shippingcarrierused}</td>
-                            <td width="118"><img src="../../img/co_1.jpg"></td>
-                            <td width="118"><img src="../../img/co_2.jpg"></td>
-                            <td width="118"><img src="../../img/co_3.jpg"></td>
+                            <td width="118"><img src="<c:url value ="/img/co_1.jpg"/> "></td>
+                            <td width="118"><img src="<c:url value ="/img/co_2.jpg"/> "></td>
+                            <td width="118"><img src="<c:url value ="/img/co_3.jpg"/> "></td>
                         </tr>
                         <tr>
                             <td>&nbsp;</td>
@@ -333,7 +352,7 @@
                     <td height="32" align="left">
                         <span class="voknet"></span>
                         <label for="textarea"></label>
-                        <textarea name="textarea" id="textarea" cols="100%" rows="5" class="newco"><%--Additional comments:(optional)--%></textarea>
+                        <textarea name="textarea" id="textarea" cols="100%" rows="5" class="newco validate[required]"><%--Additional comments:(optional)--%></textarea>
                     </td>
                 </tr>
                 <tr>
@@ -349,16 +368,17 @@
         </h4>
         <div class="box">
             <form id="sendWithoutNum">
+                <input type="hidden" name="sellerid" value="${cases.sellerid}"/>
              <input type="hidden" name="transactionId" value="${cases.transactionid}"/>
             <table width="100%" border="0">
             <tbody><tr>
-                <td height="32" align="left"><strong><img src="../../img/new_yes.png" width="22" height="22"> Tracking number entered successfully</strong></td>
+                <td height="32" align="left"><strong><img src="<c:url value ="/img/new_yes.png"/> " width="22" height="22"> Tracking number entered successfully</strong></td>
             </tr>
             <tr>
                 <td height="32" align="left">Please check to see if this tracking information is correct.</td>
             </tr>
             <tr>
-                <td height="32" align="left"><textarea name="textarea2" id="textarea2" cols="100%" rows="5" class="newco"><%--Additional comments:(optional)--%></textarea></td>
+                <td height="32" align="left"><textarea name="textarea2" id="textarea2" cols="100%" rows="5" class="newco validate[required]"><%--Additional comments:(optional)--%></textarea></td>
             </tr>
             <tr>
                 <td height="32" align="left" style="color:#F00">Or octer the correct tracking delivery conmation number</td>
@@ -369,7 +389,7 @@
             <tr>
                 <td height="32" align="left">
                     <label for="textarea"></label>
-                    <textarea name="textarea" id="textarea" cols="100%" rows="5" class="newco"><%--Additional comments:(optional)--%></textarea>
+                    <textarea name="textarea" id="textarea" cols="100%" rows="5" class="newco validate[required]"><%--Additional comments:(optional)--%></textarea>
                 </td>
             </tr>
             <tr>
@@ -406,7 +426,7 @@
                 <td height="32" align="left">
                     <span class="voknet"></span>
                     <label for="textarea"></label>
-                    <textarea name="textarea" id="textarea" cols="100%" rows="5" class="newco"><%--Additional comments:(optional)--%></textarea>
+                    <textarea name="textarea" id="textarea" cols="100%" rows="5" class="newco validate[required]"><%--Additional comments:(optional)--%></textarea>
                 </td>
             </tr>
             <tr>
@@ -429,7 +449,7 @@
             <tr>
                 <td height="32" align="left">
                     <label for="textarea"></label>
-                    <textarea name="textarea" id="textarea" cols="100%" rows="5" class="newco"><%--Additional comments:(optional)--%></textarea>
+                    <textarea name="textarea" id="textarea" cols="100%" rows="5" class="newco validate[required]"><%--Additional comments:(optional)--%></textarea>
                 </td>
             </tr>
             <tr>

@@ -6,7 +6,8 @@
   To change this template use File | Settings | File Templates.
 --%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<%@include file= "/WEB-INF/jsp/commonImport.jsp" %>
+<%--<%@include file= "/WEB-INF/jsp/commonImport.jsp" %>--%>
+<%@include file= "/WEB-INF/jsp/smallFormImport.jsp" %>
 <html>
 <c:set var="shipping" value="${tradingShippingdetails}"/>
 <head>
@@ -346,6 +347,7 @@
                 zIndex:2000
             });
         }
+        var api = frameElement.api, W = api.opener;
         function saveData(objs) {
             var moreTable  = $("table[name='moreTable']").each(function(i,d){
                 $(d).find("select,input").each(function(ii,dd){
@@ -374,15 +376,15 @@
             var data = $('#form').serialize();
             var urll = "/xsddWeb/saveShippingDetails.do";
             $(objs).attr("disabled",true);
-            var api = frameElement.api, W = api.opener;
+
             $().invoke(
                     urll,
                     data,
                     [function (m, r) {
                         alert(r);
                         $(objs).attr("disabled",false);
-                        W.refreshTable();
                         W.returnShipping.close();
+                        W.refreshTable();
                     },
                         function (m, r) {
                             $(objs).attr("disabled",false);
@@ -423,10 +425,10 @@
                 <select name="ebayAccount">
                     <c:forEach items="${ebayList}" var="ebay">
                         <c:if test="${shipping.ebayAccount==ebay.id}">
-                            <option value="${ebay.id}" selected="selected">${ebay.configName}</option>
+                            <option value="${ebay.id}" selected="selected">${ebay.ebayName}</option>
                         </c:if>
                         <c:if test="${shipping.ebayAccount!=ebay.id}">
-                            <option value="${ebay.id}">${ebay.configName}</option>
+                            <option value="${ebay.id}">${ebay.ebayName}</option>
                         </c:if>
                     </c:forEach>
                 </select>

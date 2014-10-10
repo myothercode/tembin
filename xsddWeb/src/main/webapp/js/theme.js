@@ -23,7 +23,15 @@ function initLeftMenuBar() {
     $trigger.click(function (e) {
       e.preventDefault();
       e.stopPropagation();
-      
+        try{
+            if(this.id=='systemMessages'){
+                getSystemMessage();
+            }else if(this.id=='ebayMessages'){
+                getEbayMessage();
+            }
+        }
+        catch (e){}
+
       // hide all other pop-dialogs
       $(".notification-dropdown .pop-dialog").removeClass("is-visible");
       $(".notification-dropdown .trigger").removeClass("active")

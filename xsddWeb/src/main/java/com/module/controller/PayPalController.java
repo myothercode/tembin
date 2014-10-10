@@ -1,8 +1,10 @@
 package com.module.controller;
 
+import com.base.aboutpaypal.service.PayPalService;
 import com.base.database.publicd.model.PublicUserConfig;
 import com.base.database.trading.model.TradingDataDictionary;
 import com.base.database.trading.model.TradingPaypal;
+import com.base.database.trading.model.UsercontrollerPaypalAccount;
 import com.base.domains.SessionVO;
 import com.base.domains.CommonParmVO;
 import com.base.domains.querypojos.PaypalQuery;
@@ -42,7 +44,9 @@ public class PayPalController extends BaseAction{
 
     @Autowired
     private ITradingPayPal iTradingPayPal;
-    
+
+    @Autowired
+    private PayPalService payPalService;
     /**
      * 列表页面跳转及查询
      * @param request
@@ -85,13 +89,19 @@ public class PayPalController extends BaseAction{
      */
     @RequestMapping("/addPayPal.do")
     @AvoidDuplicateSubmission(needSaveToken = true)
-    public ModelAndView addPayPal(HttpServletRequest request,HttpServletResponse response,@ModelAttribute( "initSomeParmMap" )ModelMap modelMap){
+    public ModelAndView addPayPal(HttpServletRequest request,HttpServletResponse response,@ModelAttribute( "initSomeParmMap" )ModelMap modelMap,CommonParmVO commonParmVO){
         List<TradingDataDictionary> lidata = DataDictionarySupport.getTradingDataDictionaryByType(DataDictionarySupport.DATA_DICT_SITE);
 
         modelMap.put("siteList",lidata);
         SessionVO c= SessionCacheSupport.getSessionVO();
-        List<PublicUserConfig> paypalList = DataDictionarySupport.getPublicUserConfigByType(DataDictionarySupport.PUBLIC_DATA_DICT_PAYPAL, c.getId());
-        modelMap.put("paypalList",paypalList);
+
+        Map map =new HashMap();
+        map.put("userId",c.getId());
+        PageJsonBean jsonBean=new PageJsonBean();
+        jsonBean.setPageCount(1000);
+        jsonBean.setPageNum(1);
+        List<UsercontrollerPaypalAccount> paypalAccounts = payPalService.queryPayPalList(map, jsonBean.toPage());
+        modelMap.put("paypalList",paypalAccounts);
 
         return forword("module/paypal/addPayPal",modelMap);
     }
@@ -105,12 +115,19 @@ public class PayPalController extends BaseAction{
      */
     @RequestMapping("/editPayPal.do")
     @AvoidDuplicateSubmission(needSaveToken = true)
-    public ModelAndView editPayPal(HttpServletRequest request,HttpServletResponse response,@ModelAttribute( "initSomeParmMap" )ModelMap modelMap){
+    public ModelAndView editPayPal(HttpServletRequest request,HttpServletResponse response,@ModelAttribute( "initSomeParmMap" )ModelMap modelMap,CommonParmVO commonParmVO){
         SessionVO c= SessionCacheSupport.getSessionVO();
         List<TradingDataDictionary> lidata = DataDictionarySupport.getTradingDataDictionaryByType(DataDictionarySupport.DATA_DICT_SITE);
         modelMap.put("siteList",lidata);
-        List<PublicUserConfig> paypalList = DataDictionarySupport.getPublicUserConfigByType(DataDictionarySupport.PUBLIC_DATA_DICT_EBAYACCOUNT, c.getId());
-        modelMap.put("paypalList",paypalList);
+
+        Map map =new HashMap();
+        map.put("userId",c.getId());
+        PageJsonBean jsonBean=new PageJsonBean();
+        jsonBean.setPageCount(1000);
+        jsonBean.setPageNum(1);
+        List<UsercontrollerPaypalAccount> paypalAccounts = payPalService.queryPayPalList(map, jsonBean.toPage());
+        modelMap.put("paypalList",paypalAccounts);
+
         Map m = new HashMap();
         m.put("id",request.getParameter("id"));
         PaypalQuery paypalli = this.iTradingPayPal.selectByPayPal(m);

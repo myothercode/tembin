@@ -19,6 +19,9 @@
     <script type="text/javascript">
         var api = frameElement.api, W = api.opener;
         function submitCommit(){
+            if(!$("#addRemarkForm").validationEngine("validate")){
+                return;
+            }
             var url=path+"/order/saveTabremark.do?folderType=${folderType}";
             var data=$("#addRemarkForm").serialize();
             $().invoke(url,data,
@@ -37,11 +40,15 @@
         function closedialog(){
             W.selectTabRemark.close();
         }
+        $(document).ready(function(){
+            $("#addRemarkForm").validationEngine();
+        });
+
     </script>
 </head>
 <body>
 <form id="addRemarkForm">
-    &nbsp;文件夹名称:<input name="tabName" id="tabName"/><br/>
+    <br/><br/>&nbsp;文件夹名称:<input name="tabName"  class="validate[required]" id="tabName"/><br/>
 </form>
 <div align="right">
     <input type="button" value="保存" onclick="submitCommit();"/>

@@ -51,20 +51,25 @@ public class GetEBPCaseDetailAPI {
             historyList.add(responseHistory);
         }
         Element paymentDetail1=caseDetail.element("paymentDetail");
-        Iterator pay=paymentDetail1.elementIterator("moneyMovement");
-        while(pay.hasNext()){
-            Element payment= (Element) pay.next();
-            TradingCasePaymentDetail paymentDetail=new TradingCasePaymentDetail();
-            paymentDetail.setType(SamplePaseXml.getSpecifyElementText(payment,"type"));
-            paymentDetail.setFrompartyrole(SamplePaseXml.getSpecifyElementText(payment,"fromParty","role"));
-            paymentDetail.setTopartyrole(SamplePaseXml.getSpecifyElementText(payment,"toParty","role"));
-            paymentDetail.setAmount(SamplePaseXml.getSpecifyElementText(payment,"amount"));
-            paymentDetail.setPaymentmethod(SamplePaseXml.getSpecifyElementText(payment,"paymentMethod"));
-            paymentDetail.setStatus(SamplePaseXml.getSpecifyElementText(payment,"status"));
-            String transactionDate=SamplePaseXml.getSpecifyElementText(payment,"transactionDate");
-            paymentDetail.setTransactiondate(DateUtils.returnDate(transactionDate));
-            paymentDetail.setBalancedue(SamplePaseXml.getSpecifyElementText(paymentDetail1,"balanceDue"));
-            paymentDetailList.add(paymentDetail);
+        Iterator pay=null;
+        if(paymentDetail1!=null){
+            pay =paymentDetail1.elementIterator("moneyMovement");
+        }
+        if(pay!=null) {
+            while (pay.hasNext()) {
+                Element payment = (Element) pay.next();
+                TradingCasePaymentDetail paymentDetail = new TradingCasePaymentDetail();
+                paymentDetail.setType(SamplePaseXml.getSpecifyElementText(payment, "type"));
+                paymentDetail.setFrompartyrole(SamplePaseXml.getSpecifyElementText(payment, "fromParty", "role"));
+                paymentDetail.setTopartyrole(SamplePaseXml.getSpecifyElementText(payment, "toParty", "role"));
+                paymentDetail.setAmount(SamplePaseXml.getSpecifyElementText(payment, "amount"));
+                paymentDetail.setPaymentmethod(SamplePaseXml.getSpecifyElementText(payment, "paymentMethod"));
+                paymentDetail.setStatus(SamplePaseXml.getSpecifyElementText(payment, "status"));
+                String transactionDate = SamplePaseXml.getSpecifyElementText(payment, "transactionDate");
+                paymentDetail.setTransactiondate(DateUtils.returnDate(transactionDate));
+                paymentDetail.setBalancedue(SamplePaseXml.getSpecifyElementText(paymentDetail1, "balanceDue"));
+                paymentDetailList.add(paymentDetail);
+            }
         }
         map.put("ebpCaseDetail",ebpCaseDetail);
         map.put("historyList",historyList);
