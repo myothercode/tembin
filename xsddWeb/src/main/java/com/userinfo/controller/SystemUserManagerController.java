@@ -9,10 +9,15 @@ import com.base.mybatis.page.Page;
 import com.base.mybatis.page.PageJsonBean;
 import com.base.userinfo.service.SystemUserManagerService;
 import com.base.utils.annotations.AvoidDuplicateSubmission;
+import com.base.utils.applicationcontext.ApplicationContextUtil;
+import com.base.utils.common.UUIDUtil;
 import com.base.utils.exception.Asserts;
+import com.base.utils.mailUtil.MailUtils;
 import com.common.base.utils.ajax.AjaxSupport;
 import com.common.base.web.BaseAction;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.mail.Email;
+import org.apache.commons.mail.SimpleEmail;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -22,6 +27,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -143,6 +150,19 @@ public class SystemUserManagerController extends BaseAction {
         Asserts.assertTrue(StringUtils.isNotEmpty(oldPWD) && StringUtils.isNotEmpty(newPWD),"原密码和新密码不能为空");
         systemUserManagerService.changePWD(oldPWD, newPWD);
         AjaxSupport.sendSuccessText("","修改成功！");
+    }
+
+    @RequestMapping("getSafeCodelogin.do")
+    /**邮件获取验证码*/
+    public void getSafeCode(HttpServletRequest request,HttpServletResponse response,String loginUserID,
+                                 @ModelAttribute( "initSomeParmMap" )ModelMap modelMap){
+        Asserts.assertTrue(StringUtils.isNotEmpty(loginUserID),"帐号不能为空!");
+        Map map=new HashMap();
+        map.put("HttpServletRequest",request);
+        map.put("loginUserID",loginUserID);
+        systemUserManagerService.sendSafeCode(map);
+        AjaxSupport.sendSuccessText("","验证码已发送至邮箱！");
+
     }
 
 }

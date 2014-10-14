@@ -535,6 +535,76 @@ public class TradingMessageAddmembermessageExample {
             return (Criteria) this;
         }
 
+        public Criteria andSenderIsNull() {
+            addCriterion("sender is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andSenderIsNotNull() {
+            addCriterion("sender is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andSenderEqualTo(String value) {
+            addCriterion("sender =", value, "sender");
+            return (Criteria) this;
+        }
+
+        public Criteria andSenderNotEqualTo(String value) {
+            addCriterion("sender <>", value, "sender");
+            return (Criteria) this;
+        }
+
+        public Criteria andSenderGreaterThan(String value) {
+            addCriterion("sender >", value, "sender");
+            return (Criteria) this;
+        }
+
+        public Criteria andSenderGreaterThanOrEqualTo(String value) {
+            addCriterion("sender >=", value, "sender");
+            return (Criteria) this;
+        }
+
+        public Criteria andSenderLessThan(String value) {
+            addCriterion("sender <", value, "sender");
+            return (Criteria) this;
+        }
+
+        public Criteria andSenderLessThanOrEqualTo(String value) {
+            addCriterion("sender <=", value, "sender");
+            return (Criteria) this;
+        }
+
+        public Criteria andSenderLike(String value) {
+            addCriterion("sender like", value, "sender");
+            return (Criteria) this;
+        }
+
+        public Criteria andSenderNotLike(String value) {
+            addCriterion("sender not like", value, "sender");
+            return (Criteria) this;
+        }
+
+        public Criteria andSenderIn(List<String> values) {
+            addCriterion("sender in", values, "sender");
+            return (Criteria) this;
+        }
+
+        public Criteria andSenderNotIn(List<String> values) {
+            addCriterion("sender not in", values, "sender");
+            return (Criteria) this;
+        }
+
+        public Criteria andSenderBetween(String value1, String value2) {
+            addCriterion("sender between", value1, value2, "sender");
+            return (Criteria) this;
+        }
+
+        public Criteria andSenderNotBetween(String value1, String value2) {
+            addCriterion("sender not between", value1, value2, "sender");
+            return (Criteria) this;
+        }
+
         public Criteria andRecipientidIsNull() {
             addCriterion("recipientID is null");
             return (Criteria) this;
@@ -605,6 +675,146 @@ public class TradingMessageAddmembermessageExample {
             return (Criteria) this;
         }
 
+        public Criteria andSubjectIsNull() {
+            addCriterion("subject is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andSubjectIsNotNull() {
+            addCriterion("subject is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andSubjectEqualTo(String value) {
+            addCriterion("subject =", value, "subject");
+            return (Criteria) this;
+        }
+
+        public Criteria andSubjectNotEqualTo(String value) {
+            addCriterion("subject <>", value, "subject");
+            return (Criteria) this;
+        }
+
+        public Criteria andSubjectGreaterThan(String value) {
+            addCriterion("subject >", value, "subject");
+            return (Criteria) this;
+        }
+
+        public Criteria andSubjectGreaterThanOrEqualTo(String value) {
+            addCriterion("subject >=", value, "subject");
+            return (Criteria) this;
+        }
+
+        public Criteria andSubjectLessThan(String value) {
+            addCriterion("subject <", value, "subject");
+            return (Criteria) this;
+        }
+
+        public Criteria andSubjectLessThanOrEqualTo(String value) {
+            addCriterion("subject <=", value, "subject");
+            return (Criteria) this;
+        }
+
+        public Criteria andSubjectLike(String value) {
+            addCriterion("subject like", value, "subject");
+            return (Criteria) this;
+        }
+
+        public Criteria andSubjectNotLike(String value) {
+            addCriterion("subject not like", value, "subject");
+            return (Criteria) this;
+        }
+
+        public Criteria andSubjectIn(List<String> values) {
+            addCriterion("subject in", values, "subject");
+            return (Criteria) this;
+        }
+
+        public Criteria andSubjectNotIn(List<String> values) {
+            addCriterion("subject not in", values, "subject");
+            return (Criteria) this;
+        }
+
+        public Criteria andSubjectBetween(String value1, String value2) {
+            addCriterion("subject between", value1, value2, "subject");
+            return (Criteria) this;
+        }
+
+        public Criteria andSubjectNotBetween(String value1, String value2) {
+            addCriterion("subject not between", value1, value2, "subject");
+            return (Criteria) this;
+        }
+
+        public Criteria andBodyIsNull() {
+            addCriterion("body is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andBodyIsNotNull() {
+            addCriterion("body is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andBodyEqualTo(String value) {
+            addCriterion("body =", value, "body");
+            return (Criteria) this;
+        }
+
+        public Criteria andBodyNotEqualTo(String value) {
+            addCriterion("body <>", value, "body");
+            return (Criteria) this;
+        }
+
+        public Criteria andBodyGreaterThan(String value) {
+            addCriterion("body >", value, "body");
+            return (Criteria) this;
+        }
+
+        public Criteria andBodyGreaterThanOrEqualTo(String value) {
+            addCriterion("body >=", value, "body");
+            return (Criteria) this;
+        }
+
+        public Criteria andBodyLessThan(String value) {
+            addCriterion("body <", value, "body");
+            return (Criteria) this;
+        }
+
+        public Criteria andBodyLessThanOrEqualTo(String value) {
+            addCriterion("body <=", value, "body");
+            return (Criteria) this;
+        }
+
+        public Criteria andBodyLike(String value) {
+            addCriterion("body like", value, "body");
+            return (Criteria) this;
+        }
+
+        public Criteria andBodyNotLike(String value) {
+            addCriterion("body not like", value, "body");
+            return (Criteria) this;
+        }
+
+        public Criteria andBodyIn(List<String> values) {
+            addCriterion("body in", values, "body");
+            return (Criteria) this;
+        }
+
+        public Criteria andBodyNotIn(List<String> values) {
+            addCriterion("body not in", values, "body");
+            return (Criteria) this;
+        }
+
+        public Criteria andBodyBetween(String value1, String value2) {
+            addCriterion("body between", value1, value2, "body");
+            return (Criteria) this;
+        }
+
+        public Criteria andBodyNotBetween(String value1, String value2) {
+            addCriterion("body not between", value1, value2, "body");
+            return (Criteria) this;
+        }
+
         public Criteria andParentmessageidIsNull() {
             addCriterion("parentMessageID is null");
             return (Criteria) this;
@@ -672,6 +882,76 @@ public class TradingMessageAddmembermessageExample {
 
         public Criteria andParentmessageidNotBetween(String value1, String value2) {
             addCriterion("parentMessageID not between", value1, value2, "parentmessageid");
+            return (Criteria) this;
+        }
+
+        public Criteria andRepliedIsNull() {
+            addCriterion("replied is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andRepliedIsNotNull() {
+            addCriterion("replied is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andRepliedEqualTo(String value) {
+            addCriterion("replied =", value, "replied");
+            return (Criteria) this;
+        }
+
+        public Criteria andRepliedNotEqualTo(String value) {
+            addCriterion("replied <>", value, "replied");
+            return (Criteria) this;
+        }
+
+        public Criteria andRepliedGreaterThan(String value) {
+            addCriterion("replied >", value, "replied");
+            return (Criteria) this;
+        }
+
+        public Criteria andRepliedGreaterThanOrEqualTo(String value) {
+            addCriterion("replied >=", value, "replied");
+            return (Criteria) this;
+        }
+
+        public Criteria andRepliedLessThan(String value) {
+            addCriterion("replied <", value, "replied");
+            return (Criteria) this;
+        }
+
+        public Criteria andRepliedLessThanOrEqualTo(String value) {
+            addCriterion("replied <=", value, "replied");
+            return (Criteria) this;
+        }
+
+        public Criteria andRepliedLike(String value) {
+            addCriterion("replied like", value, "replied");
+            return (Criteria) this;
+        }
+
+        public Criteria andRepliedNotLike(String value) {
+            addCriterion("replied not like", value, "replied");
+            return (Criteria) this;
+        }
+
+        public Criteria andRepliedIn(List<String> values) {
+            addCriterion("replied in", values, "replied");
+            return (Criteria) this;
+        }
+
+        public Criteria andRepliedNotIn(List<String> values) {
+            addCriterion("replied not in", values, "replied");
+            return (Criteria) this;
+        }
+
+        public Criteria andRepliedBetween(String value1, String value2) {
+            addCriterion("replied between", value1, value2, "replied");
+            return (Criteria) this;
+        }
+
+        public Criteria andRepliedNotBetween(String value1, String value2) {
+            addCriterion("replied not between", value1, value2, "replied");
             return (Criteria) this;
         }
 

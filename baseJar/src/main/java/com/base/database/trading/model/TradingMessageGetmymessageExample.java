@@ -756,7 +756,7 @@ public class TradingMessageGetmymessageExample {
         }
 
         public Criteria andReadEqualTo(String value) {
-            addCriterion("read =", value, "read");
+            addCriterion("`read` =", value, "read");
             return (Criteria) this;
         }
 

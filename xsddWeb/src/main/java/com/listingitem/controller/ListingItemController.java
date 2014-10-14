@@ -370,12 +370,16 @@ public class ListingItemController extends BaseAction {
         String folderType = request.getParameter("folderType");
         List<PublicUserConfig> lipuc = DataDictionarySupport.getPublicUserConfigByType(folderType,c.getId());
         List<PublicUserConfig> li = new ArrayList<PublicUserConfig>();
-        for(PublicUserConfig puc:lipuc){
-            if(puc.getConfigValue().equals("true")){
-                li.add(puc);
+        if(lipuc!=null&&lipuc.size()>1) {
+            for (PublicUserConfig puc : lipuc) {
+                if (puc.getConfigValue().equals("true")) {
+                    li.add(puc);
+                }
             }
+            AjaxSupport.sendSuccessText("", li);
+        }else{
+            AjaxSupport.sendSuccessText("", null);
         }
-        AjaxSupport.sendSuccessText("",li);
     }
     /**
      * 刊登商品
@@ -497,6 +501,28 @@ public class ListingItemController extends BaseAction {
         }
 
     }
+    /**
+     * 添加备注
+     * @param request
+     * @param response
+     * @param modelMap
+     * @throws Exception
+     */
+    @RequestMapping("/ajax/addRemark.do")
+    @ResponseBody
+    public void addRemark(HttpServletRequest request,HttpServletResponse response,@ModelAttribute( "initSomeParmMap" )ModelMap modelMap) throws Exception {
+        String id = request.getParameter("id");
+        String remark = request.getParameter("remark");
+        TradingListingData tld = this.iTradingListingData.selectById(Long.parseLong(id));
+        if(tld!=null){
+            tld.setRemark(remark);
+            this.iTradingListingData.updateTradingListingData(tld);
+            AjaxSupport.sendSuccessText("","操作成功!");
+        }else{
+            AjaxSupport.sendSuccessText("","操作失败，你未选择商品，在数据库表中未找到数据!");
+        }
+    }
+
     @RequestMapping("/ajax/getListItemDataAmend.do")
     @ResponseBody
     public void getListItemDataAmend(HttpServletRequest request,ModelMap modelMap,CommonParmVO commonParmVO) throws Exception {
@@ -601,6 +627,8 @@ public class ListingItemController extends BaseAction {
             String ack = SamplePaseXml.getVFromXmlString(res, "Ack");
             if ("Success".equalsIgnoreCase(ack) || "Warning".equalsIgnoreCase(ack)) {
                 tla.setIsFlag("1");
+                tld.setIsFlag("1");
+                this.iTradingListingData.updateTradingListingData(tld);
             }else{
                 tla.setIsFlag("0");
             }

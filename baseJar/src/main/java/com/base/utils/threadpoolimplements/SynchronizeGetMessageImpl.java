@@ -37,10 +37,12 @@ public class SynchronizeGetMessageImpl implements ThreadPoolBaseInterFace {
                 List<Element> messages = GetMyMessageAPI.getMessages(res);
                 for(Element message:messages){
                     TradingMessageGetmymessage ms= GetMyMessageAPI.addDatabase(message, accountId, ebay);//保存到数据库
-                    if("false".equals(ms.getRead())){
-                        ms.setCreateUser(taskMessageVO.getMessageTo());
-                        iTradingMessageGetmymessage.saveMessageGetmymessage(ms);
+                    if("true".equals(ms.getRead())){
+                        List<TradingMessageGetmymessage> getmymessages=iTradingMessageGetmymessage.selectMessageGetmymessageByMessageId(ms.getMessageid());
+                        ms.setId(getmymessages.get(0).getId());
                     }
+                    ms.setCreateUser(taskMessageVO.getMessageTo());
+                    iTradingMessageGetmymessage.saveMessageGetmymessage(ms);
                 }
             }else {return;}
         } catch (Exception e) {

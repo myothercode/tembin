@@ -81,6 +81,12 @@ public class GetOrdersController extends BaseAction {
     @Value("${EBAY.API.URL}")
     private String apiUrl;
 
+    @RequestMapping("/queryOrdersList.do")
+    public ModelAndView queryOrdersList(HttpServletRequest request,HttpServletResponse response,ModelMap modelMap){
+        String content=request.getParameter("content");
+        modelMap.put("content",content);
+        return forword("/orders/order/queryOrdersList",modelMap);
+    }
     @RequestMapping("/getOrdersList.do")
     public ModelAndView OrdersList(HttpServletRequest request,HttpServletResponse response,ModelMap modelMap){
         List<PublicUserConfig> configs=new ArrayList<PublicUserConfig>();
@@ -286,61 +292,64 @@ public class GetOrdersController extends BaseAction {
         if(!StringUtils.isNotBlank(folderId)){
             folderId=null;
         }
-        map.put("ebays",ebays);
-        map.put("starttime",starttime);
-        map.put("endtime",endtime);
-        map.put("status",status);
-        map.put("countryQ",countryQ);
-        map.put("typeQ",typeQ);
-        map.put("content",content);
-        map.put("folderId",folderId);
-        map.put("itemType",itemType);
-        List<OrderGetOrdersQuery> lists= this.iTradingOrderGetOrders.selectOrderGetOrdersByGroupList(map,page);
-        for(OrderGetOrdersQuery list:lists){
-            String itemid=list.getItemid();
-            List<TradingOrderGetItem> itemList= iTradingOrderGetItem.selectOrderGetItemByItemId(itemid);
-            if(itemList!=null&&itemList.size()>0){
-                Long pictureid=itemList.get(0).getPicturedetailsId();
-                List<TradingOrderPictureDetails> pictureDetailses=iTradingOrderPictureDetails.selectOrderGetItemById(pictureid);
-                if(pictureDetailses!=null&&pictureDetailses.size()>0){
-                    list.setPictrue(pictureDetailses.get(0).getPictureurl());
-                }
-             /*   List<TradingDataDictionary> dictionaries=iTradingDataDictionary.s()*/
-                list.setItemSite(itemList.get(0).getSite());
-            }
-            String variationSKU=list.getVariationsku();
-            if(StringUtils.isNotBlank(variationSKU)){
-                List<TradingOrderOrderVariationSpecifics> specificses=iTradingOrderOrderVariationSpecifics.selectOrderOrderVariationSpecificsBySku(variationSKU);
-                List<String> s=new ArrayList<String>();
-                if(specificses!=null&&specificses.size()>0){
-                    for(TradingOrderOrderVariationSpecifics specificse:specificses){
-                        String va=specificse.getName()+":"+specificse.getValue();
-                        s.add(va);
+        List<OrderGetOrdersQuery> lists=new ArrayList<OrderGetOrdersQuery>();
+        if(ebays.size()>0){
+            map.put("ebays",ebays);
+            map.put("starttime",starttime);
+            map.put("endtime",endtime);
+            map.put("status",status);
+            map.put("countryQ",countryQ);
+            map.put("typeQ",typeQ);
+            map.put("content",content);
+            map.put("folderId",folderId);
+            map.put("itemType",itemType);
+            lists= this.iTradingOrderGetOrders.selectOrderGetOrdersByGroupList(map,page);
+            for(OrderGetOrdersQuery list:lists){
+                String itemid=list.getItemid();
+                List<TradingOrderGetItem> itemList= iTradingOrderGetItem.selectOrderGetItemByItemId(itemid);
+                if(itemList!=null&&itemList.size()>0){
+                    Long pictureid=itemList.get(0).getPicturedetailsId();
+                    List<TradingOrderPictureDetails> pictureDetailses=iTradingOrderPictureDetails.selectOrderGetItemById(pictureid);
+                    if(pictureDetailses!=null&&pictureDetailses.size()>0){
+                        list.setPictrue(pictureDetailses.get(0).getPictureurl());
                     }
+                 /*   List<TradingDataDictionary> dictionaries=iTradingDataDictionary.s()*/
+                    list.setItemSite(itemList.get(0).getSite());
                 }
-                list.setVariationspecificsMap(s);
-            }
-            List<TradingOrderAddMemberMessageAAQToPartner> partners=iTradingOrderAddMemberMessageAAQToPartner.selectTradingOrderAddMemberMessageAAQToPartnerByTransactionId(list.getTransactionid(),3);
-            if(partners!=null&&partners.size()>0){
-                list.setMessage(partners.get(0).getBody());
-            }
-            List<TradingOrderGetSellerTransactions> transactionses=iTradingOrderGetSellerTransactions.selectTradingOrderGetSellerTransactionsByTransactionId(list.getTransactionid());
-           /* iTradingOrderVariation.selectOrderVariationByItemId()*/
-            for(TradingOrderGetSellerTransactions transaction:transactionses){
-                list.setPaypalPaidTime(transaction.getPaidtime());
-                list.setPaypalPaymentTime(transaction.getPaymenttime());
-                list.setExternalTransactionID(transaction.getExternaltransactionid());
-            }
-            String url="http://www.sandbox.ebay.com/itm/"+list.getItemid();
-            list.setItemUrl(url);
-            if("notAllComplete".equals(status)){
-                list.setFlagNotAllComplete(true);
-            }else{
-                list.setFlagNotAllComplete(false);
-            }
-            TradingFeedBackDetail feedBackDetail=iTradingFeedBackDetail.selectFeedBackDetailByTransactionId(list.getTransactionid());
-            if(feedBackDetail!=null){
-                list.setFeedbackMessage("true");
+                String variationSKU=list.getVariationsku();
+                if(StringUtils.isNotBlank(variationSKU)){
+                    List<TradingOrderOrderVariationSpecifics> specificses=iTradingOrderOrderVariationSpecifics.selectOrderOrderVariationSpecificsBySku(variationSKU);
+                    List<String> s=new ArrayList<String>();
+                    if(specificses!=null&&specificses.size()>0){
+                        for(TradingOrderOrderVariationSpecifics specificse:specificses){
+                            String va=specificse.getName()+":"+specificse.getValue();
+                            s.add(va);
+                        }
+                    }
+                    list.setVariationspecificsMap(s);
+                }
+                List<TradingOrderAddMemberMessageAAQToPartner> partners=iTradingOrderAddMemberMessageAAQToPartner.selectTradingOrderAddMemberMessageAAQToPartnerByTransactionId(list.getTransactionid(),3);
+                if(partners!=null&&partners.size()>0){
+                    list.setMessage(partners.get(0).getBody());
+                }
+                List<TradingOrderGetSellerTransactions> transactionses=iTradingOrderGetSellerTransactions.selectTradingOrderGetSellerTransactionsByTransactionId(list.getTransactionid());
+               /* iTradingOrderVariation.selectOrderVariationByItemId()*/
+                for(TradingOrderGetSellerTransactions transaction:transactionses){
+                    list.setPaypalPaidTime(transaction.getPaidtime());
+                    list.setPaypalPaymentTime(transaction.getPaymenttime());
+                    list.setExternalTransactionID(transaction.getExternaltransactionid());
+                }
+                String url="http://www.sandbox.ebay.com/itm/"+list.getItemid();
+                list.setItemUrl(url);
+                if("notAllComplete".equals(status)){
+                    list.setFlagNotAllComplete(true);
+                }else{
+                    list.setFlagNotAllComplete(false);
+                }
+                TradingFeedBackDetail feedBackDetail=iTradingFeedBackDetail.selectFeedBackDetailByTransactionId(list.getTransactionid());
+                if(feedBackDetail!=null){
+                    list.setFeedbackMessage("true");
+                }
             }
         }
         jsonBean.setList(lists);

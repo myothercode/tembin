@@ -139,9 +139,9 @@ function getULSelect(par){
     var ulid_=par["ulid"]==null?"":("id="+par["ulid"]);
     var inputid_=par["inputid"]==null?"":("id="+par["inputid"]);
     var inputval_=par["inputval"]==null?"":(par["inputval"]);
-    var showname_=par["showname"]==null?"请选择...":(par["showname"]);
+    var showname_=par["showname"]==null?"请选择":(par["showname"]);
 
-    var hs="<ul "+ulid_+"><li style='width: 90px;height: 25px;' class=\"select_box\"><span>"+showname_+"</span><ul class=\"son_ul\">";
+    var hs="<ul "+ulid_+"><li style='width: 70px;height: 25px;' class=\"select_box\"><span style='color: blue'>"+showname_+"</span><ul class=\"son_ul\">";
     hs+="<input type='hidden' "+inputid_+" value="+inputval_+"  />";
     hs+=lis;
     hs+="</ul></li></ul>";

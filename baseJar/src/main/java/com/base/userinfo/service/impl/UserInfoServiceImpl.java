@@ -5,10 +5,14 @@ import com.base.database.trading.mapper.UsercontrollerEbayAccountMapper;
 import com.base.database.trading.mapper.UsercontrollerEbayDevMapper;
 import com.base.database.trading.mapper.UsercontrollerPaypalAccountMapper;
 import com.base.database.trading.model.*;
+import com.base.database.userinfo.mapper.UsercontrollerOrgMapper;
 import com.base.database.userinfo.mapper.UsercontrollerUserEbayMapper;
 import com.base.database.userinfo.mapper.UsercontrollerUserMapper;
+import com.base.database.userinfo.mapper.UsercontrollerUserRoleMapper;
+import com.base.database.userinfo.model.UsercontrollerOrg;
 import com.base.database.userinfo.model.UsercontrollerUser;
 import com.base.database.userinfo.model.UsercontrollerUserEbay;
+import com.base.database.userinfo.model.UsercontrollerUserRole;
 import com.base.domains.*;
 import com.base.domains.userinfo.UsercontrollerDevAccountExtend;
 import com.base.domains.userinfo.UsercontrollerEbayAccountExtend;
@@ -46,6 +50,10 @@ public class UserInfoServiceImpl implements com.base.userinfo.service.UserInfoSe
     private UsercontrollerUserEbayMapper userEbayMapper;
     @Autowired
     private UsercontrollerPaypalAccountMapper paypalAccountMapper;
+    @Autowired
+    private UsercontrollerOrgMapper usercontrollerOrgMapper;
+    @Autowired
+    private UsercontrollerUserRoleMapper userRoleMapper;
 
 
     @Override
@@ -218,8 +226,27 @@ public class UserInfoServiceImpl implements com.base.userinfo.service.UserInfoSe
             UsercontrollerPaypalAccount s= paypalAccountMapper.selectByPrimaryKey(ea.getPaypalAccountId());
             eae.setPaypalName(s.getPaypalAccount());
         }
-
-
         return eae;
     }
+
+    @Override
+    /**新增注册用户*/
+    public void regInsertUserInfo(Map map){
+        UsercontrollerOrg org= (UsercontrollerOrg) map.get("UsercontrollerOrg");
+        UsercontrollerUser user = (UsercontrollerUser) map.get("UsercontrollerUser");
+        org.setStatus("1");
+        usercontrollerOrgMapper.insert(org);
+        user.setUserOrgId(org.getOrgId().intValue());
+        user.setStatus("1");
+        user.setDefaultDevAccount(1L);
+        user.setUserPassword(EncryptionUtil.pwdEncrypt(user.getUserPassword(), user.getUserLoginId()));
+        user.setUserParentId(null);
+        userMapper.insert(user);
+
+        UsercontrollerUserRole userRole = new UsercontrollerUserRole();
+        userRole.setUserId(user.getUserId());
+        userRole.setRoleId(1);//通过网页注册的帐号，默认都是管理员帐号
+        userRoleMapper.insert(userRole);
+    }
+
 }

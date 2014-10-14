@@ -49,7 +49,6 @@ public class SessionCacheSupport extends CacheBaseSupport {
     public static<T extends SessionVO> void put(T t){
         Cache cache =cacheManager.getCache(sessionName);
         Element element=new Element(generateKey(),t);
-
         cache.put(element);
     }
     /**取出值*/

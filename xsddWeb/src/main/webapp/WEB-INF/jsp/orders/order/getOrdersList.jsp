@@ -91,10 +91,13 @@
             refreshTable2();
             refreshTable3();
             refreshTable4();
+            var lllll=0;
             <c:forEach items="${folders}" begin="0"  varStatus="status">
+                lllll=${status.count+4};
                 setTab1('menu',${status.index+5},${status.count+4});
             /*<dt id="menu${status.index+5}" name="${folders[status.index].id}" class="new_tab_2" onclick="setTab1('menu',${status.index+5},${status.count+4})">${folders[status.index].configName}</dt>*/
             </c:forEach>
+            $("#OrderGetOrdersListTable"+lllll).selectDataAfterSetParm({"bedDetailVO.deptId":"", "isTrue":0});
         });
 
         function refreshTable1(){
@@ -116,7 +119,7 @@
         function makeOption1(json){
            /* var htm="<a target=\"_blank\" href=\"javascript:void(0)\" onclick=\"viewOrder('"+json.orderid+"');\">查看详情</a>";
             var htm1="|<a target=\"_blank\" href=\"javascript:void(0)\" onclick=\"modifyOrderStatus('"+json.transactionid+"');\">修改发货状态</a>";*/
-            var htm="<div class=\"ui-select\" style=\"width:106px\" >" +
+            /*var htm="<div class=\"ui-select\" style=\"width:106px\" >" +
             "<select onchange=\"selectOperation('"+json.orderid+"','"+json.transactionid+"','"+json.selleruserid+"',this); \" name=\"ui-select\" style=\"margin-left:-3px;\">" +
                     "<option value=\"0\"><a href=\"javascript:#\">--请选择--</a></option>" +
                     "<option value=\"1\"><a href=\"javascript:#\">查看详情</a></option>" +
@@ -124,8 +127,15 @@
                     "<option value=\"3\"><a href=\"javascript:#\">发送消息</a></option>" +
                     "<option value=\"4\"><a href=\"javascript:#\">退款功能</a></option>" +
             "</select>" +
-            "</div>";
-            return htm;
+            "</div>";*/
+            var hs="";
+            hs="<li onclick=selectOperation('"+json.orderid+"','"+json.transactionid+"','"+json.selleruserid+"',this); value='1' doaction=\"readed\" >查看详情</li>";
+            hs+="<li  onclick=selectOperation('"+json.orderid+"','"+json.transactionid+"','"+json.selleruserid+"',this); value='2' doaction=\"look\" >修改状态</li>";
+            hs+="<li  onclick=selectOperation('"+json.orderid+"','"+json.transactionid+"','"+json.selleruserid+"',this); value='3' doaction=\"look\" >发送消息</li>";
+            hs+="<li  onclick=selectOperation('"+json.orderid+"','"+json.transactionid+"','"+json.selleruserid+"',this); value='4' doaction=\"look\" >退款功能</li>";
+            var pp={"liString":hs};
+            return getULSelect(pp);
+           /* return htm;*/
         }
         function selectOperation(orderid,transactionid,selleruserid,obj){
             var value=$(obj).val();
@@ -672,7 +682,7 @@
         <input type="hidden" id="daysQ"/>
     </form>
 <div class="Contentbox" id="ContentboxDiv">
-<div id="con_menu_1" class="hover" style="display: none;">
+<div id="con_menu_1" style="display: none;">
     <!--综合开始 -->
     <div class="new_usa" style="margin-top:20px;">
         <li class="new_usa_list"><span class="newusa_i">收件人国家：</span><a href="#"><span class="newusa_ici_1" scop="queryCountry1"  onclick="queryCountry(1,1,null);">全部&nbsp;</span></a><a href="#"><span class="newusa_ici_1" scop="queryCountry1"  onclick="queryCountry(1,2,'US');"><img src="<c:url value ="/img/usa_1.png"/> ">美国&nbsp;</span></a><a href="#"><span class="newusa_ici_1" scop="queryCountry1"  onclick="queryCountry(1,3,'UK');"><img src="<c:url value ="/img/UK.jpg"/> ">英国&nbsp;</span></a><a href="#"><span class="newusa_ici_1" scop="queryCountry1"  onclick="queryCountry(1,4,'DE');"><img src="<c:url value ="/img/DE.png"/> ">德国&nbsp;</span></a><a href="#"><span class="newusa_ici_1" scop="queryCountry1"  onclick="queryCountry(1,5,'AU');"><img src="<c:url value ="/img/AU.jpg"/>">澳大利亚</span></a></li>

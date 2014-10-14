@@ -41,5 +41,8 @@
         <if test="checkFlag!=null">
             and returnpolicy.check_flag = #{checkFlag}
         </if>
+        <if test="userid!=null">
+            and returnpolicy.create_user = #{userid}
+        </if>
     </select>
 </mapper>

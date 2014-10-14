@@ -1,8 +1,11 @@
 package com.trading.service.impl;
 
+import com.base.database.customtrading.mapper.MessageAddmymessageMapper;
 import com.base.database.trading.mapper.TradingMessageAddmembermessageMapper;
 import com.base.database.trading.model.TradingMessageAddmembermessage;
 import com.base.database.trading.model.TradingMessageAddmembermessageExample;
+import com.base.domains.querypojos.MessageAddmymessageQuery;
+import com.base.mybatis.page.Page;
 import com.base.utils.common.ObjectUtils;
 import com.base.utils.exception.Asserts;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * 商品描述模块
@@ -20,7 +24,8 @@ import java.util.List;
 public class TradingMessageAddmembermessageImpl implements com.trading.service.ITradingMessageAddmembermessage {
     @Autowired
     private TradingMessageAddmembermessageMapper TradingMessageAddmembermessageMapper;
-
+    @Autowired
+    private MessageAddmymessageMapper messageAddmymessageMapper;
    
 
     @Override
@@ -38,12 +43,18 @@ public class TradingMessageAddmembermessageImpl implements com.trading.service.I
     }
 
     @Override
-    public List<TradingMessageAddmembermessage> selectMessageGetmymessageByItemId(String itemid) {
+    public List<TradingMessageAddmembermessage> selectMessageGetmymessageByMessageId(String messageId,String replied) {
         TradingMessageAddmembermessageExample example=new TradingMessageAddmembermessageExample();
         TradingMessageAddmembermessageExample.Criteria ce=example.createCriteria();
-        ce.andItemidEqualTo(itemid);
+        ce.andMessageidEqualTo(messageId);
+        ce.andRepliedEqualTo(replied);
         List<TradingMessageAddmembermessage> list=TradingMessageAddmembermessageMapper.selectByExample(example);
         return list;
+    }
+
+    @Override
+    public List<MessageAddmymessageQuery> selectMessageGetmymessageByGroupList(Map map, Page page) {
+        return messageAddmymessageMapper.selectMessageGetmymessageByGroupList(map,page);
     }
 
 }

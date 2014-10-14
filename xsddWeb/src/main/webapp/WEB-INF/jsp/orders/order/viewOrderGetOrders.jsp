@@ -215,7 +215,7 @@
     </tr>
 
     </tbody></table>
-<div id="new_svt_1" class="hover" style="display: block;">
+<div id="new_svt_1"  style="display: block;">
     <link href="../../css/compiled/layout.css" rel="stylesheet" type="text/css">
     <c:forEach items="${orders}" begin="0"  varStatus="status">
     <table width="100%" border="0">

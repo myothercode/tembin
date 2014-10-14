@@ -2,10 +2,12 @@ package com.module.controller;
 
 import com.base.database.trading.model.TradingTemplateInitTable;
 import com.base.domains.CommonParmVO;
+import com.base.domains.SessionVO;
 import com.base.domains.querypojos.TemplateInitTableQuery;
 import com.base.mybatis.page.Page;
 import com.base.mybatis.page.PageJsonBean;
 import com.base.utils.annotations.AvoidDuplicateSubmission;
+import com.base.utils.cache.SessionCacheSupport;
 import com.base.utils.common.ObjectUtils;
 import com.base.utils.imageManage.service.ImageService;
 import com.common.base.utils.ajax.AjaxSupport;
@@ -66,6 +68,8 @@ public class TemplateInitTableController extends BaseAction{
     @ResponseBody
     public void loadTemplateInitTableList(CommonParmVO commonParmVO){
         Map m = new HashMap();
+        SessionVO c= SessionCacheSupport.getSessionVO();
+        m.put("userid",c.getId());
         /**分页组装*/
         PageJsonBean jsonBean=commonParmVO.getJsonBean();
         Page page=jsonBean.toPage();

@@ -18,6 +18,25 @@
             //getSystemMessage();
             getMessagesByTime();
         });
+        function cleanContent(obj){
+            var cont= $(obj).val();
+            if(cont=="SKU/内容") {
+                $(obj).val("");
+            }
+        }
+        function addContent(obj){
+            var cont= $(obj).val();
+            if(cont==""){
+                $(obj).val("SKU/内容");
+            }
+        }
+        function queryOrder(obj){
+            var cont= $(obj).val();
+            if(cont!=""&&event.keyCode==13){
+                console.debug($("#ebayMessageLiu").attr("href"));
+                $("#ebayMessageLiu").click;
+            }
+        }
     </script>
     <style type="text/css">
         .select_ul {margin:0 5px 0 0;padding:0;list-style-type:none;}
@@ -51,7 +70,10 @@
     </div>
     <ul class="nav navbar-nav pull-right hidden-xs">
         <li class="hidden-xs hidden-sm">
-            <input class="search" type="text" />
+            <input class="search" type="text" value="SKU/内容" style="color: #e0e0e0" onkeydown="queryOrder(this);" onfocus="cleanContent(this);" onblur="addContent(this);"/>
+            <%--<div class="vsearch">
+                <input id="content6" style="background:#000000; padding: 2px 6px;top: 9px;border-radius: 2px;position: relative;height: 27px; " name="" type="text" class="key_1"><input style="background:#000000;padding: 2px 6px;top: 9px;border-radius: 2px;position: relative;height: 27px; " name="newbut" type="button" class="key_2"></div>
+           --%><%-- <input type="text" style="padding: 2px 6px;top: 9px;border-radius: 2px;position: relative;height: 27px; ">--%>
         </li>
         <li title="ebay消息" class="notification-dropdown hidden-xs hidden-sm">
             <a href="javascript:void(0)" id="ebayMessages"  class="trigger">
@@ -65,7 +87,7 @@
                 </div>
                 <div class="body">
                     <a href="javascript:void(0)" class="close-icon"><i class="icon-remove-sign"></i></a>
-                    <div class="notifications">
+                    <div class="notifications" id="notifications">
                         <h3 id="ebaymessageNotice">You have 0 new notifications</h3>
 
                         <a href="#" class="item">

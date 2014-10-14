@@ -4,10 +4,12 @@ import com.base.database.trading.model.TradingDescriptionDetails;
 import com.base.database.trading.model.TradingDescriptionDetailsWithBLOBs;
 import com.base.database.trading.model.TradingReturnpolicy;
 import com.base.domains.CommonParmVO;
+import com.base.domains.SessionVO;
 import com.base.domains.querypojos.DescriptionDetailsWithBLOBsQuery;
 import com.base.mybatis.page.Page;
 import com.base.mybatis.page.PageJsonBean;
 import com.base.utils.annotations.AvoidDuplicateSubmission;
+import com.base.utils.cache.SessionCacheSupport;
 import com.base.utils.common.ObjectUtils;
 import com.common.base.utils.ajax.AjaxSupport;
 import com.common.base.web.BaseAction;
@@ -51,6 +53,8 @@ public class DescriptionDetailsController extends BaseAction{
         Map m = new HashMap();
         String checkFlag = request.getParameter("checkFlag");
         m.put("checkFlag",checkFlag);
+        SessionVO c= SessionCacheSupport.getSessionVO();
+        m.put("userid",c.getId());
         /**分页组装*/
         PageJsonBean jsonBean=commonParmVO.getJsonBean();
         Page page=jsonBean.toPage();

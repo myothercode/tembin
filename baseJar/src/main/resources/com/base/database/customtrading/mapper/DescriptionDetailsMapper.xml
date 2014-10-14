@@ -31,5 +31,8 @@
         <if test="checkFlag!=null">
             and DescriptionDetails.check_flag = #{checkFlag}
         </if>
+        <if test="userid!=null">
+            and DescriptionDetails.create_user = #{userid}
+        </if>
     </select>
 </mapper>

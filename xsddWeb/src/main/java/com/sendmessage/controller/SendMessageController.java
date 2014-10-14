@@ -53,13 +53,16 @@ public class SendMessageController extends BaseAction{
     public void loadSendMessageList(CommonParmVO commonParmVO) throws Exception {
         Map m = new HashMap();
         /**分页组装*/
-        m.put("sendMessage","notAutoSendMessage");
         PageJsonBean jsonBean=commonParmVO.getJsonBean();
         Page page=jsonBean.toPage();
         Map ebayMap=new HashMap();
         List<UsercontrollerEbayAccountExtend> ebays=systemUserManagerService.queryCurrAllEbay(ebayMap);
-        m.put("ebays",ebays);
-        List<TradingOrderAddMemberMessageAAQToPartnerQuery> lists= iTradingOrderAddMemberMessageAAQToPartner.selectTradingOrderAddMemberMessageAAQToPartner(m, page);
+        List<TradingOrderAddMemberMessageAAQToPartnerQuery> lists=new ArrayList<TradingOrderAddMemberMessageAAQToPartnerQuery>();
+        if(ebays.size()>0){
+            m.put("sendMessage","notAutoSendMessage");
+            m.put("ebays",ebays);
+            lists= iTradingOrderAddMemberMessageAAQToPartner.selectTradingOrderAddMemberMessageAAQToPartner(m, page);
+        }
         jsonBean.setList(lists);
         jsonBean.setTotal((int)page.getTotalCount());
         AjaxSupport.sendSuccessText("", jsonBean);
@@ -74,8 +77,11 @@ public class SendMessageController extends BaseAction{
         Page page=jsonBean.toPage();
         Map ebayMap=new HashMap();
         List<UsercontrollerEbayAccountExtend> ebays=systemUserManagerService.queryCurrAllEbay(ebayMap);
-        m.put("ebays",ebays);
-        List<TradingOrderAddMemberMessageAAQToPartnerQuery> lists= iTradingOrderAddMemberMessageAAQToPartner.selectTradingOrderAddMemberMessageAAQToPartner(m, page);
+        List<TradingOrderAddMemberMessageAAQToPartnerQuery> lists=new ArrayList<TradingOrderAddMemberMessageAAQToPartnerQuery>();
+        if(ebays.size()>0){
+            m.put("ebays",ebays);
+            lists= iTradingOrderAddMemberMessageAAQToPartner.selectTradingOrderAddMemberMessageAAQToPartner(m, page);
+        }
         jsonBean.setList(lists);
         jsonBean.setTotal((int)page.getTotalCount());
         AjaxSupport.sendSuccessText("", jsonBean);

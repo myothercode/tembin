@@ -58,4 +58,7 @@ public interface UserInfoService {
 
     /**根据id查询ebay信息*/
     UsercontrollerEbayAccountExtend queryEbayInfoById(Map map);
+
+    /**新增注册用户*/
+    void regInsertUserInfo(Map map);
 }

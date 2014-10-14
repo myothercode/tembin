@@ -51,13 +51,17 @@
             $("#ItemInformationListTable").selectDataAfterSetParm({"bedDetailVO.deptId":"", "isTrue":0});
         }
         function makeOption1(json){
-            var htm="<div class=\"ui-select\"  style=\"margin-top:1px; width:120px\">" +
+            /*var htm="<div class=\"ui-select\"  style=\"margin-top:1px; width:120px\">" +
                     "<select onchange=\"selectOption("+json.id+",this);\">" +
                     "<option value=\"0\">--请选择--</option>" +
                     "<option value=\"1\">添加标签</option>" +
                     "</select>" +
                     "</div>";
-            return htm;
+            return htm;*/
+            var hs="";
+            hs+="<li onclick=selectOption("+json.id+",this); value='1' doaction=\"readed\" >添加标签</li>";
+            var pp={"liString":hs};
+            return getULSelect(pp);
         }
         function selectOption(id,obj){
             var value=$(obj).val();
@@ -268,12 +272,17 @@
         }
         function makeOption5(json){
            /* var htm="<a target=\"_blank\" href=\"javascript:void(0)\" onclick=\"addChildType('"+json.typeId+"');\">添加子分类</a>";*/
-            var htm="<div class=\"ui-select\" style=\"margin-top:1px; width:120px\">" +
+          /*  var htm="<div class=\"ui-select\" style=\"margin-top:1px; width:120px\">" +
                     "<select onclick=\"addChildType('"+json.typeId+"');\">" +
                     "<option value=\"1\">添加子分类</option>" +
                     "</select>" +
                     "</div>";
-            return htm;
+            return htm;*/
+            var hs="";
+            hs="<li onclick=addChildType('"+json.typeId+"'); value='1' doaction=\"readed\" >添加子分类</li>";
+            var pp={"liString":hs};
+            return getULSelect(pp);
+
         }
 
         function addType(){
@@ -331,7 +340,7 @@
             </div>
             <div class="Contentbox">
                 <div>
-                    <div id="con_menu_1" class="hover" style="display: none;">
+                    <div id="con_menu_1" style="display: none;">
                         <!--综合开始 -->
                         <div class="new_usa" style="margin-top:20px;">
                             <li class="new_usa_list"><span class="newusa_i">按标签看：</span><span class="newusa_ici_1" scop="remark" onclick="onclickremark(null,0)">全部&nbsp;</span><a href="#"><span class="newusa_ici_1" scop="remark" onclick="onclickremark('null',1)">无标签&nbsp;</span></a><a href="#"><span class="newusa_ici_1">有电池&nbsp;</span></a><a href="#"><span class="newusa_ici_1">无电池&nbsp;</span></a></li>

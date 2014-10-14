@@ -3,6 +3,7 @@ package com.message.controller;
 import com.base.database.trading.model.TradingMessageAddmembermessage;
 import com.base.domains.CommonParmVO;
 import com.base.domains.SessionVO;
+import com.base.domains.querypojos.MessageAddmymessageQuery;
 import com.base.domains.querypojos.MessageGetmymessageQuery;
 import com.base.domains.userinfo.UsercontrollerDevAccountExtend;
 import com.base.domains.userinfo.UsercontrollerEbayAccountExtend;
@@ -11,6 +12,7 @@ import com.base.mybatis.page.PageJsonBean;
 import com.base.sampleapixml.APINameStatic;
 import com.base.sampleapixml.BindAccountAPI;
 import com.base.sampleapixml.GetMyMessageAPI;
+import com.base.userinfo.service.SystemUserManagerService;
 import com.base.userinfo.service.UserInfoService;
 import com.base.utils.annotations.AvoidDuplicateSubmission;
 import com.base.utils.cache.SessionCacheSupport;
@@ -35,10 +37,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by Administrtor on 2014/8/6.
@@ -54,6 +53,8 @@ public class GetmymessageController extends BaseAction{
     private ITradingMessageAddmembermessage iTradingMessageAddmembermessage;
     @Autowired
     private UserInfoService userInfoService;
+    @Autowired
+    private SystemUserManagerService systemUserManagerService;
 
 
     @Value("${EBAY.API.URL}")
@@ -74,14 +75,76 @@ public class GetmymessageController extends BaseAction{
     @ResponseBody
     public void noReadMessageGetmymessageList(HttpServletRequest request,CommonParmVO commonParmVO) throws Exception {
         String readed=request.getParameter("readed");
+        Map map=new HashMap();
+        List<UsercontrollerEbayAccountExtend> ebays=systemUserManagerService.queryCurrAllEbay(map);
         Map m = new HashMap();
-        m.put("read",readed);
         PageJsonBean jsonBean=commonParmVO.getJsonBean();
         Page page=jsonBean.toPage();
-        List<MessageGetmymessageQuery> lists= this.iTradingMessageGetmymessage.selectMessageGetmymessageByGroupList(m,page);
+        List<MessageGetmymessageQuery> lists=new ArrayList<MessageGetmymessageQuery>();
+        if(ebays.size()>0){
+            m.put("read",readed);
+            m.put("ebays",ebays);
+            lists= this.iTradingMessageGetmymessage.selectMessageGetmymessageByGroupList(m,page);
+        }
+
         jsonBean.setList(lists);
         AjaxSupport.sendSuccessText("",jsonBean);
 
+    }
+    /**获取list数据的ajax方法*/
+    @RequestMapping("/ajax/loadMessageAddmymessageList.do")
+    @ResponseBody
+    public void loadMessageAddmymessageList(HttpServletRequest request,CommonParmVO commonParmVO) throws Exception {
+        String replied=request.getParameter("replied");
+        String amount=request.getParameter("amount");
+        String status=request.getParameter("status");
+        String day=request.getParameter("day");
+        String type=request.getParameter("type");
+        String content=request.getParameter("content");
+        Date starttime=null;
+        Date endtime=null;
+        if(!StringUtils.isNotBlank(replied)){
+            replied=null;
+        }
+        if(!StringUtils.isNotBlank(amount)){
+            amount=null;
+        }
+        if(!StringUtils.isNotBlank(status)){
+            status=null;
+        }else{
+            replied=status;
+        }
+        if(!StringUtils.isNotBlank(day)){
+            day=null;
+        }else{
+            if("2".equals(day)){
+                starttime=DateUtils.subDays(new Date(),1);
+                Date endTime= DateUtils.addDays(starttime, 0);
+                endtime= com.base.utils.common.DateUtils.turnToDateEnd(endTime);
+            }else{
+                int days=Integer.parseInt(day);
+                starttime=DateUtils.subDays(new Date(),days-1);
+                Date endTime= DateUtils.addDays(starttime,days-1);
+                endtime= com.base.utils.common.DateUtils.turnToDateEnd(endTime);
+            }
+        }
+        Map m = new HashMap();
+        /**分页组装*/
+        PageJsonBean jsonBean=commonParmVO.getJsonBean();
+        Page page=jsonBean.toPage();
+        Map map=new HashMap();
+        List<UsercontrollerEbayAccountExtend> ebays=systemUserManagerService.queryCurrAllEbay(map);
+        List<MessageAddmymessageQuery> lists=new ArrayList<MessageAddmymessageQuery>();
+        if(ebays.size()>0){
+            m.put("ebays",ebays);
+            m.put("amount",amount);
+            m.put("starttime",starttime);
+            m.put("endtime",endtime);
+            m.put("replied",replied);
+            lists=iTradingMessageAddmembermessage.selectMessageGetmymessageByGroupList(m,page);
+        }
+        jsonBean.setList(lists);
+        AjaxSupport.sendSuccessText("",jsonBean);
     }
     /**获取list数据的ajax方法*/
     @RequestMapping("/ajax/loadMessageGetmymessageList.do")
@@ -119,18 +182,29 @@ public class GetmymessageController extends BaseAction{
         /**分页组装*/
         PageJsonBean jsonBean=commonParmVO.getJsonBean();
         Page page=jsonBean.toPage();
-        List<UsercontrollerEbayAccountExtend> ebays=userInfoService.getEbayAccountForCurrUser();
-        m.put("ebays",ebays);
-        m.put("amount",amount);
-        m.put("status",status);
-        m.put("starttime",starttime);
-        m.put("endtime",endtime);
-        List<MessageGetmymessageQuery> lists= this.iTradingMessageGetmymessage.selectMessageGetmymessageByGroupList(m,page);
+        Map map=new HashMap();
+        List<UsercontrollerEbayAccountExtend> ebays=systemUserManagerService.queryCurrAllEbay(map);
+        List<MessageGetmymessageQuery> lists=new ArrayList<MessageGetmymessageQuery>();
+        if(ebays.size()>0){
+            m.put("ebays",ebays);
+            m.put("amount",amount);
+            m.put("status",status);
+            m.put("starttime",starttime);
+            m.put("endtime",endtime);
+            lists= this.iTradingMessageGetmymessage.selectMessageGetmymessageByGroupList(m,page);
+        }
         jsonBean.setList(lists);
         jsonBean.setTotal((int)page.getTotalCount());
         AjaxSupport.sendSuccessText("", jsonBean);
     }
-
+    @RequestMapping("/viewMessageAddmymessage.do")
+    @AvoidDuplicateSubmission(needSaveToken = true)
+    public ModelAndView viewMessageAddmymessage(HttpServletRequest request,HttpServletResponse response,@ModelAttribute( "initSomeParmMap" )ModelMap modelMap) throws Exception {
+        String messageID=request.getParameter("messageID");
+        List<TradingMessageAddmembermessage> addmembermessages=iTradingMessageAddmembermessage.selectMessageGetmymessageByMessageId(messageID,"true");
+        modelMap.put("addMessages",addmembermessages);
+        return forword("MessageGetmymessage/viewMessageAddmymessage",modelMap);
+    }
    /**
      * 查看消息
      * @param request
@@ -143,7 +217,10 @@ public class GetmymessageController extends BaseAction{
     @AvoidDuplicateSubmission(needSaveToken = true)
     public ModelAndView viewTemplateInitTable(HttpServletRequest request,HttpServletResponse response,@ModelAttribute( "initSomeParmMap" )ModelMap modelMap) throws Exception {
         String messageID=request.getParameter("messageID");
-        UsercontrollerDevAccountExtend dev= (UsercontrollerDevAccountExtend) request.getSession().getAttribute("dveId");
+        UsercontrollerDevAccountExtend dev = userInfoService.getDevInfo(null);
+        dev.setApiSiteid("0");
+        dev.setApiCallName(APINameStatic.GetMyMessages);
+        request.getSession().setAttribute("dveId", dev);
         List<UsercontrollerEbayAccountExtend> ebays = userInfoService.getEbayAccountForCurrUser();
         Map m=new HashMap();
         m.put("messageID",messageID);
@@ -205,6 +282,8 @@ public class GetmymessageController extends BaseAction{
         tm.setParentmessageid(message.getExternalmessageid());
         tm.setEmailcopytosender(emailCopyToSender);
         tm.setDisplaytopublic(displayToPublic);
+        tm.setSender(message.getRecipientuserid());
+        tm.setSubject(message.getSubject());
         parms.put("addMessage", tm);
         parms.put("ebayId",message.getEbayAccountId());
         parms.put("devAccount",dev);
@@ -213,8 +292,11 @@ public class GetmymessageController extends BaseAction{
         Map<String,String> map= GetMyMessageAPI.apiAddmembermessage(parms);
         String flag=map.get("msg");
         if(!"true".equals(flag)){
+            tm.setReplied("false");
+            iTradingMessageAddmembermessage.saveMessageAddmembermessage(tm);
             AjaxSupport.sendSuccessText("fail", map.get("par"));
         }else{
+            tm.setReplied("true");
             iTradingMessageAddmembermessage.saveMessageAddmembermessage(tm);
             AjaxSupport.sendSuccessText("message",  map.get("par"));
         }

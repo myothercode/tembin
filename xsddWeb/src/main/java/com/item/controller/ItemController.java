@@ -784,7 +784,7 @@ public class ItemController extends BaseAction{
     }
 
     /**
-     * 保存数据
+     * 重命名
      * @param request
      * @param response
      * @param modelMap
@@ -810,6 +810,49 @@ public class ItemController extends BaseAction{
         }else {
             AjaxSupport.sendSuccessText("","请选择需要删除的范本!");
         }
+    }
 
+    /**
+     * 获取登录用户的Ｅbay账号
+     * @param request
+     * @param modelMap
+     * @param commonParmVO
+     * @throws Exception
+     */
+    @RequestMapping("/ajax/selfEbayAccount.do")
+    @ResponseBody
+    public void selfEbayAccount(HttpServletRequest request,ModelMap modelMap,CommonParmVO commonParmVO) throws Exception {
+        SessionVO c= SessionCacheSupport.getSessionVO();
+        List<UsercontrollerEbayAccount> ebayList = this.iUsercontrollerEbayAccount.selectUsercontrollerEbayAccountByUserId(c.getId());
+        AjaxSupport.sendSuccessText("",ebayList);
+    }
+
+    /**
+     * 复制
+     * @param request
+     * @param response
+     * @param modelMap
+     * @return
+     * @throws Exception
+     */
+    @RequestMapping("/ajax/copyItem.do")
+    @AvoidDuplicateSubmission(needRemoveToken = true)
+    @ResponseBody
+    public void copyItem(HttpServletRequest request,HttpServletResponse response,@ModelAttribute( "initSomeParmMap" )ModelMap modelMap) throws Exception {
+        String id = request.getParameter("ids");
+        String [] ids = id.split(",");
+        String ebayaccount = request.getParameter("ebayaccount");
+        if(ids!=null&&ids.length>0){
+            try{
+                this.iTradingItem.copyItem(ids,ebayaccount);
+                AjaxSupport.sendSuccessText("","操作成功!");
+            }catch(Exception e){
+                e.printStackTrace();
+                AjaxSupport.sendSuccessText("","删除失败!");
+            }
+
+        }else {
+            AjaxSupport.sendSuccessText("","请选择需要删除的范本!");
+        }
     }
 }

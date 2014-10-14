@@ -29,5 +29,8 @@
         <if test="checkFlag!=null">
             and paypal.check_flag = #{checkFlag}
         </if>
+        <if test="userid!=null">
+            and paypal.create_user = #{userid}
+        </if>
     </select>
 </mapper>

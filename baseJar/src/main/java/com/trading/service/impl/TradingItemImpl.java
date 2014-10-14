@@ -1440,4 +1440,169 @@ public class TradingItemImpl implements com.trading.service.ITradingItem {
             this.tradingItemMapper.updateByPrimaryKey(tradingItem);
         }
     }
+
+    /**
+     * 复制
+     * @param ids
+     * @param ebayaccount
+     */
+    @Override
+    public void copyItem(String[] ids,String ebayaccount) throws Exception {
+        for(String id:ids){
+            TradingItem tradingItem = this.tradingItemMapper.selectByPrimaryKey(Long.parseLong(id));
+            //复制多属性
+            TradingVariations tradvars = this.iTradingVariations.selectByParentId(tradingItem.getId());
+            List<TradingPicturedetails> lipicd = this.iTradingPictureDetails.selectByParentId(tradingItem.getId());
+            List<TradingPublicLevelAttr> litplass = this.iTradingPublicLevelAttr.selectByParentId("ItemSpecifics", tradingItem.getId());
+            tradingItem.setId(null);
+            tradingItem.setEbayAccount(ebayaccount);
+            tradingItem.setItemId(null);
+            tradingItem.setIsFlag(null);
+
+            this.saveTradingItem(tradingItem);
+
+            if(tradvars!=null){
+                TradingPictures tptures = this.iTradingPictures.selectParnetId(tradvars.getId());
+                List<TradingPublicLevelAttr> litplavss = this.iTradingPublicLevelAttr.selectByParentId("VariationSpecificsSet",tradvars.getId());
+                List<TradingVariation> litv = this.iTradingVariation.selectByParentId(tradvars.getId());
+                tradvars.setId(null);
+                tradvars.setParentId(tradingItem.getId());
+                tradvars.setParentUuid(tradingItem.getUuid());
+                tradvars.setCreateTime(new Date());
+                this.iTradingVariations.saveVariations(tradvars);
+
+                if(tptures!=null){
+                    List<TradingPublicLevelAttr> litpla = this.iTradingPublicLevelAttr.selectByParentId("VariationSpecificPictureSet",tptures.getId());
+                    tptures.setId(null);
+                    tptures.setCreateTime(new Date());
+                    tptures.setParentId(tradvars.getId());
+                    tptures.setParentUuid(tradvars.getUuid());
+                    this.iTradingPictures.savePictures(tptures);
+                    for(TradingPublicLevelAttr tpla:litpla){
+                        List<TradingPublicLevelAttr> livalue = this.iTradingPublicLevelAttr.selectByParentId("VariationSpecificValue",tpla.getId());
+                        List<TradingAttrMores> liname = this.iTradingAttrMores.selectByParnetid(tpla.getId(),"MuAttrPictureURL");
+                        tpla.setId(null);
+                        tpla.setParentId(tptures.getId());
+                        tpla.setParentUuid(tptures.getUuid());
+                        this.iTradingPublicLevelAttr.savePublicLevelAttr(tpla);
+
+                        if(livalue!=null&&livalue.size()>0){
+                            TradingPublicLevelAttr tplavsv = livalue.get(0);
+                            tplavsv.setId(null);
+                            tplavsv.setParentId(tpla.getId());
+                            tplavsv.setParentUuid(tpla.getUuid());
+                            this.iTradingPublicLevelAttr.savePublicLevelAttr(tplavsv);
+                        }
+                        if(liname!=null&&liname.size()>0){
+                            for(TradingAttrMores tam : liname){
+                                tam.setId(null);
+                                tam.setParentId(tpla.getId());
+                                tam.setParentUuid(tpla.getUuid());
+                                this.iTradingAttrMores.saveAttrMores(tam);
+                            }
+                        }
+                    }
+                }
+
+                if(litplavss!=null&&litplavss.size()>0){
+                    for(TradingPublicLevelAttr tpla : litplavss){
+                        List<TradingPublicLevelAttr> linvlist = this.iTradingPublicLevelAttr.selectByParentId("NameValueList",tpla.getId());
+                        tpla.setId(null);
+                        tpla.setParentId(tradvars.getId());
+                        tpla.setParentUuid(tradvars.getUuid());
+                        this.iTradingPublicLevelAttr.savePublicLevelAttr(tpla);
+
+                        for(TradingPublicLevelAttr nvlist : linvlist){
+                            NameValueList nvl = new NameValueList();
+                            List<TradingAttrMores> liname = this.iTradingAttrMores.selectByParnetid(nvlist.getId(),"Name");
+                            List<TradingAttrMores> lival = this.iTradingAttrMores.selectByParnetid(nvlist.getId(),"Value");
+                            nvlist.setId(null);
+                            nvlist.setParentId(tpla.getId());
+                            nvlist.setParentUuid(tpla.getUuid());
+                            this.iTradingPublicLevelAttr.savePublicLevelAttr(nvlist);
+
+                            if(liname!=null&&liname.size()>0){
+                                TradingAttrMores tam = liname.get(0);
+                                tam.setId(null);
+                                tam.setParentId(nvlist.getId());
+                                tam.setParentUuid(nvlist.getUuid());
+                                this.iTradingAttrMores.saveAttrMores(tam);
+                            }
+                            if(lival!=null&&lival.size()>0){
+                                for(TradingAttrMores str : lival){
+                                    str.setId(null);
+                                    str.setParentId(nvlist.getId());
+                                    str.setParentUuid(nvlist.getUuid());
+                                    this.iTradingAttrMores.saveAttrMores(str);
+                                }
+                            }
+                        }
+                    }
+                }
+                if(litv!=null&&litv.size()>0){
+                    for(TradingVariation tv:litv){
+                        List<TradingPublicLevelAttr> livs = this.iTradingPublicLevelAttr.selectByParentId("VariationSpecifics",tv.getId());
+                        tv.setId(null);
+                        tv.setParentId(tradvars.getId());
+                        tv.setParentUuid(tradvars.getUuid());
+                        tv.setCreateTime(new Date());
+                        this.iTradingVariation.saveVariation(tv);
+                        if(livs!=null&&livs.size()>0){
+                            for(TradingPublicLevelAttr tpla : livs){
+                                List<TradingPublicLevelAttr> linvlist = this.iTradingPublicLevelAttr.selectByParentId(null,tpla.getId());
+                                tpla.setId(null);
+                                tpla.setParentId(tv.getId());
+                                tpla.setParentUuid(tv.getUuid());
+                                this.iTradingPublicLevelAttr.savePublicLevelAttr(tpla);
+                                for(TradingPublicLevelAttr nvlist : linvlist){
+                                    nvlist.setId(null);
+                                    nvlist.setParentId(tpla.getId());
+                                    nvlist.setParentUuid(tpla.getUuid());
+                                    this.iTradingPublicLevelAttr.savePublicLevelAttr(nvlist);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            //保存图片信息
+
+            if (lipicd != null&&lipicd.size()>0) {
+                TradingPicturedetails tpicd = lipicd.get(0);
+                List<TradingAttrMores> litam = this.iTradingAttrMores.selectByParnetid( tpicd.getId(),"PictureURL");
+                tpicd.setId(null);
+                tpicd.setParentId(tradingItem.getId());
+                tpicd.setParentUuid(tradingItem.getUuid());
+                this.iTradingPictureDetails.savePictureDetails(tpicd);
+                if(litam!=null&&litam.size()>0){
+                    for(TradingAttrMores tam:litam){
+                        tam.setId(null);
+                        tam.setParentId(tpicd.getId());
+                        tam.setParentUuid(tpicd.getUuid());
+                        this.iTradingAttrMores.saveAttrMores(tam);
+                    }
+                }
+
+            }
+
+            //保存属性值
+
+            if(litplass!=null&&litplass.size()>0){
+                TradingPublicLevelAttr tpa = litplass.get(0);
+
+                List<TradingPublicLevelAttr> litpais = this.iTradingPublicLevelAttr.selectByParentId(null, tpa.getId());
+                tpa.setId(null);
+                tpa.setParentId(tradingItem.getId());
+                tpa.setParentUuid(tradingItem.getUuid());
+                this.iTradingPublicLevelAttr.savePublicLevelAttr(tpa);
+                for(TradingPublicLevelAttr tpla:litpais){
+                    tpla.setId(null);
+                    tpla.setParentId(tpa.getId());
+                    tpla.setParentUuid(tpa.getUuid());
+                    this.iTradingPublicLevelAttr.savePublicLevelAttr(tpla);
+                }
+            }
+
+        }
+    }
 }

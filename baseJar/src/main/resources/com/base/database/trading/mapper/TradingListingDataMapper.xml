@@ -26,6 +26,8 @@
     <result column="title" jdbcType="VARCHAR" property="title" />
     <result column="create_user" jdbcType="BIGINT" property="createUser" />
     <result column="folder_id" jdbcType="VARCHAR" property="folderId" />
+    <result column="is_flag" jdbcType="VARCHAR" property="isFlag" />
+    <result column="remark" jdbcType="VARCHAR" property="remark" />
   </resultMap>
   <sql id="Example_Where_Clause">
     <!--
@@ -100,7 +102,7 @@
     -->
     id, item_id, pic_url, sku, ebay_account, site, listing_type, price, shipping_price, 
     Quantity, QuantitySold, ListingDuration, StartTime, EndTime, do_rate, create_date, 
-    update_date, title, create_user, folder_id
+    update_date, title, create_user, folder_id, is_flag, remark
   </sql>
   <select id="selectByExample" parameterType="com.base.database.trading.model.TradingListingDataExample" resultMap="BaseResultMap">
     <!--
@@ -159,14 +161,16 @@
       Quantity, QuantitySold, ListingDuration, 
       StartTime, EndTime, do_rate, 
       create_date, update_date, title, 
-      create_user, folder_id)
+      create_user, folder_id, is_flag, 
+      remark)
     values (#{id,jdbcType=BIGINT}, #{itemId,jdbcType=VARCHAR}, #{picUrl,jdbcType=VARCHAR}, 
       #{sku,jdbcType=VARCHAR}, #{ebayAccount,jdbcType=VARCHAR}, #{site,jdbcType=VARCHAR}, 
       #{listingType,jdbcType=VARCHAR}, #{price,jdbcType=DOUBLE}, #{shippingPrice,jdbcType=DOUBLE}, 
       #{quantity,jdbcType=BIGINT}, #{quantitysold,jdbcType=BIGINT}, #{listingduration,jdbcType=VARCHAR}, 
       #{starttime,jdbcType=TIMESTAMP}, #{endtime,jdbcType=TIMESTAMP}, #{doRate,jdbcType=BIGINT}, 
       #{createDate,jdbcType=TIMESTAMP}, #{updateDate,jdbcType=TIMESTAMP}, #{title,jdbcType=VARCHAR}, 
-      #{createUser,jdbcType=BIGINT}, #{folderId,jdbcType=VARCHAR})
+      #{createUser,jdbcType=BIGINT}, #{folderId,jdbcType=VARCHAR}, #{isFlag,jdbcType=VARCHAR}, 
+      #{remark,jdbcType=VARCHAR})
       <selectKey resultType="long" keyProperty="id" order="AFTER">
           SELECT LAST_INSERT_ID()
       </selectKey>
@@ -238,6 +242,12 @@
       <if test="folderId != null">
         folder_id,
       </if>
+      <if test="isFlag != null">
+        is_flag,
+      </if>
+      <if test="remark != null">
+        remark,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
       <if test="id != null">
@@ -299,6 +309,12 @@
       </if>
       <if test="folderId != null">
         #{folderId,jdbcType=VARCHAR},
+      </if>
+      <if test="isFlag != null">
+        #{isFlag,jdbcType=VARCHAR},
+      </if>
+      <if test="remark != null">
+        #{remark,jdbcType=VARCHAR},
       </if>
     </trim>
       <selectKey resultType="long" keyProperty="id" order="AFTER">
@@ -382,6 +398,12 @@
       <if test="record.folderId != null">
         folder_id = #{record.folderId,jdbcType=VARCHAR},
       </if>
+      <if test="record.isFlag != null">
+        is_flag = #{record.isFlag,jdbcType=VARCHAR},
+      </if>
+      <if test="record.remark != null">
+        remark = #{record.remark,jdbcType=VARCHAR},
+      </if>
     </set>
     <if test="_parameter != null">
       <include refid="Update_By_Example_Where_Clause" />
@@ -412,7 +434,9 @@
       update_date = #{record.updateDate,jdbcType=TIMESTAMP},
       title = #{record.title,jdbcType=VARCHAR},
       create_user = #{record.createUser,jdbcType=BIGINT},
-      folder_id = #{record.folderId,jdbcType=VARCHAR}
+      folder_id = #{record.folderId,jdbcType=VARCHAR},
+      is_flag = #{record.isFlag,jdbcType=VARCHAR},
+      remark = #{record.remark,jdbcType=VARCHAR}
     <if test="_parameter != null">
       <include refid="Update_By_Example_Where_Clause" />
     </if>
@@ -481,6 +505,12 @@
       <if test="folderId != null">
         folder_id = #{folderId,jdbcType=VARCHAR},
       </if>
+      <if test="isFlag != null">
+        is_flag = #{isFlag,jdbcType=VARCHAR},
+      </if>
+      <if test="remark != null">
+        remark = #{remark,jdbcType=VARCHAR},
+      </if>
     </set>
     where id = #{id,jdbcType=BIGINT}
   </update>
@@ -508,7 +538,9 @@
       update_date = #{updateDate,jdbcType=TIMESTAMP},
       title = #{title,jdbcType=VARCHAR},
       create_user = #{createUser,jdbcType=BIGINT},
-      folder_id = #{folderId,jdbcType=VARCHAR}
+      folder_id = #{folderId,jdbcType=VARCHAR},
+      is_flag = #{isFlag,jdbcType=VARCHAR},
+      remark = #{remark,jdbcType=VARCHAR}
     where id = #{id,jdbcType=BIGINT}
   </update>
 </mapper>

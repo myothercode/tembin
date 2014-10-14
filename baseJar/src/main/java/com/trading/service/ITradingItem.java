@@ -37,4 +37,6 @@ public interface ITradingItem {
     void delItem(String[] ids);
 
     void rename(String[] ids, String fileName);
+
+    void copyItem(String[] ids, String ebayaccount) throws Exception;
 }

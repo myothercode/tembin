@@ -3,7 +3,6 @@ package com.test.controller;
 import com.base.database.publicd.model.PublicDataDict;
 import com.base.database.publicd.model.PublicUserConfig;
 import com.base.database.trading.model.TradingDataDictionary;
-import com.base.database.userinfo.model.UsercontrollerUser;
 import com.base.domains.LoginVO;
 import com.base.domains.SessionVO;
 import com.base.userinfo.service.UserInfoService;
@@ -12,17 +11,19 @@ import com.base.utils.cache.DataDictionarySupport;
 import com.base.utils.cache.SessionCacheSupport;
 import com.base.utils.common.ObjectUtils;
 import com.base.utils.exception.Asserts;
+import com.base.utils.mailUtil.MailUtils;
 import com.common.base.utils.ajax.AjaxSupport;
 import com.common.base.web.BaseAction;
 import com.test.service.TestService;
 import com.trading.service.ITradingDataDictionary;
 import net.sf.ehcache.Cache;
 import net.sf.ehcache.CacheManager;
-import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.mail.Email;
+import org.apache.commons.mail.SimpleEmail;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -75,12 +76,19 @@ public class TextContraller extends BaseAction {
         return forword("mainFrame",modelMap);
     }
 
-    /**注册用户*/
-    public ModelAndView doReg(UsercontrollerUser user,HttpServletRequest request,HttpServletResponse response,
+   /* *//**注册用户*//*
+    public void doReg(UsercontrollerUser user ,UsercontrollerOrg org,
+                      HttpServletRequest request,HttpServletResponse response,
                               @ModelAttribute( "initSomeParmMap" )ModelMap modelMap){
+        Asserts.assertTrue(ObjectUtils.isNumOrChar(user.getUserLoginId()),"登录名只能由数字和字母组成!");
+        Asserts.assertTrue(StringUtils.isNotEmpty(user.getUserPassword()),"密码不能为空!");
+        Map map =new HashMap();
+        map.put("UsercontrollerUser",user);
+        map.put("UsercontrollerOrg",org);
+        userInfoService.regInsertUserInfo(map);
+        AjaxSupport.sendSuccessText("success","注册成功!请登录!");
+    }*/
 
-
-    }
 
     /**登录操作*/
     @RequestMapping("/login.do")
@@ -157,15 +165,17 @@ public class TextContraller extends BaseAction {
         AjaxSupport.sendSuccessText("啊", "dfd");
     }
 
+    /**发送修改密码的验证码*/
     @RequestMapping("sometest.do")
-    public ModelAndView sometest(ModelMap modelMap,String id) throws InterruptedException {
-        Map<String,String> map=new HashMap<String, String>();
-        map.put("type","country");
-        map.put("value","GM");
-        //map.put("ds","d");
-        List<TradingDataDictionary> x= DataDictionarySupport.getTradingDataDictionaryByMap(map);
-        return forword("sometest",modelMap);
+    public void sometest() throws Exception {
+        Email email = new SimpleEmail();
+        email.addTo("caixu23@qq.com");
+        email.setSubject("这个是标题");
+        email.setMsg("这个是测试邮件");
 
+        MailUtils mailUtils= (MailUtils) ApplicationContextUtil.getBean("mailUtils");
+        mailUtils.sendMail(email);
+        AjaxSupport.sendSuccessText("","a");
     }
 
 }

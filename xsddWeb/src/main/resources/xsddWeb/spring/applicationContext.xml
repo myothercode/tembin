@@ -9,6 +9,7 @@
     <import resource="classpath*:xsddWeb/spring/spring-Ehcache.xml" />
     <import resource="classpath*:baseJar/spring/applicationContext-cxfclient.xml" />
     <import resource="classpath*:baseJar/spring/scheduledConfig.xml" />
+    <!--<import resource="classpath*:xsddWeb/spring/mailconfig.xml" />-->
     <!--<import resource="classpath*:xsddWeb/spring/applicationShiro.xml" />-->
 
 

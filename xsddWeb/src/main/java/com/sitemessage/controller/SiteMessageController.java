@@ -1,8 +1,8 @@
 package com.sitemessage.controller;
 
-import com.base.database.sitemessage.mapper.CustomPublicSitemessageMapper;
 import com.base.database.sitemessage.model.CustomPublicSitemessage;
 import com.base.database.sitemessage.model.PublicSitemessage;
+import com.base.database.trading.model.TradingMessageGetmymessage;
 import com.base.domains.CommonParmVO;
 import com.base.mybatis.page.Page;
 import com.base.mybatis.page.PageJsonBean;
@@ -13,6 +13,7 @@ import com.common.base.utils.ajax.AjaxSupport;
 import com.common.base.web.BaseAction;
 import com.sitemessage.service.SiteMessageService;
 import com.sitemessage.service.SiteMessageStatic;
+import com.trading.service.ITradingMessageGetmymessage;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -35,6 +36,8 @@ public class SiteMessageController extends BaseAction {
 
     @Autowired
     private SiteMessageService siteMessageService;
+    @Autowired
+    private ITradingMessageGetmymessage iTradingMessageGetmymessage;
 
     /**消息列表页面*/
     @RequestMapping("siteMessagePage.do")
@@ -61,9 +64,9 @@ public class SiteMessageController extends BaseAction {
         Page page=jsonBean.toPage();
 
         List<CustomPublicSitemessage> customPublicSitemessages = siteMessageService.querySiteMessage(publicSitemessage, page);
-
+        List<TradingMessageGetmymessage> messages=iTradingMessageGetmymessage.selectMessageGetmymessageByNoRead("false");
         if("num".equalsIgnoreCase(commonParmVO.getStrV1())){
-            String r="{\"systemMessageNum\":\""+page.getTotalCount()+"\",\"ebayMessageNum\":\""+0+"\"}";
+            String r="{\"systemMessageNum\":\""+page.getTotalCount()+"\",\"ebayMessageNum\":\""+messages.size()+"\"}";
             AjaxSupport.sendSuccessText("",r);
             return;
         }
@@ -101,6 +104,6 @@ public class SiteMessageController extends BaseAction {
             map.put("idArray",ids);
         }
         siteMessageService.batchSetReaded(map);
-        AjaxSupport.sendSuccessText("","标记成功！");
+        AjaxSupport.sendSuccessText("", "标记成功！");
     }
 }

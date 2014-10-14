@@ -5,13 +5,17 @@ import com.base.database.trading.mapper.TradingMessageGetmymessageMapper;
 import com.base.database.trading.model.TradingMessageGetmymessage;
 import com.base.database.trading.model.TradingMessageGetmymessageExample;
 import com.base.domains.querypojos.MessageGetmymessageQuery;
+import com.base.domains.userinfo.UsercontrollerEbayAccountExtend;
 import com.base.mybatis.page.Page;
+import com.base.userinfo.service.SystemUserManagerService;
 import com.base.utils.common.ObjectUtils;
 import com.base.utils.exception.Asserts;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -27,7 +31,8 @@ public class TradingMessageGetmymessageImpl implements com.trading.service.ITrad
 
     @Autowired
     private MessageGetmymessageMapper MessageGetmymessageMapper;
-
+    @Autowired
+    private SystemUserManagerService systemUserManagerService;
     @Override
     public void saveMessageGetmymessage(TradingMessageGetmymessage MessageGetmymessage) throws Exception {
         if(MessageGetmymessage.getId()==null){
@@ -36,7 +41,7 @@ public class TradingMessageGetmymessageImpl implements com.trading.service.ITrad
         }else{
             TradingMessageGetmymessage t=TradingMessageGetmymessageMapper.selectByPrimaryKey(MessageGetmymessage.getId());
             Asserts.assertTrue(t != null && t.getCreateUser() != null, "没有找到记录或者记录创建者为空");
-            ObjectUtils.valiUpdate(t.getCreateUser(),TradingMessageGetmymessageMapper.class,MessageGetmymessage.getId());
+            ObjectUtils.valiUpdate(t.getCreateUser(),TradingMessageGetmymessageMapper.class,MessageGetmymessage.getId(),"Synchronize");
 
             this.TradingMessageGetmymessageMapper.updateByPrimaryKeySelective(MessageGetmymessage);
         }
@@ -66,11 +71,27 @@ public class TradingMessageGetmymessageImpl implements com.trading.service.ITrad
     }
 
     @Override
-    public List<TradingMessageGetmymessage> selectMessageGetmymessageByItemId(String itemid) {
+    public List<TradingMessageGetmymessage> selectMessageGetmymessageByNoRead(String read) {
         TradingMessageGetmymessageExample example=new TradingMessageGetmymessageExample();
         TradingMessageGetmymessageExample.Criteria cr=example.createCriteria();
-        cr.andItemidEqualTo(itemid);
+        List<String> ebayNames=new ArrayList<String>();
+        Map map=new HashMap();
+        List<UsercontrollerEbayAccountExtend> ebays=systemUserManagerService.queryCurrAllEbay(map);
+        for(UsercontrollerEbayAccountExtend d:ebays){
+            ebayNames.add(d.getEbayName());
+        }
+        cr.andReadEqualTo(read);
+        cr.andRecipientuseridIn(ebayNames);
         List<TradingMessageGetmymessage> list=TradingMessageGetmymessageMapper.selectByExample(example);
+        return list;
+    }
+
+    @Override
+    public List<TradingMessageGetmymessage> selectMessageGetmymessageByMessageId(String messageId) {
+        TradingMessageGetmymessageExample example=new TradingMessageGetmymessageExample();
+        TradingMessageGetmymessageExample.Criteria cr=example.createCriteria();
+        cr.andMessageidEqualTo(messageId);
+        List<TradingMessageGetmymessage> list=TradingMessageGetmymessageMapper.selectByExampleWithBLOBs(example);
         return list;
     }
 

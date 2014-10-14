@@ -40,8 +40,12 @@
         }
         /**查看发送消息*/
         function makeOption1(json){
-            var htm="<div class=\"ui-select\" style=\"width:8px\"><a href=\"javascript:void(0)\" onclick=\"deleteSendMessage("+json.transactionid+","+json.messagetype+");\">删除</a></div>";
-            return htm;
+            /*var htm="<div class=\"ui-select\" style=\"width:8px\"><a href=\"javascript:void(0)\" onclick=\"deleteSendMessage("+json.transactionid+","+json.messagetype+");\">删除</a></div>";
+            return htm;*/
+            var hs="";
+            hs="<li onclick=deleteSendMessage("+json.transactionid+","+json.messagetype+"); value='1' doaction=\"readed\" >删除</li>";
+            var pp={"liString":hs};
+            return getULSelect(pp);
         }
         function makeOption3(json){
             var htm = "<input type=\"checkbox\"  name=\"templateId\" value=" + json.id + ">";
@@ -72,7 +76,7 @@
                 return "评价";
             }
             if(json.messagetype==4){
-                return "ebay累发送消息";
+                return "ebay类发送消息";
             }
         }
         function Allchecked(obj){

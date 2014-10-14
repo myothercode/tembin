@@ -89,9 +89,9 @@
 
 
 /**用ul和li模拟的下拉框的样式*/
-.select_box {list-style: none;width:90px; border:0px solid #ccc; padding-right:20px; padding-left:10px; background:url(../../img/107.gif) no-repeat 70px center; position:relative;}
+.select_box {list-style: none;width:60px; border:0px solid #ccc; padding-right:20px; padding-left:10px; background:url(../../img/107.gif) no-repeat 50px center; position:relative;}
 .select_box span {cursor:pointer; display:block; line-height:25px; width:100%; height:25px; overflow:hidden;}
 .select_box ul li {cursor:pointer;list-style: none}
-.son_ul {z-index: 999;margin:0;padding:0;width:83px; position:absolute; left:0; top:25px; border:1px dashed #ccc; background:#fff;}
-.son_ul li {margin:0;padding:0;display:block; line-height:25px; padding-left:10px; width:75px;list-style: none; }
+.son_ul {z-index: 999;margin:0;padding:0;width:70px; position:absolute; left:0; top:25px; border:1px dashed #ccc; background:#fff;}
+.son_ul li {margin:0;padding:0;display:block; line-height:25px; padding-left:10px; width:65px;list-style: none; }
 .hover {background:#ccc;}

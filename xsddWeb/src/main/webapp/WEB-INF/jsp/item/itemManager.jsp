@@ -184,13 +184,15 @@
         $(document).ready(function(){
             var url=path+"/ajax/selfFolder.do?folderType=modelFolder";
             $().invoke(url,{},
-                    [function(m,r){
-                        var htmlstr='<dt name="allProduct" class=new_tab_1 onclick="setTab(this)">所有范本</dt>'
-                                +'<dt name="listingProduct" class=new_tab_2 onclick="setTab(this)">有在线刊登</dt>'
-                                +'<dt name="product" class=new_tab_2 onclick="setTab(this)">无在线刊登</dt>'
-                                +'<dt name="timeProduct" class=new_tab_2 onclick="setTab(this)">定时</dt>';
-                        for(var i = 0;i < r.length;i++){
-                            htmlstr+="<dt name='myFolder_"+i+"' val='"+r[i].id+"' class=new_tab_2 onclick='setTab(this)'>"+r[i].configName+"</dt>";
+                    [function(m,r) {
+                        var htmlstr = '<dt name="allProduct" class=new_tab_1 onclick="setTab(this)">所有范本</dt>'
+                                + '<dt name="listingProduct" class=new_tab_2 onclick="setTab(this)">有在线刊登</dt>'
+                                + '<dt name="product" class=new_tab_2 onclick="setTab(this)">无在线刊登</dt>'
+                                + '<dt name="timeProduct" class=new_tab_2 onclick="setTab(this)">定时</dt>';
+                        if (r != null) {
+                            for (var i = 0; i < r.length; i++) {
+                                htmlstr += "<dt name='myFolder_" + i + "' val='" + r[i].id + "' class=new_tab_2 onclick='setTab(this)'>" + r[i].configName + "</dt>";
+                            }
                         }
                         $("#tab").html(htmlstr);
                     },
@@ -224,7 +226,15 @@
                 ],
                 selectDataNow:false,
                 isrowClick:false,
-                showIndex:false
+                showIndex:false,
+                isrowClick: true,
+                rowClickMethod: function (obj,o){
+                    if($("input[type='checkbox'][name='modelid'][val='"+obj.id+"']").prop("checked")){
+                        $("input[type='checkbox'][name='modelid'][val='" + obj.id + "']").prop("checked", false);
+                    }else {
+                        $("input[type='checkbox'][name='modelid'][val='" + obj.id + "']").prop("checked", true);
+                    }
+                }
             });
             refreshTable();
         }
@@ -265,27 +275,22 @@
         }
         /**组装操作选项*/
         function makeOption1(json){
-            var htm="<a target=\"_blank\" href=\"javascript:void(0)\" onclick=\"editItem('"+json.id+"');\">编辑</a>";
-            return htm;
+            var hs="";
+            hs+="<li style='height:25px' onclick=editItem('"+json.id+"') value='"+json.id+"' doaction=\"look\" >编辑</li>";
+            hs+="<li style='height:25px' onclick=delItem('"+json.id+"') value='"+json.id+"' doaction=\"look\" >删除</li>";
+            hs+="<li style='height:25px' onclick=copyItem('"+json.id+"') value='"+json.id+"' doaction=\"look\" >复制</li>";
+            hs+="<li style='height:25px' onclick=renameItem('"+json.id+"') value='"+json.id+"' doaction=\"look\" >重命名</li>";
+            hs+="<li style='height:25px' onclick=toFolder('"+json.id+"') value='"+json.id+"' doaction=\"look\" >移动</li>";
+            hs+="<li style='height:25px' onclick=listingItem('"+json.id+"') value='"+json.id+"' doaction=\"look\" >立即刊登</li>";
+            var pp={"liString":hs};
+            return getULSelect(pp);
         }
 
         function  refreshTable(){
             $("#itemTable").selectDataAfterSetParm({});
         }
-        //移动到文件夹
-        function shiftToFolder(obj) {
-            var item = $("input[name='modelid']");
-            var idStr = "";
 
-            for (var i = 0; i < item.length; i++) {
-                if ($(item[i])[0].checked) {
-                    idStr += $($(item[i])[0]).attr("val") + ",";
-                }
-            }
-            if(idStr==""){
-                alert("请选择需要移动的商品！");
-                return ;
-            }
+        function toFolder(idStr){
             var url=path+"/ajax/selfFolder.do?folderType=modelFolder";
             $().invoke(url,{},
                     [function(m,r){
@@ -335,7 +340,22 @@
                             alert(r);
                         }]
             );
+        }
+        //移动到文件夹
+        function shiftToFolder(obj) {
+            var item = $("input[name='modelid']");
+            var idStr = "";
 
+            for (var i = 0; i < item.length; i++) {
+                if ($(item[i])[0].checked) {
+                    idStr += $($(item[i])[0]).attr("val") + ",";
+                }
+            }
+            if(idStr==""){
+                alert("请选择需要移动的商品！");
+                return ;
+            }
+            toFolder(idStr);
         }
     function listing(obj){
         var item = $("input[name='modelid']");
@@ -359,6 +379,10 @@
             return ;
         }
 
+        listingItem(idStr);
+    }
+
+    function listingItem(idStr){
         var url = path+"/ajax/listingItem.do?id="+idStr;
         $().invoke(url, {},
                 [function (m, r) {
@@ -370,6 +394,7 @@
                     }]
         );
     }
+
     function onselectAlls(obj){
         var item = $("input[name='modelid']");
         if($(obj).prop("checked")){
@@ -398,10 +423,61 @@
         if($(obj).val()=="del"){//删除
             delItem(idStr);
         }else if($(obj).val()=="copy"){//复制
-
+            copyItem(idStr);
         }else if($(obj).val()=="rename"){//重命名
             renameItem(idStr)
         }
+    }
+    function copyItem(idStr){
+        var url=path+"/ajax/selfEbayAccount.do";
+        $().invoke(url,{},
+                [function(m,r){
+                    var htmlstr = "<div>选择Ebay账号：</div>";
+                    htmlstr += "<div>";
+                    for(var i = 0;i < r.length;i++){
+                        htmlstr+="<div><input type='radio' name='ebayAccount' value='"+r[i].id+"'/>"+r[i].ebayName+"</div>";
+                    }
+                    htmlstr += "</div>";
+                    var editPage = $.dialog({title: '选择Ebay账号',
+                        content: htmlstr,
+                        icon: 'succeed',
+                        width: 400,
+                        button: [
+                            {
+                                name: '确定',
+                                callback: function (iwins, enter) {
+                                    var ebayaccount = "";
+                                    for(var i =0;i<iwins.parent.document.getElementsByName("ebayAccount").length;i++){
+                                        if(iwins.parent.document.getElementsByName("ebayAccount")[i].checked){
+                                            ebayaccount = iwins.parent.document.getElementsByName("ebayAccount")[i].value;
+                                        }
+                                    }
+                                    if(ebayaccount==""){
+                                        alert("请选择Ebay账号！");
+                                        return false;
+                                    }
+                                    var url = path + "/ajax/copyItem.do?ids=" + idStr+"&ebayaccount="+ebayaccount;
+                                    $().invoke(url, {},
+                                            [function (m, r) {
+                                                alert(r);
+                                                Base.token();
+                                                onloadTable(loadurl);
+                                            },
+                                                function (m, r) {
+                                                    alert(r);
+                                                    Base.token();
+                                                }]
+                                    );
+
+                                }
+                            }
+                        ]
+                    });
+                },
+                    function(m,r){
+                        alert(r);
+                    }]
+        )
     }
     //删除范本
     function delItem(idStr){
@@ -468,10 +544,10 @@
             <div class="new_usa" style="margin-top:20px;">
                 <li class="new_usa_list"><span class="newusa_i">选择国家：</span>
                     <a href="javascript:void(0)" onclick="selectCounty(this)" value=""><span class="newusa_ici">全部</span></a>
-                    <a href="javascript:void(0)" onclick="selectCounty(this)" value="311"><span class="newusa_ici_1"><img src="<c:url value ="/img/usa_1.png"/> ">美国</span></a>
-                    <a href="javascript:void(0)" onclick="selectCounty(this)" value="310"><span class="newusa_ici_1"><img src="<c:url value ="/img/UK.jpg"/> ">英国</span></a>
-                    <a href="javascript:void(0)" onclick="selectCounty(this)" value="298"><span class="newusa_ici_1"><img src="<c:url value ="/img/DE.png"/> ">德国</span></a>
-                    <a href="javascript:void(0)" onclick="selectCounty(this)" value="291"><span class="newusa_ici_1"><img src="<c:url value ="/img/AU.jpg"/> ">澳大利亚</span></a>
+                    <a href="javascript:void(0)" onclick="selectCounty(this)" value="311"><span class="newusa_ici_1"><img src="<c:url value ='/img/usa_1.png'/> ">美国</span></a>
+                    <a href="javascript:void(0)" onclick="selectCounty(this)" value="310"><span class="newusa_ici_1"><img src="<c:url value ='/img/UK.jpg'/> ">英国</span></a>
+                    <a href="javascript:void(0)" onclick="selectCounty(this)" value="298"><span class="newusa_ici_1"><img src="<c:url value ='/img/DE.png'/> ">德国</span></a>
+                    <a href="javascript:void(0)" onclick="selectCounty(this)" value="291"><span class="newusa_ici_1"><img src="<c:url value ='/img/AU.jpg'/> ">澳大利亚</span></a>
                 </li>
                 <li class="new_usa_list">
                     <span class="newusa_i">选择账号：</span>

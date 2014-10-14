@@ -40,5 +40,8 @@
         <if test="checkFlag!=null">
             and buyer.check_flag = #{checkFlag}
         </if>
+        <if test="userid!=null">
+            and buyer.create_user = #{userid}
+        </if>
     </select>
 </mapper>

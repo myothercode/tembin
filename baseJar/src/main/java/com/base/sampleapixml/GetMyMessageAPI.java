@@ -56,8 +56,8 @@ public class GetMyMessageAPI {
             ms.setExpirationdate(date1);
         }
         ms.setResponseenabled(SamplePaseXml.getSpecifyElementText(message,"ResponseDetails","ResponseEnabled"));
-        ms.setResponseenabled(SamplePaseXml.getSpecifyElementText(message,"ResponseDetails","ResponseURL"));
-        ms.setResponseenabled(SamplePaseXml.getSpecifyElementText(message,"Folder","FolderID"));
+        ms.setResponseurl(SamplePaseXml.getSpecifyElementText(message,"ResponseDetails","ResponseURL"));
+        ms.setFolderid(SamplePaseXml.getSpecifyElementText(message,"Folder","FolderID"));
         ms.setLoginAccountId(accountId);
         ms.setEbayAccountId(ebay);
         return ms;

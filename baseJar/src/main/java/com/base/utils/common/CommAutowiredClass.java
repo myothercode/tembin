@@ -13,4 +13,6 @@ public class CommAutowiredClass {
     @Value("${IS_START_TIMER_TASK}")
     public String isStartTimerTask;//本机是否开启定时任务
 
+
+
 }

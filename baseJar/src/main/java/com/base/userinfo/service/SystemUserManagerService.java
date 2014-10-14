@@ -46,4 +46,7 @@ public interface SystemUserManagerService {
 
     /**修改密码*/
     void changePWD(String oldPWD, String newPWD);
+
+    /**发送找回密码的验证码*/
+    void sendSafeCode(Map map);
 }

@@ -26,10 +26,11 @@
         <result column="title" jdbcType="VARCHAR" property="title" />
         <result column="create_user" jdbcType="BIGINT" property="createUser" />
         <result column="folder_id" jdbcType="VARCHAR" property="folderId" />
+        <result column="remark" jdbcType="VARCHAR" property="remark" />
     </resultMap>
     <select id="selectByExample" resultMap="BaseResultMap" parameterType="map">
         select * from trading_listing_data tion
-        where 1=1
+        where 1=1 and tion.is_flag='0'
         <if test="folderid==null">
             and tion.folder_id is null
         </if>

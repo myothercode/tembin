@@ -43,7 +43,7 @@ function addMenuLevel1(json){
 
 /**添加二级菜单*/
 function addMenuLevel2(json){
-    var h="<li><a target='contentMain' " +
+    var h="<li><a name='menu2' target='contentMain' " +
         "onclick='addArrow(this)' href="+json.permissionURL+">"+json.permissionName+"</a></li>";
     var parID="menu_1_"+json['parentID'];
     $("#"+parID+" .submenu").append(h);
@@ -51,6 +51,9 @@ function addMenuLevel2(json){
 
 /**为选中的菜单的大菜单增加箭头*/
 function addArrow(obj){
+    $("a[name='menu2']").css({"background-image":path+"/img/new_list_one.png","color":"666666"});
+    $(obj).css({"background-image":path+"/img/new_list_one_1.png","color":"2a6496"});
+
     $(".pointer[flag='po']").remove();
    var arrow="<div flag='po' class=\"pointer\">"+
             "<div class=\"arrow\"></div>"+
@@ -91,36 +94,34 @@ function getEbayMessage(p){
         url,
         data,
         [function(m,r){
-            console.debug(m);
-            console.debug(r);
-           /* if(r==null){return;}
-            if(data.strV1=="num"){
-                var re = eval("(" + r + ")");
-                //alert(re.systemMessageNum)
-                $("#systemMessageCount").html(re.systemMessageNum);
-                $("#ebayMessagesCount").html(re.ebayMessageNum);
-                $("#ebaymessageNotice").html("You have "+re.ebayMessageNum+" new notifications")
-                return;
-            }
+            if(r==null){return;}
             var dat = r.list;
             var ht="";
             for(var i in dat){
-                var ddd =alySystemMessage(dat[i]);
-                ht+="<a onclick='openMessage("+dat[i]["id"]+")' href=\"javascript:void(0)\" class=\"item\">"+
-                    "<img src=\"/xsddWeb/img/contact-img.png\" class=\"display\" />"+
-                    "<div class=\"name\">"+ddd["titl"]+"</div>"+
-                    "<div class=\"msg\">"+
-                    ddd["cont"]+
-                    "</div>"+
-                    "<span class=\"time\"><i class=\"icon-time\"></i> "+dat[i]["createTime"]+"</span>"+
-                    "</a>";
+                var subj=dat[i].subject;
+                if(subj.length>15){
+                    subj=subj.substring(0,15)+"...";
+                }
+                ht+="<a href=\"#\" onclick='openGetMessage("+dat[i].messageid+");' class=\"item\">" +
+                "<i class=\"icon-download-alt\"></i>"+subj+"" +
+                "<span class=\"time\"><i class=\"icon-time\"></i>"+dat[i].receivedate+"</span>" +
+                "</a>";
             }
-            ht+="<div class=\"footer\"><a href=\"sitemessage/siteMessagePage.do\" target='contentMain' class=\"logout\">View all messages</a></div>";
-            $("#messages").html(ht);*/
+            ht+="<div class=\"footer\"><a id=\"ebayMessageLiu\" href=\"message/MessageGetmymessageList.do\" target='contentMain' class=\"logout\">View all notifications</a></div>";
+            $("#notifications").html(ht);
         },
             function(m,r){}]
     );
 /*    $("#ebaymessageNotice").html("You have "+ 0 +" new notifications")*/
+}
+function openGetMessage(messageid){
+    var url=path+"/message/viewMessageGetmymessage.do";
+    MessageGetmymessage=$.dialog({title: '查看消息',
+        content: 'url:'+url+'?messageID='+messageid,
+        icon: 'succeed',
+        width:1025,
+        height:500
+    });
 }
 /**获取系统信息*/
 function getSystemMessage(p){

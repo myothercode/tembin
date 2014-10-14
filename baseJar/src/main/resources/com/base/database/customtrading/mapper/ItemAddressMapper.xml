@@ -27,6 +27,9 @@
         <if test="checkFlag!=null">
             and item.check_flag = #{checkFlag}
         </if>
+        <if test="userid!=null">
+            and item.create_user = #{userid}
+        </if>
     </select>
 
 </mapper>

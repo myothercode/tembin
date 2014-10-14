@@ -14,6 +14,8 @@ import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.util.Collection;
 import java.util.Date;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 
 /**
@@ -92,5 +94,13 @@ public class ObjectUtils {
         return true;
     }
 
+    /**判断字符串只是由数字和字母组成*/
+    public static boolean isNumOrChar(String s){
+        if(StringUtils.isEmpty(s)){return false;}
+        String regEx="^[A-Za-z0-9_]+$";
+        Pattern p= Pattern.compile(regEx);
+        Matcher m=p.matcher(s);
+        return m.matches();
+    }
 
 }

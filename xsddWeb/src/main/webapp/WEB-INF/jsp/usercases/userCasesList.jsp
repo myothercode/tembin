@@ -66,15 +66,19 @@
             }
             var h=htm+htm1+htm2;
             return h;*/
-            var htm="<div class=\"ui-select\" style=\"width:106px\" >" +
+           /* var htm="<div class=\"ui-select\" style=\"width:106px\" >" +
                     "<select onchange=\"selectOperation('"+json.transactionid+"','"+json.id+"','"+json.sellerid+"',this); \" name=\"ui-select\" style=\"margin-left:-3px;\">" +
                     "<option value=\"0\"><a href=\"javascript:#\">--请选择--</a></option>" +
-                  /*  "<option value=\"1\"><a href=\"javascript:#\">同步详情</a></option>" +
-                    "<option value=\"2\"><a href=\"javascript:#\">查看详情</a></option>" +*/
+                  *//*  "<option value=\"1\"><a href=\"javascript:#\">同步详情</a></option>" +
+                    "<option value=\"2\"><a href=\"javascript:#\">查看详情</a></option>" +*//*
                     "<option value=\"3\"><a href=\"javascript:#\">处理纠纷</a></option>" +
                     "</select>" +
                     "</div>";
-            return htm;
+            return htm;*/
+            var hs="";
+            hs+="<li onclick=selectOperation('"+json.transactionid+"','"+json.id+"','"+json.sellerid+"',this); value='3' doaction=\"readed\" >处理纠纷</li>";
+            var pp={"liString":hs};
+            return getULSelect(pp);
         }
         function selectOperation(transactionid,id,sellerid,obj){
             var value=$(obj).val();

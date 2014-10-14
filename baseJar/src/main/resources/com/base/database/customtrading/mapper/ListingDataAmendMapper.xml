@@ -25,7 +25,7 @@
         <result column="amend_type" property="amendType" jdbcType="VARCHAR" />
         <result column="amend_user" property="amendUser" jdbcType="BIGINT" />
         <result column="amend_time" property="amendTime" jdbcType="TIMESTAMP" />
-        <result column="is_flag" property="isFlag" jdbcType="VARCHAR" />
+        <result column="endisflag" property="isFlag" jdbcType="VARCHAR" />
     </resultMap>
     <resultMap id="ResultMapWithBLOBs" type="com.base.domains.querypojos.ListingDataAmendQuery" extends="BaseResultMap" >
         <!--
@@ -35,7 +35,7 @@
         <result column="content" property="content" jdbcType="LONGVARCHAR" />
     </resultMap>
     <select id="selectByExample" resultMap="BaseResultMap" parameterType="map">
-        select tion.*,amend.amend_type,amend.item,amend.create_user amend_user,amend.create_time amend_time,amend.is_flag,amend.content from trading_listing_data tion,trading_listing_amend amend
+        select tion.*,amend.amend_type,amend.item,amend.create_user amend_user,amend.create_time amend_time,amend.is_flag endisflag,amend.content from trading_listing_data tion,trading_listing_amend amend
         where tion.id=amend.parent_id
         <if test="userid!=null">
             and tion.create_user = #{userid}
