@@ -12,6 +12,11 @@
 <html>
 <head>
     <title></title>
+    <style type="text/css">
+        body {
+            background-color: #ffffff;
+        }
+    </style>
     <script>
         var descDiag="";
         function addDescriptionDetails(){

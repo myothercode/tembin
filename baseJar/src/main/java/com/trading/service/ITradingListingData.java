@@ -1,6 +1,7 @@
 package com.trading.service;
 
 import com.base.database.trading.model.TradingListingAmend;
+import com.base.database.trading.model.TradingListingAmendWithBLOBs;
 import com.base.database.trading.model.TradingListingData;
 import com.base.domains.querypojos.ListingDataAmendQuery;
 import com.base.mybatis.page.Page;
@@ -24,7 +25,7 @@ public interface ITradingListingData {
 
     void updateTradingListingData(TradingListingData tld);
 
-    void insertTradingListingAmend(TradingListingAmend tla);
+    void insertTradingListingAmend(TradingListingAmendWithBLOBs tla);
 
     List<TradingListingData> selectByList(String sku, String ebayAccount);
 

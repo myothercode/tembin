@@ -23,10 +23,9 @@
                 url:path + "/sendMessage/ajax/loadSendMessageList.do?",
                 columnData:[
                     {title:"",name:"pictureUrl",width:"2%",align:"left",format:makeOption3},
-                    {title:"标题",name:"subject",width:"8%",align:"left"},
-                    {title:"主题",name:"body",width:"8%",align:"left"},
-                    {title:"类型",name:"messagetype",width:"8%",align:"left",format:makeOption2},
-                    {title:"备注",name:"recipientid",width:"8%",align:"left"},
+                    {title:"模板名称",name:"name",width:"8%",align:"left"},
+                    {title:"内容",name:"content",width:"8%",align:"left"},
+                    {title:"状态",name:"status",width:"8%",align:"left",format:makeOption2},
                     {title:"操作",name:"countNum",width:"8%",align:"left",format:makeOption1}
                 ],
                 selectDataNow:false,
@@ -43,7 +42,10 @@
             /*var htm="<div class=\"ui-select\" style=\"width:8px\"><a href=\"javascript:void(0)\" onclick=\"deleteSendMessage("+json.transactionid+","+json.messagetype+");\">删除</a></div>";
             return htm;*/
             var hs="";
-            hs="<li onclick=deleteSendMessage("+json.transactionid+","+json.messagetype+"); value='1' doaction=\"readed\" >删除</li>";
+            hs="<li onclick=editMessageTemplate("+json.id+"); value='1' doaction=\"readed\" >编辑</li>";
+            hs+="<li onclick=useStatus("+json.id+",'1'); value='1' doaction=\"look\" >启用</li>";
+            hs+="<li onclick=useStatus("+json.id+",'0'); value='1' doaction=\"look\" >禁用</li>";
+            hs+="<li onclick=deleteSendMessage("+json.id+"); value='1' doaction=\"look\" >删除</li>";
             var pp={"liString":hs};
             return getULSelect(pp);
         }
@@ -51,13 +53,27 @@
             var htm = "<input type=\"checkbox\"  name=\"templateId\" value=" + json.id + ">";
             return htm;
         }
-        function deleteSendMessage(transactionid,messagetype){
-            var url=path+"/sendMessage/ajax/removesendMessage.do?transactionid="+transactionid+"&messagetype="+messagetype;
+        function useStatus(id,status){
+            var url=path+"/sendMessage/useStatus.do?id="+id+"&status="+status;
             $().invoke(url,null,
                     [function(m,r){
                         alert(r);
-                        refreshTable();
                         Base.token();
+                        refreshTable();
+                    },
+                        function(m,r){
+                            alert(r);
+                            Base.token();
+                        }]
+            );
+        }
+        function deleteSendMessage(id){
+            var url=path+"/sendMessage/ajax/removesendMessage.do?id="+id;
+            $().invoke(url,null,
+                    [function(m,r){
+                        alert(r);
+                        Base.token();
+                        refreshTable();
                     },
                         function(m,r){
                             alert(r);
@@ -66,17 +82,12 @@
             );
         }
         function makeOption2(json){
-            if(json.messagetype==1){
-                return "纠纷类主动发送消息";
-            }
-            if(json.messagetype==2){
-                return "自动发送消息";
-            }
-            if(json.messagetype==3){
-                return "评价";
-            }
-            if(json.messagetype==4){
-                return "ebay类发送消息";
+            if(json.status==1){
+                var htm = "<img src='"+path+"/img/new_yes.png' />";
+                return htm;
+            }else{
+                var htm = "<img src='"+path+"/img/new_no.png' />";
+                return htm;
             }
         }
         function Allchecked(obj){
@@ -91,6 +102,87 @@
                 }
             }
         }
+        function addMessageTemplate(){
+            var url=path+'/sendMessage/addMessageTemplate.do?';
+            sendGetmymessage=$.dialog({title: '添加或编辑',
+                content: 'url:'+url,
+                icon: 'succeed',
+                width:850,
+                height:450,
+                lock:true
+            });
+        }
+        function editMessageTemplate(id){
+            var url=path+'/sendMessage/addMessageTemplate.do?id='+id;
+            sendGetmymessage=$.dialog({title: '添加或编辑',
+                content: 'url:'+url,
+                icon: 'succeed',
+                width:850,
+                height:450,
+                lock:true
+            });
+        }
+        function viewForbidden(){
+            $("#sendMessageTable").initTable({
+                url:path + "/sendMessage/ajax/loadSendMessageList.do?status=0",
+                columnData:[
+                    {title:"",name:"pictureUrl",width:"2%",align:"left",format:makeOption3},
+                    {title:"模板名称",name:"name",width:"8%",align:"left"},
+                    {title:"内容",name:"content",width:"8%",align:"left"},
+                    {title:"状态",name:"status",width:"8%",align:"left",format:makeOption2},
+                    {title:"操作",name:"countNum",width:"8%",align:"left",format:makeOption1}
+                ],
+                selectDataNow:false,
+                isrowClick:false,
+                showIndex:false
+            });
+            refreshTable();
+        }
+        function onclickType(count,name){
+            var types=$("span[scop=type]");
+            for(var i=0;i<types.length;i++){
+                if(i==count){
+                    $(types[i]).attr("class","newusa_ici");
+                    $("#type").val(name);
+                }else{
+                    $(types[i]).attr("class","newusa_ici_1");
+                }
+            }
+        }
+        function selectDays(count,name){
+            var days=$("span[scop=days]");
+
+            for(var i=0;i<days.length;i++){
+                if(i==count){
+                    $(days[i]).attr("class","newusa_ici");
+                    $("#time").val(name);
+                }else{
+                    $(days[i]).attr("class","newusa_ici_1");
+                }
+            }
+        }
+        function querySelect(){
+            var type=$("#type").val();
+            var time=$("#time").val();
+            var itemType=$("#itemTypeid").val();
+            var content2=$("#content2").val();
+            $("#sendMessageTable").initTable({
+                url:path + "/sendMessage/ajax/loadSendMessageList.do",
+                columnData:[
+                    {title:"",name:"pictureUrl",width:"2%",align:"left",format:makeOption3},
+                    {title:"模板名称",name:"name",width:"8%",align:"left"},
+                    {title:"内容",name:"content",width:"8%",align:"left"},
+                    {title:"状态",name:"status",width:"8%",align:"left",format:makeOption2},
+                    {title:"操作",name:"countNum",width:"8%",align:"left",format:makeOption1}
+                ],
+                selectDataNow:false,
+                isrowClick:false,
+                showIndex:false
+            });
+            $("#sendMessageTable").selectDataAfterSetParm({"bedDetailVO.deptId":"", "isTrue":0,"type":type,"time":time,"itemType":itemType,"content2":content2});
+
+        }
+
     </script>
 </head>
 <body>
@@ -102,51 +194,45 @@
             <div class="Contentbox">
                 <div>
                     <!--综合开始 -->
-                    <div class="new_usa">
+                    <%--<div class="new_usa">
                         <div class="newds">
                             <div class="newsj_left">
                                 <span class="newusa_ici_del_in"><input type="checkbox" name="checkbox" id="checkbox" onclick="Allchecked(this);"></span>
-                                <span class="newusa_ici_del">检查eBay费</span><%--<div class="page_num">显示20条</div>--%>
+                                <span class="newusa_ici_del">检查eBay费</span>&lt;%&ndash;<div class="page_num">显示20条</div>&ndash;%&gt;
                             </div>
                         </div>
                         <div class="tbbay"><a href="#">添加模板</a></div>
+                    </div>--%>
+                    <div class="new_usa" style="margin-top:20px;">
+                        <li class="new_usa_list"><span class="newusa_i">按类型看：</span><a href="#"><span class="newusa_ici_1" scop="type" onclick="onclickType(0,null)">全部&nbsp;</span></a><a href="#"><span class="newusa_ici_1" scop="type" onclick="onclickType(1,'caseType')">CASE&nbsp;</span></a><a href="#"><span class="newusa_ici_1" scop="type" onclick="onclickType(2,'autoType')">自动消息&nbsp;</span></a><a href="#"><span class="newusa_ici_1" scop="type" onclick="onclickType(3,'messageType')">一般消息&nbsp;</span></a></li>
+                        <%--<li class="new_usa_list"><span class="newusa_i">信息状态：</span><span class="newusa_ici_1" scop="information" onclick="onclickinformation(null,0)">全部&nbsp;</span><a href="#"><span class="newusa_ici_1" scop="information" onclick="onclickinformation('picture',1)">无图片&nbsp;</span></a><a href="#"><span class="newusa_ici_1" scop="information" onclick="onclickinformation('custom',2)">无报关信息&nbsp;</span></a><a href="#"><span class="newusa_ici_1" scop="information" onclick="onclickinformation('notAllnull',3)">信息不全&nbsp;</span></a></li>
+                        --%>
+                        <div class="newsearch">
+                            <span class="newusa_i">创建时间：</span><a href="#"><span class="newusa_ici_1" scop="days" onclick="selectDays(0,null);">全部&nbsp;</span></a><a href="#"><span class="newusa_ici_1" scop="days" onclick="selectDays(1,'1');">今天&nbsp;</span></a><a href="#"><span class="newusa_ici_1" scop="days" onclick="selectDays(2,'2');">昨天&nbsp;</span></a><a href="#"><span class="newusa_ici_1" scop="days" onclick="selectDays(3,'7');">7天以内&nbsp;</span></a><a href="#"><span class="newusa_ici_1" scop="days" onclick="selectDays(4,'30');">30天以内&nbsp;</span></a>
+                         </div>
+                        <div class="newsearch">
+                            <span class="newusa_i">搜索内容：</span>
+
+<span id="sleBG">
+<span id="sleHid">
+<select id="itemTypeid" name="itemType" class="select">
+    <option value="0">选择类型</option>
+    <option value="1">模板名称</option>
+    <option value="2">内容</option>
+</select>
+</span>
+</span>
+                            <div class="vsearch">
+                                <input id="content2" name="content2" type="text" class="key_1"><input name="newbut" type="button" class="key_2" onclick="querySelect();"></div>
+                            <input type="hidden" id="type">
+                            <input type="hidden" id="time">
+
+                        </div>
+
                     </div>
+                    <li class="new_usa_list"><span class="newusa_ii"><input name="" type="checkbox" value=""></span><a href="#"><span class="newusa_ici_2" onclick="viewForbidden();">查看禁用的模板</span></a><div class="tbbay"><a data-toggle="modal" onclick="addMessageTemplate();" href="#myModal" class="">增加模板</a></div></li>
                     <div id="sendMessageTable"></div>
                     <!--综合结束 -->
-                    <%--<table width="100%" border="0" align="left" cellspacing="0" style="margin-top:20px;">
-                        <tbody><tr>
-                            <td width="5%" bgcolor="#F7F7F7"></td>
-                            <td width="25%" height="30" bgcolor="#F7F7F7"><strong>标题</strong></td>
-                            <td width="40%" height="30" bgcolor="#F7F7F7"><strong>主题<b style="color:#8BB51B"></b></strong></td>
-                            <td width="15%" align="center" bgcolor="#F7F7F7">备注</td>
-                            <td width="15%" align="center" bgcolor="#F7F7F7"><strong>操作</strong></td>
-                        </tr>
-                        <tr>
-                            <td width="5%" valign="top" style="color:#5E93D5"><input type="checkbox" name="checkbox" id="checkbox"></td>
-                            <td width="20%" style="color:#5E93D5">退回货物</td>
-                            <td width="30%" valign="top">RMA and address information for returning package
-                            </td>
-                            <td width="15%" align="center">topshoper998</td>
-
-                            <td width="15%" align="center"><div class="ui-select" style="width:8px">
-                                <select>
-                                    <option value="AK">删除</option>
-                                    <option value="AK">动作</option>
-                                </select>
-                            </div></td>
-                        </tr>
-                        </tbody></table>--%>
-                    <%--<div class="page_newlist">
-                        <div class="page_num">显示20条</div>共 <span style="color:#F00">3000</span> 条记录 <span style="color:#F00">300</span> 页
-                    </div>--%>
-                    <%--<div class="maage_page">
-                        <li>&lt;</li>
-                        <li class="page_cl">1</li>
-                        <li>2</li>
-                        <li>3</li>
-                        <li>4</li>
-                        <dt>&gt;</dt>
-                    </div>--%>
                 </div>
 
             </div>

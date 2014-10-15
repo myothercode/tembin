@@ -29,7 +29,8 @@
         <result column="remark" jdbcType="VARCHAR" property="remark" />
     </resultMap>
     <select id="selectByExample" resultMap="BaseResultMap" parameterType="map">
-        select * from trading_listing_data tion
+        select tion.* from trading_listing_data tion inner join (select acc.* from usercontroller_ebay_account acc,usercontroller_user_ebay dev where acc.id=dev.ebay_id and dev.user_id=#{userid}
+        ) ebayaccount on tion.ebay_account=ebayaccount.ebay_account
         where 1=1 and tion.is_flag='0'
         <if test="folderid==null">
             and tion.folder_id is null
@@ -37,9 +38,9 @@
         <if test="folderid!=null">
             and tion.folder_id = #{folderid}
         </if>
-        <if test="userid!=null">
+        <!--<if test="userid!=null">
             and tion.create_user = #{userid}
-        </if>
+        </if>-->
         <if test="flag==1">
             and tion.QuantitySold > 0
         </if>

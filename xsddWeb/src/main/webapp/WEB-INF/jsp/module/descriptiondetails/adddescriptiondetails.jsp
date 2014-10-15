@@ -132,8 +132,11 @@
     _sku="systemImage";
     var type = '${type}';
     if(type=="01"){
-        $("input").each(function(i,d){
+        $("input[type='text']").each(function(i,d){
             $(d).attr("disabled",true);
+        });
+        $("input[type='button']").each(function(i,d){
+            $(d).hide();
         });
         $("select").each(function(i,d){
             $(d).attr("disabled",true);

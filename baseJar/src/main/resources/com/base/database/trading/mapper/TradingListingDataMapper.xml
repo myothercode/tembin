@@ -28,6 +28,9 @@
     <result column="folder_id" jdbcType="VARCHAR" property="folderId" />
     <result column="is_flag" jdbcType="VARCHAR" property="isFlag" />
     <result column="remark" jdbcType="VARCHAR" property="remark" />
+    <result column="BuyItNowPrice" jdbcType="DOUBLE" property="buyitnowprice" />
+    <result column="Reserveprice" jdbcType="DOUBLE" property="reserveprice" />
+    <result column="SubTitle" jdbcType="VARCHAR" property="subtitle" />
   </resultMap>
   <sql id="Example_Where_Clause">
     <!--
@@ -102,7 +105,8 @@
     -->
     id, item_id, pic_url, sku, ebay_account, site, listing_type, price, shipping_price, 
     Quantity, QuantitySold, ListingDuration, StartTime, EndTime, do_rate, create_date, 
-    update_date, title, create_user, folder_id, is_flag, remark
+    update_date, title, create_user, folder_id, is_flag, remark, BuyItNowPrice, Reserveprice, 
+    SubTitle
   </sql>
   <select id="selectByExample" parameterType="com.base.database.trading.model.TradingListingDataExample" resultMap="BaseResultMap">
     <!--
@@ -162,7 +166,8 @@
       StartTime, EndTime, do_rate, 
       create_date, update_date, title, 
       create_user, folder_id, is_flag, 
-      remark)
+      remark, BuyItNowPrice, Reserveprice, 
+      SubTitle)
     values (#{id,jdbcType=BIGINT}, #{itemId,jdbcType=VARCHAR}, #{picUrl,jdbcType=VARCHAR}, 
       #{sku,jdbcType=VARCHAR}, #{ebayAccount,jdbcType=VARCHAR}, #{site,jdbcType=VARCHAR}, 
       #{listingType,jdbcType=VARCHAR}, #{price,jdbcType=DOUBLE}, #{shippingPrice,jdbcType=DOUBLE}, 
@@ -170,7 +175,8 @@
       #{starttime,jdbcType=TIMESTAMP}, #{endtime,jdbcType=TIMESTAMP}, #{doRate,jdbcType=BIGINT}, 
       #{createDate,jdbcType=TIMESTAMP}, #{updateDate,jdbcType=TIMESTAMP}, #{title,jdbcType=VARCHAR}, 
       #{createUser,jdbcType=BIGINT}, #{folderId,jdbcType=VARCHAR}, #{isFlag,jdbcType=VARCHAR}, 
-      #{remark,jdbcType=VARCHAR})
+      #{remark,jdbcType=VARCHAR}, #{buyitnowprice,jdbcType=DOUBLE}, #{reserveprice,jdbcType=DOUBLE}, 
+      #{subtitle,jdbcType=VARCHAR})
       <selectKey resultType="long" keyProperty="id" order="AFTER">
           SELECT LAST_INSERT_ID()
       </selectKey>
@@ -248,6 +254,15 @@
       <if test="remark != null">
         remark,
       </if>
+      <if test="buyitnowprice != null">
+        BuyItNowPrice,
+      </if>
+      <if test="reserveprice != null">
+        Reserveprice,
+      </if>
+      <if test="subtitle != null">
+        SubTitle,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
       <if test="id != null">
@@ -315,6 +330,15 @@
       </if>
       <if test="remark != null">
         #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="buyitnowprice != null">
+        #{buyitnowprice,jdbcType=DOUBLE},
+      </if>
+      <if test="reserveprice != null">
+        #{reserveprice,jdbcType=DOUBLE},
+      </if>
+      <if test="subtitle != null">
+        #{subtitle,jdbcType=VARCHAR},
       </if>
     </trim>
       <selectKey resultType="long" keyProperty="id" order="AFTER">
@@ -404,6 +428,15 @@
       <if test="record.remark != null">
         remark = #{record.remark,jdbcType=VARCHAR},
       </if>
+      <if test="record.buyitnowprice != null">
+        BuyItNowPrice = #{record.buyitnowprice,jdbcType=DOUBLE},
+      </if>
+      <if test="record.reserveprice != null">
+        Reserveprice = #{record.reserveprice,jdbcType=DOUBLE},
+      </if>
+      <if test="record.subtitle != null">
+        SubTitle = #{record.subtitle,jdbcType=VARCHAR},
+      </if>
     </set>
     <if test="_parameter != null">
       <include refid="Update_By_Example_Where_Clause" />
@@ -436,7 +469,10 @@
       create_user = #{record.createUser,jdbcType=BIGINT},
       folder_id = #{record.folderId,jdbcType=VARCHAR},
       is_flag = #{record.isFlag,jdbcType=VARCHAR},
-      remark = #{record.remark,jdbcType=VARCHAR}
+      remark = #{record.remark,jdbcType=VARCHAR},
+      BuyItNowPrice = #{record.buyitnowprice,jdbcType=DOUBLE},
+      Reserveprice = #{record.reserveprice,jdbcType=DOUBLE},
+      SubTitle = #{record.subtitle,jdbcType=VARCHAR}
     <if test="_parameter != null">
       <include refid="Update_By_Example_Where_Clause" />
     </if>
@@ -511,6 +547,15 @@
       <if test="remark != null">
         remark = #{remark,jdbcType=VARCHAR},
       </if>
+      <if test="buyitnowprice != null">
+        BuyItNowPrice = #{buyitnowprice,jdbcType=DOUBLE},
+      </if>
+      <if test="reserveprice != null">
+        Reserveprice = #{reserveprice,jdbcType=DOUBLE},
+      </if>
+      <if test="subtitle != null">
+        SubTitle = #{subtitle,jdbcType=VARCHAR},
+      </if>
     </set>
     where id = #{id,jdbcType=BIGINT}
   </update>
@@ -540,7 +585,10 @@
       create_user = #{createUser,jdbcType=BIGINT},
       folder_id = #{folderId,jdbcType=VARCHAR},
       is_flag = #{isFlag,jdbcType=VARCHAR},
-      remark = #{remark,jdbcType=VARCHAR}
+      remark = #{remark,jdbcType=VARCHAR},
+      BuyItNowPrice = #{buyitnowprice,jdbcType=DOUBLE},
+      Reserveprice = #{reserveprice,jdbcType=DOUBLE},
+      SubTitle = #{subtitle,jdbcType=VARCHAR}
     where id = #{id,jdbcType=BIGINT}
   </update>
 </mapper>

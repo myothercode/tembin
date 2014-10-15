@@ -9,12 +9,14 @@
     <script type="text/javascript" src=<c:url value ="/js/jquery/jquery-1.9.0.min.js" /> ></script>
     <script type="text/javascript" src=<c:url value ="/js/base.js" /> ></script>
     <script type="text/javascript" src=<c:url value ="/js/util.js" /> ></script>
+    <script type="text/javascript" src=<c:url value ="/js/jquery-blockui/jquery.blockUI.min.js" /> ></script>
 
     <script type="text/javascript">
         var _token;
         $(document).ready(function(){
             $(".admin_user_reg ul").css({"background-size":"100% 100%","height":"540px"})
             $("#sureSu").hide();
+            $("#pwd1,#pwd2").prop("disabled",true);
         });
 
         function getSafeCode(){
@@ -31,14 +33,47 @@
                     [function(m,r){
                         alert(r);
                         $("#sureSu").show();
+                        $("#pwd1,#pwd2").prop("disabled",false);
+                    },
+                        function(m,r){
+                            alert(r);
+                        }],{isConverPage:true}
+            );
+        };
+
+        function changePassWord(){
+            var ld=$("#loginUserID").val();
+            var safeCode1=$("#safeCode").val();
+            var pw1=$("#pwd1").val();
+            var pw21=$("#pwd2").val();
+            if(ld==null || safeCode1==null || pw1==null){
+                $.blockUI({
+                    message: '<h1>帐号、验证码、密码不能为空</h1>',
+                    timeout: 2000
+                });
+                return;
+            }
+            if(pw1!=pw21){
+                $.blockUI({
+                    message: '<h1>两次密码输入不一致!</h1>',
+                    timeout: 2000
+                });
+                return;
+            }
+
+           var url="/xsddWeb/systemuser/changePWDBySafeCodelogin.do";
+            var data=$("#regForm").serialize();
+            $().invoke(
+                    url,
+                    data,
+                    [function(m,r){
+                        alert(r);
+                        document.location.href='login.jsp';
                     },
                         function(m,r){
                             alert(r);
                         }]
             );
-        };
-
-        function changePassWord(){
 
         }
 
@@ -65,7 +100,7 @@
                         />
             </li>
 
-            <li style="height: 15px;margin-top: 5px">验证码</li>
+            <li style="height: 15px;margin-top: 5px">邮箱验证码</li>
             <li>
                 <input name="safeCode" type="text" class="admin_user_input" id="safeCode" value=""
                         />
@@ -73,13 +108,13 @@
 
             <li style="height: 15px;margin-top: 5px">新密码</li>
             <li>
-                <input name="pwd1" type="text" class="admin_user_input" id="pwd1" value=""
+                <input name="newPWD" type="password" class="admin_user_input" id="pwd1" value=""
                         />
             </li>
 
             <li style="height: 15px;margin-top: 5px">确认新密码</li>
             <li>
-                <input name="pwd2" type="text" class="admin_user_input" id="pwd2" value=""
+                <input name="pwd2" type="password" class="admin_user_input" id="pwd2" value=""
                         />
             </li>
 
@@ -92,7 +127,7 @@
         <li>
             <input onclick="document.location.href='login.jsp'" type="button" name="button" id="button" value="返回" class="admin_3">
             <input type="button" onclick="getSafeCode()" name="button" id="button1" value="获取验证码" class="admin_4" />
-            <input type="button" onclick="doReg()" name="button" id="sureSu" value="确定" class="admin_1" style="margin-left: 18px" />
+            <input type="button" onclick="changePassWord()" name="button" id="sureSu" value="确定" class="admin_1" style="margin-left: 18px" />
         </li>
     </ul>
 

@@ -44,7 +44,7 @@
                 $(d).attr("disabled",true);
             });
             $("textarea").attr("disabled",true);
-            $("button").attr("disabled",true);
+            $("button").hide();
         }
     });
 </script>

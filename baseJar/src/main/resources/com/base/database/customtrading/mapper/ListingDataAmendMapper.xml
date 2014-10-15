@@ -25,7 +25,8 @@
         <result column="amend_type" property="amendType" jdbcType="VARCHAR" />
         <result column="amend_user" property="amendUser" jdbcType="BIGINT" />
         <result column="amend_time" property="amendTime" jdbcType="TIMESTAMP" />
-        <result column="endisflag" property="isFlag" jdbcType="VARCHAR" />
+        <result column="endisflag" property="endisflag" jdbcType="VARCHAR" />
+        <result column="endid" property="endid" jdbcType="VARCHAR" />
     </resultMap>
     <resultMap id="ResultMapWithBLOBs" type="com.base.domains.querypojos.ListingDataAmendQuery" extends="BaseResultMap" >
         <!--
@@ -35,10 +36,14 @@
         <result column="content" property="content" jdbcType="LONGVARCHAR" />
     </resultMap>
     <select id="selectByExample" resultMap="BaseResultMap" parameterType="map">
-        select tion.*,amend.amend_type,amend.item,amend.create_user amend_user,amend.create_time amend_time,amend.is_flag endisflag,amend.content from trading_listing_data tion,trading_listing_amend amend
+        select enditem.*,groa.endid endid from (
+        select tion.*,amend.amend_type,amend.item,amend.id amendid,amend.create_user amend_user,amend.create_time amend_time,amend.is_flag endisflag,amend.content from trading_listing_data tion,trading_listing_amend amend
         where tion.id=amend.parent_id
+        <if test="parentId!=null">
+            and amend.parent_id = #{parentId}
+        </if>
         <if test="userid!=null">
-            and tion.create_user = #{userid}
+            and amend.create_user = #{userid}
         </if>
         <if test="flag==1">
             and tion.QuantitySold > 0
@@ -64,5 +69,7 @@
         <if test="amendFlag!=null">
             and amend.is_flag = #{amendFlag}
         </if>
+        ) enditem LEFT JOIN (select max(id) endid from trading_listing_amend ss group by ss.parent_id,ss.amend_type,ss.content ) groa on enditem.amendid = groa.endid
+        ORDER BY enditem.amendid desc
     </select>
 </mapper>

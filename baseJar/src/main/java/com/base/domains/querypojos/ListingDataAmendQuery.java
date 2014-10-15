@@ -14,11 +14,19 @@ public class ListingDataAmendQuery extends TradingListingData{
 
     private Date amendTime;
 
-    private String isFlag;
+    private String endisflag;
 
     private String content;
 
-    
+    private String endid;
+
+    public String getEndid() {
+        return endid;
+    }
+
+    public void setEndid(String endid) {
+        this.endid = endid;
+    }
 
     public String getAmendType() {
         return amendType;
@@ -44,12 +52,12 @@ public class ListingDataAmendQuery extends TradingListingData{
         this.amendTime = amendTime;
     }
 
-    public String getIsFlag() {
-        return isFlag;
+    public String getEndisflag() {
+        return endisflag;
     }
 
-    public void setIsFlag(String isFlag) {
-        this.isFlag = isFlag;
+    public void setEndisflag(String endisflag) {
+        this.endisflag = endisflag;
     }
 
     public String getContent() {

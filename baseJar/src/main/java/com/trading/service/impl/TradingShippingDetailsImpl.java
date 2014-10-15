@@ -133,8 +133,12 @@ public class TradingShippingDetailsImpl implements com.trading.service.ITradingS
     @Override
     public void saveAllData(TradingShippingdetails tradingShippingdetails,ShippingDetails shippingDetails,String noLocations) throws Exception {
         ConvertPOJOUtil.convert(tradingShippingdetails,shippingDetails);
-        tradingShippingdetails.setCountType(shippingDetails.getShippingServiceOptions().size()+"");
-        tradingShippingdetails.setInterCountType(shippingDetails.getInternationalShippingServiceOption().size()+"");
+        /*tradingShippingdetails.setCountType(shippingDetails.getShippingServiceOptions().size()+"");
+        if(shippingDetails.getInternationalShippingServiceOption()==null){
+            tradingShippingdetails.setInterCountType("0");
+        }else {
+            tradingShippingdetails.setInterCountType(shippingDetails.getInternationalShippingServiceOption().size() + "");
+        }*/
         this.saveShippingDetails(tradingShippingdetails);
         //保存国网运输详情
         this.iTradingShippingServiceOptions.deleteByParentId(tradingShippingdetails.getId());

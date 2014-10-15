@@ -64,7 +64,7 @@
                     $(d).attr("disabled",true);
                 });
                 $("textarea").attr("disabled",true);
-                $("button").attr("disabled",true);
+                $("button").hide();
             }
         });
         var api = frameElement.api, W = api.opener;

@@ -6,8 +6,10 @@ import com.base.database.trading.model.UsercontrollerEbayAccount;
 import com.base.domains.CommonParmVO;
 import com.base.domains.SessionVO;
 import com.base.domains.querypojos.DiscountpriceinfoQuery;
+import com.base.domains.userinfo.UsercontrollerEbayAccountExtend;
 import com.base.mybatis.page.Page;
 import com.base.mybatis.page.PageJsonBean;
+import com.base.userinfo.service.SystemUserManagerService;
 import com.base.utils.annotations.AvoidDuplicateSubmission;
 import com.base.utils.cache.DataDictionarySupport;
 import com.base.utils.cache.SessionCacheSupport;
@@ -41,6 +43,8 @@ public class DiscountPriceInfoController extends BaseAction {
     private ITradingDiscountPriceInfo iTradingDiscountPriceInfo;
     @Autowired
     private IUsercontrollerEbayAccount iUsercontrollerEbayAccount;
+    @Autowired
+    private SystemUserManagerService systemUserManagerService;
     /**
      * 查询列表页面跳转
      * @param request
@@ -88,7 +92,7 @@ public class DiscountPriceInfoController extends BaseAction {
     @AvoidDuplicateSubmission(needSaveToken = true)
     public ModelAndView addDiscountPriceInfo(HttpServletRequest request,HttpServletResponse response,@ModelAttribute( "initSomeParmMap" )ModelMap modelMap){
         SessionVO c= SessionCacheSupport.getSessionVO();
-        List<UsercontrollerEbayAccount> ebayList = this.iUsercontrollerEbayAccount.selectUsercontrollerEbayAccountByUserId(c.getId());
+        List<UsercontrollerEbayAccountExtend> ebayList=systemUserManagerService.queryCurrAllEbay(new HashMap());
         modelMap.put("userli",ebayList);
         return forword("module/discountpriceinfo/adddiscountpriceinfo",modelMap);
     }
@@ -106,7 +110,7 @@ public class DiscountPriceInfoController extends BaseAction {
         String id = request.getParameter("id");
 
         SessionVO c= SessionCacheSupport.getSessionVO();
-        List<UsercontrollerEbayAccount> ebayList = this.iUsercontrollerEbayAccount.selectUsercontrollerEbayAccountByUserId(c.getId());
+        List<UsercontrollerEbayAccountExtend> ebayList=systemUserManagerService.queryCurrAllEbay(new HashMap());
         modelMap.put("userli",ebayList);
         Map m = new HashMap();
         m.put("userid",c.getId());

@@ -84,6 +84,9 @@
                 and OrderGetOrders.title like "%"#{content}"%"
             </if>
         </if>
+        <if test="framConten!=null">
+            and (OrderGetOrders.title like "%"#{framConten}"%" or OrderGetOrders sKU "%"#{framConten}"%")
+        </if>
         <if test="typeQ!=null">
             <if test="typeQ=='fixation'">
                 and item.listingType="FixedPriceItem" and variation.orderItem_id is  null

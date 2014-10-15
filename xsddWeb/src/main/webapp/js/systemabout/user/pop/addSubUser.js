@@ -120,7 +120,7 @@ function submitf(){
     var data=$("#addSunUserForm").serialize();
 
     var url=path+"/systemuser/";
-    if(userID!=null){
+    if(userID!=null && userID!=''){
         url+="editSubUser.do?userID="+userID;
     }else{
         url+="addSubUser.do";

@@ -281,8 +281,11 @@
 
             var type = '${type}';
             if(type=="01"){
-                $("input").each(function(i,d){
+                $("input[type='text']").each(function(i,d){
                     $(d).attr("disabled",true);
+                });
+                $("input[type='button']").each(function(i,d){
+                    $(d).hide();
                 });
                 $("select").each(function(i,d){
                     $(d).attr("disabled",true);
@@ -502,9 +505,9 @@
                             尺寸规格
                         </td>
                         <td>
-                            深度<input type="text" size="8" name="PackageDepth"  class="validate[custom[number]]" id="PackageDepth">inch
-                            长度<input type="text" size="8" name="PackageLength"  class="validate[custom[number]]" id="PackageLength">inch
-                            宽度<input type="text" size="8" name="PackageWidth"  class="validate[custom[number]]" id="PackageWidth">inch
+                            深度<input type="text" size="2" name="PackageDepth"  class="validate[custom[number]]" id="PackageDepth">inch
+                            长度<input type="text" size="2" name="PackageLength"  class="validate[custom[number]]" id="PackageLength">inch
+                            宽度<input type="text" size="2" name="PackageWidth"  class="validate[custom[number]]" id="PackageWidth">inch
                         </td>
                     </tr>
                     <tr>

@@ -12,6 +12,11 @@
 <html>
 <head>
     <title></title>
+    <style type="text/css">
+        body {
+            background-color: #ffffff;
+        }
+    </style>
     <script>
         var api = frameElement.api, W = api.opener;
         function submitCommit(){
@@ -43,7 +48,7 @@
                     $(d).attr("disabled",true);
                 });
                 $("textarea").attr("disabled",true);
-                $("button").attr("disabled",true);
+                $("button").hide();
             }
         });
     </script>

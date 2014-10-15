@@ -257,6 +257,7 @@ public class GetOrdersController extends BaseAction {
         String content=request.getParameter("content");
         String status=request.getParameter("status");
         String folderId=request.getParameter("folderId");
+        String framConten=request.getParameter("framConten");
         /**分页组装*/
         PageJsonBean jsonBean=commonParmVO.getJsonBean();
         Page page=jsonBean.toPage();
@@ -292,6 +293,9 @@ public class GetOrdersController extends BaseAction {
         if(!StringUtils.isNotBlank(folderId)){
             folderId=null;
         }
+        if(!StringUtils.isNotBlank(framConten)){
+            framConten=null;
+        }
         List<OrderGetOrdersQuery> lists=new ArrayList<OrderGetOrdersQuery>();
         if(ebays.size()>0){
             map.put("ebays",ebays);
@@ -303,6 +307,7 @@ public class GetOrdersController extends BaseAction {
             map.put("content",content);
             map.put("folderId",folderId);
             map.put("itemType",itemType);
+            map.put("framConten",framConten);
             lists= this.iTradingOrderGetOrders.selectOrderGetOrdersByGroupList(map,page);
             for(OrderGetOrdersQuery list:lists){
                 String itemid=list.getItemid();

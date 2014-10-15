@@ -64,7 +64,7 @@ public class PaypalController extends BaseAction {
         return;
     }
 
-    @RequestMapping("queryPaypalList")
+    @RequestMapping("queryPaypalList.do")
     @ResponseBody
     /**查询paypalList 分页*/
     public void queryPaypalList(com.base.domains.querypojos.CommonParmVO commonParmVO){
@@ -73,7 +73,7 @@ public class PaypalController extends BaseAction {
         Page page = jsonBean.toPage();
         List<UsercontrollerPaypalAccount> paypalAccounts = payPalService.queryPayPalList(map, page);
         jsonBean.setList(paypalAccounts);
-        jsonBean.setPageCount((int) page.getTotalCount());
+        jsonBean.setTotal((int) page.getTotalCount());
         AjaxSupport.sendSuccessText("",jsonBean);
     }
 

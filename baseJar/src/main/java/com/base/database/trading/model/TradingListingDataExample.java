@@ -1620,6 +1620,196 @@ public class TradingListingDataExample {
             addCriterion("remark not between", value1, value2, "remark");
             return (Criteria) this;
         }
+
+        public Criteria andBuyitnowpriceIsNull() {
+            addCriterion("BuyItNowPrice is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andBuyitnowpriceIsNotNull() {
+            addCriterion("BuyItNowPrice is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andBuyitnowpriceEqualTo(Double value) {
+            addCriterion("BuyItNowPrice =", value, "buyitnowprice");
+            return (Criteria) this;
+        }
+
+        public Criteria andBuyitnowpriceNotEqualTo(Double value) {
+            addCriterion("BuyItNowPrice <>", value, "buyitnowprice");
+            return (Criteria) this;
+        }
+
+        public Criteria andBuyitnowpriceGreaterThan(Double value) {
+            addCriterion("BuyItNowPrice >", value, "buyitnowprice");
+            return (Criteria) this;
+        }
+
+        public Criteria andBuyitnowpriceGreaterThanOrEqualTo(Double value) {
+            addCriterion("BuyItNowPrice >=", value, "buyitnowprice");
+            return (Criteria) this;
+        }
+
+        public Criteria andBuyitnowpriceLessThan(Double value) {
+            addCriterion("BuyItNowPrice <", value, "buyitnowprice");
+            return (Criteria) this;
+        }
+
+        public Criteria andBuyitnowpriceLessThanOrEqualTo(Double value) {
+            addCriterion("BuyItNowPrice <=", value, "buyitnowprice");
+            return (Criteria) this;
+        }
+
+        public Criteria andBuyitnowpriceIn(List<Double> values) {
+            addCriterion("BuyItNowPrice in", values, "buyitnowprice");
+            return (Criteria) this;
+        }
+
+        public Criteria andBuyitnowpriceNotIn(List<Double> values) {
+            addCriterion("BuyItNowPrice not in", values, "buyitnowprice");
+            return (Criteria) this;
+        }
+
+        public Criteria andBuyitnowpriceBetween(Double value1, Double value2) {
+            addCriterion("BuyItNowPrice between", value1, value2, "buyitnowprice");
+            return (Criteria) this;
+        }
+
+        public Criteria andBuyitnowpriceNotBetween(Double value1, Double value2) {
+            addCriterion("BuyItNowPrice not between", value1, value2, "buyitnowprice");
+            return (Criteria) this;
+        }
+
+        public Criteria andReservepriceIsNull() {
+            addCriterion("Reserveprice is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andReservepriceIsNotNull() {
+            addCriterion("Reserveprice is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andReservepriceEqualTo(Double value) {
+            addCriterion("Reserveprice =", value, "reserveprice");
+            return (Criteria) this;
+        }
+
+        public Criteria andReservepriceNotEqualTo(Double value) {
+            addCriterion("Reserveprice <>", value, "reserveprice");
+            return (Criteria) this;
+        }
+
+        public Criteria andReservepriceGreaterThan(Double value) {
+            addCriterion("Reserveprice >", value, "reserveprice");
+            return (Criteria) this;
+        }
+
+        public Criteria andReservepriceGreaterThanOrEqualTo(Double value) {
+            addCriterion("Reserveprice >=", value, "reserveprice");
+            return (Criteria) this;
+        }
+
+        public Criteria andReservepriceLessThan(Double value) {
+            addCriterion("Reserveprice <", value, "reserveprice");
+            return (Criteria) this;
+        }
+
+        public Criteria andReservepriceLessThanOrEqualTo(Double value) {
+            addCriterion("Reserveprice <=", value, "reserveprice");
+            return (Criteria) this;
+        }
+
+        public Criteria andReservepriceIn(List<Double> values) {
+            addCriterion("Reserveprice in", values, "reserveprice");
+            return (Criteria) this;
+        }
+
+        public Criteria andReservepriceNotIn(List<Double> values) {
+            addCriterion("Reserveprice not in", values, "reserveprice");
+            return (Criteria) this;
+        }
+
+        public Criteria andReservepriceBetween(Double value1, Double value2) {
+            addCriterion("Reserveprice between", value1, value2, "reserveprice");
+            return (Criteria) this;
+        }
+
+        public Criteria andReservepriceNotBetween(Double value1, Double value2) {
+            addCriterion("Reserveprice not between", value1, value2, "reserveprice");
+            return (Criteria) this;
+        }
+
+        public Criteria andSubtitleIsNull() {
+            addCriterion("SubTitle is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andSubtitleIsNotNull() {
+            addCriterion("SubTitle is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andSubtitleEqualTo(String value) {
+            addCriterion("SubTitle =", value, "subtitle");
+            return (Criteria) this;
+        }
+
+        public Criteria andSubtitleNotEqualTo(String value) {
+            addCriterion("SubTitle <>", value, "subtitle");
+            return (Criteria) this;
+        }
+
+        public Criteria andSubtitleGreaterThan(String value) {
+            addCriterion("SubTitle >", value, "subtitle");
+            return (Criteria) this;
+        }
+
+        public Criteria andSubtitleGreaterThanOrEqualTo(String value) {
+            addCriterion("SubTitle >=", value, "subtitle");
+            return (Criteria) this;
+        }
+
+        public Criteria andSubtitleLessThan(String value) {
+            addCriterion("SubTitle <", value, "subtitle");
+            return (Criteria) this;
+        }
+
+        public Criteria andSubtitleLessThanOrEqualTo(String value) {
+            addCriterion("SubTitle <=", value, "subtitle");
+            return (Criteria) this;
+        }
+
+        public Criteria andSubtitleLike(String value) {
+            addCriterion("SubTitle like", value, "subtitle");
+            return (Criteria) this;
+        }
+
+        public Criteria andSubtitleNotLike(String value) {
+            addCriterion("SubTitle not like", value, "subtitle");
+            return (Criteria) this;
+        }
+
+        public Criteria andSubtitleIn(List<String> values) {
+            addCriterion("SubTitle in", values, "subtitle");
+            return (Criteria) this;
+        }
+
+        public Criteria andSubtitleNotIn(List<String> values) {
+            addCriterion("SubTitle not in", values, "subtitle");
+            return (Criteria) this;
+        }
+
+        public Criteria andSubtitleBetween(String value1, String value2) {
+            addCriterion("SubTitle between", value1, value2, "subtitle");
+            return (Criteria) this;
+        }
+
+        public Criteria andSubtitleNotBetween(String value1, String value2) {
+            addCriterion("SubTitle not between", value1, value2, "subtitle");
+            return (Criteria) this;
+        }
     }
 
     /**

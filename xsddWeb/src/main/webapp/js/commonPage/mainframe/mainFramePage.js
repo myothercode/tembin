@@ -96,7 +96,8 @@ function getEbayMessage(p){
         [function(m,r){
             if(r==null){return;}
             var dat = r.list;
-            var ht="";
+            var temph=$("#ebaymessageNotice").html();
+            var ht="<h3 id=\"ebaymessageNotice\">"+temph+"</h3>";
             for(var i in dat){
                 var subj=dat[i].subject;
                 if(subj.length>15){
@@ -182,9 +183,9 @@ function openMessage(mid){
 
     });
 
-    var nm = $("#systemMessageCount").html();
+    /*var nm = $("#systemMessageCount").html();
     var n=(parseInt(nm)-1)>0?0:(parseInt(nm)-1);
-    $("#systemMessageCount").html(n);
+    $("#systemMessageCount").html(n);*/
 }
 
 /**解析系统消息并着色*/

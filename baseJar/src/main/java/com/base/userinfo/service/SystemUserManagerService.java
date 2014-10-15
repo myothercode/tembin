@@ -49,4 +49,7 @@ public interface SystemUserManagerService {
 
     /**发送找回密码的验证码*/
     void sendSafeCode(Map map);
+
+    /**修改被遗忘的密码*/
+    String doChangeForgetPassWord(Map map);
 }

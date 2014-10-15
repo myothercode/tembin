@@ -9,10 +9,12 @@ import com.base.domains.querypojos.ItemQuery;
 import com.base.domains.querypojos.PaypalQuery;
 import com.base.domains.querypojos.VariationQuery;
 import com.base.domains.userinfo.UsercontrollerDevAccountExtend;
+import com.base.domains.userinfo.UsercontrollerEbayAccountExtend;
 import com.base.mybatis.page.Page;
 import com.base.mybatis.page.PageJsonBean;
 import com.base.sampleapixml.APINameStatic;
 import com.base.sampleapixml.BindAccountAPI;
+import com.base.userinfo.service.SystemUserManagerService;
 import com.base.userinfo.service.UserInfoService;
 import com.base.utils.annotations.AvoidDuplicateSubmission;
 import com.base.utils.cache.DataDictionarySupport;
@@ -102,6 +104,8 @@ public class ItemController extends BaseAction{
     private ImageService imageService;
     @Autowired
     private PayPalService payPalService;
+    @Autowired
+    private SystemUserManagerService systemUserManagerService;
     /**
      * 范本管理
      * @param request
@@ -114,7 +118,8 @@ public class ItemController extends BaseAction{
     public ModelAndView itemManager(HttpServletRequest request,HttpServletResponse response,@ModelAttribute( "initSomeParmMap" )ModelMap modelMap){
         SessionVO c= SessionCacheSupport.getSessionVO();
         //List<PublicUserConfig> ebayList = DataDictionarySupport.getPublicUserConfigByType(DataDictionarySupport.PUBLIC_DATA_DICT_PAYPAL, c.getId());
-        List<UsercontrollerEbayAccount> ebayList = this.iUsercontrollerEbayAccount.selectUsercontrollerEbayAccountByUserId(c.getId());
+        //List<UsercontrollerEbayAccount> ebayList = this.iUsercontrollerEbayAccount.selectUsercontrollerEbayAccountByUserId(c.getId());
+        List<UsercontrollerEbayAccountExtend> ebayList=systemUserManagerService.queryCurrAllEbay(new HashMap());
         modelMap.put("ebayList",ebayList);
         return forword("item/itemManager",modelMap);
     }
@@ -250,7 +255,7 @@ public class ItemController extends BaseAction{
 
         SessionVO c= SessionCacheSupport.getSessionVO();
         //List<PublicUserConfig> ebayList = DataDictionarySupport.getPublicUserConfigByType(DataDictionarySupport.PUBLIC_DATA_DICT_PAYPAL, c.getId());
-        List<UsercontrollerEbayAccount> ebayList = this.iUsercontrollerEbayAccount.selectUsercontrollerEbayAccountByUserId(c.getId());
+        List<UsercontrollerEbayAccountExtend> ebayList=systemUserManagerService.queryCurrAllEbay(new HashMap());
         modelMap.put("ebayList",ebayList);
         modelMap.put("imageUrlPrefix",imageService.getImageUrlPrefix());
         return forword("item/addItem",modelMap);
@@ -823,7 +828,7 @@ public class ItemController extends BaseAction{
     @ResponseBody
     public void selfEbayAccount(HttpServletRequest request,ModelMap modelMap,CommonParmVO commonParmVO) throws Exception {
         SessionVO c= SessionCacheSupport.getSessionVO();
-        List<UsercontrollerEbayAccount> ebayList = this.iUsercontrollerEbayAccount.selectUsercontrollerEbayAccountByUserId(c.getId());
+        List<UsercontrollerEbayAccountExtend> ebayList=systemUserManagerService.queryCurrAllEbay(new HashMap());
         AjaxSupport.sendSuccessText("",ebayList);
     }
 

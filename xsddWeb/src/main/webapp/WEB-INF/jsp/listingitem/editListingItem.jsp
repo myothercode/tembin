@@ -260,7 +260,7 @@
 </head>
 <body>
 <form id="form">
-    <input type="hidden" name="ItemID" value="${item.itemID}">
+    <input type="hidden" name="ItemID" value="${itemidstr}">
     <input type="hidden" name="listingType" value="${item.listingType}">
     <div id="selectId">
         <table width="70%">

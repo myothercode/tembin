@@ -31,6 +31,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.web.servlet.support.RequestContextUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -92,10 +94,43 @@ public class TextContraller extends BaseAction {
 
     /**登录操作*/
     @RequestMapping("/login.do")
-    public ModelAndView login(LoginVO loginVO,HttpServletRequest request,HttpServletResponse response,ModelMap modelMap){
-        Asserts.assertTrue(!ObjectUtils.isLogicalNull(loginVO.getLoginId()),"登信息为空");
+    public ModelAndView login(LoginVO loginVO,HttpServletRequest request,HttpServletResponse response,@ModelAttribute( "initSomeParmMap" )ModelMap modelMap
+                              ){
+        if(ObjectUtils.isLogicalNull(loginVO.getLoginId()) || "请输入你的帐号".equalsIgnoreCase(loginVO.getLoginId())){
+            request.getSession().setAttribute("errMessage_","登信息为空");
+            return redirect("/login.jsp");
+        }
+        //首先检查是否需要检查验证码，以及验证验证码是否正确
+        Object vcode = request.getSession().getAttribute("valCapCode");
+        if(vcode!=null && "yes".equalsIgnoreCase((String)vcode)){
+            String code = (String)request.getSession().getAttribute(com.google.code.kaptcha.Constants.KAPTCHA_SESSION_KEY);
+            if(!code.equalsIgnoreCase(loginVO.getCapcode())){
+                request.getSession().setAttribute("showCapImage","yes");
+                request.getSession().setAttribute("valCapCode","yes");
+                request.getSession().setAttribute("errMessage_","验证码错误!");
+                return redirect("/login.jsp");
+            }
+        }
+       //检查账户密码师傅正确
         SessionVO sessionVO = userInfoService.getUserInfo(loginVO);
-        Asserts.assertTrue(!ObjectUtils.isLogicalNull(sessionVO),"帐号或者密码不正确!");
+        if(ObjectUtils.isLogicalNull(sessionVO)){
+            request.getSession().setAttribute("errMessage_","帐号或者密码不正确");
+            Object num=request.getSession().getAttribute("loginFailNum_");
+            if(num==null){
+                request.getSession().setAttribute("loginFailNum_",1);
+            }else {
+                Integer i=(Integer)num+1;
+                request.getSession().setAttribute("loginFailNum_",i);
+            }
+            Integer ii = (Integer) request.getSession().getAttribute("loginFailNum_");
+            if(ii>3){//如果输入次数超过了3次，那么就需要输入验证码
+                request.getSession().setAttribute("showCapImage","yes");
+                request.getSession().setAttribute("valCapCode","yes");
+            }
+
+            return redirect("/login.jsp");
+        }
+        request.getSession().removeAttribute("valCapCode");
         request.getSession().setAttribute(SessionCacheSupport.USERLOGINID, sessionVO.getLoginId());
         sessionVO.setLoginId(sessionVO.getLoginId());
         SessionCacheSupport.remove(sessionVO.getLoginId());

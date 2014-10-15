@@ -8,7 +8,16 @@ public class LoginVO {
     private String loginId;//用户id
     private String password;//密码
     private String enpassword;//加密后的密码
+    private String capcode;//图片验证码
 
+
+    public String getCapcode() {
+        return capcode;
+    }
+
+    public void setCapcode(String capcode) {
+        this.capcode = capcode;
+    }
 
     public String getEnpassword() {
         return enpassword;

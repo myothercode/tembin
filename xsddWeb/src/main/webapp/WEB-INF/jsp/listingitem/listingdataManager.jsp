@@ -26,13 +26,13 @@
         function setTab(obj) {
             nameFolder = $(obj).attr("name");
             $(obj).parent().find("dt").each(function (i, d) {
-                if ($(d).attr("name") == name) {
+                if ($(d).attr("name") == nameFolder) {
                     $(d).attr("class", "new_tab_1");
                 } else {
                     $(d).attr("class", "new_tab_2");
                 }
             });
-            if(name=="updatelog"){
+            if(nameFolder=="updatelog"){
                 $("#amendlog").show();
                 $("[name='attrshow']").each(function(i,d){
                     $(d).hide();
@@ -65,10 +65,21 @@
 
         function itemstatus(json){
             var htm = "";
-            if(json.isFlag=="1"){
+            if(json.endisflag=="1"){
                 htm="<img src='"+path+"/img/new_yes.png'>";
             }else{
                 htm="<img src='"+path+"/img/new_no.png'>";
+            }
+            return htm;
+        }
+        function amendIsFlag(json){
+            var htm="";
+            if(json.endisflag=="1"){
+                htm="";
+            }else{
+                if(json.endid!=null&&json.endid!=""){
+                    htm="<a onclick=aaa('"+json.id+"') >继续处理</a>";
+                }
             }
             return htm;
         }
@@ -76,7 +87,7 @@
             $("#itemTable").initTable({
                 url:urls,
                 columnData:[
-                    {title:"图片",name:"Option1",width:"8%",align:"left",format:picUrl},
+                    {title:"图片",name:"Option1",width:"6%",align:"left",format:picUrl},
                     {title:"物品标题",name:"title",width:"8%",align:"left"},
                     {title:"SKU",name:"sku",width:"8%",align:"left"},
                     {title:"ebay账户",name:"ebayAccount",width:"8%",align:"left"},
@@ -87,8 +98,8 @@
                     {title:"商品数量",name:"Option1",width:"8%",align:"left",format:tjCount},
                     {title:"修改时间",name:"amendTime",width:"8%",align:"left"},
                     {title:"操作内容",name:"content",width:"8%",align:"left"},
-                    {title:"状态",name:"content",width:"8%",align:"left",format:itemstatus},
-                    {title:"操作",name:"Option1",width:"8%",align:"left",format:makeOption1}
+                    {title:"状态",name:"content",width:"4%",align:"left",format:itemstatus},
+                    {title:"操作",name:"Option1",width:"8%",align:"left",format:amendIsFlag}
                 ],
                 selectDataNow:false,
                 isrowClick:false,
@@ -336,7 +347,6 @@
                 width:800,
                 lock: true,
                 height:400
-
             });
         }
         $(document).ready(function(){
@@ -434,20 +444,37 @@
                 return ;
             }
         }
-
+        function getTitle(json){
+            var html="";
+            if(json.title.length>20){
+                html = "<span title='"+json.title+"'>"+json.title.substr(0,20)+".....</span>";
+            }else{
+                html = json.title;
+            }
+            var remark = "";
+            if(json.remark!=null&&json.remark!=""){
+                if(json.remark.length>25){
+                    remark = json.remark.substr(0,25)+"......";
+                }else{
+                    remark = json.remark;
+                }
+                html+="<span class='newdf' title='"+json.remark+"'>备注："+remark+"</span>";
+            }
+            return html;
+        }
         function onloadTable(urls){
             $("#itemTable").initTable({
                 url:urls,
                 columnData:[
-                    {title:"选择",name:"itemName",width:"8%",align:"left",format:makeOption0},
+                    {title:"选择",name:"itemName",width:"4%",align:"left",format:makeOption0},
                     {title:"图片",name:"Option1",width:"8%",align:"left",format:picUrl},
-                    {title:"物品标题",name:"title",width:"8%",align:"left"},
-                    {title:"SKU",name:"sku",width:"8%",align:"left"},
+                    {title:"物品标题",name:"title",width:"8%",align:"left",format:getTitle},
+                    {title:"SKU",name:"sku",width:"4%",align:"left"},
                     {title:"ebay账户",name:"ebayAccount",width:"8%",align:"left"},
-                    {title:"站点",name:"site",width:"8%",align:"left"},
+                    {title:"站点",name:"site",width:"4%",align:"left"},
                     {title:"刊登类型",name:"listingType",width:"8%",align:"left"},
-                    {title:"价格",name:"price",width:"8%",align:"left",format:getPriceHtml},
-                    {title:"数量/已售",name:"Option1",width:"8%",align:"left",format:tjCount},
+                    {title:"价格",name:"price",width:"10%",align:"left",format:getPriceHtml},
+                    {title:"数量/已售",name:"Option1",width:"10%",align:"left",format:tjCount},
                     {title:"结束时间",name:"endtime",width:"8%",align:"left"},
                     {title:"操作",name:"Option1",width:"8%",align:"left",format:makeOption1}
                 ],
@@ -467,17 +494,59 @@
         }
         function getPriceHtml(json){
             var htm="";
-            if("updatelog"!=nameFolder) {
-                htm = "<input type=text name='price' size='2' class='form-control' value='"+json.price+"'/></br></br>"+"$"+json.price;
+            if("updatelog"!=nameFolder&&json.listingType=="FixedPriceItem") {
+                htm = "<div style='display:inline;'><input type=text name='price' onFocus='showImg(this)' ids='"+json.id+"' itemId='"+json.itemId+"' " +
+                        "size='1' style='height:20px;border: 1px solid #AA17A4;' class='form-control' value='"+json.price+"'/></br>" +
+                        "<img onclick='updateItemPrice(this)' style='display:none;' src='<c:url value ="/img/save_ion.gif"/>' />&nbsp;&nbsp;&nbsp;&nbsp;<img onclick='hideImg(this)' style='display:none;' src='<c:url value ="/img/undo1_re.gif"/>'/></div>"+"</br>" +
+                        "+$";
+                if(json.shippingPrice==null){
+                    htm+="0.00";
+                }else{
+                    htm+=json.shippingPrice;
+                }
             }else{
-                htm = "$"+json.price;
+                htm = json.price+"</br>+$"+json.shippingPrice;;
             }
 
             return htm;
         }
+        function showImg(obj){
+            $(obj).parent().find("img").each(function(i,d){
+                $(d).show();
+            });
+        }
+        function hideImg(obj){
+            $(obj).parent().find("img").each(function(i,d){
+                $(d).hide();
+            });
+        }
+        //修改界面
+        function updateItemPrice(obj){
+            var price=$(obj).parent().find("[type='text']").val();
+            var itemId=$(obj).parent().find("[type='text']").attr("itemId");
+            var textname = $(obj).parent().find("[type='text']").attr("name");
+            var ids = $(obj).parent().find("[type='text']").attr("ids");
+            var type=textname;
+            var url = path + "/ajax/updateListingData.do?itemId=" + itemId+"&price="+price+"&type="+type+"&ids="+ids;
+            $().invoke(url, {},
+                    [function (m, r) {
+                        alert(r);
+                        Base.token();
+                        if("updatelog"==nameFolder){
+                            onloadTableamend(loadurl);
+                        }else{
+                            onloadTable(loadurl);
+                        }
+                    },
+                        function (m, r) {
+                            alert(r);
+                            Base.token();
+                        }]
+            );
+        }
         /**组装操作选项*/
         function makeOption0(json){
-            var htm="<input type=checkbox name='listingitemid' value='"+json.itemId+"' val='"+json.id+"' />";
+            var htm="<input type=checkbox name='listingitemid' listingType='"+json.listingType+"' value='"+json.itemId+"' val='"+json.id+"' />";
             return htm;
         }
         function picUrl(json){
@@ -486,13 +555,14 @@
         }
         function tjCount(json){
             var htm="";
-            if("updatelog"!=nameFolder) {
-                htm="<input type=text name='quantity' size='2' class='form-control' value='"+json.quantity+"'/></br></br>"+json.quantity+"/"+json.quantitysold;
+            if("updatelog"!=nameFolder&&json.listingType=="FixedPriceItem") {
+                htm="<div style='display:inline;'><input type=text name='quantity' onFocus='showImg(this)' ids='"+json.id+"' itemId='"+json.itemId+"' size='1'  style='height:20px;border: 1px solid #AA17A4;' class='form-control' value='"+json.quantity+"'/></br><img onclick='updateItemPrice(this)' style='display:none;' onkeypress='showImg(this)' src='<c:url value ="/img/save_ion.gif"/>' />&nbsp;&nbsp;&nbsp;&nbsp;<img onclick='hideImg(this)' style='display:none;' src='<c:url value ="/img/undo1_re.gif"/>'/></div></br>"+json.quantity+"/"+json.quantitysold;
             }else{
                 htm = json.quantity+"/"+json.quantitysold;
             }
             return htm;
         }
+
         /**组装操作选项*/
         function makeOption1(json){
             var hs="";
@@ -500,7 +570,7 @@
             if("updatelog"!=nameFolder) {
                 hs += "<li style='height:25px' onclick=edit('" + json.itemId + "') value='" + json.id + "' doaction=\"look\" >在线编辑</li>";
                 hs += "<li style='height:25px' onclick=endItemByid('" + json.itemId + "') value='" + json.id + "' doaction=\"look\" >提前结束</li>";
-                hs += "<li style='height:25px' onclick=quickEdit('" + json.id + "') value='" + json.id + "' doaction=\"look\" >快速编辑</li>";
+                hs += "<li style='height:25px' onclick=quickEdit('" + json.id + "','"+json.listingType+"') value='" + json.id + "' doaction=\"look\" >快速编辑</li>";
                 hs += "<li style='height:25px' onclick=remark('" + json.id + "') value='" + json.id + "' doaction=\"look\" >备注</li>";
                 hs += "<li style='height:25px' onclick=selectLog('" + json.id + "') value='" + json.id + "' doaction=\"look\" >查看日志</li>";
             }
@@ -508,8 +578,16 @@
             return getULSelect(pp);
         }
         //快速编辑
-        function quickEdit(id){
-
+        var quickEdits;
+        function quickEdit(id,listingType){
+            var url=path+"/quickEdit.do?id="+id+"&&listingType="+listingType;
+            quickEdits=$.dialog({title: '快速编辑',
+                content: 'url:'+url,
+                icon: 'succeed',
+                width:1000,
+                lock: true,
+                height:400
+            });
         }
         //备注
         function remark(id){
@@ -529,11 +607,11 @@
                             } else {
                                 //alert(iwins.parent.document.getElementById("centents").selectedIndex);
                                 reason = iwins.parent.document.getElementById("centents").value;
-                                alert(reason);
+                                //alert(reason);
                                 var url = path + "/ajax/addRemark.do?id=" + id+"&remark="+reason;
                                 $().invoke(url, {},
                                         [function (m, r) {
-                                            alert(r);
+                                            //alert(r);
                                             Base.token();
                                             if("updatelog"==nameFolder){
                                                 onloadTableamend(loadurl);
@@ -554,7 +632,14 @@
         }
         //查看日志
         function selectLog(id){
-
+            var url=path+"/getListItemDataAmend.do?parentId="+id;
+            tablePricewin=$.dialog({title: '修改在线商品日志',
+                content: 'url:'+url,
+                icon: 'succeed',
+                width:800,
+                lock: true,
+                height:400
+            });
         }
         function  refreshTable(){
             $("#itemTable").selectDataAfterSetParm({"bedDetailVO.deptId":"", "isTrue":0});
@@ -568,6 +653,47 @@
                 width:1000
             });
         }
+
+        function changeSelect(obj){
+            var item = $("input[name='listingitemid']");
+            var idStr = "";
+            var isab = false;
+            var listingType="";
+            var itemId="";
+            for (var i = 0; i < item.length; i++) {
+                if ($(item[i])[0].checked) {
+                    if(listingType==""){
+                        listingType=$($(item[i])[0]).attr("listingType");
+                    }else{
+                        if(listingType==$($(item[i])[0]).attr("listingType")){
+                            listingType=$($(item[i])[0]).attr("listingType");
+                        }else{
+                            isab=true;
+                        }
+                    }
+                    idStr += $($(item[i])[0]).attr("val") + ",";
+                    itemId += $($(item[i])[0]).val() + ",";
+                }
+            }
+            if(idStr==""){
+                alert("请选择需要处理的商品！");
+                $(obj).val();
+                return ;
+            }
+            if($(obj).val()=="listingEdit"){//在线编辑
+                edit(itemId);
+            }else if($(obj).val()=="quickEdit"){//快速编辑
+                if(isab){
+                    alert("不允许不同刊登类型进行编辑！");
+                    $(obj).val();
+                    return;
+                }
+                quickEdit(idStr,listingType)
+            }else if($(obj).val()=="remark"){//备注
+                remark(idStr)
+            }
+            $(obj).val();
+        }
     </script>
 </head>
 <body>
@@ -578,6 +704,7 @@
         <div class="new_tab_ls" id="tab">
 
         </div>
+
         <div class=Contentbox>
             <div class="new_usa" style="margin-top:20px;">
                 <li class="new_usa_list"><span class="newusa_i">选择国家：</span>
@@ -591,7 +718,7 @@
                     <span class="newusa_i">选择账号：</span>
                     <a href="javascript:void(0)" onclick="selectEbayAccount(this)"  value=""><span class="newusa_ici">全部</span></a>
                     <c:forEach items="${ebayList}" var="ebay">
-                        <a href="javascript:void(0)" onclick="selectEbayAccount(this)" value="${ebay.ebayName}"><span class="newusa_ici_1">${ebay.ebayNameCode}</span></a>
+                        <a href="javascript:void(0)" onclick="selectEbayAccount(this)" value="${ebay.ebayAccount}"><span class="newusa_ici_1">${ebay.ebayNameCode}</span></a>
                     </c:forEach>
                 </li>
                 <li class="new_usa_list">
@@ -640,9 +767,11 @@
 
                         <div class="numlist">
                             <div class="ui-select" style="margin-top:1px; width:10px">
-                                <select>
-                                    <option value="AK">选项</option>
-                                    <option value="AK">动作</option>
+                                <select  onchange="changeSelect(this)">
+                                    <option value="">请选择</option>
+                                    <option value="listingEdit">在线编辑</option>
+                                    <option value="quickEdit">快速编辑</option>
+                                    <option value="remark">备注</option>
                                 </select>
                             </div>
                             <%--<div class="ui-select" style="margin-top:1px; width:10px">

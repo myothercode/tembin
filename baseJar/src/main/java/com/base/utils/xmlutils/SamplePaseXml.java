@@ -344,9 +344,38 @@ public class SamplePaseXml {
             }
             item.setListingType(listType);
             item.setPrice(Double.parseDouble(element.element("SellingStatus").elementText("CurrentPrice")));
-            //item.setShippingPrice(Long.parseLong());
+            Element shippingdes = element.element("ShippingDetails");
+            if(shippingdes!=null){
+                List<Element> shippingit = shippingdes.elements("ShippingServiceOptions");
+                Element shippingOption = shippingit.get(0);
+                if(shippingOption!=null){
+                    Element option  = shippingOption.element("ShippingServiceCost");
+                    if(option!=null){
+                        item.setShippingPrice(Double.parseDouble(option.getText()));
+                    }else{
+                        item.setShippingPrice(0.00);
+                    }
+                }else{
+                    item.setShippingPrice(0.00);
+                }
+            }else{
+                item.setShippingPrice(0.00);
+            }
             item.setQuantity(Long.parseLong(element.elementText("Quantity")));
             item.setQuantitysold(Long.parseLong(element.element("SellingStatus").elementText("QuantitySold")));
+            Element elflag = element.element("SellingStatus").element("ListingStatus");
+            if(elflag!=null){
+                if(elflag.getText().equals("Active")){
+                    item.setIsFlag("0");
+                }else{
+                    item.setIsFlag("1");
+                }
+            }else{
+                item.setIsFlag("1");
+            }
+            item.setSubtitle("");
+            item.setBuyitnowprice(Double.parseDouble(element.element("ListingDetails").elementText("ConvertedBuyItNowPrice")));
+            item.setReserveprice(Double.parseDouble(element.element("ListingDetails").elementText("ConvertedReservePrice")));
             item.setListingduration(element.elementText("ListingDuration"));
             item.setStarttime(DateUtils.parseDateTime(element.element("ListingDetails").elementText("StartTime").replace("T"," ").replace(".000Z","")));
             item.setEndtime(DateUtils.parseDateTime(element.element("ListingDetails").elementText("EndTime").replace("T"," ").replace(".000Z","")));

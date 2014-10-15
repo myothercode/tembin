@@ -48,7 +48,7 @@ public class ListingItemDataTaskRun extends BaseScheduledClass implements Schedu
                 "<StartTimeFrom>"+startTime+"</StartTimeFrom>\n" +
                 "<StartTimeTo>"+endTime+"</StartTimeTo>\n" +
                 "<UserID>"+ebayName+"</UserID>\n" +
-                "<IncludeWatchCount>true</IncludeWatchCount>\n" +
+                "<IncludeVariations>true</IncludeVariations><IncludeWatchCount>true</IncludeWatchCount>\n" +
                 "<DetailLevel>ReturnAll</DetailLevel>\n" +
                 "</GetSellerListRequest>​";
         return colStr;
@@ -64,6 +64,7 @@ public class ListingItemDataTaskRun extends BaseScheduledClass implements Schedu
             AddApiTask addApiTask = new AddApiTask();
             Map<String, String> resMap= addApiTask.exec(d, cosXml, "https://api.sandbox.ebay.com/ws/api.dll");
             String res=resMap.get("message");
+            System.out.println(res);
             String ack = SamplePaseXml.getVFromXmlString(res,"Ack");
             if(ack.equals("Success")){
                 Document document= DocumentHelper.parseText(res);
@@ -74,6 +75,7 @@ public class ListingItemDataTaskRun extends BaseScheduledClass implements Schedu
                 List<TradingListingData> litld = SamplePaseXml.getItemListElememt(res,ebayAccount);
                 for(TradingListingData td : litld){
                     td.setEbayAccount(ebayAccount);
+                    td.setCreateUser(userid);
                     TradingListingDataExample tlde  = new TradingListingDataExample();
                     tlde.createCriteria().andItemIdEqualTo(td.getItemId());
                     List<TradingListingData> litl = tldm.selectByExample(tlde);
@@ -90,7 +92,7 @@ public class ListingItemDataTaskRun extends BaseScheduledClass implements Schedu
                         pages=2;
                     }
                     for(int i=pages;i<=Integer.parseInt(page);i++){
-                        String colStr = this.getCosXml(ebayAccount,"2014-06-06T16:15:12.000Z","2014-09-23T18:15:12.000Z",i);
+                        String colStr = this.getCosXml(ebayAccount,"2014-08-06T16:15:12.000Z","2014-10-14T18:15:12.000Z",i);
                         this.saveListingData(colStr,ebayAccount,userid,i);
                     }
                 }
@@ -114,7 +116,7 @@ public class ListingItemDataTaskRun extends BaseScheduledClass implements Schedu
         List<UsercontrollerEbayAccount> liue = ueam.selectByExample(ueame);
         for(int i =0 ;i<liue.size();i++) {
             UsercontrollerEbayAccount ue = liue.get(i);
-            String colStr = this.getCosXml(ue.getEbayName(),"2014-06-06T16:15:12.000Z","2014-09-23T18:15:12.000Z",1);
+            String colStr = this.getCosXml(ue.getEbayName(),"2014-08-06T16:15:12.000Z","2014-10-14T18:15:12.000Z",1);
             this.saveListingData(colStr,ue.getEbayName(),ue.getUserId(),1);
         }
     }

@@ -5,6 +5,7 @@ import com.base.database.customtrading.mapper.ListingDataMapper;
 import com.base.database.trading.mapper.TradingListingAmendMapper;
 import com.base.database.trading.mapper.TradingListingDataMapper;
 import com.base.database.trading.model.TradingListingAmend;
+import com.base.database.trading.model.TradingListingAmendWithBLOBs;
 import com.base.database.trading.model.TradingListingData;
 import com.base.database.trading.model.TradingListingDataExample;
 import com.base.domains.querypojos.ListingDataAmendQuery;
@@ -63,7 +64,7 @@ public class TradingListingDataImpl implements com.trading.service.ITradingListi
     }
 
     @Override
-    public void insertTradingListingAmend(TradingListingAmend tla){
+    public void insertTradingListingAmend(TradingListingAmendWithBLOBs tla){
         this.tradingListingAmendMapper.insertSelective(tla);
     }
     @Override

@@ -1,5 +1,6 @@
 /**
  * Created by wula on 2014/7/26.
+ * 遮罩效果依赖于jquery.blockUI.min.js
  */
 $.ajaxSettings.traditional = true;
 var Base={
@@ -70,9 +71,13 @@ var Base={
 if(url.indexOf("?")==-1){
     url+="?math1="+Math.random();
 }else{
-    url+="&math1="+Math.random();
-}
+    url+="&math1="+Math.random();}
         var self = this;
+
+        if(config.isConverPage){
+            $.blockUI({ message: '<h1><img src="/xsddWeb/img/busy.gif" /> Just a moment...</h1>' });
+        }
+
         $.ajax({
             url: url,
             type: config.type,
@@ -80,6 +85,7 @@ if(url.indexOf("?")==-1){
             async: config.async,
             data: param,
             complete: function (res, status) {
+                $.unblockUI();
                 if(status == "success" || status == "notmodified") {
                     var responseText = res.responseText;
                     if(typeof(_invokeGetData_type)!="undefined" && _invokeGetData_type=='string'){
@@ -125,7 +131,7 @@ if(url.indexOf("?")==-1){
         return this;
     };
     //默认参数，异步，且以对象模式进行ajax访问
-    $.fn.invoke.defaultConfig = {type: "POST", dataType: "html", async: true, ajaxMode: "ajaxFlag"};
+    $.fn.invoke.defaultConfig = {type: "POST", dataType: "html", async: true, ajaxMode: "ajaxFlag","isConverPage":false};
 
 
 })(jQuery);

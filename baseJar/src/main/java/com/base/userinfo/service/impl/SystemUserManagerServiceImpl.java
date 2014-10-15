@@ -265,6 +265,7 @@ public class SystemUserManagerServiceImpl implements SystemUserManagerService {
         String scode= UUIDUtil.getUUID();
         request.getSession().setAttribute("passWordSafeCode_",scode);
         request.getSession().setAttribute("opDateTime_",new Date());
+        request.getSession().setAttribute("loginUserIDchangePWD_",loginUserID);
 
         UsercontrollerUserExample userExample = new UsercontrollerUserExample();
         userExample.createCriteria().andUserLoginIdEqualTo(loginUserID);
@@ -282,7 +283,7 @@ public class SystemUserManagerServiceImpl implements SystemUserManagerService {
             log.setOperuser(usert.getUserLoginId());
             log.setEventdesc("通过邮件找回密码!邮箱为"+usert.getUserEmail());
             SystemLogUtils.saveLog(log);
-            
+
             email.addTo(usert.getUserEmail());
             email.setSubject("tembin密码修改验证码");
             email.setMsg("您正在进行密码找回操作，本次操作验证码为:"+scode);
@@ -294,6 +295,34 @@ public class SystemUserManagerServiceImpl implements SystemUserManagerService {
             logger.error(e.getMessage(),e);
         }
 
+    }
+
+    @Override
+    /**修改被遗忘的密码*/
+    public String doChangeForgetPassWord(Map map){
+        HttpServletRequest request = (HttpServletRequest) map.get("HttpServletRequest");
+        String loginUserID = (String) map.get("loginUserId");
+        String newPWD = (String) map.get("newPWD");
+        String safeCode = (String) map.get("safeCode");
+
+        Object remotsafeCodeobj= request.getSession().getAttribute("passWordSafeCode_");
+        Asserts.assertTrue(!ObjectUtils.isLogicalNull(remotsafeCodeobj),"请先获取邮箱验证码，谢谢！");
+        String remotsafeCode = (String) remotsafeCodeobj;
+        Asserts.assertTrue(remotsafeCode.equals(safeCode),"邮箱验证码不正确!");
+        String loginUserId1= (String) request.getSession().getAttribute("loginUserIDchangePWD_");
+        Asserts.assertTrue(loginUserID.equals(loginUserId1),"需要修改的账户名不对！");
+
+
+        UsercontrollerUserExample userExample = new UsercontrollerUserExample();
+        userExample.createCriteria().andUserLoginIdEqualTo(loginUserID);
+        List<UsercontrollerUser> users = userMapper.selectByExample(userExample);
+        Asserts.assertTrue(!ObjectUtils.isLogicalNull(users),"没有此帐号");
+        UsercontrollerUser user=users.get(0);
+
+        String enewp = EncryptionUtil.pwdEncrypt(newPWD, loginUserID);
+        user.setUserPassword(enewp);
+        userMapper.updateByPrimaryKeySelective(user);
+        return "success";
     }
 
 }

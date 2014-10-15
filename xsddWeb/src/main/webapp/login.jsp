@@ -8,11 +8,7 @@
     <link rel="stylesheet" type="text/css" href="<c:url value ="/css/compiled/layout.css"/> "/>
     <script type="text/javascript" src=<c:url value ="/js/jquery/jquery-1.9.0.min.js" /> ></script>
     <script type="text/javascript">
-        $(document).ready(function(){
-            if(!ischrom()){
-                alert("请使用Chrome浏览器！")
-            }
-        });
+
 
         function subLoginForm(){
             if(!ischrom()){
@@ -44,6 +40,32 @@
             }
             document.location.href='findPWD.jsp';
         }
+
+        function changeImg(){
+            $("#capImg").hide().attr('src', '/xsddWeb/captchaActionlogin.do?x=' + Math.floor(Math.random()*100) ).fadeIn();
+        }
+
+        var errMessage="<%=request.getSession().getAttribute("errMessage_")%>";
+        var showCapImage="<%=request.getSession().getAttribute("showCapImage")%>";
+        <%
+            request.getSession().removeAttribute("errMessage_");
+            request.getSession().removeAttribute("showCapImage");
+        %>
+        $(document).ready(function(){
+            if(!ischrom()){
+                alert("请使用Chrome浏览器！")
+            }
+            $(".admin_user_reg ul").css({"background-size":"100% 100%","height":"280px"})
+            if(errMessage!=null && errMessage!='' && errMessage!='null'){
+                alert(errMessage)
+            }
+            if(showCapImage!=null && showCapImage!='' && showCapImage != 'null'){
+                $("#capli").show();
+                changeImg();
+                $(".admin_user_reg ul").css({"background-size":"100% 100%","height":"350px"})
+            }
+
+        });
     </script>
     <style type="text/css">
         body {
@@ -67,7 +89,12 @@
                    onfocus="if(this.value=='请输入密码'){this.value='';}"
                    onblur="if(this.value==''){this.value='请输入密码';}" /></li>
 
-        <li>验证码:<img src=".." alt=""/> </li>
+        <li id="capli" style="display: none">
+            <div style="float: left"><input name="capcode" style="width: 100px;height: 43px;top: 0px" type="text"/></div>
+            <div>&nbsp;&nbsp;验证码:<img id="capImg" onclick="changeImg(this)" src="" alt="点击切换"/> &nbsp;</div>
+
+
+        </li>
 
         <li style="text-align: right;margin-top: 0px"><a onclick="findPassWd()" href="javascript:void(0)">忘记密码</a></li>
         <li style="margin-top: -5px">

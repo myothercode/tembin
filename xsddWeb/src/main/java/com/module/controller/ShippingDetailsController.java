@@ -7,8 +7,10 @@ import com.base.domains.SessionVO;
 import com.base.domains.querypojos.BuyerRequirementDetailsQuery;
 import com.base.domains.querypojos.PaypalQuery;
 import com.base.domains.querypojos.ShippingdetailsQuery;
+import com.base.domains.userinfo.UsercontrollerEbayAccountExtend;
 import com.base.mybatis.page.Page;
 import com.base.mybatis.page.PageJsonBean;
+import com.base.userinfo.service.SystemUserManagerService;
 import com.base.utils.annotations.AvoidDuplicateSubmission;
 import com.base.utils.cache.DataDictionarySupport;
 import com.base.utils.cache.SessionCacheSupport;
@@ -55,7 +57,8 @@ public class ShippingDetailsController extends BaseAction{
     private ITradingInternationalShippingServiceOption iTradingInternationalShippingServiceOption;
     @Autowired
     private IUsercontrollerEbayAccount iUsercontrollerEbayAccount;
-
+    @Autowired
+    private SystemUserManagerService systemUserManagerService;
     /**
      * 查询数据并展示
      * @param modelMap
@@ -221,7 +224,7 @@ public class ShippingDetailsController extends BaseAction{
         modelMap.put("lipackage",lipackage);
 
         SessionVO c= SessionCacheSupport.getSessionVO();
-        List<UsercontrollerEbayAccount> ebayList = this.iUsercontrollerEbayAccount.selectUsercontrollerEbayAccountByUserId(c.getId());
+        List<UsercontrollerEbayAccountExtend> ebayList=systemUserManagerService.queryCurrAllEbay(new HashMap());
         modelMap.put("ebayList",ebayList);
 
         return forword("module/shipping/addshippingDetails",modelMap);
@@ -265,7 +268,7 @@ public class ShippingDetailsController extends BaseAction{
         modelMap.put("lipackage",lipackage);
 
         SessionVO c= SessionCacheSupport.getSessionVO();
-        List<UsercontrollerEbayAccount> ebayList = this.iUsercontrollerEbayAccount.selectUsercontrollerEbayAccountByUserId(c.getId());
+        List<UsercontrollerEbayAccountExtend> ebayList=systemUserManagerService.queryCurrAllEbay(new HashMap());
         modelMap.put("ebayList",ebayList);
 
         TradingShippingdetails tradingShippingdetails = this.iTradingShippingDetails.selectById(Long.parseLong(request.getParameter("id")));

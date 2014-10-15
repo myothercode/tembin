@@ -16,8 +16,10 @@ import com.base.domains.CommonParmVO;
 import com.base.domains.DictDataFilterParmVO;
 import com.base.domains.SessionVO;
 import com.base.domains.userinfo.UsercontrollerDevAccountExtend;
+import com.base.domains.userinfo.UsercontrollerEbayAccountExtend;
 import com.base.mybatis.page.PageJsonBean;
 import com.base.sampleapixml.APINameStatic;
+import com.base.userinfo.service.SystemUserManagerService;
 import com.base.userinfo.service.UserInfoService;
 import com.base.utils.cache.DataDictionarySupport;
 import com.base.utils.cache.SessionCacheSupport;
@@ -83,6 +85,8 @@ public class UtilController extends BaseAction{
     private ITradingItem iTradingItem;
     @Autowired
     private KeyMoveListMapper keyMoveListMapper;
+    @Autowired
+    private SystemUserManagerService systemUserManagerService;
     /**用于更新页面token*/
     @RequestMapping("/ajax/getToken.do")
     @ResponseBody
@@ -437,7 +441,7 @@ i++;
         List<TradingDataDictionary> lidata = DataDictionarySupport.getTradingDataDictionaryByType(DataDictionarySupport.DATA_DICT_SITE);
         modelMap.put("siteList",lidata);
         SessionVO c= SessionCacheSupport.getSessionVO();
-        List<UsercontrollerEbayAccount> ebayList = this.iUsercontrollerEbayAccount.selectUsercontrollerEbayAccountByUserId(c.getId());
+        List<UsercontrollerEbayAccountExtend> ebayList=systemUserManagerService.queryCurrAllEbay(new HashMap());
         modelMap.put("ebayList",ebayList);
         return forword("/userselect/userselect",modelMap);
     }

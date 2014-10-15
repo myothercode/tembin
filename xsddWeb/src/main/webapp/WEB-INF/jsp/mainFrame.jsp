@@ -15,7 +15,7 @@
     <script type="text/javascript">
         $(document).ready(function(){
             getMenu();
-            //getSystemMessage();
+            getSystemMessage({"jsonBean.pageNum":1,"jsonBean.pageCount":1000,"readed":0,"strV1":"num"});
             getMessagesByTime();
         });
         function cleanContent(obj){
@@ -33,8 +33,8 @@
         function queryOrder(obj){
             var cont= $(obj).val();
             if(cont!=""&&event.keyCode==13){
-                console.debug($("#ebayMessageLiu").attr("href"));
-                $("#ebayMessageLiu").click;
+                $("#queryForm").submit();
+
             }
         }
     </script>
@@ -57,6 +57,8 @@
     </style>
 </head>
 <body>
+<form id="queryForm" action="/xsddWeb/order/queryOrdersList.do" target="contentMain">
+</form>
 <!-- navbar -->
 <header class="navbar navbar-inverse" role="banner">
     <div class="navbar-header">
@@ -78,7 +80,7 @@
         <li title="ebay消息" class="notification-dropdown hidden-xs hidden-sm">
             <a href="javascript:void(0)" id="ebayMessages"  class="trigger">
                 <i class="icon-warning-sign"></i>
-                <span class="ebayMessagesCount"></span>
+                <span id="ebayMessagesCount" class="count"></span>
             </a>
             <div class="pop-dialog">
                 <div class="pointer right">
@@ -88,10 +90,10 @@
                 <div class="body">
                     <a href="javascript:void(0)" class="close-icon"><i class="icon-remove-sign"></i></a>
                     <div class="notifications" id="notifications">
-                        <h3 id="ebaymessageNotice">You have 0 new notifications</h3>
+                        <h3 id="ebaymessageNotice">You have x new notifications</h3>
 
                         <a href="#" class="item">
-                            <i class="icon-download-alt"></i> New order placed
+                            <i class="icon-download-alt"></i> no message
                             <span class="time"><i class="icon-time"></i> 1 day.</span>
                         </a>
                         <div class="footer">
@@ -116,9 +118,9 @@
                     <div class="messages" id="messages">
                         <a href="javascript:void(0)" class="item">
                             <img src="/xsddWeb/img/contact-img.png" class="display" />
-                            <div class="name">Alejandra Galván</div>
+                            <div class="name">no message</div>
                             <div class="msg">
-                                There are many variations of available, but the majority have suffered alterations.
+                                no message
                             </div>
                             <span class="time"><i class="icon-time"></i> 13 min.</span>
                         </a>
