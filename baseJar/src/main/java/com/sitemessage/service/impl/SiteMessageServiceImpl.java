@@ -6,13 +6,18 @@ import com.base.database.sitemessage.model.CustomPublicSitemessage;
 import com.base.database.sitemessage.model.PublicSitemessage;
 import com.base.database.sitemessage.model.PublicSitemessageExample;
 import com.base.database.sitemessage.model.SiteMessageCountVO;
+import com.base.database.userinfo.model.SystemLog;
 import com.base.domains.SessionVO;
 import com.base.mybatis.page.Page;
 import com.base.utils.cache.SessionCacheSupport;
 import com.base.utils.common.ObjectUtils;
+import com.base.utils.common.SystemLogUtils;
 import com.base.utils.threadpool.TaskMessageVO;
 import com.sitemessage.service.SiteMessageService;
+import org.apache.commons.codec.StringEncoder;
+import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,6 +32,7 @@ import java.util.Map;
 @Service
 @Transactional(rollbackFor = Exception.class)
 public class SiteMessageServiceImpl implements SiteMessageService {
+    static Logger logger = Logger.getLogger(SiteMessageServiceImpl.class);
 
     @Autowired
     private PublicSitemessageMapper publicSitemessageMapper;
@@ -85,6 +91,33 @@ public class SiteMessageServiceImpl implements SiteMessageService {
     @Override
     /**新增一条消息*/
     public void addSiteMessage(TaskMessageVO taskMessageVO){
-        publicSitemessageMapper.insertSelective(taskMessageVO.toPublicSiteMessage());
+        SystemLog systemLog = new SystemLog();
+        systemLog.setOperuser(taskMessageVO.getMessageTo().toString());
+        systemLog.setEventname(SystemLogUtils.NO_API_Message);
+        systemLog.setEventdesc("消息类型:" + taskMessageVO.getMessageType() + ",消息内容:" + taskMessageVO.getMessageContext());
+
+        if(!taskMessageVO.getSendOrNotSend()){//如果设置了不发送消息，那么任何消息都不发送，但是会记录系统日志
+            try {
+                SystemLogUtils.saveLog(systemLog);
+            } catch (Exception e) {
+                logger.error("记录日志错误!"+taskMessageVO.getMessageTo()+";"+taskMessageVO.getMessageContext(),e);
+            }
+            return;}
+
+        if((!taskMessageVO.getWeithSendSuccessMessage() && taskMessageVO.getMessageType().endsWith("_SUCCESS"))){
+            try {
+                SystemLogUtils.saveLog(systemLog);
+            } catch (Exception e) {
+                logger.error("记录日志错误!"+taskMessageVO.getMessageTo()+";"+taskMessageVO.getMessageContext(),e);
+            }
+            return;
+        }
+
+        try {
+            publicSitemessageMapper.insertSelective(taskMessageVO.toPublicSiteMessage());
+        } catch (Exception e) {
+            taskMessageVO.setMessageContext(StringEscapeUtils.escapeHtml(taskMessageVO.getMessageContext()));
+            publicSitemessageMapper.insertSelective(taskMessageVO.toPublicSiteMessage());
+        }
     }
 }

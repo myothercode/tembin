@@ -1,6 +1,7 @@
 package com.trading.service;
 
 import com.base.database.trading.model.TradingInternationalshippingserviceoption;
+import com.base.database.trading.model.TradingShippingdetails;
 import com.base.xmlpojo.trading.addproduct.InternationalShippingServiceOption;
 
 import java.util.List;
@@ -18,5 +19,5 @@ public interface ITradingInternationalShippingServiceOption {
     void deleteByParentId(Long id);
 
 
-    List<InternationalShippingServiceOption> toXmlPojo(Long id) throws Exception;
+    List<InternationalShippingServiceOption> toXmlPojo(Long id,TradingShippingdetails tradingShippingdetails) throws Exception;
 }

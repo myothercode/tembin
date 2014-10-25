@@ -573,7 +573,11 @@ public class TextXml {
         //testAddFixedPriceItemRequest();
         //testBuyerRequirementDetails();
         //testAddFixedPriceItemRequests();
-        System.out.println(57/100);
+        //System.out.println(57/100);
+        String url="http://i.ebayimg.sandbox.ebay.com/00/s/NjAwWDk2MA==/$(KGrHqVHJBEFE1c-ciWoBUR2LG8Ul!~~60_0.JPG";
+        System.out.println(url.substring(url.lastIndexOf("_")+1,url.lastIndexOf(".")));
+        System.out.println(url.substring(0,url.lastIndexOf("_")+1));
+        System.out.println(url.substring(url.lastIndexOf(".")));
     }
 
     /**

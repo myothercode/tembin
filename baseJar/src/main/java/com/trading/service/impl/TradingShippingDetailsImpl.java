@@ -62,6 +62,9 @@ public class TradingShippingDetailsImpl implements com.trading.service.ITradingS
             TradingShippingdetails t = this.tradingShippingdetailsMapper.selectByPrimaryKey(pojo.getId());
             Asserts.assertTrue(t != null && t.getCreateUser() != null, "没有找到记录或者记录创建者为空");
             ObjectUtils.valiUpdate(t.getCreateUser(),TradingShippingserviceoptionsMapper.class,pojo.getId());
+            if(pojo.getCheckFlag()==null) {
+                pojo.setCheckFlag(t.getCheckFlag());
+            }
             this.tradingShippingdetailsMapper.updateByPrimaryKeySelective(pojo);
         }
     }
@@ -204,8 +207,8 @@ public class TradingShippingDetailsImpl implements com.trading.service.ITradingS
             sd.setExcludeShipToLocation(listr);
         }
         //ConvertPOJOUtil.convert(sd.getInsuranceDetails(),tsd);
-        sd.setInternationalShippingServiceOption(this.iTradingInternationalShippingServiceOption.toXmlPojo(tsd.getId()));
-        sd.setShippingServiceOptions(this.iTradingShippingServiceOptions.toXmlPojo(tsd.getId()));
+        sd.setInternationalShippingServiceOption(this.iTradingInternationalShippingServiceOption.toXmlPojo(tsd.getId(),tsd));
+        sd.setShippingServiceOptions(this.iTradingShippingServiceOptions.toXmlPojo(tsd.getId(),tsd));
         //System.out.println(PojoXmlUtil.pojoToXml(sd));
         return sd;
     }

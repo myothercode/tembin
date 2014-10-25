@@ -27,6 +27,7 @@
       <result column="ebay_account_id" property="ebayAccountId" jdbcType="BIGINT" />
       <result column="ebay_account_name" property="ebayAccountName" jdbcType="BIGINT" />
       <result column="countNum" property="countNum" jdbcType="BIGINT" />
+      <result column="sku" property="sku" jdbcType="BIGINT" />
       <result column="text_html" property="textHtml" jdbcType="BIGINT" />
   </resultMap>
 
@@ -38,8 +39,8 @@
         </if>
     </select>
     <select id="selectMessageGetmymessageByGroupList" resultMap="BaseResultMap" parameterType="map">
-        select MessageGetmymessage.*,count(*) countNum from trading_message_getmymessage MessageGetmymessage
-        /*left join usercontroller_ebay_account ebay on MessageGetmymessage.ebay_account_id=ebay.id*/ where 1=1
+        select MessageGetmymessage.*,item.sku sku,count(*) countNum from trading_message_getmymessage MessageGetmymessage
+        left join trading_order_get_item item on MessageGetmymessage.itemID=item.itemID where 1=1
         <if test="id!=null">
             and MessageGetmymessage.id = #{id}
         </if>
@@ -51,6 +52,25 @@
         </if>
         <if test="read!=null">
             and MessageGetmymessage.read = #{read}
+        </if>
+        <if test="messageFrom!=null">
+            <if test="messageFrom=='ebay'">
+                and MessageGetmymessage.sender = "eBay"
+            </if>
+            <if test="messageFrom!='ebay'">
+                and MessageGetmymessage.sender !="eBay"
+            </if>
+        </if>
+        <if test="type!=null">
+            <if test="type==1">
+                and MessageGetmymessage.sender like "%"#{content}"%"
+            </if>
+            <if test="type==2">
+                and MessageGetmymessage.subject like "%"#{content}"%"
+            </if>
+            <if test="type==3">
+                and MessageGetmymessage.messageID like "%"#{content}"%"
+            </if>
         </if>
         <if test="ebays!=null">
             and MessageGetmymessage.ebay_account_id in

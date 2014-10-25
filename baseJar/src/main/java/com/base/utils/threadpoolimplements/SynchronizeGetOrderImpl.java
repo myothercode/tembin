@@ -71,6 +71,10 @@ public class SynchronizeGetOrderImpl implements ThreadPoolBaseInterFace {
     private  ITradingOrderGetSellerTransactions iTradingOrderGetSellerTransactions;
     @Autowired
     private ITradingOrderOrderVariationSpecifics iTradingOrderOrderVariationSpecifics;
+    @Autowired
+    private ITradingAutoMessage iTradingAutoMessage;
+    @Autowired
+    private ITradingMessageTemplate iTradingMessageTemplate;
     @Override
     public <T> void doWork(String res, T... t) {
         if(StringUtils.isEmpty(res)){return;}
@@ -79,10 +83,10 @@ public class SynchronizeGetOrderImpl implements ThreadPoolBaseInterFace {
         String ack = null;
         try {
             Map map=new HashMap();
-            Date startTime2= DateUtils.subDays(new Date(), 9);
-            Date endTime= DateUtils.addDays(startTime2, 9);
-        /*    Date startTime2= DateUtils.subDays(new Date(), 40);
-            Date endTime= DateUtils.addDays(startTime2, 40);*/
+           /* Date startTime2= DateUtils.subDays(new Date(), 9);
+            Date endTime= DateUtils.addDays(startTime2, 9);*/
+            Date startTime2= DateUtils.subDays(new Date(),70);
+            Date endTime= DateUtils.addDays(startTime2,70);
             Date end1= com.base.utils.common.DateUtils.turnToDateEnd(endTime);
             String start= DateUtils.DateToString(startTime2);
             String end=DateUtils.DateToString(end1);
@@ -107,6 +111,7 @@ public class SynchronizeGetOrderImpl implements ThreadPoolBaseInterFace {
                         map.put("page", i + "");
                         String xml = BindAccountAPI.getGetOrders(map);
                         Map<String, String>  resMap = addApiTask.exec(d, xml, apiUrl);
+                      /*  Map<String, String>  resMap = addApiTask.exec(d, xml, "https://api.ebay.com/ws/api.dll");*/
                    /* resMap = addApiTask.exec(d, xml, "https://api.ebay.com/ws/api.dll");*/
                         String r1 = resMap.get("stat");
                         res = resMap.get("message");
@@ -139,7 +144,7 @@ public class SynchronizeGetOrderImpl implements ThreadPoolBaseInterFace {
                             }
                         }
                         //--------------自动发送消息-------------------------
-                        List<TradingOrderAddMemberMessageAAQToPartner> addmessages=iTradingOrderAddMemberMessageAAQToPartner.selectTradingOrderAddMemberMessageAAQToPartnerByTransactionId(order.getTransactionid(),2);
+                        /*List<TradingOrderAddMemberMessageAAQToPartner> addmessages=iTradingOrderAddMemberMessageAAQToPartner.selectTradingOrderAddMemberMessageAAQToPartnerByTransactionId(order.getTransactionid(),2);
                         if(addmessages!=null&&addmessages.size()>0){
                             for(TradingOrderAddMemberMessageAAQToPartner addmessage:addmessages){
                                 TradingOrderAddMemberMessageAAQToPartner message=new TradingOrderAddMemberMessageAAQToPartner();
@@ -147,54 +152,59 @@ public class SynchronizeGetOrderImpl implements ThreadPoolBaseInterFace {
                                 if(StringUtils.isNotBlank(trackingnumber)){
                                     if(addmessage.getMessageflag()<=1){
                                         //自动发送发货消息
-                                        Map<String,String> messageMap=autoSendMessage(order,2-1,token,d);
+                                        Map<String,String> messageMap=autoSendMessage(order,token,d,"标记已发货");
+
+                                        message.setBody(messageMap.get("body"));
+                                        message.setSender(order.getSelleruserid());
+                                        message.setItemid(order.getItemid());
+                                        message.setRecipientid(order.getBuyeruserid());
+                                        message.setSubject(messageMap.get("subject"));
+                                        message.setTransactionid(order.getTransactionid());
+                                        message.setCreateUser(taskMessageVO.getMessageTo());
+                                        message.setMessagetype(addmessage.getMessagetype());
                                         if("false".equals(messageMap.get("flag"))){
+                                            message.setMessageflag(addmessage.getMessagetype());
+                                            message.setReplied("false");
+                                            iTradingOrderAddMemberMessageAAQToPartner.saveOrderAddMemberMessageAAQToPartner(message);
                                             return;
                                         }
                                         if("true".equals(messageMap.get("flag"))){
                                             message.setMessageflag(2);
-                                            message.setBody(messageMap.get("body"));
-                                            message.setSender(order.getSelleruserid());
-                                            message.setItemid(order.getItemid());
-                                            message.setMessagetype(addmessage.getMessagetype());
-                                            message.setRecipientid(order.getBuyeruserid());
-                                            message.setSubject(messageMap.get("subject"));
-                                            message.setTransactionid(order.getTransactionid());
-                                            message.setCreateUser(taskMessageVO.getMessageTo());
+                                            message.setReplied("true");
                                             iTradingOrderAddMemberMessageAAQToPartner.saveOrderAddMemberMessageAAQToPartner(message);
                                         }
 
-                                    }else if(addmessage.getMessageflag()==2){
-                                        Date shippDate1=order.getShippedtime();
-                                        Date shippDate2= org.apache.commons.lang.time.DateUtils.addDays(shippDate1,2);
-                                        String shippDate=dateToString(shippDate2);
-                                        Date nowDate1=new Date();
-                                        String nowDate=dateToString(nowDate1);
-                                        if(shippDate!=null){
-                                            Integer days=Integer.valueOf(shippDate);
-                                            if(days<=Integer.valueOf(nowDate)){
+                                    }//else if(addmessage.getMessageflag()==2){
+                                       // Date shippDate1=order.getShippedtime();
+                                       // Date shippDate2= org.apache.commons.lang.time.DateUtils.addDays(shippDate1,2);
+                                       // String shippDate=dateToString(shippDate2);
+                                      //  Date nowDate1=new Date();
+                                     //   String nowDate=dateToString(nowDate1);
+                                     //   if(shippDate!=null){
+                                     //       Integer days=Integer.valueOf(shippDate);
+                                     //       if(days<=Integer.valueOf(nowDate)){
                                                 //发货n天后自动发送消息
-                                                Map<String,String> messageMap=autoSendMessage(order,3-1,token,d);
-                                                if("false".equals(messageMap.get("flag"))){
-                                                    return;
-                                                }
-                                                if("true".equals(messageMap.get("flag"))){
-                                                    message.setMessageflag(3);
-                                                    message.setBody(messageMap.get("body"));
-                                                    message.setSubject(messageMap.get("subject"));
-                                                    message.setSender(order.getSelleruserid());
-                                                    message.setItemid(order.getItemid());
-                                                    message.setMessagetype(addmessage.getMessagetype());
-                                                    message.setRecipientid(order.getBuyeruserid());
-                                                    message.setTransactionid(order.getTransactionid());
-                                                    message.setCreateUser(taskMessageVO.getMessageTo());
-                                                    iTradingOrderAddMemberMessageAAQToPartner.saveOrderAddMemberMessageAAQToPartner(message);
-                                                }
+                                     //           Map<String,String> messageMap=autoSendMessage(order,3-1,token,d);
+                                     //           if("false".equals(messageMap.get("flag"))){
+                                     //               return;
+                                     //           }
+                                      //          if("true".equals(messageMap.get("flag"))){
+                                      //              message.setMessageflag(3);
+                                      //              message.setBody(messageMap.get("body"));
+                                      //              message.setSubject(messageMap.get("subject"));
+                                      //              message.setSender(order.getSelleruserid());
+                                      //              message.setItemid(order.getItemid());
+                                      //              message.setMessagetype(addmessage.getMessagetype());
+                                      //              message.setRecipientid(order.getBuyeruserid());
+                                      //              message.setTransactionid(order.getTransactionid());
+                                      //              message.setCreateUser(taskMessageVO.getMessageTo());
+                                      //              iTradingOrderAddMemberMessageAAQToPartner.saveOrderAddMemberMessageAAQToPartner(message);
+                                      //          }
 
-                                            }
-                                        }
+                                      //      }
+                                      //  }
 
-                                    }
+                                    //}
                                 }
                             }
                         }else{
@@ -202,12 +212,55 @@ public class SynchronizeGetOrderImpl implements ThreadPoolBaseInterFace {
                             String trackingnumber=order.getShipmenttrackingnumber();
                             if("Complete".equals(order.getStatus())&&!StringUtils.isNotBlank(trackingnumber)&&"Completed".equals(order.getOrderstatus())){
                                 //付款后发送消息
-                                Map<String,String> messageMap=autoSendMessage(order,1-1,token,d);
+                                Map<String,String> messageMap=autoSendMessage(order,token,d,"收到买家付款");
+                                message.setMessageflag(1);
+                                message.setBody(messageMap.get("body"));
+                                message.setSender(order.getSelleruserid());
+                                message.setItemid(order.getItemid());
+                                message.setMessagetype(2);
+                                message.setRecipientid(order.getBuyeruserid());
+                                message.setSubject(messageMap.get("subject"));
+                                message.setTransactionid(order.getTransactionid());
+                                message.setCreateUser(taskMessageVO.getMessageTo());
                                 if("false".equals(messageMap.get("flag"))){
+                                    message.setReplied("false");
+                                    iTradingOrderAddMemberMessageAAQToPartner.saveOrderAddMemberMessageAAQToPartner(message);
                                     return;
                                 }
                                 if("true".equals(messageMap.get("flag"))){
-                                    message.setMessageflag(1);
+                                    message.setReplied("true");
+                                    iTradingOrderAddMemberMessageAAQToPartner.saveOrderAddMemberMessageAAQToPartner(message);
+                                }
+                            }
+                            if(StringUtils.isNotBlank(trackingnumber)){
+                                //Date shippDate1=order.getShippedtime();
+                               // Date shippDate2= org.apache.commons.lang.time.DateUtils.addDays(shippDate1,2);
+                               // String shippDate=dateToString(shippDate2);
+                               // Date nowDate1=new Date();
+                               // String nowDate=dateToString(nowDate1);
+                               // Integer days=Integer.valueOf(shippDate);
+                                //if(days<=Integer.valueOf(nowDate)){
+                                    //发货n天后自动发送消息
+                                 //   Map<String,String> messageMap=autoSendMessage(order,token,d,"");
+                                //    if("false".equals(messageMap.get("flag"))){
+                               //         return;
+                                //    }
+                              //      if("true".equals(messageMap.get("flag"))){
+                              //          message.setMessageflag(3);
+                               //         message.setBody(messageMap.get("body"));
+                                //        message.setSubject(messageMap.get("subject"));
+                                //        message.setSender(order.getSelleruserid());
+                               //         message.setItemid(order.getItemid());
+                               //         message.setMessagetype(2);
+                               //         message.setRecipientid(order.getBuyeruserid());
+                                //        message.setTransactionid(order.getTransactionid());
+                                //        message.setCreateUser(taskMessageVO.getMessageTo());
+                                //        iTradingOrderAddMemberMessageAAQToPartner.saveOrderAddMemberMessageAAQToPartner(message);
+                                //    }
+                               // }else{
+                                    //发送发货消息
+                                    Map<String,String> messageMap=autoSendMessage(order,token,d,"标记已发货");
+                                    message.setMessageflag(2);
                                     message.setBody(messageMap.get("body"));
                                     message.setSender(order.getSelleruserid());
                                     message.setItemid(order.getItemid());
@@ -216,58 +269,24 @@ public class SynchronizeGetOrderImpl implements ThreadPoolBaseInterFace {
                                     message.setSubject(messageMap.get("subject"));
                                     message.setTransactionid(order.getTransactionid());
                                     message.setCreateUser(taskMessageVO.getMessageTo());
-                                    iTradingOrderAddMemberMessageAAQToPartner.saveOrderAddMemberMessageAAQToPartner(message);
-                                }
-                            }
-                            if(StringUtils.isNotBlank(trackingnumber)){
-                                Date shippDate1=order.getShippedtime();
-                                Date shippDate2= org.apache.commons.lang.time.DateUtils.addDays(shippDate1,2);
-                                String shippDate=dateToString(shippDate2);
-                                Date nowDate1=new Date();
-                                String nowDate=dateToString(nowDate1);
-                                Integer days=Integer.valueOf(shippDate);
-                                if(days<=Integer.valueOf(nowDate)){
-                                    //发货n天后自动发送消息
-                                    Map<String,String> messageMap=autoSendMessage(order,3-1,token,d);
                                     if("false".equals(messageMap.get("flag"))){
+                                        message.setReplied("false");
+                                        iTradingOrderAddMemberMessageAAQToPartner.saveOrderAddMemberMessageAAQToPartner(message);
                                         return;
                                     }
                                     if("true".equals(messageMap.get("flag"))){
-                                        message.setMessageflag(3);
-                                        message.setBody(messageMap.get("body"));
-                                        message.setSubject(messageMap.get("subject"));
-                                        message.setSender(order.getSelleruserid());
-                                        message.setItemid(order.getItemid());
-                                        message.setMessagetype(2);
-                                        message.setRecipientid(order.getBuyeruserid());
-                                        message.setTransactionid(order.getTransactionid());
-                                        message.setCreateUser(taskMessageVO.getMessageTo());
+                                        message.setReplied("true");
                                         iTradingOrderAddMemberMessageAAQToPartner.saveOrderAddMemberMessageAAQToPartner(message);
                                     }
-                                }else{
-                                    //发送发货消息
-                                    Map<String,String> messageMap=autoSendMessage(order,2-1,token,d);
-                                    if("false".equals(messageMap.get("flag"))){
-                                        return;
-                                    }
-                                    if("true".equals(messageMap.get("flag"))){
-                                        message.setMessageflag(2);
-                                        message.setBody(messageMap.get("body"));
-                                        message.setSender(order.getSelleruserid());
-                                        message.setItemid(order.getItemid());
-                                        message.setMessagetype(2);
-                                        message.setRecipientid(order.getBuyeruserid());
-                                        message.setSubject(messageMap.get("subject"));
-                                        message.setTransactionid(order.getTransactionid());
-                                        message.setCreateUser(taskMessageVO.getMessageTo());
-                                        iTradingOrderAddMemberMessageAAQToPartner.saveOrderAddMemberMessageAAQToPartner(message);
-                                    }
-                                }
+                               //}
                             }
-                        }
+                        }*/
                         //------------同步订单商品-----------
                         d.setApiCallName(APINameStatic.GetItem);
-                        Map<String,String> itemresmap= GetOrderItemAPI.apiGetOrderItem(d, token, apiUrl, order.getItemid());
+                        //测试环境
+                       Map<String,String> itemresmap= GetOrderItemAPI.apiGetOrderItem(d, token, apiUrl, order.getItemid());
+                        //真实环境
+                       // Map<String,String> itemresmap= GetOrderItemAPI.apiGetOrderItem(d, token, "https://api.ebay.com/ws/api.dll", order.getItemid());
                         String itemr1 = itemresmap.get("stat");
                         String itemres = itemresmap.get("message");
                         if ("fail".equalsIgnoreCase(itemr1)) {
@@ -352,6 +371,7 @@ public class SynchronizeGetOrderImpl implements ThreadPoolBaseInterFace {
                             }
                             order.setShippingdetailsId(shippingDetails.getId());
                             item.setCreateUser(taskMessageVO.getMessageTo());
+                            item.setSku(order.getSku());
                             iTradingOrderGetItem.saveOrderGetItem(item);
 
                             List<TradingOrderItemSpecifics> specificItemList= (List<TradingOrderItemSpecifics>) items.get(GetOrderItemAPI.ITEM_SPECIFICS);
@@ -452,7 +472,7 @@ public class SynchronizeGetOrderImpl implements ThreadPoolBaseInterFace {
                     }*/
                         //----------------
                         //同步外部交易
-                        d.setApiCallName("GetSellerTransactions");
+                        /*d.setApiCallName("GetSellerTransactions");
                         String sellerxml = BindAccountAPI.GetSellerTransactions(token);//获取接受消息
                         Map<String, String> resSellerMap = addApiTask.exec(d, sellerxml, apiUrl);
                         //------------------------
@@ -474,7 +494,7 @@ public class SynchronizeGetOrderImpl implements ThreadPoolBaseInterFace {
                             }
                         } else {
                             return;
-                        }
+                        }*/
                         //---------------------------------------
                         order.setCreateUser(taskMessageVO.getMessageTo());
                         iTradingOrderGetOrders.saveOrderGetOrders(order);
@@ -487,11 +507,50 @@ public class SynchronizeGetOrderImpl implements ThreadPoolBaseInterFace {
             return;
         }
     }
-    private Map<String,String> autoSendMessage(TradingOrderGetOrders order,Integer flag,String token,UsercontrollerDevAccountExtend d) throws Exception {
+    /*private Map<String,String> autoSendMessage(TradingOrderGetOrders order,String token,UsercontrollerDevAccountExtend d,String type) throws Exception {
         Map<String,String> messageMap=new HashMap<String, String>();
-       /* String[] bodys={"付款的",
+        List<TradingAutoMessage> partners=iTradingAutoMessage.selectAutoMessageByType(type);
+        if(partners!=null&&partners.size()>0){
+            List<TradingMessageTemplate> templates=iTradingMessageTemplate.selectMessageTemplatebyId(partners.get(0).getMessagetemplateId());
+            if(templates!=null&&templates.size()>0){
+                String body=templates.get(0).getContent();
+                String subject=templates.get(0).getName();
+                d.setApiCallName(APINameStatic.AddMemberMessageAAQToPartner);
+                Map map=new HashMap();
+                messageMap.put("body",body);
+                messageMap.put("subject",subject);
+                map.put("token", token);
+                map.put("subject",subject);
+                map.put("body",body);
+                map.put("itemid",order.getItemid());
+                map.put("buyeruserid",order.getBuyeruserid());
+                String xml = BindAccountAPI.getAddMemberMessageAAQToPartner(map);
+                AddApiTask addApiTask = new AddApiTask();
+                Map<String, String> resMap = addApiTask.exec(d, xml, apiUrl);
+                String r1 = resMap.get("stat");
+                String res = resMap.get("message");
+                if ("fail".equalsIgnoreCase(r1)) {
+                    messageMap.put("flag","false");
+                    messageMap.put("message",res);
+                }
+                String ack = SamplePaseXml.getVFromXmlString(res, "Ack");
+                if ("Success".equalsIgnoreCase(ack)) {
+                    messageMap.put("flag","true");
+                    messageMap.put("message","发送成功");
+                }else{
+                    messageMap.put("flag","false");
+                    messageMap.put("message","获取必要的参数失败！请稍后重试");
+                }
+
+            }
+        }else{
+            messageMap.put("flag","false");
+            messageMap.put("message","无对应的自动消息,请先创建");
+        }
+        return messageMap;
+        *//*String[] bodys={"付款的",
                         "发货的",
-                        "发货n天的"};*/
+                        "发货n天的"};
         String[] bodys={"Hello "+order.getBuyeruserid()+",\n" +
                 "\n" +
                 "Thank you for your payment for:\n" +
@@ -509,7 +568,7 @@ public class SynchronizeGetOrderImpl implements ThreadPoolBaseInterFace {
                 "us.\n" +
                 "\n" +
                 "Yours Sincerely,\n" +
-                "Thanks and best regards.",/*---*/
+                "Thanks and best regards.",---
                 "Dear fed53\n" +
                         "\n" +
                         "We have shipped your eBay item "+order.getTitle()+". It is estimated to arrive in 8-15 business days in normal conditions. If not, please do not hesitate to contact us. We shall do whatever we can to help you.\n" +
@@ -519,7 +578,7 @@ public class SynchronizeGetOrderImpl implements ThreadPoolBaseInterFace {
                         "Thanks again for your great purchase and great understanding. We sincerely hope our item and customer service can give you the BEST BUYING EXPERIENCE on eBay.If you have any other concerns, feel free to let me know. Please give us a chance to rectify problem before leaving a negative feedback, and then we will try our best to help resolve it rightly. \n" +
                         "\n" +
                         "Yours Sincerely,\n" +
-                        "Thanks and best regards.",/*---*/
+                        "Thanks and best regards.",---
                 "Dear elainegs85,\n" +
                         "\n" +
                         "It is 2 days since your item was shipped. May I know whether you've received it?\n" +
@@ -560,8 +619,8 @@ public class SynchronizeGetOrderImpl implements ThreadPoolBaseInterFace {
             messageMap.put("flag","false");
             messageMap.put("message","获取必要的参数失败！请稍后重试");
         }
-        return messageMap;
-    }
+        return messageMap;*//*
+    }*/
     private String dateToString(Date date){
         String d=null;
         if(date!=null){

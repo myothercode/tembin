@@ -15,6 +15,8 @@ public interface ImageService {
 
     Map<String,String> getFTPINfo();
 
+    String getItemListIconUrl();
+
     /**图片是否在本地保存*/
     boolean getISBackLocal();
 }

@@ -1017,6 +1017,146 @@ public class TradingPicturedetailsExample {
             addCriterion("check_flag not between", value1, value2, "checkFlag");
             return (Criteria) this;
         }
+
+        public Criteria andBaseurlIsNull() {
+            addCriterion("baseurl is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andBaseurlIsNotNull() {
+            addCriterion("baseurl is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andBaseurlEqualTo(String value) {
+            addCriterion("baseurl =", value, "baseurl");
+            return (Criteria) this;
+        }
+
+        public Criteria andBaseurlNotEqualTo(String value) {
+            addCriterion("baseurl <>", value, "baseurl");
+            return (Criteria) this;
+        }
+
+        public Criteria andBaseurlGreaterThan(String value) {
+            addCriterion("baseurl >", value, "baseurl");
+            return (Criteria) this;
+        }
+
+        public Criteria andBaseurlGreaterThanOrEqualTo(String value) {
+            addCriterion("baseurl >=", value, "baseurl");
+            return (Criteria) this;
+        }
+
+        public Criteria andBaseurlLessThan(String value) {
+            addCriterion("baseurl <", value, "baseurl");
+            return (Criteria) this;
+        }
+
+        public Criteria andBaseurlLessThanOrEqualTo(String value) {
+            addCriterion("baseurl <=", value, "baseurl");
+            return (Criteria) this;
+        }
+
+        public Criteria andBaseurlLike(String value) {
+            addCriterion("baseurl like", value, "baseurl");
+            return (Criteria) this;
+        }
+
+        public Criteria andBaseurlNotLike(String value) {
+            addCriterion("baseurl not like", value, "baseurl");
+            return (Criteria) this;
+        }
+
+        public Criteria andBaseurlIn(List<String> values) {
+            addCriterion("baseurl in", values, "baseurl");
+            return (Criteria) this;
+        }
+
+        public Criteria andBaseurlNotIn(List<String> values) {
+            addCriterion("baseurl not in", values, "baseurl");
+            return (Criteria) this;
+        }
+
+        public Criteria andBaseurlBetween(String value1, String value2) {
+            addCriterion("baseurl between", value1, value2, "baseurl");
+            return (Criteria) this;
+        }
+
+        public Criteria andBaseurlNotBetween(String value1, String value2) {
+            addCriterion("baseurl not between", value1, value2, "baseurl");
+            return (Criteria) this;
+        }
+
+        public Criteria andPicformatIsNull() {
+            addCriterion("picformat is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andPicformatIsNotNull() {
+            addCriterion("picformat is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andPicformatEqualTo(String value) {
+            addCriterion("picformat =", value, "picformat");
+            return (Criteria) this;
+        }
+
+        public Criteria andPicformatNotEqualTo(String value) {
+            addCriterion("picformat <>", value, "picformat");
+            return (Criteria) this;
+        }
+
+        public Criteria andPicformatGreaterThan(String value) {
+            addCriterion("picformat >", value, "picformat");
+            return (Criteria) this;
+        }
+
+        public Criteria andPicformatGreaterThanOrEqualTo(String value) {
+            addCriterion("picformat >=", value, "picformat");
+            return (Criteria) this;
+        }
+
+        public Criteria andPicformatLessThan(String value) {
+            addCriterion("picformat <", value, "picformat");
+            return (Criteria) this;
+        }
+
+        public Criteria andPicformatLessThanOrEqualTo(String value) {
+            addCriterion("picformat <=", value, "picformat");
+            return (Criteria) this;
+        }
+
+        public Criteria andPicformatLike(String value) {
+            addCriterion("picformat like", value, "picformat");
+            return (Criteria) this;
+        }
+
+        public Criteria andPicformatNotLike(String value) {
+            addCriterion("picformat not like", value, "picformat");
+            return (Criteria) this;
+        }
+
+        public Criteria andPicformatIn(List<String> values) {
+            addCriterion("picformat in", values, "picformat");
+            return (Criteria) this;
+        }
+
+        public Criteria andPicformatNotIn(List<String> values) {
+            addCriterion("picformat not in", values, "picformat");
+            return (Criteria) this;
+        }
+
+        public Criteria andPicformatBetween(String value1, String value2) {
+            addCriterion("picformat between", value1, value2, "picformat");
+            return (Criteria) this;
+        }
+
+        public Criteria andPicformatNotBetween(String value1, String value2) {
+            addCriterion("picformat not between", value1, value2, "picformat");
+            return (Criteria) this;
+        }
     }
 
     /**

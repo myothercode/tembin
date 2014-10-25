@@ -34,5 +34,6 @@
         <if test="userid!=null">
             and DescriptionDetails.create_user = #{userid}
         </if>
+        order by id desc
     </select>
 </mapper>

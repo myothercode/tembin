@@ -42,4 +42,39 @@ public class TradingAutoMessageAttrImpl implements com.trading.service.ITradingA
         List<TradingAutoMessageAttr> list= tradingAutoMessageAttrMapper.selectByExample(example);
         return list;
     }
+
+    @Override
+    public List<TradingAutoMessageAttr> selectAutoMessageListByDictionaryIdIsNull(String Type) {
+        TradingAutoMessageAttrExample example=new TradingAutoMessageAttrExample();
+        TradingAutoMessageAttrExample.Criteria cr=example.createCriteria();
+        cr.andAutomessageIdIsNull();
+        cr.andTypeEqualTo(Type);
+        List<TradingAutoMessageAttr> list= tradingAutoMessageAttrMapper.selectByExample(example);
+        return list;
+    }
+
+    @Override
+    public List<TradingAutoMessageAttr> selectAutoMessageListById(Long id) {
+        TradingAutoMessageAttrExample example=new TradingAutoMessageAttrExample();
+        TradingAutoMessageAttrExample.Criteria cr=example.createCriteria();
+        cr.andIdEqualTo(id);
+        List<TradingAutoMessageAttr> list= tradingAutoMessageAttrMapper.selectByExample(example);
+        return list;
+    }
+
+    @Override
+    public List<TradingAutoMessageAttr> selectAutoMessageListByMessageId(Long autoMessageId) {
+        TradingAutoMessageAttrExample example=new TradingAutoMessageAttrExample();
+        TradingAutoMessageAttrExample.Criteria cr=example.createCriteria();
+        cr.andAutomessageIdEqualTo(autoMessageId);
+        List<TradingAutoMessageAttr> list= tradingAutoMessageAttrMapper.selectByExample(example);
+        return list;
+    }
+
+    @Override
+    public void deleteAutoMessageAttr(TradingAutoMessageAttr autoMessageAttr) throws Exception {
+        if(autoMessageAttr!=null&&autoMessageAttr.getId()!=null){
+            tradingAutoMessageAttrMapper.deleteByPrimaryKey(autoMessageAttr.getId());
+        }
+    }
 }

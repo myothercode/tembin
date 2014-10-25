@@ -455,6 +455,66 @@ public class TradingAutoMessageAttrExample {
             return (Criteria) this;
         }
 
+        public Criteria andDictionaryIdIsNull() {
+            addCriterion("dictionary_id is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andDictionaryIdIsNotNull() {
+            addCriterion("dictionary_id is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andDictionaryIdEqualTo(Long value) {
+            addCriterion("dictionary_id =", value, "dictionaryId");
+            return (Criteria) this;
+        }
+
+        public Criteria andDictionaryIdNotEqualTo(Long value) {
+            addCriterion("dictionary_id <>", value, "dictionaryId");
+            return (Criteria) this;
+        }
+
+        public Criteria andDictionaryIdGreaterThan(Long value) {
+            addCriterion("dictionary_id >", value, "dictionaryId");
+            return (Criteria) this;
+        }
+
+        public Criteria andDictionaryIdGreaterThanOrEqualTo(Long value) {
+            addCriterion("dictionary_id >=", value, "dictionaryId");
+            return (Criteria) this;
+        }
+
+        public Criteria andDictionaryIdLessThan(Long value) {
+            addCriterion("dictionary_id <", value, "dictionaryId");
+            return (Criteria) this;
+        }
+
+        public Criteria andDictionaryIdLessThanOrEqualTo(Long value) {
+            addCriterion("dictionary_id <=", value, "dictionaryId");
+            return (Criteria) this;
+        }
+
+        public Criteria andDictionaryIdIn(List<Long> values) {
+            addCriterion("dictionary_id in", values, "dictionaryId");
+            return (Criteria) this;
+        }
+
+        public Criteria andDictionaryIdNotIn(List<Long> values) {
+            addCriterion("dictionary_id not in", values, "dictionaryId");
+            return (Criteria) this;
+        }
+
+        public Criteria andDictionaryIdBetween(Long value1, Long value2) {
+            addCriterion("dictionary_id between", value1, value2, "dictionaryId");
+            return (Criteria) this;
+        }
+
+        public Criteria andDictionaryIdNotBetween(Long value1, Long value2) {
+            addCriterion("dictionary_id not between", value1, value2, "dictionaryId");
+            return (Criteria) this;
+        }
+
         public Criteria andCreateUserIsNull() {
             addCriterion("create_user is null");
             return (Criteria) this;

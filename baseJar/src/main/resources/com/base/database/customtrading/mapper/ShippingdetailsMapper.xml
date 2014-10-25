@@ -62,5 +62,6 @@
         <if test="checkFlag!=null">
             and shipping.check_flag = #{checkFlag}
         </if>
+        order by id desc
     </select>
 </mapper>

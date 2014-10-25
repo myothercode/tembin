@@ -97,6 +97,16 @@ public class TradingOrderGetOrdersImpl implements com.trading.service.ITradingOr
     }
 
     @Override
+    public List<TradingOrderGetOrders> selectOrderGetOrdersByBuyerAndItemid(String itemid, String buyer) {
+        TradingOrderGetOrdersExample example=new TradingOrderGetOrdersExample();
+        TradingOrderGetOrdersExample.Criteria cr=example.createCriteria();
+        cr.andBuyeruseridEqualTo(buyer);
+        cr.andItemidEqualTo(itemid);
+        List<TradingOrderGetOrders> list=tradingOrderGetOrdersMapper.selectByExample(example);
+        return list;
+    }
+
+    @Override
     public void downloadOrders(List<TradingOrderGetOrders> list, String outputFile, ServletOutputStream outputStream) throws Exception {
         // 创建新的Excel 工作簿
         HSSFWorkbook workbook = new HSSFWorkbook();

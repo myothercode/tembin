@@ -6,7 +6,6 @@ import org.apache.commons.lang.StringUtils;
 import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.Date;
 import java.util.Map;
 
 /**
@@ -321,8 +320,8 @@ public class BindAccountAPI {
         return xml;
     }
     //提供运输信息provideShippingInfo
-    public static  String ProvideShippingInfo(String token,String caseId,String caseType,String carrier,String shippedTime1,Date shippedTime){
-        String xml="<?xml version=\"1.0\" encoding=\"utf-8\"?>" +
+    public static  String ProvideShippingInfo(String token,String caseId,String caseType,String carrier,String shippedTime1,String message){
+       /* String xml="<?xml version=\"1.0\" encoding=\"utf-8\"?>" +
                 "<provideShippingInfoRequest xmlns:\"http://www.ebay.com/marketplace/resolution/v1/services\">" +
                 "  <RequesterCredentials>" +
                 "    <eBayAuthToken>"+token+"</eBayAuthToken>" +
@@ -333,8 +332,18 @@ public class BindAccountAPI {
                 "  </caseId>" +
                 "  <carrierUsed>"+carrier+"</carrierUsed>" +
                 "  <shippedDate>"+shippedTime1+"</shippedDate>" +
-                "  <!--Optional:-->" +
-                "  <comments>Your item was shipped with USPS on "+shippedTime+".</comments>" +
+               *//* "  <!--Optional:-->" +*//*
+                "  <comments>"+message+"</comments>" +
+                "</provideShippingInfoRequest>";*/
+        String xml="<?xml version=\"1.0\" encoding=\"utf-8\"?>" +
+                "<provideShippingInfoRequest xmlns=\"http://www.ebay.com/marketplace/resolution/v1/services\">" +
+                "  <carrierUsed>"+carrier+"</carrierUsed>" +
+                "  <caseId>" +
+                "    <id>"+caseId+"</id>" +
+                "    <type>"+caseType+"</type>" +
+                "  </caseId>" +
+                "  <comments>"+message+"</comments>" +
+                "  <shippedDate>"+shippedTime1+"</shippedDate>" +
                 "</provideShippingInfoRequest>";
         return xml;
     }
@@ -351,8 +360,8 @@ public class BindAccountAPI {
                 "   </caseId>" +
                 "   <trackingNumber>"+trackingNum+"</trackingNumber>" +
                 "   <carrierUsed>"+carrier+"</carrierUsed>" +
-                "   <!--Optional:-->" +
-                "   <comments>Here is your "+carrier+" tracking number</comments>" +
+             /*   "   <!--Optional:-->" +*/
+                "   <comments>"+message+"</comments>" +
                 "</provideTrackingInfoRequest>";
         return xml;
     }

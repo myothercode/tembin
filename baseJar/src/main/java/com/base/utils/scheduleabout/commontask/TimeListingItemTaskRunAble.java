@@ -72,7 +72,7 @@ public class TimeListingItemTaskRunAble extends BaseScheduledClass implements Sc
                 devInfo.setApiSiteid(withBLOBs.getStateId());
                 devInfo.setApiCallName(withBLOBs.getApiMethod());
                 AddApiTask addApiTask = new AddApiTask();
-                Map<String, String> resMap = addApiTask.exec(devInfo, withBLOBs.getTimerMessage(), commV.apiUrl);
+                Map<String, String> resMap = addApiTask.exec2(devInfo, withBLOBs.getTimerMessage(), commV.apiUrl);
                 String r1 = resMap.get("stat");
                 String res = resMap.get("message");
                 if ("fail".equalsIgnoreCase(r1)) {

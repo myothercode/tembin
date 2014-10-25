@@ -575,6 +575,126 @@ public class TradingAutoMessageExample {
             return (Criteria) this;
         }
 
+        public Criteria andDayIsNull() {
+            addCriterion("day is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andDayIsNotNull() {
+            addCriterion("day is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andDayEqualTo(Integer value) {
+            addCriterion("day =", value, "day");
+            return (Criteria) this;
+        }
+
+        public Criteria andDayNotEqualTo(Integer value) {
+            addCriterion("day <>", value, "day");
+            return (Criteria) this;
+        }
+
+        public Criteria andDayGreaterThan(Integer value) {
+            addCriterion("day >", value, "day");
+            return (Criteria) this;
+        }
+
+        public Criteria andDayGreaterThanOrEqualTo(Integer value) {
+            addCriterion("day >=", value, "day");
+            return (Criteria) this;
+        }
+
+        public Criteria andDayLessThan(Integer value) {
+            addCriterion("day <", value, "day");
+            return (Criteria) this;
+        }
+
+        public Criteria andDayLessThanOrEqualTo(Integer value) {
+            addCriterion("day <=", value, "day");
+            return (Criteria) this;
+        }
+
+        public Criteria andDayIn(List<Integer> values) {
+            addCriterion("day in", values, "day");
+            return (Criteria) this;
+        }
+
+        public Criteria andDayNotIn(List<Integer> values) {
+            addCriterion("day not in", values, "day");
+            return (Criteria) this;
+        }
+
+        public Criteria andDayBetween(Integer value1, Integer value2) {
+            addCriterion("day between", value1, value2, "day");
+            return (Criteria) this;
+        }
+
+        public Criteria andDayNotBetween(Integer value1, Integer value2) {
+            addCriterion("day not between", value1, value2, "day");
+            return (Criteria) this;
+        }
+
+        public Criteria andHourIsNull() {
+            addCriterion("hour is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andHourIsNotNull() {
+            addCriterion("hour is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andHourEqualTo(Integer value) {
+            addCriterion("hour =", value, "hour");
+            return (Criteria) this;
+        }
+
+        public Criteria andHourNotEqualTo(Integer value) {
+            addCriterion("hour <>", value, "hour");
+            return (Criteria) this;
+        }
+
+        public Criteria andHourGreaterThan(Integer value) {
+            addCriterion("hour >", value, "hour");
+            return (Criteria) this;
+        }
+
+        public Criteria andHourGreaterThanOrEqualTo(Integer value) {
+            addCriterion("hour >=", value, "hour");
+            return (Criteria) this;
+        }
+
+        public Criteria andHourLessThan(Integer value) {
+            addCriterion("hour <", value, "hour");
+            return (Criteria) this;
+        }
+
+        public Criteria andHourLessThanOrEqualTo(Integer value) {
+            addCriterion("hour <=", value, "hour");
+            return (Criteria) this;
+        }
+
+        public Criteria andHourIn(List<Integer> values) {
+            addCriterion("hour in", values, "hour");
+            return (Criteria) this;
+        }
+
+        public Criteria andHourNotIn(List<Integer> values) {
+            addCriterion("hour not in", values, "hour");
+            return (Criteria) this;
+        }
+
+        public Criteria andHourBetween(Integer value1, Integer value2) {
+            addCriterion("hour between", value1, value2, "hour");
+            return (Criteria) this;
+        }
+
+        public Criteria andHourNotBetween(Integer value1, Integer value2) {
+            addCriterion("hour not between", value1, value2, "hour");
+            return (Criteria) this;
+        }
+
         public Criteria andCreateUserIsNull() {
             addCriterion("create_user is null");
             return (Criteria) this;

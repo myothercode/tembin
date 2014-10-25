@@ -70,7 +70,7 @@ public class ApiRunable implements Runnable {
         for (ThreadPoolBaseInterFace f : map.values()){
             if(taskMessageVO.getBeanNameType().equals(f.getType())){
                 f.doWork(res,taskMessageVO);//执行自定义的方法
-                if(taskMessageVO.isWeitherAddMessage()){
+                if(taskMessageVO.getSendOrNotSend()){
                     addMessage(res);//添加信息
                 }
             }
@@ -84,7 +84,7 @@ public class ApiRunable implements Runnable {
         SiteMessageService siteMessageService= (SiteMessageService) ApplicationContextUtil.getBean(SiteMessageService.class);
         if(StringUtils.isEmpty(res)){
             taskMessageVO.setMessageTitle(taskMessageVO.getMessageTitle()+"执行失败！");
-            taskMessageVO.setMessageContext(taskMessageVO.getMessageContext() + ",没有获取到值res!");
+            taskMessageVO.setMessageContext(taskMessageVO.getMessageContext() + ",api没有获取到返回值!");
             taskMessageVO.setMessageType(taskMessageVO.getMessageType()+"_FAIL");
             siteMessageService.addSiteMessage(taskMessageVO);
             return;

@@ -19,4 +19,6 @@ public interface ITradingMessageTemplate {
     List<TradingMessageTemplate> selectMessageTemplatebyId(Long id);
 
     void deleteMessageTemplate (TradingMessageTemplate messageTemplate) throws Exception;
+
+    List<TradingMessageTemplate> selectMessageTemplatebType(String type);
 }

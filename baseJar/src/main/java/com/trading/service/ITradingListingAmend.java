@@ -10,4 +10,6 @@ public interface ITradingListingAmend {
     void saveListingAmend(TradingListingAmendWithBLOBs tradingListingAmend);
 
     TradingListingAmend selectByItemID(String itemid, String amendtype);
+
+    TradingListingAmendWithBLOBs selectById(Long id);
 }

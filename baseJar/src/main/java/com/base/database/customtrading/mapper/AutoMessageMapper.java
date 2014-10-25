@@ -14,5 +14,7 @@ public interface AutoMessageMapper {
      * @return
      */
     List<AutoMessageQuery> selectAutoMessageList(Map map, Page page);
+    List<AutoMessageQuery> selectShippingServiceOptionList(Map map, Page page);
+    List<AutoMessageQuery> selectInternationalShippingServiceList(Map map, Page page);
 
 }

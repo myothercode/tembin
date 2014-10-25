@@ -14,7 +14,7 @@ public interface ITradingGetUserCases {
 
     void saveGetUserCases(TradingGetUserCases GetUserCases) throws Exception;
 
-    List<TradingGetUserCases> selectGetUserCasesByTransactionId(String transactionid);
+    List<TradingGetUserCases> selectGetUserCasesByTransactionId(String transactionid,String seller);
 
     List<UserCasesQuery> selectGetUserCases(Map map, Page page);
 

@@ -42,10 +42,11 @@ public class TradingGetUserCasesImpl implements com.trading.service.ITradingGetU
     }
 
     @Override
-    public List<TradingGetUserCases> selectGetUserCasesByTransactionId(String transactionid) {
+    public List<TradingGetUserCases> selectGetUserCasesByTransactionId(String transactionid,String seller) {
         TradingGetUserCasesExample example=new TradingGetUserCasesExample();
         TradingGetUserCasesExample.Criteria cr=example.createCriteria();
         cr.andTransactionidEqualTo(transactionid);
+        cr.andSelleridEqualTo(seller);
         List<TradingGetUserCases> list=tradingGetUserCasesMapper.selectByExample(example);
         return list;
     }

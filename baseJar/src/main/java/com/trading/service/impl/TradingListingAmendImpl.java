@@ -34,4 +34,9 @@ public class TradingListingAmendImpl implements com.trading.service.ITradingList
         }
     }
 
+    @Override
+    public TradingListingAmendWithBLOBs selectById(Long id){
+        return this.tradingListingAmendMapper.selectByPrimaryKey(id);
+    }
+
 }

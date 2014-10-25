@@ -32,12 +32,14 @@ public class TradingDescriptionDetailsImpl implements com.trading.service.ITradi
     public void saveDescriptionDetails(TradingDescriptionDetailsWithBLOBs pojo) throws Exception {
         if(pojo.getId()==null){
             ObjectUtils.toInitPojoForInsert(pojo);
-            this.tradingDescriptionDetailsMapper.insert(pojo);
+            this.tradingDescriptionDetailsMapper.insertSelective(pojo);
         }else{
-            //TradingDescriptionDetailsWithBLOBs t=tradingDescriptionDetailsMapper.selectByPrimaryKey(pojo.getId());
-            //Asserts.assertTrue(t != null && t.getCreateUser() != null, "没有找到记录或者记录创建者为空");
-            //ObjectUtils.valiUpdate(t.getCreateUser(),TradingDescriptionDetailsMapper.class,pojo.getId());
-
+            TradingDescriptionDetailsWithBLOBs t=tradingDescriptionDetailsMapper.selectByPrimaryKey(pojo.getId());
+            Asserts.assertTrue(t != null && t.getCreateUser() != null, "没有找到记录或者记录创建者为空");
+            ObjectUtils.valiUpdate(t.getCreateUser(),TradingDescriptionDetailsMapper.class,pojo.getId());
+            if(pojo.getCheckFlag()==null) {
+                pojo.setCheckFlag(t.getCheckFlag());
+            }
             this.tradingDescriptionDetailsMapper.updateByPrimaryKeySelective(pojo);
         }
     }

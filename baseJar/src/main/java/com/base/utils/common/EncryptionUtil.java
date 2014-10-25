@@ -1,5 +1,6 @@
 package com.base.utils.common;
 
+import org.springframework.security.authentication.encoding.Md5PasswordEncoder;
 import org.springframework.security.authentication.encoding.ShaPasswordEncoder;
 
 /**
@@ -14,8 +15,17 @@ public class EncryptionUtil {
 	spe.setEncodeHashAsBase64(true);
 	return spe.encodePassword(password, username);
     }
+
+    /**md5编码*/
+    public static String md5Encrypt(String url){
+        Md5PasswordEncoder md5=new Md5PasswordEncoder();
+        String m = md5.encodePassword(url,"");
+        return m;
+    }
     
     public static void main(String[] args) {
-	System.out.println(EncryptionUtil.pwdEncrypt("123456", "532401197111251239"));
+	System.out.println(EncryptionUtil.md5Encrypt("http://jhfj!@#%^*(*(.com"));
+        System.out.println(EncryptionUtil.md5Encrypt("http://jhfj!@#%^*(*(.com"));
+        System.out.println(EncryptionUtil.md5Encrypt("http://jhfj!@#%^*(*(.com"));
     }
 }

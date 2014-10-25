@@ -32,5 +32,6 @@
         <if test="userid!=null">
             and paypal.create_user = #{userid}
         </if>
+        order by id desc
     </select>
 </mapper>

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.base.database.customtrading.mapper.ListingDataTaskQueryMapper">
+  <resultMap id="BaseResultMap" type="com.base.database.task.model.ListingDataTask">
+    <result column="create_date" jdbcType="TIMESTAMP" property="createDate" />
+  </resultMap>
+    <select id="selectByMaxCreateDate" resultMap="BaseResultMap" parameterType="map">
+        select max(create_date) create_date from listing_data_task tsk where 1=1
+        <if test="ebayAccount!=null">
+            and tsk.ebayaccount = #{ebayAccount}
+        </if>
+    </select>
+</mapper>

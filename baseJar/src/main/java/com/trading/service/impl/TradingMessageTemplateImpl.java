@@ -64,4 +64,21 @@ public class TradingMessageTemplateImpl implements com.trading.service.ITradingM
             tradingMessageTemplateMapper.deleteByPrimaryKey(messageTemplate.getId());
         }
     }
+
+    @Override
+    public List<TradingMessageTemplate> selectMessageTemplatebType(String type) {
+        TradingMessageTemplateExample example=new TradingMessageTemplateExample();
+        TradingMessageTemplateExample.Criteria cr=example.createCriteria();
+        if("caseType".equals(type)){
+            cr.andCasetypeEqualTo(1);
+        }
+        if("autoType".equals(type)){
+            cr.andAutotypeEqualTo(1);
+        }
+        if("messageType".equals(type)){
+            cr.andMessagetypeEqualTo(1);
+        }
+        List<TradingMessageTemplate> list=tradingMessageTemplateMapper.selectByExample(example);
+        return list;
+    }
 }

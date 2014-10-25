@@ -46,7 +46,7 @@ public class TradingPictureDetailsImpl implements com.trading.service.ITradingPi
             tpm.deleteByExample(details);
 
             ObjectUtils.toInitPojoForInsert(tp);
-            this.tpm.insert(tp);
+            this.tpm.insertSelective(tp);
         }else{
             this.tpm.updateByPrimaryKeySelective(tp);
         }

@@ -16,6 +16,7 @@ import com.base.utils.applicationcontext.RequestResponseContext;
 import com.base.utils.cache.DataDictionarySupport;
 import com.base.utils.cache.SessionCacheSupport;
 import com.base.utils.common.*;
+import com.base.utils.exception.Asserts;
 import com.base.utils.ftpabout.FtpUploadFile;
 import com.base.utils.imageManage.service.ImageService;
 import com.base.xmlpojo.trading.addproduct.*;
@@ -115,14 +116,21 @@ public class TradingItemImpl implements com.trading.service.ITradingItem {
     private ITradingTemplateInitTable iTradingTemplateInitTable;
     @Autowired
     private PayPalService payPalService;
-
+    @Autowired
+    private ITradingListingPicUrl iTradingListingPicUrl;
 
     @Override
     public void saveTradingItem(TradingItem pojo) throws Exception {
         if(pojo.getId()==null){
             ObjectUtils.toInitPojoForInsert(pojo);
+            if(pojo.getUuid()==null){
+                pojo.setUuid(UUIDUtil.getUUID());
+            }
             this.tradingItemMapper.insertSelective(pojo);
         }else{
+            if(pojo.getUuid()==null){
+                pojo.setUuid(UUIDUtil.getUUID());
+            }
             this.tradingItemMapper.updateByPrimaryKeySelective(pojo);
         }
 
@@ -193,9 +201,21 @@ public class TradingItemImpl implements com.trading.service.ITradingItem {
                 tradingItem.setListingWay("0");//表示为正常刊登
             }
             tradingItem.setSku(item.getSKU());
-
-
+            tradingItem.setListingduration(item.getListingDuration() == null ? "GTC" : item.getListingDuration());
             this.saveTradingItem(tradingItem);
+            //处理模板中上传的图片
+            if(tradingItem.getTemplateId()!=null){//用户选择了模板，才会处理模板图片信息
+                String [] tempicUrls = request.getParameterValues("blankimg");//界面中添加的模板图片
+                TradingTemplateInitTable ttit = this.iTradingTemplateInitTable.selectById(tradingItem.getTemplateId());
+                if(tempicUrls!=null&&tempicUrls.length>0){//如果界面中模板图片不为空，那么替换模板中ＵＲＬ地址
+                    for(String url:tempicUrls){
+                        TradingAttrMores tam = this.iTradingAttrMores.toDAOPojo("TemplatePicUrl",url);
+                        tam.setParentId(tradingItem.getTemplateId());
+                        tam.setParentUuid(tradingItem.getUuid());
+                        this.iTradingAttrMores.saveAttrMores(tam);
+                    }
+                }
+            }
             itemMap.put(paypals[is],tradingItem.getId());
             if(item.getListingType().equals("Chinese")){//拍买商品保存数据
                 TradingAddItem tai = this.iTradingAddItem.selectParentId(tradingItem.getId());
@@ -313,7 +333,7 @@ public class TradingItemImpl implements com.trading.service.ITradingItem {
                             }
                         }
                     }
-
+                    String [] morePicUrl = request.getParameterValues("pic_mackid_more");
                     //保存多属必图片信息
                     Pictures pictrue = item.getVariations().getPictures();
                     if(pictrue!=null){
@@ -338,21 +358,25 @@ public class TradingItemImpl implements com.trading.service.ITradingItem {
                             this.iTradingPublicLevelAttr.savePublicLevelAttr(tpname);
 
                             this.iTradingAttrMores.deleteByParentId("MuAttrPictureURL",tplas.getId());
-
-                            List<String> listr = vsps.getPictureURL();
-                            listr = MyCollectionsUtil.listUnique(listr);
-                            for(String str: listr){
-                                if(str!=null&&!"".equals(str)){
-                                    TradingAttrMores tams = this.iTradingAttrMores.toDAOPojo("MuAttrPictureURL",str);
-                                    tams.setParentId(tplas.getId());
-                                    tams.setParentUuid(tplas.getUuid());
-                                    this.iTradingAttrMores.saveAttrMores(tams);
+                            if(vsps.getPictureURL()!=null) {
+                                List<String> listr = vsps.getPictureURL();
+                                listr = MyCollectionsUtil.listUnique(listr);
+                                for (int i = 0;i<listr.size();i++) {
+                                    String str = listr.get(i);
+                                    if (str != null && !"".equals(str)) {
+                                        TradingAttrMores tams = this.iTradingAttrMores.toDAOPojo("MuAttrPictureURL", str);
+                                        tams.setParentId(tplas.getId());
+                                        tams.setParentUuid(tplas.getUuid());
+                                        tams.setAttr1(morePicUrl[i]);
+                                        this.iTradingAttrMores.saveAttrMores(tams);
+                                    }
                                 }
                             }
                         }
                     }
                 }
             }
+            String [] picUrl = request.getParameterValues("pic_mackid");
             //保存图片信息
             PictureDetails picd = item.getPictureDetails();
             if(picd!=null){
@@ -371,20 +395,26 @@ public class TradingItemImpl implements com.trading.service.ITradingItem {
                     TradingAttrMores tam = this.iTradingAttrMores.toDAOPojo("PictureURL",picurl[i]);
                     tam.setParentId(tpicd.getId());
                     tam.setParentUuid(tpicd.getUuid());
+                    tam.setAttr1(picUrl[i]);
                     this.iTradingAttrMores.saveAttrMores(tam);
                 }
             }else{
+                String [] picurl = request.getParameterValues("PictureDetails_"+paypals[is]+".PictureURL");
                 TradingPicturedetails tpicd = this.iTradingPictureDetails.toDAOPojo(picd);
                 tpicd.setParentId(tradingItem.getId());
                 tpicd.setParentUuid(tradingItem.getUuid());
+                tpicd.setGallerytype("Gallery");
+                tpicd.setPhotodisplay("PicturePack");
+                if(picurl!=null&&picurl.length>0) {
+                    tpicd.setGalleryurl(picurl[0]);
+                }
                 this.iTradingPictureDetails.savePictureDetails(tpicd);
-
                 this.iTradingAttrMores.deleteByParentId("PictureURL",tpicd.getId());
-                String [] picurl = request.getParameterValues("PictureDetails_"+paypals[is]+".PictureURL");
                 for(int i = 0;i<picurl.length;i++){
                     TradingAttrMores tam = this.iTradingAttrMores.toDAOPojo("PictureURL",picurl[i]);
                     tam.setParentId(tpicd.getId());
                     tam.setParentUuid(tpicd.getUuid());
+                    tam.setAttr1(picUrl[i]);
                     this.iTradingAttrMores.saveAttrMores(tam);
                 }
             }
@@ -428,6 +458,7 @@ public class TradingItemImpl implements com.trading.service.ITradingItem {
 
         }else if(tradingItem.getListingtype().equals("Chinese")){//拍买价
             TradingAddItem tai = this.iTradingAddItem.selectParentId(tradingItem.getId());
+            Asserts.assertTrue(!ObjectUtils.isLogicalNull(tai),"拍卖价格不能为空！");
             item.setBuyItNowPrice(tai.getBuyitnowprice().doubleValue());
         }
         PrimaryCategory pc = new PrimaryCategory();
@@ -535,7 +566,22 @@ public class TradingItemImpl implements com.trading.service.ITradingItem {
                         List<String> listr = new ArrayList<String>();
                         List<TradingAttrMores> liname = this.iTradingAttrMores.selectByParnetid(tpla.getId(),"MuAttrPictureURL");
                         for(TradingAttrMores tam : liname){
-                            listr.add(tam.getValue());
+                            List<TradingListingpicUrl> liplu = this.iTradingListingPicUrl.selectByMackId(tam.getAttr1());
+                            TradingListingpicUrl plu = liplu.get(0);
+                            if(plu.getEbayurl()==null&&plu.getCheckFlag().equals("0")){
+                                Thread.sleep(5000L);
+                                List<TradingListingpicUrl> litamss = this.iTradingListingPicUrl.selectByMackId(tam.getAttr1());
+                                plu = litamss.get(0);
+                                if(plu.getCheckFlag().equals("1")){
+                                    listr.add(plu.getEbayurl());
+                                }else{
+                                    Asserts.assertTrue(false,"图片未成功上传，请重新选择图片上传");
+                                }
+                            }else if(plu.getEbayurl()==null&&plu.getCheckFlag().equals("2")){
+                                Asserts.assertTrue(false,"图片未成功上传，请重新选择图片上传");
+                            }else if(plu.getCheckFlag().equals("1")){
+                                listr.add(plu.getEbayurl());
+                            }
                         }
                         vss.setPictureURL(listr);
                         livss.add(vss);
@@ -651,7 +697,26 @@ public class TradingItemImpl implements com.trading.service.ITradingItem {
             List<TradingAttrMores> litam = this.iTradingAttrMores.selectByParnetid(tpd.getId(),"PictureURL");
             List<String> listr = new ArrayList<String>();
             for(TradingAttrMores tam : litam){
-                listr.add(tam.getValue());
+                List<TradingListingpicUrl> liplu = this.iTradingListingPicUrl.selectByMackId(tam.getAttr1());
+                if(liplu!=null&&liplu.size()>0){
+                    TradingListingpicUrl plu = liplu.get(0);
+                    if(plu.getEbayurl()==null&&plu.getCheckFlag().equals("0")){
+                        Thread.sleep(5000L);
+                        List<TradingListingpicUrl> litamss = this.iTradingListingPicUrl.selectByMackId(tam.getAttr1());
+                        plu = litamss.get(0);
+                        if(plu.getCheckFlag().equals("1")){
+                            listr.add(plu.getEbayurl());
+                        }else{
+                            Asserts.assertTrue(false,"图片未成功上传，请重新选择图片上传");
+                        }
+                    }else if(plu.getEbayurl()==null&&plu.getCheckFlag().equals("2")){
+                        Asserts.assertTrue(false,"图片未成功上传，请重新选择图片上传");
+                    }else if(plu.getCheckFlag().equals("1")){
+                        listr.add(plu.getEbayurl());
+                    }
+                }else {
+                    listr.add(tam.getValue());
+                }
             }
             pds.setPictureURL(listr);
             item.setPictureDetails(pds);

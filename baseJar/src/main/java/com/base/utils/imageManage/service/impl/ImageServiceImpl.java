@@ -31,6 +31,8 @@ public class ImageServiceImpl implements com.base.utils.imageManage.service.Imag
     private String sfBackUp;//是否在本地备份
     @Value("${IMAGE_URL_PREFIX}")
     private String imageUrlPrefix;//图片访问的前缀，如果需要修改且与ueditor相关，请连同config.json一起修改
+    @Value("${ITEM_LIST_ICON_URL}")
+    private String itemListIconUrl;//获取商品列表图标的地址
 
     @Override
     public String getImageDir(){
@@ -56,6 +58,11 @@ public class ImageServiceImpl implements com.base.utils.imageManage.service.Imag
         map.put("ftpUserName",ftpUserName);
         map.put("ftpPassword",ftpPassword);
         return map;
+    }
+
+    @Override
+    public String getItemListIconUrl(){
+        return itemListIconUrl;
     }
 
     @Override

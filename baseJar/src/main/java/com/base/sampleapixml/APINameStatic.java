@@ -13,6 +13,8 @@ public class APINameStatic {
     public static final String GetSessionID = "GetSessionID";
     /**获取运输方式ＡＰＩ*/
     public static final String GeteBayDetails = "GeteBayDetails";
+    /**上传商品图片*/
+    public static final String UploadSiteHostedPictures = "UploadSiteHostedPictures";
     /**获取token*/
     public static final String FetchToken = "FetchToken";
     /**获取帐号信息*/

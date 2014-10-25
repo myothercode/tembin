@@ -379,7 +379,10 @@ public class SamplePaseXml {
             item.setListingduration(element.elementText("ListingDuration"));
             item.setStarttime(DateUtils.parseDateTime(element.element("ListingDetails").elementText("StartTime").replace("T"," ").replace(".000Z","")));
             item.setEndtime(DateUtils.parseDateTime(element.element("ListingDetails").elementText("EndTime").replace("T"," ").replace(".000Z","")));
-            item.setPicUrl(element.element("PictureDetails").elementText("GalleryURL"));
+            String url = element.element("PictureDetails").elementText("GalleryURL");
+
+            //item.setPicUrl(url.substring(0,url.lastIndexOf("_")+1)+"14"+url.substring(url.lastIndexOf(".")));
+            item.setPicUrl("http://thumbs.ebaystatic.com/pict/"+item.getItemId()+".jpg");
             li.add(item);
         }
         return li;

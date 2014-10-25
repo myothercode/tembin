@@ -36,5 +36,6 @@
         <if test="checkFlag!=null">
             and dis.check_flag = #{checkFlag}
         </if>
+        order by id desc
     </select>
 </mapper>

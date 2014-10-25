@@ -22,10 +22,15 @@ public class TaskPool {
     }*/
 
 
-    /**用于发起post请求的线程池*/
+    /**用于发起普通post请求的线程池*/
     public static ThreadPoolTaskExecutor threadPoolTaskExecutor;
     static {
         threadPoolTaskExecutor = (ThreadPoolTaskExecutor)ApplicationContextUtil.getBean("postTaskExecutor",ThreadPoolTaskExecutor.class);
+    }
+    /**用于定时任务的post请求线程池*/
+    public static ThreadPoolTaskExecutor threadPoolTaskExecutor2;
+    static {
+        threadPoolTaskExecutor2 = (ThreadPoolTaskExecutor)ApplicationContextUtil.getBean("postTaskExecutor2",ThreadPoolTaskExecutor.class);
     }
     /**用于定时任务的线程池*/
     public static ThreadPoolTaskExecutor scheduledThreadPoolTaskExecutor;

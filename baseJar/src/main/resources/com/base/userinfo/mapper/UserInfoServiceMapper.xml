@@ -114,7 +114,7 @@
         update usercontroller_dev_account set use_num=use_num+1 where id=#{id}
     </update>
     <update id="initUseNum" parameterType="map">
-        update usercontroller_dev_account set use_num=0,use_date=#{date}
+        update usercontroller_dev_account set use_num=0,use_date=#{udate}
     </update>
 
 </mapper>

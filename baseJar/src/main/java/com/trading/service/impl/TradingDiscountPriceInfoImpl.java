@@ -36,7 +36,10 @@ public class TradingDiscountPriceInfoImpl implements com.trading.service.ITradin
             TradingDiscountpriceinfo t=tradingDiscountpriceinfoMapper.selectByPrimaryKey(pojo.getId());
             Asserts.assertTrue(t != null && t.getCreateUser() != null, "没有找到记录或者记录创建者为空");
             ObjectUtils.valiUpdate(t.getCreateUser(),TradingDiscountpriceinfoMapper.class,pojo.getId());
-            this.tradingDiscountpriceinfoMapper.updateByPrimaryKey(pojo);
+            if(pojo.getCheckFlag()==null) {
+                pojo.setCheckFlag(t.getCheckFlag());
+            }
+            this.tradingDiscountpriceinfoMapper.updateByPrimaryKeySelective(pojo);
         }
     }
 

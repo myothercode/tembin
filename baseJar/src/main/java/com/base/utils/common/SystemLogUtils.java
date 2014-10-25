@@ -21,14 +21,21 @@ import java.util.Date;
 public class SystemLogUtils {
 
     public static final String FIND_PASSWORD="findPassword";//找回密码事件
+    public static final String NO_API_Message="noApiMessage";//不系统通知的时候记录失败日志
 
+    /**祝需要传入三个值
+     * log.setEventname();
+     log.setOperuser();
+     log.setEventdesc();*/
     public static void saveLog(SystemLog systemLog) throws Exception {
         SessionVO sessionVO= SessionCacheSupport.getSessionVO();
         systemLog.setOperuser(sessionVO!=null?sessionVO.getLoginId():systemLog.getOperuser());
         systemLog.setCreatedate(new Date());
 
         HttpServletRequest request=RequestResponseContext.getRequest();
-        systemLog.setEventdesc(systemLog.getEventdesc()+";客户端ip是:"+getIpAddr(request));
+        if(request!=null){
+            systemLog.setEventdesc(systemLog.getEventdesc()+";客户端ip是:"+getIpAddr(request));
+        }
 
         SystemLogMapper systemLogMapper = (SystemLogMapper) ApplicationContextUtil.getBean(SystemLogMapper.class);
         systemLogMapper.insert(systemLog);

@@ -14,11 +14,27 @@ public class  TaskMessageVO<T> {
     private String messageContext;//消息内容前缀
     private Long messageTo;//接收人
     private String messageFrom;//发送人
-
-    private boolean weitherAddMessage=true;//是否写入消息，默认是true
+    private Boolean sendOrNotSend=true;//是否发送消息
+    private Boolean weithSendSuccessMessage=true;//是否发送成功消息
     private String beanNameType;//要执行的bean类型名
     private T objClass;//传递的对象参数
 
+
+    public Boolean getWeithSendSuccessMessage() {
+        return weithSendSuccessMessage;
+    }
+
+    public void setWeithSendSuccessMessage(Boolean weithSendSuccessMessage) {
+        this.weithSendSuccessMessage = weithSendSuccessMessage;
+    }
+
+    public Boolean getSendOrNotSend() {
+        return sendOrNotSend;
+    }
+
+    public void setSendOrNotSend(Boolean sendOrNotSend) {
+        this.sendOrNotSend = sendOrNotSend;
+    }
 
     public String getBeanNameType() {
         return beanNameType;
@@ -36,13 +52,7 @@ public class  TaskMessageVO<T> {
         this.beanNameType = beanNameType;
     }
 
-    public boolean isWeitherAddMessage() {
-        return weitherAddMessage;
-    }
 
-    public void setWeitherAddMessage(boolean weitherAddMessage) {
-        this.weitherAddMessage = weitherAddMessage;
-    }
 
     public String getMessageFrom() {
         return messageFrom;

@@ -1,9 +1,7 @@
 package com.trading.service.impl;
 
 import com.base.database.trading.mapper.TradingShippingserviceoptionsMapper;
-import com.base.database.trading.model.TradingBuyerRequirementDetails;
-import com.base.database.trading.model.TradingShippingserviceoptions;
-import com.base.database.trading.model.TradingShippingserviceoptionsExample;
+import com.base.database.trading.model.*;
 import com.base.utils.cache.DataDictionarySupport;
 import com.base.utils.common.ConvertPOJOUtil;
 import com.base.utils.common.ObjectUtils;
@@ -11,6 +9,7 @@ import com.base.xmlpojo.trading.addproduct.ShippingServiceOptions;
 import com.base.xmlpojo.trading.addproduct.attrclass.ShippingServiceAdditionalCost;
 import com.base.xmlpojo.trading.addproduct.attrclass.ShippingServiceCost;
 import com.base.xmlpojo.trading.addproduct.attrclass.ShippingSurcharge;
+import com.trading.service.ITradingDataDictionary;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,7 +25,8 @@ import java.util.List;
 public class TradingShippingServiceOptionsImpl implements com.trading.service.ITradingShippingServiceOptions {
     @Autowired
     private TradingShippingserviceoptionsMapper tsm;
-
+    @Autowired
+    private ITradingDataDictionary iTradingDataDictionary;
     @Override
     public void saveShippingServiceOptions(TradingShippingserviceoptions pojo) throws Exception {
         if(pojo.getId()==null) {
@@ -65,20 +65,21 @@ public class TradingShippingServiceOptionsImpl implements com.trading.service.IT
     }
 
     @Override
-    public List<ShippingServiceOptions> toXmlPojo(Long id) throws Exception {
+    public List<ShippingServiceOptions> toXmlPojo(Long id,TradingShippingdetails tradingShippingdetails) throws Exception {
         List<ShippingServiceOptions> lisso = new ArrayList();
         TradingShippingserviceoptionsExample tse = new TradingShippingserviceoptionsExample();
         tse.createCriteria().andParentIdEqualTo(id);
         List<TradingShippingserviceoptions> litsso = this.tsm.selectByExample(tse);
+        TradingDataDictionary tdd = this.iTradingDataDictionary.selectDictionaryByID(Long.parseLong(tradingShippingdetails.getSite()));
         if(litsso!=null&& litsso.size()>0){
             for(TradingShippingserviceoptions tsso : litsso){
                 ShippingServiceOptions sso = new ShippingServiceOptions();
                 ConvertPOJOUtil.convert(sso,tsso);
                 sso.setShippingService(DataDictionarySupport.getTradingDataDictionaryByID(Long.parseLong(sso.getShippingService())).getValue());
-                sso.setShippingServiceCost(new ShippingServiceCost("USD",tsso.getShippingservicecost()));
-                sso.setShippingServiceAdditionalCost(new ShippingServiceAdditionalCost("USD",tsso.getShippingserviceadditionalcost()));
+                sso.setShippingServiceCost(new ShippingServiceCost(tdd.getValue1(),tsso.getShippingservicecost()));
+                sso.setShippingServiceAdditionalCost(new ShippingServiceAdditionalCost(tdd.getValue1(),tsso.getShippingserviceadditionalcost()));
                 if(tsso.getShippingsurcharge()!=null&&tsso.getShippingsurcharge()!=0){
-                    sso.setShippingSurcharge(new ShippingSurcharge("USD",tsso.getShippingsurcharge()));
+                    sso.setShippingSurcharge(new ShippingSurcharge(tdd.getValue1(),tsso.getShippingsurcharge()));
                 }
                 lisso.add(sso);
             }

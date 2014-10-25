@@ -56,4 +56,16 @@ public class TradingAttrMoresImpl implements com.trading.service.ITradingAttrMor
         List<TradingAttrMores> litam = this.tradingAttrMoresMapper.selectByExample(tame);
         return litam;
     }
+    /**
+     *
+     * @param id
+     * @return
+     */
+    @Override
+    public List<TradingAttrMores> selectByParnetidUuid(Long id,String attrValue,String parentuuid){
+        TradingAttrMoresExample tame = new TradingAttrMoresExample();
+        tame.createCriteria().andParentIdEqualTo(id).andAttrValueEqualTo(attrValue).andParentUuidEqualTo(parentuuid);
+        List<TradingAttrMores> litam = this.tradingAttrMoresMapper.selectByExample(tame);
+        return litam;
+    }
 }

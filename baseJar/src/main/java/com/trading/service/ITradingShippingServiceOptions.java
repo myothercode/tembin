@@ -1,5 +1,6 @@
 package com.trading.service;
 
+import com.base.database.trading.model.TradingShippingdetails;
 import com.base.database.trading.model.TradingShippingserviceoptions;
 import com.base.xmlpojo.trading.addproduct.ShippingServiceOptions;
 
@@ -17,5 +18,5 @@ public interface ITradingShippingServiceOptions {
 
     void deleteByParentId(Long id);
 
-    List<ShippingServiceOptions> toXmlPojo(Long id) throws Exception;
+    List<ShippingServiceOptions> toXmlPojo(Long id,TradingShippingdetails tradingShippingdetails) throws Exception;
 }

@@ -16,4 +16,13 @@ public interface ITradingAutoMessage {
 
     List<AutoMessageQuery> selectAutoMessageList(Map map, Page page);
 
+    List<TradingAutoMessage> selectAutoMessageById(Long id);
+
+    void deleteAutoMessage(TradingAutoMessage autoMessage) throws Exception;
+
+    List<AutoMessageQuery> selectShippingServiceOptionList(Map map, Page page);
+
+    List<AutoMessageQuery> selectInternationalShippingServiceList(Map map, Page page);
+
+    List<TradingAutoMessage> selectAutoMessageByType(String type);
 }

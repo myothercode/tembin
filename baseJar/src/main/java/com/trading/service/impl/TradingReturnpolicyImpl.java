@@ -33,11 +33,14 @@ public class TradingReturnpolicyImpl implements com.trading.service.ITradingRetu
     public void saveTradingReturnpolicy(TradingReturnpolicy tradingReturnpolicy) throws Exception {
         if(tradingReturnpolicy.getId()==null){
             ObjectUtils.toInitPojoForInsert(tradingReturnpolicy);
-            this.tradingReturnpolicyMapper.insert(tradingReturnpolicy);
+            this.tradingReturnpolicyMapper.insertSelective(tradingReturnpolicy);
         }else{
             TradingReturnpolicy t=tradingReturnpolicyMapper.selectByPrimaryKey(tradingReturnpolicy.getId());
             Asserts.assertTrue(t != null && t.getCreateUser() != null, "没有找到记录或者记录创建者为空");
             ObjectUtils.valiUpdate(t.getCreateUser(),TradingReturnpolicyMapper.class,tradingReturnpolicy.getId());
+            if(tradingReturnpolicy.getCheckFlag()==null) {
+                tradingReturnpolicy.setCheckFlag(t.getCheckFlag());
+            }
             this.tradingReturnpolicyMapper.updateByPrimaryKeySelective(tradingReturnpolicy);
         }
     }

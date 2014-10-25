@@ -25,5 +25,7 @@ public interface ITradingOrderGetOrders {
 
     List<TradingOrderGetOrders> selectOrderGetOrdersByFolder(String folderId,List<String> ebays);
 
+    List<TradingOrderGetOrders> selectOrderGetOrdersByBuyerAndItemid(String itemid,String buyer);
+
     void downloadOrders(List<TradingOrderGetOrders> list,String outputFile,ServletOutputStream outputStream) throws Exception;
 }

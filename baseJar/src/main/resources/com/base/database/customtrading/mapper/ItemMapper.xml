@@ -111,5 +111,6 @@
         <if test="selectType!=null">
             and item.${selectType} =#{selectValue}
         </if>
+        order by item.id desc
     </select>
 </mapper>

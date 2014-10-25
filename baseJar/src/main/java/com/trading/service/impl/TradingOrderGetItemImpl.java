@@ -1,8 +1,11 @@
 package com.trading.service.impl;
 
+import com.base.database.customtrading.mapper.OrderItemMapper;
 import com.base.database.trading.mapper.TradingOrderGetItemMapper;
 import com.base.database.trading.model.TradingOrderGetItem;
 import com.base.database.trading.model.TradingOrderGetItemExample;
+import com.base.domains.querypojos.OrderItemQuery;
+import com.base.mybatis.page.Page;
 import com.base.utils.common.ObjectUtils;
 import com.base.utils.exception.Asserts;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * 退货政策
@@ -21,7 +25,8 @@ public class TradingOrderGetItemImpl implements com.trading.service.ITradingOrde
 
     @Autowired
     private TradingOrderGetItemMapper tradingOrderGetItemMapper;
-
+    @Autowired
+    private OrderItemMapper orderItemMapper;
     @Override
     public void saveOrderGetItem(TradingOrderGetItem OrderGetItem) throws Exception {
         if(OrderGetItem.getId()==null){
@@ -42,5 +47,10 @@ public class TradingOrderGetItemImpl implements com.trading.service.ITradingOrde
         cr.andItemidEqualTo(ItemId);
         List<TradingOrderGetItem> lists=tradingOrderGetItemMapper.selectByExample(itemExample);
         return lists;
+    }
+
+    @Override
+    public List<OrderItemQuery> selectOrderItemList(Map map, Page page) {
+        return orderItemMapper.selectOrderItemList(map,page);
     }
 }

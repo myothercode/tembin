@@ -35,7 +35,10 @@ public class TradingItemAddressImpl implements com.trading.service.ITradingItemA
             TradingItemAddress t=tradingItemAddressMapper.selectByPrimaryKey(tradingItemAddress.getId());
             Asserts.assertTrue(t != null && t.getCreateUser() != null, "没有找到记录或者记录创建者为空");
             ObjectUtils.valiUpdate(t.getCreateUser(),TradingItemAddressMapper.class,tradingItemAddress.getId());
-            this.tradingItemAddressMapper.updateByPrimaryKey(tradingItemAddress);
+            if(tradingItemAddress.getCheckFlag()==null) {
+                tradingItemAddress.setCheckFlag(t.getCheckFlag());
+            }
+            this.tradingItemAddressMapper.updateByPrimaryKeySelective(tradingItemAddress);
         }
     }
 

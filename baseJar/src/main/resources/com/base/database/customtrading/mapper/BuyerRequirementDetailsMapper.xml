@@ -43,5 +43,6 @@
         <if test="userid!=null">
             and buyer.create_user = #{userid}
         </if>
+        order by id desc
     </select>
 </mapper>

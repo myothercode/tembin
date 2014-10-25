@@ -15,4 +15,6 @@ public interface ITradingAttrMores {
     void deleteByParentId(String attrValue,Long id);
 
     List<TradingAttrMores> selectByParnetid(Long id, String attrValue);
+
+    List<TradingAttrMores> selectByParnetidUuid(Long id, String attrValue, String parentuuid);
 }

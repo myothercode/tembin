@@ -10,6 +10,16 @@ public class MessageGetmymessageQuery extends TradingMessageGetmymessage{
 
     private Long countNum;
 
+    private String sku;
+
+    public String getSku() {
+        return sku;
+    }
+
+    public void setSku(String sku) {
+        this.sku = sku;
+    }
+
     public Long getCountNum() {
         return countNum;
     }

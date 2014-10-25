@@ -75,7 +75,7 @@ public class TradingAttrMoresExample {
      *
      * @mbggenerated
      */
-    public boolean getDistinct() {
+    public boolean isDistinct() {
         return distinct;
     }
 
@@ -162,7 +162,7 @@ public class TradingAttrMoresExample {
             criteria = new ArrayList<Criterion>();
         }
 
-        public boolean getValid() {
+        public boolean isValid() {
             return criteria.size() > 0;
         }
 
@@ -650,6 +650,76 @@ public class TradingAttrMoresExample {
             addCriterion("create_time not between", value1, value2, "createTime");
             return (Criteria) this;
         }
+
+        public Criteria andAttr1IsNull() {
+            addCriterion("attr1 is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andAttr1IsNotNull() {
+            addCriterion("attr1 is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andAttr1EqualTo(String value) {
+            addCriterion("attr1 =", value, "attr1");
+            return (Criteria) this;
+        }
+
+        public Criteria andAttr1NotEqualTo(String value) {
+            addCriterion("attr1 <>", value, "attr1");
+            return (Criteria) this;
+        }
+
+        public Criteria andAttr1GreaterThan(String value) {
+            addCriterion("attr1 >", value, "attr1");
+            return (Criteria) this;
+        }
+
+        public Criteria andAttr1GreaterThanOrEqualTo(String value) {
+            addCriterion("attr1 >=", value, "attr1");
+            return (Criteria) this;
+        }
+
+        public Criteria andAttr1LessThan(String value) {
+            addCriterion("attr1 <", value, "attr1");
+            return (Criteria) this;
+        }
+
+        public Criteria andAttr1LessThanOrEqualTo(String value) {
+            addCriterion("attr1 <=", value, "attr1");
+            return (Criteria) this;
+        }
+
+        public Criteria andAttr1Like(String value) {
+            addCriterion("attr1 like", value, "attr1");
+            return (Criteria) this;
+        }
+
+        public Criteria andAttr1NotLike(String value) {
+            addCriterion("attr1 not like", value, "attr1");
+            return (Criteria) this;
+        }
+
+        public Criteria andAttr1In(List<String> values) {
+            addCriterion("attr1 in", values, "attr1");
+            return (Criteria) this;
+        }
+
+        public Criteria andAttr1NotIn(List<String> values) {
+            addCriterion("attr1 not in", values, "attr1");
+            return (Criteria) this;
+        }
+
+        public Criteria andAttr1Between(String value1, String value2) {
+            addCriterion("attr1 between", value1, value2, "attr1");
+            return (Criteria) this;
+        }
+
+        public Criteria andAttr1NotBetween(String value1, String value2) {
+            addCriterion("attr1 not between", value1, value2, "attr1");
+            return (Criteria) this;
+        }
     }
 
     /**
@@ -698,19 +768,19 @@ public class TradingAttrMoresExample {
             return secondValue;
         }
 
-        public boolean getNoValue() {
+        public boolean isNoValue() {
             return noValue;
         }
 
-        public boolean getSingleValue() {
+        public boolean isSingleValue() {
             return singleValue;
         }
 
-        public boolean getBetweenValue() {
+        public boolean isBetweenValue() {
             return betweenValue;
         }
 
-        public boolean getListValue() {
+        public boolean isListValue() {
             return listValue;
         }
 

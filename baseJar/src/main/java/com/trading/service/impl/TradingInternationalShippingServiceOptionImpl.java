@@ -1,9 +1,7 @@
 package com.trading.service.impl;
 
 import com.base.database.trading.mapper.TradingInternationalshippingserviceoptionMapper;
-import com.base.database.trading.model.TradingAttrMores;
-import com.base.database.trading.model.TradingInternationalshippingserviceoption;
-import com.base.database.trading.model.TradingInternationalshippingserviceoptionExample;
+import com.base.database.trading.model.*;
 import com.base.utils.cache.DataDictionarySupport;
 import com.base.utils.common.ConvertPOJOUtil;
 import com.base.utils.common.ObjectUtils;
@@ -11,6 +9,7 @@ import com.base.xmlpojo.trading.addproduct.InternationalShippingServiceOption;
 import com.base.xmlpojo.trading.addproduct.attrclass.ShippingServiceAdditionalCost;
 import com.base.xmlpojo.trading.addproduct.attrclass.ShippingServiceCost;
 import com.trading.service.ITradingAttrMores;
+import com.trading.service.ITradingDataDictionary;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,6 +27,8 @@ public class TradingInternationalShippingServiceOptionImpl implements com.tradin
     private TradingInternationalshippingserviceoptionMapper tradingInternationalshippingserviceoptionMapper;
     @Autowired
     private ITradingAttrMores iTradingAttrMores;
+    @Autowired
+    private ITradingDataDictionary iTradingDataDictionary;
     @Override
     public void saveInternationalShippingServiceOption(TradingInternationalshippingserviceoption pojo) throws Exception {
         if(pojo.getId()==null) {
@@ -65,20 +66,22 @@ public class TradingInternationalShippingServiceOptionImpl implements com.tradin
         this.tradingInternationalshippingserviceoptionMapper.deleteByExample(tie);
     }
     @Override
-    public List<InternationalShippingServiceOption> toXmlPojo(Long id) throws Exception {
+    public List<InternationalShippingServiceOption> toXmlPojo(Long id,TradingShippingdetails tradingShippingdetails) throws Exception {
+
         TradingInternationalshippingserviceoptionExample tie = new TradingInternationalshippingserviceoptionExample();
         tie.createCriteria().andParentIdEqualTo(id);
         List<TradingInternationalshippingserviceoption> litis = this.tradingInternationalshippingserviceoptionMapper.selectByExample(tie);
         if(litis==null||litis.size()==0)
             return null;
         List<InternationalShippingServiceOption>  liisso = new ArrayList();
+        TradingDataDictionary tdd = this.iTradingDataDictionary.selectDictionaryByID(Long.parseLong(tradingShippingdetails.getSite()));
         for(int i=0;i<litis.size();i++){
             TradingInternationalshippingserviceoption ti = litis.get(i);
             InternationalShippingServiceOption isso = new InternationalShippingServiceOption();
             ConvertPOJOUtil.convert(isso,ti);
             isso.setShippingService(DataDictionarySupport.getTradingDataDictionaryByID(Long.parseLong(isso.getShippingService())).getValue());
-            isso.setShippingServiceCost(new ShippingServiceCost("USD",ti.getShippingservicecost()));
-            isso.setShippingServiceAdditionalCost(new ShippingServiceAdditionalCost("USD", ti.getShippingserviceadditionalcost()));
+            isso.setShippingServiceCost(new ShippingServiceCost(tdd.getValue1(),ti.getShippingservicecost()));
+            isso.setShippingServiceAdditionalCost(new ShippingServiceAdditionalCost(tdd.getValue1(), ti.getShippingserviceadditionalcost()));
             List<TradingAttrMores> litam = this.iTradingAttrMores.selectByParnetid(ti.getId(),"ShipToLocation");
             List<String> listr = new ArrayList();
             for(TradingAttrMores tam:litam){

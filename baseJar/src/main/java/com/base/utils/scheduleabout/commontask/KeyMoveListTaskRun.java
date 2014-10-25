@@ -34,7 +34,7 @@ import java.util.Map;
 
 /**
  * Created by Administrtor on 2014/8/29.
- * 定时刊登任务
+ * 一键搬家任务
  */
 public class KeyMoveListTaskRun extends BaseScheduledClass implements Scheduledable {
     static Logger logger = Logger.getLogger(KeyMoveListTaskRun.class);
@@ -46,6 +46,9 @@ public class KeyMoveListTaskRun extends BaseScheduledClass implements Scheduleda
         KeyMoveListExample kmle = new KeyMoveListExample();
         kmle.createCriteria().andTaskFlagEqualTo("0");
         List<KeyMoveList> likml = keyMapper.selectByExampleWithBLOBs(kmle);
+
+        likml = filterLimitList(likml);//限制每次的执行条数
+
         List<Item> liitem = new ArrayList<Item>();
         for(KeyMoveList kml:likml){
             String xml = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n" +
@@ -61,7 +64,8 @@ public class KeyMoveListTaskRun extends BaseScheduledClass implements Scheduleda
                 d.setApiSiteid(DataDictionarySupport.getTradingDataDictionaryByID(Long.parseLong(kml.getSiteId())).getName1());
                 d.setApiCallName(APINameStatic.GetItem);
                 AddApiTask addApiTask = new AddApiTask();
-                Map<String, String> resMap = addApiTask.exec(d, xml, "https://api.sandbox.ebay.com/ws/api.dll");
+                CommAutowiredClass commPars = (CommAutowiredClass) ApplicationContextUtil.getBean(CommAutowiredClass.class);//获取注入的参数
+                Map<String, String> resMap = addApiTask.exec2(d, xml, commPars.apiUrl);
                 String res = resMap.get("message");
                 String ack = SamplePaseXml.getVFromXmlString(res, "Ack");
                 if("Success".equals(ack)){//ＡＰＩ成功请求，保存数据
@@ -90,9 +94,9 @@ public class KeyMoveListTaskRun extends BaseScheduledClass implements Scheduleda
     }
 
     /**只从集合记录取多少条*/
-    private List<TradingTimerListingWithBLOBs> filterLimitList(List<TradingTimerListingWithBLOBs> tlist){
+    private List<KeyMoveList> filterLimitList(List<KeyMoveList> tlist){
 
-        List<TradingTimerListingWithBLOBs> x=new ArrayList<TradingTimerListingWithBLOBs>();
+        List<KeyMoveList> x=new ArrayList<KeyMoveList>();
         for (int i = 0;i<20;i++){
             x.add(tlist.get(i));
         }

@@ -12,6 +12,7 @@ import com.trading.service.*;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
@@ -37,6 +38,8 @@ public class SynchronizeUserCasesImpl implements ThreadPoolBaseInterFace {
     private ITradingGetDispute iTradingGetDispute;
     @Autowired
     private ITradingGetDisputeMessage iTradingGetDisputeMessage;
+    @Value("${EBAY.API.URL}")
+    private String apiUrl;
     @Override
     public <T> void doWork(String res, T... t) {
           if(StringUtils.isEmpty(res)){return;}
@@ -53,12 +56,12 @@ public class SynchronizeUserCasesImpl implements ThreadPoolBaseInterFace {
                 String totalPages= (String) map1.get("totalPages");
                 int totalPage= Integer.parseInt(totalPages);
                 for(int i=1;i<=totalPage;i++) {
-                    if (i != 1) {
+                    if (i > 1) {
                         Map map=new HashMap();
-                        Date startTime2= DateUtils.subDays(new Date(), 60);
-                        Date endTime= DateUtils.addDays(startTime2, 60);
-                      /*  Date startTime2= DateUtils.subDays(new Date(), 9);
-                        Date endTime= DateUtils.addDays(startTime2,9);*/
+                     /*   Date startTime2= DateUtils.subDays(new Date(), 60);
+                        Date endTime= DateUtils.addDays(startTime2, 60);*/
+                        Date startTime2= DateUtils.subDays(new Date(), 9);
+                        Date endTime= DateUtils.addDays(startTime2,9);
                         Date end1= com.base.utils.common.DateUtils.turnToDateEnd(endTime);
                         String start= DateUtils.DateToString(startTime2);
                         String end=DateUtils.DateToString(end1);
@@ -85,7 +88,7 @@ public class SynchronizeUserCasesImpl implements ThreadPoolBaseInterFace {
                     }
                     List<TradingGetUserCases> userCasesList = (List<TradingGetUserCases>) map1.get("cases");
                     for (TradingGetUserCases userCases : userCasesList) {
-                        List<TradingGetUserCases> casesList = iTradingGetUserCases.selectGetUserCasesByTransactionId(userCases.getTransactionid());
+                        List<TradingGetUserCases> casesList = iTradingGetUserCases.selectGetUserCasesByTransactionId(userCases.getTransactionid(),userCases.getSellerid());
                         if (casesList != null && casesList.size() > 0) {
                             userCases.setId(casesList.get(0).getId());
                             userCases.setHandled(casesList.get(0).getHandled());
@@ -149,15 +152,18 @@ public class SynchronizeUserCasesImpl implements ThreadPoolBaseInterFace {
                                 return;
                             }
                         }else{
-                            d.setApiDevName("5d70d647-b1e2-4c7c-a034-b343d58ca425");
+                            /*d.setApiDevName("5d70d647-b1e2-4c7c-a034-b343d58ca425");
                             d.setApiAppName("sandpoin-23af-4f47-a304-242ffed6ff5b");
                             d.setApiCertName("165cae7e-4264-4244-adff-e11c3aea204e");
                             d.setApiCompatibilityLevel("883");
-                            d.setApiSiteid("0");
+                            d.setApiSiteid("0");*/
                             d.setHeaderType("");
                             d.setApiCallName(APINameStatic.GetDispute);
                             String xml = BindAccountAPI.getGetDispute(token, caseId);
+                            //真实环境
                             Map<String, String> resMap = addApiTask.exec(d, xml, "https://api.ebay.com/ws/api.dll");
+                            //测试环境
+                           /* Map<String, String> resMap = addApiTask.exec(d, xml, apiUrl);*/
                             String r1 = resMap.get("stat");
                             res = resMap.get("message");
                             if ("fail".equalsIgnoreCase(r1)) {
