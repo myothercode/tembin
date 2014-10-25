@@ -37,7 +37,6 @@
             map.put("virtualSKU",path+"/virtualSKU/virtualSKUList.do");
             map.put("inventory",path+"/inventory/InventoryList.do");
             top.location=map.get(name);
-
         }
         function abcd(obj){
             var urll=path+"/ajax/saveFeedBackAll.do";

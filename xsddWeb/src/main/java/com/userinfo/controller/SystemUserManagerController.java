@@ -49,6 +49,13 @@ public class SystemUserManagerController extends BaseAction {
     public ModelAndView sysUserManPage(@ModelAttribute( "initSomeParmMap" )ModelMap modelMap){
         return forword("/userinfo/systemUserManager",modelMap);
     }
+
+    @RequestMapping("userConfPage.do")
+    @AvoidDuplicateSubmission(needSaveToken = true)
+    public ModelAndView userConfPage(@ModelAttribute( "initSomeParmMap" )ModelMap modelMap){
+        return forword("/userinfo/selfUserConfig",modelMap);
+    }
+
     /**初始化增加子用户的页面*/
     @RequestMapping("addSubUserInit.do")
     @AvoidDuplicateSubmission(needSaveToken = true)

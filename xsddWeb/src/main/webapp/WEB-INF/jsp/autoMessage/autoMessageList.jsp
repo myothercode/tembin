@@ -25,8 +25,8 @@
                     {title:"",name:"pictureUrl",width:"2%",align:"left",format:makeOption3},
                     {title:"标题",name:"subject",width:"8%",align:"left"},
                     {title:"类型",name:"type",width:"8%",align:"left"},
-                    {title:"eBay账号",name:"ebayName",width:"8%",align:"left",format:makeOption1},
-                    {title:"买家来自",name:"countrys",width:"8%",align:"left",format:makeOption2},
+                    {title:"指定国家",name:"country",width:"8%",align:"left"},
+                    {title:"指定账号",name:"amount",width:"8%",align:"left"},
                     {title:"操作",name:"countNum",width:"8%",align:"left",format:makeOption4}
                 ],
                 selectDataNow:false,
@@ -38,44 +38,52 @@
         function refreshTable(){
             $("#autoMessageTable").selectDataAfterSetParm({"bedDetailVO.deptId":"", "isTrue":0});
         }
-        function makeOption1(json){
-            var ebayNames=json.ebayNames;
-            var htm="";
-            for(var i=0;i<ebayNames.length;i++){
-                if(i==0){
-                    htm+=ebayNames[i]
-                }else if(i==(ebayNames.length-1)){
-                    htm+=ebayNames[i];
-                }else{
-                    htm+=ebayNames[i]+",";
-                }
-            }
-            return htm;
-        }
-        function makeOption2(json){
-            var htm="";
-            var countrys=json.countrys;
-            for(var i=0;i<countrys.length;i++){
-                if(i==0){
-                    htm+=countrys[i]
-                }else if(i==(countrys.length-1)){
-                    htm+=countrys[i];
-                }else{
-                    htm+=countrys[i]+",";
-                }
-            }
-            return htm;
-        }
+
+
         function makeOption3(json){
             var htm = "<input type=\"checkbox\"  name=\"templateId\" value=" + json.id + ">";
             return htm;
         }
         function makeOption4(json){
             var hs="";
-            hs="<li onclick=editMessageTemplate("+json.id+"); value='1' doaction=\"readed\" >编辑</li>";
-            hs+="<li onclick=deleteSendMessage("+json.id+"); value='1' doaction=\"look\" >删除</li>";
+            hs="<li style=\"height:25px;\"  onclick=editAutoMessage("+json.id+"); value='1' doaction=\"readed\" >编辑</li>";
+            hs+="<li style=\"height:25px;\"  onclick=deleteAutoMessage("+json.id+"); value='1' doaction=\"look\" >删除</li>";
             var pp={"liString":hs};
             return getULSelect(pp);
+        }
+        function addAutoMessage(){
+            var url=path+'/autoMessage/addAutoMessage.do?';
+            autoMessage=$.dialog({title: '自动消息',
+                content: 'url:'+url,
+                icon: 'succeed',
+                width:950,
+                height:600,
+                lock:true
+            });
+        }
+        function editAutoMessage(id){
+            var url=path+'/autoMessage/addAutoMessage.do?id='+id;
+            autoMessage=$.dialog({title: '自动消息',
+                content: 'url:'+url,
+                icon: 'succeed',
+                width:950,
+                height:600,
+                lock:true
+            });
+        }
+        function deleteAutoMessage(id){
+            var url=path+"/autoMessage/ajax/deleteAutoMessage.do?id="+id;
+            $().invoke(url,null,
+                    [function(m,r){
+                        alert(r);
+                        refreshTable();
+                        Base.token();
+                    },
+                        function(m,r){
+                            alert(r);
+                            Base.token();
+                        }]
+            );
         }
     </script>
 </head>
@@ -94,9 +102,10 @@
                                 <span class="newusa_ici_del">删除</span><div id="newtipi">
 
                                 </div>
-                            </div><div class="tbbay"><a data-toggle="modal" href="#myModal" class="">添加模板</a></div>
+                            </div><div class="tbbay"><a data-toggle="modal" href="#myModal" class="" onclick="addAutoMessage();">添加模板</a></div>
                         </div>
                     </div>
+                    <div style="width: 100%;float: left;height: 5px"></div>
                     <div id="autoMessageTable"></div>
                 </div>
 

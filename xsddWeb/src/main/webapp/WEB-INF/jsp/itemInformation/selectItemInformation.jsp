@@ -85,6 +85,7 @@
                     urll,
                     {},
                     [function (m, r) {
+
                         for(var js = 0;js<ss.length;js++){
                             var str = '';
                             for(var i =0;i< r.length;i++){
@@ -93,7 +94,7 @@
                                         '<a onclick="deletePic(this)" style="position: absolute;top: -45px;right: -15px;" href=\'javascript:void(0)\'>&times;</a></div>';
                                 str += "</li>";
                             }
-                            W.document.getElementById("picture_"+ss[js]).innerHTML=str;
+                            $(W.document.getElementById("picture_"+ss[js])).html(str);
                         }
                         initDraug();
                         W._sku = productsku;

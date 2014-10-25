@@ -174,7 +174,18 @@
                         }]
             );
         }
-
+        function selectSendMessage(){
+            var url=path+'/message/selectSendMessage.do?';
+            sentmessage = $.dialog({title: '选择消息模板',
+                content:'url:'+url,
+                icon: 'succeed',
+                width:800,
+                height:400,
+                parent:api,
+                lock:true,
+                zIndex:2000
+            });
+        }
         $(document).ready(function(){
             $("#sendForm").validationEngine();
         });
@@ -203,19 +214,36 @@
 <div class="modal-header">
 <table width="100%" border="0" style="margin-top:-20px;">
     <tbody><tr>
-        <td style="line-height:30px;"><span style=" color:#2395F3; font-size:24px; font-family:Arial, Helvetica, sans-serif">aasla_karih</span> [来自eBay账号：containyou 的买家]</td>
+        <td style="line-height:30px;"><span style=" color:#2395F3; font-size:24px; font-family:Arial, Helvetica, sans-serif">
+        <c:if test="${flag=='true'}">
+            ${order.buyeruserid}</span> [来自eBay账号：${order.selleruserid} 的买家]
+        </c:if>
+        <c:if test="${flag=='false'}">
+            ${message.sender}</span> [来自eBay账号：${message.recipientuserid} 的买家]
+        </c:if>
+        </td>
     </tr>
     <tr>
         <td><div class="new_tab">
             <div class="new_tab_left"></div>
             <div class="new_tab_right"></div>
-            <dt id="svt1" class="new_ic_1" onclick="setvTab('svt',1,4)">订单摘要</dt>
-            <dt id="svt2" onclick="setvTab('svt',2,4)" class="">回复消息</dt>
+            <c:if test="${flag=='true'}">
+                <dt id="svt1" class="new_ic_1" onclick="setvTab('svt',1,4)">订单摘要</dt>
+                <dt id="svt2"  onclick="setvTab('svt',2,4)" class="">回复消息</dt>
+            </c:if>
+            <c:if test="${flag=='false'}">
+                <dt id="svt2" class="new_ic_1"  onclick="setvTab('svt',2,4)" class="">回复消息</dt>
+            </c:if>
         </div></td>
     </tr>
 
     </tbody></table>
+<c:if test="${flag=='true'}">
 <div id="new_svt_1"  style="display: block;">
+</c:if>
+<c:if test="${flag=='false'}">
+<div id="new_svt_1"  style="display: none;">
+</c:if>
     <link href="../../css/compiled/layout.css" rel="stylesheet" type="text/css">
     <c:forEach items="${orders}" begin="0"  varStatus="status">
     <table width="100%" border="0">
@@ -360,8 +388,8 @@
                     </c:if>
                     </td>
                     <td width="15%" height="30">${orders[status.index].total} USD</td>
-                    <td width="15%" height="30">0.85--</td>
-                    <td width="15%" height="30">13.17--</td>
+                    <td width="15%" height="30">${accs[status.index].feeAmount}&nbsp;${accs[status.index].feeAmountUnit}</td>
+                    <td width="15%" height="30">${orders[status.index].total-accs[status.index].feeAmount} USD</td>
                 </tr>
                 <c:if test="${orders[status.index].status=='Incomplete'}">
                     <tr>
@@ -387,7 +415,12 @@
         <button type="button" class="btn btn-default" onclick="dialogClose();" data-dismiss="modal">关闭</button>
     </div>
 </div>
+<c:if test="${flag=='true'}">
 <div style="display: none;" id="new_svt_2">
+</c:if>
+<c:if test="${flag=='false'}">
+<div style="display: block;" id="new_svt_2">
+</c:if>
     <link href="../../css/compiled/layout.css" rel="stylesheet" type="text/css">
     <table width="100%" border="0">
         <tbody><tr>
@@ -437,7 +470,18 @@
         <tr>
             <td>
                 <div class="newbook">
-                    <p style="text-align: right;">aasla_karih 2014-08-20 22:38</p>
+                    <p style="text-align: right;">
+                        <c:if test="${flag=='true'}">
+                            ${order.buyeruserid}&nbsp;
+                            <c:if test="${addMessage1!=null}">
+                                <fmt:formatDate value="${addMessage1[0].createTime}" pattern="yyyy-MM-dd HH:mm"/>
+                            </c:if>
+
+                        </c:if>
+                        <c:if test="${flag=='false'}">
+                            ${message.sender}&nbsp;<fmt:formatDate value="${addMessage1[0].createTime}" pattern="yyyy-MM-dd HH:mm"/>
+                        </c:if>
+                    </p>
                 <c:forEach items="${addMessage1}" var="addMessage">
                     <c:if test="${addMessage.sender==sender}">
                         <p class="user">${addMessage.recipientid}，您好！</p>
@@ -452,12 +496,17 @@
                     </c:if>
                     <c:if test="${addMessage.sender==recipient}">
 
-                        <p class="admin">携宇科技</p>
+                        <p class="admin">${addMessage.sender}</p>
 
                         <div class="admin_co">
                             <div class="admin_co_1"></div>
                             <ul>Hi ${addMessage.recipientid}.: )<br/>${addMessage.body}
-                                <span>发送与:<fmt:formatDate value="${addMessage.createTime}" pattern="yyyy-MM-dd HH:mm:ss"/></span>
+                                <c:if test="${addMessage.replied=='true'}">
+                                    <span>发送与:<fmt:formatDate value="${addMessage.createTime}" pattern="yyyy-MM-dd HH:mm:ss"/></span>
+                                </c:if>
+                                <c:if test="${addMessage.replied=='false'}">
+                                    <span style="color: red">发送失败与:<fmt:formatDate value="${addMessage.createTime}" pattern="yyyy-MM-dd HH:mm:ss"/>!</span>
+                                </c:if>
                             </ul>
                             <div class="admin_co_2"></div>
                         </div>
@@ -515,6 +564,7 @@
                 <textarea name="body"  id="textarea" style="width:772px;" rows="5"  class="newco_one validate[required]"></textarea><div class="modal-footer" style="margin-top:20px; float:left; width:100%;">
                 </form>
                 <%--<button type="button" class="btn btn-primary">保存</button>--%>
+                <button type="button" class="btn btn-primary" onclick="selectSendMessage();">选择模板</button>
                 <button type="button" class="btn btn-newco" onclick="submitCommit1();">回复</button>
                 <button type="button" class="btn btn-default" onclick="dialogClose();" data-dismiss="modal">关闭</button>
             </div></td>

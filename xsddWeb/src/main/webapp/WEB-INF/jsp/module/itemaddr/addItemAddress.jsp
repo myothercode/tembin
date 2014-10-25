@@ -28,7 +28,7 @@
             $().invoke(url,data,
                     [function(m,r){
                         alert(r);
-                        W.refreshTable();
+                        W.refreshTableAddress();
                         W.itemAddressList.close();
                     },
                         function(m,r){

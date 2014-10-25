@@ -1,9 +1,18 @@
 package com.order.controller;
 
+import com.base.domains.CommonParmVO;
+import com.base.domains.SessionVO;
+import com.base.domains.querypojos.OrderItemQuery;
 import com.base.domains.userinfo.UsercontrollerEbayAccountExtend;
+import com.base.mybatis.page.Page;
+import com.base.mybatis.page.PageJsonBean;
 import com.base.userinfo.service.UserInfoService;
 import com.base.utils.annotations.AvoidDuplicateSubmission;
+import com.base.utils.cache.SessionCacheSupport;
+import com.common.base.utils.ajax.AjaxSupport;
 import com.common.base.web.BaseAction;
+import com.trading.service.ITradingOrderGetItem;
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -16,7 +25,9 @@ import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by Administrtor on 2014/8/15.
@@ -27,7 +38,8 @@ public class GetOrderItemController extends BaseAction {
     static Logger logger = Logger.getLogger(GetOrderItemController.class);
     @Autowired
     private UserInfoService userInfoService;
-
+    @Autowired
+    private ITradingOrderGetItem iTradingOrderGetItem;
     @Value("${EBAY.API.URL}")
     private String apiUrl;
 
@@ -35,22 +47,29 @@ public class GetOrderItemController extends BaseAction {
      public ModelAndView OrdersList(HttpServletRequest request,HttpServletResponse response,ModelMap modelMap){
         return forword("/orders/orderItem/orderItemList",modelMap);
     }
-   /* *//**获取list数据的ajax方法*//*
+  /**获取list数据的ajax方法*/
     @RequestMapping("/ajax/loadOrdersList.do")
     @ResponseBody
-    public void loadOrdersList(CommonParmVO commonParmVO) throws Exception {
+    public void loadOrdersList(CommonParmVO commonParmVO,HttpServletRequest request) throws Exception {
+        String content=request.getParameter("content");
+        if(!StringUtils.isNotBlank(content)){
+            content=null;
+        }
         Map m = new HashMap();
-        *//**分页组装*//*
+        /**分页组装*/
         PageJsonBean jsonBean=commonParmVO.getJsonBean();
         Page page=jsonBean.toPage();
         List<UsercontrollerEbayAccountExtend> ebays=userInfoService.getEbayAccountForCurrUser();
+        SessionVO sessionVO= SessionCacheSupport.getSessionVO();
         Map map=new HashMap();
         map.put("ebays",ebays);
-        List<OrderorderItemQuery> lists= this.iTradingOrderorderItem.selectOrderorderItemByGroupList(map,page);
+        map.put("content",content);
+        m.put("userId",sessionVO.getId());
+        List<OrderItemQuery> lists= this.iTradingOrderGetItem.selectOrderItemList(map,page);
         jsonBean.setList(lists);
         jsonBean.setTotal((int)page.getTotalCount());
         AjaxSupport.sendSuccessText("", jsonBean);
-    }*/
+    }
 
    /**
      * 初始化同步订单商品界面

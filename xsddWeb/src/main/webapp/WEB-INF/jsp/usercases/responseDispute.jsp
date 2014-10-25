@@ -107,9 +107,9 @@
             }
         }
         function sendTrackNum(){
-            if(!$("#sendTrackNum").validationEngine("validate")){
+            /*if(!$("#sendTrackNum").validationEngine("validate")){
                 return;
-            }
+            }*/
             var url=path+"/userCases/sendTrackNum.do?";
             var data=$("#sendTrackNum").serialize();
             $().invoke(url,data,
@@ -187,6 +187,44 @@
            $("#sendRefund").validationEngine();
            $("#sendMessageForm").validationEngine();
        });
+        function queryTrack(){
+            var url=path+"/userCases/queryTrack.do?trackNum=${order.shipmenttrackingnumber}";
+            $().invoke(url,null,
+                    [function(m,r){
+                        /*W.CaseDetails.close();*/
+                       /* accepted inTranst delivered*/
+                       if(r.Status==1){
+                           alert("查询不到,请核实跟踪号");
+                           return;
+                       }else if(r.Status==2||r.Status==3){
+                           $("#accepted").attr("src","<c:url value ="/img/co_1.jpg"/> ");
+                           $("#inTranst").attr("src","<c:url value ="/img/co_1.jpg"/> ");
+                           $("#delivered").attr("src","<c:url value ="/img/co_3.jpg"/> ");
+                           $("#accepted1").attr("style","color:C3C3C3");
+                           $("#inTranst1").attr("style","color:#8DB81F");
+                           $("#delivered1").attr("style","color:C3C3C3");
+                       }else if(r.Status==4){
+                           $("#accepted").attr("src","<c:url value ="/img/co_1.jpg"/> ");
+                           $("#inTranst").attr("src","<c:url value ="/img/co_1.jpg"/> ");
+                           $("#delivered").attr("src","<c:url value ="/img/co_1.jpg"/> ");
+                           $("#accepted1").attr("style","color:C3C3C3");
+                           $("#inTranst1").attr("style","color:C3C3C3");
+                           $("#delivered1").attr("style","color:#8DB81F");
+                       }
+                        var track=$("#trackId");
+                        track.attr("style","display: block");
+                        Base.token();
+                    },
+                        function(m,r){
+                            alert(r);
+                            Base.token();
+                        }]
+            );
+
+        }
+    function selectSendMessage(){
+        $("#textarea3").val($("#template").val());
+    }
     </script>
 </head>
 <body>
@@ -224,7 +262,7 @@
 <table width="100%" border="0">
 <tbody><tr>
     <td width="772">            <div class="modal-header">
-        <h4 class="modal-title"><span>Please respond to your buyer by sep 07,2014.</span>Choose one of the following</h4>
+        <h4 class="modal-title"><span>Please respond to your buyer by <fmt:formatDate value="${cases.respondbydate}" pattern="yyyy-MM-dd"/>.</span>Choose one of the following</h4>
     </div></td>
     <td width="9" rowspan="3" valign="top">&nbsp;</td>
     <td rowspan="3" valign="top" style="margin-left:20px; padding-left:15px; padding-top:20px; padding-right:20px; line-height:25px;background:#F4F4F4"><strong>订单号</strong><br>
@@ -310,11 +348,11 @@
                     <td height="32" align="left"><input name="carrier" type="text" class="form-controlsd" value="${order.shippingcarrierused}"></td>
                 </tr>
                 <tr>
-                    <td height="32" align="left">[ <font color="#5F93D7">View your tracking information</font> ]
+                    <td height="32" align="left">[ <a href="#" onclick="queryTrack();"><font color="#5F93D7">View your tracking information</font></a> ]
                         <span class="voknet"></span></td>
                 </tr>
                 <tr>
-                    <td height="32" align="left"><table width="100%" border="0">
+                    <td height="32" align="left"><table id="trackId" width="100%" border="0" style="display: none">
                         <tbody><tr>
                             <td><strong>Tracking #:</strong></td>
                             <td><strong>Carrier:</strong></td>
@@ -325,26 +363,26 @@
                         <tr>
                             <td>${order.shipmenttrackingnumber}</td>
                             <td>${order.shippingcarrierused}</td>
-                            <td width="118"><img src="<c:url value ="/img/co_1.jpg"/> "></td>
-                            <td width="118"><img src="<c:url value ="/img/co_2.jpg"/> "></td>
-                            <td width="118"><img src="<c:url value ="/img/co_3.jpg"/> "></td>
+                            <td width="118"><img id="accepted" src="<c:url value ="/img/co_1.jpg"/> "></td>
+                            <td width="118"><img id="inTranst" src="<c:url value ="/img/co_2.jpg"/> "></td>
+                            <td width="118"><img id="delivered" src="<c:url value ="/img/co_3.jpg"/> "></td>
                         </tr>
                         <tr>
                             <td>&nbsp;</td>
                             <td>&nbsp;</td>
-                            <td width="116" style="color:#8DB81F">ACCEPTED</td>
-                            <td width="116" style="color:C3C3C3">IN TRANST</td>
-                            <td width="116" style="color:C3C3C3">Delivered</td>
+                            <td width="116" id="accepted1" style="color:#8DB81F">ACCEPTED</td>
+                            <td width="116" id="inTranst1" style="color:C3C3C3">IN TRANST</td>
+                            <td width="116" id="delivered1" style="color:C3C3C3">Delivered</td>
                         </tr>
                         <tr>
                             <td>&nbsp;</td>
                             <td>&nbsp;</td>
-                            <td colspan="3" style="color:#8DB81F">Departure from outward office of exchange</td>
+                            <%--<td colspan="3" style="color:#8DB81F">Departure from outward office of exchange</td>--%>
                         </tr>
                         <tr>
                             <td>&nbsp;</td>
                             <td>&nbsp;</td>
-                            <td colspan="3" style="color:#BFBFBF">2014-05-29,09:59:00,Guangdong</td>
+                           <%-- <td colspan="3" style="color:#BFBFBF">2014-05-29,09:59:00,Guangdong</td>--%>
                         </tr>
                         </tbody></table></td>
                 </tr>
@@ -404,6 +442,7 @@
         </h4>
         <div class="box">
             <form id="sendRefund">
+                <input type="hidden" name="sellerid" value="${cases.sellerid}"/>
                 <input type="hidden" name="transactionId" value="${cases.transactionid}"/>
             <table width="100%" border="0">
             <tbody><tr>
@@ -441,15 +480,22 @@
         </h4>
         <div class="box">
             <form id="sendMessageForm">
+                <input type="hidden" name="sellerid" value="${cases.sellerid}"/>
                 <input type="hidden" name="transactionId" value="${cases.transactionid}"/>
             <table width="100%" border="0">
             <tbody><tr>
-                <td height="32" align="left" style="color:#5F93D7">Please provide detailed information in your response. All responses may be Viewed by the buyer and eBay Customer Support</td>
+                <td height="32" align="left" style="color:#5F93D7">
+                    <select id="template" onclick="selectSendMessage();">
+                        <option value="">--请选择--</option>
+                        <c:forEach items="${templates}" var="template">
+                            <option value="${template.content}">${template.name}</option>
+                        </c:forEach>
+                    </select><br/>Please provide detailed information in your response. All responses may be Viewed by the buyer and eBay Customer Support</td>
             </tr>
             <tr>
                 <td height="32" align="left">
                     <label for="textarea"></label>
-                    <textarea name="textarea" id="textarea" cols="100%" rows="5" class="newco validate[required]"><%--Additional comments:(optional)--%></textarea>
+                    <textarea name="textarea" id="textarea3" cols="100%" rows="5" class="newco validate[required]"><%--Additional comments:(optional)--%></textarea>
                 </td>
             </tr>
             <tr>
@@ -465,7 +511,6 @@
 </tr>
 <tr>
     <td width="772"><div class="modal-footer">
-        <button type="button" class="btn btn-primary">保存</button>
         <button type="button" class="btn btn-newco" onclick="submit3();">回复</button>
         <button type="button" class="btn btn-default" onclick="closedialog();" data-dismiss="modal">关闭</button>
     </div> </td>

@@ -92,12 +92,18 @@
             refreshTable3();
             refreshTable4();
             var lllll=0;
+            var con="#con_menu_";
+            var menu="";
             <c:forEach items="${folders}" begin="0"  varStatus="status">
                 lllll=${status.count+4};
+                menu=${status.count+4};
                 setTab1('menu',${status.index+5},${status.count+4});
             /*<dt id="menu${status.index+5}" name="${folders[status.index].id}" class="new_tab_2" onclick="setTab1('menu',${status.index+5},${status.count+4})">${folders[status.index].configName}</dt>*/
             </c:forEach>
             $("#OrderGetOrdersListTable"+lllll).selectDataAfterSetParm({"bedDetailVO.deptId":"", "isTrue":0});
+            setTab('menu',1,4);
+            $(con+lllll).attr("style","display: none;")
+            $("#menu"+menu).attr("class","new_tab_2");
         });
 
         function refreshTable1(){
@@ -129,10 +135,10 @@
             "</select>" +
             "</div>";*/
             var hs="";
-            hs="<li onclick=selectOperation('"+json.orderid+"','"+json.transactionid+"','"+json.selleruserid+"',this); value='1' doaction=\"readed\" >查看详情</li>";
-            hs+="<li  onclick=selectOperation('"+json.orderid+"','"+json.transactionid+"','"+json.selleruserid+"',this); value='2' doaction=\"look\" >修改状态</li>";
-            hs+="<li  onclick=selectOperation('"+json.orderid+"','"+json.transactionid+"','"+json.selleruserid+"',this); value='3' doaction=\"look\" >发送消息</li>";
-            hs+="<li  onclick=selectOperation('"+json.orderid+"','"+json.transactionid+"','"+json.selleruserid+"',this); value='4' doaction=\"look\" >退款功能</li>";
+            hs="<li style=\"height:25px;\"  onclick=selectOperation('"+json.orderid+"','"+json.transactionid+"','"+json.selleruserid+"',this); value='1' doaction=\"readed\" >查看详情</li>";
+            hs+="<li style=\"height:25px;\"  onclick=selectOperation('"+json.orderid+"','"+json.transactionid+"','"+json.selleruserid+"',this); value='2' doaction=\"look\" >修改状态</li>";
+            hs+="<li style=\"height:25px;\"  onclick=selectOperation('"+json.orderid+"','"+json.transactionid+"','"+json.selleruserid+"',this); value='3' doaction=\"look\" >发送消息</li>";
+            hs+="<li style=\"height:25px;\"  onclick=selectOperation('"+json.orderid+"','"+json.transactionid+"','"+json.selleruserid+"',this); value='4' doaction=\"look\" >退款功能</li>";
             var pp={"liString":hs};
             return getULSelect(pp);
            /* return htm;*/
@@ -148,6 +154,10 @@
             if(value=="3"){
                 sendMessage(orderid);
             }
+            if(value=="4"){
+                issueRefund(transactionid,selleruserid);
+            }
+
         }
         function sendMessage(orderid){
             var url=path+'/order/initOrdersSendMessage.do?orderid='+orderid;
@@ -156,6 +166,15 @@
                 icon: 'succeed',
                 width:800,
                 height:500,
+                lock:true
+            });
+        }
+        function issueRefund(transactionid,selleruserid){
+            var url=path+'/order/initIssueRefund.do?transactionid='+transactionid+'&selleruserid='+selleruserid;
+            viewsendMessage=$.dialog({title: '退款选项',
+                content: 'url:'+url,
+                icon: 'succeed',
+                width:800,
                 lock:true
             });
         }
@@ -253,7 +272,8 @@
                 content: 'url:'+url,
                 icon: 'succeed',
                 width:1200,
-                height:850
+                height:850,
+                lock:true
             });
         }
         function modifyOrderStatus(id,selleruserid){
@@ -282,7 +302,9 @@
             var itemType=$("#itemType1").val();
             var content=$("#content1").val();
             var table="#OrderGetOrdersListTable1";
-            refreshTable5(table,countryQ,typeQ,daysQ,itemType,content,null);
+            var starttime=$("#starttime1").val();
+            var endtime=$("#endtime1").val();
+            refreshTable5(table,countryQ,typeQ,daysQ,itemType,content,null,starttime,endtime);
         }
         function query2(){
             var daysQ=$("#daysQ").val();
@@ -292,7 +314,9 @@
             var content=$("#content2").val();
             var table="#OrderGetOrdersListTable2";
             var status="Incomplete";
-            refreshTable5(table,countryQ,typeQ,daysQ,itemType,content,status);
+            var starttime=$("#starttime2").val();
+            var endtime=$("#endtime2").val();
+            refreshTable5(table,countryQ,typeQ,daysQ,itemType,content,status,starttime,endtime);
         }
         function query3(){
             var daysQ=$("#daysQ").val();
@@ -301,7 +325,9 @@
             var itemType=$("#itemType3").val();
             var content=$("#content3").val();
             var table="#OrderGetOrdersListTable3";
-            refreshTable5(table,countryQ,typeQ,daysQ,itemType,content,"notAllComplete");
+            var starttime=$("#starttime3").val();
+            var endtime=$("#endtime3").val();
+            refreshTable5(table,countryQ,typeQ,daysQ,itemType,content,"notAllComplete",starttime,endtime);
         }
         function query4(){
             var daysQ=$("#daysQ").val();
@@ -311,9 +337,11 @@
             var content=$("#content4").val();
             var table="#OrderGetOrdersListTable4";
             var status="Complete";
-            refreshTable5(table,countryQ,typeQ,daysQ,itemType,content,status);
+            var starttime=$("#starttime4").val();
+            var endtime=$("#endtime4").val();
+            refreshTable5(table,countryQ,typeQ,daysQ,itemType,content,status,starttime,endtime);
         }
-        function refreshTable5(table,countryQ,typeQ,daysQ,itemType,content,status){
+        function refreshTable5(table,countryQ,typeQ,daysQ,itemType,content,status,starttime,endtime){
             $(table).initTable({
                 url:path + "/order/ajax/loadOrdersList.do?",
                 columnData:[
@@ -331,7 +359,7 @@
                 isrowClick:false,
                 showIndex:false
             });
-            $(table).selectDataAfterSetParm({"bedDetailVO.deptId":"", "isTrue":0,"countryQ":countryQ,"typeQ":typeQ,"daysQ":daysQ,"itemType":itemType,"content":content,"status":status});
+            $(table).selectDataAfterSetParm({"bedDetailVO.deptId":"", "isTrue":0,"countryQ":countryQ,"typeQ":typeQ,"daysQ":daysQ,"itemType":itemType,"content":content,"status":status,"starttime1":starttime,"endtime1":endtime});
             alert("查询成功");
         }
         function queryTime(n,flag,day){
@@ -344,6 +372,8 @@
                             <input type="hidden" id="typeQ"/>
                             <input type="hidden" id="daysQ"/>*/
                     $("#daysQ").val(day);
+                    $("#starttime"+n).val("");
+                    $("#endtime"+n).val("");
                 }else{
                     $(time[i]).attr("class","newusa_ici_1");
                 }
@@ -495,7 +525,11 @@
                 var attrs=$(lastdiv).find("span[scop=queryAttr4]");
                 var times=$(lastdiv).find("span[scop=queryTime4]");
                 var table=$(lastdiv).find("div[id=OrderGetOrdersListTable4]");
+                var starttime=$(lastdiv).find("input[id=starttime4]");
+                var endtime=$(lastdiv).find("input[id=endtime4]");
                 $(table).attr("id","OrderGetOrdersListTable"+i);
+                $(starttime).attr("id","starttime"+i);
+                $(endtime).attr("id","endtime"+i);
                 var id2="#menu"+i;
                 var id1=$(id2).attr("name2");
                 $(table).initTable({
@@ -584,7 +618,9 @@
                     var itemType=$(itemType1).val();
                     var content=$(content1).val();
                     var folderId=id1;
-                    refreshTable6(table,countryQ,typeQ,daysQ,itemType,content,folderId);
+                    var starttime1=$(starttime).val();
+                    var endtime1=$(endtime).val();
+                    refreshTable6(table,countryQ,typeQ,daysQ,itemType,content,folderId,starttime1,endtime1);
                 });
                 var download=$(lastdiv).find("span[id=downloadOrder4]");
                 $(download).removeAttr("onclick");
@@ -615,7 +651,7 @@
             setTab(name,cursel,n);
         }
     }
-    function refreshTable6(table,countryQ,typeQ,daysQ,itemType,content,folderId){
+    function refreshTable6(table,countryQ,typeQ,daysQ,itemType,content,folderId,starttime,endtime){
         $(table).initTable({
             url:path + "/order/ajax/loadOrdersList.do?",
             columnData:[
@@ -633,7 +669,7 @@
             isrowClick:false,
             showIndex:false
         });
-        $(table).selectDataAfterSetParm({"bedDetailVO.deptId":"", "isTrue":0,"countryQ":countryQ,"typeQ":typeQ,"daysQ":daysQ,"itemType":itemType,"content":content,"folderId":folderId});
+        $(table).selectDataAfterSetParm({"bedDetailVO.deptId":"", "isTrue":0,"countryQ":countryQ,"typeQ":typeQ,"daysQ":daysQ,"itemType":itemType,"content":content,"folderId":folderId,"starttime1":starttime,"endtime1":endtime});
         alert("查询成功");
     }
     //--------------------------------------------------------------------------
@@ -689,6 +725,8 @@
         <li class="new_usa_list"><span class="newusa_i">刊登类型：</span><a href="#"><span class="newusa_ici_1" scop="queryAttr1"  onclick="queryAttr(1,1,null);">全部&nbsp;</span></a><a href="#"><span class="newusa_ici_1" scop="queryAttr1"  onclick="queryAttr(1,2,'fixation');">固价&nbsp;</span></a><a href="#"><span class="newusa_ici_1" scop="queryAttr1"  onclick="queryAttr(1,3,'auction');">拍卖&nbsp;</span></a><a href="#"><span class="newusa_ici_1" scop="queryAttr1"  onclick="queryAttr(1,4,'multiattribute');">多属性&nbsp;</span></a></li>
         <div class="newsearch">
             <span class="newusa_i">刊登类型：</span><a href="#"><span class="newusa_ici_1" scop="queryTime1" onclick="queryTime(1,1,null)">全部&nbsp;</span></a><a href="#"><span class="newusa_ici_1" scop="queryTime1" onclick="queryTime(1,2,'1')">今天&nbsp;</span></a><a href="#"><span scop="queryTime1" onclick="queryTime(1,3,'2')" class="newusa_ici_1">昨天&nbsp;</span></a><a href="#"><span scop="queryTime1" onclick="queryTime(1,4,'7');" class="newusa_ici_1">7天以内&nbsp;</span></a><a href="#"><span scop="queryTime1" onclick="queryTime(1,5,'30')" class="newusa_ici_1">30天以内&nbsp;</span></a>
+            <span style="float: left;color: #5F93D7;">从</span><input style="float: left;color: #5F93D7;width: 90px;height: 26px;" id="starttime1"  type="text" onfocus="WdatePicker({isShowWeek:true,dateFmt:'yyyy-MM-dd'})"/>
+            <span style="float: left;color: #5F93D7;">到</span><input style="float: left;color: #5F93D7;width: 90px;height: 26px;margin-right: 20px;" id="endtime1"  type="text" onfocus="WdatePicker({isShowWeek:true,dateFmt:'yyyy-MM-dd'})"/>
 <span id="sleBG">
 <span id="sleHid">
 <select name="type" class="select" id="itemType1" onchange="cleanInput();">
@@ -713,6 +751,7 @@
         </div>
     </div>
     <!--综合结束 -->
+    <div style="width: 100%;float: left;height: 5px"></div>
     <div id="OrderGetOrdersListTable1" ></div>
     <div class="page_newlist">
     </div>
@@ -725,6 +764,8 @@
         <li class="new_usa_list"><span class="newusa_i">刊登类型：</span><a href="#"><span class="newusa_ici_1" scop="queryAttr2" onclick="queryAttr(2,1,null);">全部&nbsp;</span></a><a href="#"><span class="newusa_ici_1" scop="queryAttr2" onclick="queryAttr(2,2,'fixation');">固价&nbsp;</span></a><a href="#"><span class="newusa_ici_1" scop="queryAttr2" onclick="queryAttr(2,3,'auction');">拍卖&nbsp;</span></a><a href="#"><span class="newusa_ici_1" scop="queryAttr2" onclick="queryAttr(2,4,'multiattribute');">多属性&nbsp;</span></a></li>
         <div class="newsearch">
             <span class="newusa_i">刊登类型：</span><a href="#"><span scop="queryTime2" onclick="queryTime(2,1,null)" class="newusa_ici_1">全部&nbsp;</span></a><a href="#"><span scop="queryTime2" onclick="queryTime(2,2,1)" class="newusa_ici_1">今天&nbsp;</span></a><a href="#"><span scop="queryTime2" onclick="queryTime(2,3,'2')" class="newusa_ici_1">昨天&nbsp;</span></a><a href="#"><span scop="queryTime2" onclick="queryTime(2,4,'7')" class="newusa_ici_1">7天以内&nbsp;</span></a><a href="#"><span scop="queryTime2" onclick="queryTime(2,5,'30')" class="newusa_ici_1">30天以内&nbsp;</span></a>
+            <span style="float: left;color: #5F93D7;">从</span><input style="float: left;color: #5F93D7;width: 90px;height: 26px;" id="starttime2"  type="text" onfocus="WdatePicker({isShowWeek:true,dateFmt:'yyyy-MM-dd'})"/>
+            <span style="float: left;color: #5F93D7;">到</span><input style="float: left;color: #5F93D7;width: 90px;height: 26px;margin-right: 20px;" id="endtime2"  type="text" onfocus="WdatePicker({isShowWeek:true,dateFmt:'yyyy-MM-dd'})"/>
 <span id="sleBG">
 <span id="sleHid">
 <select name="type" class="select" id="itemType2" onchange="cleanInput();">
@@ -749,6 +790,7 @@
         </div>
     </div>
     <!--综合结束 -->
+    <div style="width: 100%;float: left;height: 5px"></div>
     <div id="OrderGetOrdersListTable2" ></div>
     <div class="page_newlist">
     </div>
@@ -761,6 +803,8 @@
         <li class="new_usa_list"><span class="newusa_i">刊登类型：</span><a href="#"><span class="newusa_ici_1" scop="queryAttr3" onclick="queryAttr(3,1,null);">全部&nbsp;</span></a><a href="#"><span class="newusa_ici_1" scop="queryAttr3" onclick="queryAttr(3,2,'fixation');">固价&nbsp;</span></a><a href="#"><span class="newusa_ici_1" scop="queryAttr3" onclick="queryAttr(3,3,'auction');">拍卖&nbsp;</span></a><a href="#"><span class="newusa_ici_1" scop="queryAttr3" onclick="queryAttr(3,4,'multiattribute');">多属性&nbsp;</span></a></li>
         <div class="newsearch">
             <span class="newusa_i">刊登类型：</span><a href="#"><span scop="queryTime3" onclick="queryTime(3,1,null)" class="newusa_ici_1">全部&nbsp;</span></a><a href="#"><span scop="queryTime3" onclick="queryTime(3,2,'1')" class="newusa_ici_1">今天&nbsp;</span></a><a href="#"><span scop="queryTime3" onclick="queryTime(3,3,'2')" class="newusa_ici_1">昨天&nbsp;</span></a><a href="#"><span scop="queryTime3" onclick="queryTime(3,4,'7')" class="newusa_ici_1">7天以内&nbsp;</span></a><a href="#"><span scop="queryTime3" onclick="queryTime(3,5,'30')" class="newusa_ici_1">30天以内&nbsp;</span></a>
+            <span style="float: left;color: #5F93D7;">从</span><input style="float: left;color: #5F93D7;width: 90px;height: 26px;" id="starttime3"  type="text" onfocus="WdatePicker({isShowWeek:true,dateFmt:'yyyy-MM-dd'})"/>
+            <span style="float: left;color: #5F93D7;">到</span><input style="float: left;color: #5F93D7;width: 90px;height: 26px;margin-right: 20px;" id="endtime3"  type="text" onfocus="WdatePicker({isShowWeek:true,dateFmt:'yyyy-MM-dd'})"/>
 <span id="sleBG">
 <span id="sleHid">
 <select name="type" class="select" id="itemType3" onchange="cleanInput();">
@@ -788,6 +832,7 @@
         </div>
     </div>
     <!--综合结束 -->
+    <div style="width: 100%;float: left;height: 5px"></div>
     <div id="OrderGetOrdersListTable3" ></div>
     <div class="page_newlist">
     </div>
@@ -799,6 +844,8 @@
         <li class="new_usa_list"><span class="newusa_i">刊登类型：</span><a href="#"><span class="newusa_ici_1" scop="queryAttr4" onclick="queryAttr(4,1,null);">全部&nbsp;</span></a><a href="#"><span class="newusa_ici_1" scop="queryAttr4" onclick="queryAttr(4,2,'fixation');">固价&nbsp;</span></a><a href="#"><span class="newusa_ici_1" scop="queryAttr4" onclick="queryAttr(4,3,'auction');">拍卖&nbsp;</span></a><a href="#"><span class="newusa_ici_1" scop="queryAttr4" onclick="queryAttr(4,4,'multiattribute');">多属性&nbsp;</span></a></li>
         <div class="newsearch">
             <span class="newusa_i">刊登类型：</span><a href="#"><span scop="queryTime4" onclick="queryTime(4,1,null)" class="newusa_ici_1">全部&nbsp;</span></a><a href="#"><span scop="queryTime4" onclick="queryTime(4,2,'1')" class="newusa_ici_1">今天&nbsp;</span></a><a href="#"><span scop="queryTime4" onclick="queryTime(4,3,'2')" class="newusa_ici_1">昨天&nbsp;</span></a><a href="#"><span scop="queryTime4" onclick="queryTime(4,4,'7')" class="newusa_ici_1">7天以内&nbsp;</span></a><a href="#"><span scop="queryTime4" onclick="queryTime(4,5,'30')" class="newusa_ici_1">30天以内&nbsp;</span></a>
+            <span style="float: left;color: #5F93D7;">从</span><input style="float: left;color: #5F93D7;width: 90px;height: 26px;" id="starttime4"  type="text" onfocus="WdatePicker({isShowWeek:true,dateFmt:'yyyy-MM-dd'})"/>
+            <span style="float: left;color: #5F93D7;">到</span><input style="float: left;color: #5F93D7;width: 90px;height: 26px;margin-right: 20px;" id="endtime4"  type="text" onfocus="WdatePicker({isShowWeek:true,dateFmt:'yyyy-MM-dd'})"/>
 <span id="sleBG">
 <span id="sleHid">
 <select name="type" class="select" id="itemType4" onchange="cleanInput();">
@@ -826,6 +873,7 @@
         </div>
     </div>
     <!--综合结束 -->
+    <div style="width: 100%;float: left;height: 5px"></div>
     <div id="OrderGetOrdersListTable4" ></div>
     <div class="page_newlist">
     </div>

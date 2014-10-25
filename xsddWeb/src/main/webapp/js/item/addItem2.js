@@ -37,13 +37,23 @@ var ueditorToolBar={
     ]],
 //关闭字数统计
     wordCount:false,
+    zIndex : 0,
     //关闭elementPath
     elementPathEnabled:false
     //默认的编辑区域高度
     //initialFrameHeight:500
     //initialFrameWidth:'98%'
 };
-
+//数据状态
+function makeOption2(json){
+    var htm=''
+    if(json.checkFlag=="0"){
+        htm='已启用';
+    }else{
+        htm='已禁用';
+    }
+    return htm;
+}
 /**加载几个模块的信息*/
 /**加载买家要求*/
 var loadDataBuyerV=false;
@@ -52,12 +62,14 @@ function loadDataBuyer(){
     $("#buyer").initTable({
         url: path + "/ajax/loadBuyerRequirementDetailsList.do?checkFlag=0",
         columnData: [
-            {title: "选择", name: "option1", width: "8%", align: "left", format: returnBuyer},
-            {title: "名称", name: "name", width: "8%", align: "left"},
-            {title: "站点", name: "siteName", width: "8%", align: "left"},
-            {title: "所有买家购买", name: "buyerFlag", width: "8%", align: "left"}
+            {title: "选择", name: "option1", width: "5%", align: "left", format: returnBuyer},
+            {title:"名称",name:"name",width:"30%",align:"left"},
+            {title:"站点",name:"siteName",width:"5%",align:"left"},
+            {title:"买家要求",name:"option1",width:"45%",align:"left",format:makeOption3buyer},
+            {title:"状态",name:"option1",width:"10%",align:"left",format:makeOption2},
+            {title:"操作",name:"option1",width:"5%",align:"center",format:makeOption1buyer}
         ],
-        selectDataNow: true,
+        selectDataNow: false,
         isrowClick: false,
         showIndex: false,
         afterLoadTable:function(){
@@ -69,6 +81,7 @@ function loadDataBuyer(){
             }
         }
     });
+    refreshTablebuyer();
     loadDataBuyerV=true;
 }
 
@@ -80,14 +93,16 @@ function loadDiscountPriceInfo(){
         url: path + "/ajax/loadDiscountPriceInfoList.do?checkFlag=0",
         columnData: [
             {title: "选项", name: "option1", width: "8%", align: "left", format: returnDiscountpriceinfo},
-            {title: "名称", name: "name", width: "8%", align: "left"},
-            {title: "账户名称", name: "ebayName", width: "8%", align: "left"},
-            {title: "开始时间", name: "disStarttime", width: "8%", align: "left"},
-            {title: "结束时间", name: "disEndtime", width: "8%", align: "left"},
-            {title: "降价", name: "madeforoutletcomparisonprice", width: "8%", align: "left"},
-            {title: "是否免运费", name: "isShippingfee", width: "8%", align: "left"}
+            {title:"名称",name:"name",width:"8%",align:"left"},
+            {title:"账户名称",name:"ebayName",width:"8%",align:"left"},
+            {title:"开始时间",name:"disStarttime",width:"8%",align:"left"},
+            {title:"结束时间",name:"disEndtime",width:"8%",align:"left"},
+            {title:"折扣",name:"madeforoutletcomparisonprice",width:"8%",align:"left"},
+            {title:"降价",name:"minimumadvertisedprice",width:"8%",align:"left"},
+            {title:"数据状态",name:"option1",width:"8%",align:"left",format:makeOption2},
+            {title:"操作",name:"option1",width:"8%",align:"left",format:makeOption1Disprice}
         ],
-        selectDataNow: true,
+        selectDataNow: false,
         isrowClick: false,
         showIndex: false,
         afterLoadTable:function(){
@@ -99,6 +114,7 @@ function loadDiscountPriceInfo(){
             }
         }
     });
+    refreshTableDisPrice();
     loadDiscountPriceInfoV=true;
 }
 
@@ -110,12 +126,14 @@ var loadItemLocationV=false;
          url: path + "/ajax/loadItemAddressList.do?checkFlag=0",
          columnData: [
              {title: "选项", name: "option1", width: "8%", align: "left", format: returnItemLocation},
-             {title: "名称", name: "name", width: "8%", align: "left"},
-             {title: "地址", name: "address", width: "8%", align: "left"},
-             {title: "国家", name: "countryName", width: "8%", align: "left"},
-             {title: "邮编", name: "postalcode", width: "8%", align: "left"}
+             {title:"名称",name:"name",width:"8%",align:"left"},
+             {title:"地址",name:"address",width:"8%",align:"left"},
+             {title:"国家",name:"countryName",width:"8%",align:"left"},
+             {title:"邮编",name:"postalcode",width:"8%",align:"left"},
+             {title:"状态",name:"option1",width:"8%",align:"left",format:makeOption2},
+             {title:"操作",name:"option1",width:"8%",align:"left",format:makeOption1address}
          ],
-         selectDataNow: true,
+         selectDataNow: false,
          isrowClick: false,
          showIndex: false,
          afterLoadTable:function(){
@@ -127,6 +145,7 @@ var loadItemLocationV=false;
              }
          }
      });
+     refreshTableAddress();
      loadItemLocationV=true;
  }
 
@@ -138,13 +157,13 @@ function loadPayOption(){
         url: path + "/ajax/loadPayPalList.do?checkFlag=0",
         columnData: [
             {title: "选项", name: "option1", width: "8%", align: "left", format: returnPay},
-            {title: "名称", name: "payName", width: "8%", align: "left"},
-            {title: "站点", name: "siteName", width: "8%", align: "left"},
-            {title: "paypal账号", name: "payPalName", width: "8%", align: "left"},
-            {title: "描述", name: "paymentinstructions", width: "8%", align: "left"}
-
+            {title:"名称",name:"payName",width:"8%",align:"left"},
+            {title:"站点",name:"siteName",width:"8%",align:"left"},
+            {title:"paypal账号",name:"payPalName",width:"8%",align:"left"},
+            {title:"状态",name:"option1",width:"8%",align:"left",format:makeOption2},
+            {title:"动作",name:"option1",width:"8%",align:"left",format:makeOption1paypal}
         ],
-        selectDataNow: true,
+        selectDataNow: false,
         isrowClick: false,
         showIndex: false,
         afterLoadTable:function(){
@@ -156,6 +175,7 @@ function loadPayOption(){
             }
         }
     });
+    refreshTablepaypal();
     loadPayOptionV=true;
 }
 
@@ -166,16 +186,14 @@ if(loadReturnpolicyV==true){return;}
     $("#returnpolicy").initTable({
         url: path + "/ajax/loadReturnpolicyList.do?checkFlag=0",
         columnData: [
-            {title: "选项", name: "option1", width: "8%", align: "left", format: returnReturnpolicy},
-            {title: "名称", name: "name", width: "8%", align: "left"},
-            {title: "站点", name: "siteName", width: "8%", align: "left"},
-            {title: "退货政策", name: "returnsAcceptedOptionName", width: "8%", align: "left"},
-            {title: "退货天数", name: "returnsWithinOptionName", width: "8%", align: "left"},
-            {title: "退款方式", name: "refundOptionName", width: "8%", align: "left"},
-            {title: "退货运费由谁负担", name: "shippingCostPaidByOptionName", width: "8%", align: "left"}
-
+            {title: "选项", name: "option1", width: "5%", align: "left", format: returnReturnpolicy},
+            {title:"名称",name:"name",width:"20%",align:"left"},
+            {title:"站点",name:"siteName",width:"10%",align:"left"},
+            {title:"退货明细",name:"option1",width:"50%",align:"left",format:makeOption3returnpolicy},
+            {title:"数据状态",name:"option1",width:"10%",align:"left",format:makeOption2},
+            {title:"操作",name:"option1",width:"5%",align:"left",format:makeOption1returnpolicy}
         ],
-        selectDataNow: true,
+        selectDataNow: false,
         isrowClick: false,
         showIndex: false,
         afterLoadTable:function(){
@@ -187,6 +205,7 @@ if(loadReturnpolicyV==true){return;}
             }
         }
     });
+    refreshTablereturnpolicy();
     loadReturnpolicyV=true;
 }
 
@@ -200,12 +219,14 @@ function loadShippingDeails(){
         url: path + "/ajax/loadShippingDetailsList.do?checkFlag=0",
         columnData: [
             {title: "选项", name: "option1", width: "8%", align: "left", format: returnShippingDeails},
-            {title: "名称", name: "shippingName", width: "8%", align: "left"},
-            {title: "站点", name: "siteName", width: "8%", align: "left"},
-            {title: "ebay账号", name: "ebayName", width: "8%", align: "left"}
+            {title:"名称",name:"shippingName",width:"8%",align:"left"},
+            {title:"站点",name:"siteName",width:"8%",align:"left"},
+            {title:"ebay账号",name:"option1",width:"8%",align:"left",format:showData},
+            {title:"数据状态",name:"option1",width:"8%",align:"left",format:makeOption2},
+            {title:"操作",name:"option1",width:"8%",align:"left",format:shippingmakeOption1}
 
         ],
-        selectDataNow: true,
+        selectDataNow: false,
         isrowClick: false,
         showIndex: false,
         afterLoadTable:function(){
@@ -217,6 +238,7 @@ function loadShippingDeails(){
             }
         }
     });
+    refreshTableShipping();
     loadShippingDeailsV=true;
 }
 
@@ -227,15 +249,12 @@ function loaddescriptiondetails(){
     $("#descriptiondetails").initTable({
         url:path + "/ajax/loadDescriptionDetailsList.do?checkFlag=0",
         columnData:[
-            {title: "选项", name: "option1", width: "8%", align: "left", format: returnDescriptiondetails},
+            {title: "选项", name: "option1", width: "2%", align: "left", format: returnDescriptiondetails},
             {title:"名称",name:"name",width:"8%",align:"left"},
-            {title:"pay",name:"payInfo",width:"8%",align:"left"},
-            {title:"shipping",name:"shippingInfo",width:"8%",align:"left"},
-            {title:"contact",name:"contactInfo",width:"8%",align:"left"},
-            {title:"Guarantee",name:"guaranteeInfo",width:"8%",align:"left"},
-            {title:"Feedback",name:"feedbackInfo",width:"8%",align:"left"}
+            {title:"数据状态",name:"option1",width:"8%",align:"left",format:makeOption2},
+            {title:"操作",name:"option1",width:"8%",align:"left",format:makeOption1descript}
         ],
-        selectDataNow: true,
+        selectDataNow: false,
         isrowClick: false,
         showIndex: false,
         afterLoadTable:function(){
@@ -247,6 +266,7 @@ function loaddescriptiondetails(){
             }
         }
     });
+    refreshTableDesciption();
     descriptiondetailsV=true;
 }
 
@@ -292,19 +312,77 @@ function returnDescriptiondetails(json) {
     var htm = "<input type=\"radio\" name=\"sellerItemInfoId\" value=" + json.id + ">";
     return htm;
 }
+function clearMoreAttrsText(){
+    $("#moreAttrs").find("span").each(function(i,d){
+        $(d).show();
+    });
+    $("#moreAttrs").find("[type='text']").each(function(i,d){
+        if($(d).val()!="") {
+            $(d).prop("type", "hidden");
+        }
+    });
+}
+function showMoreAttrsText(obj){
+    clearMoreAttrsText();
+    $(obj).parent().find("[type='hidden']").prop("type","text").focus();
+    $(obj).hide();
+}
+function clearThisText(obj) {
+    if ($(obj).val() != "") {
+        if(
+            $(obj).validationEngine("validate")){
+            $(obj).validationEngine();
+            return;
+        }else{
+            $(obj).prop("type", "hidden");
+            $(obj).parent().find("span").show();
+        }
+    }
+}
+function bodyClick(){
+    $("#attTable").find("span").each(function(i,d){
+        if(!$(d).hasClass("combo")){
+            $(d).show();
+        }
 
+    });
+    $("#attTable").find("[type='text']").each(function(i,d){
+        if($(d).val()!=""){
+            if(!$(d).hasClass("combo-text")){
+                $(d).prop("type","hidden");
+            }
+        }
+    });
+}
 
+function showText(obj){
+    bodyClick();
+    if($(obj).prop("val")!="1"){
+        $(obj).find("[type='hidden']").prop("type","text").focus();
+        $(obj).find("span").hide();
+    }
+}
+function getJoinValue(obj){
+    $(obj).parent().find("span").text($(obj).val());
+}
 function addValueTr(obj1, obj2) {
-    var trStr = '<tr height="20px;"><td><input type="text" name="name"  class="validate[required] form-control" value="' + obj1 + '"></td><td><input type="text" name="value" class="validate[required] form-control" value="' + obj2 + '"></td><td><a href="javascript:void(0)" onclick="removeROW(this)">移除</a></td></tr>';
+    var trStr = '';
+    if(obj1!=""&&obj2!=""){
+        trStr = '<tr height="32px;"><td onclick="showText(this)" style="text-align: center"><span name="name" style="color: dodgerblue;">'+obj1+'</span><input type="hidden" onblur="bodyClick();"  onkeyup="getJoinValue(this)" name="name"  class="validate[required] form-control" value="' + obj1 + '"></td><td  onclick="showText(this)"  style="text-align: center"><span name="value"  style="color: dodgerblue;">'+obj2+'</span><input type="hidden"  onkeyup="getJoinValue(this)" name="value" class="validate[required] form-control"  onblur="bodyClick();" value="' + obj2 + '"></td><td style="text-align: center"><img src="'+path+'/img/del.png" onclick="removeROW(this)"></td></tr>';
+    }else{
+        trStr = '<tr height="32px;"><td onclick="showText(this)" style="text-align: center"><span name="name" style="display: none;color: dodgerblue;">'+obj1+'</span><input  onblur="bodyClick();" onkeyup="getJoinValue(this)" type="text" name="name"  class="validate[required] form-control" value="' + obj1 + '"></td><td  onclick="showText(this)" style="text-align: center"><span name="value"  style="display: none;color: dodgerblue;">'+obj2+'</span><input type="text"  onkeyup="getJoinValue(this)" name="value"  onblur="bodyClick();" class="validate[required] form-control" value="' + obj2 + '"></td><td  style="text-align: center"><img src="'+path+'/img/del.png" onclick="removeROW(this)"></td></tr>';
+    }
     return trStr;
 }
 function removeROW(obj) {
     $(obj).parent().parent().remove();
 }
 function addAttrTr(showName, name, value) {
-    var trStr = '<tr><td>' + showName + '</td><td><input type="text" name="' + name + '" value="' + value + '"></td></tr>';
+    var trStr = '<tr height="32px;"><td onclick="showText(this)" style="text-align: center"><span name="name">'+showName+'</span><input type="hidden" name="name" val="1" class="validate[required] form-control" value="' + name + '"></td><td  onclick="showText(this)"  style="text-align: center"><span name="value">'+value+'</span><input type="hidden" onkeyup="getJoinValue(this)" name="value" class="validate[required] form-control" value="' + value + '"  onblur="bodyClick();"></td><td style="text-align: center"><img src="'+path+'/img/del.png" onclick="removeROW(this)"></td></tr>';
+/*    var trStr = '<tr><td>' + showName + '</td><td><input type="text" name="' + name + '" value="' + value + '"></td></tr>';*/
     return trStr;
 }
+
 /**
  *添加自定义属性
  */
@@ -315,11 +393,12 @@ function addValue() {
  *添加定固定属性
  */
 function addAttr(showName, name) {
-    $("#trValue").after().append(addAttrTr(showName, name, ''));
+    $("#attTable").append(addAttrTr(showName, name, ''));
 }
 
 function onShow(obj) {
     _sku = obj.value;
+    isShowPicLink();
 }
 //选择刊登 类型，判断显示
 function changeRadio(obj) {
@@ -331,7 +410,7 @@ function changeRadio(obj) {
         $("#oneAttr").hide();
         $("#twoAttr").show();
         $("#Auction").hide();
-        $("dt[name='priceMessage']").hide();
+        $("dt[name='priceMessage']").show();
     } else if (obj == "FixedPriceItem") {
         $("#oneAttr").show();
         $("#twoAttr").hide();
@@ -346,8 +425,8 @@ function changeRadio(obj) {
 }
 //点击添回SKU输入项
 function addInputSKU(obj) {
-    var len = $(obj).parent().parent().find("table").find("tr").find("td").length / $(obj).parent().parent().find("table").find("tr").length - 5;
-    $(obj).parent().parent().find("table").append(addTr(len));
+    var len = $(obj).parent().parent().parent().find("table").find("tr").find("td").length / $(obj).parent().parent().parent().find("table").find("tr").length - 5;
+    $(obj).parent().parent().parent().parent().find("table").append(addTr(len));
     $("#moreAttrs").tableDnD({dragHandle: ".dragHandle"});
     changeBackcolour();
 }
@@ -362,26 +441,30 @@ function changeBackcolour(){
 function addTr(len) {
     var str = "";
     str += "<tr>";
-    str += "<td class='dragHandle'></td>";
-    str += "<td><input type='text' name='SKU'  class='validate[required] form-control'></td>";
-    str += "<td><input type='text' name='Quantity' class='validate[required,custom[integer]] form-control'></td>";
-    str += "<td><input type='text' name='StartPrice.value' class='validate[required,custom[number]] form-control'></td>";
+    str += "<td class='dragHandle'  width='5px;'></td>";
+    str += "<td><span style='display:none;color: dodgerblue;' onclick='showMoreAttrsText(this)'></span><input type='text' name='SKU'  onblur='clearThisText(this);' onkeyup='getJoinValue(this)'  class='validate[required] form-control'></td>";
+    str += "<td><span style='display:none;color: dodgerblue;' onclick='showMoreAttrsText(this)'></span><input type='text' name='Quantity'  onblur='clearThisText(this);' onkeyup='getJoinValue(this)' size='8' class='validate[required,custom[integer]] form-control'></td>";
+    str += "<td><span style='display:none;color: dodgerblue;' onclick='showMoreAttrsText(this)'></span><input type='text' name='StartPrice.value'  onblur='clearThisText(this);' onkeyup='getJoinValue(this)'  size='8' class='validate[required,custom[number]] form-control'></td>";
     for (var i = 0; i < len; i++) {
-        str += "<td><input type='text' name='attr_Value' class='validate[required] form-control' onblur='addb(this)' size='10' ></td>";
+        str += "<td><span style='display:none;color: dodgerblue;' onclick='showMoreAttrsText(this)'></span><input type='text' name='attr_Value' onkeyup='getJoinValue(this)' class='validate[required] form-control' onblur='addb(this)' size='10' ></td>";
     }
-    str += "<td name='del'><a href='javascript:void(0)' onclick='removeCloums(this)'>删除</a></td>";
+    str += "<td name='del'><img src='"+path+"/img/del.png' onclick='removeCloums(this)'></td>";
     str += "</tr>";
     return str;
 }
 //添加属性列
 function addMoreAttr(obj) {
-    $(obj).parent().parent().find("table").find("tr").each(function (i, d) {
+    $(obj).parent().parent().parent().find("table").find("tr").each(function (i, d) {
         $(d).find("td").each(function (ii, dd) {
             if ($(dd).attr("name") == "del") {
                 if (i == 0) {
-                    $(dd).before("<td><a href='javascript:void(0)' onclick='removeCols(this)'>移除</a><input type='text' size='8' class='validate[required] form-control' name='attr_Name' onblur='addc(this)'></td>");
+                    $(dd).before("<td width='10%'><span style='display:none;color: dodgerblue;' onclick='showMoreAttrsText(this)'></span>" +
+                        "<input type='text' size='8' onkeyup='getJoinValue(this)' class='validate[required] form-control'" +
+                        " name='attr_Name' onblur='addc(this)'>&nbsp;&nbsp;<img src='"+path+"/img/del.png' onclick='removeCols(this)'></td>");
                 } else {
-                    $(dd).before("<td><input type='text' size='10' name='attr_Value' onblur='addb(this)' class='validate[required] form-control'></td>");
+                    $(dd).before("<td width='10%'><span style='display:none;color: dodgerblue;' onclick='showMoreAttrsText(this)'></span>" +
+                        "<input type='text' size='10' name='attr_Value' onblur='addb(this)' " +
+                        " onkeyup='getJoinValue(this)' class='validate[required] form-control'></td>");
                 }
             }
         });
@@ -464,11 +547,17 @@ function addc(obj) {
         $("#picMore").html("");
         for (var i = 0; i < attrValue.keys.length; i++) {
             $("#picMore").append(addPic(attrName, attrValue.get(attrValue.keys[i])));
+            $().image_editor.init(attrName+"."+attrValue.get(attrValue.keys[i])); //编辑器的实例id
+            $().image_editor.show(attrValue.get(attrValue.keys[i])); //上传图片的按钮id
         }
     }
+    clearThisText(obj);
 }
 //当输入属性值时调用的方法
 function addb(obj) {
+    if(attrName==""||attrName==null){
+        attrName = $("#moreAttrs  tr:eq(0) td:eq(4)").find("[type='hidden'][name='attr_Name']").val();
+    }
     var attrValue = new Map();
     if ($(obj.parentNode)[0].cellIndex == 4) {
         $("#moreAttrs tr td:nth-child(5)").each(function (i, d) {
@@ -497,11 +586,12 @@ function addb(obj) {
             $().image_editor.show(attrValue.get(attrValue.keys[i])); //上传图片的按钮id
         }
     }
+    clearThisText(obj);
 }
 function addPic(attrName, attrValue) {
     var str = "";
     str += "<div><div>" + attrName + ":" + attrValue + "</div><script type=text/plain id='" + attrName + "." + attrValue + "' />";
-    str += "<div><a href='javascript:void(0)' id=" + attrValue + " onClick='selectPic(this)'>选择图片</a></div>";
+    str += "<div><b class='new_button'><a href='javascript:void(0)' id=" + attrValue + " onClick='selectPic(this)'>选择图片</a></b></div>";
     str += "</div>";
     return str;
 }
@@ -510,31 +600,110 @@ var afterUploadCallback = null;
 var sss;
 //当选择图片后生成图片地址
 function selectPic(a) {
+    if(($("#showPics").find("img").length+$("#picMore").find("img").length/2)>8){
+        setTimeout(function(){closeSelectPicWindow()},200) ;
+        alert("最多只能上传8张图片，上传图片已超过上传张数！");
+        return;
+    }
     sss = a.id;
     afterUploadCallback = {"imgURLS": addPictrueUrl};
+}
+/**关闭打开的图片选择框*/
+function closeSelectPicWindow(){
+    $(".edui-for-insertimage").each(function(i,d){
+        var dis=$(d).css("display")=='block';
+        var ishave1=$(d).hasClass("edui-dialog");
+        var ishave2=$(d).hasClass("edui-state-centered");
+        var didd= d.id;
+        var divIndex=parseInt(strGetNum(didd))+1 ;
+
+        if(didd!=null && didd!='' && ishave1 && ishave2 && dis){
+            //alert(d.id+"::"+dis+"::"+ishave1+":"+ishave2)
+            $EDITORUI["edui"+divIndex]._onClick(event, this)
+        }
+    });
 }
 
 /**移除选中的图片*/
 function deletePic(a){
     $(a.parentNode.parentNode).remove();
 }
+
 function addPictrueUrl(urls) {
-    alert(sss);
+    var ebayid = $("input[type='checkbox'][name='ebayAccounts']:checked").val();
+    var siteid = $("select[name='site']").val();
+
     if (sss.indexOf("apicUrls")!=-1) {//商品图片
         var str = '';
+        var urlss= '';
+        var isabc = false;
         for (var i = 0; i < urls.length; i++) {
-            str += '<li><div style="position:relative"><input type="hidden" name="PictureDetails'+sss.substr(sss.indexOf("_"),sss.length)+'.PictureURL" value="' + urls[i].src + '">' +
-                '<img src=' + urls[i].src.replace("@", ":") + ' height="100%" width="100%" />' +
+            var imgsrc = urls[i].src.replace("@", ":");
+            var idDuff=generateMixedRandom(5);
+
+            str += '<li><div style="position:relative"><input type="hidden" name="pic_mackid"/> <input type="hidden" name="PictureDetails'+sss.substr(sss.indexOf("_"),sss.length)+'.PictureURL" value="' + urls[i].src + '">' +
+                '<img id=imgtemp'+idDuff+' src=' + imgsrc + ' height=\"80px\" width=\"80px\" />' +
                 '<a onclick="deletePic(this)" style="position: absolute;top: -45px;right: -15px;" href=\'javascript:void(0)\'>&times;</a></div>';
             str += "</li>";
+            urlss+=imgsrc+",";
+            $("<img/>").attr({"src": imgsrc,"id":"_imgtemp"+idDuff}).load(function() {
+                if(this.width<1000 || this.height<1000){
+                    var targgetImgIndex=subRight(this.id,5)//strGetNum(this.id);
+                    $("#imgtemp"+targgetImgIndex).wrap("<div style=\"border: solid red 1px;width: 85px;\"></div>");
+                    afterTipFunction("imgtemp"+targgetImgIndex,"图像大小小于1000像素，可能会影响展示效果",true);
+                }
+             $("#"+this.id).remove();
+            });
+
         }
-        $("#picture"+sss.substr(sss.indexOf("_"),sss.length)).append(str);
+        var addhtml = $("#picture"+sss.substr(sss.indexOf("_"),sss.length)).append(str);
         str = "";
+        var url=path+"/ajax/saveListingPicUrl.do?urls="+urlss+"&siteid="+siteid+"&ebayid="+ebayid;
+        $().invoke(url,{},
+            [function(m,r){
+                for(var i =0;i< r.length;i++){
+                    var tlu = r[i];
+                    var len = $(addhtml).find("input[type='hidden'][name='pic_mackid']").length- r.length;
+                    $(addhtml).find("input[type='hidden'][name='pic_mackid']").each(function(j,d){
+                        if($(d).val()==""&&(i+len)==j){
+                            $(d).val(tlu.mackId);
+                        }
+                    });
+                }
+            },
+                function(m,r){
+                    alert(r);
+                }]
+        );
     } else {//多属性图片
-        $('#' + sss).before("<input type='hidden' name='VariationSpecificValue_" + sss + "' value='" + sss + "'>");
-        for (var i = 0; i < urls.length; i++) {
-            $('#' + sss).before("<span><input type='hidden' name='" + sss + "' value='" + urls[i].src + "'><img src='" + urls[i].src.replace("@", ":") + "' height='50' width='50' /> <a href='javascritp:void(0)' onclick='removeThis(this)'>移除</a></span>");
+        var str = '';
+        var urlss= '';
+        if($('#' + sss).parent().find("[name*='VariationSpecificValue_']").length==0){
+            $('#' + sss).before("<input type='hidden' name='VariationSpecificValue_" + sss + "' value='" + sss + "'>");
         }
+        for (var i = 0; i < urls.length; i++) {
+            str+="<span><input type='hidden' name='pic_mackid_more'/><input type='hidden' name='" + sss + "' value='" + urls[i].src + "'><img src='" + urls[i].src.replace("@", ":") + "' height='50' width='50' /><img src='"+path+"/img/del.png' onclick='removeThis(this)'></span>";
+            urlss+=urls[i].src.replace("@", ":")+",";
+        }
+        var addhtmlstr = $('#' + sss).before(str);
+        str="";
+        var url=path+"/ajax/saveListingPicUrl.do?urls="+urlss+"&siteid="+siteid+"&ebayid="+ebayid;
+        $().invoke(url,{},
+            [function(m,r){
+                for(var i =0;i< r.length;i++){
+                    var tlu = r[i];
+                    var len = $("#"+sss).parent().find("input[type='hidden'][name='pic_mackid_more']").length- r.length;
+                    $("#"+sss).parent().find("input[type='hidden'][name='pic_mackid_more']").each(function(j,d){
+                        if($(d).val()==""&&(i+len)==j){
+                            $(d).val(tlu.mackId);
+                        }
+                    });
+                }
+            },
+                function(m,r){
+                    alert(r);
+                }]
+        );
     }
     initDraug();//初始化拖动图片
 }
@@ -552,7 +721,18 @@ function initDraug(){
 function removeThis(obj) {
     $(obj).parent().remove();
 }
-
+//得到分类名称
+function getCategoryName(categoryId,siteId){
+    var url=path+"/ajax/getCategoryName.do?categoryId="+categoryId+"&siteId="+siteId;
+    $().invoke(url,{},
+        [function(m,r){
+            $("#PrimaryCategoryshow").html(r);
+        },
+            function(m,r){
+                alert(r);
+            }]
+    );
+}
 //当输入分类，
 function addTypeAttr() {
     $('#typeAttrs').html('');
@@ -562,24 +742,37 @@ function addTypeAttr() {
     }
     var values = $("#PrimaryCategory").val();
     getCategorySpecificsData(values, "typeAttrs", "afterClickAttr", "attTable");
+    var site = $("select[name='site']").find("option:selected").val();
+    getCategoryName(values,site);
+    $("#PrimaryCategoryshow").show();
 }
 var CategoryType;
 function selectType() {
-    var title = $("#Title").val();
-    if(title==null||title==""){
-        alert("请输入第一标题！");
-        return;
-    }
+
     CategoryType = $.dialog({
         id:"itemClass_",
         title: '选择商品分类',
-        content: 'url:' + path + '/category/initSelectCategoryPage.do?title='+title,
+        content: 'url:' + path + '/category/initSelectCategoryPage.do',
         icon: 'succeed',
         zIndex:2000,
         width: 650,
         lock: true
     });
 }
+
+function queryType() {
+    var title = $("#Title").val();
+    CategoryType = $.dialog({
+        id:"itemClass_",
+        title: '搜索商品分类',
+        content: 'url:' + path + '/category/initQueryCategoryPage.do?title='+title,
+        icon: 'succeed',
+        zIndex:2000,
+        width: 650,
+        lock: true
+    });
+}
+
 function incount(obj) {
     $(obj).parent().find("span").text($(obj).val().length);
 }
@@ -610,4 +803,40 @@ function selectTemplate() {
         width: 650,
         height: 600
     });
+}
+//选择模板图片
+function selectTemplatePic(obj){
+    afterUploadCallback = {"imgURLS": templatePicShow};
+}
+
+function templatePicShow(urls) {
+    var str="<div style='position:relative'>";
+    for (var i = 0; i < urls.length; i++) {
+        str += '<span style="padding-left: 14px;"><input type="hidden" name="blankimg" value="' + urls[i].src + '">' +
+            '<img src=' + urls[i].src + ' height=\"80px\" width=\"80px\" />' +
+            '<a onclick="removeTemplatePic(this)" style="position: absolute;top: 0px;" href=\'javascript:void(0)\'>&times;</a></span>';
+    }
+    str += "</div>";
+
+    $("#blankImg_main").append(str);
+}
+function removeTemplatePic(obj){
+    $(obj).parent().remove();
+}
+function setTemplate(obj){
+    var name=$(obj).attr("name");
+    $(obj).parent().find("dt").each(function (i, d) {
+        if($(d).attr("name")==name){
+            $(d).attr("class","new_tab_1");
+        }else{
+            $(d).attr("class","new_tab_2");
+        }
+    });
+    if(name=="template"){
+        $("#"+name).show();
+        $("#templatepic").hide();
+    }else if(name=="templatepic"){
+        $("#"+name).show();
+        $("#template").hide();
+    }
 }

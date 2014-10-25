@@ -78,10 +78,25 @@
                 htm="";
             }else{
                 if(json.endid!=null&&json.endid!=""){
-                    htm="<a onclick=aaa('"+json.id+"') >继续处理</a>";
+                    htm="<a onclick=continueWork('"+json.id+"','"+json.endid+"') >继续处理</a>";
                 }
             }
             return htm;
+        }
+        function continueWork(id,endid){
+            var url = path + "/ajax/continueWork.do?id=" + id+"&&endid="+endid;
+            $().invoke(url, {},
+                    [function (m, r) {
+                        alert(r);
+                        Base.token();
+                        onloadTableamend(loadurl);
+                    },
+                        function (m, r) {
+                            alert(r);
+                            Base.token();
+                            onloadTableamend(loadurl);
+                        }],{isConverPage:true}
+            );
         }
         function onloadTableamend(urls){
             $("#itemTable").initTable({
@@ -92,7 +107,7 @@
                     {title:"SKU",name:"sku",width:"8%",align:"left"},
                     {title:"ebay账户",name:"ebayAccount",width:"8%",align:"left"},
                     {title:"站点",name:"site",width:"8%",align:"left"},
-                    {title:"刊登类型",name:"listingType",width:"8%",align:"left"},
+                    {title:"刊登类型",name:"listingType",width:"8%",align:"left",format:listingType},
                     {title:"价格",name:"price",width:"8%",align:"left"},
                     {title:"数量/已售",name:"price",width:"8%",align:"left"},
                     {title:"商品数量",name:"Option1",width:"8%",align:"left",format:tjCount},
@@ -264,6 +279,18 @@
         }
         function getCentents(){
             alert($("#centents").val());
+        }
+        function listingType(json){
+            var htm="";
+            if(json.listingType=="2"){
+                htm="lx.png";
+            }else if(json.listingType=="Chinese"){
+                htm="bids.png";
+            }else if(json.listingType=="FixedPriceItem"){
+                htm="buyit.jpg";
+            }
+
+            return "<img width='24' height='17' src='"+path+"/img/"+htm+"'>";
         }
         function endItemByid(itemidStr){
             var tent = "<div>原因<select id='centents' name='centents'><option value='Incorrect'>Incorrect</option>" +
@@ -472,7 +499,7 @@
                     {title:"SKU",name:"sku",width:"4%",align:"left"},
                     {title:"ebay账户",name:"ebayAccount",width:"8%",align:"left"},
                     {title:"站点",name:"site",width:"4%",align:"left"},
-                    {title:"刊登类型",name:"listingType",width:"8%",align:"left"},
+                    {title:"刊登类型",name:"listingType",width:"8%",align:"left",format:listingType},
                     {title:"价格",name:"price",width:"10%",align:"left",format:getPriceHtml},
                     {title:"数量/已售",name:"Option1",width:"10%",align:"left",format:tjCount},
                     {title:"结束时间",name:"endtime",width:"8%",align:"left"},
@@ -694,6 +721,58 @@
             }
             $(obj).val();
         }
+        //同步
+    function synListingData(){
+        var url = path + "/ajax/myEbayAccount.do";
+        $().invoke(url, {},
+                [function (m, r) {
+                    var ten = "<div>";
+                    for(var i=0;i< r.length;i++){
+                        ten+="<div><input type='checkbox' name='ebayAccount' id='ebayAccount' value='"+r[i].ebayAccount+"'/>"+r[i].ebayName+"(<font color='blue'>最近同步时间："+r[i].maxDate+"</font>)</div>";
+                    }
+                    ten+="</div>";
+                    $.dialog({title: '选择EBAY账号',
+                        content: ten,
+                        icon: 'succeed',
+                        width: 400,
+                        button: [
+                            {
+                                name: '确定',
+                                callback: function (iwins, enter) {
+                                    var reason = "";
+                                    for(var i=0;i<iwins.parent.document.getElementsByName("ebayAccount").length;i++){
+                                        if($(iwins.parent.document.getElementsByName("ebayAccount")[i]).prop("checked")){
+                                            reason+=$(iwins.parent.document.getElementsByName("ebayAccount")[i]).val()+",";
+                                        }
+                                    }
+                                    if (reason == "") {
+                                        alert("ebay账号必须选择！");
+                                        return false;
+                                    } else {
+                                        var url = path + "/ajax/synListingData.do?ebayAccount="+reason;
+                                        $().invoke(url, {},
+                                                [function (m, r) {
+                                                    alert(r);
+                                                    Base.token();
+                                                },
+                                                    function (m, r) {
+                                                        alert(r);
+                                                        Base.token();
+                                                    }]
+                                        );
+                                    }
+                                }
+                            }
+                        ]
+                    });
+                },
+                    function (m, r) {
+                        alert(r);
+                        Base.token();
+                    }]
+        );
+        /**/
+    }
     </script>
 </head>
 <body>
@@ -785,13 +864,14 @@
                         <span class="newusa_ici_del" name="attrshow" onclick="endItem(this)">提前结束</span>
                         <span class="newusa_ici_del" name="attrshow" onclick="tablePrice(this)">表格调价</span><span
                             class="newusa_ici_del"  onclick="addTabRemark();">管理文件夹</span></div>
-                    <div class="tbbay" name="attrshow"><a data-toggle="modal" href="#myModal" class="">同步eBay</a></div>
+                    <div class="tbbay" name="attrshow"><a data-toggle="modal" href="javascript:void(0)" class="" onclick="synListingData()">同步eBay</a></div>
                 </div>
             </div>
             <%--<iframe src="/xsddWeb/getListingItemList.do?1=1" id="listing_frame" height="1000px;" frameborder="0"
                     width="100%">
             </iframe>--%>
-            <div id="itemTable">
+<div style="width: 100%;float: left;height: 5px"></div>
+            <div id="itemTable" >
             </div>
         </div>
 

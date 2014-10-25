@@ -154,7 +154,7 @@ public class ItemAddressController  extends BaseAction {
     public void delItemAddress(HttpServletRequest request,HttpServletResponse response,@ModelAttribute( "initSomeParmMap" )ModelMap modelMap) throws Exception {
         String id = request.getParameter("id");
         TradingItemAddress tp= this.iTradingItemAddress.selectById(Long.parseLong(id));
-        if(tp.getCheckFlag().equals("1")){
+        if("1".equals(tp.getCheckFlag())){
             tp.setCheckFlag("0");
         }else{
             tp.setCheckFlag("1");

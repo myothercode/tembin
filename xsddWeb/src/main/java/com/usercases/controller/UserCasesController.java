@@ -1,5 +1,7 @@
 package com.usercases.controller;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.base.database.trading.model.*;
 import com.base.domains.CommonParmVO;
 import com.base.domains.SessionVO;
@@ -21,6 +23,10 @@ import com.common.base.web.BaseAction;
 import com.sitemessage.service.SiteMessageStatic;
 import com.trading.service.*;
 import org.apache.commons.lang.StringUtils;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -33,6 +39,10 @@ import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.net.URI;
+import java.net.URLEncoder;
 import java.util.*;
 
 /**
@@ -68,6 +78,8 @@ public class UserCasesController extends BaseAction{
     private ITradingOrderPictureDetails iTradingOrderPictureDetails ;
     @Autowired
     private ITradingOrderAddMemberMessageAAQToPartner iTradingOrderAddMemberMessageAAQToPartner;
+    @Autowired
+    private ITradingMessageTemplate iTradingMessageTemplate;
     /*
     *纠纷列表
     */
@@ -97,6 +109,8 @@ public class UserCasesController extends BaseAction{
         String days=request.getParameter("days");
         String name=request.getParameter("name");
         String content=request.getParameter("content");
+        String starttime1=request.getParameter("starttime1");
+        String endtime1=request.getParameter("endtime1");
         if(!StringUtils.isNotBlank(account)){
             account=null;
         }
@@ -127,6 +141,18 @@ public class UserCasesController extends BaseAction{
         }
         if(!StringUtils.isNotBlank(content)){
             content=null;
+        }
+        if(StringUtils.isNotBlank(starttime1)){
+            int year=Integer.valueOf(starttime1.substring(0,4));
+            int month=Integer.valueOf(starttime1.substring(5,7))-1;
+            int day1=Integer.valueOf(starttime1.substring(8));
+            starttime=DateUtils.turnToDateStart(DateUtils.buildDate(year,month,day1));
+        }
+        if(StringUtils.isNotBlank(endtime1)){
+            int year=Integer.valueOf(endtime1.substring(0,4));
+            int month=Integer.valueOf(endtime1.substring(5,7))-1;
+            int day1=Integer.valueOf(endtime1.substring(8));
+            endtime=DateUtils.turnToDateEnd(DateUtils.buildDate(year,month,day1));
         }
         Map m = new HashMap();
         m.put("account",account);
@@ -283,8 +309,11 @@ public class UserCasesController extends BaseAction{
         TradingGetUserCases cases=new TradingGetUserCases();
         List<TradingOrderGetItem> items=new ArrayList<TradingOrderGetItem>();
         List<String> pics=new ArrayList<String>();
+       /* List<TradingOrderGetOrders> orders=iTradingOrderGetOrders.selectOrderGetOrdersByTransactionId(transactionid,sellerid);*/
+        //测试------
         List<TradingOrderGetOrders> orders=iTradingOrderGetOrders.selectOrderGetOrdersByTransactionId(transactionid,sellerid);
-        List<TradingGetUserCases> casesList=iTradingGetUserCases.selectGetUserCasesByTransactionId(transactionid);
+        //-----
+        List<TradingGetUserCases> casesList=iTradingGetUserCases.selectGetUserCasesByTransactionId(transactionid,sellerid);
         String reason="";
         String content="";
         String information="";
@@ -323,6 +352,13 @@ public class UserCasesController extends BaseAction{
             }
 
         }
+        List<TradingMessageTemplate> ts=new ArrayList<TradingMessageTemplate>();
+        List<TradingMessageTemplate> templates=iTradingMessageTemplate.selectMessageTemplatebType("caseType");
+        for(TradingMessageTemplate template:templates){
+            if(template.getStatus()==1){
+                ts.add(template);
+            }
+        }
         modelMap.put("order",order);
         modelMap.put("cases",cases);
         modelMap.put("transactionid",transactionid);
@@ -331,6 +367,7 @@ public class UserCasesController extends BaseAction{
         modelMap.put("reason",reason);
         modelMap.put("content",content);
         modelMap.put("information",information);
+        modelMap.put("templates",ts);
         return forword("usercases/responseDispute",modelMap);
     }
     /*
@@ -473,18 +510,23 @@ public class UserCasesController extends BaseAction{
       /*  d.setSoaGlobalId("EBAY-US");
         d.setSoaServiceVersion("1.0.0");*/
         /*d.setSoaServiceName("ResolutionCaseManagementService");*/
-        d.setSoaOperationName("getUserCases");
         /*d.setSoaSecurityToken("AgAAAA**AQAAAA**aAAAAA**CLSRUQ**nY+sHZ2PrBmdj6wVnY+sEZ2PrA2dj6AFlYCjDJGCqA+dj6x9nY+seQ**FdYBAA**AAMAAA**w2sMbwlQ7TBHWxj9EsVedHQRI3+lonY9MDfiyayQbnFkjEanjL/yMCpS/D2B9xHRzRx+ppxWZkRPgeAKJvNotPLLrVTuEzOl5M7pi6Tw8+pzcmIEsOh7HQO78JlyFlvLc/ruE6/hG0E/HO1UX76YBwxp00N9f1NNUpo5u36D/TYsx5O2jXFTKkCOHwz6RW9vtN6TU39aLm+JQme2+NfFFXnbX8MHzoUiX7Sty0R88ZpX5wLp8ZdgXCEc5zZDQziYB1MSXF9hsmby5wKbxFF+OvW/zKADThk1gprgAgnEOucyoao+cUMHopLlYgMbjnLzdCXP5F9z+fkYTnKF6AEl5eHBpcKQGbPzswnKebRoBVw+bI2I1C/iq+PvBUyndFAexjrvlDQbEKr6qb6AWRVTTfkW2ce6a0ixRuCTq35zEpWpfAqkSKo+X23d/Q4V8R30rDXotOWDZL6o408cMO+UQ17uVA2arA1JNkYfc/AZ0T0z7ze5o/yp93jJPlDgi05Ut4fpCAMZw3X85GxrTlbEtawWgoyUbmMuv4f6QHZLZAerOaJA8DRJkzkzjJJ025bp1HvAECOc4ggdv0cofu4q96shssgNYYZJUPM+q4+0fnGK0pxQTNY9SV6vSaVCVoTZJo6vefW7OiHX2/eLoPKFuUfsKXXEv9OY71gD1xzYg/rpCMAqCTq1dKqqyT1R5fxANnoRX7vwkq+7jkCj2fAfKTnHi9mSuBFsilKLmnsqqWy3IGShMgdxiQwBEk6IWi9C");*/
-        String token="AgAAAA**AQAAAA**aAAAAA**CLSRUQ**nY+sHZ2PrBmdj6wVnY+sEZ2PrA2dj6AFlYCjDJGCqA+dj6x9nY+seQ**FdYBAA**AAMAAA**w2sMbwlQ7TBHWxj9EsVedHQRI3+lonY9MDfiyayQbnFkjEanjL/yMCpS/D2B9xHRzRx+ppxWZkRPgeAKJvNotPLLrVTuEzOl5M7pi6Tw8+pzcmIEsOh7HQO78JlyFlvLc/ruE6/hG0E/HO1UX76YBwxp00N9f1NNUpo5u36D/TYsx5O2jXFTKkCOHwz6RW9vtN6TU39aLm+JQme2+NfFFXnbX8MHzoUiX7Sty0R88ZpX5wLp8ZdgXCEc5zZDQziYB1MSXF9hsmby5wKbxFF+OvW/zKADThk1gprgAgnEOucyoao+cUMHopLlYgMbjnLzdCXP5F9z+fkYTnKF6AEl5eHBpcKQGbPzswnKebRoBVw+bI2I1C/iq+PvBUyndFAexjrvlDQbEKr6qb6AWRVTTfkW2ce6a0ixRuCTq35zEpWpfAqkSKo+X23d/Q4V8R30rDXotOWDZL6o408cMO+UQ17uVA2arA1JNkYfc/AZ0T0z7ze5o/yp93jJPlDgi05Ut4fpCAMZw3X85GxrTlbEtawWgoyUbmMuv4f6QHZLZAerOaJA8DRJkzkzjJJ025bp1HvAECOc4ggdv0cofu4q96shssgNYYZJUPM+q4+0fnGK0pxQTNY9SV6vSaVCVoTZJo6vefW7OiHX2/eLoPKFuUfsKXXEv9OY71gD1xzYg/rpCMAqCTq1dKqqyT1R5fxANnoRX7vwkq+7jkCj2fAfKTnHi9mSuBFsilKLmnsqqWy3IGShMgdxiQwBEk6IWi9C";
-        d.setSoaSecurityToken(token);
        /* d.setSoaRequestDataFormat("XML");*/
-        d.setHeaderType("DisputeApiHeader");
      /*   d.setSoaResponseDataformat("XML");*/
+        d.setSoaOperationName("getUserCases");
+        //没写死的
+        String token=userInfoService.getTokenByEbayID(ebay);
+        //写死了的
+       /* String token="AgAAAA**AQAAAA**aAAAAA**CLSRUQ**nY+sHZ2PrBmdj6wVnY+sEZ2PrA2dj6AFlYCjDJGCqA+dj6x9nY+seQ**FdYBAA**AAMAAA**w2sMbwlQ7TBHWxj9EsVedHQRI3+lonY9MDfiyayQbnFkjEanjL/yMCpS/D2B9xHRzRx+ppxWZkRPgeAKJvNotPLLrVTuEzOl5M7pi6Tw8+pzcmIEsOh7HQO78JlyFlvLc/ruE6/hG0E/HO1UX76YBwxp00N9f1NNUpo5u36D/TYsx5O2jXFTKkCOHwz6RW9vtN6TU39aLm+JQme2+NfFFXnbX8MHzoUiX7Sty0R88ZpX5wLp8ZdgXCEc5zZDQziYB1MSXF9hsmby5wKbxFF+OvW/zKADThk1gprgAgnEOucyoao+cUMHopLlYgMbjnLzdCXP5F9z+fkYTnKF6AEl5eHBpcKQGbPzswnKebRoBVw+bI2I1C/iq+PvBUyndFAexjrvlDQbEKr6qb6AWRVTTfkW2ce6a0ixRuCTq35zEpWpfAqkSKo+X23d/Q4V8R30rDXotOWDZL6o408cMO+UQ17uVA2arA1JNkYfc/AZ0T0z7ze5o/yp93jJPlDgi05Ut4fpCAMZw3X85GxrTlbEtawWgoyUbmMuv4f6QHZLZAerOaJA8DRJkzkzjJJ025bp1HvAECOc4ggdv0cofu4q96shssgNYYZJUPM+q4+0fnGK0pxQTNY9SV6vSaVCVoTZJo6vefW7OiHX2/eLoPKFuUfsKXXEv9OY71gD1xzYg/rpCMAqCTq1dKqqyT1R5fxANnoRX7vwkq+7jkCj2fAfKTnHi9mSuBFsilKLmnsqqWy3IGShMgdxiQwBEk6IWi9C";*/
+       /* String token="AgAAAA**AQAAAA**aAAAAA**jek4VA**nY+sHZ2PrBmdj6wVnY+sEZ2PrA2dj6AFlIWnC5iEpAidj6x9nY+seQ**tSsCAA**AAMAAA**y8BaJPw6GUdbbbco8zXEwRR4Ttr9sLd78jL0FyYa0yonvk5hz1RY6DtKkaDtn9NuzluKeFZoqsNbujZP48S4QZhHVa5Dp0bDGqBdKaosolzsrPDm8qozoxbsTiWY8X/M5xev/YU2zJ42/JRGDlEdnQhwCASG1BcSo+DqXuG3asbj0INJr4/HsArf8cCYsPQCtUDkq5QJY6Rvil+Kla/dGhViTQ3gt7a4t3KjxKH+/jlhDU/6sUEKlvb2nY1gCmX8S9pU48c+4Vy6G6NpfcGUcIG/TXFWBTqU0R+v+/6DOIfDW8s90rrLSVMGFqnRxA2sexdEmVhyF5csBmv9+TVfjdyEZK5UgvDqWJHesuDMFTr0KIc8EtdnTQaE3YeZch15DdoEbqcyyBQBZHidBPdDHz/DkpTg7iq1953yKodm2y0mW6aaYAfc5beW+PoqMW8C3WwGJmWZqh3dBi+QEKznEJ9SRg43Bc3q2344JFY7YpIEfJDaQ36BHRcIZxLew8v7RIGL5YYO1BBdTolVV9/eMCQDsUB0mUeMYjxnH5w0K/6CDmJ9WNMQTblNol0x3vhJbil1L/CMP9KGEHj5Yqx0003MLL9Yod7nL89Zpy+a8I/E5byxFt21KZTGE90Ot0LyLpRXsotDwIm5+ZdvATsU6mGADX4tk970CpCeM487v9fn1opouaCBvknCINqXoSeGXLQ7uZFpeqkWts1lIWh9vEuuiuZa4vNoL7aCr+93LTFnsO6AsZp7dmboQcI96I/o";
+        */
+        d.setSoaSecurityToken(token);
+        d.setHeaderType("DisputeApiHeader");
         Map map=new HashMap();
-        Date startTime2= DateUtils.subDays(new Date(), 60);
-        Date endTime= DateUtils.addDays(startTime2, 60);
-      /*  Date startTime2= DateUtils.subDays(new Date(), 9);
-        Date endTime= DateUtils.addDays(startTime2,9);*/
+       /* Date startTime2= DateUtils.subDays(new Date(), 60);
+        Date endTime= DateUtils.addDays(startTime2, 60);*/
+        Date startTime2= DateUtils.subDays(new Date(), 9);
+        Date endTime= DateUtils.addDays(startTime2,9);
         Date end1= com.base.utils.common.DateUtils.turnToDateEnd(endTime);
         String start= DateUtils.DateToString(startTime2);
         String end=DateUtils.DateToString(end1);
@@ -617,10 +659,10 @@ public class UserCasesController extends BaseAction{
         String sellerid=request.getParameter("sellerid");
         UsercontrollerDevAccountExtend d=new UsercontrollerDevAccountExtend();
         d.setSoaOperationName("provideShippingInfo");
-        String token="AgAAAA**AQAAAA**aAAAAA**CLSRUQ**nY+sHZ2PrBmdj6wVnY+sEZ2PrA2dj6AFlYCjDJGCqA+dj6x9nY+seQ**FdYBAA**AAMAAA**w2sMbwlQ7TBHWxj9EsVedHQRI3+lonY9MDfiyayQbnFkjEanjL/yMCpS/D2B9xHRzRx+ppxWZkRPgeAKJvNotPLLrVTuEzOl5M7pi6Tw8+pzcmIEsOh7HQO78JlyFlvLc/ruE6/hG0E/HO1UX76YBwxp00N9f1NNUpo5u36D/TYsx5O2jXFTKkCOHwz6RW9vtN6TU39aLm+JQme2+NfFFXnbX8MHzoUiX7Sty0R88ZpX5wLp8ZdgXCEc5zZDQziYB1MSXF9hsmby5wKbxFF+OvW/zKADThk1gprgAgnEOucyoao+cUMHopLlYgMbjnLzdCXP5F9z+fkYTnKF6AEl5eHBpcKQGbPzswnKebRoBVw+bI2I1C/iq+PvBUyndFAexjrvlDQbEKr6qb6AWRVTTfkW2ce6a0ixRuCTq35zEpWpfAqkSKo+X23d/Q4V8R30rDXotOWDZL6o408cMO+UQ17uVA2arA1JNkYfc/AZ0T0z7ze5o/yp93jJPlDgi05Ut4fpCAMZw3X85GxrTlbEtawWgoyUbmMuv4f6QHZLZAerOaJA8DRJkzkzjJJ025bp1HvAECOc4ggdv0cofu4q96shssgNYYZJUPM+q4+0fnGK0pxQTNY9SV6vSaVCVoTZJo6vefW7OiHX2/eLoPKFuUfsKXXEv9OY71gD1xzYg/rpCMAqCTq1dKqqyT1R5fxANnoRX7vwkq+7jkCj2fAfKTnHi9mSuBFsilKLmnsqqWy3IGShMgdxiQwBEk6IWi9C";
+        String token="AgAAAA**AQAAAA**aAAAAA**jek4VA**nY+sHZ2PrBmdj6wVnY+sEZ2PrA2dj6AFlIWnC5iEpAidj6x9nY+seQ**tSsCAA**AAMAAA**y8BaJPw6GUdbbbco8zXEwRR4Ttr9sLd78jL0FyYa0yonvk5hz1RY6DtKkaDtn9NuzluKeFZoqsNbujZP48S4QZhHVa5Dp0bDGqBdKaosolzsrPDm8qozoxbsTiWY8X/M5xev/YU2zJ42/JRGDlEdnQhwCASG1BcSo+DqXuG3asbj0INJr4/HsArf8cCYsPQCtUDkq5QJY6Rvil+Kla/dGhViTQ3gt7a4t3KjxKH+/jlhDU/6sUEKlvb2nY1gCmX8S9pU48c+4Vy6G6NpfcGUcIG/TXFWBTqU0R+v+/6DOIfDW8s90rrLSVMGFqnRxA2sexdEmVhyF5csBmv9+TVfjdyEZK5UgvDqWJHesuDMFTr0KIc8EtdnTQaE3YeZch15DdoEbqcyyBQBZHidBPdDHz/DkpTg7iq1953yKodm2y0mW6aaYAfc5beW+PoqMW8C3WwGJmWZqh3dBi+QEKznEJ9SRg43Bc3q2344JFY7YpIEfJDaQ36BHRcIZxLew8v7RIGL5YYO1BBdTolVV9/eMCQDsUB0mUeMYjxnH5w0K/6CDmJ9WNMQTblNol0x3vhJbil1L/CMP9KGEHj5Yqx0003MLL9Yod7nL89Zpy+a8I/E5byxFt21KZTGE90Ot0LyLpRXsotDwIm5+ZdvATsU6mGADX4tk970CpCeM487v9fn1opouaCBvknCINqXoSeGXLQ7uZFpeqkWts1lIWh9vEuuiuZa4vNoL7aCr+93LTFnsO6AsZp7dmboQcI96I/o";
         d.setSoaSecurityToken(token);
         d.setHeaderType("DisputeApiHeader");
-        List<TradingGetUserCases> caseses= iTradingGetUserCases.selectGetUserCasesByTransactionId(transactionId);
+        List<TradingGetUserCases> caseses= iTradingGetUserCases.selectGetUserCasesByTransactionId(transactionId,sellerid);
         List<TradingOrderGetOrders> orderses=iTradingOrderGetOrders.selectOrderGetOrdersByTransactionId(transactionId,sellerid);
         Date shippedTime=null;
         if(orderses!=null&&orderses.size()>0){
@@ -633,7 +675,7 @@ public class UserCasesController extends BaseAction{
             String caseId=caseses.get(0).getCaseid();
             String caseType=caseses.get(0).getCasetype();
             String shippedTime1=DateUtils.DateToString(shippedTime);
-            String xml = BindAccountAPI.ProvideShippingInfo(token,caseId,caseType,carrier,shippedTime1,shippedTime);
+            String xml = BindAccountAPI.ProvideShippingInfo(token,caseId,caseType,carrier,shippedTime1,message);
             AddApiTask addApiTask = new AddApiTask();
             Map<String, String> resEbpMap = addApiTask.exec(d, xml, "https://svcs.ebay.com/services/resolution/ResolutionCaseManagementService/v1");
             String r1 = resEbpMap.get("stat");
@@ -670,7 +712,7 @@ public class UserCasesController extends BaseAction{
         String token="AgAAAA**AQAAAA**aAAAAA**CLSRUQ**nY+sHZ2PrBmdj6wVnY+sEZ2PrA2dj6AFlYCjDJGCqA+dj6x9nY+seQ**FdYBAA**AAMAAA**w2sMbwlQ7TBHWxj9EsVedHQRI3+lonY9MDfiyayQbnFkjEanjL/yMCpS/D2B9xHRzRx+ppxWZkRPgeAKJvNotPLLrVTuEzOl5M7pi6Tw8+pzcmIEsOh7HQO78JlyFlvLc/ruE6/hG0E/HO1UX76YBwxp00N9f1NNUpo5u36D/TYsx5O2jXFTKkCOHwz6RW9vtN6TU39aLm+JQme2+NfFFXnbX8MHzoUiX7Sty0R88ZpX5wLp8ZdgXCEc5zZDQziYB1MSXF9hsmby5wKbxFF+OvW/zKADThk1gprgAgnEOucyoao+cUMHopLlYgMbjnLzdCXP5F9z+fkYTnKF6AEl5eHBpcKQGbPzswnKebRoBVw+bI2I1C/iq+PvBUyndFAexjrvlDQbEKr6qb6AWRVTTfkW2ce6a0ixRuCTq35zEpWpfAqkSKo+X23d/Q4V8R30rDXotOWDZL6o408cMO+UQ17uVA2arA1JNkYfc/AZ0T0z7ze5o/yp93jJPlDgi05Ut4fpCAMZw3X85GxrTlbEtawWgoyUbmMuv4f6QHZLZAerOaJA8DRJkzkzjJJ025bp1HvAECOc4ggdv0cofu4q96shssgNYYZJUPM+q4+0fnGK0pxQTNY9SV6vSaVCVoTZJo6vefW7OiHX2/eLoPKFuUfsKXXEv9OY71gD1xzYg/rpCMAqCTq1dKqqyT1R5fxANnoRX7vwkq+7jkCj2fAfKTnHi9mSuBFsilKLmnsqqWy3IGShMgdxiQwBEk6IWi9C";
         d.setSoaSecurityToken(token);
         d.setHeaderType("DisputeApiHeader");
-        List<TradingGetUserCases> caseses= iTradingGetUserCases.selectGetUserCasesByTransactionId(transactionId);
+        List<TradingGetUserCases> caseses= iTradingGetUserCases.selectGetUserCasesByTransactionId(transactionId,sellerid);
         List<TradingOrderGetOrders> orderses=iTradingOrderGetOrders.selectOrderGetOrdersByTransactionId(transactionId,sellerid);
         String trackingNum="";
         String carrier="";
@@ -720,6 +762,7 @@ public class UserCasesController extends BaseAction{
         String partialRefund=request.getParameter("partialRefund");
         String amout=request.getParameter("amout");
         String transactionId=request.getParameter("transactionId");
+        String sellerid=request.getParameter("sellerid");
         String textarea=request.getParameter("textarea");
         if(StringUtils.isNotBlank(fullRefund)&&StringUtils.isNotBlank(partialRefund)){
             AjaxSupport.sendFailText("fail","请选择一个");
@@ -729,7 +772,7 @@ public class UserCasesController extends BaseAction{
         String token="AgAAAA**AQAAAA**aAAAAA**CLSRUQ**nY+sHZ2PrBmdj6wVnY+sEZ2PrA2dj6AFlYCjDJGCqA+dj6x9nY+seQ**FdYBAA**AAMAAA**w2sMbwlQ7TBHWxj9EsVedHQRI3+lonY9MDfiyayQbnFkjEanjL/yMCpS/D2B9xHRzRx+ppxWZkRPgeAKJvNotPLLrVTuEzOl5M7pi6Tw8+pzcmIEsOh7HQO78JlyFlvLc/ruE6/hG0E/HO1UX76YBwxp00N9f1NNUpo5u36D/TYsx5O2jXFTKkCOHwz6RW9vtN6TU39aLm+JQme2+NfFFXnbX8MHzoUiX7Sty0R88ZpX5wLp8ZdgXCEc5zZDQziYB1MSXF9hsmby5wKbxFF+OvW/zKADThk1gprgAgnEOucyoao+cUMHopLlYgMbjnLzdCXP5F9z+fkYTnKF6AEl5eHBpcKQGbPzswnKebRoBVw+bI2I1C/iq+PvBUyndFAexjrvlDQbEKr6qb6AWRVTTfkW2ce6a0ixRuCTq35zEpWpfAqkSKo+X23d/Q4V8R30rDXotOWDZL6o408cMO+UQ17uVA2arA1JNkYfc/AZ0T0z7ze5o/yp93jJPlDgi05Ut4fpCAMZw3X85GxrTlbEtawWgoyUbmMuv4f6QHZLZAerOaJA8DRJkzkzjJJ025bp1HvAECOc4ggdv0cofu4q96shssgNYYZJUPM+q4+0fnGK0pxQTNY9SV6vSaVCVoTZJo6vefW7OiHX2/eLoPKFuUfsKXXEv9OY71gD1xzYg/rpCMAqCTq1dKqqyT1R5fxANnoRX7vwkq+7jkCj2fAfKTnHi9mSuBFsilKLmnsqqWy3IGShMgdxiQwBEk6IWi9C";
         d.setSoaSecurityToken(token);
         d.setHeaderType("DisputeApiHeader");
-        List<TradingGetUserCases> caseses= iTradingGetUserCases.selectGetUserCasesByTransactionId(transactionId);
+        List<TradingGetUserCases> caseses= iTradingGetUserCases.selectGetUserCasesByTransactionId(transactionId,sellerid);
         if(caseses!=null&&caseses.size()>0){
             String caseId=caseses.get(0).getCaseid();
             String caseType=caseses.get(0).getCasetype();
@@ -774,12 +817,13 @@ public class UserCasesController extends BaseAction{
     public void sendMessageForm(CommonParmVO commonParmVO,HttpServletRequest request) throws Exception {
         String transactionId=request.getParameter("transactionId");
         String textarea=request.getParameter("textarea");
+        String sellerid=request.getParameter("sellerid");
         UsercontrollerDevAccountExtend d=new UsercontrollerDevAccountExtend();
         String token="AgAAAA**AQAAAA**aAAAAA**CLSRUQ**nY+sHZ2PrBmdj6wVnY+sEZ2PrA2dj6AFlYCjDJGCqA+dj6x9nY+seQ**FdYBAA**AAMAAA**w2sMbwlQ7TBHWxj9EsVedHQRI3+lonY9MDfiyayQbnFkjEanjL/yMCpS/D2B9xHRzRx+ppxWZkRPgeAKJvNotPLLrVTuEzOl5M7pi6Tw8+pzcmIEsOh7HQO78JlyFlvLc/ruE6/hG0E/HO1UX76YBwxp00N9f1NNUpo5u36D/TYsx5O2jXFTKkCOHwz6RW9vtN6TU39aLm+JQme2+NfFFXnbX8MHzoUiX7Sty0R88ZpX5wLp8ZdgXCEc5zZDQziYB1MSXF9hsmby5wKbxFF+OvW/zKADThk1gprgAgnEOucyoao+cUMHopLlYgMbjnLzdCXP5F9z+fkYTnKF6AEl5eHBpcKQGbPzswnKebRoBVw+bI2I1C/iq+PvBUyndFAexjrvlDQbEKr6qb6AWRVTTfkW2ce6a0ixRuCTq35zEpWpfAqkSKo+X23d/Q4V8R30rDXotOWDZL6o408cMO+UQ17uVA2arA1JNkYfc/AZ0T0z7ze5o/yp93jJPlDgi05Ut4fpCAMZw3X85GxrTlbEtawWgoyUbmMuv4f6QHZLZAerOaJA8DRJkzkzjJJ025bp1HvAECOc4ggdv0cofu4q96shssgNYYZJUPM+q4+0fnGK0pxQTNY9SV6vSaVCVoTZJo6vefW7OiHX2/eLoPKFuUfsKXXEv9OY71gD1xzYg/rpCMAqCTq1dKqqyT1R5fxANnoRX7vwkq+7jkCj2fAfKTnHi9mSuBFsilKLmnsqqWy3IGShMgdxiQwBEk6IWi9C";
         d.setSoaSecurityToken(token);
         d.setHeaderType("DisputeApiHeader");
         d.setSoaOperationName("offerOtherSolution");
-        List<TradingGetUserCases> caseses= iTradingGetUserCases.selectGetUserCasesByTransactionId(transactionId);
+        List<TradingGetUserCases> caseses= iTradingGetUserCases.selectGetUserCasesByTransactionId(transactionId,sellerid);
         if(caseses!=null&&caseses.size()>0) {
             String caseId = caseses.get(0).getCaseid();
             String caseType = caseses.get(0).getCasetype();
@@ -804,9 +848,20 @@ public class UserCasesController extends BaseAction{
                 partner.setItemid(cases.getItemid());
                 partner.setRecipientid(cases.getBuyerid());
                 partner.setMessagetype(1);
+                partner.setReplied("true");
                 iTradingOrderAddMemberMessageAAQToPartner.saveOrderAddMemberMessageAAQToPartner(partner);
                 AjaxSupport.sendSuccessText("message", "发送消息成功!");
             }else{
+                TradingGetUserCases cases=caseses.get(0);
+                TradingOrderAddMemberMessageAAQToPartner partner=new TradingOrderAddMemberMessageAAQToPartner();
+                partner.setSender(cases.getSellerid());
+                partner.setBody(textarea);
+                partner.setTransactionid(cases.getTransactionid());
+                partner.setItemid(cases.getItemid());
+                partner.setRecipientid(cases.getBuyerid());
+                partner.setMessagetype(1);
+                partner.setReplied("false");
+                iTradingOrderAddMemberMessageAAQToPartner.saveOrderAddMemberMessageAAQToPartner(partner);
                 String errors = SamplePaseXml.getVFromXmlString(res, "Errors");
                 logger.error("发送消息失败!" + errors);
                 AjaxSupport.sendFailText("fail", "发送消息失败！请稍后重试");
@@ -815,5 +870,38 @@ public class UserCasesController extends BaseAction{
             AjaxSupport.sendFailText("fail","纠纷不存在");
         }
         AjaxSupport.sendSuccessText("message", "sendMessageForm");
+    }
+
+    //获取track number
+    @RequestMapping("/queryTrack.do")
+    @ResponseBody
+    public void queryTrack(CommonParmVO commonParmVO,HttpServletRequest request) throws Exception {
+        request.setCharacterEncoding("UTF-8");
+        BufferedReader in = null;
+        String content = null;
+        String trackNum=request.getParameter("trackNum");
+        String token=(URLEncoder.encode("RXYaxblwfBeNY+2zFVDbCYTz91r+VNWmyMTgXE4v16gCffJam2FcsPUpiau6F8Yk"));
+        String url="http://api.91track.com/track?culture=zh-CN&numbers="+trackNum+"&token="+token;
+        /*String url="http://api.91track.com/track?culture=en&numbers="+"RD275816257CN"+"&token="+token;*/
+        HttpClient client=new DefaultHttpClient();
+        HttpGet get=new HttpGet();
+        get.setURI(new URI(url));
+        HttpResponse response = client.execute(get);
+
+        in = new BufferedReader(new InputStreamReader(response.getEntity()
+                .getContent()));
+        StringBuffer sb = new StringBuffer("");
+        String line ="";
+        String NL = System.getProperty("line.separator");
+        while ((line = in.readLine()) != null) {
+            sb.append(line + NL);
+        }
+        in.close();
+        content = sb.toString();
+        String[] arr=content.split(",");
+        String content1="{"+arr[1]+"}";
+       /* String content1="{\"age\":66,\"name\":\"老张头\"}";*/
+        JSONObject json = JSON.parseObject(content1);
+        AjaxSupport.sendSuccessText("message", json);
     }
 }

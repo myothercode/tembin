@@ -1,5 +1,7 @@
 package com.common.base.web;
 
+import com.base.utils.applicationcontext.ApplicationContextUtil;
+import com.base.utils.imageManage.service.ImageService;
 import com.common.base.utils.EditorSupportUtils;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.ui.ModelMap;
@@ -23,6 +25,10 @@ public class BaseAction {
         ModelMap map=new ModelMap();
         map.put("nowDateTime",new Date());
         map.put("jscacheVersion","3");
+        try {
+            ImageService imageService= (ImageService) ApplicationContextUtil.getBean(ImageService.class);
+            map.put("itemListIconUrl",imageService.getItemListIconUrl());
+        } catch (Exception e) {}
         return map;
     }
 

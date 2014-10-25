@@ -85,16 +85,60 @@ function afterClickAttr(obj, parentid,attTable) {
     }
     select += "</select>";
 
-    var tr = "<tr id=tr"+domid+" >" + "<td><input type='hidden' name='name' value=\""+$(obj).html()+"\" >" +
+    var tr = "<tr id=tr"+domid+" >" + "<td style='text-align: center'><input type='hidden' name='name' value=\""+$(obj).html()+"\" >" +
         $(obj).html() + "</td>" +
-        "<td><input id=_value"+domid+" type='hidden' name='value'>" + select + "</td>" +
-        "<td>" + "<a href='javascript:void(0)' onclick='removeThisTr(this)'>移除</a>" + "</td></tr>";
+        "<td onclick='onclickmulAttrTD(this)' style='text-align: center'><span name='values' style='color: rgb(30, 144, 255); display: inline;'>"+optionData[0]['itemEnName']+"</span>" +
+        "<input id=_value"+domid+" type='hidden' name='value'>" + select + "</td>" +
+        "<td style='text-align: center'>" + "<img src='/xsddWeb/img/del.png' onclick='removeThisTr(this)' />" + "</td></tr>";
     $('#'+attTable).append(tr);
     $(obj).hide();
     //try{
         $.parser.parse();
-    //}catch (e){}
+    $('#'+attTable).find("span[class='combo']").hide();
+    $('#'+attTable).find("span[name='values']").show();
 
+    $('#'+attTable).find("input").each(function(i,d){
+        if($(d).hasClass("combo-text")){
+           $(d).removeAttr("onblur");
+            $(d).attr("onblur","onblurMulAttrInput(this)")
+        }
+
+    });
+    //}catch (e){}
+}
+
+/**combox失去焦点的时候执行*/
+function onblurMulAttrInput(inpu){
+    setTimeout(function(){
+        $("div").each(function(i,d){
+            if($(d).hasClass("panel combo-p")){
+                if($(d).css("display")=='none'){
+                    var selectid=$(inpu).parents("td").eq(0).find("select[id^='_select']").eq(0).attr("id");
+                    setTimeout(function(){
+                        $('#attTable').find("span[name='values']").html($("#"+selectid).combobox('getValue'));
+                        $('#attTable').find("span[class='combo']").hide();
+                        $('#attTable').find("span[name='values']").show();
+                    },200);
+                }
+                console.log($(d).css("display"))
+            }
+        });
+    },500);
+
+    return;  
+}
+function onclickmulAttrTD(td){
+    $(td).find("span").hide();
+    $(td).find("span").each(function(i,d){
+        if($(d).attr("name")==null){
+            $(d).show();
+        }
+    });
+    $(td).find("input").each(function(i,d){
+        if($(d).attr("id")==null){
+            $(d).focus();
+        }
+    });
 }
 
 /**同步combox的数据*/
@@ -268,11 +312,21 @@ function checkLocalStorage(){
 
 /**保存并提交*/
 function saveData(objs,name) {
+    bodyClick();//自定义属性
     asyCombox2InputData();//同步comebox的数值
     reSortItemPic();//对经过排序的图片进行重新排列
     domReIndex("picture","PictureDetails");//对重新排列后的元素进行重新索引
     $("#dataMouth").val(name);
+    if(name=="Backgrounder"){
+        $("#ListingMessage").val("1");
+    }else{
+        $("#ListingMessage").val("0");
+    }
     if(!$("#form").validationEngine("validate")){
+        return;
+    }
+    if(($("#showPics").find("img").length+$("#picMore").find("img").length/2)>8){
+        alert("最多只能上传8张图片，上传图片已超过上传限制！");
         return;
     }
     var pciValue = new Map();
@@ -288,18 +342,18 @@ function saveData(objs,name) {
         $("input[type='hidden'][name='VariationSpecificValue_"+pciValue.keys[i]+"']").prop("name","Variations.Pictures.VariationSpecificPictureSet["+i+"].VariationSpecificValue");
     }
 
-    var nameList = $("input[type='text'][name='name']").each(function(i,d){
+    var nameList = $("input[type='hidden'][name='name']").each(function(i,d){
         var name_= $(d).prop("name");
         var t="ItemSpecifics.NameValueList["+i+"].";
         $(d).prop("name",t+name_);
     });
-    var valueList = $("input[type='text'][name='value']").each(function(i,d){
+    var valueList = $("input[type='hidden'][name='value']").each(function(i,d){
         var name_= $(d).prop("name");
         var t="ItemSpecifics.NameValueList["+i+"].";
         $(d).prop("name",t+name_);
     });
 
-    $("input[type='text'][name='attr_Name']").each(function(i,d){
+    $("input[type='hidden'][name='attr_Name']").each(function(i,d){
         var t="Variations.VariationSpecificsSet.NameValueList["+i+"].Name";
         $(d).prop("name",t);
     });
@@ -319,6 +373,7 @@ function saveData(objs,name) {
     });
     $("#Description").val(myDescription.getContent());
     checkLocalStorage();
+    $("input[type='hidden'][name='timerListing']").val($("input[type='text'][name='timerStr']").val());
     var data = $('#form').serialize();
     var urll = "/xsddWeb/saveItem.do";
     $(objs).attr("disabled",true);
@@ -336,7 +391,7 @@ function saveData(objs,name) {
                 Base.token();
                 alert(r)
                 $(objs).attr("disabled",false);
-                document.location = path+"/itemManager.do";
+                //document.location = path+"/itemManager.do";
             }]
     )
 }
@@ -351,20 +406,33 @@ function selectAccount(obj){
         $(obj).prop("checked",false);
     }
     $("#showPics").text("");
+    isShowPicLink();
+    initTitle();
+    initPrice();
+}
+
+/**判断是否显示图片上传按钮*/
+function isShowPicLink(){
+
     $("input[type='checkbox'][name='ebayAccounts']:checked").each(function(i,d){
+        if(_sku==null || _sku ==''){
+            return;
+        }
+        if($("#apicUrls_"+$(d).val())[0]!=null){
+            return;
+        }
         //初始化上传图片
         var showStr = "<div class='panel' style='display: block'>";
-        showStr +=" <section class='example' ><ul class='gbin1-list' id='picture_"+$(d).val()+"'></ul></section> ";
+        showStr +=" <section class='example' ><ul class='gbin1-list' style='padding-left: 20px;' id='picture_"+$(d).val()+"'></ul></section> ";
         showStr +=" <script type=text/plain id='picUrls_"+$(d).val()+"'></script> ";
-        showStr +=" <div style='padding-left: 60px;'><a href='javascript:void(0)' id='apicUrls_"+$(d).val()+"' onclick='selectPic(this)'>选择图片</a></div> </div> ";
+        showStr +=" <div style='padding-left: 60px;'><b class='new_button'><a href='javascript:void(0)' id='apicUrls_"+$(d).val()+"' onclick='selectPic(this)'>选择图片</a></b></div> </div> ";
         $("#showPics").append(showStr);
         $().image_editor.init("picUrls_"+$(d).val()); //编辑器的实例id
         $().image_editor.show("apicUrls_"+$(d).val()); //上传图片的按钮id        }
         //增加标题跟数量与价格
     });
-    initTitle();
-    initPrice();
 }
+
 
 function initTitle(){
     $("#titleDiv").text("");
@@ -373,7 +441,7 @@ function initTitle(){
         titleHtml+=' <li> ';
         titleHtml+=' <dt>物品标题('+$(d).attr("shortName")+')</dt> ';
         titleHtml+=' <div class="new_left"> ';
-        titleHtml+=' <input type="text" name="Title_'+$(d).val()+'" id="Title_'+$(d).val()+'" style="width:600px;" ';
+        titleHtml+=' <input type="text" name="Title_'+$(d).val()+'" id="Title" style="width:600px;" ';
         titleHtml+=' class="validate[required,maxSize[80]] form-control" size="100" ';
         titleHtml+=' onkeyup="incount(this)"><span id="incount">0</span>/80 ';
         titleHtml+=' </div> ';

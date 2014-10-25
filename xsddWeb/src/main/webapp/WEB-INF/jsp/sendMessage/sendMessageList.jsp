@@ -22,9 +22,8 @@
             $("#sendMessageTable").initTable({
                 url:path + "/sendMessage/ajax/loadSendMessageList.do?",
                 columnData:[
-                    {title:"",name:"pictureUrl",width:"2%",align:"left",format:makeOption3},
                     {title:"模板名称",name:"name",width:"8%",align:"left"},
-                    {title:"内容",name:"content",width:"8%",align:"left"},
+                    {title:"消息类型",name:"content",width:"8%",align:"left",format:makeOption4},
                     {title:"状态",name:"status",width:"8%",align:"left",format:makeOption2},
                     {title:"操作",name:"countNum",width:"8%",align:"left",format:makeOption1}
                 ],
@@ -42,12 +41,28 @@
             /*var htm="<div class=\"ui-select\" style=\"width:8px\"><a href=\"javascript:void(0)\" onclick=\"deleteSendMessage("+json.transactionid+","+json.messagetype+");\">删除</a></div>";
             return htm;*/
             var hs="";
-            hs="<li onclick=editMessageTemplate("+json.id+"); value='1' doaction=\"readed\" >编辑</li>";
-            hs+="<li onclick=useStatus("+json.id+",'1'); value='1' doaction=\"look\" >启用</li>";
-            hs+="<li onclick=useStatus("+json.id+",'0'); value='1' doaction=\"look\" >禁用</li>";
-            hs+="<li onclick=deleteSendMessage("+json.id+"); value='1' doaction=\"look\" >删除</li>";
+            hs="<li style=\"height:25px;\" onclick=editMessageTemplate("+json.id+"); value='1' doaction=\"readed\" >编辑</li>";
+            if(json.status==0){
+                hs+="<li style=\"height:25px;\" onclick=useStatus("+json.id+",'1'); value='1' doaction=\"look\" >启用</li>";
+            }else{
+                hs+="<li style=\"height:25px;\" onclick=useStatus("+json.id+",'0'); value='1' doaction=\"look\" >禁用</li>";
+            }
+            hs+="<li style=\"height:25px;\" onclick=deleteSendMessage("+json.id+"); value='1' doaction=\"look\" >删除</li>";
             var pp={"liString":hs};
             return getULSelect(pp);
+        }
+        function makeOption4(json){
+            var htm="";
+            if(json.casetype==1){
+                htm+="CASE<br/>";
+            }
+            if(json.autotype==1){
+                htm+="自动消息<br/>";
+            }
+            if(json.messagetype==1){
+                htm+="message<br/>";
+            }
+            return htm;
         }
         function makeOption3(json){
             var htm = "<input type=\"checkbox\"  name=\"templateId\" value=" + json.id + ">";
@@ -122,13 +137,18 @@
                 lock:true
             });
         }
-        function viewForbidden(){
+        function viewForbidden(obj){
+            var url=path + "/sendMessage/ajax/loadSendMessageList.do?status="+status;
+            if(obj.checked){
+                url=path + "/sendMessage/ajax/loadSendMessageList.do?status=0";
+            }else{
+                url=path + "/sendMessage/ajax/loadSendMessageList.do?";
+            }
             $("#sendMessageTable").initTable({
-                url:path + "/sendMessage/ajax/loadSendMessageList.do?status=0",
+                url:url,
                 columnData:[
-                    {title:"",name:"pictureUrl",width:"2%",align:"left",format:makeOption3},
                     {title:"模板名称",name:"name",width:"8%",align:"left"},
-                    {title:"内容",name:"content",width:"8%",align:"left"},
+                    {title:"消息类型",name:"content",width:"8%",align:"left",format:makeOption4},
                     {title:"状态",name:"status",width:"8%",align:"left",format:makeOption2},
                     {title:"操作",name:"countNum",width:"8%",align:"left",format:makeOption1}
                 ],
@@ -203,10 +223,10 @@
                         </div>
                         <div class="tbbay"><a href="#">添加模板</a></div>
                     </div>--%>
-                    <div class="new_usa" style="margin-top:20px;">
+                   <%-- <div class="new_usa" style="margin-top:20px;">
                         <li class="new_usa_list"><span class="newusa_i">按类型看：</span><a href="#"><span class="newusa_ici_1" scop="type" onclick="onclickType(0,null)">全部&nbsp;</span></a><a href="#"><span class="newusa_ici_1" scop="type" onclick="onclickType(1,'caseType')">CASE&nbsp;</span></a><a href="#"><span class="newusa_ici_1" scop="type" onclick="onclickType(2,'autoType')">自动消息&nbsp;</span></a><a href="#"><span class="newusa_ici_1" scop="type" onclick="onclickType(3,'messageType')">一般消息&nbsp;</span></a></li>
-                        <%--<li class="new_usa_list"><span class="newusa_i">信息状态：</span><span class="newusa_ici_1" scop="information" onclick="onclickinformation(null,0)">全部&nbsp;</span><a href="#"><span class="newusa_ici_1" scop="information" onclick="onclickinformation('picture',1)">无图片&nbsp;</span></a><a href="#"><span class="newusa_ici_1" scop="information" onclick="onclickinformation('custom',2)">无报关信息&nbsp;</span></a><a href="#"><span class="newusa_ici_1" scop="information" onclick="onclickinformation('notAllnull',3)">信息不全&nbsp;</span></a></li>
-                        --%>
+                        &lt;%&ndash;<li class="new_usa_list"><span class="newusa_i">信息状态：</span><span class="newusa_ici_1" scop="information" onclick="onclickinformation(null,0)">全部&nbsp;</span><a href="#"><span class="newusa_ici_1" scop="information" onclick="onclickinformation('picture',1)">无图片&nbsp;</span></a><a href="#"><span class="newusa_ici_1" scop="information" onclick="onclickinformation('custom',2)">无报关信息&nbsp;</span></a><a href="#"><span class="newusa_ici_1" scop="information" onclick="onclickinformation('notAllnull',3)">信息不全&nbsp;</span></a></li>
+                        &ndash;%&gt;
                         <div class="newsearch">
                             <span class="newusa_i">创建时间：</span><a href="#"><span class="newusa_ici_1" scop="days" onclick="selectDays(0,null);">全部&nbsp;</span></a><a href="#"><span class="newusa_ici_1" scop="days" onclick="selectDays(1,'1');">今天&nbsp;</span></a><a href="#"><span class="newusa_ici_1" scop="days" onclick="selectDays(2,'2');">昨天&nbsp;</span></a><a href="#"><span class="newusa_ici_1" scop="days" onclick="selectDays(3,'7');">7天以内&nbsp;</span></a><a href="#"><span class="newusa_ici_1" scop="days" onclick="selectDays(4,'30');">30天以内&nbsp;</span></a>
                          </div>
@@ -227,10 +247,10 @@
                             <input type="hidden" id="type">
                             <input type="hidden" id="time">
 
-                        </div>
+                        </div>--%>
 
                     </div>
-                    <li class="new_usa_list"><span class="newusa_ii"><input name="" type="checkbox" value=""></span><a href="#"><span class="newusa_ici_2" onclick="viewForbidden();">查看禁用的模板</span></a><div class="tbbay"><a data-toggle="modal" onclick="addMessageTemplate();" href="#myModal" class="">增加模板</a></div></li>
+                    <li class="new_usa_list"><span class="newusa_ii"><input name="" type="checkbox" value="" onclick="viewForbidden(this);"></span><a href="#"><span class="newusa_ici_2" onclick="viewForbidden();">查看禁用的模板</span></a><div class="tbbay"><a data-toggle="modal" href="#myModal" class="">增加模板</a></div></li>
                     <div id="sendMessageTable"></div>
                     <!--综合结束 -->
                 </div>

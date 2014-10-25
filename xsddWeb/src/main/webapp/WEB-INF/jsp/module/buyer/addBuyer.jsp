@@ -26,7 +26,7 @@
             $().invoke(url,data,
                     [function(m,r){
                         alert(r);
-                        W.refreshTable();
+                        W.refreshTablebuyer();
                         W.buyerRequire.close();
                     },
                         function(m,r){

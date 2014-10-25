@@ -1,13 +1,12 @@
 package com.listingitem.controller;
 
-import com.baidu.ueditor.upload.StorageManager;
+import com.base.database.customtrading.mapper.ListingDataTaskQueryMapper;
 import com.base.database.publicd.model.PublicUserConfig;
+import com.base.database.task.model.ListingDataTask;
 import com.base.database.trading.model.*;
 import com.base.domains.CommonParmVO;
 import com.base.domains.SessionVO;
-import com.base.domains.querypojos.ItemQuery;
 import com.base.domains.querypojos.ListingDataAmendQuery;
-import com.base.domains.querypojos.PaypalQuery;
 import com.base.domains.querypojos.TablePriceQuery;
 import com.base.domains.userinfo.UsercontrollerDevAccountExtend;
 import com.base.domains.userinfo.UsercontrollerEbayAccountExtend;
@@ -17,12 +16,14 @@ import com.base.sampleapixml.APINameStatic;
 import com.base.userinfo.service.SystemUserManagerService;
 import com.base.userinfo.service.UserInfoService;
 import com.base.utils.annotations.AvoidDuplicateSubmission;
+import com.base.utils.applicationcontext.ApplicationContextUtil;
 import com.base.utils.cache.DataDictionarySupport;
 import com.base.utils.cache.SessionCacheSupport;
-import com.base.utils.common.MyStringUtil;
+import com.base.utils.common.DateUtils;
 import com.base.utils.common.ObjectUtils;
 import com.base.utils.exception.Asserts;
 import com.base.utils.threadpool.AddApiTask;
+import com.base.utils.threadpool.TaskMessageVO;
 import com.base.utils.xmlutils.PojoXmlUtil;
 import com.base.utils.xmlutils.SamplePaseXml;
 import com.base.xmlpojo.trading.addproduct.Item;
@@ -33,15 +34,12 @@ import com.base.xmlpojo.trading.addproduct.attrclass.StartPrice;
 import com.common.base.utils.ajax.AjaxResponse;
 import com.common.base.utils.ajax.AjaxSupport;
 import com.common.base.web.BaseAction;
+import com.sitemessage.service.SiteMessageService;
+import com.sitemessage.service.SiteMessageStatic;
+import com.task.service.IListingDataTask;
 import com.trading.service.*;
-import org.apache.commons.fileupload.FileItem;
-import org.apache.commons.fileupload.FileUploadException;
-import org.apache.commons.fileupload.disk.DiskFileItemFactory;
-import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.commons.lang.math.NumberUtils;
 import org.apache.poi.hssf.usermodel.*;
-import org.apache.poi.ss.usermodel.CellStyle;
-import org.apache.poi.ss.usermodel.Row;
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
@@ -56,13 +54,12 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
-import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * Created by Administrtor on 2014/8/18.
@@ -87,6 +84,10 @@ public class ListingItemController extends BaseAction {
     public ITradingTablePrice iTradingTablePrice;
     @Autowired
     private SystemUserManagerService systemUserManagerService;
+    @Autowired
+    private IListingDataTask iListingDataTask;
+    @Autowired
+    private ListingDataTaskQueryMapper listingDataTaskQueryMapper;
 
     @RequestMapping("/getListingItemList.do")
     public ModelAndView getListingItemList(HttpServletRequest request, HttpServletResponse response, ModelMap modelMap) throws Exception {
@@ -241,6 +242,74 @@ public class ListingItemController extends BaseAction {
     }
 
     /**
+     * 失败日志继续处理
+     * @param request
+     * @param response
+     * @param modelMap
+     * @return
+     * @throws Exception
+     */
+    @RequestMapping("/ajax/continueWork.do")
+    @ResponseBody
+    public void continueWork(HttpServletRequest request,HttpServletResponse response,@ModelAttribute( "initSomeParmMap" )ModelMap modelMap) throws Exception {
+        SessionVO c= SessionCacheSupport.getSessionVO();
+        List<TradingDataDictionary> lisite = DataDictionarySupport.getTradingDataDictionaryByType("site");
+        String id = request.getParameter("id");
+        String endid = request.getParameter("endid");
+        TradingListingData tldata = this.iTradingListingData.selectById(Long.parseLong(id));
+        TradingListingAmendWithBLOBs tlend = this.iTradingListingAmend.selectById(Long.parseLong(endid));
+
+        AddApiTask addApiTask = new AddApiTask();
+        UsercontrollerDevAccountExtend dt = userInfoService.getDevByOrder(new HashMap());
+        dt.setApiCallName(APINameStatic.ReviseItem);
+        String siteid="";
+        for(TradingDataDictionary tdd : lisite){
+            if(tldata.getSite().equals(tdd.getValue())){
+                siteid=tdd.getName1();
+                break;
+            }
+        }
+        dt.setApiSiteid(siteid);
+        Map<String, String> resMap = addApiTask.exec(dt, tlend.getCosxml(), apiUrl);
+        String res = resMap.get("message");
+        String ack = SamplePaseXml.getVFromXmlString(res, "Ack");
+
+        tlend.setCreateTime(new Date());
+        tlend.setCreateUser(c.getId());
+        System.out.println(":::::::::::"+res);
+        if("Success".equalsIgnoreCase(ack)||"Warning".equalsIgnoreCase(ack)){
+            tlend.setId(null);
+            tlend.setIsFlag("1");
+            this.iTradingListingAmend.saveListingAmend(tlend);
+            AjaxSupport.sendSuccessText("message", "操作成功！");
+        }else{
+            String resStr = "";
+            if(res!=null){
+                resStr = SamplePaseXml.getSpecifyElementTextAllInOne(res,"Errors","LongMessage");
+            }else{
+                resStr = "请求失败！";
+            }
+            this.saveSystemLog(resStr,"继续修改报错",SiteMessageStatic.LISTING_DATA_UPDATE);
+            tlend.setId(null);
+            tlend.setIsFlag("0");
+            this.iTradingListingAmend.saveListingAmend(tlend);
+            AjaxSupport.sendFailText("fail","操作失败！");
+        }
+    }
+
+    public void saveSystemLog(String context,String title,String type){
+        SiteMessageService siteMessageService= (SiteMessageService) ApplicationContextUtil.getBean(SiteMessageService.class);
+        TaskMessageVO taskMessageVO=new TaskMessageVO();
+        taskMessageVO.setMessageContext(context);
+        taskMessageVO.setMessageTitle(title);
+        taskMessageVO.setMessageType(type);
+        taskMessageVO.setMessageFrom("system");
+        SessionVO sessionVO=SessionCacheSupport.getSessionVO();
+        taskMessageVO.setMessageTo(sessionVO.getId());
+        taskMessageVO.setObjClass(null);
+        siteMessageService.addSiteMessage(taskMessageVO);
+    }
+    /**
      * 保存数据
      * @param request
      * @param response
@@ -327,7 +396,7 @@ public class ListingItemController extends BaseAction {
                 ite.setStartPrice(sp);
 
                 RequesterCredentials rc = new RequesterCredentials();
-                rc.seteBayAuthToken("AgAAAA**AQAAAA**aAAAAA**vVcRVA**nY+sHZ2PrBmdj6wVnY+sEZ2PrA2dj6wFk4GhCpGGoA+dj6x9nY+seQ**cx0CAA**AAMAAA**Z2MB0OtmO4JsPFBZPcjclippjnZG4bwpcpXYRXDdc6wEppv5m/WiCvsjyTKWoVXCMxQl2se3U6Vn93oBL6zg8EcR3GCXCC3ZbTpEQ3lBX8avBrME9VHo0RcfcE7oLVtnBAuSffy3Dk5ICUNyU7g57/rHw8d5DnO3JeitpQcTLKAInt+sEZslri3wa4Mx0xgyFW5OF3w8mNK8ib8+57PTHcApnp8xRTAlIVuwW3F/fGbSFVReS07/MulzlFXBoW/ZPLq+L2aLFpn5s+IB5/gB0HoDo5uGzRnALmXxUz8BuwJMrUE29830W7xVSEaYSYsOcJyue6PjJKyZt0rXf8TNHusXCHX240dWllrjMVxS7pEHgKb/FKfd/79PH3rXTFmuexesXS6H1lRmHBBE1iknFwtzzS+UeN22Rd6W+hjSjuOHB33o2gMS5cOdVXHuHyOQ6VJU3bJL/eNDgyB+wz3HhZmz6sF+lmLIRKP82H1QXdlwdGdpVhAhyqnE4FH4qTgPBMxv6c4jRL5BRuyUZDLeJI1WXmaZ4pNMss+MiME7Qu+7bP7S2TZhmValbfW/FvqSrxR9LlHji7iQSsz2m56x5TLjOtkFWjRxmB6C1wzBVtzdILzbvmA/1+9RlMevalW6bg22irusiv7iuD/AnC9pZ0Sju2XK/7WpjVW4/lZyBmRbqHQJPbU/5MU3xrM8pTV8rZmPfQrRh2araaWGIBE5IW3gsTrETpRUQybXd/a107ee61GwXEUqVat1EfznFpIs");
+                rc.seteBayAuthToken(token);
                 rir.setRequesterCredentials(rc);
                 rir.setItem(ite);
                 xml = PojoXmlUtil.pojoToXml(rir);
@@ -350,6 +419,13 @@ public class ListingItemController extends BaseAction {
                     this.iTradingListingAmend.saveListingAmend(tla);
                     AjaxSupport.sendSuccessText("message", "操作成功！");
                 }else{
+                    String resStr = "";
+                    if(res!=null){
+                        resStr = SamplePaseXml.getSpecifyElementTextAllInOne(res,"Errors","LongMessage");
+                    }else{
+                        resStr = "请求失败！";
+                    }
+                    this.saveSystemLog(resStr,"表格调价报错",SiteMessageStatic.LISTING_DATA_UPDATE);
                     tla.setIsFlag("0");
                     this.iTradingListingAmend.saveListingAmend(tla);
                     AjaxSupport.sendFailText("fail","操作失败！");
@@ -384,6 +460,33 @@ public class ListingItemController extends BaseAction {
         }else{
             AjaxSupport.sendSuccessText("", null);
         }
+    }
+
+
+    /**
+     * 用户点击同步时，查询
+     * @param request
+     * @param modelMap
+     * @param commonParmVO
+     * @throws Exception
+     */
+    @RequestMapping("/ajax/myEbayAccount.do")
+    @ResponseBody
+    public void myEbayAccount(HttpServletRequest request,ModelMap modelMap,CommonParmVO commonParmVO) throws Exception {
+        SessionVO c= SessionCacheSupport.getSessionVO();
+        List<UsercontrollerEbayAccount> liuserebay = this.iUsercontrollerEbayAccount.selectUsercontrollerEbayAccountByUserId(c.getId());
+        List<Map> lim = new ArrayList<Map>();
+        for(UsercontrollerEbayAccount uea:liuserebay){
+            Map mpar = new HashMap();
+            mpar.put("ebayAccount",uea.getEbayAccount());
+
+            Map m = new HashMap();
+            m.put("ebayAccount",uea.getEbayAccount());
+            m.put("ebayName",uea.getEbayAccount());
+            m.put("maxDate",this.listingDataTaskQueryMapper.selectByMaxCreateDate(mpar).getCreateDate());
+            lim.add(m);
+        }
+        AjaxSupport.sendSuccessText("", lim);
     }
     /**
      * 刊登商品
@@ -642,6 +745,13 @@ public class ListingItemController extends BaseAction {
                 tld.setIsFlag("1");
                 this.iTradingListingData.updateTradingListingData(tld);
             }else{
+                String resStr = "";
+                if(res!=null){
+                    resStr = SamplePaseXml.getSpecifyElementTextAllInOne(res,"Errors","LongMessage");
+                }else{
+                    resStr = "请求失败！";
+                }
+                this.saveSystemLog(resStr,"提前结束商品报错",SiteMessageStatic.LISTING_DATA_UPDATE);
                 tla.setIsFlag("0");
             }
             this.iTradingListingData.insertTradingListingAmend(tla);
@@ -780,6 +890,13 @@ public class ListingItemController extends BaseAction {
                 this.iTradingListingAmend.saveListingAmend(tla);
                 this.iTradingListingData.updateTradingListingData(tld);
             }else{
+                String resStr = "";
+                if(returnString!=null){
+                    resStr = SamplePaseXml.getSpecifyElementTextAllInOne(returnString,"Errors","LongMessage");
+                }else{
+                    resStr = "请求失败！";
+                }
+                this.saveSystemLog(resStr,"快速修改报错",SiteMessageStatic.LISTING_DATA_UPDATE);
                 tla.setIsFlag("0");
                 this.iTradingListingAmend.saveListingAmend(tla);
                 Document document= DocumentHelper.parseText(returnString);
@@ -800,96 +917,104 @@ public class ListingItemController extends BaseAction {
     public ModelAndView editListingItem(HttpServletRequest request, HttpServletResponse response, ModelMap modelMap) throws Exception {
         String itemid = request.getParameter("itemid");
         String [] itemidStr = itemid.split(",");
+        TradingListingData tldata = this.iTradingListingData.selectByItemid(itemidStr[0]);
+        UsercontrollerEbayAccount uea = this.iUsercontrollerEbayAccount.selectByEbayAccount(tldata.getEbayAccount());
         String xml = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n" +
                 "<GetItemRequest xmlns=\"urn:ebay:apis:eBLBaseComponents\">\n" +
                 "<RequesterCredentials>\n" +
-                "<eBayAuthToken>AgAAAA**AQAAAA**aAAAAA**vVcRVA**nY+sHZ2PrBmdj6wVnY+sEZ2PrA2dj6wFk4GhCpGGoA+dj6x9nY+seQ**cx0CAA**AAMAAA**Z2MB0OtmO4JsPFBZPcjclippjnZG4bwpcpXYRXDdc6wEppv5m/WiCvsjyTKWoVXCMxQl2se3U6Vn93oBL6zg8EcR3GCXCC3ZbTpEQ3lBX8avBrME9VHo0RcfcE7oLVtnBAuSffy3Dk5ICUNyU7g57/rHw8d5DnO3JeitpQcTLKAInt+sEZslri3wa4Mx0xgyFW5OF3w8mNK8ib8+57PTHcApnp8xRTAlIVuwW3F/fGbSFVReS07/MulzlFXBoW/ZPLq+L2aLFpn5s+IB5/gB0HoDo5uGzRnALmXxUz8BuwJMrUE29830W7xVSEaYSYsOcJyue6PjJKyZt0rXf8TNHusXCHX240dWllrjMVxS7pEHgKb/FKfd/79PH3rXTFmuexesXS6H1lRmHBBE1iknFwtzzS+UeN22Rd6W+hjSjuOHB33o2gMS5cOdVXHuHyOQ6VJU3bJL/eNDgyB+wz3HhZmz6sF+lmLIRKP82H1QXdlwdGdpVhAhyqnE4FH4qTgPBMxv6c4jRL5BRuyUZDLeJI1WXmaZ4pNMss+MiME7Qu+7bP7S2TZhmValbfW/FvqSrxR9LlHji7iQSsz2m56x5TLjOtkFWjRxmB6C1wzBVtzdILzbvmA/1+9RlMevalW6bg22irusiv7iuD/AnC9pZ0Sju2XK/7WpjVW4/lZyBmRbqHQJPbU/5MU3xrM8pTV8rZmPfQrRh2araaWGIBE5IW3gsTrETpRUQybXd/a107ee61GwXEUqVat1EfznFpIs</eBayAuthToken>\n" +
+                "<eBayAuthToken>"+uea.getEbayToken()+"</eBayAuthToken>\n" +
                 "</RequesterCredentials>\n" +
                 "<ItemID>"+itemidStr[0]+"</ItemID>\n" +
                 "<DetailLevel>ReturnAll</DetailLevel>\n" +
                 "</GetItemRequest>";
         String res = this.cosPostXml(xml,APINameStatic.GetItem);
-        Item item = null;
-        if(res!=null){
-            item = SamplePaseXml.getItem(res);
-        }
-        modelMap.put("item",item);
-        modelMap.put("itemidstr",itemid);
-        SessionVO c= SessionCacheSupport.getSessionVO();
-        List<PublicUserConfig> paypalList = DataDictionarySupport.getPublicUserConfigByType(DataDictionarySupport.PUBLIC_DATA_DICT_PAYPAL, c.getId());
-        modelMap.put("paypalList",paypalList);
+            String ack = SamplePaseXml.getVFromXmlString(res,"Ack");
+            if("Success".equalsIgnoreCase(ack)||"Warning".equalsIgnoreCase(ack)){
+                Item item = null;
+                if(res!=null){
+                    item = SamplePaseXml.getItem(res);
+                }
+                modelMap.put("item",item);
+                modelMap.put("itemidstr",itemid);
+                SessionVO c= SessionCacheSupport.getSessionVO();
+                List<PublicUserConfig> paypalList = DataDictionarySupport.getPublicUserConfigByType(DataDictionarySupport.PUBLIC_DATA_DICT_PAYPAL, c.getId());
+                modelMap.put("paypalList",paypalList);
 
-        List<TradingDataDictionary> lidata = DataDictionarySupport.getTradingDataDictionaryByType(DataDictionarySupport.DATA_DICT_SITE);
-        modelMap.put("siteList",lidata);
+                List<TradingDataDictionary> lidata = DataDictionarySupport.getTradingDataDictionaryByType(DataDictionarySupport.DATA_DICT_SITE);
+                modelMap.put("siteList",lidata);
 
-        List<TradingDataDictionary> acceptList = DataDictionarySupport.getTradingDataDictionaryByType(DataDictionarySupport.RETURNS_ACCEPTED_OPTION);
-        modelMap.put("acceptList",acceptList);
+                List<TradingDataDictionary> acceptList = DataDictionarySupport.getTradingDataDictionaryByType(DataDictionarySupport.RETURNS_ACCEPTED_OPTION);
+                modelMap.put("acceptList",acceptList);
 
-        List<TradingDataDictionary> withinList = DataDictionarySupport.getTradingDataDictionaryByType(DataDictionarySupport.RETURNS_WITHIN_OPTION);
-        modelMap.put("withinList",withinList);
+                List<TradingDataDictionary> withinList = DataDictionarySupport.getTradingDataDictionaryByType(DataDictionarySupport.RETURNS_WITHIN_OPTION);
+                modelMap.put("withinList",withinList);
 
-        List<TradingDataDictionary> refundList = DataDictionarySupport.getTradingDataDictionaryByType(DataDictionarySupport.REFUND_OPTION);
-        modelMap.put("refundList",refundList);
+                List<TradingDataDictionary> refundList = DataDictionarySupport.getTradingDataDictionaryByType(DataDictionarySupport.REFUND_OPTION);
+                modelMap.put("refundList",refundList);
 
-        List<TradingDataDictionary> costPaidList = DataDictionarySupport.getTradingDataDictionaryByType(DataDictionarySupport.SHIPPING_COST_PAID);
-        modelMap.put("costPaidList",costPaidList);
+                List<TradingDataDictionary> costPaidList = DataDictionarySupport.getTradingDataDictionaryByType(DataDictionarySupport.SHIPPING_COST_PAID);
+                modelMap.put("costPaidList",costPaidList);
 
-        List<TradingDataDictionary> lidatas = this.iTradingDataDictionary.selectDictionaryByType("country");
-        modelMap.put("countryList",lidatas);
-        Long siteid = 0L;
-        for(TradingDataDictionary tdd : lidata){
-            if(tdd.getValue().equals(item.getSite())){
-                siteid=tdd.getId();
-                break;
+                List<TradingDataDictionary> lidatas = this.iTradingDataDictionary.selectDictionaryByType("country");
+                modelMap.put("countryList",lidatas);
+                Long siteid = 0L;
+                for(TradingDataDictionary tdd : lidata){
+                    if(tdd.getValue().equals(item.getSite())){
+                        siteid=tdd.getId();
+                        break;
+                    }
+                }
+                modelMap.put("siteid",siteid);
+                List<TradingDataDictionary> litype = DataDictionarySupport.getTradingDataDictionaryByType(DataDictionarySupport.DATA_DICT_SHIPPING_TYPE,siteid);
+                List<TradingDataDictionary> li1 = new ArrayList<TradingDataDictionary>();
+                List<TradingDataDictionary> li2 = new ArrayList<TradingDataDictionary>();
+                List<TradingDataDictionary> li3 = new ArrayList<TradingDataDictionary>();
+                List<TradingDataDictionary> li4 = new ArrayList<TradingDataDictionary>();
+                List<TradingDataDictionary> li5 = new ArrayList<TradingDataDictionary>();
+                for(TradingDataDictionary tdd:litype){
+                    if(tdd.getName1().equals("Economy services")){
+                        li1.add(tdd);
+                    }else if(tdd.getName1().equals("Expedited services")){
+                        li2.add(tdd);
+                    }else if(tdd.getName1().equals("One-day services")){
+                        li3.add(tdd);
+                    }else if(tdd.getName1().equals("Other services")){
+                        li4.add(tdd);
+                    }else if(tdd.getName1().equals("Standard services")){
+                        li5.add(tdd);
+                    }
+                }
+                modelMap.put("li1",li1);
+                modelMap.put("li2",li2);
+                modelMap.put("li3",li3);
+                modelMap.put("li4",li4);
+                modelMap.put("li5",li5);
+
+                List<TradingDataDictionary> liinter = DataDictionarySupport.getTradingDataDictionaryByType(DataDictionarySupport.DATA_DICT_SHIPPINGINTER_TYPE);
+                List<TradingDataDictionary> inter1 = new ArrayList();
+                List<TradingDataDictionary> inter2 = new ArrayList();
+                for(TradingDataDictionary tdd:liinter){
+                    if(tdd.getName1().equals("Expedited services")){
+                        inter1.add(tdd);
+                    }else if(tdd.getName1().equals("Other services")){
+                        inter2.add(tdd);
+                    }
+                }
+                modelMap.put("inter1",inter1);
+                modelMap.put("inter2",inter2);
+
+                List<TradingDataDictionary> lipackage = DataDictionarySupport.getTradingDataDictionaryByType(DataDictionarySupport.DATA_DICT_SHIPPINGPACKAGE);
+
+                modelMap.put("lipackage",lipackage);
+
+                List<PublicUserConfig> ebayList = DataDictionarySupport.getPublicUserConfigByType(DataDictionarySupport.PUBLIC_DATA_DICT_EBAYACCOUNT, c.getId());
+                modelMap.put("ebayList",ebayList);
+            }else{
+                Asserts.assertTrue(false,"查询数据报错！");
             }
-        }
-        modelMap.put("siteid",siteid);
-        List<TradingDataDictionary> litype = DataDictionarySupport.getTradingDataDictionaryByType(DataDictionarySupport.DATA_DICT_SHIPPING_TYPE,siteid);
-        List<TradingDataDictionary> li1 = new ArrayList<TradingDataDictionary>();
-        List<TradingDataDictionary> li2 = new ArrayList<TradingDataDictionary>();
-        List<TradingDataDictionary> li3 = new ArrayList<TradingDataDictionary>();
-        List<TradingDataDictionary> li4 = new ArrayList<TradingDataDictionary>();
-        List<TradingDataDictionary> li5 = new ArrayList<TradingDataDictionary>();
-        for(TradingDataDictionary tdd:litype){
-            if(tdd.getName1().equals("Economy services")){
-                li1.add(tdd);
-            }else if(tdd.getName1().equals("Expedited services")){
-                li2.add(tdd);
-            }else if(tdd.getName1().equals("One-day services")){
-                li3.add(tdd);
-            }else if(tdd.getName1().equals("Other services")){
-                li4.add(tdd);
-            }else if(tdd.getName1().equals("Standard services")){
-                li5.add(tdd);
-            }
-        }
-        modelMap.put("li1",li1);
-        modelMap.put("li2",li2);
-        modelMap.put("li3",li3);
-        modelMap.put("li4",li4);
-        modelMap.put("li5",li5);
 
-        List<TradingDataDictionary> liinter = DataDictionarySupport.getTradingDataDictionaryByType(DataDictionarySupport.DATA_DICT_SHIPPINGINTER_TYPE);
-        List<TradingDataDictionary> inter1 = new ArrayList();
-        List<TradingDataDictionary> inter2 = new ArrayList();
-        for(TradingDataDictionary tdd:liinter){
-            if(tdd.getName1().equals("Expedited services")){
-                inter1.add(tdd);
-            }else if(tdd.getName1().equals("Other services")){
-                inter2.add(tdd);
-            }
-        }
-        modelMap.put("inter1",inter1);
-        modelMap.put("inter2",inter2);
 
-        List<TradingDataDictionary> lipackage = DataDictionarySupport.getTradingDataDictionaryByType(DataDictionarySupport.DATA_DICT_SHIPPINGPACKAGE);
-
-        modelMap.put("lipackage",lipackage);
-
-        List<PublicUserConfig> ebayList = DataDictionarySupport.getPublicUserConfigByType(DataDictionarySupport.PUBLIC_DATA_DICT_EBAYACCOUNT, c.getId());
-        modelMap.put("ebayList",ebayList);
-
-        return forword("listingitem/editListingItem",modelMap);
+            return forword("listingitem/editListingItem",modelMap);
     }
 
 
@@ -966,6 +1091,8 @@ public class ListingItemController extends BaseAction {
             if(longMessage==null){
                 longMessage = tl.elementText("ShortMessage");
             }
+
+            this.saveSystemLog(longMessage,"修改价格数量报错",SiteMessageStatic.LISTING_DATA_UPDATE);
             AjaxSupport.sendFailText("fail",longMessage);
         }
 
@@ -1062,7 +1189,7 @@ public class ListingItemController extends BaseAction {
     }
 
     /**
-     * 保存运输选项数据
+     * 在线修改数据
      * @param request
      * @throws Exception
      */
@@ -1309,6 +1436,8 @@ public class ListingItemController extends BaseAction {
                 if(longMessage==null){
                     longMessage = tl.elementText("ShortMessage");
                 }
+
+                this.saveSystemLog(longMessage,"在线修改商品报错",SiteMessageStatic.LISTING_DATA_UPDATE);
                 AjaxSupport.sendFailText("fail",longMessage);
             }
         }
@@ -1323,4 +1452,175 @@ public class ListingItemController extends BaseAction {
             this.iTradingListingData.insertTradingListingAmend(tla);
         }
     }
+
+    /**
+     * 同步在线商品
+     * @param ebayName
+     * @param startTime
+     * @param endTime
+     * @param pageNumber
+     * @param token
+     * @return
+     */
+    public String getCosXml(String ebayName,String startTime,String endTime,int pageNumber,String token){
+        String colStr="<?xml version=\"1.0\" encoding=\"utf-8\"?>\n" +
+                "<GetSellerListRequest xmlns=\"urn:ebay:apis:eBLBaseComponents\">\n" +
+                "<RequesterCredentials>\n" +
+                "<eBayAuthToken>"+token+"</eBayAuthToken>\n" +
+                "</RequesterCredentials>\n" +
+                "<Pagination ComplexType=\"PaginationType\">\n" +
+                "\t<EntriesPerPage>100</EntriesPerPage>\n" +
+                "\t<PageNumber>"+pageNumber+"</PageNumber>\n" +
+                "</Pagination>\n" +
+                "<StartTimeFrom>"+startTime+"</StartTimeFrom>\n" +
+                "<StartTimeTo>"+endTime+"</StartTimeTo>\n" +
+                "<UserID>"+ebayName+"</UserID>\n" +
+                "<IncludeVariations>true</IncludeVariations><IncludeWatchCount>true</IncludeWatchCount>\n" +
+                "<DetailLevel>ReturnAll</DetailLevel>\n" +
+                "</GetSellerListRequest>​";
+        return colStr;
+    }
+
+    /**
+     * 同步在线商品
+     * @param request
+     * @param modelMap
+     * @param commonParmVO
+     * @throws Exception
+     */
+    @RequestMapping("/ajax/synListingData.do")
+    @ResponseBody
+    public void synListingData(HttpServletRequest request,ModelMap modelMap,CommonParmVO commonParmVO) throws Exception {
+        String [] ebayAccounts = request.getParameter("ebayAccount").split(",");
+        SessionVO c= SessionCacheSupport.getSessionVO();
+        SimpleDateFormat dft = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        Date beginDate = new Date();
+        Calendar date = Calendar.getInstance();
+        date.setTime(beginDate);
+        date.set(Calendar.DATE, date.get(Calendar.DATE) - 119);
+        String startTo="";
+        String startFrom="";
+        try {
+            Date endDate = dft.parse(dft.format(date.getTime()));
+            startTo = DateUtils.DateToString(new Date());
+            startFrom = DateUtils.DateToString(endDate);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        //站点列表
+        AddApiTask addApiTask = new AddApiTask();
+        UsercontrollerDevAccountExtend d = new UsercontrollerDevAccountExtend();
+        d.setApiCallName(APINameStatic.ListingItemList);
+        List<TradingDataDictionary> litdd = DataDictionarySupport.getTradingDataDictionaryByType("site");
+        List<UsercontrollerEbayAccount> liusereae = new ArrayList<UsercontrollerEbayAccount>();
+        for(String ebayAccount : ebayAccounts){
+            liusereae.add(this.iUsercontrollerEbayAccount.selectByEbayAccount(ebayAccount));
+        }
+        for(UsercontrollerEbayAccount ue : liusereae){
+            UsercontrollerEbayAccount ues = this.iUsercontrollerEbayAccount.selectById(ue.getId());
+            for(TradingDataDictionary tdd:litdd){
+                List<ListingDataTask> lidk = iListingDataTask.selectByflag(tdd.getName1(),ue.getEbayAccount());
+                if(lidk!=null&&lidk.size()>0){
+                    for(ListingDataTask ldk:lidk){
+                        ldk.setTaskFlag("1");
+                        ldk.setCreateDate(new Date());
+                        iListingDataTask.saveListDataTask(ldk);
+                    }
+                }
+                ListingDataTask ldt= new ListingDataTask();
+                ldt.setCreateDate(new Date());
+                ldt.setEbayaccount(ue.getEbayAccount());
+                ldt.setSite(tdd.getName1());
+                ldt.setToken(ue.getEbayToken());
+                ldt.setUserid(ue.getUserId());
+                ldt.setTaskFlag("2");
+                iListingDataTask.saveListDataTask(ldt);
+
+                d.setApiSiteid(tdd.getName1());
+                String colStr = this.getCosXml(ues.getEbayAccount(),startFrom,startTo,1,ues.getEbayToken());
+                TaskMessageVO taskMessageVO=new TaskMessageVO();
+                taskMessageVO.setMessageContext(ues.getEbayName()+"在"+tdd.getName()+"站点同步在线商品");
+                taskMessageVO.setMessageTitle("同步在线商品");
+                taskMessageVO.setMessageType(SiteMessageStatic.SYN_MESSAGE_LISTING_DATA_TYPE);
+                taskMessageVO.setBeanNameType(SiteMessageStatic.SYN_MESSAGE_LISTING_DATA_BEAN);
+                taskMessageVO.setMessageFrom("system");
+                SessionVO sessionVO=SessionCacheSupport.getSessionVO();
+                taskMessageVO.setMessageTo(sessionVO.getId());
+                taskMessageVO.setObjClass(new String[]{ues.getEbayAccount(),c.getId()+"",ues.getEbayToken(),tdd.getName1()});
+                addApiTask.execDelayReturn(d, colStr, apiUrl, taskMessageVO);
+            }
+        }
+        AjaxSupport.sendSuccessText("message", "操作成功！后台正在同步数据,请稍后查看！");
+    }
+
+    /**
+     * 保存同步在线商品数据
+     * @param cosXml
+     * @param ebayAccount
+     * @param userid
+     * @param pages
+     * @param token
+     *//*
+    public void saveSynListingData(String cosXml,String ebayAccount,Long userid,int pages,String token,String siteid){
+        SessionVO c= SessionCacheSupport.getSessionVO();
+        UserInfoService userInfoService = (UserInfoService) ApplicationContextUtil.getBean(UserInfoService.class);
+        TradingListingDataMapper tldm = (TradingListingDataMapper) ApplicationContextUtil.getBean(TradingListingDataMapper.class);
+        CommAutowiredClass commPars = (CommAutowiredClass) ApplicationContextUtil.getBean(CommAutowiredClass.class);//获取注入的参数
+        SimpleDateFormat dft = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        Date beginDate = new Date();
+        Calendar date = Calendar.getInstance();
+        date.setTime(beginDate);
+        date.set(Calendar.DATE, date.get(Calendar.DATE) - 119);
+        String startTo="";
+        String startFrom="";
+        try {
+            Date endDate = dft.parse(dft.format(date.getTime()));
+            startTo = DateUtils.DateToString(new Date());
+            startFrom = DateUtils.DateToString(endDate);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        try {
+            UsercontrollerDevAccountExtend d = userInfoService.getDevInfo(userid);
+            d.setApiSiteid(siteid);
+            d.setApiCallName(APINameStatic.ListingItemList);
+            AddApiTask addApiTask = new AddApiTask();
+            Map<String, String> resMap= addApiTask.exec(d, cosXml, commPars.apiUrl);
+            String res=resMap.get("message");
+            System.out.println(res);
+            String ack = SamplePaseXml.getVFromXmlString(res,"Ack");
+            if(ack.equals("Success")){
+                Document document= DocumentHelper.parseText(res);
+                Element rootElt = document.getRootElement();
+                Element totalElt = rootElt.element("PaginationResult");
+                String totalCount = totalElt.elementText("TotalNumberOfEntries");
+                String page =  totalElt.elementText("TotalNumberOfPages");
+                for(int i=1;i<=Integer.parseInt(page);i++){
+                    String colStr = this.getCosXml(ebayAccount,startFrom,startTo,i,token);
+                    TaskMessageVO taskMessageVO=new TaskMessageVO();
+                    taskMessageVO.setMessageContext("用户点击同步在线商品");
+                    taskMessageVO.setMessageTitle("同步在线商品");
+                    taskMessageVO.setMessageType(SiteMessageStatic.SYN_MESSAGE_LISTING_DATA_TYPE);
+                    taskMessageVO.setBeanNameType(SiteMessageStatic.SYN_MESSAGE_LISTING_DATA_BEAN);
+                    taskMessageVO.setMessageFrom("system");
+                    SessionVO sessionVO=SessionCacheSupport.getSessionVO();
+                    taskMessageVO.setMessageTo(sessionVO.getId());
+                    taskMessageVO.setObjClass(new String[]{ebayAccount,c.getId()+"",});
+                    addApiTask.execDelayReturn(d, colStr, apiUrl, taskMessageVO);
+                }
+            }else{
+                String resStr = "";
+                if(res!=null){
+                    resStr = SamplePaseXml.getSpecifyElementTextAllInOne(res,"Errors","LongMessage");
+                }else{
+                    resStr = "请求失败！";
+                }
+                this.saveSystemLog(resStr,"同步在线商品报错",SiteMessageStatic.SYN_MESSAGE_LISTING_DATA_TYPE);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+
+    }*/
 }

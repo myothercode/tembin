@@ -43,7 +43,7 @@
            /* var htm="<div class=\"ui-select\" style=\"width:8px\"><a href=\"javascript:void(0)\" onclick=\"deleteAutoSendMessage("+json.transactionid+","+json.messagetype+","+json.messageflag+");\">删除</a></div>";
             return htm;*/
             var hs="";
-            hs="<li onclick=deleteAutoSendMessage("+json.transactionid+","+json.messagetype+","+json.messageflag+"); value='1' doaction=\"readed\" >删除</li>";
+            hs="<li style=\"height:25px;\" onclick=deleteAutoSendMessage("+json.transactionid+","+json.messagetype+","+json.messageflag+"); value='1' doaction=\"readed\" >删除</li>";
             var pp={"liString":hs};
             return getULSelect(pp);
         }

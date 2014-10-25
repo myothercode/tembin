@@ -12,6 +12,9 @@ import com.base.database.trading.model.TradingDataDictionary;
 import com.base.database.trading.model.TradingReseCategory;
 import com.base.database.trading.model.UsercontrollerDevAccount;
 import com.base.database.trading.model.UsercontrollerEbayAccount;
+import com.base.database.userinfo.mapper.PublicDataDictCategorySpecificsMapper;
+import com.base.database.userinfo.model.PublicDataDictCategorySpecifics;
+import com.base.database.userinfo.model.PublicDataDictCategorySpecificsExample;
 import com.base.domains.CommonParmVO;
 import com.base.domains.DictDataFilterParmVO;
 import com.base.domains.SessionVO;
@@ -55,6 +58,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 /**
@@ -74,7 +78,7 @@ public class UtilController extends BaseAction{
     @Autowired
     private ITradingReseCategory iTradingReseCategory;
     @Autowired
-    public PublicDataDictMapper publicDataDictMapper;
+    public PublicDataDictCategorySpecificsMapper publicDataDictMapper;
     @Autowired
     public TestMapper testMapper;
     @Autowired
@@ -87,6 +91,9 @@ public class UtilController extends BaseAction{
     private KeyMoveListMapper keyMoveListMapper;
     @Autowired
     private SystemUserManagerService systemUserManagerService;
+
+    @Value("${EBAY.FINDING.KEY.API.URL}")
+    private String findingkeyapiUrl;
     /**用于更新页面token*/
     @RequestMapping("/ajax/getToken.do")
     @ResponseBody
@@ -116,17 +123,17 @@ public class UtilController extends BaseAction{
         vo.setStringV2(siteID);
         List<PublicDataDict> publicDataDictList1 = DataDictionarySupport.getPublicDataDictionaryByParentID(vo);*/
 
-        PublicDataDictExample tradingDataDictionaryExample =new PublicDataDictExample();
+        PublicDataDictCategorySpecificsExample tradingDataDictionaryExample =new PublicDataDictCategorySpecificsExample();
         tradingDataDictionaryExample.createCriteria().andItemTypeEqualTo(DictCollectionsUtil.categorySpecifics)
         .andItemParentIdEqualTo(parentCategoryID).andSiteIdEqualTo(siteID);
-        List<PublicDataDict> publicDataDictList = this.publicDataDictMapper.selectByExample(tradingDataDictionaryExample);
+        List<PublicDataDictCategorySpecifics> publicDataDictList = this.publicDataDictMapper.selectByExample(tradingDataDictionaryExample);
 
 
 
         if(publicDataDictList!=null && publicDataDictList.size()>0){
 
         }else {
-            publicDataDictList=new ArrayList<PublicDataDict>();
+            publicDataDictList=new ArrayList<PublicDataDictCategorySpecifics>();
         }
         AjaxSupport.sendSuccessText("",publicDataDictList);
         return;
@@ -215,25 +222,26 @@ public class UtilController extends BaseAction{
         sb.append("<entriesPerPage>10</entriesPerPage>");
         sb.append("</paginationInput>");
         sb.append("</findItemsByKeywordsRequest>");
-
+        List<TradingReseCategory> litr = new ArrayList<TradingReseCategory>();
         TradingDataDictionary tdd = DataDictionarySupport.getTradingDataDictionaryByID(Long.parseLong(siteid));
-
-        List<BasicHeader> headers = new ArrayList<BasicHeader>();
-        headers.add(new BasicHeader("X-EBAY-SOA-SERVICE-NAME","FindingService"));
-        headers.add(new BasicHeader("X-EBAY-SOA-OPERATION-NAME","findItemsByKeywords"));
-        headers.add(new BasicHeader("X-EBAY-SOA-SERVICE-VERSION","1.12.0"));
-        headers.add(new BasicHeader("X-EBAY-SOA-GLOBAL-ID",tdd.getDataDesc()));
-        headers.add(new BasicHeader("X-EBAY-SOA-SECURITY-APPNAME","sandpoin-23af-4f47-a304-242ffed6ff5b"));
-        headers.add(new BasicHeader("X-EBAY-SOA-REQUEST-DATA-FORMAT","XML"));
-        HttpClient httpClient= HttpClientUtil.getHttpsClient();
-        String res= HttpClientUtil.post(httpClient,"http://svcs.ebay.com/services/search/FindingService/v1?",sb.toString(),"UTF-8",headers);
-        List<TradingReseCategory> litr = SamplePaseXml.selectCategoryByKey(res, title);
-        for(int i = 0;i<litr.size()-1;i++){
-            TradingReseCategory tr1 = litr.get(i);
-            for(int j = litr.size()-1;j>i;j-- ){
-                TradingReseCategory tr2 = litr.get(j);
-                if(tr1.getCategoryId().equals(tr2.getCategoryId())){
-                    litr.remove(j);
+        if(title!=null&&!"".equals(title)) {
+            List<BasicHeader> headers = new ArrayList<BasicHeader>();
+            headers.add(new BasicHeader("X-EBAY-SOA-SERVICE-NAME", "FindingService"));
+            headers.add(new BasicHeader("X-EBAY-SOA-OPERATION-NAME", "findItemsByKeywords"));
+            headers.add(new BasicHeader("X-EBAY-SOA-SERVICE-VERSION", "1.12.0"));
+            headers.add(new BasicHeader("X-EBAY-SOA-GLOBAL-ID", tdd.getDataDesc()));
+            headers.add(new BasicHeader("X-EBAY-SOA-SECURITY-APPNAME", "sandpoin-23af-4f47-a304-242ffed6ff5b"));
+            headers.add(new BasicHeader("X-EBAY-SOA-REQUEST-DATA-FORMAT", "XML"));
+            HttpClient httpClient = HttpClientUtil.getHttpsClient();
+            String res = HttpClientUtil.post(httpClient, findingkeyapiUrl, sb.toString(), "UTF-8", headers);
+            litr = SamplePaseXml.selectCategoryByKey(res, title);
+            for (int i = 0; i < litr.size() - 1; i++) {
+                TradingReseCategory tr1 = litr.get(i);
+                for (int j = litr.size() - 1; j > i; j--) {
+                    TradingReseCategory tr2 = litr.get(j);
+                    if (tr1.getCategoryId().equals(tr2.getCategoryId())) {
+                        litr.remove(j);
+                    }
                 }
             }
         }
@@ -286,8 +294,14 @@ public class UtilController extends BaseAction{
     /**商品目录选择页面初始化*/
     @RequestMapping("category/initSelectCategoryPage.do")
     public ModelAndView initSelectCategoryPage(@ModelAttribute( "initSomeParmMap" )ModelMap modelMap,HttpServletRequest request){
-        modelMap.put("title",request.getParameter("title"));
         return forword("/commonPage/category/popSelectCategoryPage",modelMap);
+    }
+
+    /**查询商品目录选择页面初始化*/
+    @RequestMapping("category/initQueryCategoryPage.do")
+    public ModelAndView initQueryCategoryPage(@ModelAttribute( "initSomeParmMap" )ModelMap modelMap,HttpServletRequest request){
+        modelMap.put("title",request.getParameter("title"));
+        return forword("/commonPage/category/popQueryCategoryPage",modelMap);
     }
 
 /**商品类别相关结束==========================================================*/
@@ -361,7 +375,7 @@ public class UtilController extends BaseAction{
             for (PublicDataDict pdd : litdd) {
                 pdd.setSiteId(tdd.getId().toString());
                 try {
-                    this.publicDataDictMapper.insertSelective(pdd);
+                 //   this.publicDataDictMapper.insertSelective(pdd);
                 }catch(Exception e){
                     continue;
                 }
@@ -449,9 +463,16 @@ i++;
     /*一键搬家*/
     @RequestMapping("keymove/saveItemToLocation.do")
     @ResponseBody
-    public ModelAndView saveItemToLocation(ModelMap modelMap, HttpServletRequest request) throws Exception {
-        String startFrom = request.getParameter("startFrom");
-        String startTo = request.getParameter("startTo");
+    public void saveItemToLocation(ModelMap modelMap, HttpServletRequest request) throws Exception {
+        SimpleDateFormat dft = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        Date beginDate = new Date();
+        Calendar date = Calendar.getInstance();
+        date.setTime(beginDate);
+        date.set(Calendar.DATE, date.get(Calendar.DATE) - 119);
+        Date endDate = dft.parse(dft.format(date.getTime()));
+        String  startTo = DateUtils.DateToString(new Date());
+        String startFrom = DateUtils.DateToString(endDate);
+
         String [] userId = request.getParameterValues("ebayAccounts");
         TradingDataDictionary sitedata = DataDictionarySupport.getTradingDataDictionaryByID(Long.parseLong(request.getParameter("site")));
         String colStr;
@@ -467,8 +488,8 @@ i++;
                     "\t<EntriesPerPage>100</EntriesPerPage>\n" +
                     "\t<PageNumber>1</PageNumber>\n" +
                     "</Pagination>\n" +
-                    "<StartTimeFrom>"+DateUtils.DateToString(DateUtils.parseDateTime(startFrom))+"</StartTimeFrom>\n" +
-                    "<StartTimeTo>"+DateUtils.DateToString(DateUtils.parseDateTime(startTo))+"</StartTimeTo>\n" +
+                    "<StartTimeFrom>"+startFrom+"</StartTimeFrom>\n" +
+                    "<StartTimeTo>"+startTo+"</StartTimeTo>\n" +
                     "<UserID>"+uea.getEbayName()+"</UserID>\n" +
                     "<GranularityLevel>Coarse</GranularityLevel>\n" +
                     "<DetailLevel>ItemReturnDescription</DetailLevel>\n" +
@@ -507,8 +528,8 @@ i++;
                                 "\t<EntriesPerPage>100</EntriesPerPage>\n" +
                                 "\t<PageNumber>"+i+"</PageNumber>\n" +
                                 "</Pagination>\n" +
-                                "<StartTimeFrom>"+DateUtils.DateToString(DateUtils.parseDateTime(startFrom))+"</StartTimeFrom>\n" +
-                                "<StartTimeTo>"+DateUtils.DateToString(DateUtils.parseDateTime(startTo))+"</StartTimeTo>\n" +
+                                "<StartTimeFrom>"+startFrom+"</StartTimeFrom>\n" +
+                                "<StartTimeTo>"+startTo+"</StartTimeTo>\n" +
                                 "<UserID>"+uea.getEbayName()+"</UserID>\n" +
                                 "<GranularityLevel>Coarse</GranularityLevel>\n" +
                                 "<DetailLevel>ItemReturnDescription</DetailLevel>\n" +
@@ -519,14 +540,13 @@ i++;
                         if("Success".equals(acks)) {//ＡＰＩ成功请求，保存数据
                             li.addAll(SamplePaseXml.getItemElememt(res));
                         }else{//ＡＰＩ请求失败
-
+                            AjaxSupport.sendFailText("fail","请求数据失败！");
                         }
                     }
                 }
             }else{//ＡＰＩ请求失败
-
+                AjaxSupport.sendFailText("fail","请求数据失败！");
             }
-
         }
         List<Item> liitem = new ArrayList<Item>();
         for(String id : userId) {
@@ -548,8 +568,7 @@ i++;
                 }
             }
         }
-        //this.iTradingItem.saveListingItem(liitem);
-        return forword("/test",modelMap);
+        AjaxSupport.sendSuccessText("message", "操作成功！");
     }
 
     public String cosPost(){

@@ -35,7 +35,8 @@
 <script type="text/javascript" src=<c:url value ="/js/jquery/jquery-1.9.0.min.js" /> ></script>
 <script type="text/javascript" src=<c:url value ="/js/base.js" /> ></script>
 <script type="text/javascript" src=<c:url value ="/js/util.js" /> ></script>
-<script type="text/javascript" src=<c:url value ="/js/lhgdialog/lhgdialog.min.js" /> ></script>
+<%--<script type="text/javascript" src=<c:url value ="/js/lhgdialog/lhgdialog.min.js" /> ></script>--%>
+<script type="text/javascript" src=<c:url value ="/js/lhgdialog/lhgdialog.js" /> ></script>
 <script type="text/javascript" src=<c:url value ="/js/My97DatePicker/WdatePicker.js" /> ></script>
 <script type="text/javascript" src=<c:url value ="/js/jquery-blockui/jquery.blockUI.min.js" /> ></script>
 <script type="text/javascript" src=<c:url value ="/js/table/jquery.table.js" /> ></script>
@@ -53,10 +54,18 @@
     var path = window["path"] = '<%=rootPath%>';
     var nowDateTime="<fmt:formatDate value="${nowDateTime}" pattern="yyyy-MM-dd HH:mm:ss"/>";
     var _token="<%=_token%>";
+    var itemListIconUrl_="${itemListIconUrl}";
 
     var _sku=null;
     var _jscacheVersion="${jscacheVersion}";
 
+
+    /**关闭弹窗的时候会统一执行的方法*/
+    function doitAfterCloseLhgDiolag(){
+        Base.token();
+    }
+
+    /**清除本地缓存*/
     function cleanLocalStorageFunction() {
         try {
             var __v = __getjv();
@@ -80,6 +89,7 @@
             return localStorage.getItem("tiancheng_jscacheVersion");
         }
         cleanLocalStorageFunction();
+
 
 
 

@@ -26,7 +26,13 @@ var Base={
         }, {"async": async});
     },
     handleException: function (exception) {
-        var errorDivJquery = $("#_errorDiv");
+        var erM='请求出错了！';
+        if(exception!=null && exception.responseText!=null && exception.responseText !=''){
+            erM=exception.responseText;
+        }
+        flashMessage_(erM);
+
+        /*var errorDivJquery = $("#_errorDiv");
         if(!errorDivJquery.length) {
             errorDivJquery = $("<div></div>").attr("id", "_errorDiv").css("position", "absolute").css("z-indx",
                 99999).css("background", "#aaaaaa").css("top", "30px").css("width", "100%").css("height",
@@ -34,7 +40,7 @@ var Base={
                     $(this).hide();
                 }).appendTo("body");
         }
-        errorDivJquery.html(exception.responseText).show();
+        errorDivJquery.html(exception.responseText).show();*/
     }
 };
 
@@ -147,9 +153,11 @@ function getULSelect(par){
     var inputval_=par["inputval"]==null?"":(par["inputval"]);
     var showname_=par["showname"]==null?"请选择":(par["showname"]);
 
-    var hs="<ul "+ulid_+"><li style='width: 70px;height: 25px;' class=\"select_box\"><span style='color: blue'>"+showname_+"</span><ul class=\"son_ul\">";
+    var hs="<ul "+ulid_+">" +
+        "<li style='width: 70px;height: 25px;' class=\"select_box\">" +
+        "<span style='color: blue;text-align: center'>"+showname_+"</span><ul class=\"son_ul\">";
     hs+="<input type='hidden' "+inputid_+" value="+inputval_+"  />";
-    hs+=lis;
+    hs+=lis.replace(/style='height:25px'/ig,"style='height:25px;text-align: center'");
     hs+="</ul></li></ul>";
 
     return hs;
@@ -172,6 +180,67 @@ function initULSelect(){
         $(this).parents('li').find('ul').slideUp();
     });
 }
+
+
+/**一闪即逝的提示*/
+function flashMessage_(erM){
+    $.blockUI({
+        message: erM,
+        fadeIn: 700,
+        fadeOut: 700,
+        timeout: 5000,
+        showOverlay: false,
+        centerY: false,
+        css: {
+            width: '350px',
+            top: '200px',
+            left: '',
+            right: '10px',
+            border: 'none',
+            padding: '5px',
+            backgroundColor: '#000',
+            '-webkit-border-radius': '10px',
+            '-moz-border-radius': '10px',
+            opacity: .6,
+            color: '#fff'
+        }
+    });
+}
+
+/**google自带的提示*/
+function chrome_Notice(tit,m) {
+    var notification_ = null;
+    var pp={"body":m};
+    if(tit==null || tit==""){
+        tit="通知";
+    }
+    if (!("Notification" in window)) {
+        alert("This browser does not support desktop notification");
+        return;
+    }
+    else if (Notification.permission === "granted") {
+        notification = new Notification(tit,pp);
+        notification.onshow = function () {
+            setTimeout(notification.close.bind(notification), 5000);
+        }
+    }
+
+    else if (Notification.permission === "denied") {
+        flashMessage_("您设置了拒绝桌面通知");
+    }
+    else {
+        Notification.requestPermission(function (status) {
+            if (!('permission' in Notification)) {
+                Notification.permission = permission;
+            }
+            if (permission === "granted") {
+                notification = new Notification(tit,pp);
+            }
+        });
+    }
+}
+
+
 
 
 

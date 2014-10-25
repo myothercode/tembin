@@ -14,6 +14,7 @@ import com.baidu.ueditor.upload.Uploader;
 import com.base.utils.applicationcontext.ApplicationContextUtil;
 import com.base.utils.applicationcontext.RequestResponseContext;
 import com.base.utils.imageManage.service.ImageService;
+import org.apache.commons.lang.StringUtils;
 
 public class ActionEnter {
 	
@@ -106,8 +107,14 @@ public class ActionEnter {
                 ImageService imageService1= (ImageService) ApplicationContextUtil.getBean(ImageService.class);
                 String p1= imageService1.getImageDir();
                 String userLoginID=imageService1.getImageUserDir();
+                String skuPath=request.getParameter("_sku");
+                if(StringUtils.isEmpty(skuPath)){
+                    state=new BaseState(false);
+                    state.putInfo("fail","sku不能为空");
+                   break;
+                }
                 conf.put("rootPath",p1);//在本地存放的目录
-                conf.put("dir","/"+userLoginID+"/"+request.getParameter("_sku"));//图片相对路径
+                conf.put("dir","/"+userLoginID+"/"+skuPath);//图片相对路径
                 conf.put("action","listImage");
                 int starti = this.getStartIndex();
                 state = new FileManager( conf ).listFile( starti );

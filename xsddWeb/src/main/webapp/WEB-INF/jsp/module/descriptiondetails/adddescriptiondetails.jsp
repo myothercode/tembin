@@ -163,7 +163,7 @@
                     alert(r);
                     W.descDiag.close();
                     Base.token();
-                    W.refreshTable();
+                    W.refreshTableDesciption();
                 },
                     function(m,r){
                         alert(r);

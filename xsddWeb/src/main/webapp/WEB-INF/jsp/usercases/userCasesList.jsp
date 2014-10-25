@@ -51,8 +51,8 @@
         function refreshTable(){
             $("#UserCasesListTable").selectDataAfterSetParm({"bedDetailVO.deptId":"", "isTrue":0});
         }
-        function refreshTable1(account,type,status,days,name,content){
-            $("#UserCasesListTable").selectDataAfterSetParm({"bedDetailVO.deptId":"", "isTrue":0,"account":account,"type":type,"status":status,"days":days,"name":name,"content":content});
+        function refreshTable1(account,type,status,days,name,content,starttime,endtime){
+            $("#UserCasesListTable").selectDataAfterSetParm({"bedDetailVO.deptId":"", "isTrue":0,"account":account,"type":type,"status":status,"days":days,"name":name,"content":content,"starttime1":starttime,"endtime1":endtime});
         }
         /**组装操作选项*/
         function makeOption1(json){
@@ -76,7 +76,7 @@
                     "</div>";
             return htm;*/
             var hs="";
-            hs+="<li onclick=selectOperation('"+json.transactionid+"','"+json.id+"','"+json.sellerid+"',this); value='3' doaction=\"readed\" >处理纠纷</li>";
+            hs+="<li style=\"height:25px;\" onclick=selectOperation('"+json.transactionid+"','"+json.id+"','"+json.sellerid+"',this); value='3' doaction=\"readed\" >处理纠纷</li>";
             var pp={"liString":hs};
             return getULSelect(pp);
         }
@@ -141,7 +141,7 @@
                 content: 'url:'+url,
                 icon: 'succeed',
                 width:1100,
-                height:1100,
+                height:700,
                 lock:true
             });
         }
@@ -152,6 +152,8 @@
             var days=$("#caseDays").val();
             var name=$("#selectName").val();
             var content=$("#qeuryContent").val();
+            var starttime=$("#starttime").val();
+            var endtime=$("#endtime").val();
             $("#UserCasesListTable").initTable({
                 url:path + "/userCases/ajax/loadUserCasesList.do?type="+type,
                 columnData:[
@@ -168,7 +170,7 @@
                 showIndex:false,
                 rowClickMethod:rowClickMethod
             });
-            refreshTable1(account,type,status,days,name,content)
+            refreshTable1(account,type,status,days,name,content,starttime,endtime)
             alert("查询完成");
         }
         function selectAccount(name,count){
@@ -210,6 +212,8 @@
                 if(count==i){
                     $(days[i]).attr("class","newusa_ici");
                     $("#caseDays").val(name);
+                    $("#starttime").val("");
+                    $("#endtime").val("");
                 }else{
                     $(days[i]).attr("class","newusa_ici_1");
                 }
@@ -268,6 +272,8 @@
         <li class="new_usa_list"><span class="newusa_i">处理状态：</span><a href="#"><span scop="status" onclick="selectStatus(null,0);" class="newusa_ici_1">&nbsp;全部&nbsp;&nbsp;</span></a><a href="#"><span scop="status" onclick="selectStatus('1',1);" class="newusa_ici_1">已处理&nbsp;</span></a><a href="#"><span scop="status" onclick="selectStatus('0',2);" class="newusa_ici_1">未处理&nbsp;</span></a></li>
         <div class="newsearch">
             <span class="newusa_i">搜索内容：</span><a href="#"><span scop="days" onclick="selectDays(null,0);" class="newusa_ici_1">&nbsp;全部&nbsp;&nbsp;</span></a><a href="#"><span scop="days" onclick="selectDays('1',1);" class="newusa_ici_1">&nbsp;今天&nbsp;&nbsp;</span></a><a href="#"><span scop="days" onclick="selectDays('2',2);" class="newusa_ici_1">&nbsp;昨天&nbsp;&nbsp;</span></a><a href="#"><span scop="days" onclick="selectDays('7',3);" class="newusa_ici_1">7天以内&nbsp;</span></a><a href="#"><span scop="days" onclick="selectDays('30',4);" class="newusa_ici_1">30天以内&nbsp;</span></a>
+            <span style="float: left;color: #5F93D7;">从</span><input style="float: left;color: #5F93D7;width: 90px;height: 26px;" id="starttime"  type="text" onfocus="WdatePicker({isShowWeek:true,dateFmt:'yyyy-MM-dd'})"/>
+            <span style="float: left;color: #5F93D7;">到</span><input style="float: left;color: #5F93D7;width: 90px;height: 26px;margin-right: 20px;" id="endtime"  type="text" onfocus="WdatePicker({isShowWeek:true,dateFmt:'yyyy-MM-dd'})"/>
 <span id="sleBG">
 <span id="sleHid">
 <select id="selectName" name="type" class="select">
@@ -299,6 +305,7 @@
         </div>
     </div>
     <!--综合结束 -->
+    <div style="width: 100%;float: left;height: 5px"></div>
     <div id="UserCasesListTable"></div>
     <%--<table width="100%" border="0" align="left" cellspacing="0" style="margin-top:20px;">
         <tbody><tr>

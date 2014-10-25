@@ -10,6 +10,13 @@
 <html>
 <head>
 <title></title>
+<script type="text/javascript" src=<c:url value ="/js/item/shipping.js" /> ></script>
+<script type="text/javascript" src=<c:url value ="/js/item/itemAddress.js" /> ></script>
+<script type="text/javascript" src=<c:url value ="/js/item/paypal.js" /> ></script>
+<script type="text/javascript" src=<c:url value ="/js/item/returnpolicy.js" /> ></script>
+<script type="text/javascript" src=<c:url value ="/js/item/buyer.js" /> ></script>
+<script type="text/javascript" src=<c:url value ="/js/item/description.js" /> ></script>
+<script type="text/javascript" src=<c:url value ="/js/item/disprice.js" /> ></script>
 <script type="text/javascript" src=
         <c:url value="/js/ueditor/ueditor.config.js"/>></script>
 <script type="text/javascript" src=
@@ -24,6 +31,7 @@
         <c:url value="/js/item/addItem2.js"/>></script>
 <script type="text/javascript" src=
 <c:url value="/js/table/jquery.tablednd.js"/>></script>
+
 <!-- bootstrap -->
 <link href=
       <c:url value="/css/bootstrap/bootstrap.css"/> rel="stylesheet">
@@ -50,10 +58,11 @@
 <!-- this page specific styles -->
 <link rel="stylesheet" href=
 <c:url value="/css/compiled/gallery.css"/> type="text/css" media="screen"/>
+
 <script>
     var myDescription = null;
     var payid = '${item.payId}';
-    var buyid = '${item.buyerId}'
+    var buyid = '${item.buyerId}';
     var discountpriceinfoId = '${item.discountpriceinfoId}';
     var itemLocationId = '${item.itemLocationId}';
     var returnpolicyId = '${item.returnpolicyId}';
@@ -62,9 +71,18 @@
     var imageUrlPrefix = '${imageUrlPrefix}';
     var url = window.location.href;
     $(document).ready(function () {
-        if($("#PrimaryCategoryshow").text()==""){
-            $("#PrimaryCategoryshow").hide();
-        }
+        $("#oneAttr").show();
+        $("#twoAttr").hide();
+        $("#Auction").hide();
+        $("dt[name='priceMessage']").show();
+
+
+        $("div[name='showModel']").show();
+        $("div[name='showModel']").hide();
+        $("div[name='priceMessage']").addClass("new_ic_1");
+        $("#priceMessage").show()
+
+
         var srcs = '${ttit.templateViewUrl}';
         $("#templateUrl").attr("src", imageUrlPrefix + srcs);
 
@@ -89,7 +107,7 @@
 
 
         <c:forEach items="${lipa}" var="pa">
-        $("#trValue").after().append(addValueTr('${pa.name}', '${pa.value}'));
+            $("#attTable").append(addValueTr('${pa.name}', '${pa.value}'));
         </c:forEach>
 
         var ebayAccount = '${item.ebayAccount}';
@@ -112,25 +130,26 @@
         //多属性
         <c:forEach items="${liv}" var="liv" varStatus="status">
         var str = "";
-        str += "<tr><td class='dragHandle'></td>";
-        str += "<td><input type='text' name='SKU' class='validate[required] form-control' value='${liv.sku}'></td>";
-        str += "<td><input type='text' name='Quantity' class='validate[required] form-control' value='${liv.quantity}'></td>";
-        str += "<td><input type='text' name='StartPrice.value' class='validate[required] form-control' value=${liv.startprice}></td>";
+        str += "<tr style='height: 32px;'><td class='dragHandle' width='5px;'></td>";
+        str += "<td><span style='color: dodgerblue;' onclick='showMoreAttrsText(this)'>${liv.sku}</span><input type='hidden' name='SKU' onblur='clearThisText(this);' onkeyup='getJoinValue(this)' class='validate[required] form-control' value='${liv.sku}'></td>";
+        str += "<td><span style='color: dodgerblue;' onclick='showMoreAttrsText(this)'>${liv.quantity}</span><input type='hidden' name='Quantity' onblur='clearThisText(this);' onkeyup='getJoinValue(this)' size='8' class='validate[required] form-control' value='${liv.quantity}'></td>";
+        str += "<td><span style='color: dodgerblue;' onclick='showMoreAttrsText(this)'>${liv.startprice}</span><input type='hidden' name='StartPrice.value' onblur='clearThisText(this);' onkeyup='getJoinValue(this)'  size='8' class='validate[required] form-control' value=${liv.startprice}></td>";
         <c:forEach items="${liv.tradingPublicLevelAttr}" var="ta">
-        str += "<td><input type='text' name='attr_Value'  class='validate[required] form-control' onblur='addb(this)' size='10' value='${ta.value}'></td>";
+        str += "<td><span style='color: dodgerblue;' onclick='showMoreAttrsText(this)'>${ta.value}</span><input type='hidden' name='attr_Value' onkeyup='getJoinValue(this)'  class='validate[required] form-control' onblur='addb(this)' size='10' value='${ta.value}'></td>";
         </c:forEach>
-        str += "<td name='del'><a href='javascript:void(0)' onclick='removeCloums(this)'>删除</a></td>";
+        str += "<td name='del'><img src='"+path+"/img/del.png' onclick='removeCloums(this)'></td>";
         str += "</tr>";
         $("#moreAttrs").append(str);
         </c:forEach>
         <c:forEach items="${clso}" var="lis" varStatus="status">
         $("#moreAttrs tr:eq(0)").find("td").each(function (i, d) {
             if ($(d).attr("name") == "del") {
-                $(d).before("<td><a href='javascript:void(0)' onclick='removeCols(this)'>移除</a><input type='text' size='8' value='${lis.value}' name='attr_Name' onblur='addc(this)'></td>");
+                $(d).before("<td width='10%'><span style='color: dodgerblue;' onclick='showMoreAttrsText(this)'>${lis.value}</span><input type='hidden' onkeyup='getJoinValue(this)' size='8' value='${lis.value}' name='attr_Name' onblur='addc(this)'>&nbsp;&nbsp;<img src='"+path+"/img/del.png' onclick='removeCols(this)'></td>");
             }
         });
         </c:forEach>
-
+        $("#moreAttrs").tableDnD({dragHandle: ".dragHandle"});
+        changeBackcolour();
 
         var attrValue = new Map();
         $("#moreAttrs tr td:nth-child(5)").each(function (i, d) {
@@ -160,15 +179,15 @@
         var picstr = '';
         <c:if test="${lipic!=null}">
         var showStr = "<div class='panel' style='display: block'>";
-        showStr += " <section class='example'><ul class='gbin1-list' id='picture_" + ebayAccount + "'></ul></section> ";
+        showStr += " <section class='example'><ul class='gbin1-list' style='padding-left: 20px;' id='picture_" + ebayAccount + "'></ul></section> ";
         showStr += " <script type=text/plain id='picUrls_" + ebayAccount + "'/>";
-        showStr += " <div style='padding-left: 60px;'><a href='javascript:void(0)' id='apicUrls_" + ebayAccount + "' onclick='selectPic(this)'>选择图片</a></div> </div> ";
+        showStr += " <div style='padding-left: 60px;'>&nbsp;&nbsp;&nbsp;&nbsp;<b class='new_button'><a href='javascript:void(0)' id='apicUrls_" + ebayAccount + "' onclick='selectPic(this)' style=''>选择图片</a></b></div> </div> ";
         $("#showPics").append(showStr);
         $().image_editor.init("picUrls_" + ebayAccount); //编辑器的实例id
         $().image_editor.show("apicUrls_" + ebayAccount); //上传图片的按钮id
         <c:forEach items="${lipic}" var="lipic" varStatus="status">
-        picstr += '<li><div style="position:relative"><input type="hidden" name="PictureDetails_' + ebayAccount + '.PictureURL" value="${lipic.value}">' +
-                '<img src=${lipic.value} height="100%" width="100%" />' +
+        picstr += '<li><div style="position:relative"><input type="hidden" name="pic_mackid" value="${lipic.attr1}"/><input type="hidden" name="PictureDetails_' + ebayAccount + '.PictureURL" value="${lipic.value}">' +
+                '<img src=${lipic.value} height="80" width="80" />' +
                 '<a onclick="deletePic(this)" style="position: absolute;top: -45px;right: -15px;" href=\'javascript:void(0)\'>&times;</a></div>';
         picstr += "</li>";
         </c:forEach>
@@ -191,13 +210,13 @@
         <c:forEach items="${lipics}" var="pics">
         $("#${pics.tamname}").before("<input type='hidden' name='VariationSpecificValue_${pics.tamname}' value='${pics.tamname}'>");
         <c:forEach items="${pics.litam}" var="pi">
-        $("#${pics.tamname}").before("<span><input type='hidden' name='${pics.tamname}' value='${pi.value}'><img src='${pi.value}' height='50' width='50' /> <a href='javascritp:void(0)' onclick='removeThis(this)'>移除</a></span>");
+        $("#${pics.tamname}").before("<span><input type='hidden' name='pic_mackid_more' value='${pi.attr1}'/><input type='hidden' name='${pics.tamname}' value='${pi.value}'><img src='${pi.value}' height='50' width='50' /> <img src='"+path+"/img/del.png' onclick='removeThis(this)'></span>&nbsp;&nbsp;&nbsp;&nbsp;");
         </c:forEach>
         </c:forEach>
 
         var privatelisting = '${tai.privatelisting}';
         $("input[name='PrivateListing'][value='" + privatelisting + "']").attr("checked", true);
-        var listingduration = '${tai.listingduration}';
+        var listingduration = '${item.listingduration}';
         $("select[name='ListingDuration']").find("option[value='" + listingduration + "']").attr("selected", true);
         //ReservePrice,BuyItNowPrice,ListingFlag,ListingScale,SecondFlag
         var reserveprice = '${tai.reserveprice}';
@@ -213,6 +232,33 @@
         initDraug();//初始化拖动图片
         changeBackcolour();
         initModel();
+        var item_id = '${item.id}';
+        if(item_id!=null&&item_id!=""){
+            addTypeAttr();
+        }
+        var categoryId = '${item.categoryid}';
+        if(site!=""&&categoryId!=""){
+            getCategoryName(categoryId,site);
+            $("#PrimaryCategoryshow").show();
+        }else{
+            $("#PrimaryCategoryshow").hide();
+        }
+
+
+
+        <c:if test="${templi!=null}">
+            var strss="<div style='position:relative'>";
+            <c:forEach items="${templi}" var="temp">
+                strss += '<span style="padding-left: 14px;"><input type="hidden" name="blankimg" value="${temp.value}">' +
+                    '<img src="${temp.value}" height=\"80px\" width=\"80px\" />' +
+                    '<a onclick="removeTemplatePic(this)" style="position: absolute;top: 0px;" href=\'javascript:void(0)\'>&times;</a></span>';
+            </c:forEach>
+            strss += "</div>";
+            $("#showTemplatePic").append(strss);
+            $().image_editor.init("blankImg_main"); //编辑器的实例id
+            $().image_editor.show("blankImg_id"); //上传图片的按钮id
+        </c:if>
+
 
     });
 </script>
@@ -248,25 +294,10 @@
     .price_div li em input{
         padding-right: 8px;
     }
-    .new h1{
-        float: left;
-        height: 35px;
-        width: 100%;
-        font-size: 16px;
-        line-height: 35px;
-        font-weight: normal;
-        color: #333;
-        background-color: #F7F7F7;
-        text-indent: 1em;
-        margin-top: 9px;
-        margin-right: 0px;
-        margin-bottom: 9px;
-        margin-left: 50px;
-    }
 </style>
 </head>
 <c:set var="item" value="${item}"/>
-<body style="height: 2949px;">
+<body>
 <div class="new_all">
 <form id="form" class="new_user_form">
 <div class="here">当前位置：首页 > 刊登管理 > <b>刊登</b></div>
@@ -279,6 +310,7 @@
     <li>
         <dt>名称</dt>
         <div class="new_left">
+            <input type="hidden" id="ListingMessage" name="ListingMessage"/>
             <input type="text" class="validate[required] form-control" style="width:300px;" name="itemName"
                    id="itemName"
                    value="${item.itemName}">
@@ -289,7 +321,7 @@
         <em style="color:#48a5f3"><input type="radio" name="listingType" value="Chinese"
                                          onchange="changeRadio('Chinese')">拍买</em>
         <em style="color:#48a5f3"><input type="radio" name="listingType" value="FixedPriceItem"
-                                         onchange="changeRadio('FixedPriceItem')">固价</em>
+                                         onchange="changeRadio('FixedPriceItem')" checked="checked">固价</em>
         <em style="color:#48a5f3"><input type="radio" name="listingType" value="2" onchange="changeRadio('2')">多属性</em>
     </li>
 
@@ -329,12 +361,9 @@
     </li>
     <li>
         <dt>无货在线</dt>
-        <em style="color:#48a5f3"><input type="checkbox" name="OutOfStockControl" value="1">是否开启无货在线</em>
+        <em style="color:#48a5f3"><input type="checkbox" name="OutOfStockControl" value="1" checked>是否开启无货在线</em>
     </li>
-    <li>
-        <dt>刊登消息</dt>
-        <em style="color:#48a5f3"><input type="checkbox" name="ListingMessage" value="1" checked>延迟通知刊登消息</em>
-    </li>
+
     <div id="titleDiv">
         <li>
             <dt>物品标题</dt>
@@ -360,13 +389,14 @@
         <dt>第一分类</dt>
         <div class="new_left">
             <input type="text" id="PrimaryCategory" style="width:300px;" name="PrimaryCategory.categoryID"
-                   onblur="addTypeAttr(this)" class="validate[required,custom[integer]] form-control"
-                   title="PrimaryCategory.categoryID"
-                   class="validate[required]" value="${item.categoryid}">
+                   onblur="addTypeAttr(this)" class="validate[required,custom[number]] form-control"
+                   title="PrimaryCategory.categoryID"  value="${item.categoryid}">
             <b class="new_button"><a data-toggle="modal" href="javascript:void(0)" onclick="selectType()">选择分类</a></b>
+
+            <b class="new_button"><a data-toggle="modal" href="javascript:void(0)" onclick="queryType()">搜索分类</a></b>
         </div>
     </li>
-    <li id="PrimaryCategoryshow"></li>
+    <li id="PrimaryCategoryshow" style="padding-left: 100px;"></li>
     <div class="panel">
         <li style="background:#F7F7F7; padding-top:9px;">
             <dt>第二分类</dt>
@@ -391,16 +421,18 @@
                 <table width="80%" id="moreAttrs" class="tablednd">
                     <tr style="height: 32px;" class="nodrop nodrag">
                         <td style="width: 15px">&nbsp;</td>
-                        <td>Sub SKU</td>
-                        <td>数量</td>
-                        <td>价格</td>
-                        <td name="del">操作</td>
+                        <td width="20%">Sub SKU</td>
+                        <td width="10%">数量</td>
+                        <td width="10%">价格</td>
+                        <td name="del" width="30%">操作</td>
                     </tr>
                 </table>
-                <a href="javascript:void(0)" style="padding-left: 120px;" onclick="addInputSKU(this)">添加SKU项</a> &nbsp;&nbsp;&nbsp;&nbsp;<a
-                    href="javascript:void(0)" onclick="addMoreAttr(this)">添加属性</a>
+                <div style="padding-left: 120px;height: 40px;padding-top: 16px;">
+                    <b class="new_button_1"><a data-toggle="modal" href="javascript:void(0);" onclick="addInputSKU(this)">添加SKU项</a></b>
+                    <b class="new_button_1"><a data-toggle="modal" href="javascript:void(0);" onclick="addMoreAttr(this);">添加属性</a></b>
+                </div>
             </div>
-            <div id="picMore">
+            <div id="picMore" style="padding-left: 60px;width: 150px;">
 
             </div>
         </li>
@@ -409,22 +441,25 @@
     <li style="height: 100%;">
         <dt>属性</dt>
         <div>
-            <table id="attTable">
+            <table id="attTable" width="600px;">
                 <tr>
-                    <td align="center">名称</td>
-                    <td align="center">值</td>
-                    <td align="center">操作</td>
+                    <td align="center" width="30%">名称</td>
+                    <td align="center" width="30%">值</td>
+                    <td align="center" width="30%">操作</td>
                 </tr>
-                <tr>
+                <%--<tr>
                     <td colspan="3" id="trValue"></td>
-                </tr>
+                </tr>--%>
             </table>
-            <a style="padding-left: 120px;" href="javascript:void(0);" onclick="addValue();">添加自定义属性</a>
+            <div style="padding-left: 120px;height: 40px;padding-top: 16px;">
+                <b class="new_button_1"><a data-toggle="modal" href="javascript:void(0);" onclick="addValue();">添加新的物品属性</a></b>
+            </div>
 
-            <div id="typeAttrs"></div>
+
+            <div style="padding-left: 80px;" id="typeAttrs"></div>
         </div>
     </li>
-    <li>
+    <li style="padding-top: 9px;">
         <dt>物品状况</dt>
         <div class="ui-select dt5">
             <select name="ConditionID">
@@ -438,14 +473,31 @@
         </div>
     </li>
     <h1>模板信息</h1>
-    <li style="height: 100%;">
-        <dt>模板</dt>
-        <div class="new_left">
-            <div id="showTemplate">
-                <input type="hidden" id="templateId" name="templateId" value="${ttit.id}">
-                <img src="" id="templateUrl">
+    <div class="new_tab_ls" id="selectModel" style="padding-left: 20px;border-bottom-width: 1px;border-bottom-color: gainsboro;">
+        <dt id=menu1 name="template" class=new_tab_1 onclick="setTemplate(this)">模板</dt>
+        <dt id=menu2 name="templatepic" class=new_tab_2 onclick="setTemplate(this)">模板图片</dt>
+    </div>
+    <li style="height: 100%;padding-top: 10px;">
+        <div  style="display: block;" id="template">
+            <dt>模板</dt>
+            <div class="new_left">
+                <div id="showTemplate">
+                    <input type="hidden" id="templateId" name="templateId" value="${ttit.id}">
+                    <img src="" width="200px" height="200px" id="templateUrl" onerror="this.src=''">
+                </div>
+                <b class="new_button"><a href="javascript:void(0)" onclick="selectTemplate(this)">选择模板</a></b>
             </div>
-            <a href="javascript:void(0)" onclick="selectTemplate(this)">选择模板</a>
+        </div>
+        <div style="display: none;" id="templatepic">
+            <dt>模板图片</dt>
+            <div style='display: block; vertical-align:text-bottom;height: 100px;'>
+                <script type=text/plain id='blankImg_main'></script>
+                <span id="showTemplatePic"></span>
+                <div style="height: 8px;"></div>
+                <div style="padding-left: 100px;">
+                    <b class="new_button"><a style="padding-bottom: 4px;" href='javascript:void(0)' id='blankImg_id' onclick='selectTemplatePic(this)'>选择模板图片</a></b>
+                </div>
+            </div>
         </div>
     </li>
     <h1>商品描述</h1>
@@ -458,7 +510,8 @@
     </li>
 
 </div>
-<div class="new_tab">
+<div >
+<div class="new_tab" style="width: 980px">
     <dt class=new_ic_1 name=priceMessage onmouseover="setTab(this)">价格管理</dt>
     <dt name=pay onmouseover="setTab(this)">付款方式</dt>
     <dt name=shippingDeails onmouseover="setTab(this)">运输选项</dt>
@@ -468,27 +521,29 @@
     <dt name=discountpriceinfo onmouseover="setTab(this)">折扣信息</dt>
     <dt name=descriptiondetails onmouseover="setTab(this)">卖家描述</dt>
 </div>
-<div name="showModel" id="priceMessage" class="price_div">
+<div class="Contentbox">
+<div name="showModel" id="priceMessage"  style="width: 980px;height: 500px" class="price_div">
     <br/>
-
+    <li>
+        <dt>刊登天数</dt>
+        <div class="ui-select dt5">
+            <select name="ListingDuration">
+                <option value="Days_1">1 days</option>
+                <option value="Days_3">3 days</option>
+                <option value="Days_5">5 days</option>
+                <option value="Days_7">7 days</option>
+                <option value="Days_10">10 days</option>
+                <option value="GTC" selected>GTC</option>
+            </select>
+        </div>
+    </li>
     <div id="Auction" style="display: none;">
         <h1 style="padding-left: 50px;">拍买</h1>
         <li>
             <dt>私人拍买</dt>
             <em style="color:#48a5f3"><input type="checkbox" name="PrivateListing" value="on">不向公众显示买家的名称</em>
         </li>
-        <li>
-            <dt>刊登天数</dt>
-            <div class="ui-select dt5">
-                <select name="ListingDuration">
-                    <option value="Days_1">1</option>
-                    <option value="Days_3">3</option>
-                    <option value="Days_5">5</option>
-                    <option value="Days_7">7</option>
-                    <option value="Days_10">10</option>
-                </select>
-            </div>
-        </li>
+
         <li>
             <dt>保留价</dt>
             <div class="new_left">
@@ -541,33 +596,56 @@
     <br/>
     <br/>
 </div>
-<div name="showModel" id="buyer" style="display: none;"></div>
-<div name="showModel" id="discountpriceinfo" style="display: none;"></div>
-<div name="showModel" id="itemLocation" style="display: none;"></div>
-<div name="showModel" id="pay" style="display: none;"></div>
-<div name="showModel" id="returnpolicy" style="display: none;"></div>
-<div name="showModel" id="shippingDeails" style="display: none;"></div>
-<div name="showModel" id="descriptiondetails" style="display: none;"></div>
+<div name="showModel" id="buyer" style="display: none;width: 980px;height: 500px;"></div>
+<div name="showModel" id="discountpriceinfo" style="display: none;width: 980px;height: 500px"></div>
+<div name="showModel" id="itemLocation" style="display: none;width: 980px;height: 500px"></div>
+<div name="showModel" id="pay" style="display: none;width: 980px;height: 500px"></div>
+<div name="showModel" id="returnpolicy" style="display: none;width: 980px;height: 500px"></div>
+<div name="showModel" id="shippingDeails" style="display: none;width: 980px;height: 500px"></div>
+<div name="showModel" id="descriptiondetails" style="display: none;width: 980px;height: 500px"></div>
+</div>
+</div>
 <input type="hidden" name="id" id="id" value="${item.id}">
 <input type="hidden" name="dataMouth" id="dataMouth" value="">
+<input type="hidden" name="timerListing"/>
 </form>
 </div>
-<div class="new_view">
+
+<div id="new_view" class="new_view" style="position: fixed;bottom: 45px;overflow: visible" >
 
     <%--<li><a href="javascript:void(0)">预览</a></li>
     <li><a href="javascript:void(0)">检查eBay费</a></li>--%>
     <c:if test="${item.isFlag==null}">
-        <li><a href="javascript:void(0)" onclick="saveData(this,'all')">立即刊登</a></li>
+        <li ><a href="javascript:void(0)" onclick="saveData(this,'all')">立即刊登</a></li>
+        <li id="houtaikd"><a  href="javascript:void(0)" onclick="saveData(this,'Backgrounder')">后台刊登</a></li>
     </c:if>
     <li><a href="javascript:void(0)" onclick="saveData(this,'save')">保存范本</a></li>
     <c:if test="${item.isFlag==null}">
         <li><a href="javascript:void(0)" onclick="saveData(this,'timeSave')">定时</a></li>
-        <li><input name="timerListing" style="height: 24px;width: 100px" type="text"
-               onfocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss',minDate:'%y-%M-{%d}'})"></li>
+        <li><input name="timerStr" style="height: 24px;width: 100px" type="text"
+                   onfocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss',minDate:'%y-%M-{%d}'})"></li>
     </c:if>
     <%--<li><a href="javascript:void(0)">更新在线刊登</a></li>
     <li><a href="javascript:void(0)">更新</a></li>--%>
     <li><a href="javascript:void(0)" onclick="closeWindow()">关闭</a></li>
 </div>
+
+
+
+<link rel="stylesheet" type="text/css" href="<c:url value ="/js/toolTip/qtip2/jquery.qtip.min.css"/> "/>
+<%--<script type="text/javascript" src=<c:url value ="/js/toolTip/qtip2/jquery.qtip.min.js" /> ></script>
+<script type="text/javascript" src=<c:url value ="/js/toolTip/qtip2/jquery-ui.min.js" /> ></script>--%>
+<script type="text/javascript" src=<c:url value ="/js/batchAjaxUtil.js" /> ></script>
+<script type="text/javascript" src=<c:url value ="/js/toolTip/loadTipTool.js" /> ></script>
+
+
+<%--<link rel="stylesheet" type="text/css" href="<c:url value ="/js/toolTip/css/jQuery.toolTip.css"/> "/>
+    <script type="text/javascript" src=<c:url value ="/js/toolTip/js/jQuery.toolTip.js" /> ></script>
+<script type="text/javascript">
+    $(document).ready(function(){
+        $('.tooltip').toolTip();
+    })
+
+</script>--%>
 </body>
 </html>

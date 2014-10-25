@@ -1,5 +1,7 @@
 package com.order.controller;
 
+import com.base.aboutpaypal.domain.PaypalVO;
+import com.base.aboutpaypal.service.PayPalService;
 import com.base.database.publicd.model.PublicUserConfig;
 import com.base.database.trading.model.*;
 import com.base.domains.CommonParmVO;
@@ -74,6 +76,12 @@ public class GetOrdersController extends BaseAction {
     private ITradingOrderOrderVariationSpecifics iTradingOrderOrderVariationSpecifics;
     @Autowired
     private ITradingFeedBackDetail iTradingFeedBackDetail ;
+    @Autowired
+    private PayPalService payPalService;
+    @Autowired
+    private IUsercontrollerEbayAccount iUsercontrollerEbayAccount;
+    @Autowired
+    private ITradingGetUserCases iTradingGetUserCases;
    /* @Autowired
     private ITradingOrderVariation iTradingOrderVariation;
     @Autowired
@@ -258,6 +266,8 @@ public class GetOrdersController extends BaseAction {
         String status=request.getParameter("status");
         String folderId=request.getParameter("folderId");
         String framConten=request.getParameter("framConten");
+        String starttime1=request.getParameter("starttime1");
+        String endtime1=request.getParameter("endtime1");
         /**分页组装*/
         PageJsonBean jsonBean=commonParmVO.getJsonBean();
         Page page=jsonBean.toPage();
@@ -295,6 +305,18 @@ public class GetOrdersController extends BaseAction {
         }
         if(!StringUtils.isNotBlank(framConten)){
             framConten=null;
+        }
+        if(StringUtils.isNotBlank(starttime1)){
+            int year=Integer.valueOf(starttime1.substring(0,4));
+            int month=Integer.valueOf(starttime1.substring(5,7))-1;
+            int day1=Integer.valueOf(starttime1.substring(8));
+            starttime=DateUtils.turnToDateStart(DateUtils.buildDate(year,month,day1));
+        }
+        if(StringUtils.isNotBlank(endtime1)){
+            int year=Integer.valueOf(endtime1.substring(0,4));
+            int month=Integer.valueOf(endtime1.substring(5,7))-1;
+            int day1=Integer.valueOf(endtime1.substring(8));
+            endtime=DateUtils.turnToDateEnd(DateUtils.buildDate(year,month,day1));
         }
         List<OrderGetOrdersQuery> lists=new ArrayList<OrderGetOrdersQuery>();
         if(ebays.size()>0){
@@ -416,6 +438,7 @@ public class GetOrdersController extends BaseAction {
         String selleruserid=request.getParameter("selleruserid");
         List<TradingOrderGetOrders> lists=iTradingOrderGetOrders.selectOrderGetOrdersByOrderId(orderid);
         List<TradingOrderGetOrders> lists1=iTradingOrderGetOrders.selectOrderGetOrdersByTransactionId(transactionid,selleruserid);
+
         modelMap.put("order",lists1.get(0));
         modelMap.put("orders",lists);
         modelMap.put("orderId",orderid);
@@ -426,10 +449,21 @@ public class GetOrdersController extends BaseAction {
         List<String> palpays=new ArrayList<String>();
         List<String> grossdetailamounts=new ArrayList<String>();
         List<String> pictures=new ArrayList<String>();
+        List<PaypalVO> accs=new ArrayList<PaypalVO>();
         for(TradingOrderGetOrders order:lists){
             List<TradingOrderGetSellerTransactions> sellerTransactions=iTradingOrderGetSellerTransactions.selectTradingOrderGetSellerTransactionsByTransactionId(order.getTransactionid());
             if(sellerTransactions!=null&&sellerTransactions.size()>0){
                 palpays.add(sellerTransactions.get(0).getExternaltransactionid());
+                /*UsercontrollerEbayAccount u= iUsercontrollerEbayAccount.selectByEbayAccount(order.getSelleruserid());
+                Map map =new HashMap();
+                map.put("paypalId",u.getId());
+                map.put("transactionID",sellerTransactions.get(0).getExternaltransactionid());
+                PaypalVO acc = payPalService.getTransactionDetails(map);*/
+                Map map =new HashMap();
+                map.put("paypalId",1l);
+                map.put("transactionID","4RJ37607494399203");
+                PaypalVO acc = payPalService.getTransactionDetails(map);
+                accs.add(acc);
             }else{
                 palpays.add("");
             }
@@ -454,6 +488,7 @@ public class GetOrdersController extends BaseAction {
                     pictures.add("");
                 }
             }
+
         }
         List<TradingOrderSenderAddress> senderAddresses=iTradingOrderSenderAddress.selectOrderSenderAddressByOrderId(orderid);
         TradingOrderSenderAddress type1=new TradingOrderSenderAddress();
@@ -505,12 +540,24 @@ public class GetOrdersController extends BaseAction {
         modelMap.put("pictures",pictures);
         modelMap.put("sender",lists1.get(0).getBuyeruserid());
         modelMap.put("recipient",lists1.get(0).getSelleruserid());
+        modelMap.put("accs",accs);
+        modelMap.put("flag","true");
         /*Map<String,String> map=new HashMap<String, String>();
         map.put("orderStatus","Completed");
         map.put("selleraccount",lists.get(0).getSelleruserid());
         map.put("buyaccount",lists.get(0).getBuyeruserid());
         List<OrderGetOrdersQuery> querys= this.iTradingOrderGetOrders.selectOrderGetOrdersByGroupList(map,page);*/
         return forword("orders/order/viewOrderGetOrders",modelMap);
+    }
+    //退款选项初始化
+    @RequestMapping("/initIssueRefund.do")
+    @AvoidDuplicateSubmission(needSaveToken = true)
+    public ModelAndView initIssueRefund(HttpServletRequest request,HttpServletResponse response,@ModelAttribute( "initSomeParmMap" )ModelMap modelMap) throws Exception {
+        String transactionid=request.getParameter("transactionid");
+        String selleruserid=request.getParameter("selleruserid");
+        List<TradingOrderGetOrders> orders=iTradingOrderGetOrders.selectOrderGetOrdersByTransactionId(transactionid,selleruserid);
+        modelMap.put("order",orders.get(0));
+        return forword("orders/order/issueRefund",modelMap);
     }
     /*
      *修改订单状态初始化
@@ -523,6 +570,85 @@ public class GetOrdersController extends BaseAction {
         List<TradingOrderGetOrders> orderList=iTradingOrderGetOrders.selectOrderGetOrdersByTransactionId(transactionid,selleruserid);
         modelMap.put("order",orderList.get(0));
         return forword("orders/order/modifyOrderStatus",modelMap);
+    }
+    /*
+    *退款
+    */
+    @RequestMapping("/sendRefund.do")
+    @AvoidDuplicateSubmission(needRemoveToken = true)
+    @ResponseBody
+    public void sendRefund(CommonParmVO commonParmVO,HttpServletRequest request) throws Exception {
+        String transactionid=request.getParameter("transactionid");
+        String selleruserid=request.getParameter("selleruserid");
+        String fullRefund=request.getParameter("fullRefund");
+        String partialRefund=request.getParameter("partialRefund");
+        String amout=request.getParameter("amout");
+        List<TradingGetUserCases> caseses=iTradingGetUserCases.selectGetUserCasesByTransactionId(transactionid,selleruserid);
+        List<TradingOrderGetOrders> orders=iTradingOrderGetOrders.selectOrderGetOrdersByTransactionId(transactionid,selleruserid);
+        if(StringUtils.isNotBlank(fullRefund)&&StringUtils.isNotBlank(partialRefund)){
+            AjaxSupport.sendFailText("fail","请选择一个");
+            return;
+        }
+        if(caseses==null||caseses.size()==0){
+            AjaxSupport.sendFailText("fail","该订单无纠纷");
+            return;
+        }
+        if(orders==null||orders.size()==0){
+            AjaxSupport.sendFailText("fail","该订单无效,请核实订单");
+            return;
+        }
+        if("Active".equals(orders.get(0).getOrderstatus())){
+            AjaxSupport.sendFailText("fail","该订单未付款");
+            return;
+        }
+        UsercontrollerDevAccountExtend d=new UsercontrollerDevAccountExtend();
+        List<UsercontrollerEbayAccountExtend> dList= userInfoService.getEbayAccountForCurrUser();
+        String token=null;
+        for(UsercontrollerEbayAccountExtend list:dList){
+            if(StringUtils.isNotBlank(selleruserid)&&selleruserid.equals(list.getEbayName())){
+                token=list.getEbayToken();
+            }
+        }
+       /* String token="AgAAAA**AQAAAA**aAAAAA**CLSRUQ**nY+sHZ2PrBmdj6wVnY+sEZ2PrA2dj6AFlYCjDJGCqA+dj6x9nY+seQ**FdYBAA**AAMAAA**w2sMbwlQ7TBHWxj9EsVedHQRI3+lonY9MDfiyayQbnFkjEanjL/yMCpS/D2B9xHRzRx+ppxWZkRPgeAKJvNotPLLrVTuEzOl5M7pi6Tw8+pzcmIEsOh7HQO78JlyFlvLc/ruE6/hG0E/HO1UX76YBwxp00N9f1NNUpo5u36D/TYsx5O2jXFTKkCOHwz6RW9vtN6TU39aLm+JQme2+NfFFXnbX8MHzoUiX7Sty0R88ZpX5wLp8ZdgXCEc5zZDQziYB1MSXF9hsmby5wKbxFF+OvW/zKADThk1gprgAgnEOucyoao+cUMHopLlYgMbjnLzdCXP5F9z+fkYTnKF6AEl5eHBpcKQGbPzswnKebRoBVw+bI2I1C/iq+PvBUyndFAexjrvlDQbEKr6qb6AWRVTTfkW2ce6a0ixRuCTq35zEpWpfAqkSKo+X23d/Q4V8R30rDXotOWDZL6o408cMO+UQ17uVA2arA1JNkYfc/AZ0T0z7ze5o/yp93jJPlDgi05Ut4fpCAMZw3X85GxrTlbEtawWgoyUbmMuv4f6QHZLZAerOaJA8DRJkzkzjJJ025bp1HvAECOc4ggdv0cofu4q96shssgNYYZJUPM+q4+0fnGK0pxQTNY9SV6vSaVCVoTZJo6vefW7OiHX2/eLoPKFuUfsKXXEv9OY71gD1xzYg/rpCMAqCTq1dKqqyT1R5fxANnoRX7vwkq+7jkCj2fAfKTnHi9mSuBFsilKLmnsqqWy3IGShMgdxiQwBEk6IWi9C";
+        */
+        d.setSoaSecurityToken(token);
+        d.setHeaderType("DisputeApiHeader");
+        if(caseses!=null&&caseses.size()>0){
+            String caseId=caseses.get(0).getCaseid();
+            String caseType=caseses.get(0).getCasetype();
+            String xml="";
+            //issueFullRefund退全款
+            if(fullRefund!=null){
+                d.setSoaOperationName("issueFullRefund");
+                xml=BindAccountAPI.issueFullRefund(token,caseId,caseType,"");
+            }
+            //issuePartialRefund退半款
+            if(partialRefund!=null){
+                d.setSoaOperationName("issuePartialRefund");
+                xml=BindAccountAPI.issuePartialRefund(token,caseId,caseType,"",amout);
+            }
+            AddApiTask addApiTask = new AddApiTask();
+            Map<String, String> resEbpMap = addApiTask.exec(d, xml, "https://svcs.ebay.com/services/resolution/ResolutionCaseManagementService/v1");
+            String r1 = resEbpMap.get("stat");
+            String res = resEbpMap.get("message");
+            if ("fail".equalsIgnoreCase(r1)) {
+                AjaxSupport.sendFailText("fail", res);
+                return;
+            }
+            String ack = SamplePaseXml.getVFromXmlString(res, "ack");
+            if ("Success".equalsIgnoreCase(ack)) {
+                TradingGetUserCases cases=caseses.get(0);
+                cases.setHandled(1);
+                iTradingGetUserCases.saveGetUserCases(cases);
+                AjaxSupport.sendSuccessText("message", "退款成功!");
+            }else{
+                String errors = SamplePaseXml.getVFromXmlString(res, "Errors");
+                logger.error("退款失败!" + errors);
+                AjaxSupport.sendFailText("fail", "退款失败！请稍后重试");
+            }
+        }else{
+            AjaxSupport.sendFailText("fail","纠纷不存在");
+        }
     }
     /*
      *修改订单状态
@@ -820,9 +946,19 @@ public class GetOrdersController extends BaseAction {
              message1.setSender(ebayName);
              message1.setMessagetype(3);
              message1.setTransactionid(transactionid);
+             message1.setReplied("true");
              iTradingOrderAddMemberMessageAAQToPartner.saveOrderAddMemberMessageAAQToPartner(message1);
              AjaxSupport.sendSuccessText("success", "评价发送成功");
          }else{
+             TradingOrderAddMemberMessageAAQToPartner message1=new TradingOrderAddMemberMessageAAQToPartner();
+             message1.setBody(CommentText);
+             message1.setItemid(itemid);
+             message1.setRecipientid(buyeruserid);
+             message1.setSender(ebayName);
+             message1.setMessagetype(3);
+             message1.setTransactionid(transactionid);
+             message1.setReplied("false");
+             iTradingOrderAddMemberMessageAAQToPartner.saveOrderAddMemberMessageAAQToPartner(message1);
              AjaxSupport.sendFailText("fail", "获取必要的参数失败！请稍后重试");
          }
      }
@@ -913,9 +1049,20 @@ public class GetOrdersController extends BaseAction {
             message1.setSender(sender);
             message1.setMessagetype(4);
             message1.setTransactionid(transactionid);
+            message1.setReplied("true");
             iTradingOrderAddMemberMessageAAQToPartner.saveOrderAddMemberMessageAAQToPartner(message1);
             AjaxSupport.sendSuccessText("success", "发送成功");
         }else{
+            TradingOrderAddMemberMessageAAQToPartner message1=new TradingOrderAddMemberMessageAAQToPartner();
+            message1.setBody(body);
+            message1.setItemid(itemid);
+            message1.setRecipientid(buyeruserid);
+            message1.setSubject(subject);
+            message1.setSender(sender);
+            message1.setMessagetype(4);
+            message1.setTransactionid(transactionid);
+            message1.setReplied("false");
+            iTradingOrderAddMemberMessageAAQToPartner.saveOrderAddMemberMessageAAQToPartner(message1);
             AjaxSupport.sendFailText("fail", "获取必要的参数失败！请稍后重试");
         }
     }
@@ -931,24 +1078,35 @@ public class GetOrdersController extends BaseAction {
         UsercontrollerDevAccountExtend d = userInfoService.getDevInfo(null);//开发者帐号id
         d.setApiSiteid("0");
         d.setApiCallName(APINameStatic.GetOrders);
-        request.getSession().setAttribute("dveId", d);
-       /* UsercontrollerDevAccountExtend d=new UsercontrollerDevAccountExtend();
+        //--真实环境
+      /*  UsercontrollerDevAccountExtend d=new UsercontrollerDevAccountExtend();
         d.setApiDevName("5d70d647-b1e2-4c7c-a034-b343d58ca425");
         d.setApiAppName("sandpoin-23af-4f47-a304-242ffed6ff5b");
-        d.setApiCertName("165cae7e-4264-4244-adff-e11c3aea204e");
+        d.setApiCertName("165cae7e-4264-4244-adff-e11c3aea204e");*/
+       /* UsercontrollerDevAccountExtend d=new UsercontrollerDevAccountExtend();
+        d.setApiDevName("bbafa7e7-2f98-4783-9c34-f403faeb007f");
+        d.setApiAppName("chengdul-6dfe-4b1b-905c-41b1bd716d72");
+        d.setApiCertName("41bd760a-48ab-489b-87b1-f5d33a7044a6");
         d.setApiCompatibilityLevel("883");
         d.setApiSiteid("0");
-        d.setApiCallName(APINameStatic.GetOrders);
-        request.getSession().setAttribute("dveId", d);*/
+        d.setApiCallName(APINameStatic.GetOrders);*/
+        //-------
+        request.getSession().setAttribute("dveId", d);
         Map map=new HashMap();
-        Date startTime2=DateUtils.subDays(new Date(),9);
-        Date endTime= DateUtils.addDays(startTime2, 9);
-   /*     Date startTime2=DateUtils.subDays(new Date(),40);
-        Date endTime= DateUtils.addDays(startTime2, 40);*/
+       /* Date startTime2=DateUtils.subDays(new Date(),9);
+        Date endTime= DateUtils.addDays(startTime2, 9);*/
+        Date startTime2=DateUtils.subDays(new Date(),70);
+        Date endTime= DateUtils.addDays(startTime2, 70);
         Date end1= com.base.utils.common.DateUtils.turnToDateEnd(endTime);
         String start= DateUtils.DateToString(startTime2);
         String end=DateUtils.DateToString(end1);
+        //测试环境
         String token=userInfoService.getTokenByEbayID(ebay);
+        //真实环境
+        /*String token="AgAAAA**AQAAAA**aAAAAA**jek4VA**nY+sHZ2PrBmdj6wVnY+sEZ2PrA2dj6AFlIWnC5iEpAidj6x9nY+seQ**tSsCAA**AAMAAA**y8BaJPw6GUdbbbco8zXEwRR4Ttr9sLd78jL0FyYa0yonvk5hz1RY6DtKkaDtn9NuzluKeFZoqsNbujZP48S4QZhHVa5Dp0bDGqBdKaosolzsrPDm8qozoxbsTiWY8X/M5xev/YU2zJ42/JRGDlEdnQhwCASG1BcSo+DqXuG3asbj0INJr4/HsArf8cCYsPQCtUDkq5QJY6Rvil+Kla/dGhViTQ3gt7a4t3KjxKH+/jlhDU/6sUEKlvb2nY1gCmX8S9pU48c+4Vy6G6NpfcGUcIG/TXFWBTqU0R+v+/6DOIfDW8s90rrLSVMGFqnRxA2sexdEmVhyF5csBmv9+TVfjdyEZK5UgvDqWJHesuDMFTr0KIc8EtdnTQaE3YeZch15DdoEbqcyyBQBZHidBPdDHz/DkpTg7iq1953yKodm2y0mW6aaYAfc5beW+PoqMW8C3WwGJmWZqh3dBi+QEKznEJ9SRg43Bc3q2344JFY7YpIEfJDaQ36BHRcIZxLew8v7RIGL5YYO1BBdTolVV9/eMCQDsUB0mUeMYjxnH5w0K/6CDmJ9WNMQTblNol0x3vhJbil1L/CMP9KGEHj5Yqx0003MLL9Yod7nL89Zpy+a8I/E5byxFt21KZTGE90Ot0LyLpRXsotDwIm5+ZdvATsU6mGADX4tk970CpCeM487v9fn1opouaCBvknCINqXoSeGXLQ7uZFpeqkWts1lIWh9vEuuiuZa4vNoL7aCr+93LTFnsO6AsZp7dmboQcI96I/o";
+*/
+       /* String token="AgAAAA**AQAAAA**aAAAAA**j+o4VA**nY+sHZ2PrBmdj6wVnY+sEZ2PrA2dj6AFlICkCpSGoA6dj6x9nY+seQ**tSsCAA**AAMAAA**w9ucV7+/Za+QiC82KESb5VYCbY2/n18LiFAO6UdYHbIhnt/gYioIQe3Aq5aIUnCe3VHmXgHZ9EH4gNMhiqtdYLn4qYVRh3+MfdM58KycszijKBHb8ddmeiswKa7w5LjiMTBT1EZRByoQOuTcXpmnBIVDCSWS0QqIcwKHj7ZOdrpMVrkd/zZQgXWMeYSI/NiKsSGo7MLuEc4dsAz3ifgt/d00HQXrntrr8iwh4HpC8g80mNpQ/2yd/5ZM7mDBGFviMFgUuA2qIWua6/PpCRCmoUTL2t9YoCcOh5qScgUvyRj8qeJtcZ/4VrQT2c1r2Ud6/7EEpm8wDn11NaxLJqRZJN/BXT1SD7+5qf5W4CpIsHXN7Xklao2Y4qrKoGdxIKEs1Yya4T58Bs0PIv9Iupfz3ogibPK3KMETosJnUZxteo08JhEO8iWufLBEyfCK5gbVsueZz4BXYoARqcoeJ5Us3mDw26oxx5GtyVC7ipKefnmBghY5nbD1kzOZ9hAuFIyhjedZLj2qORajy7wnsa87A0YI6EOLIk1v7szqRUNPBsY4m2AFSYdAjLnwOiOirv0TbfYOS2ofMD1+AQPR5nbopvwLYYMUi/LlA3UUEU3zEzHpPP+A4rMIVUzjXEGgq0LzwipwtALpnS1CfOXq0FDayN3J6q2PLs0jveF+nmop8yOPkZRRyd4EtuCRYD+ADxQHRZ89+zVqwFg0xGVQe3r1V95wga23esmbmgVj2E5s7tq1GM8+e5SA/x3H9fzP6/pK";
+        */
         map.put("token", token);
 /*        map.put("token","AgAAAA**AQAAAA**aAAAAA**CLSRUQ**nY+sHZ2PrBmdj6wVnY+sEZ2PrA2dj6AFlYCjDJGCqA+dj6x9nY+seQ**FdYBAA**AAMAAA**w2sMbwlQ7TBHWxj9EsVedHQRI3+lonY9MDfiyayQbnFkjEanjL/yMCpS/D2B9xHRzRx+ppxWZkRPgeAKJvNotPLLrVTuEzOl5M7pi6Tw8+pzcmIEsOh7HQO78JlyFlvLc/ruE6/hG0E/HO1UX76YBwxp00N9f1NNUpo5u36D/TYsx5O2jXFTKkCOHwz6RW9vtN6TU39aLm+JQme2+NfFFXnbX8MHzoUiX7Sty0R88ZpX5wLp8ZdgXCEc5zZDQziYB1MSXF9hsmby5wKbxFF+OvW/zKADThk1gprgAgnEOucyoao+cUMHopLlYgMbjnLzdCXP5F9z+fkYTnKF6AEl5eHBpcKQGbPzswnKebRoBVw+bI2I1C/iq+PvBUyndFAexjrvlDQbEKr6qb6AWRVTTfkW2ce6a0ixRuCTq35zEpWpfAqkSKo+X23d/Q4V8R30rDXotOWDZL6o408cMO+UQ17uVA2arA1JNkYfc/AZ0T0z7ze5o/yp93jJPlDgi05Ut4fpCAMZw3X85GxrTlbEtawWgoyUbmMuv4f6QHZLZAerOaJA8DRJkzkzjJJ025bp1HvAECOc4ggdv0cofu4q96shssgNYYZJUPM+q4+0fnGK0pxQTNY9SV6vSaVCVoTZJo6vefW7OiHX2/eLoPKFuUfsKXXEv9OY71gD1xzYg/rpCMAqCTq1dKqqyT1R5fxANnoRX7vwkq+7jkCj2fAfKTnHi9mSuBFsilKLmnsqqWy3IGShMgdxiQwBEk6IWi9C");*/
         map.put("fromTime", start);
@@ -1369,7 +1527,10 @@ public class GetOrdersController extends BaseAction {
         map2.put("token",token);
         map2.put("d",d);
         taskMessageVO.setObjClass(map2);
+        //测试环境
         addApiTask.execDelayReturn(d, xml,apiUrl, taskMessageVO);
+        //真实环境
+        /*addApiTask.execDelayReturn(d, xml,"https://api.ebay.com/ws/api.dll", taskMessageVO);*/
         AjaxSupport.sendSuccessText("message", "操作成功！结果请稍后查看消息！");
     }
     //---修改前---

@@ -155,9 +155,7 @@
 <div class="newds">
     <div class="tbbay"><a data-toggle="modal" href="#myModal" class=""  onclick="addBuyer()">新增</a></div>
 </div>
-<div id="buyerRequireTable">
-
-</div>
+<div id="buyerRequireTable"></div>
 <%--<div>
     <table width="100%">
         <tr>

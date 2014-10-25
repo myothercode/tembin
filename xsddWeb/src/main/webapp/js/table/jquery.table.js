@@ -271,19 +271,24 @@
 					$("td", this).each(function (j) {
 						if(option.showIndex) {
 							if(j != 0) {
-								if(columnData[j - 1]["click"] != undefined) {
-									$(this).unbind("click").click(function () {
-										columnData[j - 1]["click"](tableData[i - 1]);
-									});
-								}
+                                try{
+                                    if(columnData[j - 1]["click"] != undefined) {
+                                        $(this).unbind("click").click(function () {
+                                            columnData[j - 1]["click"](tableData[i - 1]);
+                                        });
+                                    }
+                                }catch (e){}
+
 							}
 						} else {
 							if(j != 0) {
+                                try{
 								if(columnData[j]["click"] != undefined) {
 									$(this).unbind("click").click(function () {
 										columnData[j]["click"](tableData[i - 1]);
 									});
 								}
+                                }catch (e){}
 							}
 						}
 					});

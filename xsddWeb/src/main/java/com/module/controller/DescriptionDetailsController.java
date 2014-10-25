@@ -107,7 +107,7 @@ public class DescriptionDetailsController extends BaseAction{
     public void delDescriptionDetails(HttpServletRequest request,HttpServletResponse response,@ModelAttribute( "initSomeParmMap" )ModelMap modelMap) throws Exception {
         String id = request.getParameter("id");
         TradingDescriptionDetailsWithBLOBs tp= this.iTradingDescriptionDetails.selectById(Long.parseLong(id));
-        if(tp.getCheckFlag().equals("1")){
+        if("1".equals(tp.getCheckFlag())){
             tp.setCheckFlag("0");
         }else{
             tp.setCheckFlag("1");

@@ -129,7 +129,7 @@ public class SendMessageController extends BaseAction{
         if(StringUtils.isNotBlank(id)){
             template.setId(Long.valueOf(id));
         }else{
-            template.setStatus(0);
+            template.setStatus(1);
         }
         if(StringUtils.isNotBlank(name)){
             template.setName(name);

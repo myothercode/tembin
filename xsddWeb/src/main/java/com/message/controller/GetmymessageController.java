@@ -1,10 +1,12 @@
 package com.message.controller;
 
-import com.base.database.trading.model.TradingMessageAddmembermessage;
+import com.base.aboutpaypal.domain.PaypalVO;
+import com.base.aboutpaypal.service.PayPalService;
+import com.base.database.trading.model.*;
 import com.base.domains.CommonParmVO;
 import com.base.domains.SessionVO;
-import com.base.domains.querypojos.MessageAddmymessageQuery;
 import com.base.domains.querypojos.MessageGetmymessageQuery;
+import com.base.domains.querypojos.TradingOrderAddMemberMessageAAQToPartnerQuery;
 import com.base.domains.userinfo.UsercontrollerDevAccountExtend;
 import com.base.domains.userinfo.UsercontrollerEbayAccountExtend;
 import com.base.mybatis.page.Page;
@@ -22,8 +24,7 @@ import com.base.utils.threadpool.TaskMessageVO;
 import com.common.base.utils.ajax.AjaxSupport;
 import com.common.base.web.BaseAction;
 import com.sitemessage.service.SiteMessageStatic;
-import com.trading.service.ITradingMessageAddmembermessage;
-import com.trading.service.ITradingMessageGetmymessage;
+import com.trading.service.*;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,8 +56,22 @@ public class GetmymessageController extends BaseAction{
     private UserInfoService userInfoService;
     @Autowired
     private SystemUserManagerService systemUserManagerService;
-
-
+    @Autowired
+    private ITradingOrderAddMemberMessageAAQToPartner iTradingOrderAddMemberMessageAAQToPartner;
+    @Autowired
+    private ITradingOrderGetOrders iTradingOrderGetOrders;
+    @Autowired
+    private ITradingOrderGetSellerTransactions iTradingOrderGetSellerTransactions;
+    @Autowired
+    private PayPalService payPalService;
+    @Autowired
+    private  ITradingOrderGetAccount iTradingOrderGetAccount;
+    @Autowired
+    private ITradingOrderGetItem iTradingOrderGetItem;
+    @Autowired
+    private ITradingOrderPictureDetails iTradingOrderPictureDetails;
+    @Autowired
+    private ITradingOrderSenderAddress iTradingOrderSenderAddress;
     @Value("${EBAY.API.URL}")
     private String apiUrl;
     /**
@@ -101,8 +116,16 @@ public class GetmymessageController extends BaseAction{
         String day=request.getParameter("day");
         String type=request.getParameter("type");
         String content=request.getParameter("content");
+        String starttime1=request.getParameter("starttime1");
+        String endtime1=request.getParameter("endtime1");
         Date starttime=null;
         Date endtime=null;
+     /*   if(!StringUtils.isNotBlank(content)){
+            content=null;
+        }*/
+        if(!StringUtils.isNotBlank(type)){
+            type=null;
+        }
         if(!StringUtils.isNotBlank(replied)){
             replied=null;
         }
@@ -128,20 +151,35 @@ public class GetmymessageController extends BaseAction{
                 endtime= com.base.utils.common.DateUtils.turnToDateEnd(endTime);
             }
         }
+        if(StringUtils.isNotBlank(starttime1)){
+            int year=Integer.valueOf(starttime1.substring(0,4));
+            int month=Integer.valueOf(starttime1.substring(5,7))-1;
+            int day1=Integer.valueOf(starttime1.substring(8));
+            starttime=DateUtils.turnToDateStart(DateUtils.buildDate(year,month,day1));
+        }
+        if(StringUtils.isNotBlank(endtime1)){
+            int year=Integer.valueOf(endtime1.substring(0,4));
+            int month=Integer.valueOf(endtime1.substring(5,7))-1;
+            int day1=Integer.valueOf(endtime1.substring(8));
+            endtime=DateUtils.turnToDateEnd(DateUtils.buildDate(year,month,day1));
+        }
         Map m = new HashMap();
         /**分页组装*/
         PageJsonBean jsonBean=commonParmVO.getJsonBean();
         Page page=jsonBean.toPage();
         Map map=new HashMap();
         List<UsercontrollerEbayAccountExtend> ebays=systemUserManagerService.queryCurrAllEbay(map);
-        List<MessageAddmymessageQuery> lists=new ArrayList<MessageAddmymessageQuery>();
+        List<TradingOrderAddMemberMessageAAQToPartnerQuery> lists=new ArrayList<TradingOrderAddMemberMessageAAQToPartnerQuery>();
         if(ebays.size()>0){
             m.put("ebays",ebays);
             m.put("amount",amount);
             m.put("starttime",starttime);
             m.put("endtime",endtime);
             m.put("replied",replied);
-            lists=iTradingMessageAddmembermessage.selectMessageGetmymessageByGroupList(m,page);
+            m.put("messageType",4);
+            m.put("type",type);
+            m.put("content",content);
+            lists=iTradingOrderAddMemberMessageAAQToPartner.selectTradingOrderAddMemberMessageAAQToPartner(m, page);
         }
         jsonBean.setList(lists);
         AjaxSupport.sendSuccessText("",jsonBean);
@@ -156,10 +194,22 @@ public class GetmymessageController extends BaseAction{
         String day=request.getParameter("day");
         String type=request.getParameter("type");
         String content=request.getParameter("content");
+        String starttime1=request.getParameter("starttime1");
+        String endtime1=request.getParameter("endtime1");
+        String messageFrom=request.getParameter("messageFrom");
         Date starttime=null;
         Date endtime=null;
+        if(!StringUtils.isNotBlank(messageFrom)){
+            messageFrom=null;
+        }
         if(!StringUtils.isNotBlank(amount)){
             amount=null;
+        }
+       /* if(!StringUtils.isNotBlank(content)){
+            content=null;
+        }*/
+        if(!StringUtils.isNotBlank(type)){
+            type=null;
         }
         if(!StringUtils.isNotBlank(status)){
             status=null;
@@ -178,6 +228,18 @@ public class GetmymessageController extends BaseAction{
                 endtime= com.base.utils.common.DateUtils.turnToDateEnd(endTime);
             }
         }
+        if(StringUtils.isNotBlank(starttime1)){
+            int year=Integer.valueOf(starttime1.substring(0,4));
+            int month=Integer.valueOf(starttime1.substring(5,7))-1;
+            int day1=Integer.valueOf(starttime1.substring(8));
+            starttime=DateUtils.turnToDateStart(DateUtils.buildDate(year,month,day1));
+        }
+        if(StringUtils.isNotBlank(endtime1)){
+            int year=Integer.valueOf(endtime1.substring(0,4));
+            int month=Integer.valueOf(endtime1.substring(5,7))-1;
+            int day1=Integer.valueOf(endtime1.substring(8));
+            endtime=DateUtils.turnToDateEnd(DateUtils.buildDate(year,month,day1));
+        }
         Map m = new HashMap();
         /**分页组装*/
         PageJsonBean jsonBean=commonParmVO.getJsonBean();
@@ -191,6 +253,9 @@ public class GetmymessageController extends BaseAction{
             m.put("status",status);
             m.put("starttime",starttime);
             m.put("endtime",endtime);
+            m.put("messageFrom",messageFrom);
+            m.put("type",type);
+            m.put("content",content);
             lists= this.iTradingMessageGetmymessage.selectMessageGetmymessageByGroupList(m,page);
         }
         jsonBean.setList(lists);
@@ -200,10 +265,133 @@ public class GetmymessageController extends BaseAction{
     @RequestMapping("/viewMessageAddmymessage.do")
     @AvoidDuplicateSubmission(needSaveToken = true)
     public ModelAndView viewMessageAddmymessage(HttpServletRequest request,HttpServletResponse response,@ModelAttribute( "initSomeParmMap" )ModelMap modelMap) throws Exception {
-        String messageID=request.getParameter("messageID");
-        List<TradingMessageAddmembermessage> addmembermessages=iTradingMessageAddmembermessage.selectMessageGetmymessageByMessageId(messageID,"true");
-        modelMap.put("addMessages",addmembermessages);
-        return forword("MessageGetmymessage/viewMessageAddmymessage",modelMap);
+        String itemid=request.getParameter("itemid");
+        String recipientid=request.getParameter("recipientid");
+        String sender=request.getParameter("sender");
+        List<TradingOrderAddMemberMessageAAQToPartner> addMessages=new ArrayList<TradingOrderAddMemberMessageAAQToPartner>();
+        List<TradingMessageGetmymessage> messages1=new ArrayList<TradingMessageGetmymessage>();
+        List<TradingMessageGetmymessage> messageList=iTradingMessageGetmymessage.selectMessageGetmymessageByItemIdAndSender(itemid,recipientid,sender);
+        List<TradingOrderAddMemberMessageAAQToPartner> addmessageList=iTradingOrderAddMemberMessageAAQToPartner.selectTradingOrderAddMemberMessageAAQToPartnerByItemIdAndSender(itemid,4,sender,recipientid);
+        messages1.addAll(messageList);
+        addMessages.addAll(addmessageList);
+        for(TradingMessageGetmymessage message:messages1){
+            TradingOrderAddMemberMessageAAQToPartner partner=new TradingOrderAddMemberMessageAAQToPartner();
+            partner.setSender(message.getSender());
+            partner.setSubject(message.getSubject());
+            partner.setRecipientid(message.getRecipientuserid());
+            partner.setCreateTime(message.getReceivedate());
+            String text=message.getTextHtml();
+            if(StringUtils.isNotBlank(text)){
+                String[] text1=text.split("</strong><br><br>");
+                String[] text2=text1[1].split("<br/><br>");
+                partner.setBody(text2[0]);
+            }
+            addMessages.add(partner);
+        }
+        Object[] addMessages1=addMessages.toArray();
+        for(int i=0;i<addMessages1.length;i++){
+            for(int j=i+1;j<addMessages1.length;j++){
+                TradingOrderAddMemberMessageAAQToPartner l1= (TradingOrderAddMemberMessageAAQToPartner) addMessages1[i];
+                TradingOrderAddMemberMessageAAQToPartner l2= (TradingOrderAddMemberMessageAAQToPartner) addMessages1[j];
+                if(l1.getCreateTime().after(l2.getCreateTime())){
+                    addMessages1[i]=l2;
+                    addMessages1[j]=l1;
+                }
+            }
+        }
+
+        List<TradingOrderGetOrders> lists=new ArrayList<TradingOrderGetOrders>();
+        List<TradingOrderGetOrders> lists1=new ArrayList<TradingOrderGetOrders>();
+        if(messageList!=null&&messageList.size()>0){
+            modelMap.put("message",messageList.get(0));
+            modelMap.put("sender",messageList.get(0).getSender());
+            modelMap.put("recipient",messageList.get(0).getRecipientuserid());
+            lists=iTradingOrderGetOrders.selectOrderGetOrdersByBuyerAndItemid(messageList.get(0).getItemid(),messageList.get(0).getSender());
+        }
+        if(lists!=null&&lists.size()>0){
+            lists1=iTradingOrderGetOrders.selectOrderGetOrdersByTransactionId(lists.get(0).getTransactionid(),lists.get(0).getSelleruserid());
+        }
+        List<String> palpays=new ArrayList<String>();
+        List<String> grossdetailamounts=new ArrayList<String>();
+        List<String> pictures=new ArrayList<String>();
+        List<PaypalVO> accs=new ArrayList<PaypalVO>();
+        for(TradingOrderGetOrders order:lists){
+            List<TradingOrderGetSellerTransactions> sellerTransactions=iTradingOrderGetSellerTransactions.selectTradingOrderGetSellerTransactionsByTransactionId(order.getTransactionid());
+            if(sellerTransactions!=null&&sellerTransactions.size()>0){
+                palpays.add(sellerTransactions.get(0).getExternaltransactionid());
+                /*UsercontrollerEbayAccount u= iUsercontrollerEbayAccount.selectByEbayAccount(order.getSelleruserid());
+                Map map =new HashMap();
+                map.put("paypalId",u.getId());
+                map.put("transactionID",sellerTransactions.get(0).getExternaltransactionid());
+                PaypalVO acc = payPalService.getTransactionDetails(map);*/
+                Map map =new HashMap();
+                map.put("paypalId",1l);
+                map.put("transactionID","4RJ37607494399203");
+                PaypalVO acc = payPalService.getTransactionDetails(map);
+                accs.add(acc);
+            }else{
+                palpays.add("");
+            }
+            List<TradingOrderGetAccount> accountlist=iTradingOrderGetAccount.selectTradingOrderGetAccountByTransactionId(order.getTransactionid());
+            if(accountlist!=null&&accountlist.size()>0){
+                for(TradingOrderGetAccount account:accountlist){
+                    if("成交費".equals(account.getDescription())){
+                        grossdetailamounts.add(account.getGrossdetailamount());
+                    }else{
+                        grossdetailamounts.add("");
+                    }
+                }
+            }
+            String ItemId=order.getItemid();
+            List<TradingOrderGetItem> itemList= iTradingOrderGetItem.selectOrderGetItemByItemId(ItemId);
+            if(itemList!=null&&itemList.size()>0){
+                Long pictureid=itemList.get(0).getPicturedetailsId();
+                List<TradingOrderPictureDetails> pictureDetailses=iTradingOrderPictureDetails.selectOrderGetItemById(pictureid);
+                if(pictureDetailses!=null&&pictureDetailses.size()>0){
+                    pictures.add(pictureDetailses.get(0).getPictureurl());
+                }else{
+                    pictures.add("");
+                }
+            }
+
+        }
+        List<TradingOrderSenderAddress> senderAddresses=new ArrayList<TradingOrderSenderAddress>();
+        if(lists1!=null&&lists1.size()>0){
+            senderAddresses=iTradingOrderSenderAddress.selectOrderSenderAddressByOrderId(lists1.get(0).getOrderid());
+            modelMap.put("orderId",lists1.get(0).getOrderid());
+            modelMap.put("order",lists1.get(0));
+            modelMap.put("sender",lists1.get(0).getBuyeruserid());
+            modelMap.put("recipient",lists1.get(0).getSelleruserid());
+        }
+        TradingOrderSenderAddress type1=new TradingOrderSenderAddress();
+        TradingOrderSenderAddress type2=new TradingOrderSenderAddress();
+        for(TradingOrderSenderAddress senderAddresse:senderAddresses){
+            if("1".equals(senderAddresse.getType())){
+                type1=senderAddresse;
+            }
+            if("2".equals(senderAddresse.getType())){
+                type2=senderAddresse;
+            }
+        }
+        if(lists!=null&&lists.size()>0){
+            modelMap.put("flag","true");
+        }else{
+            modelMap.put("flag","false");
+        }
+       /* modelMap.put("messages",messages);
+        modelMap.put("messageID",messages.get(0).getMessageid());*/
+        modelMap.put("addMessage1",addMessages1);
+        modelMap.put("orders",lists);
+        String rootpath=request.getContextPath();
+        modelMap.put("rootpath",rootpath);
+        modelMap.put("addresstype1",type1);
+        modelMap.put("addresstype2",type2);
+        modelMap.put("paypals",palpays);
+        modelMap.put("grossdetailamounts",grossdetailamounts);
+        modelMap.put("pictures",pictures);
+
+        modelMap.put("accs",accs);
+        return forword("orders/order/viewOrderGetOrders",modelMap);
     }
    /**
      * 查看消息
@@ -240,10 +428,131 @@ public class GetmymessageController extends BaseAction{
                 iTradingMessageGetmymessage.saveMessageGetmymessage(message);
             }
         }
-        modelMap.put("messages",messages);
-        modelMap.put("messageID",messages.get(0).getMessageid());
+        List<TradingOrderAddMemberMessageAAQToPartner> addMessages=new ArrayList<TradingOrderAddMemberMessageAAQToPartner>();
+        List<TradingMessageGetmymessage> messages1=new ArrayList<TradingMessageGetmymessage>();
+        List<TradingMessageGetmymessage> messageList=iTradingMessageGetmymessage.selectMessageGetmymessageByItemIdAndSender(messages.get(0).getItemid(),messages.get(0).getSender(),messages.get(0).getRecipientuserid());
+        List<TradingOrderAddMemberMessageAAQToPartner> addmessageList=iTradingOrderAddMemberMessageAAQToPartner.selectTradingOrderAddMemberMessageAAQToPartnerByItemIdAndSender(messages.get(0).getItemid(),4,messages.get(0).getRecipientuserid(),messages.get(0).getSender());
+        messages1.addAll(messageList);
+        addMessages.addAll(addmessageList);
+        for(TradingMessageGetmymessage message:messages1){
+            TradingOrderAddMemberMessageAAQToPartner partner=new TradingOrderAddMemberMessageAAQToPartner();
+            partner.setSender(message.getSender());
+            partner.setSubject(message.getSubject());
+            partner.setRecipientid(message.getRecipientuserid());
+            partner.setCreateTime(message.getReceivedate());
+            String text=message.getTextHtml();
+            if(StringUtils.isNotBlank(text)){
+                String[] text1=text.split("</strong><br><br>");
+                String[] text2=text1[1].split("<br/><br>");
+                partner.setBody(text2[0]);
+            }
+            addMessages.add(partner);
+        }
+        Object[] addMessages1=addMessages.toArray();
+        for(int i=0;i<addMessages1.length;i++){
+            for(int j=i+1;j<addMessages1.length;j++){
+                TradingOrderAddMemberMessageAAQToPartner l1= (TradingOrderAddMemberMessageAAQToPartner) addMessages1[i];
+                TradingOrderAddMemberMessageAAQToPartner l2= (TradingOrderAddMemberMessageAAQToPartner) addMessages1[j];
+                if(l1.getCreateTime().after(l2.getCreateTime())){
+                    addMessages1[i]=l2;
+                    addMessages1[j]=l1;
+                }
+            }
+        }
 
-        return forword("MessageGetmymessage/viewMessageGetmymessage",modelMap);
+        List<TradingOrderGetOrders> lists=new ArrayList<TradingOrderGetOrders>();
+        List<TradingOrderGetOrders> lists1=new ArrayList<TradingOrderGetOrders>();
+        if(messages!=null&&messages.size()>0){
+            modelMap.put("message",messages.get(0));
+            modelMap.put("sender",messages.get(0).getSender());
+            modelMap.put("recipient",messages.get(0).getRecipientuserid());
+            lists=iTradingOrderGetOrders.selectOrderGetOrdersByBuyerAndItemid(messages.get(0).getItemid(),messages.get(0).getSender());
+        }
+        if(lists!=null&&lists.size()>0){
+            lists1=iTradingOrderGetOrders.selectOrderGetOrdersByTransactionId(lists.get(0).getTransactionid(),lists.get(0).getSelleruserid());
+        }
+        List<String> palpays=new ArrayList<String>();
+        List<String> grossdetailamounts=new ArrayList<String>();
+        List<String> pictures=new ArrayList<String>();
+        List<PaypalVO> accs=new ArrayList<PaypalVO>();
+        for(TradingOrderGetOrders order:lists){
+            List<TradingOrderGetSellerTransactions> sellerTransactions=iTradingOrderGetSellerTransactions.selectTradingOrderGetSellerTransactionsByTransactionId(order.getTransactionid());
+            if(sellerTransactions!=null&&sellerTransactions.size()>0){
+                palpays.add(sellerTransactions.get(0).getExternaltransactionid());
+                /*UsercontrollerEbayAccount u= iUsercontrollerEbayAccount.selectByEbayAccount(order.getSelleruserid());
+                Map map =new HashMap();
+                map.put("paypalId",u.getId());
+                map.put("transactionID",sellerTransactions.get(0).getExternaltransactionid());
+                PaypalVO acc = payPalService.getTransactionDetails(map);*/
+                Map map =new HashMap();
+                map.put("paypalId",1l);
+                map.put("transactionID","4RJ37607494399203");
+                PaypalVO acc = payPalService.getTransactionDetails(map);
+                accs.add(acc);
+            }else{
+                palpays.add("");
+            }
+            List<TradingOrderGetAccount> accountlist=iTradingOrderGetAccount.selectTradingOrderGetAccountByTransactionId(order.getTransactionid());
+            if(accountlist!=null&&accountlist.size()>0){
+                for(TradingOrderGetAccount account:accountlist){
+                    if("成交費".equals(account.getDescription())){
+                        grossdetailamounts.add(account.getGrossdetailamount());
+                    }else{
+                        grossdetailamounts.add("");
+                    }
+                }
+            }
+            String ItemId=order.getItemid();
+            List<TradingOrderGetItem> itemList= iTradingOrderGetItem.selectOrderGetItemByItemId(ItemId);
+            if(itemList!=null&&itemList.size()>0){
+                Long pictureid=itemList.get(0).getPicturedetailsId();
+                List<TradingOrderPictureDetails> pictureDetailses=iTradingOrderPictureDetails.selectOrderGetItemById(pictureid);
+                if(pictureDetailses!=null&&pictureDetailses.size()>0){
+                    pictures.add(pictureDetailses.get(0).getPictureurl());
+                }else{
+                    pictures.add("");
+                }
+            }
+
+        }
+        List<TradingOrderSenderAddress> senderAddresses=new ArrayList<TradingOrderSenderAddress>();
+        if(lists1!=null&&lists1.size()>0){
+            senderAddresses=iTradingOrderSenderAddress.selectOrderSenderAddressByOrderId(lists1.get(0).getOrderid());
+            modelMap.put("orderId",lists1.get(0).getOrderid());
+            modelMap.put("order",lists1.get(0));
+            modelMap.put("sender",lists1.get(0).getBuyeruserid());
+            modelMap.put("recipient",lists1.get(0).getSelleruserid());
+        }
+        TradingOrderSenderAddress type1=new TradingOrderSenderAddress();
+        TradingOrderSenderAddress type2=new TradingOrderSenderAddress();
+        for(TradingOrderSenderAddress senderAddresse:senderAddresses){
+            if("1".equals(senderAddresse.getType())){
+                type1=senderAddresse;
+            }
+            if("2".equals(senderAddresse.getType())){
+                type2=senderAddresse;
+            }
+        }
+        if(lists!=null&&lists.size()>0){
+            modelMap.put("flag","true");
+        }else{
+            modelMap.put("flag","false");
+        }
+       /* modelMap.put("messages",messages);
+        modelMap.put("messageID",messages.get(0).getMessageid());*/
+        modelMap.put("addMessage1",addMessages1);
+        modelMap.put("orders",lists);
+        String rootpath=request.getContextPath();
+        modelMap.put("rootpath",rootpath);
+        modelMap.put("addresstype1",type1);
+        modelMap.put("addresstype2",type2);
+        modelMap.put("paypals",palpays);
+        modelMap.put("grossdetailamounts",grossdetailamounts);
+        modelMap.put("pictures",pictures);
+
+        modelMap.put("accs",accs);
+        return forword("orders/order/viewOrderGetOrders",modelMap);
+      /*  return forword("MessageGetmymessage/viewMessageGetmymessage",modelMap);*/
     }
 
     @RequestMapping("/sendMessageGetmymessage.do")
@@ -258,10 +567,10 @@ public class GetmymessageController extends BaseAction{
         return forword("MessageGetmymessage/sendMessageGetmymessageList",modelMap);
     }
 
-    @RequestMapping("/ajax/saveMessageGetmymessage.do")
+   /* @RequestMapping("/ajax/saveMessageGetmymessage.do")
     @AvoidDuplicateSubmission(needRemoveToken = true)
     @ResponseBody
-    /**回复消息*/
+    *//**回复消息*//*
     public void saveMessageGetmymessage(HttpServletRequest request,HttpServletResponse response,ModelMap modelMap) throws Exception {
         String messageid=request.getParameter("messageid");
         String sendHeader=request.getParameter("sendHeader");
@@ -301,7 +610,7 @@ public class GetmymessageController extends BaseAction{
             AjaxSupport.sendSuccessText("message",  map.get("par"));
         }
     }
-
+*/
     @RequestMapping("/GetmymessageEbay.do")
     @AvoidDuplicateSubmission(needSaveToken = true)
     @ResponseBody
@@ -310,6 +619,12 @@ public class GetmymessageController extends BaseAction{
         List<UsercontrollerEbayAccountExtend> ebays = userInfoService.getEbayAccountForCurrUser();
         modelMap.put("ebays",ebays);
         return forword("MessageGetmymessage/GetmymessageEbay",modelMap);
+    }
+    //选择消息模板初始化
+    @RequestMapping("/selectSendMessage.do")
+    public ModelAndView selectSendMessage(HttpServletRequest request,HttpServletResponse response,ModelMap modelMap){
+
+        return forword("MessageGetmymessage/selectSendMessage",modelMap);
     }
 
     @RequestMapping("/apiGetMyMessagesRequest")
@@ -371,10 +686,11 @@ public class GetmymessageController extends BaseAction{
         d.setApiCallName(APINameStatic.GetMyMessages);
         request.getSession().setAttribute("dveId", d);
         Map map=new HashMap();
-    /*   Date startTime2= com.base.utils.common.DateUtils.subDays(new Date(),8);
+       /*Date startTime2= com.base.utils.common.DateUtils.subDays(new Date(),8);
         Date endTime= DateUtils.addDays(startTime2, 9);*/
-        Date startTime2= com.base.utils.common.DateUtils.subDays(new Date(),60);
-        Date endTime= DateUtils.addDays(startTime2, 60);/*MutualWithdrawalAgreementLate*/
+        Date startTime2= com.base.utils.common.DateUtils.subDays(new Date(),90);
+        Date endTime= DateUtils.addDays(startTime2, 90);
+        /*MutualWithdrawalAgreementLate*/
 
 
         Date end1= com.base.utils.common.DateUtils.turnToDateEnd(endTime);

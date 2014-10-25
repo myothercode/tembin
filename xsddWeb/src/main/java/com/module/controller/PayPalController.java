@@ -187,7 +187,7 @@ public class PayPalController extends BaseAction{
     public void delPayPal(HttpServletRequest request,HttpServletResponse response,@ModelAttribute( "initSomeParmMap" )ModelMap modelMap) throws Exception {
         String id = request.getParameter("id");
         TradingPaypal tp= this.iTradingPayPal.selectById(Long.parseLong(id));
-        if(tp.getCheckFlag().equals("1")){
+        if("1".equals(tp.getCheckFlag())){
             tp.setCheckFlag("0");
         }else{
             tp.setCheckFlag("1");

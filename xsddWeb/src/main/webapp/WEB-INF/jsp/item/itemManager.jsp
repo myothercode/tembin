@@ -169,9 +169,6 @@
             loadurl = urls;
             onloadTable(loadurl);
         }
-        function addItem(){
-            document.location = path+"/addItem.do";
-        }
         function addTabRemark(){
             var url=path+"/order/selectTabRemark.do?folderType=modelFolder";
             OrderGetOrders=$.dialog({title: '选择文件夹',
@@ -251,14 +248,14 @@
         function listingType(json){
             var htm="";
             if(json.listingtype=="2"){
-                htm="多属性";
+                htm="lx.png";
             }else if(json.listingtype=="Chinese"){
-                htm="拍买";
+                htm="bids.png";
             }else if(json.listingtype=="FixedPriceItem"){
-                htm="固价";
+                htm="buyit.jpg";
             }
 
-            return htm;
+            return "<img width='24' height='17' src='"+path+"/img/"+htm+"'>";
         }
         function itemName(json){
             var htm="<span style='color:#5F93D7;'>"+json.itemName+"</span></br>"+json.sku;
@@ -281,7 +278,7 @@
             hs+="<li style='height:25px' onclick=copyItem('"+json.id+"') value='"+json.id+"' doaction=\"look\" >复制</li>";
             hs+="<li style='height:25px' onclick=renameItem('"+json.id+"') value='"+json.id+"' doaction=\"look\" >重命名</li>";
             hs+="<li style='height:25px' onclick=toFolder('"+json.id+"') value='"+json.id+"' doaction=\"look\" >移动</li>";
-            hs+="<li style='height:25px' onclick=listingItem('"+json.id+"') value='"+json.id+"' doaction=\"look\" >立即刊登</li>";
+            hs+="<li style='height:25px' onclick=listingItem('"+json.id+"','"+json.isFlag+"') value='"+json.id+"' doaction=\"look\" >立即刊登</li>";
             var pp={"liString":hs};
             return getULSelect(pp);
         }
@@ -379,20 +376,37 @@
             return ;
         }
 
-        listingItem(idStr);
+        listingItem(idStr,"");
     }
 
-    function listingItem(idStr){
-        var url = path+"/ajax/listingItem.do?id="+idStr;
-        $().invoke(url, {},
-                [function (m, r) {
-                    alert(r);
-                    onloadTable(loadurl);
-                },
-                    function (m, r) {
+    function listingItem(idStr,isFlag){
+        if(isFlag=="Success"){
+            $.dialog.confirm("该商品已成功刊登，你确定要再次刊登吗？",function(){
+                var url = path+"/ajax/listingItem.do?id="+idStr;
+                $().invoke(url, {},
+                        [function (m, r) {
+                            alert(r);
+                            onloadTable(loadurl);
+                        },
+                            function (m, r) {
+                                alert(r);
+                            }]
+                );
+            },null);
+        }else{
+            var url = path+"/ajax/listingItem.do?id="+idStr;
+            $().invoke(url, {},
+                    [function (m, r) {
                         alert(r);
-                    }]
-        );
+                        onloadTable(loadurl);
+                    },
+                        function (m, r) {
+                            alert(r);
+                        }]
+            );
+        }
+
+
     }
 
     function onselectAlls(obj){
@@ -611,6 +625,7 @@
             <%--<iframe src="/xsddWeb/itemList.do?1=1" id="listing_frame" height="1000px;" frameborder="0" width="100%">
 
             </iframe>--%>
+                <div style="width: 100%;float: left;height: 5px"></div>
                 <div id="itemTable"></div>
 
 

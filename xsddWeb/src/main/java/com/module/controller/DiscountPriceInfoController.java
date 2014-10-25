@@ -184,7 +184,7 @@ public class DiscountPriceInfoController extends BaseAction {
         String id = request.getParameter("id");
 
         TradingDiscountpriceinfo tp= this.iTradingDiscountPriceInfo.selectById(Long.parseLong(id));
-        if(tp.getCheckFlag().equals("1")){
+        if("1".equals(tp.getCheckFlag())){
             tp.setCheckFlag("0");
         }else{
             tp.setCheckFlag("1");

@@ -11,6 +11,12 @@
 <head>
     <%@include file= "/WEB-INF/jsp/commonImport.jsp" %>
     <script type="text/javascript" src=<c:url value ="/js/commonPage/mainframe/mainFramePage.js" /> ></script>
+    <link rel="stylesheet" type="text/css" href="<c:url value ="/js/toolTip/css/toolTip.css"/> "/>
+    <script type="text/javascript" src=<c:url value ="/js/toolTip/js/toolTip.js" /> ></script>
+    <%--<link rel="stylesheet" type="text/css" href="<c:url value ="/js/toolTip/css/jQuery.toolTip.css"/> "/>
+    <script type="text/javascript" src=<c:url value ="/js/toolTip/js/jQuery.toolTip.js" /> ></script>--%>
+
+
     <title></title>
     <script type="text/javascript">
         $(document).ready(function(){
@@ -56,11 +62,11 @@
         dl .noneBold { font-weight:normal;}
     </style>
 </head>
-<body>
+<body style=overflow:scroll;overflow-y:hidden;>
 <form id="queryForm" action="/xsddWeb/order/queryOrdersList.do" target="contentMain">
 </form>
 <!-- navbar -->
-<header class="navbar navbar-inverse" role="banner">
+<header  class="navbar navbar-inverse" style="position: fixed;top: 0px;width: 100%;" role="banner">
     <div class="navbar-header">
         <button class="navbar-toggle" type="button" data-toggle="collapse" id="menu-toggler">
             <span class="sr-only">Toggle navigation</span>
@@ -72,14 +78,16 @@
     </div>
     <ul class="nav navbar-nav pull-right hidden-xs">
         <li class="hidden-xs hidden-sm">
-            <input class="search" type="text" value="SKU/内容" style="color: #e0e0e0" onkeydown="queryOrder(this);" onfocus="cleanContent(this);" onblur="addContent(this);"/>
+            <input class="search" type="text" value="SKU/内容" style="color: #808080" onkeydown="queryOrder(this);" onfocus="cleanContent(this);" onblur="addContent(this);"/>
             <%--<div class="vsearch">
                 <input id="content6" style="background:#000000; padding: 2px 6px;top: 9px;border-radius: 2px;position: relative;height: 27px; " name="" type="text" class="key_1"><input style="background:#000000;padding: 2px 6px;top: 9px;border-radius: 2px;position: relative;height: 27px; " name="newbut" type="button" class="key_2"></div>
            --%><%-- <input type="text" style="padding: 2px 6px;top: 9px;border-radius: 2px;position: relative;height: 27px; ">--%>
         </li>
-        <li title="ebay消息" class="notification-dropdown hidden-xs hidden-sm">
-            <a href="javascript:void(0)" id="ebayMessages"  class="trigger">
-                <i class="icon-warning-sign"></i>
+        <li   class="notification-dropdown hidden-xs hidden-sm" >
+            <a title="ebay消息"  href="javascript:void(0)" id="ebayMessages"  class="trigger " >
+                <i title="ebay消息" class="icon-warning-sign tooltips"
+                   tooltip="ebay消息"
+                   tooltip-type="primary" tooltip-position="bottom"></i>
                 <span id="ebayMessagesCount" class="count"></span>
             </a>
             <div class="pop-dialog">
@@ -105,7 +113,9 @@
         </li>
         <li title="系统消息" class="notification-dropdown hidden-xs hidden-sm">
             <a href="javascript:void(0)" id="systemMessages" class="trigger">
-                <i class="icon-envelope"></i>
+                <i class="icon-envelope tooltips"
+                   tooltip="系统消息"
+                   tooltip-type="primary" tooltip-position="bottom"></i>
                 <span id="systemMessageCount" class="count"></span>
             </a>
             <div class="pop-dialog">
@@ -124,20 +134,19 @@
                             </div>
                             <span class="time"><i class="icon-time"></i> 13 min.</span>
                         </a>
-
-
-
                     </div>
                 </div>
             </div>
         </li>
 
-        <li title="配置" class="settings hidden-xs hidden-sm">
-            <a href="../../personal-info.html" role="button">
+        <li title="系统配置" class="settings hidden-xs hidden-sm tooltips" tooltip="系统配置"
+            tooltip-type="primary" tooltip-position="bottom">
+            <a target="contentMain" href="/xsddWeb/systemuser/userConfPage.do" role="button">
                 <i class="icon-cog"></i>
             </a>
         </li>
-        <li title="退出" class="settings hidden-xs hidden-sm">
+        <li title="注销登录" class="settings hidden-xs hidden-sm tooltips" tooltip="注销登录"
+            tooltip-type="primary" tooltip-position="bottom">
             <a onclick="logout()" href="javascript:void(0)" role="button">
                 <i class="icon-share-alt"></i>
             </a>
@@ -153,7 +162,7 @@
     </ul>
 </div>
 
-<div class="content">
+<div id="contentMaindiv" class="content" style="top: 52px">
     <iframe width="100%" height="100%" frameborder="0px" id="contentMain" name="contentMain">
 
     </iframe>

@@ -44,7 +44,7 @@
         <table width="100%" border="0" align="left" cellspacing="0" style="margin-top:20px;">
             <tr>
                 <td width="10%" height="40" align="right">原始密码</td>
-                <td width="82%" height="40"><input id="oldPWD" name="oldPWD" type="text" class="newps"></td>
+                <td width="82%" height="40"><input id="oldPWD" name="oldPWD" type="password" class="newps"></td>
             </tr>
             <tr>
                 <td width="10%" height="40" align="right" >新密码</td>

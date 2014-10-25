@@ -64,6 +64,7 @@
 <div align="right">
     <input type="button" value="添加分类" onclick="addType();"/>
 </div>
+<div style="width: 100%;float: left;height: 5px"></div>
 <div id="ItemInformationTypeListTable"></div>
 </body>
 </html>

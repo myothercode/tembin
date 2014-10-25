@@ -26,7 +26,7 @@
                     {title:"",name:"pictureUrl",width:"2%",align:"left",format:makeOption4},
                     {title:"主题",name:"read",width:"8%",align:"left",format:makeOption2,click:makeOption1},
                     {title:"From > to",name:"sender",width:"8%",align:"left",format:makeOption3,click:makeOption1},
-                    {title:"SKU",name:"sendtoname",width:"8%",align:"left",click:makeOption1},
+                    {title:"SKU",name:"sku",width:"8%",align:"left",click:makeOption1},
                     {title:"修改时间",name:"receivedate",width:"8%",align:"left",click:makeOption1},
                     {title:"总数",name:"countNum",width:"8%",align:"left",click:makeOption1}
                 ],
@@ -40,27 +40,30 @@
         function refreshTable(){
             $("#MessageGetmymessageListTable").selectDataAfterSetParm({"bedDetailVO.deptId":"", "isTrue":0});
         }
-        function refreshTable1(amount,status,day,type,content){
-            $("#MessageGetmymessageListTable").selectDataAfterSetParm({"bedDetailVO.deptId":"", "isTrue":0,"amount":amount,"status":status,"day":day,"type":type,"content":content});
+        function refreshTable1(amount,status,day,type,content,starttime,endtime,messageFrom){
+            $("#MessageGetmymessageListTable").selectDataAfterSetParm({"bedDetailVO.deptId":"", "isTrue":0,"amount":amount,"status":status,"day":day,"type":type,"content":content,"starttime1":starttime,"endtime1":endtime,"messageFrom":messageFrom});
 
         }
-        function refreshTable2(amount,status,day,type,content){
-            $("#MessageGetmymessageListTable1").selectDataAfterSetParm({"bedDetailVO.deptId":"", "isTrue":0,"amount":amount,"status":status,"day":day,"type":type,"content":content});
+        function refreshTable2(amount,status,day,type,content,starttime,endtime){
+            $("#MessageGetmymessageListTable1").selectDataAfterSetParm({"bedDetailVO.deptId":"", "isTrue":0,"amount":amount,"status":status,"day":day,"type":type,"content":content,"starttime1":starttime,"endtime1":endtime});
 
         }
-        function refreshTable3(amount,status,day,type,content){
-            $("#MessageGetmymessageListTable2").selectDataAfterSetParm({"bedDetailVO.deptId":"", "isTrue":0,"amount":amount,"status":status,"day":day,"type":type,"content":content});
+        function refreshTable3(amount,status,day,type,content,starttime,endtime){
+            $("#MessageGetmymessageListTable2").selectDataAfterSetParm({"bedDetailVO.deptId":"", "isTrue":0,"amount":amount,"status":status,"day":day,"type":type,"content":content,"starttime1":starttime,"endtime1":endtime});
 
         }
         /**查看消息*/
+        var OrderGetOrders;
         function makeOption1(json){
             var url=path+"/message/viewMessageGetmymessage.do";
-            MessageGetmymessage=$.dialog({title: '查看消息',
+            OrderGetOrders=$.dialog({title: '查看消息',
                 content: 'url:'+url+'?messageID='+json.messageid,
                 icon: 'succeed',
-                width:1025,
-                height:500
+                width:1200,
+                height:850,
+                lock:true
             });
+
         }
         function makeOption2(json){
             var detail=json.subject;
@@ -78,11 +81,12 @@
         }
         function makeOption5(json){
             var url=path+"/message/viewMessageAddmymessage.do";
-            MessageGetmymessage=$.dialog({title: '查看消息',
-                content: 'url:'+url+'?messageID='+json.messageid,
+            OrderGetOrders=$.dialog({title: '查看消息',
+                content: 'url:'+url+'?itemid='+json.itemid+'&recipientid='+json.recipientid+'&sender='+json.sender,
                 icon: 'succeed',
-                width:1025,
-                height:400
+                width:1200,
+                height:850,
+                lock:true
             });
         }
         function getBindParm(){
@@ -112,6 +116,8 @@
                 if(i==(count)){
                     $(days[i]).attr("class","newusa_ici");
                     $("#selectDay").val(name);
+                    $("#starttime").val("");
+                    $("#endtime").val("");
                 }else{
                     $(days[i]).attr("class","newusa_ici_1");
                 }
@@ -123,6 +129,8 @@
                 if(i==(count)){
                     $(days[i]).attr("class","newusa_ici");
                     $("#selectDay1").val(name);
+                    $("#starttime1").val("");
+                    $("#endtime1").val("");
                 }else{
                     $(days[i]).attr("class","newusa_ici_1");
                 }
@@ -134,6 +142,8 @@
                 if(i==(count)){
                     $(days[i]).attr("class","newusa_ici");
                     $("#selectDay2").val(name);
+                    $("#starttime2").val("");
+                    $("#endtime2").val("");
                 }else{
                     $(days[i]).attr("class","newusa_ici_1");
                 }
@@ -147,6 +157,19 @@
                     $("#selectStatus").val(name);
                 }else{
                     $(days[i]).attr("class","newusa_ici_1");
+                    $("span[scop=days]").attr("class","newusa_ici_1");
+                }
+            }
+        }
+        function selectmessageFrom(count,name){
+            var days=$("span[scop=messageFrom]");
+            for(var i=0;i<days.length;i++){
+                if(i==(count)){
+                    $(days[i]).attr("class","newusa_ici");
+                    $("#selectmessageFrom").val(name);
+                }else{
+                    $(days[i]).attr("class","newusa_ici_1");
+                    $("span[scop=days]").attr("class","newusa_ici_1");
                 }
             }
         }
@@ -214,13 +237,16 @@
             var day=$("#selectDay").val();
             var type=$("#typeQuery").val();
             var content=$("#content").val();
+            var starttime=$("#starttime").val();
+            var endtime=$("#endtime").val();
+            var messageFrom=$("#selectmessageFrom").val();
             $("#MessageGetmymessageListTable").initTable({
                 url:path + "/message/ajax/loadMessageGetmymessageList.do?",
                 columnData:[
                     {title:"",name:"pictureUrl",width:"2%",align:"left",format:makeOption4},
                     {title:"主题",name:"read",width:"8%",align:"left",format:makeOption2,click:makeOption1},
                     {title:"From > to",name:"sender",width:"8%",align:"left",format:makeOption3,click:makeOption1},
-                    {title:"SKU",name:"sendtoname",width:"8%",align:"left",click:makeOption1},
+                    {title:"SKU",name:"sku",width:"8%",align:"left",click:makeOption1},
                     {title:"修改时间",name:"receivedate",width:"8%",align:"left",click:makeOption1},
                     {title:"总数",name:"countNum",width:"8%",align:"left",click:makeOption1}
                 ],
@@ -228,15 +254,17 @@
                 isrowClick:false,
                 showIndex:false
             });
-            refreshTable1(amount,status,day,type,content);
+            refreshTable1(amount,status,day,type,content,starttime,endtime,messageFrom);
             alert("查询成功");
         }
         function queryMessage1(){
             var amount=$("#selectAmount1").val();
             var status=$("#selectStatus1").val();
             var day=$("#selectDay1").val();
-            var type=$("#typeQuery").val();
-            var content=$("#content").val();
+            var type=$("#typeQuery1").val();
+            var content=$("#content1").val();
+            var starttime=$("#starttime1").val();
+            var endtime=$("#endtime1").val();
             var replied="true";
             $("#MessageGetmymessageListTable1").initTable({
                 url:path + "/message/ajax/loadMessageAddmymessageList.do?replied="+replied,
@@ -244,7 +272,7 @@
                     {title:"",name:"pictureUrl",width:"2%",align:"left",format:makeOption4},
                     {title:"主题",name:"read",width:"8%",align:"left",format:makeOption2,click:makeOption5},
                     {title:"From > to",name:"sender",width:"8%",align:"left",format:makeOption3,click:makeOption5},
-                    {title:"SKU",name:"sender",width:"8%",align:"left",click:makeOption5},
+                    {title:"SKU",name:"sku",width:"8%",align:"left",click:makeOption5},
                     {title:"修改时间",name:"createTime",width:"8%",align:"left",click:makeOption5},
                     {title:"总数",name:"countNum",width:"8%",align:"left",click:makeOption5}
                 ],
@@ -252,15 +280,17 @@
                 isrowClick:false,
                 showIndex:false
             });
-            refreshTable2(amount,status,day,type,content);
+            refreshTable2(amount,status,day,type,content,starttime,endtime);
             alert("查询成功");
         }
         function queryMessage2(){
             var amount=$("#selectAmount2").val();
             var status=$("#selectStatus2").val();
             var day=$("#selectDay2").val();
-            var type=$("#typeQuery").val();
-            var content=$("#content").val();
+            var type=$("#typeQuery2").val();
+            var content=$("#content2").val();
+            var starttime=$("#starttime2").val();
+            var endtime=$("#endtime2").val();
             var replied="false";
             $("#MessageGetmymessageListTable2").initTable({
                 url:path + "/message/ajax/loadMessageAddmymessageList.do?replied="+replied,
@@ -268,7 +298,7 @@
                     {title:"",name:"pictureUrl",width:"2%",align:"left",format:makeOption4},
                     {title:"主题",name:"read",width:"8%",align:"left",format:makeOption2,click:makeOption5},
                     {title:"From > to",name:"sender",width:"8%",align:"left",format:makeOption3,click:makeOption5},
-                    {title:"SKU",name:"sender",width:"8%",align:"left",click:makeOption5},
+                    {title:"SKU",name:"sku",width:"8%",align:"left",click:makeOption5},
                     {title:"修改时间",name:"createTime",width:"8%",align:"left",click:makeOption5},
                     {title:"总数",name:"countNum",width:"8%",align:"left",click:makeOption5}
                 ],
@@ -276,7 +306,7 @@
                 isrowClick:false,
                 showIndex:false
             });
-            refreshTable3(amount,status,day,type,content);
+            refreshTable3(amount,status,day,type,content,starttime,endtime);
             alert("查询成功");
         }
         function inintTableOne(table,cursel){
@@ -287,7 +317,7 @@
                         {title:"",name:"pictureUrl",width:"2%",align:"left",format:makeOption4},
                         {title:"主题",name:"subject",width:"8%",align:"left",format:makeOption2,click:makeOption1},
                         {title:"From > to",name:"sender",width:"8%",align:"left",format:makeOption3,click:makeOption1},
-                        {title:"SKU",name:"sendtoname",width:"8%",align:"left",click:makeOption1},
+                        {title:"SKU",name:"sku",width:"8%",align:"left",click:makeOption1},
                         {title:"修改时间",name:"receivedate",width:"8%",align:"left",click:makeOption1},
                         {title:"总数",name:"countNum",width:"8%",align:"left",click:makeOption1}
                     ],
@@ -308,7 +338,7 @@
                         {title:"",name:"pictureUrl",width:"2%",align:"left",format:makeOption4},
                         {title:"主题",name:"read",width:"8%",align:"left",format:makeOption2,click:makeOption5},
                         {title:"From > to",name:"sender",width:"8%",align:"left",format:makeOption3,click:makeOption5},
-                        {title:"SKU",name:"sender",width:"8%",align:"left",click:makeOption5},
+                        {title:"SKU",name:"sku",width:"8%",align:"left",click:makeOption5},
                         {title:"修改时间",name:"createTime",width:"8%",align:"left",click:makeOption5},
                         {title:"总数",name:"countNum",width:"8%",align:"left",click:makeOption5}
                     ],
@@ -318,6 +348,19 @@
                 });
             }
             $(table).selectDataAfterSetParm({"bedDetailVO.deptId":"", "isTrue":0});
+        }
+        function definedDays(obj){
+                $(obj).val("");
+        }
+        function definedDays1(obj){
+            var value=$(obj).val();
+            if(value==""){
+                $(obj).val("自定义时间");
+            }else{
+                $("#selectDay").val(value);
+                $(obj).attr("class","newusa_ici");
+                $(obj).val(value+"以内");
+            }
         }
     </script>
 </head>
@@ -377,6 +420,7 @@
                     <input type="hidden" id="selectAmount"/>
                     <input type="hidden" id="selectStatus"/>
                     <input type="hidden" id="selectDay">
+                    <input type="hidden" id="selectmessageFrom"/>
                 </form>
                 <form id="selectForm1">
                     <input type="hidden" id="selectAmount1"/>
@@ -391,16 +435,21 @@
                 <div id="con_menu_1"  style="display: block;">
                     <!--综合开始 -->
                     <div class="new_usa" style="margin-top:20px;">
-                        <li class="new_usa_list"><span class="newusa_i">选择账号：</span><a href="#"><span class="newusa_ici_1" scop="amount" onclick="selectAmount1(0,null);">全部&nbsp;</span></a><a href="#"><span class="newusa_ici_1" scop="amount" onclick="selectAmount1(1,null)">固价&nbsp;</span></a><a href="#"><span class="newusa_ici_1" scop="amount" onclick="selectAmount1(2,null)">多属性&nbsp;</span></a><a href="#"><span class="newusa_ici_1" scop="amount" onclick="selectAmount1(3,null)">多属性&nbsp;</span></a></li>
+                        <li class="new_usa_list"><span class="newusa_i">属性：</span><a href="#"><span class="newusa_ici_1" scop="amount" onclick="selectAmount1(0,null);">全部&nbsp;</span></a><a href="#"><span class="newusa_ici_1" scop="amount" onclick="selectAmount1(1,null)">固价&nbsp;</span></a><a href="#"><span class="newusa_ici_1" scop="amount" onclick="selectAmount1(2,null)">多属性&nbsp;</span></a><a href="#"><span class="newusa_ici_1" scop="amount" onclick="selectAmount1(3,null)">多属性&nbsp;</span></a></li>
                         <li class="new_usa_list"><span class="newusa_i">消息状态：</span><a href="#"><span class="newusa_ici_1" scop="status" onclick="selectStatus1(0,null);">全部&nbsp;</span></a><a href="#"><span class="newusa_ici_1" scop="status"  onclick="selectStatus1(1,'readed');">已读&nbsp;</span></a><a href="#"><span class="newusa_ici_1" scop="status" onclick="selectStatus1(2,'noRead');">未读&nbsp;</span></a></li>
+                        <li class="new_usa_list"><span class="newusa_i">消息来源：</span><a href="#"><span class="newusa_ici_1" scop="messageFrom" onclick="selectmessageFrom(0,null);">全部&nbsp;</span></a><a href="#"><span class="newusa_ici_1" scop="messageFrom"  onclick="selectmessageFrom(1,'ebay');">来自eBay&nbsp;</span></a><a href="#"><span class="newusa_ici_1" scop="messageFrom" onclick="selectmessageFrom(2,'buyer');">来自买家&nbsp;</span></a></li>
                         <div class="newsearch">
-                            <span class="newusa_i">消息来源：</span><a href="#"><span class="newusa_ici_1" scop="days" onclick="selectDays(0,null);">全部&nbsp;</span></a><a href="#"><span class="newusa_ici_1" scop="days" onclick="selectDays(1,'1');">今天&nbsp;</span></a><a href="#"><span class="newusa_ici_1" scop="days" onclick="selectDays(2,'2');">昨天&nbsp;</span></a><a href="#"><span class="newusa_ici_1" scop="days" onclick="selectDays(3,'7');">7天以内&nbsp;</span></a><a href="#"><span class="newusa_ici_1" scop="days" onclick="selectDays(4,'30');">30天以内&nbsp;</span></a>
+                            <span class="newusa_i">时间：</span><a href="#"><span class="newusa_ici_1" scop="days" onclick="selectDays(0,null);">全部&nbsp;</span></a><a href="#"><span class="newusa_ici_1" scop="days" onclick="selectDays(1,'1');">今天&nbsp;</span></a><a href="#"><span class="newusa_ici_1" scop="days" onclick="selectDays(2,'2');">昨天&nbsp;</span></a><a href="#"><span class="newusa_ici_1" scop="days" onclick="selectDays(3,'7');">7天以内&nbsp;</span></a><a href="#"><span class="newusa_ici_1" scop="days" onclick="selectDays(4,'30');">30天以内&nbsp;</span></a>
+                            <span style="float: left;color: #5F93D7;">从</span><input style="float: left;color: #5F93D7;width: 90px;height: 26px;" id="starttime"  type="text" onfocus="WdatePicker({isShowWeek:true,dateFmt:'yyyy-MM-dd'})"/>
+                            <span style="float: left;color: #5F93D7;">到</span><input style="float: left;color: #5F93D7;width: 90px;height: 26px;margin-right: 20px;" id="endtime"  type="text" onfocus="WdatePicker({isShowWeek:true,dateFmt:'yyyy-MM-dd'})"/>
 <span id="sleBG">
 <span id="sleHid">
-<select name="type" class="select">
-    <option id="typeQuery" selected="selected">选择类型</option>
-    <option value="1">图书</option>
-    <option value="2">音像</option>
+<select id="typeQuery"  name="type" class="select">
+    <option value="" selected="selected">选择类型</option>
+    <option value="1">发件人</option>
+    <option value="2">主题</option>
+    <option value="4">messageId</option>
+
 </select>
 </span>
 </span>
@@ -431,6 +480,7 @@
                         </div>
                     </div>
                     <!--综合结束 -->
+                    <div style="width: 100%;float: left;height: 5px"></div>
                     <div id="MessageGetmymessageListTable" ></div>
                     <%--<table width="100%" border="0" align="left" cellspacing="0" style="margin-top:20px;">
                         <tbody><tr>
@@ -484,17 +534,19 @@
                             <li class="new_usa_list"><span class="newusa_i">消息状态：</span><a href="#"><span class="newusa_ici_1" scop="status2" onclick="selectStatus2(0,null);">全部&nbsp;</span></a><a href="#"><span class="newusa_ici_1" scop="status2" onclick="selectStatus2(1,'true');">发送成功&nbsp;</span></a><a href="#"><span class="newusa_ici_1" scop="status2" onclick="selectStatus2(2,'false');">发送失败&nbsp;</span></a></li>
                             <div class="newsearch">
                                 <span class="newusa_i">消息来源：</span><a href="#"><span class="newusa_ici_1" scop="days1" onclick="selectDays1(0,null);">全部&nbsp;</span></a><a href="#"><span class="newusa_ici_1" scop="days1" onclick="selectDays1(1,'1');">今天&nbsp;</span></a><a href="#"><span class="newusa_ici_1" scop="days1" onclick="selectDays1(2,'2');">昨天&nbsp;</span></a><a href="#"><span class="newusa_ici_1" scop="days1" onclick="selectDays1(3,'7');">7天以内&nbsp;</span></a><a href="#"><span class="newusa_ici_1" scop="days1" onclick="selectDays1(4,'30');">30天以内&nbsp;</span></a>
+                                <span style="float: left;color: #5F93D7;">从</span><input style="float: left;color: #5F93D7;width: 90px;height: 26px;" id="starttime1"  type="text" onfocus="WdatePicker({isShowWeek:true,dateFmt:'yyyy-MM-dd'})"/>
+                                <span style="float: left;color: #5F93D7;">到</span><input style="float: left;color: #5F93D7;width: 90px;height: 26px;margin-right: 20px;" id="endtime1"  type="text" onfocus="WdatePicker({isShowWeek:true,dateFmt:'yyyy-MM-dd'})"/>
 <span id="sleBG">
 <span id="sleHid">
-<select name="type" class="select">
-    <option id="typeQuery" selected="selected">选择类型</option>
-    <option value="1">图书</option>
-    <option value="2">音像</option>
+<select id="typeQuery1" name="type" class="select">
+    <option value=""  selected="selected">选择类型</option>
+    <option value="1">收件人</option>
+    <option value="2">内容</option>
 </select>
 </span>
 </span>
                                 <div class="vsearch">
-                                    <input id="content" name="" type="text" class="key_1"><input onclick="queryMessage1();" name="newbut" type="button" class="key_2"></div>
+                                    <input id="content1" name="" type="text" class="key_1"><input onclick="queryMessage1();" name="newbut" type="button" class="key_2"></div>
                             </div>
                             <div class="newds">
                                 <div class="newsj_left" style="margin-right:15px;">
@@ -525,17 +577,19 @@
                             <li class="new_usa_list"><span class="newusa_i">消息状态：</span><a href="#"><span class="newusa_ici_1" scop="status3" onclick="selectStatus3(0,null);">全部&nbsp;</span></a><a href="#"><span class="newusa_ici_1" scop="status3" onclick="selectStatus3(1,'true');">发送成功&nbsp;</span></a><a href="#"><span class="newusa_ici_1" scop="status3" onclick="selectStatus3(2,'false');">发送失败&nbsp;</span></a></li>
                             <div class="newsearch">
                                 <span class="newusa_i">消息来源：</span><a href="#"><span class="newusa_ici_1" scop="days2" onclick="selectDays2(0,null);">全部&nbsp;</span></a><a href="#"><span class="newusa_ici_1" scop="days2" onclick="selectDays2(1,'1');">今天&nbsp;</span></a><a href="#"><span class="newusa_ici_1" scop="days2" onclick="selectDays2(2,'2');">昨天&nbsp;</span></a><a href="#"><span class="newusa_ici_1" scop="days2" onclick="selectDays2(3,'7');">7天以内&nbsp;</span></a><a href="#"><span class="newusa_ici_1" scop="days2" onclick="selectDays2(4,'30');">30天以内&nbsp;</span></a>
+                                <span style="float: left;color: #5F93D7;">从</span><input style="float: left;color: #5F93D7;width: 90px;height: 26px;" id="starttime2"  type="text" onfocus="WdatePicker({isShowWeek:true,dateFmt:'yyyy-MM-dd'})"/>
+                                <span style="float: left;color: #5F93D7;">到</span><input style="float: left;color: #5F93D7;width: 90px;height: 26px;margin-right: 20px;" id="endtime2"  type="text" onfocus="WdatePicker({isShowWeek:true,dateFmt:'yyyy-MM-dd'})"/>
 <span id="sleBG">
 <span id="sleHid">
-<select name="type" class="select">
-    <option id="typeQuery" selected="selected">选择类型</option>
-    <option value="1">图书</option>
-    <option value="2">音像</option>
+<select id="typeQuery2" name="type" class="select">
+    <option value=""  selected="selected">选择类型</option>
+    <option value="1">收件人</option>
+    <option value="2">内容</option>
 </select>
 </span>
 </span>
                                 <div class="vsearch">
-                                    <input id="content" name="" type="text" class="key_1"><input onclick="queryMessage2();" name="newbut" type="button" class="key_2"></div>
+                                    <input id="content2" name="" type="text" class="key_1"><input onclick="queryMessage2();" name="newbut" type="button" class="key_2"></div>
                             </div>
                             <div class="newds">
                                 <div class="newsj_left" style="margin-right:15px;">

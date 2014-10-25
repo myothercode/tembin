@@ -44,16 +44,21 @@
     <form id="remarkForm">
         <br/><br/>
         <input type="hidden" name="id" value="${id}"/>
-        &nbsp;&nbsp;标签:&nbsp;<input type="text" class="validate[required]" name="remark" style="width: 800px;"/><br/>
-        &nbsp;&nbsp;<select name="parentid">
-            <option value="0">--请选择--</option>
-            <c:forEach items="${parents}" var="parent">
-                <option value="${parent.id}">${parent.configName}</option>
-            </c:forEach>
+        &nbsp;&nbsp;父类标签:<select name="parentid">
+        <option value="0">--请选择--</option>
+        <c:forEach items="${parents}" var="parent">
+            <option value="${parent.id}">${parent.configName}</option>
+        </c:forEach>
 
-        </select>
+    </select><br/><br/>
+        &nbsp;&nbsp;标签:&nbsp;<input type="text" class="validate[required]" name="remark" style="width: 800px;"/>
+
     </form>
-    &nbsp;&nbsp;<input type="button" value="保存" onclick="submitCommit();"/>
-    &nbsp;&nbsp;<input type="button" value="关闭" onclick="closedialog();">
+
+
+    <div class="modal-footer">
+        <button type="button" class="btn btn-newco" onclick="submitCommit();">保存</button>
+        <button type="button" class="btn btn-default" onclick="closedialog();" data-dismiss="modal">关闭</button>
+    </div>
 </body>
 </html>

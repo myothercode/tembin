@@ -21,7 +21,7 @@
                     data,
                     [function(m,r){
                         $("#legendd").html(r.messageTitle);
-                        $("#messageText").val(r.message);
+                        $("#messageText").html(r.message);
                         W.refreshRoleTable();
                     },
                     function(m,r){
@@ -44,7 +44,8 @@
                     <label class="control-label">消息内容</label>
                     <div class="controls">
                         <div class="textarea">
-                            <textarea id="messageText" readonly="true" type="" class="" style="margin: 0px; width: 340px; height: 108px;"> </textarea>
+                            <div id="messageText"></div>
+                            <%--<textarea id="messageText1" readonly="true" type="" class="" style="margin: 0px; width: 340px; height: 108px;"> </textarea>--%>
                         </div>
                     </div>
                 </div>

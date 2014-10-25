@@ -67,20 +67,13 @@
         }
         /**组装操作选项*/
         function makeOption1(json){
-            var htm='<div class="ui-select" style="margin-top:9px; width:10px">'
-            htm+='<select onchange="selectDo(this)">'
-            htm+='<option value="">请选择</option>'
-            htm+='<option value="'+json.id+'">查看</option>'
-            if(json.checkFlag=="0") {
-                htm += '<option value="' + json.id + '">禁用</option>'
-            }else{
-                htm += '<option value="' + json.id + '">启用</option>'
-            }
-            htm+='<option value="'+json.id+'">编辑</option>'
-
-            htm+='</select>'
-            htm+='</div>';
-            return htm;
+            var hs="";
+            hs+="<li style='height:25px' onclick=editshippingDetailsselect('"+json.id+"') value='"+json.id+"' doaction=\"look\" >查看</li>";
+            hs+="<li style='height:25px' onclick=editshippingDetails('"+json.id+"') value='"+json.id+"' doaction=\"look\" >编辑</li>";
+            hs+="<li style='height:25px' onclick=delshippingDetails('"+json.id+"') value='"+json.id+"' doaction=\"look\" >禁用</li>";
+            hs+="<li style='height:25px' onclick=delshippingDetails('"+json.id+"') value='"+json.id+"' doaction=\"look\" >启用</li>";
+            var pp={"liString":hs};
+            return getULSelect(pp);
         }
         function selectDo(obj){
             if($(obj).find(":selected").text()=="编辑"){

@@ -692,7 +692,7 @@ lhgdialog.fn = lhgdialog.prototype =
 		}
 		
 		that.unlock();
-		
+
 		if( that._maxState )
 		{
 			_$html.removeClass('ui_lock_scroll');
@@ -722,9 +722,18 @@ lhgdialog.fn = lhgdialog.prototype =
 			DOM.wrap[0].className = '';
 		    DOM.border.removeClass('ui_state_focus');
 		    DOM.title[0].innerHTML = '';
-		    DOM.content.html('');
 			DOM.icon[0].innerHTML = '';
 		    DOM.buttons[0].innerHTML = '';
+
+            try{
+                var tem_ = DOM.content.html();
+                if(tem_!=null && tem_ != '' && tem_.indexOf("style") > -1 ){
+                    doitAfterCloseLhgDiolag();
+                }
+                tem_=null;
+            }catch (e){}
+
+            DOM.content.html('');
 			
 			that.hide(true)._setAbsolute();
 		
@@ -734,7 +743,7 @@ lhgdialog.fn = lhgdialog.prototype =
 			    if(that.hasOwnProperty(i) && i !== 'DOM') delete that[i];
 		    };
 		}
-		
+
 		that.closed = true;
 		return that;
 	},

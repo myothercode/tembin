@@ -25,7 +25,7 @@
                 [function(m,r){
                     alert(r);
                     W.returnPolicy.close();
-                    W.refreshTable();
+                    W.refreshTablereturnpolicy();
                 },
                     function(m,r){
                         alert(r);

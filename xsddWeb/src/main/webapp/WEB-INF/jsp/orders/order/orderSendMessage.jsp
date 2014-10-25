@@ -26,6 +26,7 @@
                         alert(r);
                         W.viewsendMessage.close();
                         W.viewsendMessage1.close();
+                        W.OrderGetOrders.close();
                         Base.token;
                     },
                         function(m,r){
@@ -34,6 +35,11 @@
                         }]
             );
 
+        }
+        function closedialog(){
+            W.viewsendMessage.close();
+            W.viewsendMessage1.close();
+            W.OrderGetOrders.close();
         }
     </script>
 </head>
@@ -45,7 +51,11 @@
     <input type="hidden" name="transactionid" value="${order.transactionid}">
 主题：<input type="text" name="subject" style="width: 700px"><br/>
 内容：<textarea id="body" name="body" style="width: 700px;height: 400px;"></textarea>
-<input type="button" value="发送" onclick="submitCommit();"/>
+
 </form>
+<div class="modal-footer">
+    <button type="button" class="btn btn-newco" onclick="submitCommit();">发送</button>
+    <button type="button" class="btn btn-default" onclick="closedialog();" data-dismiss="modal">关闭</button>
+</div>
 </body>
 </html>

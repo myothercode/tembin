@@ -387,7 +387,7 @@
                         alert(r);
                         $(objs).attr("disabled",false);
                         W.returnShipping.close();
-                        W.refreshTable();
+                        W.refreshTableShipping();
                     },
                         function (m, r) {
                             $(objs).attr("disabled",false);

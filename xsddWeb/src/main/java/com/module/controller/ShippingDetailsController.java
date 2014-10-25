@@ -386,7 +386,7 @@ public class ShippingDetailsController extends BaseAction{
     public void delshippingDetails(HttpServletRequest request,HttpServletResponse response,@ModelAttribute( "initSomeParmMap" )ModelMap modelMap) throws Exception {
         String id = request.getParameter("id");
         TradingShippingdetails tp= this.iTradingShippingDetails.selectById(Long.parseLong(id));
-        if(tp.getCheckFlag().equals("1")){
+        if("1".equals(tp.getCheckFlag())){
             tp.setCheckFlag("0");
         }else{
             tp.setCheckFlag("1");
@@ -394,7 +394,4 @@ public class ShippingDetailsController extends BaseAction{
         this.iTradingShippingDetails.saveShippingDetails(tp);
         AjaxSupport.sendSuccessText("","操作成功!");
     }
-
-
-
 }

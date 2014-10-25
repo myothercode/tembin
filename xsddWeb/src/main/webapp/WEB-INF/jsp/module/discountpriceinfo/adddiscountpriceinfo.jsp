@@ -77,7 +77,7 @@
             $().invoke(url,data,
                     [function(m,r){
                         alert(r);
-                        W.refreshTable();
+                        W.refreshTableDisPrice();
                         W.discountPriceInfo.close();
                     },
                         function(m,r){

@@ -26,7 +26,7 @@
                 columnData:[
                     {title:"",name:"pictureUrl",width:"2%",align:"left",format:makeOption4,click:sellectCheckBox},
                     {title:"图片",name:"pictureUrl",width:"8%",align:"left",format:makeOption2,click:sellectCheckBox},
-                    {title:"商品 / SKU",name:"sku",width:"8%",align:"left",click:sellectCheckBox},
+                    {title:"商品/SKU",name:"sku",width:"8%",align:"left",click:sellectCheckBox},
                     {title:"产品名称",name:"name",width:"8%",align:"left",click:sellectCheckBox},
                     {title:"标签",name:"remark",width:"8%",align:"left",click:sellectCheckBox},
                     {title:"分类",name:"typeName",width:"8%",align:"left",click:sellectCheckBox},
@@ -59,7 +59,7 @@
                     "</div>";
             return htm;*/
             var hs="";
-            hs+="<li onclick=selectOption("+json.id+",this); value='1' doaction=\"readed\" >添加标签</li>";
+            hs+="<li style=\"height:25px;\" onclick=selectOption("+json.id+",this); value='1' doaction=\"readed\" >添加标签</li>";
             var pp={"liString":hs};
             return getULSelect(pp);
         }
@@ -91,7 +91,8 @@
             itemInformation=$.dialog({title: '添加或修改商品信息',
                 content: 'url:'+url,
                 icon: 'succeed',
-                width:1050
+                width:1050,
+                height:700
             });
         }
         function removeItemInformation(){
@@ -202,7 +203,7 @@
                 columnData:[
                     {title:"",name:"pictureUrl",width:"2%",align:"left",format:makeOption4,click:sellectCheckBox},
                     {title:"图片",name:"pictureUrl",width:"8%",align:"left",format:makeOption2,click:sellectCheckBox},
-                    {title:"商品 / SKU",name:"sku",width:"8%",align:"left",click:sellectCheckBox},
+                    {title:"商品/SKU",name:"sku",width:"8%",align:"left",click:sellectCheckBox},
                     {title:"产品名称",name:"name",width:"8%",align:"left",click:sellectCheckBox},
                     {title:"标签",name:"remark",width:"8%",align:"left",click:sellectCheckBox},
                     {title:"分类",name:"typeName",width:"8%",align:"left",click:sellectCheckBox},
@@ -279,7 +280,7 @@
                     "</div>";
             return htm;*/
             var hs="";
-            hs="<li onclick=addChildType('"+json.typeId+"'); value='1' doaction=\"readed\" >添加子分类</li>";
+            hs="<li style=\"height:25px;width:75px; \" onclick=addChildType('"+json.typeId+"'); value='1' doaction=\"readed\" >添加子分类</li>";
             var pp={"liString":hs};
             return getULSelect(pp);
 
@@ -318,7 +319,7 @@
     </script>
 </head>
 <body>
-    <div class="new_all">
+    <div class="new_all" <%--style="width: "--%>>
         <div class="here">当前位置：首页 &gt; 商品管理 &gt; <b>商品模板</b></div>
         <div class="a_bal"></div>
         <div class="new">
@@ -333,14 +334,14 @@
                     }
                 }
             </script>
-            <h2>eBay官方调整E邮宝接口，截至九月底将停止使用原E邮宝，需要您重新授权E邮宝</h2>
+
             <div class="new_tab_ls">
-                <dt id="menu1" class="new_tab_2" onclick="setTab('menu',1,5)">商品列表</dt>
-                <dt id="menu2" class="new_tab_1" onclick="setTab('menu',2,5)">商品分类列表</dt>
+                <dt id="menu1" class="new_tab_1" onclick="setTab('menu',1,5)">商品列表</dt>
+                <dt id="menu2" class="new_tab_2" onclick="setTab('menu',2,5)">商品分类列表</dt>
             </div>
             <div class="Contentbox">
                 <div>
-                    <div id="con_menu_1" style="display: none;">
+                    <div id="con_menu_1" style="display: block;">
                         <!--综合开始 -->
                         <div class="new_usa" style="margin-top:20px;">
                             <li class="new_usa_list"><span class="newusa_i">按标签看：</span><span class="newusa_ici_1" scop="remark" onclick="onclickremark(null,0)">全部&nbsp;</span><a href="#"><span class="newusa_ici_1" scop="remark" onclick="onclickremark('null',1)">无标签&nbsp;</span></a><a href="#"><span class="newusa_ici_1">有电池&nbsp;</span></a><a href="#"><span class="newusa_ici_1">无电池&nbsp;</span></a></li>
@@ -375,18 +376,20 @@
                                 </div>
                             </div>
                         </div>
+                        <div style="width: 100%;float: left;height: 5px"></div>
                         <div id="ItemInformationListTable"></div>
                         <div class="page_newlist">
 
                         </div>
                         <!--综合结束 -->
                     </div>
-                    <div id="con_menu_2">
+                    <div id="con_menu_2" style="display: none;">
                         <div class="new_usa" style="margin-top:20px;">
                             <div class="newds">
                                 <div class="tbbay"><a href="#" onclick="addType();">添加分类</a></div>
                             </div>
                         </div>
+                        <div style="width: 100%;float: left;height: 5px"></div>
                         <div id="ItemInformationTypeListTable"></div>
                     </div>
                     <!--结束 -->

@@ -144,7 +144,7 @@ public class ReturnpolicyController extends BaseAction{
     public void delReturnPolicy(HttpServletRequest request,HttpServletResponse response,@ModelAttribute( "initSomeParmMap" )ModelMap modelMap) throws Exception {
         String id = request.getParameter("id");
         TradingReturnpolicy tp= this.iTradingReturnpolicy.selectById(Long.parseLong(id));
-        if(tp.getCheckFlag().equals("1")){
+        if("1".equals(tp.getCheckFlag())){
             tp.setCheckFlag("0");
         }else{
             tp.setCheckFlag("1");

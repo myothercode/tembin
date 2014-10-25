@@ -89,12 +89,10 @@ function getMenuData(parentID,level){
     }
 }
 function showDiv(obj){
-
     if($(obj).attr("name")=="rese"){
         if(isSearchedCa==false){
             getRese();
         }
-
         $("#rese1").show();
         $("#choose").hide();
     }else{

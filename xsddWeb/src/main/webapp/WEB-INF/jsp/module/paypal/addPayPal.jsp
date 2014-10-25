@@ -24,7 +24,7 @@
             $().invoke(url,data,
                     [function(m,r){
                         alert(r)
-                        W.refreshTable();
+                        W.refreshTablepaypal();
                         W.payPal.close();
                     },
                         function(m,r){

@@ -57,9 +57,11 @@
         }
         /**组装操作选项*/
         function makeOption1(json){
-            var htm1="<a target=\"_blank\" href=\"javascript:void(0)\" onclick=\"editTemplateInitTable('"+json.id+"');\">编辑</a>";
-            htm=htm1+"|<a target=\"_blank\" href=\"javascript:void(0)\" onclick=\"viewTemplateInitTable('"+json.id+"');\">查看</a>";
-            return htm;
+            var hs="";
+            hs+="<li style='height:25px' onclick=viewTemplateInitTable('"+json.id+"') value='"+json.id+"' doaction=\"look\" >查看</li>";
+            hs+="<li style='height:25px' onclick=editTemplateInitTable('"+json.id+"') value='"+json.id+"' doaction=\"look\" >编辑</li>";
+            var pp={"liString":hs};
+            return getULSelect(pp);
         }
         function makeOption2(json){
             var htm=json.tLevel;
@@ -70,11 +72,22 @@
             }
         }
     </script>
+    <style type="text/css">
+        body {
+            background-color: #ffffff;
+        }
+    </style>
 </head>
 <body>
-<div style="text-align: right;">
-    <input type="button" value="新增模板" onclick="addTemplateInitTable()">
+<div class="new_all">
+    <div class="here">当前位置：首页 > 刊登管理 > <b>模板管理</b></div>
+    <div class="a_bal"></div>
+    <div class="tbbay"><a data-toggle="modal" href="javascript:void(0)" class=""  onclick="addTemplateInitTable()">新增模板</a></div>
+    <div class="a_bal"></div>
+    <div id="cent">
+        <div id="templateInitTableListTable"></div>
+    </div>
 </div>
-<div id="templateInitTableListTable"></div>
+
 </body>
 </html>

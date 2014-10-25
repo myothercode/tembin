@@ -50,9 +50,9 @@
     <input type="hidden" name="orderid" value="${orderid}"/>
     <br/><br/>&nbsp;备注信息:<input name="comment"  class="validate[required]" id="comment"/><br/>
 </form>
-<div align="right">
-    <input type="button" value="保存" onclick="submitCommit();"/>
-    <input type="button" value="关闭" onclick="closedialog();"/>
+<div class="modal-footer">
+    <button type="button" class="btn btn-newco" onclick="submitCommit();">保存</button>
+    <button type="button" class="btn btn-default" onclick="closedialog();" data-dismiss="modal">关闭</button>
 </div>
 </body>
 </html>
