@@ -109,20 +109,27 @@ function afterClickAttr(obj, parentid,attTable) {
 
 /**combox失去焦点的时候执行*/
 function onblurMulAttrInput(inpu){
+
+    var bst=false;
+
     setTimeout(function(){
         $("div").each(function(i,d){
             if($(d).hasClass("panel combo-p")){
-                if($(d).css("display")=='none'){
-                    var selectid=$(inpu).parents("td").eq(0).find("select[id^='_select']").eq(0).attr("id");
-                    setTimeout(function(){
-                        $('#attTable').find("span[name='values']").html($("#"+selectid).combobox('getValue'));
-                        $('#attTable').find("span[class='combo']").hide();
-                        $('#attTable').find("span[name='values']").show();
-                    },200);
+                if($(d).css("display")=='block'){
+                    bst=true;
                 }
-                console.log($(d).css("display"))
             }
         });
+
+        if(bst==false){
+            var selectid=$(inpu).parents("td").eq(0).find("select[id^='_select']").eq(0).attr("id");
+            setTimeout(function(){
+                $('#attTable').find("span[name='values']").html($("#"+selectid).combobox('getValue'));
+                $('#attTable').find("span[class='combo']").hide();
+                $('#attTable').find("span[name='values']").show();
+            },200);
+        }
+
     },500);
 
     return;  
