@@ -13,7 +13,7 @@ import java.util.Map;
 public interface ITradingOrderAddMemberMessageAAQToPartner {
 
     void saveOrderAddMemberMessageAAQToPartner(TradingOrderAddMemberMessageAAQToPartner OrderAddMemberMessageAAQToPartner) throws Exception;
-    List<TradingOrderAddMemberMessageAAQToPartner> selectTradingOrderAddMemberMessageAAQToPartnerByTransactionId(String TransactionId,Integer type,Integer...messageflag);
+    List<TradingOrderAddMemberMessageAAQToPartner> selectTradingOrderAddMemberMessageAAQToPartnerByTransactionId(String TransactionId,Integer type,String sender,Integer...messageflag);
     List<TradingOrderAddMemberMessageAAQToPartnerQuery> selectTradingOrderAddMemberMessageAAQToPartner(Map map, Page page);
     void deleteTradingOrderAddMemberMessageAAQToPartner(Long id);
     List<TradingOrderAddMemberMessageAAQToPartner> selectTradingOrderAddMemberMessageAAQToPartnerByItemIdAndSender(String itemid,Integer type,String sender,String recipient);

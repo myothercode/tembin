@@ -167,6 +167,10 @@ public class TradingFeedBackDetailExample {
             return criteria.size() > 0;
         }
 
+        public List<Criterion> getAllCriteria() {
+            return criteria;
+        }
+
         public List<Criterion> getCriteria() {
             return criteria;
         }
@@ -1088,6 +1092,126 @@ public class TradingFeedBackDetailExample {
             return (Criteria) this;
         }
 
+        public Criteria andAutomessageflagIsNull() {
+            addCriterion("autoMessageFlag is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andAutomessageflagIsNotNull() {
+            addCriterion("autoMessageFlag is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andAutomessageflagEqualTo(Integer value) {
+            addCriterion("autoMessageFlag =", value, "automessageflag");
+            return (Criteria) this;
+        }
+
+        public Criteria andAutomessageflagNotEqualTo(Integer value) {
+            addCriterion("autoMessageFlag <>", value, "automessageflag");
+            return (Criteria) this;
+        }
+
+        public Criteria andAutomessageflagGreaterThan(Integer value) {
+            addCriterion("autoMessageFlag >", value, "automessageflag");
+            return (Criteria) this;
+        }
+
+        public Criteria andAutomessageflagGreaterThanOrEqualTo(Integer value) {
+            addCriterion("autoMessageFlag >=", value, "automessageflag");
+            return (Criteria) this;
+        }
+
+        public Criteria andAutomessageflagLessThan(Integer value) {
+            addCriterion("autoMessageFlag <", value, "automessageflag");
+            return (Criteria) this;
+        }
+
+        public Criteria andAutomessageflagLessThanOrEqualTo(Integer value) {
+            addCriterion("autoMessageFlag <=", value, "automessageflag");
+            return (Criteria) this;
+        }
+
+        public Criteria andAutomessageflagIn(List<Integer> values) {
+            addCriterion("autoMessageFlag in", values, "automessageflag");
+            return (Criteria) this;
+        }
+
+        public Criteria andAutomessageflagNotIn(List<Integer> values) {
+            addCriterion("autoMessageFlag not in", values, "automessageflag");
+            return (Criteria) this;
+        }
+
+        public Criteria andAutomessageflagBetween(Integer value1, Integer value2) {
+            addCriterion("autoMessageFlag between", value1, value2, "automessageflag");
+            return (Criteria) this;
+        }
+
+        public Criteria andAutomessageflagNotBetween(Integer value1, Integer value2) {
+            addCriterion("autoMessageFlag not between", value1, value2, "automessageflag");
+            return (Criteria) this;
+        }
+
+        public Criteria andSenttimeIsNull() {
+            addCriterion("sentTime is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andSenttimeIsNotNull() {
+            addCriterion("sentTime is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andSenttimeEqualTo(Date value) {
+            addCriterion("sentTime =", value, "senttime");
+            return (Criteria) this;
+        }
+
+        public Criteria andSenttimeNotEqualTo(Date value) {
+            addCriterion("sentTime <>", value, "senttime");
+            return (Criteria) this;
+        }
+
+        public Criteria andSenttimeGreaterThan(Date value) {
+            addCriterion("sentTime >", value, "senttime");
+            return (Criteria) this;
+        }
+
+        public Criteria andSenttimeGreaterThanOrEqualTo(Date value) {
+            addCriterion("sentTime >=", value, "senttime");
+            return (Criteria) this;
+        }
+
+        public Criteria andSenttimeLessThan(Date value) {
+            addCriterion("sentTime <", value, "senttime");
+            return (Criteria) this;
+        }
+
+        public Criteria andSenttimeLessThanOrEqualTo(Date value) {
+            addCriterion("sentTime <=", value, "senttime");
+            return (Criteria) this;
+        }
+
+        public Criteria andSenttimeIn(List<Date> values) {
+            addCriterion("sentTime in", values, "senttime");
+            return (Criteria) this;
+        }
+
+        public Criteria andSenttimeNotIn(List<Date> values) {
+            addCriterion("sentTime not in", values, "senttime");
+            return (Criteria) this;
+        }
+
+        public Criteria andSenttimeBetween(Date value1, Date value2) {
+            addCriterion("sentTime between", value1, value2, "senttime");
+            return (Criteria) this;
+        }
+
+        public Criteria andSenttimeNotBetween(Date value1, Date value2) {
+            addCriterion("sentTime not between", value1, value2, "senttime");
+            return (Criteria) this;
+        }
+
         public Criteria andCreateTimeIsNull() {
             addCriterion("create_time is null");
             return (Criteria) this;
@@ -1253,6 +1377,8 @@ public class TradingFeedBackDetailExample {
 
         private boolean listValue;
 
+        private String typeHandler;
+
         public String getCondition() {
             return condition;
         }
@@ -1281,16 +1407,22 @@ public class TradingFeedBackDetailExample {
             return listValue;
         }
 
+        public String getTypeHandler() {
+            return typeHandler;
+        }
+
         protected Criterion(String condition) {
             super();
             this.condition = condition;
+            this.typeHandler = null;
             this.noValue = true;
         }
 
-        protected Criterion(String condition, Object value) {
+        protected Criterion(String condition, Object value, String typeHandler) {
             super();
             this.condition = condition;
             this.value = value;
+            this.typeHandler = typeHandler;
             if (value instanceof List<?>) {
                 this.listValue = true;
             } else {
@@ -1298,12 +1430,21 @@ public class TradingFeedBackDetailExample {
             }
         }
 
-        protected Criterion(String condition, Object value, Object secondValue) {
+        protected Criterion(String condition, Object value) {
+            this(condition, value, null);
+        }
+
+        protected Criterion(String condition, Object value, Object secondValue, String typeHandler) {
             super();
             this.condition = condition;
             this.value = value;
             this.secondValue = secondValue;
+            this.typeHandler = typeHandler;
             this.betweenValue = true;
+        }
+
+        protected Criterion(String condition, Object value, Object secondValue) {
+            this(condition, value, secondValue, null);
         }
     }
 }

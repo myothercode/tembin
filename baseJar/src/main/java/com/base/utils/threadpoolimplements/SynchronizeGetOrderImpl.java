@@ -2,7 +2,10 @@ package com.base.utils.threadpoolimplements;
 
 import com.base.database.trading.model.*;
 import com.base.domains.userinfo.UsercontrollerDevAccountExtend;
-import com.base.sampleapixml.*;
+import com.base.sampleapixml.APINameStatic;
+import com.base.sampleapixml.BindAccountAPI;
+import com.base.sampleapixml.GetOrderItemAPI;
+import com.base.sampleapixml.GetOrdersAPI;
 import com.base.utils.common.DateUtils;
 import com.base.utils.threadpool.AddApiTask;
 import com.base.utils.threadpool.TaskMessageVO;
@@ -75,6 +78,8 @@ public class SynchronizeGetOrderImpl implements ThreadPoolBaseInterFace {
     private ITradingAutoMessage iTradingAutoMessage;
     @Autowired
     private ITradingMessageTemplate iTradingMessageTemplate;
+    @Autowired
+    private IUsercontrollerEbayAccount iUsercontrollerEbayAccount;
     @Override
     public <T> void doWork(String res, T... t) {
         if(StringUtils.isEmpty(res)){return;}
@@ -144,143 +149,73 @@ public class SynchronizeGetOrderImpl implements ThreadPoolBaseInterFace {
                             }
                         }
                         //--------------自动发送消息-------------------------
-                        /*List<TradingOrderAddMemberMessageAAQToPartner> addmessages=iTradingOrderAddMemberMessageAAQToPartner.selectTradingOrderAddMemberMessageAAQToPartnerByTransactionId(order.getTransactionid(),2);
+                        List<TradingOrderAddMemberMessageAAQToPartner> addmessages=iTradingOrderAddMemberMessageAAQToPartner.selectTradingOrderAddMemberMessageAAQToPartnerByTransactionId(order.getTransactionid(),2,order.getSelleruserid());
                         if(addmessages!=null&&addmessages.size()>0){
-                            for(TradingOrderAddMemberMessageAAQToPartner addmessage:addmessages){
-                                TradingOrderAddMemberMessageAAQToPartner message=new TradingOrderAddMemberMessageAAQToPartner();
-                                String trackingnumber=order.getShipmenttrackingnumber();
-                                if(StringUtils.isNotBlank(trackingnumber)){
-                                    if(addmessage.getMessageflag()<=1){
-                                        //自动发送发货消息
-                                        Map<String,String> messageMap=autoSendMessage(order,token,d,"标记已发货");
-
-                                        message.setBody(messageMap.get("body"));
-                                        message.setSender(order.getSelleruserid());
-                                        message.setItemid(order.getItemid());
-                                        message.setRecipientid(order.getBuyeruserid());
-                                        message.setSubject(messageMap.get("subject"));
-                                        message.setTransactionid(order.getTransactionid());
-                                        message.setCreateUser(taskMessageVO.getMessageTo());
-                                        message.setMessagetype(addmessage.getMessagetype());
-                                        if("false".equals(messageMap.get("flag"))){
-                                            message.setMessageflag(addmessage.getMessagetype());
-                                            message.setReplied("false");
-                                            iTradingOrderAddMemberMessageAAQToPartner.saveOrderAddMemberMessageAAQToPartner(message);
-                                            return;
-                                        }
-                                        if("true".equals(messageMap.get("flag"))){
-                                            message.setMessageflag(2);
-                                            message.setReplied("true");
-                                            iTradingOrderAddMemberMessageAAQToPartner.saveOrderAddMemberMessageAAQToPartner(message);
-                                        }
-
-                                    }//else if(addmessage.getMessageflag()==2){
-                                       // Date shippDate1=order.getShippedtime();
-                                       // Date shippDate2= org.apache.commons.lang.time.DateUtils.addDays(shippDate1,2);
-                                       // String shippDate=dateToString(shippDate2);
-                                      //  Date nowDate1=new Date();
-                                     //   String nowDate=dateToString(nowDate1);
-                                     //   if(shippDate!=null){
-                                     //       Integer days=Integer.valueOf(shippDate);
-                                     //       if(days<=Integer.valueOf(nowDate)){
-                                                //发货n天后自动发送消息
-                                     //           Map<String,String> messageMap=autoSendMessage(order,3-1,token,d);
-                                     //           if("false".equals(messageMap.get("flag"))){
-                                     //               return;
-                                     //           }
-                                      //          if("true".equals(messageMap.get("flag"))){
-                                      //              message.setMessageflag(3);
-                                      //              message.setBody(messageMap.get("body"));
-                                      //              message.setSubject(messageMap.get("subject"));
-                                      //              message.setSender(order.getSelleruserid());
-                                      //              message.setItemid(order.getItemid());
-                                      //              message.setMessagetype(addmessage.getMessagetype());
-                                      //              message.setRecipientid(order.getBuyeruserid());
-                                      //              message.setTransactionid(order.getTransactionid());
-                                      //              message.setCreateUser(taskMessageVO.getMessageTo());
-                                      //              iTradingOrderAddMemberMessageAAQToPartner.saveOrderAddMemberMessageAAQToPartner(message);
-                                      //          }
-
-                                      //      }
-                                      //  }
-
-                                    //}
+                            List<TradingAutoMessage> partners=iTradingAutoMessage.selectAutoMessageByType("标记已发货");
+                            TradingAutoMessage autoMessage=new TradingAutoMessage();
+                            UsercontrollerEbayAccount ebay=iUsercontrollerEbayAccount.selectByEbayAccount(order.getSelleruserid());
+                            for(TradingAutoMessage partner:partners){
+                                if(partner.getCreateUser()==ebay.getUserId()){
+                                    int day=partner.getDay();
+                                    int hour=partner.getHour();
+                                    Date date=order.getLastmodifiedtime();
+                                    Date date1=org.apache.commons.lang.time.DateUtils.addDays(date,day);
+                                    Date date2=org.apache.commons.lang.time.DateUtils.addHours(date1,hour);
+                                    order.setSendmessagetime(date2);
                                 }
                             }
+                            boolean flag=false;
+                            String trackingnumber=order.getShipmenttrackingnumber();
+                            for(TradingOrderAddMemberMessageAAQToPartner addmessage:addmessages){
+                                if(StringUtils.isNotBlank(trackingnumber)&&addmessage.getMessageflag()==2){
+                                    flag=true;
+                                }
+                            }
+                            if(flag&&StringUtils.isNotBlank(trackingnumber)){
+                                order.setPaypalflag(null);
+                                order.setShippedflag(1);
+                            }else{
+                                order.setPaypalflag(1);
+                                order.setShippedflag(1);
+                            }
                         }else{
-                            TradingOrderAddMemberMessageAAQToPartner message=new TradingOrderAddMemberMessageAAQToPartner();
                             String trackingnumber=order.getShipmenttrackingnumber();
                             if("Complete".equals(order.getStatus())&&!StringUtils.isNotBlank(trackingnumber)&&"Completed".equals(order.getOrderstatus())){
                                 //付款后发送消息
-                                Map<String,String> messageMap=autoSendMessage(order,token,d,"收到买家付款");
-                                message.setMessageflag(1);
-                                message.setBody(messageMap.get("body"));
-                                message.setSender(order.getSelleruserid());
-                                message.setItemid(order.getItemid());
-                                message.setMessagetype(2);
-                                message.setRecipientid(order.getBuyeruserid());
-                                message.setSubject(messageMap.get("subject"));
-                                message.setTransactionid(order.getTransactionid());
-                                message.setCreateUser(taskMessageVO.getMessageTo());
-                                if("false".equals(messageMap.get("flag"))){
-                                    message.setReplied("false");
-                                    iTradingOrderAddMemberMessageAAQToPartner.saveOrderAddMemberMessageAAQToPartner(message);
-                                    return;
+                                List<TradingAutoMessage> partners=iTradingAutoMessage.selectAutoMessageByType("收到买家付款");
+                                TradingAutoMessage autoMessage=new TradingAutoMessage();
+                                UsercontrollerEbayAccount ebay=iUsercontrollerEbayAccount.selectByEbayAccount(order.getSelleruserid());
+                                for(TradingAutoMessage partner:partners){
+                                    if(partner.getCreateUser()==ebay.getUserId()){
+                                        int day=partner.getDay();
+                                        int hour=partner.getHour();
+                                        Date date=order.getLastmodifiedtime();
+                                        Date date1=org.apache.commons.lang.time.DateUtils.addDays(date,day);
+                                        Date date2=org.apache.commons.lang.time.DateUtils.addHours(date1,hour);
+                                        order.setSendmessagetime(date2);
+                                    }
                                 }
-                                if("true".equals(messageMap.get("flag"))){
-                                    message.setReplied("true");
-                                    iTradingOrderAddMemberMessageAAQToPartner.saveOrderAddMemberMessageAAQToPartner(message);
-                                }
+                                order.setPaypalflag(1);
+                                order.setShippedflag(null);
                             }
                             if(StringUtils.isNotBlank(trackingnumber)){
-                                //Date shippDate1=order.getShippedtime();
-                               // Date shippDate2= org.apache.commons.lang.time.DateUtils.addDays(shippDate1,2);
-                               // String shippDate=dateToString(shippDate2);
-                               // Date nowDate1=new Date();
-                               // String nowDate=dateToString(nowDate1);
-                               // Integer days=Integer.valueOf(shippDate);
-                                //if(days<=Integer.valueOf(nowDate)){
-                                    //发货n天后自动发送消息
-                                 //   Map<String,String> messageMap=autoSendMessage(order,token,d,"");
-                                //    if("false".equals(messageMap.get("flag"))){
-                               //         return;
-                                //    }
-                              //      if("true".equals(messageMap.get("flag"))){
-                              //          message.setMessageflag(3);
-                               //         message.setBody(messageMap.get("body"));
-                                //        message.setSubject(messageMap.get("subject"));
-                                //        message.setSender(order.getSelleruserid());
-                               //         message.setItemid(order.getItemid());
-                               //         message.setMessagetype(2);
-                               //         message.setRecipientid(order.getBuyeruserid());
-                                //        message.setTransactionid(order.getTransactionid());
-                                //        message.setCreateUser(taskMessageVO.getMessageTo());
-                                //        iTradingOrderAddMemberMessageAAQToPartner.saveOrderAddMemberMessageAAQToPartner(message);
-                                //    }
-                               // }else{
-                                    //发送发货消息
-                                    Map<String,String> messageMap=autoSendMessage(order,token,d,"标记已发货");
-                                    message.setMessageflag(2);
-                                    message.setBody(messageMap.get("body"));
-                                    message.setSender(order.getSelleruserid());
-                                    message.setItemid(order.getItemid());
-                                    message.setMessagetype(2);
-                                    message.setRecipientid(order.getBuyeruserid());
-                                    message.setSubject(messageMap.get("subject"));
-                                    message.setTransactionid(order.getTransactionid());
-                                    message.setCreateUser(taskMessageVO.getMessageTo());
-                                    if("false".equals(messageMap.get("flag"))){
-                                        message.setReplied("false");
-                                        iTradingOrderAddMemberMessageAAQToPartner.saveOrderAddMemberMessageAAQToPartner(message);
-                                        return;
+                                List<TradingAutoMessage> partners=iTradingAutoMessage.selectAutoMessageByType("标记已发货");
+                                TradingAutoMessage autoMessage=new TradingAutoMessage();
+                                UsercontrollerEbayAccount ebay=iUsercontrollerEbayAccount.selectByEbayAccount(order.getSelleruserid());
+                                for(TradingAutoMessage partner:partners){
+                                    if(partner.getCreateUser()==ebay.getUserId()){
+                                        int day=partner.getDay();
+                                        int hour=partner.getHour();
+                                        Date date=order.getLastmodifiedtime();
+                                        Date date1=org.apache.commons.lang.time.DateUtils.addDays(date,day);
+                                        Date date2=org.apache.commons.lang.time.DateUtils.addHours(date1,hour);
+                                        order.setSendmessagetime(date2);
                                     }
-                                    if("true".equals(messageMap.get("flag"))){
-                                        message.setReplied("true");
-                                        iTradingOrderAddMemberMessageAAQToPartner.saveOrderAddMemberMessageAAQToPartner(message);
-                                    }
-                               //}
+                                }
+                                order.setPaypalflag(null);
+                                order.setShippedflag(1);
                             }
-                        }*/
+                        }
                         //------------同步订单商品-----------
                         d.setApiCallName(APINameStatic.GetItem);
                         //测试环境
@@ -507,120 +442,6 @@ public class SynchronizeGetOrderImpl implements ThreadPoolBaseInterFace {
             return;
         }
     }
-    /*private Map<String,String> autoSendMessage(TradingOrderGetOrders order,String token,UsercontrollerDevAccountExtend d,String type) throws Exception {
-        Map<String,String> messageMap=new HashMap<String, String>();
-        List<TradingAutoMessage> partners=iTradingAutoMessage.selectAutoMessageByType(type);
-        if(partners!=null&&partners.size()>0){
-            List<TradingMessageTemplate> templates=iTradingMessageTemplate.selectMessageTemplatebyId(partners.get(0).getMessagetemplateId());
-            if(templates!=null&&templates.size()>0){
-                String body=templates.get(0).getContent();
-                String subject=templates.get(0).getName();
-                d.setApiCallName(APINameStatic.AddMemberMessageAAQToPartner);
-                Map map=new HashMap();
-                messageMap.put("body",body);
-                messageMap.put("subject",subject);
-                map.put("token", token);
-                map.put("subject",subject);
-                map.put("body",body);
-                map.put("itemid",order.getItemid());
-                map.put("buyeruserid",order.getBuyeruserid());
-                String xml = BindAccountAPI.getAddMemberMessageAAQToPartner(map);
-                AddApiTask addApiTask = new AddApiTask();
-                Map<String, String> resMap = addApiTask.exec(d, xml, apiUrl);
-                String r1 = resMap.get("stat");
-                String res = resMap.get("message");
-                if ("fail".equalsIgnoreCase(r1)) {
-                    messageMap.put("flag","false");
-                    messageMap.put("message",res);
-                }
-                String ack = SamplePaseXml.getVFromXmlString(res, "Ack");
-                if ("Success".equalsIgnoreCase(ack)) {
-                    messageMap.put("flag","true");
-                    messageMap.put("message","发送成功");
-                }else{
-                    messageMap.put("flag","false");
-                    messageMap.put("message","获取必要的参数失败！请稍后重试");
-                }
-
-            }
-        }else{
-            messageMap.put("flag","false");
-            messageMap.put("message","无对应的自动消息,请先创建");
-        }
-        return messageMap;
-        *//*String[] bodys={"付款的",
-                        "发货的",
-                        "发货n天的"};
-        String[] bodys={"Hello "+order.getBuyeruserid()+",\n" +
-                "\n" +
-                "Thank you for your payment for:\n" +
-                "\n" +
-                "eBay item number: \n" +order.getItemid()+
-                " \n" +
-                "eBay item name: "+order.getTitle()+"\n" +
-                "\n" +
-                "We have received the cleared payment \n" +
-                "and we will ship your package within specified handling time.The different \n" +
-                "products has different handling time,please notice the handling time.Please \n" +
-                "DON’T leave us 1, 2, 3 or 4-Detailed Seller Ratings on Shipping Time which \n" +
-                "equaling to negative feedback. We welcome your positive 5-Detailed Seller \n" +
-                "Ratings for us.If you have any questions,please don’t hesitate to contact \n" +
-                "us.\n" +
-                "\n" +
-                "Yours Sincerely,\n" +
-                "Thanks and best regards.",---
-                "Dear fed53\n" +
-                        "\n" +
-                        "We have shipped your eBay item "+order.getTitle()+". It is estimated to arrive in 8-15 business days in normal conditions. If not, please do not hesitate to contact us. We shall do whatever we can to help you.\n" +
-                        "\n" +
-                        "Here is the tracking number of your parcel "+order.getShipmenttrackingnumber()+", and you can log in http://91.sellertool.com/track/"+order.getShipmenttrackingnumber()+" to view the updated shipment, which will be shown in 1-2 business days.\n" +
-                        "\n" +
-                        "Thanks again for your great purchase and great understanding. We sincerely hope our item and customer service can give you the BEST BUYING EXPERIENCE on eBay.If you have any other concerns, feel free to let me know. Please give us a chance to rectify problem before leaving a negative feedback, and then we will try our best to help resolve it rightly. \n" +
-                        "\n" +
-                        "Yours Sincerely,\n" +
-                        "Thanks and best regards.",---
-                "Dear elainegs85,\n" +
-                        "\n" +
-                        "It is 2 days since your item was shipped. May I know whether you've received it?\n" +
-                        "\n" +
-                        "If not,the tracking number of your package is "+order.getShipmenttrackingnumber()+",and you can log in http://91.sellertool.com/en-us/track/"+order.getShipmenttrackingnumber()+" to view the updated shipment\n" +
-                        "\n" +
-                        "If you've received it, we sincerely hope you can leave us a positive feedback and 5-star Detailed Seller Ratings if the item works fine for you. Your encouragement will keep us moving forward and constantly improving our service.\n" +
-                        "\n" +
-                        "Thanks again for your great purchase and great understanding. We sincerely hope our item and customer service can give you the BEST BUYING EXPERIENCE on eBay.If you have any other concerns, feel free to let me know. Please give us a chance to rectify problem before leaving the negative/neutral feedback with low stars rating, and then we will try our best to help resolve it rightly. \n" +
-                        "\n" +
-                        "Thanks again! \n" +
-                        "\n" +
-                        "Best regards."};
-        String subjects="auto send message";
-        d.setApiCallName(APINameStatic.AddMemberMessageAAQToPartner);
-        Map map=new HashMap();
-        messageMap.put("body",bodys[flag]);
-        messageMap.put("subject",subjects);
-        map.put("token", token);
-        map.put("subject",subjects);
-        map.put("body",bodys[flag]);
-        map.put("itemid",order.getItemid());
-        map.put("buyeruserid",order.getBuyeruserid());
-        String xml = BindAccountAPI.getAddMemberMessageAAQToPartner(map);
-        AddApiTask addApiTask = new AddApiTask();
-        Map<String, String> resMap = addApiTask.exec(d, xml, apiUrl);
-        String r1 = resMap.get("stat");
-        String res = resMap.get("message");
-        if ("fail".equalsIgnoreCase(r1)) {
-            messageMap.put("flag","false");
-            messageMap.put("message",res);
-        }
-        String ack = SamplePaseXml.getVFromXmlString(res, "Ack");
-        if ("Success".equalsIgnoreCase(ack)) {
-            messageMap.put("flag","true");
-            messageMap.put("message","发送成功");
-        }else{
-            messageMap.put("flag","false");
-            messageMap.put("message","获取必要的参数失败！请稍后重试");
-        }
-        return messageMap;*//*
-    }*/
     private String dateToString(Date date){
         String d=null;
         if(date!=null){

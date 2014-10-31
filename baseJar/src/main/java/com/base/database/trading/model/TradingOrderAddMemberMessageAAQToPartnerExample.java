@@ -865,6 +865,76 @@ public class TradingOrderAddMemberMessageAAQToPartnerExample {
             return (Criteria) this;
         }
 
+        public Criteria andFailereasonIsNull() {
+            addCriterion("faileReason is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andFailereasonIsNotNull() {
+            addCriterion("faileReason is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andFailereasonEqualTo(String value) {
+            addCriterion("faileReason =", value, "failereason");
+            return (Criteria) this;
+        }
+
+        public Criteria andFailereasonNotEqualTo(String value) {
+            addCriterion("faileReason <>", value, "failereason");
+            return (Criteria) this;
+        }
+
+        public Criteria andFailereasonGreaterThan(String value) {
+            addCriterion("faileReason >", value, "failereason");
+            return (Criteria) this;
+        }
+
+        public Criteria andFailereasonGreaterThanOrEqualTo(String value) {
+            addCriterion("faileReason >=", value, "failereason");
+            return (Criteria) this;
+        }
+
+        public Criteria andFailereasonLessThan(String value) {
+            addCriterion("faileReason <", value, "failereason");
+            return (Criteria) this;
+        }
+
+        public Criteria andFailereasonLessThanOrEqualTo(String value) {
+            addCriterion("faileReason <=", value, "failereason");
+            return (Criteria) this;
+        }
+
+        public Criteria andFailereasonLike(String value) {
+            addCriterion("faileReason like", value, "failereason");
+            return (Criteria) this;
+        }
+
+        public Criteria andFailereasonNotLike(String value) {
+            addCriterion("faileReason not like", value, "failereason");
+            return (Criteria) this;
+        }
+
+        public Criteria andFailereasonIn(List<String> values) {
+            addCriterion("faileReason in", values, "failereason");
+            return (Criteria) this;
+        }
+
+        public Criteria andFailereasonNotIn(List<String> values) {
+            addCriterion("faileReason not in", values, "failereason");
+            return (Criteria) this;
+        }
+
+        public Criteria andFailereasonBetween(String value1, String value2) {
+            addCriterion("faileReason between", value1, value2, "failereason");
+            return (Criteria) this;
+        }
+
+        public Criteria andFailereasonNotBetween(String value1, String value2) {
+            addCriterion("faileReason not between", value1, value2, "failereason");
+            return (Criteria) this;
+        }
+
         public Criteria andCreateUserIsNull() {
             addCriterion("create_user is null");
             return (Criteria) this;

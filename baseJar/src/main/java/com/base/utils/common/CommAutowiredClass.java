@@ -12,7 +12,6 @@ public class CommAutowiredClass {
     public String apiUrl;//api的调用地址
     @Value("${IS_START_TIMER_TASK}")
     public String isStartTimerTask;//本机是否开启定时任务
-
-
-
+    @Value("${SERVICE_ITEM_URL}")
+    public String serviceItemUrl;//访问商品信息url
 }

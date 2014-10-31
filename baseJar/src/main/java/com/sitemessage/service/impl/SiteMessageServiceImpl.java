@@ -120,4 +120,14 @@ public class SiteMessageServiceImpl implements SiteMessageService {
             publicSitemessageMapper.insertSelective(taskMessageVO.toPublicSiteMessage());
         }
     }
+
+    @Override
+    public List<PublicSitemessage> selectPublicSitemessageByMessage(String messageType,String orderAndSeller) {
+        PublicSitemessageExample example=new PublicSitemessageExample();
+        PublicSitemessageExample.Criteria cr=example.createCriteria();
+        cr.andMessageTypeEqualTo(messageType);
+        cr.andOrderandsellerEqualTo(orderAndSeller);
+        List<PublicSitemessage> list=publicSitemessageMapper.selectByExample(example);
+        return list;
+    }
 }

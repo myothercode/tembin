@@ -13,5 +13,9 @@ public interface ITradingFeedBackDetail {
 
     TradingFeedBackDetail selectFeedBackDetailByTransactionId(String transactionId);
 
+    List<TradingFeedBackDetail> selectFeedBackDetailByAutoMessageFlag(List<String> types);
+
     int selectByCount(Map m);
+
+    TradingFeedBackDetail selectFeedBackDetailByBuyerAndFeedBackId(String buyer,String feedBackId);
 }

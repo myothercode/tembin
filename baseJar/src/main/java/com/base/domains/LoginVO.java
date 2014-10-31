@@ -9,7 +9,15 @@ public class LoginVO {
     private String password;//密码
     private String enpassword;//加密后的密码
     private String capcode;//图片验证码
+    private String email;//邮箱
 
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
 
     public String getCapcode() {
         return capcode;

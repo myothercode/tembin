@@ -3735,6 +3735,186 @@ public class TradingOrderGetOrdersExample {
             return (Criteria) this;
         }
 
+        public Criteria andPaypalflagIsNull() {
+            addCriterion("paypalFlag is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andPaypalflagIsNotNull() {
+            addCriterion("paypalFlag is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andPaypalflagEqualTo(Integer value) {
+            addCriterion("paypalFlag =", value, "paypalflag");
+            return (Criteria) this;
+        }
+
+        public Criteria andPaypalflagNotEqualTo(Integer value) {
+            addCriterion("paypalFlag <>", value, "paypalflag");
+            return (Criteria) this;
+        }
+
+        public Criteria andPaypalflagGreaterThan(Integer value) {
+            addCriterion("paypalFlag >", value, "paypalflag");
+            return (Criteria) this;
+        }
+
+        public Criteria andPaypalflagGreaterThanOrEqualTo(Integer value) {
+            addCriterion("paypalFlag >=", value, "paypalflag");
+            return (Criteria) this;
+        }
+
+        public Criteria andPaypalflagLessThan(Integer value) {
+            addCriterion("paypalFlag <", value, "paypalflag");
+            return (Criteria) this;
+        }
+
+        public Criteria andPaypalflagLessThanOrEqualTo(Integer value) {
+            addCriterion("paypalFlag <=", value, "paypalflag");
+            return (Criteria) this;
+        }
+
+        public Criteria andPaypalflagIn(List<Integer> values) {
+            addCriterion("paypalFlag in", values, "paypalflag");
+            return (Criteria) this;
+        }
+
+        public Criteria andPaypalflagNotIn(List<Integer> values) {
+            addCriterion("paypalFlag not in", values, "paypalflag");
+            return (Criteria) this;
+        }
+
+        public Criteria andPaypalflagBetween(Integer value1, Integer value2) {
+            addCriterion("paypalFlag between", value1, value2, "paypalflag");
+            return (Criteria) this;
+        }
+
+        public Criteria andPaypalflagNotBetween(Integer value1, Integer value2) {
+            addCriterion("paypalFlag not between", value1, value2, "paypalflag");
+            return (Criteria) this;
+        }
+
+        public Criteria andShippedflagIsNull() {
+            addCriterion("shippedFlag is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andShippedflagIsNotNull() {
+            addCriterion("shippedFlag is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andShippedflagEqualTo(Integer value) {
+            addCriterion("shippedFlag =", value, "shippedflag");
+            return (Criteria) this;
+        }
+
+        public Criteria andShippedflagNotEqualTo(Integer value) {
+            addCriterion("shippedFlag <>", value, "shippedflag");
+            return (Criteria) this;
+        }
+
+        public Criteria andShippedflagGreaterThan(Integer value) {
+            addCriterion("shippedFlag >", value, "shippedflag");
+            return (Criteria) this;
+        }
+
+        public Criteria andShippedflagGreaterThanOrEqualTo(Integer value) {
+            addCriterion("shippedFlag >=", value, "shippedflag");
+            return (Criteria) this;
+        }
+
+        public Criteria andShippedflagLessThan(Integer value) {
+            addCriterion("shippedFlag <", value, "shippedflag");
+            return (Criteria) this;
+        }
+
+        public Criteria andShippedflagLessThanOrEqualTo(Integer value) {
+            addCriterion("shippedFlag <=", value, "shippedflag");
+            return (Criteria) this;
+        }
+
+        public Criteria andShippedflagIn(List<Integer> values) {
+            addCriterion("shippedFlag in", values, "shippedflag");
+            return (Criteria) this;
+        }
+
+        public Criteria andShippedflagNotIn(List<Integer> values) {
+            addCriterion("shippedFlag not in", values, "shippedflag");
+            return (Criteria) this;
+        }
+
+        public Criteria andShippedflagBetween(Integer value1, Integer value2) {
+            addCriterion("shippedFlag between", value1, value2, "shippedflag");
+            return (Criteria) this;
+        }
+
+        public Criteria andShippedflagNotBetween(Integer value1, Integer value2) {
+            addCriterion("shippedFlag not between", value1, value2, "shippedflag");
+            return (Criteria) this;
+        }
+
+        public Criteria andSendmessagetimeIsNull() {
+            addCriterion("sendMessageTime is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andSendmessagetimeIsNotNull() {
+            addCriterion("sendMessageTime is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andSendmessagetimeEqualTo(Date value) {
+            addCriterion("sendMessageTime =", value, "sendmessagetime");
+            return (Criteria) this;
+        }
+
+        public Criteria andSendmessagetimeNotEqualTo(Date value) {
+            addCriterion("sendMessageTime <>", value, "sendmessagetime");
+            return (Criteria) this;
+        }
+
+        public Criteria andSendmessagetimeGreaterThan(Date value) {
+            addCriterion("sendMessageTime >", value, "sendmessagetime");
+            return (Criteria) this;
+        }
+
+        public Criteria andSendmessagetimeGreaterThanOrEqualTo(Date value) {
+            addCriterion("sendMessageTime >=", value, "sendmessagetime");
+            return (Criteria) this;
+        }
+
+        public Criteria andSendmessagetimeLessThan(Date value) {
+            addCriterion("sendMessageTime <", value, "sendmessagetime");
+            return (Criteria) this;
+        }
+
+        public Criteria andSendmessagetimeLessThanOrEqualTo(Date value) {
+            addCriterion("sendMessageTime <=", value, "sendmessagetime");
+            return (Criteria) this;
+        }
+
+        public Criteria andSendmessagetimeIn(List<Date> values) {
+            addCriterion("sendMessageTime in", values, "sendmessagetime");
+            return (Criteria) this;
+        }
+
+        public Criteria andSendmessagetimeNotIn(List<Date> values) {
+            addCriterion("sendMessageTime not in", values, "sendmessagetime");
+            return (Criteria) this;
+        }
+
+        public Criteria andSendmessagetimeBetween(Date value1, Date value2) {
+            addCriterion("sendMessageTime between", value1, value2, "sendmessagetime");
+            return (Criteria) this;
+        }
+
+        public Criteria andSendmessagetimeNotBetween(Date value1, Date value2) {
+            addCriterion("sendMessageTime not between", value1, value2, "sendmessagetime");
+            return (Criteria) this;
+        }
+
         public Criteria andCreateUserIsNull() {
             addCriterion("create_user is null");
             return (Criteria) this;

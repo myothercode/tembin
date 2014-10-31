@@ -39,4 +39,6 @@ public interface ITradingItem {
     void rename(String[] ids, String fileName);
 
     void copyItem(String[] ids, String ebayaccount) throws Exception;
+
+    Item toEditItem(TradingItem tradingItem) throws Exception;
 }

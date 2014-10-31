@@ -19,6 +19,7 @@ import javax.servlet.ServletOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -208,6 +209,28 @@ public class TradingOrderGetOrdersImpl implements com.trading.service.ITradingOr
         // 操作结束，关闭文件
         outputStream.flush();
         outputStream.close();
+    }
+
+    @Override
+    public List<TradingOrderGetOrders> selectOrderGetOrdersBySendPaidMessage() {
+        TradingOrderGetOrdersExample example=new TradingOrderGetOrdersExample();
+        TradingOrderGetOrdersExample.Criteria cr=example.createCriteria();
+        cr.andPaypalflagIsNotNull();
+        cr.andShippedflagIsNull();
+        cr.andSendmessagetimeLessThan(new Date());
+        List<TradingOrderGetOrders> list=tradingOrderGetOrdersMapper.selectByExample(example);
+        return list;
+    }
+
+    @Override
+    public List<TradingOrderGetOrders> selectOrderGetOrdersBySendShipMessage() {
+        TradingOrderGetOrdersExample example=new TradingOrderGetOrdersExample();
+        TradingOrderGetOrdersExample.Criteria cr=example.createCriteria();
+        cr.andPaypalflagIsNull();
+        cr.andShippedflagIsNotNull();
+        cr.andSendmessagetimeLessThan(new Date());
+        List<TradingOrderGetOrders> list=tradingOrderGetOrdersMapper.selectByExample(example);
+        return list;
     }
 
 

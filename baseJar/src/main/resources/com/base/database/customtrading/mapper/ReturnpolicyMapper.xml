@@ -26,10 +26,11 @@
       <result column="ShippingCostPaidByOption_name" jdbcType="VARCHAR" property="shippingCostPaidByOptionName" />
       <result column="site_name" jdbcType="VARCHAR" property="siteName" />
       <result column="check_flag" jdbcType="VARCHAR" property="checkFlag" />
+      <result column="site_img" property="siteImg" jdbcType="VARCHAR" />
   </resultMap>
 
     <select id="selectByReturnpolicyList" resultMap="BaseResultMap" parameterType="map">
-        select returnpolicy.*,dic.name ReturnsAcceptedOption_name,dic1.name ReturnsWithinOption_name,dic2.name RefundOption_name,dic3.name ShippingCostPaidByOption_name,dic4.name site_name from trading_returnpolicy returnpolicy
+        select returnpolicy.*,dic.name ReturnsAcceptedOption_name,dic1.name ReturnsWithinOption_name,dic2.name RefundOption_name,dic3.name ShippingCostPaidByOption_name,dic4.name site_name,dic4.imgurl site_img from trading_returnpolicy returnpolicy
         left join trading_data_dictionary dic on returnpolicy.ReturnsAcceptedOption=dic.id
         left join trading_data_dictionary dic1 on returnpolicy.ReturnsWithinOption=dic1.id
         left join trading_data_dictionary dic2 on returnpolicy.RefundOption=dic2.id

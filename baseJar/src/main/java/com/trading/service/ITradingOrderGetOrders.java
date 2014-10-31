@@ -28,4 +28,8 @@ public interface ITradingOrderGetOrders {
     List<TradingOrderGetOrders> selectOrderGetOrdersByBuyerAndItemid(String itemid,String buyer);
 
     void downloadOrders(List<TradingOrderGetOrders> list,String outputFile,ServletOutputStream outputStream) throws Exception;
+
+    List<TradingOrderGetOrders> selectOrderGetOrdersBySendPaidMessage();
+
+    List<TradingOrderGetOrders> selectOrderGetOrdersBySendShipMessage();
 }

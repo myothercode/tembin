@@ -1,16 +1,13 @@
 package com.base.utils.mailUtil;
 
-import com.base.utils.applicationcontext.ApplicationContextUtil;
-import com.base.utils.common.CommAutowiredClass;
+
 import org.apache.commons.mail.DefaultAuthenticator;
 import org.apache.commons.mail.Email;
+import org.apache.commons.mail.HtmlEmail;
 import org.apache.commons.mail.SimpleEmail;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.mail.SimpleMailMessage;
-import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
+
 
 /**
  * Created by Administrator on 2014/10/13.
@@ -32,7 +29,17 @@ public class MailUtils {
     public String mailFrom;
 
     public void sendMail(Email email) throws Exception{
-        //Email email = new SimpleEmail();
+        /*Email email1 = new SimpleEmail();
+        email1.setHostName("smtp.126.com");
+        email1.setSmtpPort(Integer.valueOf("465"));
+        email1.setAuthenticator(new DefaultAuthenticator("byuniversal99@126.com", "byby12345"));
+        email1.setSSLOnConnect(true);
+        email1.setCharset("UTF-8");
+        email1.setFrom("byuniversal99@126.com");
+        email1.addTo("892129701@qq.com");
+        email1.setSubject("tembin密码修改验证码叫姐姐");
+        email1.setMsg("您正在进行密码找回操作，本次操作验证码为:");
+        email1.send();*/
         email.setHostName(hostName);
         email.setSmtpPort(Integer.valueOf(port) );
         email.setAuthenticator(new DefaultAuthenticator(userName, userPassword));
@@ -41,4 +48,32 @@ public class MailUtils {
         email.setFrom(mailFrom);
         email.send();
     }
+
+    /*public static void main(String[] args) throws Exception {
+        MailUtils mailUtils = new MailUtils();
+
+        mailUtils.sendMail2(null);
+    }
+
+
+    public void sendMail2(Email email) throws Exception {
+        if(email==null){
+            email = new HtmlEmail();
+
+        }
+        email.setHostName("smtp.exmail.qq.com");
+        email.setSmtpPort(Integer.valueOf("465"));
+        // email.setAuthenticator(null);
+        email.setAuthenticator(new DefaultAuthenticator("info@tembin.com", "QWQW123"));
+        email.setSSLOnConnect(true);
+        email.setCharset("UTF-8");
+        email.setFrom("info@tembin.com");
+        email.addTo("892129701@qq.com");
+        email.setSubject("ddd");
+        email.setMsg("<a href=\"http://www.baidu.com\"><img src=\"http://www.baidu.com/img/baidu_jgylogo3.gif\"/></a>");
+        email.send();
+    }*/
+
+
 }
+

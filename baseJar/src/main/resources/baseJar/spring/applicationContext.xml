@@ -42,9 +42,11 @@
 
     <bean id="propertyConfigurer"
           class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+        <property name="ignoreResourceNotFound" value="true" />
         <property name="locations">
             <list>
                 <value>classpath*:/baseJar/config/db.properties</value>
+                <value>file:/var/config/db.properties</value>
             </list>
         </property>
     </bean>

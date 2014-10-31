@@ -525,6 +525,76 @@ public class PublicSitemessageExample {
             return (Criteria) this;
         }
 
+        public Criteria andOrderandsellerIsNull() {
+            addCriterion("orderAndSeller is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andOrderandsellerIsNotNull() {
+            addCriterion("orderAndSeller is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andOrderandsellerEqualTo(String value) {
+            addCriterion("orderAndSeller =", value, "orderandseller");
+            return (Criteria) this;
+        }
+
+        public Criteria andOrderandsellerNotEqualTo(String value) {
+            addCriterion("orderAndSeller <>", value, "orderandseller");
+            return (Criteria) this;
+        }
+
+        public Criteria andOrderandsellerGreaterThan(String value) {
+            addCriterion("orderAndSeller >", value, "orderandseller");
+            return (Criteria) this;
+        }
+
+        public Criteria andOrderandsellerGreaterThanOrEqualTo(String value) {
+            addCriterion("orderAndSeller >=", value, "orderandseller");
+            return (Criteria) this;
+        }
+
+        public Criteria andOrderandsellerLessThan(String value) {
+            addCriterion("orderAndSeller <", value, "orderandseller");
+            return (Criteria) this;
+        }
+
+        public Criteria andOrderandsellerLessThanOrEqualTo(String value) {
+            addCriterion("orderAndSeller <=", value, "orderandseller");
+            return (Criteria) this;
+        }
+
+        public Criteria andOrderandsellerLike(String value) {
+            addCriterion("orderAndSeller like", value, "orderandseller");
+            return (Criteria) this;
+        }
+
+        public Criteria andOrderandsellerNotLike(String value) {
+            addCriterion("orderAndSeller not like", value, "orderandseller");
+            return (Criteria) this;
+        }
+
+        public Criteria andOrderandsellerIn(List<String> values) {
+            addCriterion("orderAndSeller in", values, "orderandseller");
+            return (Criteria) this;
+        }
+
+        public Criteria andOrderandsellerNotIn(List<String> values) {
+            addCriterion("orderAndSeller not in", values, "orderandseller");
+            return (Criteria) this;
+        }
+
+        public Criteria andOrderandsellerBetween(String value1, String value2) {
+            addCriterion("orderAndSeller between", value1, value2, "orderandseller");
+            return (Criteria) this;
+        }
+
+        public Criteria andOrderandsellerNotBetween(String value1, String value2) {
+            addCriterion("orderAndSeller not between", value1, value2, "orderandseller");
+            return (Criteria) this;
+        }
+
         public Criteria andCreateTimeIsNull() {
             addCriterion("create_time is null");
             return (Criteria) this;

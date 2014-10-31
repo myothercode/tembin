@@ -54,11 +54,13 @@
                 and attr.attrValue is null
             </if>
         </if>
-        <if test="itemType!=null">
-            and dic.id=#{itemType}
-        </if>
         <if test="content!=null">
-            and itemInformation.name like "%"#{content}"%"
+            <if test="itemType==1">
+                and itemInformation.sku like "%"#{content}"%"
+            </if>
+            <if test="itemType==2">
+                and itemInformation.name like "%"#{content}"%"
+            </if>
         </if>
         <if test="userID!=null">
             and itemInformation.create_user=#{userID}

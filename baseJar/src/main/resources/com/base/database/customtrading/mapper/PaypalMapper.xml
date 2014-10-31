@@ -17,10 +17,11 @@
     <result column="site_name" jdbcType="VARCHAR" property="siteName" />
     <result column="paypal_name" jdbcType="VARCHAR" property="payPalName" />
     <result column="check_flag" jdbcType="VARCHAR" property="checkFlag" />
+      <result column="site_img" property="siteImg" jdbcType="VARCHAR" />
   </resultMap>
 
     <select id="selectByPayPalList" resultMap="BaseResultMap" parameterType="map">
-        select paypal.*,dic.name site_name,dic1.paypal_account paypal_name from trading_paypal paypal
+        select paypal.*,dic.name site_name,dic1.paypal_account paypal_name,dic.imgurl site_img from trading_paypal paypal
         left join trading_data_dictionary dic on paypal.site=dic.id
         left join usercontroller_paypal_account dic1 on paypal.paypal=dic1.id where 1=1
         <if test="id!=null">

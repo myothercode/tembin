@@ -261,52 +261,52 @@ public class TradingDiscountpriceinfoExample {
             return (Criteria) this;
         }
 
-        public Criteria andMadeforoutletcomparisonpriceEqualTo(Long value) {
+        public Criteria andMadeforoutletcomparisonpriceEqualTo(Double value) {
             addCriterion("MadeForOutletComparisonPrice =", value, "madeforoutletcomparisonprice");
             return (Criteria) this;
         }
 
-        public Criteria andMadeforoutletcomparisonpriceNotEqualTo(Long value) {
+        public Criteria andMadeforoutletcomparisonpriceNotEqualTo(Double value) {
             addCriterion("MadeForOutletComparisonPrice <>", value, "madeforoutletcomparisonprice");
             return (Criteria) this;
         }
 
-        public Criteria andMadeforoutletcomparisonpriceGreaterThan(Long value) {
+        public Criteria andMadeforoutletcomparisonpriceGreaterThan(Double value) {
             addCriterion("MadeForOutletComparisonPrice >", value, "madeforoutletcomparisonprice");
             return (Criteria) this;
         }
 
-        public Criteria andMadeforoutletcomparisonpriceGreaterThanOrEqualTo(Long value) {
+        public Criteria andMadeforoutletcomparisonpriceGreaterThanOrEqualTo(Double value) {
             addCriterion("MadeForOutletComparisonPrice >=", value, "madeforoutletcomparisonprice");
             return (Criteria) this;
         }
 
-        public Criteria andMadeforoutletcomparisonpriceLessThan(Long value) {
+        public Criteria andMadeforoutletcomparisonpriceLessThan(Double value) {
             addCriterion("MadeForOutletComparisonPrice <", value, "madeforoutletcomparisonprice");
             return (Criteria) this;
         }
 
-        public Criteria andMadeforoutletcomparisonpriceLessThanOrEqualTo(Long value) {
+        public Criteria andMadeforoutletcomparisonpriceLessThanOrEqualTo(Double value) {
             addCriterion("MadeForOutletComparisonPrice <=", value, "madeforoutletcomparisonprice");
             return (Criteria) this;
         }
 
-        public Criteria andMadeforoutletcomparisonpriceIn(List<Long> values) {
+        public Criteria andMadeforoutletcomparisonpriceIn(List<Double> values) {
             addCriterion("MadeForOutletComparisonPrice in", values, "madeforoutletcomparisonprice");
             return (Criteria) this;
         }
 
-        public Criteria andMadeforoutletcomparisonpriceNotIn(List<Long> values) {
+        public Criteria andMadeforoutletcomparisonpriceNotIn(List<Double> values) {
             addCriterion("MadeForOutletComparisonPrice not in", values, "madeforoutletcomparisonprice");
             return (Criteria) this;
         }
 
-        public Criteria andMadeforoutletcomparisonpriceBetween(Long value1, Long value2) {
+        public Criteria andMadeforoutletcomparisonpriceBetween(Double value1, Double value2) {
             addCriterion("MadeForOutletComparisonPrice between", value1, value2, "madeforoutletcomparisonprice");
             return (Criteria) this;
         }
 
-        public Criteria andMadeforoutletcomparisonpriceNotBetween(Long value1, Long value2) {
+        public Criteria andMadeforoutletcomparisonpriceNotBetween(Double value1, Double value2) {
             addCriterion("MadeForOutletComparisonPrice not between", value1, value2, "madeforoutletcomparisonprice");
             return (Criteria) this;
         }
@@ -321,52 +321,52 @@ public class TradingDiscountpriceinfoExample {
             return (Criteria) this;
         }
 
-        public Criteria andMinimumadvertisedpriceEqualTo(Long value) {
+        public Criteria andMinimumadvertisedpriceEqualTo(Double value) {
             addCriterion("MinimumAdvertisedPrice =", value, "minimumadvertisedprice");
             return (Criteria) this;
         }
 
-        public Criteria andMinimumadvertisedpriceNotEqualTo(Long value) {
+        public Criteria andMinimumadvertisedpriceNotEqualTo(Double value) {
             addCriterion("MinimumAdvertisedPrice <>", value, "minimumadvertisedprice");
             return (Criteria) this;
         }
 
-        public Criteria andMinimumadvertisedpriceGreaterThan(Long value) {
+        public Criteria andMinimumadvertisedpriceGreaterThan(Double value) {
             addCriterion("MinimumAdvertisedPrice >", value, "minimumadvertisedprice");
             return (Criteria) this;
         }
 
-        public Criteria andMinimumadvertisedpriceGreaterThanOrEqualTo(Long value) {
+        public Criteria andMinimumadvertisedpriceGreaterThanOrEqualTo(Double value) {
             addCriterion("MinimumAdvertisedPrice >=", value, "minimumadvertisedprice");
             return (Criteria) this;
         }
 
-        public Criteria andMinimumadvertisedpriceLessThan(Long value) {
+        public Criteria andMinimumadvertisedpriceLessThan(Double value) {
             addCriterion("MinimumAdvertisedPrice <", value, "minimumadvertisedprice");
             return (Criteria) this;
         }
 
-        public Criteria andMinimumadvertisedpriceLessThanOrEqualTo(Long value) {
+        public Criteria andMinimumadvertisedpriceLessThanOrEqualTo(Double value) {
             addCriterion("MinimumAdvertisedPrice <=", value, "minimumadvertisedprice");
             return (Criteria) this;
         }
 
-        public Criteria andMinimumadvertisedpriceIn(List<Long> values) {
+        public Criteria andMinimumadvertisedpriceIn(List<Double> values) {
             addCriterion("MinimumAdvertisedPrice in", values, "minimumadvertisedprice");
             return (Criteria) this;
         }
 
-        public Criteria andMinimumadvertisedpriceNotIn(List<Long> values) {
+        public Criteria andMinimumadvertisedpriceNotIn(List<Double> values) {
             addCriterion("MinimumAdvertisedPrice not in", values, "minimumadvertisedprice");
             return (Criteria) this;
         }
 
-        public Criteria andMinimumadvertisedpriceBetween(Long value1, Long value2) {
+        public Criteria andMinimumadvertisedpriceBetween(Double value1, Double value2) {
             addCriterion("MinimumAdvertisedPrice between", value1, value2, "minimumadvertisedprice");
             return (Criteria) this;
         }
 
-        public Criteria andMinimumadvertisedpriceNotBetween(Long value1, Long value2) {
+        public Criteria andMinimumadvertisedpriceNotBetween(Double value1, Double value2) {
             addCriterion("MinimumAdvertisedPrice not between", value1, value2, "minimumadvertisedprice");
             return (Criteria) this;
         }

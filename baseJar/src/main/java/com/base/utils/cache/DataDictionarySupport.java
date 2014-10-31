@@ -19,6 +19,12 @@ import java.util.*;
  * Created by Administrtor on 2014/7/24.
  */
 public class DataDictionarySupport extends CacheBaseSupport{
+    public static final String DICT_CACHE_NAME = "dataDictionaryCache";//数据字典所在的cache名
+
+    public static final String TRADING_DATA_DICTIONARY = "tradingDataDictionary";//trading数据字典在cache中的名称
+    public static final String PUBLIC_DATA_DICTIONARY = "publicDataDictionary";//PUBLIC数据字典在cache中的名称
+    public static final String PUBLIC_USER_CONFIG = "publicUserConfig";//用户配置数据字典在cache中的名称
+
     /**站点字典*/
     public static final String DATA_DICT_SITE ="site";//数据字典站点数据
 
@@ -36,11 +42,9 @@ public class DataDictionarySupport extends CacheBaseSupport{
 
     public static final String PUBLIC_DATA_DICT_EBAYACCOUNT = "ebayaccount";
 
-    public static final String DICT_CACHE_NAME = "dataDictionaryCache";//数据字典所在的cache名
 
-    public static final String TRADING_DATA_DICTIONARY = "tradingDataDictionary";//trading数据字典在cache中的名称
-    public static final String PUBLIC_DATA_DICTIONARY = "publicDataDictionary";//PUBLIC数据字典在cache中的名称
-    public static final String PUBLIC_USER_CONFIG = "publicUserConfig";//用户配置数据字典在cache中的名称
+
+
 
     public static final Map<Object,String> dictNameMap=new HashMap<Object, String>();
     static {

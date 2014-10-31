@@ -27,10 +27,12 @@
         <result column="create_user" jdbcType="BIGINT" property="createUser" />
         <result column="folder_id" jdbcType="VARCHAR" property="folderId" />
         <result column="remark" jdbcType="VARCHAR" property="remark" />
+        <result column="currencyId" property="currencyId" jdbcType="VARCHAR" />
+        <result column="siteName" property="siteName" jdbcType="VARCHAR" />
     </resultMap>
     <select id="selectByExample" resultMap="BaseResultMap" parameterType="map">
-        select tion.* from trading_listing_data tion inner join (select acc.* from usercontroller_ebay_account acc,usercontroller_user_ebay dev where acc.id=dev.ebay_id and dev.user_id=#{userid}
-        ) ebayaccount on tion.ebay_account=ebayaccount.ebay_account
+        select tion.*,dic.value1 currencyId,dic.name siteName from trading_listing_data tion inner join (select acc.* from usercontroller_ebay_account acc,usercontroller_user_ebay dev where acc.id=dev.ebay_id and dev.user_id=#{userid}
+        ) ebayaccount on tion.ebay_account=ebayaccount.ebay_account left join (select tra.* from trading_data_dictionary tra where tra.type='site') dic on tion.site=dic.value left join trading_item doc on tion.item_id=doc.item_id
         where 1=1 and tion.is_flag='0'
         <if test="folderid==null">
             and tion.folder_id is null
@@ -56,8 +58,13 @@
         <if test="ebayaccount!=null">
             and tion.ebay_account = #{ebayaccount}
         </if>
-        <if test="selectType!=null">
+        <if test="selectType!=null and selectType=='docname'">
+            and doc.item_name like CONCAT(CONCAT('%', #{selectValue, jdbcType=VARCHAR}),'%')
+        </if>
+        <if test="selectType!=null and selectType!='docname'">
             and tion.${selectType}  = #{selectValue}
         </if>
+
+        order by tion.id desc
     </select>
 </mapper>

@@ -10,6 +10,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>baseJar</artifactId>
+    <version>1.0-SNAPSHOT</version>
 
     <dependencies>
         <!--<dependency>
@@ -48,7 +49,18 @@
             <scope>test</scope>
         </dependency>-->
     </dependencies>
-
+<build>
+    <finalName>baseJar</finalName>
+    <plugins>
+    <plugin>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>3.1</version>
+        <configuration>
+            <encoding>UTF-8</encoding>
+        </configuration>
+    </plugin>
+    </plugins>
+</build>
 
 
 

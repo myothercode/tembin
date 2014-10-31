@@ -15,12 +15,14 @@ import com.base.userinfo.mapper.UserInfoServiceMapper;
 import com.base.userinfo.service.SystemUserManagerService;
 import com.base.utils.applicationcontext.ApplicationContextUtil;
 import com.base.utils.cache.SessionCacheSupport;
+import com.base.utils.cache.TempStoreDataSupport;
 import com.base.utils.common.*;
 import com.base.utils.exception.Asserts;
 import com.base.utils.mailUtil.MailUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.mail.Email;
 import org.apache.commons.mail.EmailException;
+import org.apache.commons.mail.HtmlEmail;
 import org.apache.commons.mail.SimpleEmail;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +30,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpServletRequest;
+import java.net.URL;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -156,10 +159,10 @@ public class SystemUserManagerServiceImpl implements SystemUserManagerService {
     public void addSubAccount(AddSubUserVO addSubUserVO){
         /**判断相同用户名是否已经存在*/
         UsercontrollerUserExample userExample=new UsercontrollerUserExample();
-        userExample.createCriteria().andUserLoginIdEqualTo(addSubUserVO.getLoginID());
+        userExample.createCriteria().andUserEmailEqualTo(addSubUserVO.getEmail());
         List<UsercontrollerUser> u1=userMapper.selectByExample(userExample);
 
-        Asserts.assertTrue(ObjectUtils.isLogicalNull(u1),"相同用户已经存在!");
+        Asserts.assertTrue(ObjectUtils.isLogicalNull(u1),"相同邮箱已经存在!");
 
         UsercontrollerUser user=new UsercontrollerUser();
         user.setUserLoginId(addSubUserVO.getLoginID());
@@ -170,7 +173,7 @@ public class SystemUserManagerServiceImpl implements SystemUserManagerService {
 
         SessionVO sessionVO=SessionCacheSupport.getSessionVO();
         user.setUserParentId(((Long)sessionVO.getId()).intValue());
-        user.setUserPassword(EncryptionUtil.pwdEncrypt("123456", user.getUserLoginId()));//初始密码是123456
+        user.setUserPassword(EncryptionUtil.pwdEncrypt("123456", user.getUserEmail()));//初始密码是123456
         user.setStatus("1");
         user.setDefaultDevAccount(1L);
         user.setUserOrgId(((Long)sessionVO.getOrgId()).intValue());
@@ -266,16 +269,20 @@ public class SystemUserManagerServiceImpl implements SystemUserManagerService {
         request.getSession().setAttribute("passWordSafeCode_",scode);
         request.getSession().setAttribute("opDateTime_",new Date());
         request.getSession().setAttribute("loginUserIDchangePWD_",loginUserID);
+        Map map1=new HashMap();
+        map1.put("emailLoginID",loginUserID);
+        map1.put("scode",scode);
+        TempStoreDataSupport.pushData(request.getSession().getId()+"_session",map1);
 
         UsercontrollerUserExample userExample = new UsercontrollerUserExample();
-        userExample.createCriteria().andUserLoginIdEqualTo(loginUserID);
+        userExample.createCriteria().andUserEmailEqualTo(loginUserID);
         List<UsercontrollerUser> user = userMapper.selectByExample(userExample);
-        Asserts.assertTrue(!ObjectUtils.isLogicalNull(user),"没有此帐号");
+        Asserts.assertTrue(!ObjectUtils.isLogicalNull(user),"此邮箱尚未注册！");
         UsercontrollerUser usert=user.get(0);
 
         Asserts.assertTrue(StringUtils.isNotEmpty(usert.getUserEmail()),"该帐号没有指定email，请联系管理员");
 
-        Email email = new SimpleEmail();
+        Email email = new HtmlEmail();
         try {
 
             SystemLog log=new SystemLog();
@@ -285,8 +292,13 @@ public class SystemUserManagerServiceImpl implements SystemUserManagerService {
             SystemLogUtils.saveLog(log);
 
             email.addTo(usert.getUserEmail());
-            email.setSubject("tembin密码修改验证码");
-            email.setMsg("您正在进行密码找回操作，本次操作验证码为:"+scode);
+            email.setSubject("tembin密码修改");
+            String nowUel=request.getContextPath();
+            String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.getServerPort()+nowUel+"/";
+            String urll=basePath+"/findPWD.jsp?email="+loginUserID+"&scode="+scode+""+"&sid="+request.getSession().getId();
+            email.setMsg("您好，<br/>您申请了本次修改密码的请求，<a href="+urll+">点击修改密码</a> <br/>或者请复制以下链接至浏览器执行!"+urll+"" +
+                    " <br>本链接五分钟内有效！<br>本邮件由系统生成，请勿回复");
+            //email.setTextMsg("或者复制此连接到浏览器执行"+urll);
 
             MailUtils mailUtils= (MailUtils) ApplicationContextUtil.getBean("mailUtils");
             mailUtils.sendMail(email);
@@ -304,17 +316,25 @@ public class SystemUserManagerServiceImpl implements SystemUserManagerService {
         String loginUserID = (String) map.get("loginUserId");
         String newPWD = (String) map.get("newPWD");
         String safeCode = (String) map.get("safeCode");
+        String sid = (String) map.get("sid");
 
-        Object remotsafeCodeobj= request.getSession().getAttribute("passWordSafeCode_");
-        Asserts.assertTrue(!ObjectUtils.isLogicalNull(remotsafeCodeobj),"请先获取邮箱验证码，谢谢！");
-        String remotsafeCode = (String) remotsafeCodeobj;
+        Map<String,String> map1= TempStoreDataSupport.pullData(sid+"_session");
+        Asserts.assertTrue(!ObjectUtils.isLogicalNull(map1),"验证码已经过期!请重新获取!");
+        String safeFinal=map1.get("scode");
+        String loginUserIDEmail=map1.get("emailLoginID");
+        Asserts.assertTrue(safeCode.equals(safeFinal)&&loginUserID.equals(loginUserIDEmail),"验证码和需要修改的账户密码无效");
+
+        /*Object remotsafeCodeobj= request.getSession().getAttribute("passWordSafeCode_");
+        Asserts.assertTrue(!ObjectUtils.isLogicalNull(remotsafeCodeobj),"请先获取邮箱验证码，谢谢！");*/
+
+        /*String remotsafeCode = (String) remotsafeCodeobj;
         Asserts.assertTrue(remotsafeCode.equals(safeCode),"邮箱验证码不正确!");
         String loginUserId1= (String) request.getSession().getAttribute("loginUserIDchangePWD_");
-        Asserts.assertTrue(loginUserID.equals(loginUserId1),"需要修改的账户名不对！");
+        Asserts.assertTrue(loginUserID.equals(loginUserId1),"需要修改的账户名不对！");*/
 
 
         UsercontrollerUserExample userExample = new UsercontrollerUserExample();
-        userExample.createCriteria().andUserLoginIdEqualTo(loginUserID);
+        userExample.createCriteria().andUserEmailEqualTo(loginUserID);
         List<UsercontrollerUser> users = userMapper.selectByExample(userExample);
         Asserts.assertTrue(!ObjectUtils.isLogicalNull(users),"没有此帐号");
         UsercontrollerUser user=users.get(0);

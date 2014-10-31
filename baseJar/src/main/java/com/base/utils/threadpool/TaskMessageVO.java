@@ -17,8 +17,16 @@ public class  TaskMessageVO<T> {
     private Boolean sendOrNotSend=true;//是否发送消息
     private Boolean weithSendSuccessMessage=true;//是否发送成功消息
     private String beanNameType;//要执行的bean类型名
+    private String orderAndSeller;//判断是否重复
     private T objClass;//传递的对象参数
 
+    public String getOrderAndSeller() {
+        return orderAndSeller;
+    }
+
+    public void setOrderAndSeller(String orderAndSeller) {
+        this.orderAndSeller = orderAndSeller;
+    }
 
     public Boolean getWeithSendSuccessMessage() {
         return weithSendSuccessMessage;
@@ -103,6 +111,7 @@ public class  TaskMessageVO<T> {
         publicSitemessage.setMessageTitle(this.getMessageTitle());
         publicSitemessage.setMessage(this.getMessageContext());
         publicSitemessage.setMessageType(this.getMessageType());
+        publicSitemessage.setOrderandseller(this.getOrderAndSeller());
         return publicSitemessage;
     }
 }

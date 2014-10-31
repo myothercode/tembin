@@ -11,6 +11,16 @@ public class PaypalQuery extends TradingPaypal{
 
     private String payPalName;
 
+    private String siteImg;
+
+    public String getSiteImg() {
+        return siteImg;
+    }
+
+    public void setSiteImg(String siteImg) {
+        this.siteImg = siteImg;
+    }
+
     public String getSiteName() {
         return siteName;
     }

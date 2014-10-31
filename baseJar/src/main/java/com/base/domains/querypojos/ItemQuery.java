@@ -12,6 +12,26 @@ public class ItemQuery extends TradingItem{
 
     public String ebayaccountname;
 
+    private String siteImg;
+
+    private String currencyId;
+
+    public String getCurrencyId() {
+        return currencyId;
+    }
+
+    public void setCurrencyId(String currencyId) {
+        this.currencyId = currencyId;
+    }
+
+    public String getSiteImg() {
+        return siteImg;
+    }
+
+    public void setSiteImg(String siteImg) {
+        this.siteImg = siteImg;
+    }
+
     public String getEbayaccountname() {
         return ebayaccountname;
     }

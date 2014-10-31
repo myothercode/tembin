@@ -3,20 +3,12 @@ package com.base.utils.scheduleabout.commontask;
 import com.base.database.keymove.mapper.KeyMoveListMapper;
 import com.base.database.keymove.model.KeyMoveList;
 import com.base.database.keymove.model.KeyMoveListExample;
-import com.base.database.trading.mapper.TradingTimerListingMapper;
-import com.base.database.trading.model.TradingItem;
-import com.base.database.trading.model.TradingTimerListingExample;
-import com.base.database.trading.model.TradingTimerListingWithBLOBs;
-import com.base.database.trading.model.UsercontrollerEbayAccount;
-import com.base.database.userinfo.mapper.UsercontrollerUserMapper;
-import com.base.database.userinfo.model.UsercontrollerUser;
 import com.base.domains.userinfo.UsercontrollerDevAccountExtend;
 import com.base.sampleapixml.APINameStatic;
 import com.base.userinfo.service.UserInfoService;
 import com.base.utils.applicationcontext.ApplicationContextUtil;
 import com.base.utils.cache.DataDictionarySupport;
 import com.base.utils.common.CommAutowiredClass;
-import com.base.utils.common.ObjectUtils;
 import com.base.utils.scheduleabout.BaseScheduledClass;
 import com.base.utils.scheduleabout.MainTask;
 import com.base.utils.scheduleabout.Scheduledable;
@@ -24,11 +16,9 @@ import com.base.utils.threadpool.AddApiTask;
 import com.base.utils.xmlutils.SamplePaseXml;
 import com.base.xmlpojo.trading.addproduct.Item;
 import com.trading.service.ITradingItem;
-import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -85,12 +75,6 @@ public class KeyMoveListTaskRun extends BaseScheduledClass implements Scheduleda
                 e.printStackTrace();
             }
         }
-        try {
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
     }
 
     /**只从集合记录取多少条*/

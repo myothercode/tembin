@@ -19,10 +19,17 @@ public class SiteMessageStatic {
         messageMap.put("synchronize_user_case_ebp_type","同步EBP纠纷");
         messageMap.put("synchronize_get_order_type","同步订单");
         messageMap.put("syn_message_listing_data_type","同步在线商品");
+        messageMap.put("auto_message_task_run","定时发送付款或发货后的自动消息");
+        messageMap.put("feed_back_auto_message_task_run","定时发送获取评价后的自动消息");
+        messageMap.put("synchronize_get_order_timer","定时同步订单");
+        messageMap.put("synchronize_feed_back_timer","定时获取评价");
+        messageMap.put("update_listing_data_message_type","范本修改在线商品");
     }
 
     /**刊登的消息类型*/
     public static final String LISTING_MESSAGE_TYPE="listing_message";
+    /**通过范本修改在线商品的消息类型*/
+    public static final String UPDATE_LISTING_DATA_MESSAGE_TYPE="update_listing_data_message_type";
     /**刊登成功的消息类型
     public static final String LISTING_MESSAGE_SUCCESS="listing_message_success";
     *//**刊登失败的消息类型*//*
@@ -68,5 +75,17 @@ public class SiteMessageStatic {
 
     /**同步订单类型*/
     public static final String SYNCHRONIZE_GET_ORDER_TYPE="synchronize_get_order_type";
+
+    /**定时发送付款或发货后的自动消息*/
+    public static final String AUTO_MESSAGE_TASK_RUN="auto_message_task_run";
+
+    /**定时发送获取评价后的自动消息*/
+    public static final String FEED_BACK_AUTO_MESSAGE_TASK_RUN="feed_back_auto_message_task_run";
+
+    /**定时同步订单*/
+    public static final String SYNCHRONIZE_GET_ORDER_TIMER="synchronize_get_order_timer";
+
+    /**定时获取评价*/
+    public static final String SYNCHRONIZE_FEED_BACK_TIMER="synchronize_feed_back_timer";
 
 }

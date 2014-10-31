@@ -39,13 +39,16 @@ public class SynchronizeGetMessageImpl implements ThreadPoolBaseInterFace {
                     TradingMessageGetmymessage ms= GetMyMessageAPI.addDatabase(message, accountId, ebay);//保存到数据库
                     if("true".equals(ms.getRead())){
                         List<TradingMessageGetmymessage> getmymessages=iTradingMessageGetmymessage.selectMessageGetmymessageByMessageId(ms.getMessageid());
-                        ms.setId(getmymessages.get(0).getId());
+                        if(getmymessages.size()>0){
+                            ms.setId(getmymessages.get(0).getId());
+                        }
                     }
                     ms.setCreateUser(taskMessageVO.getMessageTo());
                     iTradingMessageGetmymessage.saveMessageGetmymessage(ms);
                 }
             }else {return;}
         } catch (Exception e) {
+            e.printStackTrace();
             logger.error("解析xml出错,请稍后到ebay网站确认结果");
             return;
         }

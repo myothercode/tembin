@@ -72,9 +72,11 @@
     <result column="folder_id" jdbcType="VARCHAR" property="folderId" />
     <result column="galleryURL" jdbcType="VARCHAR" property="galleryURL" />
     <result column="ebayaccountname" jdbcType="VARCHAR" property="ebayaccountname" />
+      <result column="site_img" property="siteImg" jdbcType="VARCHAR" />
+      <result column="currencyId" property="currencyId" jdbcType="VARCHAR" />
   </resultMap>
     <select id="selectByItemList" resultMap="BaseResultMap" parameterType="map">
-        select item.*,dic.`name` site_name,pic.GalleryURL galleryURL,ebayaccount.ebay_name ebayaccountname from trading_item item left join trading_data_dictionary dic on item.Site=dic.id
+        select item.*,dic.`name` site_name,dic.imgurl site_img,pic.GalleryURL galleryURL,ebayaccount.ebay_name ebayaccountname,dic.value1 currencyId from trading_item item left join trading_data_dictionary dic on item.Site=dic.id
         left join trading_picturedetails pic on item.id=pic.parent_id inner join (select acc.* from usercontroller_ebay_account acc,usercontroller_user_ebay dev where acc.id=dev.ebay_id and dev.user_id=#{userid}
         ) ebayaccount on item.ebay_account=ebayaccount.id
         where 1=1 and item.check_flag='0'
@@ -109,7 +111,7 @@
             and item.ebay_account = #{ebayaccount}
         </if>
         <if test="selectType!=null">
-            and item.${selectType} =#{selectValue}
+            and item.${selectType} like CONCAT(CONCAT('%', #{selectValue, jdbcType=VARCHAR}),'%')
         </if>
         order by item.id desc
     </select>

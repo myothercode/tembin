@@ -29,10 +29,11 @@
         <result column="site_value" jdbcType="VARCHAR" property="siteValue" />
         <result column="site_name" jdbcType="VARCHAR" property="siteName" />
         <result column="check_flag" jdbcType="VARCHAR" property="checkFlag" />
+        <result column="site_img" property="siteImg" jdbcType="VARCHAR" />
     </resultMap>
 
     <select id="selectByBuyer" resultMap="BaseResultMap" parameterType="map">
-        select buyer.*,dic.name site_name from trading_buyer_requirement_details buyer
+        select buyer.*,dic.name site_name,dic.imgurl site_img from trading_buyer_requirement_details buyer
         left join trading_data_dictionary dic on buyer.site_code=dic.id where 1=1
         <if test="id!=null">
             and buyer.id = #{id}

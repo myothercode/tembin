@@ -46,10 +46,12 @@
       <result column="site_name" jdbcType="VARCHAR" property="siteName" />
       <result column="ebay_Name" jdbcType="VARCHAR" property="ebayName" />
       <result column="check_flag" property="checkFlag" jdbcType="VARCHAR" />
+      <result column="site_img" property="siteImg" jdbcType="VARCHAR" />
+      <result column="currencyId" property="currencyId" jdbcType="VARCHAR" />
   </resultMap>
 
     <select id="selectByShippingdetails" resultMap="BaseResultMap" parameterType="map">
-        select shipping.*,dic.`name` site_name,ebay.ebay_Name ebay_Name from trading_shippingdetails shipping
+        select shipping.*,dic.`name` site_name,ebay.ebay_Name ebay_Name,dic.imgurl site_img,dic.value1 currencyId from trading_shippingdetails shipping
         left join trading_data_dictionary dic on shipping.site=dic.id
         left join usercontroller_ebay_account ebay on shipping.ebay_account=ebay.id
         where 1=1

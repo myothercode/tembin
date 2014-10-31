@@ -72,12 +72,12 @@
                 and MessageGetmymessage.messageID like "%"#{content}"%"
             </if>
         </if>
-        <if test="ebays!=null">
+        <!--<if test="ebays!=null">
             and MessageGetmymessage.ebay_account_id in
             <foreach collection="ebays" item="ebay" index="index" open="(" separator="," close=")">
                 #{ebay.id}
             </foreach>
-        </if>
+        </if>-->
         <if test="status!=null">
             <if test="status=='readed'">
                 and MessageGetmymessage.read="true"

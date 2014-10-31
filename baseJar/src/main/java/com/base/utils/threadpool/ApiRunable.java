@@ -63,6 +63,10 @@ public class ApiRunable implements Runnable {
 
     /**请求完成后要执行的方法*/
     public void afterPost(String res){
+        if( StringUtils.isEmpty(taskMessageVO.getBeanNameType())  ){
+            addMessage(res);
+            return;
+        }
         ApplicationContext applicationContext = ApplicationContextUtil.getContext();
         Map<String, ThreadPoolBaseInterFace> map = applicationContext
                 .getBeansOfType(ThreadPoolBaseInterFace.class, false, true);

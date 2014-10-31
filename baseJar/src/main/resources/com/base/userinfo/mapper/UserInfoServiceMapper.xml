@@ -4,7 +4,7 @@
  <select id="queryUserRole" resultType="com.base.domains.RoleVO" parameterType="map">
     SELECT ur.role_id roleID ,r.role_name roleName,r.create_user createUser from usercontroller_user_role ur
     INNER JOIN usercontroller_role r on ur.role_id=r.role_id
-    WHERE ur.user_id=(select u.user_id from usercontroller_user u where u.user_login_id=#{loginId})
+    WHERE ur.user_id=(select u.user_id from usercontroller_user u where u.user_email=#{loginId})
  </select>
 
     <select id="queryAllPermission" resultType="com.base.domains.PermissionVO" parameterType="map" >
@@ -34,12 +34,12 @@
     </select>
     
     <select id="querySessionVOInfo" parameterType="com.base.domains.LoginVO" resultType="com.base.domains.SessionVO">
-        select u.user_id id,u.user_login_id loginId,
+        select u.user_id id,u.user_login_id loginId,u.user_email email,
         u.user_name userName,u.user_org_id orgId,org.org_name orgName,
         u.user_parent_id parentId,u.`status`,u.default_dev_account defaultDevID
          from usercontroller_user u
         INNER JOIN usercontroller_org org on org.org_id=u.user_org_id
-        where u.user_login_id = #{loginId}   and u.user_password=#{enpassword}
+        where u.user_email = #{loginId}   and u.user_password=#{enpassword}
     </select>
 
 

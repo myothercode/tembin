@@ -47,6 +47,11 @@ public class MainTask {
     public static final String LISTING_TIMER_TASK_DATA="tradingListtimertask";//在线数据同步每两分钟执行
     public static final String SET_DEV_ZERO="setDevZero";//将开发帐号的调用次数清零
     public static final String AUTO_MESSAGE="autoMessage";//定时发送自动消息
+    public static final String FEEDBACK_AUTOM_ESSAGE="FeedBackAutoMessageTaskRun";//定时发送评价自动消息
+    public static final String SYNCHRONIZE_GET_ORDERS="synchronize_get_orders";//定时每天插入账号去获取订单
+    public static final String SYNCHRONIZE_GET_TIMER_ORDERS="synchronize_get_timer_orders";//定时同步订单每两分钟
+    public static final String SYNCHRONIZE_FEED_BACK="synchronize_feed_back";//定时每天插入账号去获取评价
+    public static final String SYNCHRONIZE_FEED_BACK_TIMER="synchronize_feed_back_timer";//定时同步订单每两分钟
 
     /**主入口,2分钟执行一次的任务*/
     @Scheduled(cron="0 0/2 *  * * ?")
@@ -59,6 +64,9 @@ public class MainTask {
         doList.add(KEY_MOVE_LIST_TASK);
         doList.add(LISTING_TIMER_TASK_DATA);
         doList.add(AUTO_MESSAGE);
+        doList.add(FEEDBACK_AUTOM_ESSAGE);
+        doList.add(SYNCHRONIZE_GET_TIMER_ORDERS);
+        doList.add(SYNCHRONIZE_FEED_BACK_TIMER);
         if (isStartTimerTask==null) {
             isStartTimerTask = (CommAutowiredClass) ApplicationContextUtil.getBean(CommAutowiredClass.class);
         }
@@ -133,6 +141,8 @@ public class MainTask {
         List<String> doList=new ArrayList<String>();
         doList.add(SET_DEV_ZERO); //api次数归零任务
         doList.add(LISTING_DATA);
+        doList.add(SYNCHRONIZE_GET_ORDERS);
+        doList.add(SYNCHRONIZE_FEED_BACK);
         List<String> taskList=new ArrayList<String>();
         if("false".equalsIgnoreCase(isStartTimerTask.isStartTimerTask)){
             return;

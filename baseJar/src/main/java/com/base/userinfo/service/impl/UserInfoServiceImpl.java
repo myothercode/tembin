@@ -60,7 +60,7 @@ public class UserInfoServiceImpl implements com.base.userinfo.service.UserInfoSe
     public SessionVO getUserInfo(LoginVO loginVO){
         String enPwd= EncryptionUtil.pwdEncrypt(loginVO.getPassword(),loginVO.getLoginId());
         loginVO.setEnpassword(enPwd);
-        SessionVO sessionVO=userInfoServiceMapper.querySessionVOInfo(loginVO);
+        SessionVO sessionVO=userInfoServiceMapper.querySessionVOInfo(loginVO);//用email做登录账户
         if(ObjectUtils.isLogicalNull(sessionVO)){return null;}
         Asserts.assertTrue(StringUtils.isNotEmpty(sessionVO.getStatus()) && "1".equalsIgnoreCase(sessionVO.getStatus()) ,"账户已停用");
         Map map = new HashMap();

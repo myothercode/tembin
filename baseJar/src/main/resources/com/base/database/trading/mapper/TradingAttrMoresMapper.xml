@@ -145,9 +145,6 @@
     values (#{id,jdbcType=BIGINT}, #{attrValue,jdbcType=VARCHAR}, #{value,jdbcType=VARCHAR}, 
       #{parentId,jdbcType=BIGINT}, #{parentUuid,jdbcType=VARCHAR}, #{uuid,jdbcType=VARCHAR}, 
       #{createTime,jdbcType=TIMESTAMP}, #{attr1,jdbcType=VARCHAR})
-      <selectKey resultType="long" keyProperty="id" order="AFTER">
-          SELECT LAST_INSERT_ID()
-      </selectKey>
   </insert>
   <insert id="insertSelective" parameterType="com.base.database.trading.model.TradingAttrMores">
     <!--
@@ -207,9 +204,6 @@
         #{attr1,jdbcType=VARCHAR},
       </if>
     </trim>
-      <selectKey resultType="long" keyProperty="id" order="AFTER">
-          SELECT LAST_INSERT_ID()
-      </selectKey>
   </insert>
   <select id="countByExample" parameterType="com.base.database.trading.model.TradingAttrMoresExample" resultType="java.lang.Integer">
     <!--

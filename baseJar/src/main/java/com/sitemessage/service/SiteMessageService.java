@@ -27,4 +27,6 @@ public interface SiteMessageService {
 
     /**新增一条消息*/
     void addSiteMessage(TaskMessageVO taskMessageVO);
+
+    List<PublicSitemessage> selectPublicSitemessageByMessage(String messageType,String orderAndSeller);
 }

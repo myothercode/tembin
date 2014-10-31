@@ -24,8 +24,6 @@ public class EncryptionUtil {
     }
     
     public static void main(String[] args) {
-	System.out.println(EncryptionUtil.md5Encrypt("http://jhfj!@#%^*(*(.com"));
-        System.out.println(EncryptionUtil.md5Encrypt("http://jhfj!@#%^*(*(.com"));
-        System.out.println(EncryptionUtil.md5Encrypt("http://jhfj!@#%^*(*(.com"));
+	System.out.println(EncryptionUtil.pwdEncrypt("123456","caixu23@qq.com"));
     }
 }

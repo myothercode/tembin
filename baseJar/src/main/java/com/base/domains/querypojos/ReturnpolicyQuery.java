@@ -17,6 +17,16 @@ public class ReturnpolicyQuery extends TradingReturnpolicy{
 
     private String siteName;
 
+    private String siteImg;
+
+    public String getSiteImg() {
+        return siteImg;
+    }
+
+    public void setSiteImg(String siteImg) {
+        this.siteImg = siteImg;
+    }
+
     public String getSiteName() {
         return siteName;
     }
