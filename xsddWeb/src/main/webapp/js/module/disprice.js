@@ -48,7 +48,7 @@ function makeOption1(json){
     }else{
         hs+="<li style='height:25px' onclick=delDiscountprice('"+json.id+"') value='"+json.id+"' doaction=\"look\" >启用</li>";
     }
-    var pp={"liString":hs};
+    var pp={"liString":hs,"marginLeft":"-50px"};
     return getULSelect(pp);
 
 }

@@ -41,7 +41,7 @@ function loadreturnpolicy(){
         url:path + "/ajax/loadReturnpolicyList.do?",
         columnData:[
             {title:"名称",name:"name",width:"8%",align:"left"},
-            {title:"站点",name:"siteName",width:"8%",align:"left"},
+            {title:"站点",name:"siteName",width:"8%",align:"left",format:getSiteImg},
             {title:"退货明细",name:"option1",width:"8%",align:"left",format:makeOption3returnpolicy},
             {title:"数据状态",name:"option1",width:"8%",align:"left",format:makeOption2},
             {title:"操作",name:"option1",width:"8%",align:"left",format:makeOption1returnpolicy}
@@ -62,7 +62,7 @@ function makeOption1returnpolicy(json){
     }else {
         hs += "<li style='height:25px' onclick=delReturnPolicy('" + json.id + "') value='" + json.id + "' doaction=\"look\" >启用</li>";
     }
-    var pp={"liString":hs};
+    var pp={"liString":hs,"marginLeft":"-50px"};
     return getULSelect(pp);
 }
 

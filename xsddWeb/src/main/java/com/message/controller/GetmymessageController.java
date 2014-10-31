@@ -405,8 +405,18 @@ public class GetmymessageController extends BaseAction{
     @AvoidDuplicateSubmission(needSaveToken = true)
     public ModelAndView viewTemplateInitTable(HttpServletRequest request,HttpServletResponse response,@ModelAttribute( "initSomeParmMap" )ModelMap modelMap) throws Exception {
         String messageID=request.getParameter("messageID");
+        //测试环境
         UsercontrollerDevAccountExtend dev = userInfoService.getDevInfo(null);
         dev.setApiSiteid("0");
+        //真实环境
+       /* UsercontrollerDevAccountExtend dev=new UsercontrollerDevAccountExtend();
+        dev.setApiDevName("5d70d647-b1e2-4c7c-a034-b343d58ca425");
+        dev.setApiAppName("sandpoin-23af-4f47-a304-242ffed6ff5b");
+        dev.setApiCertName("165cae7e-4264-4244-adff-e11c3aea204e");
+        dev.setApiCompatibilityLevel("881");
+        dev.setApiSiteid("0");*/
+
+
         dev.setApiCallName(APINameStatic.GetMyMessages);
         request.getSession().setAttribute("dveId", dev);
         List<UsercontrollerEbayAccountExtend> ebays = userInfoService.getEbayAccountForCurrUser();
@@ -415,12 +425,15 @@ public class GetmymessageController extends BaseAction{
         m.put("ebays",ebays);
         List<MessageGetmymessageQuery> messages=iTradingMessageGetmymessage.selectMessageGetmymessageBySender(m);
         for(MessageGetmymessageQuery message:messages){
-            if("false".equals(message.getRead())){
+            if(message.getTextHtml()==null||"".equals(message.getTextHtml())){
                 Map parms=new HashMap();
                 parms.put("messageId", message.getMessageid());
                 parms.put("ebayId",message.getEbayAccountId());
                 parms.put("devAccount",dev);
+                //测试环境
                 parms.put("url",apiUrl);
+                //真实环境
+               /* parms.put("url","https://api.ebay.com/ws/api.dll");*/
                 parms.put("userInfoService",userInfoService);
                 String content=GetMyMessageAPI.getContent(parms);
                 message.setTextHtml(content);
@@ -681,22 +694,35 @@ public class GetmymessageController extends BaseAction{
             AjaxSupport.sendFailText("fail", "获取必要的参数失败！请稍后重试");
         }*/
         //--修改后---
+        //测试环境
         UsercontrollerDevAccountExtend d = new UsercontrollerDevAccountExtend();
         d.setApiSiteid("0");
+        //真实环境
+        /*UsercontrollerDevAccountExtend d=new UsercontrollerDevAccountExtend();
+        d.setApiDevName("5d70d647-b1e2-4c7c-a034-b343d58ca425");
+        d.setApiAppName("sandpoin-23af-4f47-a304-242ffed6ff5b");
+        d.setApiCertName("165cae7e-4264-4244-adff-e11c3aea204e");
+        d.setApiCompatibilityLevel("881");
+        d.setApiSiteid("0");*/
+        Map map=new HashMap();
         d.setApiCallName(APINameStatic.GetMyMessages);
         request.getSession().setAttribute("dveId", d);
-        Map map=new HashMap();
-       /*Date startTime2= com.base.utils.common.DateUtils.subDays(new Date(),8);
-        Date endTime= DateUtils.addDays(startTime2, 9);*/
-        Date startTime2= com.base.utils.common.DateUtils.subDays(new Date(),90);
-        Date endTime= DateUtils.addDays(startTime2, 90);
+
+       Date startTime2= com.base.utils.common.DateUtils.subDays(new Date(),6);
+        Date endTime= DateUtils.addDays(startTime2, 6);
+      /*  Date startTime2= com.base.utils.common.DateUtils.subDays(new Date(),90);
+        Date endTime= DateUtils.addDays(startTime2, 90);*/
         /*MutualWithdrawalAgreementLate*/
 
 
         Date end1= com.base.utils.common.DateUtils.turnToDateEnd(endTime);
         String start=DateUtils.DateToString(startTime2);
         String end= DateUtils.DateToString(end1);
+        //测试环境
         String token=userInfoService.getTokenByEbayID(ebay);
+        //真实环境
+       /* String token="AgAAAA**AQAAAA**aAAAAA**jek4VA**nY+sHZ2PrBmdj6wVnY+sEZ2PrA2dj6AFlIWnC5iEpAidj6x9nY+seQ**tSsCAA**AAMAAA**y8BaJPw6GUdbbbco8zXEwRR4Ttr9sLd78jL0FyYa0yonvk5hz1RY6DtKkaDtn9NuzluKeFZoqsNbujZP48S4QZhHVa5Dp0bDGqBdKaosolzsrPDm8qozoxbsTiWY8X/M5xev/YU2zJ42/JRGDlEdnQhwCASG1BcSo+DqXuG3asbj0INJr4/HsArf8cCYsPQCtUDkq5QJY6Rvil+Kla/dGhViTQ3gt7a4t3KjxKH+/jlhDU/6sUEKlvb2nY1gCmX8S9pU48c+4Vy6G6NpfcGUcIG/TXFWBTqU0R+v+/6DOIfDW8s90rrLSVMGFqnRxA2sexdEmVhyF5csBmv9+TVfjdyEZK5UgvDqWJHesuDMFTr0KIc8EtdnTQaE3YeZch15DdoEbqcyyBQBZHidBPdDHz/DkpTg7iq1953yKodm2y0mW6aaYAfc5beW+PoqMW8C3WwGJmWZqh3dBi+QEKznEJ9SRg43Bc3q2344JFY7YpIEfJDaQ36BHRcIZxLew8v7RIGL5YYO1BBdTolVV9/eMCQDsUB0mUeMYjxnH5w0K/6CDmJ9WNMQTblNol0x3vhJbil1L/CMP9KGEHj5Yqx0003MLL9Yod7nL89Zpy+a8I/E5byxFt21KZTGE90Ot0LyLpRXsotDwIm5+ZdvATsU6mGADX4tk970CpCeM487v9fn1opouaCBvknCINqXoSeGXLQ7uZFpeqkWts1lIWh9vEuuiuZa4vNoL7aCr+93LTFnsO6AsZp7dmboQcI96I/o";
+        */
         map.put("token", token);
         map.put("detail", "ReturnHeaders");
         map.put("startTime", start);
@@ -717,7 +743,10 @@ public class GetmymessageController extends BaseAction{
         taskMessageVO.setObjClass(m);
         SessionVO sessionVO= SessionCacheSupport.getSessionVO();
         taskMessageVO.setMessageTo(sessionVO.getId());
+        //测试环境
         addApiTask.execDelayReturn(d, xml, apiUrl, taskMessageVO);
+        //真实环境
+        /*addApiTask.execDelayReturn(d, xml, "https://api.ebay.com/ws/api.dll", taskMessageVO);*/
         AjaxSupport.sendSuccessText("message", "操作成功！结果请稍后查看消息！");
     }
 }

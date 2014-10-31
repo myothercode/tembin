@@ -59,15 +59,46 @@
                     "</div>";
             return htm;*/
             var hs="";
-            hs+="<li style=\"height:25px;\" onclick=selectOption("+json.id+",this); value='1' doaction=\"readed\" >添加标签</li>";
+            hs+="<li style=\"height:25px;\" onclick=selectOption("+json.id+",this); value='1' doaction=\"readed\" >快速刊登</li>";
+            hs+="<li style=\"height:25px;\" onclick=selectOption("+json.id+",this); value='2' doaction=\"look\" >编辑</li>";
+            hs+="<li style=\"height:25px;\" onclick=selectOption("+json.id+",this); value='3' doaction=\"look\" >删除</li>";
+            hs+="<li style=\"height:25px;\" onclick=selectOption("+json.id+",this); value='4' doaction=\"look\" >备注</li>";
             var pp={"liString":hs};
             return getULSelect(pp);
         }
         function selectOption(id,obj){
             var value=$(obj).val();
             if(value=='1'){
-                addRemark(id);
+                editItem(id);
             }
+            if(value=='2'){
+                updateItemInformation1(id);
+            }
+            if(value=='3'){
+                removeItemInformation1(id);
+            }
+            if(value=='4'){
+                addComment(id);
+            }
+        }
+        function editItem(id){
+            var url = path + "/information/editItem.do?id="+id;
+            itemInformation=$.dialog({title: '快速刊登',
+                content: 'url:'+url,
+                icon: 'succeed',
+                width:1050,
+                height:700,
+                lock:true
+            });
+        }
+        function addComment(id){
+            var url = path + "/information/addComment.do?id="+id;
+            itemInformation=$.dialog({title: '备注',
+                content: 'url:'+url,
+                icon: 'succeed',
+                width:600,
+                lock:true
+            });
         }
         function makeOption2(json){
             var htm="<img src="+json.pictureUrl+" style=\" width: 50px;height: 50px; \">";
@@ -75,10 +106,10 @@
         }
         function makeOption3(json){
             if(json.pictureUrl){
-                var htm = "<img src='"+path+"/img/new_yes.png' />";
+                var htm = "<img src='"+path+"/img/new_yes.png'/>";
                 return htm;
             }else{
-                var htm = "<img src='"+path+"/img/new_no.png' />";
+                var htm = "<img src='"+path+"/img/new_no.png'/>";
                 return htm;
             }
         }
@@ -92,8 +123,23 @@
                 content: 'url:'+url,
                 icon: 'succeed',
                 width:1050,
-                height:700
+                height:700,
+                lock:true
             });
+        }
+        function removeItemInformation1(id) {
+            var url = path + "/information/ajax/removeItemInformation.do?id[0]="+id;
+            $().invoke(url, null,
+                    [function (m, r) {
+                        alert(r);
+                        refreshTable();
+                        Base.token();
+                    },
+                        function (m, r) {
+                            alert(r);
+                            Base.token();
+                        }]
+            );
         }
         function removeItemInformation(){
             var id=$("input[type='checkbox'][name='templateId']:checked");
@@ -131,7 +177,9 @@
                 itemInformation=$.dialog({title: '添加或修改商品信息',
                     content: 'url:'+url,
                     icon: 'succeed',
-                    width:1050
+                    width:1050,
+                    height:700,
+                    lock:true
                 });
             }else if(id.length>1){
                 alert("请选择单个需要修改的数据");
@@ -139,22 +187,40 @@
                 alert("请选择需要修改的数据");
             }
         }
+        function updateItemInformation1(id){
+            var url=path+"/information/addItemInformation.do?id="+id;
+            itemInformation=$.dialog({title: '添加或修改商品信息',
+                content: 'url:'+url,
+                icon: 'succeed',
+                width:1050,
+                height:700,
+                lock:true
+            });
+        }
         function addRemark(id1){
             var id=null;
+            var id2="";
             if(!id1){
                  id=$("input[type='checkbox'][name='templateId']:checked");
+                for(var i=0;i<id.length;i++){
+                    if(i==(id.length-1)){
+                       id2= id2+$(id[i]).val();
+                    }else{
+                        id2= id2+$(id[i]).val()+",";
+                    }
+                }
             }else{
                  id=$("input[type=checkbox][name=templateId][value="+id1+"]");
+                 id2=$(id).val();
             }
-            if(id.length==1){
-                var url=path+"/information/addRemark.do?id="+$(id).val();
+            if(id.length>0){
+                var url=path+"/information/addRemark.do?id="+id2;
                 itemInformation=$.dialog({title: '添加标签',
                     content: 'url:'+url,
                     icon: 'succeed',
-                    width:1050
+                    width:1050,
+                    lock:true
                 });
-            }else if(id.length>1){
-                alert("请选择单个需要添加标签的商品");
             }else{
                 alert("请选择需要添加标签的商品");
             }
@@ -190,7 +256,8 @@
             itemInformation=$.dialog({title: '请选择导入的excel文件',
                 content: 'url:'+url,
                 icon: 'succeed',
-                width:1050
+                width:1050,
+                lock:true
             });
         }
         function submitCommit1(remark,information,itemType,content){
@@ -344,18 +411,17 @@
                     <div id="con_menu_1" style="display: block;">
                         <!--综合开始 -->
                         <div class="new_usa" style="margin-top:20px;">
-                            <li class="new_usa_list"><span class="newusa_i">按标签看：</span><span class="newusa_ici_1" scop="remark" onclick="onclickremark(null,0)">全部&nbsp;</span><a href="#"><span class="newusa_ici_1" scop="remark" onclick="onclickremark('null',1)">无标签&nbsp;</span></a><a href="#"><span class="newusa_ici_1">有电池&nbsp;</span></a><a href="#"><span class="newusa_ici_1">无电池&nbsp;</span></a></li>
-                            <li class="new_usa_list"><span class="newusa_i">信息状态：</span><span  class="newusa_ici_1" scop="information" onclick="onclickinformation(null,0)">全部&nbsp;</span><a href="#"><span class="newusa_ici_1" scop="information" onclick="onclickinformation('picture',1)">无图片&nbsp;</span></a><a href="#"><span class="newusa_ici_1" scop="information" onclick="onclickinformation('custom',2)">无报关信息&nbsp;</span></a><a href="#"><span class="newusa_ici_1" scop="information" onclick="onclickinformation('notAllnull',3)">信息不全&nbsp;</span></a></li>
+                            <li class="new_usa_list"><span class="newusa_i">按标签看：</span><span class="newusa_ici" scop="remark" onclick="onclickremark(null,0)">全部&nbsp;</span><a href="#"><span class="newusa_ici_1" scop="remark" onclick="onclickremark('null',1)">无标签&nbsp;</span></a><a href="#"><span class="newusa_ici_1">有电池&nbsp;</span></a><a href="#"><span class="newusa_ici_1">无电池&nbsp;</span></a></li>
+                            <li class="new_usa_list"><span class="newusa_i">信息状态：</span><span  class="newusa_ici" scop="information" onclick="onclickinformation(null,0)">全部&nbsp;</span><a href="#"><span class="newusa_ici_1" scop="information" onclick="onclickinformation('picture',1)">无图片&nbsp;</span></a><a href="#"><span class="newusa_ici_1" scop="information" onclick="onclickinformation('custom',2)">无报关信息&nbsp;</span></a><a href="#"><span class="newusa_ici_1" scop="information" onclick="onclickinformation('notAllnull',3)">信息不全&nbsp;</span></a></li>
                             <div class="newsearch">
-                                <span class="newusa_i">搜索内容：全部</span>
+                                <span class="newusa_i">搜索内容：</span>
 
 <span id="sleBG">
 <span id="sleHid">
 <select id="itemTypeid" name="itemType" class="select">
     <option value="all">选择类型</option>
-    <c:forEach items="${types}" var="type">
-        <option value="${type.id}">${type.configName}</option>
-    </c:forEach>
+    <option value="1">SKU</option>
+    <option value="2">商品名称</option>
 </select>
 </span>
 </span>

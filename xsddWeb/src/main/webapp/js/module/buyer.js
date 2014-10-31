@@ -39,12 +39,15 @@ function delBuyer(id){
             }]
     );
 }
+
+
+
 function loadbuyer(){
     $("#buyerRequireTable").initTable({
         url:path + "/ajax/loadBuyerRequirementDetailsList.do",
         columnData:[
             {title:"名称",name:"name",width:"8%",align:"left"},
-            {title:"站点",name:"siteName",width:"8%",align:"left"},
+            {title:"站点",name:"siteName",width:"8%",align:"left",format:getSiteImg},
             {title:"买家要求",name:"option1",width:"8%",align:"left",format:makeOption3buyer},
             {title:"状态",name:"option1",width:"8%",align:"left",format:makeOption2},
             {title:"操作",name:"option1",width:"8%",align:"left",format:makeOption1buyer}
@@ -68,7 +71,7 @@ function makeOption1buyer(json) {
     } else{
         hs += "<li style='height:25px' onclick=delBuyer('" + json.id + "') value='" + json.id + "' doaction=\"look\" >启用</li>";
     }
-    var pp={"liString":hs};
+    var pp={"liString":hs,"marginLeft":"-50px"};
     return getULSelect(pp);
 
 }

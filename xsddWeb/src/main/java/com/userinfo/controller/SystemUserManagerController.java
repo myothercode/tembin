@@ -166,7 +166,7 @@ public class SystemUserManagerController extends BaseAction {
         Asserts.assertTrue(StringUtils.isNotEmpty(loginUserID),"帐号不能为空!");
         Map map=new HashMap();
         map.put("HttpServletRequest",request);
-        map.put("loginUserID",loginUserID);
+        map.put("loginUserID",loginUserID);//已经修改为邮箱帐号
         systemUserManagerService.sendSafeCode(map);
         AjaxSupport.sendSuccessText("","验证码已发送至邮箱！");
     }
@@ -175,13 +175,14 @@ public class SystemUserManagerController extends BaseAction {
     /**根据邮件的验证码来修改账户密码*/
     public void changePWDBySafeCode(HttpServletRequest request,HttpServletResponse response,
                                     @ModelAttribute( "initSomeParmMap" )ModelMap modelMap,
-                                    String loginUserID,String safeCode,String newPWD){
+                                    String loginUserID,String safeCode,String newPWD,String sid){
         Asserts.assertTrue(StringUtils.isNotEmpty(loginUserID) && StringUtils.isNotEmpty(safeCode) && StringUtils.isNotEmpty(newPWD),"帐号、验证码、密码不能为空");
        Map map =new HashMap();
         map.put("HttpServletRequest",request);
         map.put("loginUserId",loginUserID);
         map.put("newPWD",newPWD);
         map.put("safeCode",safeCode);
+        map.put("sid",sid);
         systemUserManagerService.doChangeForgetPassWord(map);
         AjaxSupport.sendSuccessText("success","修改成功！");
     }

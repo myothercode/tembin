@@ -20,16 +20,14 @@ import com.base.utils.applicationcontext.ApplicationContextUtil;
 import com.base.utils.cache.DataDictionarySupport;
 import com.base.utils.cache.SessionCacheSupport;
 import com.base.utils.common.DateUtils;
+import com.base.utils.common.EncryptionUtil;
 import com.base.utils.common.ObjectUtils;
 import com.base.utils.exception.Asserts;
 import com.base.utils.threadpool.AddApiTask;
 import com.base.utils.threadpool.TaskMessageVO;
 import com.base.utils.xmlutils.PojoXmlUtil;
 import com.base.utils.xmlutils.SamplePaseXml;
-import com.base.xmlpojo.trading.addproduct.Item;
-import com.base.xmlpojo.trading.addproduct.RequesterCredentials;
-import com.base.xmlpojo.trading.addproduct.ReviseItemRequest;
-import com.base.xmlpojo.trading.addproduct.ShippingDetails;
+import com.base.xmlpojo.trading.addproduct.*;
 import com.base.xmlpojo.trading.addproduct.attrclass.StartPrice;
 import com.common.base.utils.ajax.AjaxResponse;
 import com.common.base.utils.ajax.AjaxSupport;
@@ -40,6 +38,7 @@ import com.task.service.IListingDataTask;
 import com.trading.service.*;
 import org.apache.commons.lang.math.NumberUtils;
 import org.apache.poi.hssf.usermodel.*;
+import org.apache.poi.ss.usermodel.Picture;
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
@@ -88,6 +87,8 @@ public class ListingItemController extends BaseAction {
     private IListingDataTask iListingDataTask;
     @Autowired
     private ListingDataTaskQueryMapper listingDataTaskQueryMapper;
+    @Autowired
+    private ITradingListingPicUrl iTradingListingPicUrl;
 
     @RequestMapping("/getListingItemList.do")
     public ModelAndView getListingItemList(HttpServletRequest request, HttpServletResponse response, ModelMap modelMap) throws Exception {
@@ -452,7 +453,7 @@ public class ListingItemController extends BaseAction {
         List<PublicUserConfig> li = new ArrayList<PublicUserConfig>();
         if(lipuc!=null&&lipuc.size()>1) {
             for (PublicUserConfig puc : lipuc) {
-                if (puc.getConfigValue().equals("true")) {
+                if ("true".equals(puc.getConfigValue())) {
                     li.add(puc);
                 }
             }
@@ -623,14 +624,16 @@ public class ListingItemController extends BaseAction {
         String id = request.getParameter("id");
         String [] ids = id.split(",");
         String remark = request.getParameter("remark");
+        List<TradingListingData> litld = new ArrayList<TradingListingData>();
         for(int i=0;i<ids.length;i++) {
             TradingListingData tld = this.iTradingListingData.selectById(Long.parseLong(ids[i]));
             if(tld!=null){
                 tld.setRemark(remark);
                 this.iTradingListingData.updateTradingListingData(tld);
+                litld.add(tld);
             }
         }
-        AjaxSupport.sendSuccessText("","操作成功!");
+        AjaxSupport.sendSuccessText("",litld);
     }
 
     @RequestMapping("/ajax/getListItemDataAmend.do")
@@ -703,6 +706,7 @@ public class ListingItemController extends BaseAction {
 
         dt.setApiCallName(APINameStatic.EndItem);
         AddApiTask addApiTask = new AddApiTask();
+        List<TradingListingData> litld = new ArrayList<TradingListingData>();
         for(String itemid:itemids){
             TradingListingAmend tlaold = this.iTradingListingAmend.selectByItemID(itemid,"EndItem");
             if(tlaold!=null){
@@ -744,6 +748,7 @@ public class ListingItemController extends BaseAction {
                 tla.setIsFlag("1");
                 tld.setIsFlag("1");
                 this.iTradingListingData.updateTradingListingData(tld);
+                litld.add(tld);
             }else{
                 String resStr = "";
                 if(res!=null){
@@ -756,7 +761,7 @@ public class ListingItemController extends BaseAction {
             }
             this.iTradingListingData.insertTradingListingAmend(tla);
         }
-        AjaxSupport.sendSuccessText("","操作成功!");
+        AjaxSupport.sendSuccessText("",litld);
     }
 
     public String costXml(String itemid,String reason,String token){
@@ -773,7 +778,7 @@ public class ListingItemController extends BaseAction {
     }
 
     @RequestMapping("/listingdataManager.do")
-    public ModelAndView listingdataManager(HttpServletRequest request, HttpServletResponse response, ModelMap modelMap) throws Exception {
+    public ModelAndView listingdataManager(HttpServletRequest request, HttpServletResponse response,@ModelAttribute( "initSomeParmMap" )ModelMap modelMap) throws Exception {
         SessionVO c= SessionCacheSupport.getSessionVO();
         //List<PublicUserConfig> ebayList = DataDictionarySupport.getPublicUserConfigByType(DataDictionarySupport.PUBLIC_DATA_DICT_PAYPAL, c.getId());
         List<UsercontrollerEbayAccountExtend> ebayList=systemUserManagerService.queryCurrAllEbay(new HashMap());
@@ -934,6 +939,14 @@ public class ListingItemController extends BaseAction {
                 if(res!=null){
                     item = SamplePaseXml.getItem(res);
                 }
+
+                modelMap.put("sku",item.getSKU());
+                modelMap.put("ebayAccount",item.getItemID());
+                modelMap.put("lipic",item.getPictureDetails().getPictureURL());
+
+
+
+
                 modelMap.put("item",item);
                 modelMap.put("itemidstr",itemid);
                 SessionVO c= SessionCacheSupport.getSessionVO();
@@ -1027,6 +1040,7 @@ public class ListingItemController extends BaseAction {
         String itemId = request.getParameter("itemId");
         String ids = request.getParameter("ids");
         TradingListingData tld = this.iTradingListingData.selectById(Long.parseLong(ids));
+        TradingListingData oldtld = this.iTradingListingData.selectById(Long.parseLong(ids));
         Item item = new Item();
         item.setItemID(itemId);
         TradingListingAmendWithBLOBs tla = new TradingListingAmendWithBLOBs();
@@ -1080,7 +1094,7 @@ public class ListingItemController extends BaseAction {
             tla.setIsFlag("1");
             this.iTradingListingAmend.saveListingAmend(tla);
             this.iTradingListingData.updateTradingListingData(tld);
-            AjaxSupport.sendSuccessText("message", "操作成功！");
+            AjaxSupport.sendSuccessText("message", tld);
         }else{
             tla.setIsFlag("0");
             this.iTradingListingAmend.saveListingAmend(tla);
@@ -1093,7 +1107,7 @@ public class ListingItemController extends BaseAction {
             }
 
             this.saveSystemLog(longMessage,"修改价格数量报错",SiteMessageStatic.LISTING_DATA_UPDATE);
-            AjaxSupport.sendFailText("fail",longMessage);
+            AjaxSupport.sendFailText("fail",oldtld);
         }
 
     }
@@ -1123,7 +1137,7 @@ public class ListingItemController extends BaseAction {
         if(selectType!=null&&!"".equals(selectType)){
             map.put("selectType",selectType);
         }
-        String selectValue = request.getParameter("selectValue");
+        String selectValue = request.getParameter("queryValue");
         if(selectValue!=null&&!"".equals(selectValue)){
             map.put("selectValue",selectValue);
         }
@@ -1278,10 +1292,28 @@ public class ListingItemController extends BaseAction {
                 }else if(str.equals("PictureDetails")){//改图片
                     tla.setAmendType("PictureDetails");
                     tla.setContent("图片修改");
-                    ite.setPictureDetails(item.getPictureDetails());
+
                     Item ites = new Item();
+                    String [] pics = request.getParameterValues("PictureDetails_"+item.getItemID()+".PictureURL");
+                    PictureDetails pd = new PictureDetails();
+                    pd.setGalleryType("Gallery");
+                    pd.setGalleryURL(pics[0]);
+                    pd.setPhotoDisplay("PicturePack");
+                    List<String> listr = new ArrayList<String>();
+                    for(String pic:pics){
+                        String mackid = EncryptionUtil.md5Encrypt(pic);
+                        List<TradingListingpicUrl> litamss = this.iTradingListingPicUrl.selectByMackId(mackid);
+                        if(litamss==null||litamss.size()==0){
+                            listr.add(pic);
+                        }else {
+                            TradingListingpicUrl tam = litamss.get(0);
+                            listr.add(tam.getEbayurl());
+                        }
+                    }
+                    pd.setPictureURL(listr);
+                    ite.setPictureDetails(pd);
+                    ites.setPictureDetails(pd);
                     ites.setItemID(item.getItemID());
-                    ites.setPictureDetails(item.getPictureDetails());
                     rir.setItem(ites);
                     tla.setCosxml("<?xml version=\"1.0\" encoding=\"utf-8\"?>"+PojoXmlUtil.pojoToXml(rir));
                 }else if(str.equals("PayPal")){//改支付方式

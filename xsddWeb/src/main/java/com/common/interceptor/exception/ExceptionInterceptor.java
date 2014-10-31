@@ -3,6 +3,7 @@ package com.common.interceptor.exception;
 import com.base.utils.exception.AssertsException;
 import com.common.base.utils.ajax.AjaxSupport;
 import org.apache.log4j.Logger;
+import org.springframework.dao.DataAccessException;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
 import javax.servlet.http.HttpServletRequest;
@@ -21,7 +22,13 @@ public class ExceptionInterceptor  extends HandlerInterceptorAdapter {
         logger(request, handler, ex);
         response.setStatus(response.SC_SERVICE_UNAVAILABLE);
         if(ex!=null){
-            AjaxSupport.sendFailText("出现错误！",ex.getMessage());
+            String m="";
+            if(DataAccessException.class.isAssignableFrom(ex.getClass())){//如果是数据库访问的出错
+                m="出错了！请联系客服。";
+            }else {
+                m=ex.getMessage();
+            }
+            AjaxSupport.sendFailText("出现错误！",m);
         }
 
     }

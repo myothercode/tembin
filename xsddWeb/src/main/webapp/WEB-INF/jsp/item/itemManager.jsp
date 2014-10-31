@@ -207,6 +207,10 @@
         function editItem(id){
             document.location = path+"/editItem.do?id="+id;
         }
+        function getSiteImg(json){
+            var html='<img title="'+json.siteName+'" src="'+path+json.siteImg+'"/>';
+            return html;
+        }
         function onloadTable(urls){
             $("#itemTable").initTable({
                 url:urls,
@@ -214,7 +218,7 @@
                     {title:"选择",name:"selectName",width:"4%",align:"left",format:makeOption0},
                     {title:"图片",name:"pucURLS",width:"8%",align:"left",format:picUrl},
                     {title:"名称/SKU",name:"itemName",width:"8%",align:"left",format:itemName},
-                    {title:"站点",name:"siteName",width:"8%",align:"left"},
+                    {title:"站点",name:"siteName",width:"8%",align:"left",format:getSiteImg},
                     {title:"刊登类型",name:"listingtype",width:"8%",align:"left",format:listingType},
                     {title:"eBay账户",name:"ebayaccountname",width:"8%",align:"left"},
                     {title:"刊登天数",name:"listingduration",width:"8%",align:"left"},
@@ -226,6 +230,10 @@
                 showIndex:false,
                 isrowClick: true,
                 rowClickMethod: function (obj,o){
+
+                    if($(event.target).prop("type")=="checkbox"){
+                        return;
+                    }
                     if($("input[type='checkbox'][name='modelid'][val='"+obj.id+"']").prop("checked")){
                         $("input[type='checkbox'][name='modelid'][val='" + obj.id + "']").prop("checked", false);
                     }else {
@@ -247,18 +255,25 @@
         }
         function listingType(json){
             var htm="";
+            var titlestr= "";
             if(json.listingtype=="2"){
                 htm="lx.png";
+                titlestr="多属性";
             }else if(json.listingtype=="Chinese"){
                 htm="bids.png";
+                titlestr="拍买";
             }else if(json.listingtype=="FixedPriceItem"){
-                htm="buyit.jpg";
+                htm="buyit.png";
+                titlestr="固价";
             }
 
-            return "<img width='24' height='17' src='"+path+"/img/"+htm+"'>";
+            return "<img width='16' title='"+titlestr+"' height='16' src='"+path+"/img/"+htm+"'>";
         }
         function itemName(json){
-            var htm="<span style='color:#5F93D7;'>"+json.itemName+"</span></br>"+json.sku;
+            var htm="<span style='color:#5F93D7;'><a  onclick='editItem("+json.id+")' href='javascript:void(0)'>"+json.itemName+"</a></span></br>"+json.sku;
+            if(json.itemId!=null&&json.itemId!=""){
+                htm="<span style='color:#5F93D7;'><a  onclick='editItem("+json.id+")' href='javascript:void(0)'>"+json.itemName+"<a></span></br><a target='_blank' href='"+serviceItemUrl+json.itemId+"'>"+json.sku+"</a>";
+            }
             return htm;
         }
         function picUrl(json){
@@ -284,7 +299,12 @@
         }
 
         function  refreshTable(){
-            $("#itemTable").selectDataAfterSetParm({});
+            var selectValue = $("input[type='text'][name='selectvalue']").val();
+            var param={};
+            if(selectValue!=null&&selectValue!=""){
+                param={"queryValue":selectValue};
+            }
+            $("#itemTable").selectDataAfterSetParm(param);
         }
 
         function toFolder(idStr){
@@ -432,6 +452,7 @@
         }
         if(idStr==""){
             alert("请选择立即刊登的商品！");
+            $(obj).val("");
             return ;
         }
         if($(obj).val()=="del"){//删除
@@ -440,8 +461,22 @@
             copyItem(idStr);
         }else if($(obj).val()=="rename"){//重命名
             renameItem(idStr)
+        }else if($(obj).val()=="editMoreItem"){
+            editMoreItem(idStr);
         }
     }
+    var editMorepage
+    function editMoreItem(idStr){
+        var urls = path+'/editMoreItem.do?ids='+idStr;
+        editMorepage = $.dialog({title: '批量修改范本',
+            content: 'url:'+urls,
+            icon: 'succeed',
+            width:1000,
+            height:600,
+            lock:true
+        });
+    }
+    //复制
     function copyItem(idStr){
         var url=path+"/ajax/selfEbayAccount.do";
         $().invoke(url,{},
@@ -544,7 +579,28 @@
             ]
         });
     }
+    var siteListPage
+    function selectSiteList(obj){
+        var siteid = "";
+        $(obj).parent().find("a").each(function(i,d){
+            if($(d).attr("value")!=null&&$(d).attr("value")!=""){
+                siteid+=$(d).attr("value")+",";
+            }
+        });
+        var urls = path+'/selectSiteList.do?siteidStr='+siteid;
+        siteListPage = $.dialog({title: '选择定时时间',
+            content: 'url:'+urls,
+            icon: 'succeed',
+            width:500,
+            lock:true
+        });
+    }
     </script>
+    <style>
+        .newusa_i{
+            width: 74px;
+        }
+    </style>
 </head>
 <body>
 <div class="new_all">
@@ -556,12 +612,13 @@
         </div>
         <div class=Contentbox id="Contentbox">
             <div class="new_usa" style="margin-top:20px;">
-                <li class="new_usa_list"><span class="newusa_i">选择国家：</span>
+                <li class="new_usa_list" id="li_countyselect"><span class="newusa_i">选择国家：</span>
                     <a href="javascript:void(0)" onclick="selectCounty(this)" value=""><span class="newusa_ici">全部</span></a>
                     <a href="javascript:void(0)" onclick="selectCounty(this)" value="311"><span class="newusa_ici_1"><img src="<c:url value ='/img/usa_1.png'/> ">美国</span></a>
                     <a href="javascript:void(0)" onclick="selectCounty(this)" value="310"><span class="newusa_ici_1"><img src="<c:url value ='/img/UK.jpg'/> ">英国</span></a>
                     <a href="javascript:void(0)" onclick="selectCounty(this)" value="298"><span class="newusa_ici_1"><img src="<c:url value ='/img/DE.png'/> ">德国</span></a>
                     <a href="javascript:void(0)" onclick="selectCounty(this)" value="291"><span class="newusa_ici_1"><img src="<c:url value ='/img/AU.jpg'/> ">澳大利亚</span></a>
+                    <a href="javascript:void(0)" onclick="selectSiteList(this)"><span style="padding-left: 20px;vertical-align: middle;color: royalblue">更多...</span></a>
                 </li>
                 <li class="new_usa_list">
                     <span class="newusa_i">选择账号：</span>
@@ -581,41 +638,38 @@
                 <div class="newsearch">
                     <span class="newusa_i">搜索内容：</span>
                     <a href="javascript:void(0)" onclick="selectAllData(this)" value=""><span class="newusa_ici">全部</span></a>
-<span id="sleBG">
-<span id="sleHid">
-<select name="selecttype" class="select">
+<span id="sleBG" style="width:82px;background-position: 67px 10px;">
+<span id="sleHid" style="width: 80px;">
+<select name="selecttype" class="select" style="color: #737FA7;width: 80px;">
     <option selected="selected" value="">选择类型</option>
-    <option value="sku">sku</option>
+    <option value="sku">SKU</option>
     <option value="title">物品标题</option>
+    <option value="item_id">物品号</option>
+    <option value="item_name">范本名称</option>
 </select>
 </span>
 </span>
 
                     <div class="vsearch">
-                        <input name="selectvalue" type="text" class="key_1"><input name="newbut" onclick="selectData()" type="button" class="key_2"></div>
+                        <input name="selectvalue" type="text" class="key_1"  style="vtical-align:middle;line-height:100%;"><input name="newbut" onclick="selectData()" type="button" class="key_2"></div>
                 </div>
                 <div class="newds">
                     <div class="newsj_left">
 
-                        <span class="newusa_ici_del_in">
+                        <span class="newusa_ici_del_in" style="padding-left: 8px;">
                             <input type="checkbox" onclick="onselectAlls(this);" name="checkbox" id="checkbox"/>
                         </span>
 
-                        <div class="numlist">
-                            <div class="ui-select" style="margin-top:1px; width:10px">
-                                <select onchange="changeSelect(this)">
-                                    <option value="">请选择</option>
-                                    <option value="del">删除</option>
-                                    <option value="copy">复制</option>
-                                    <option value="rename">重命名</option>
+                        <div class="numlist" style="padding-left: 8px;">
+                            <div class="ui-select" style="margin-top:1px; width:80px;min-width:0px;">
+                                <select onchange="changeSelect(this)" style="width: 80px;padding: 0px;">
+                                    <option value="">&nbsp;&nbsp;&nbsp;&nbsp;请选择</option>
+                                    <option value="del">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;删除</option>
+                                    <option value="copy">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;复制</option>
+                                    <option value="rename">&nbsp;&nbsp;&nbsp;&nbsp;重命名</option>
+                                    <option value="editMoreItem">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;编辑</option>
                                 </select>
                             </div>
-                            <%--<div class="ui-select" style="margin-top:1px; width:10px">
-                                <select>
-                                    <option value="AK">移动</option>
-                                    <option value="AK">动作</option>
-                                </select>
-                            </div>--%>
                         </div>
                         <span class="newusa_ici_del" onclick="shiftToFolder(this)">移动</span>
                         <span class="newusa_ici_del" onclick="listing(this)" id="listing">立即刊登</span>

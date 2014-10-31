@@ -38,12 +38,13 @@ function delPayPal(id){
     }]
     );
     }
+
 function loadpaypal(){
     $("#paypallisttable").initTable({
         url:path + "/ajax/loadPayPalList.do",
         columnData:[
             {title:"名称",name:"payName",width:"8%",align:"left"},
-            {title:"站点",name:"siteName",width:"8%",align:"left"},
+            {title:"站点",name:"siteName",width:"8%",align:"left",format:getSiteImg},
             {title:"paypal账号",name:"payPalName",width:"8%",align:"left"},
             {title:"状态",name:"option1",width:"8%",align:"left",format:makeOption2},
             {title:"动作",name:"option1",width:"8%",align:"left",format:makeOption1paypal}
@@ -77,6 +78,6 @@ function makeOption1paypal(json){
     }else {
         hs += "<li style='height:25px' onclick=delPayPal('" + json.id + "') value='" + json.id + "' doaction=\"look\" >启用</li>";
     }
-    var pp={"liString":hs};
+    var pp={"liString":hs,"marginLeft":"-50px"};
     return getULSelect(pp);
 }

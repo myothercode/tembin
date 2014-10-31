@@ -121,7 +121,10 @@
         var ConditionID = '${item.conditionid}';
         $("select[name='ConditionID']").find("option[value='" + ConditionID + "']").attr("selected", true);
         var listingType = '${item.listingtype}';
-        $("input[name='listingType'][value='" + listingType + "']").attr("checked", true);
+        if(listingType==""){
+            listingType="FixedPriceItem";
+        }
+        $("select[name='listingType']").find("option[value='" + listingType + "']").attr("selected", true);
         var title = '${item.title}';
         $("#incount").text(title.length);
         changeRadio(listingType);
@@ -181,14 +184,22 @@
         var showStr = "<div class='panel' style='display: block'>";
         showStr += " <section class='example'><ul class='gbin1-list' style='padding-left: 20px;' id='picture_" + ebayAccount + "'></ul></section> ";
         showStr += " <script type=text/plain id='picUrls_" + ebayAccount + "'/>";
-        showStr += " <div style='padding-left: 60px;'>&nbsp;&nbsp;&nbsp;&nbsp;<b class='new_button'><a href='javascript:void(0)' id='apicUrls_" + ebayAccount + "' onclick='selectPic(this)' style=''>选择图片</a></b></div> </div> ";
+
+        showStr += "<div style='height: 110px;'></div> <div style='padding-left: 60px;'>&nbsp;&nbsp;&nbsp;&nbsp;" +
+                "<b class='new_button'><a href='javascript:void(0)' id='apicUrls_" + ebayAccount + "' onclick='selectPic(this)' style=''>选择图片</a></b>" +
+                "<b class='new_button'><a href='javascript:void(0)' id='apicUrlsSKU_" + ebayAccount + "' onclick='selectPic(this)' style=''>选择SKU图片</a></b>" +
+                "<b class='new_button'><a href='javascript:void(0)' id='apicUrlsOther_" + ebayAccount + "' onclick='selectPic(this)' style=''>选择外部图片</a></b>" +
+                "<b class='new_button'><a href='javascript:void(0)' id='apicUrlsclear_" + ebayAccount + "' onclick='clearAllPic(this)' style=''>清空所选图片</a></b>" +
+                "</div> </div> ";
         $("#showPics").append(showStr);
         $().image_editor.init("picUrls_" + ebayAccount); //编辑器的实例id
         $().image_editor.show("apicUrls_" + ebayAccount); //上传图片的按钮id
+        $().image_editor.show("apicUrlsSKU_" + ebayAccount); //上传图片的按钮id
+        $().image_editor.show("apicUrlsOther_" + ebayAccount); //上传图片的按钮id
         <c:forEach items="${lipic}" var="lipic" varStatus="status">
         picstr += '<li><div style="position:relative"><input type="hidden" name="pic_mackid" value="${lipic.attr1}"/><input type="hidden" name="PictureDetails_' + ebayAccount + '.PictureURL" value="${lipic.value}">' +
-                '<img src=${lipic.value} height="80" width="80" />' +
-                '<a onclick="deletePic(this)" style="position: absolute;top: -45px;right: -15px;" href=\'javascript:void(0)\'>&times;</a></div>';
+                '<img src=${lipic.value} height="80px" width="78px" />' +
+                '<div style="text-align: right;background-color: dimgrey;"><img src="'+path+'/img/newpic_ico.png" onclick="removeThis(this)"></div>';
         picstr += "</li>";
         </c:forEach>
         $("#picture_" + ebayAccount).append(picstr);
@@ -208,9 +219,9 @@
         </c:forEach>*/
 
         <c:forEach items="${lipics}" var="pics">
-        $("#${pics.tamname}").before("<input type='hidden' name='VariationSpecificValue_${pics.tamname}' value='${pics.tamname}'>");
+        $("#picturemore_${pics.tamname}").append("<input type='hidden' name='VariationSpecificValue_${pics.tamname}' value='${pics.tamname}'>");
         <c:forEach items="${pics.litam}" var="pi">
-        $("#${pics.tamname}").before("<span><input type='hidden' name='pic_mackid_more' value='${pi.attr1}'/><input type='hidden' name='${pics.tamname}' value='${pi.value}'><img src='${pi.value}' height='50' width='50' /> <img src='"+path+"/img/del.png' onclick='removeThis(this)'></span>&nbsp;&nbsp;&nbsp;&nbsp;");
+        $("#picturemore_${pics.tamname}").append("<li><div style='position:relative'><input type='hidden' name='pic_mackid_more' value='${pi.attr1}'/><input type='hidden' name='${pics.tamname}' value='${pi.value}'><img src='${pi.value}' height='80' width='78' /> <div style='text-align: right;background-color: dimgrey;'><img src='"+path+"/img/newpic_ico.png' onclick='removeThis(this)'></div></div></li>");
         </c:forEach>
         </c:forEach>
 
@@ -245,19 +256,6 @@
         }
 
 
-
-        <c:if test="${templi!=null}">
-            var strss="<div style='position:relative'>";
-            <c:forEach items="${templi}" var="temp">
-                strss += '<span style="padding-left: 14px;"><input type="hidden" name="blankimg" value="${temp.value}">' +
-                    '<img src="${temp.value}" height=\"80px\" width=\"80px\" />' +
-                    '<a onclick="removeTemplatePic(this)" style="position: absolute;top: 0px;" href=\'javascript:void(0)\'>&times;</a></span>';
-            </c:forEach>
-            strss += "</div>";
-            $("#showTemplatePic").append(strss);
-            $().image_editor.init("blankImg_main"); //编辑器的实例id
-            $().image_editor.show("blankImg_id"); //上传图片的按钮id
-        </c:if>
 
 
     });
@@ -318,11 +316,13 @@
     </li>
     <li>
         <dt>刊登类型</dt>
-        <em style="color:#48a5f3"><input type="radio" name="listingType" value="Chinese"
-                                         onchange="changeRadio('Chinese')">拍买</em>
-        <em style="color:#48a5f3"><input type="radio" name="listingType" value="FixedPriceItem"
-                                         onchange="changeRadio('FixedPriceItem')" checked="checked">固价</em>
-        <em style="color:#48a5f3"><input type="radio" name="listingType" value="2" onchange="changeRadio('2')">多属性</em>
+        <div class="ui-select dt5">
+            <select name="listingType" onchange="changeRadio(this)">
+                <option value="Chinese">拍买</option>
+                <option value="FixedPriceItem">固价</option>
+                <option value="2">多属性</option>
+            </select>
+        </div>
     </li>
 
     <li>
@@ -456,20 +456,7 @@
             </div>
 
 
-            <div style="padding-left: 80px;" id="typeAttrs"></div>
-        </div>
-    </li>
-    <li style="padding-top: 9px;">
-        <dt>物品状况</dt>
-        <div class="ui-select dt5">
-            <select name="ConditionID">
-                <option selected="selected" value="1000">New</option>
-                <option value="1500">New other (see details)</option>
-                <option value="2000">Manufacturer refurbished</option>
-                <option value="2500">Seller refurbished</option>
-                <option value="3000">Used</option>
-                <option value="7000">For parts or not working</option>
-            </select>
+            <div style="padding-left: 80px;padding-top: 10px" id="typeAttrs"></div>
         </div>
     </li>
     <h1>模板信息</h1>
@@ -492,10 +479,9 @@
             <dt>模板图片</dt>
             <div style='display: block; vertical-align:text-bottom;height: 100px;'>
                 <script type=text/plain id='blankImg_main'></script>
-                <span id="showTemplatePic"></span>
-                <div style="height: 8px;"></div>
+                <section class='example'><ul class='gbin1-list' style='padding-left: 60px;' id='showTemplatePic'></ul></section>
                 <div style="padding-left: 100px;">
-                    <b class="new_button"><a style="padding-bottom: 4px;" href='javascript:void(0)' id='blankImg_id' onclick='selectTemplatePic(this)'>选择模板图片</a></b>
+                    <b class="new_button" style="margin-top: 20px;"><a style="padding-bottom: 4px;" href='javascript:void(0)' id='blankImg_id' onclick='selectTemplatePic(this)'>选择模板图片</a></b>
                 </div>
             </div>
         </div>
@@ -524,6 +510,19 @@
 <div class="Contentbox">
 <div name="showModel" id="priceMessage"  style="width: 980px;height: 500px" class="price_div">
     <br/>
+    <li style="padding-top: 9px;">
+        <dt>物品状况</dt>
+        <div class="ui-select dt5">
+            <select name="ConditionID">
+                <option selected="selected" value="1000">New</option>
+                <option value="1500">New other (see details)</option>
+                <option value="2000">Manufacturer refurbished</option>
+                <option value="2500">Seller refurbished</option>
+                <option value="3000">Used</option>
+                <option value="7000">For parts or not working</option>
+            </select>
+        </div>
+    </li>
     <li>
         <dt>刊登天数</dt>
         <div class="ui-select dt5">
@@ -561,7 +560,7 @@
             <div class="new_left">
                 <input type="text" name="ListingScale" id="ListingScale" class="form-control" style="width:100px;">
             </div>
-            <em style="color:#48a5f3"><input type="checkbox" name="SecondFlag" value="on">二次交易机会</em>
+            <%--<em style="color:#48a5f3"><input type="checkbox" name="SecondFlag" value="on">二次交易机会</em>--%>
         </li>
         <li>
             <dt>是否单物品</dt>
@@ -621,10 +620,13 @@
     </c:if>
     <li><a href="javascript:void(0)" onclick="saveData(this,'save')">保存范本</a></li>
     <c:if test="${item.isFlag==null}">
-        <li><a href="javascript:void(0)" onclick="saveData(this,'timeSave')">定时</a></li>
-        <li><input name="timerStr" style="height: 24px;width: 100px" type="text"
-                   onfocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss',minDate:'%y-%M-{%d}'})"></li>
+        <li><a href="javascript:void(0)" name="timeSave" onclick="selectTimer(this)">定时</a></li>
     </c:if>
+    <li><a href="javascript:void(0)" onclick="saveData(this,'othersave')">另存为新范本</a></li>
+    <c:if test="${item.itemId!=null}">
+        <li><a href="javascript:void(0)" onclick="saveData(this,'updateListing')">更新在线刊登</a></li>
+    </c:if>
+    <li><a onclick="previewItem()" href="javascript:void(0)" target="_blank">预览</a></li>
     <%--<li><a href="javascript:void(0)">更新在线刊登</a></li>
     <li><a href="javascript:void(0)">更新</a></li>--%>
     <li><a href="javascript:void(0)" onclick="closeWindow()">关闭</a></li>
@@ -648,4 +650,17 @@
 
 </script>--%>
 </body>
+<script>
+    $().image_editor.init("blankImg_main"); //编辑器的实例id
+    $().image_editor.show("blankImg_id"); //上传图片的按钮id
+    <c:if test="${templi!=null}">
+    var strss="";
+    <c:forEach items="${templi}" var="temp">
+    strss += '<li><div style="position:relative"><input type="hidden" name="blankimg" value="${temp.value}">' +
+            '<img src="${temp.value}" height=\"80px\" width=\"80px\" />' +
+            '<div style="text-align: right;background-color: dimgrey;"><img src="'+path+'/img/newpic_ico.png" onclick="removeThis(this)"></div></div></li>';
+    </c:forEach>
+    $("#showTemplatePic").append(strss);
+    </c:if>
+</script>
 </html>

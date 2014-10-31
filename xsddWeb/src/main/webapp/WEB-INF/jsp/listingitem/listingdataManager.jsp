@@ -98,6 +98,10 @@
                         }],{isConverPage:true}
             );
         }
+        function getSiteImg(json){
+            var html='<img title="'+json.siteName+'" src="'+path+'/img/'+json.site+'.jpg"/>';
+            return html;
+        }
         function onloadTableamend(urls){
             $("#itemTable").initTable({
                 url:urls,
@@ -106,7 +110,7 @@
                     {title:"物品标题",name:"title",width:"8%",align:"left"},
                     {title:"SKU",name:"sku",width:"8%",align:"left"},
                     {title:"ebay账户",name:"ebayAccount",width:"8%",align:"left"},
-                    {title:"站点",name:"site",width:"8%",align:"left"},
+                    {title:"站点",name:"site",width:"8%",align:"left",format:getSiteImg},
                     {title:"刊登类型",name:"listingType",width:"8%",align:"left",format:listingType},
                     {title:"价格",name:"price",width:"8%",align:"left"},
                     {title:"数量/已售",name:"price",width:"8%",align:"left"},
@@ -121,6 +125,9 @@
                 showIndex:false,
                 isrowClick: true,
                 rowClickMethod: function (obj,o){
+                    if($(event.target).prop("type")=="checkbox"){
+                        return;
+                    }
                     if($("input[type='checkbox'][name='listingitemid'][val='"+obj.id+"']").prop("checked")){
                         $("input[type='checkbox'][name='listingitemid'][val='"+obj.id+"']").prop("checked",false);
                     }else{
@@ -282,15 +289,19 @@
         }
         function listingType(json){
             var htm="";
+            var titlestr = "";
             if(json.listingType=="2"){
                 htm="lx.png";
+                titlestr="多属性";
             }else if(json.listingType=="Chinese"){
                 htm="bids.png";
+                titlestr="拍买";
             }else if(json.listingType=="FixedPriceItem"){
-                htm="buyit.jpg";
+                htm="buyit.png";
+                titlestr="固价";
             }
 
-            return "<img width='24' height='17' src='"+path+"/img/"+htm+"'>";
+            return "<img  width='16' title='"+titlestr+"' height='16' src='"+path+"/img/"+htm+"'>";
         }
         function endItemByid(itemidStr){
             var tent = "<div>原因<select id='centents' name='centents'><option value='Incorrect'>Incorrect</option>" +
@@ -318,12 +329,20 @@
                                 var url = path + "/ajax/endItem.do?itemidStr=" + itemidStr+"&reason="+reason;
                                 $().invoke(url, {},
                                         [function (m, r) {
-                                            alert(r);
+                                            /*alert(r);
                                             Base.token();
                                             if("updatelog"==nameFolder){
                                                 onloadTableamend(loadurl);
                                             }else{
                                                 onloadTable(loadurl);
+                                            }*/
+                                            for(var i = 0;i< r.length;i++){
+                                                var tld = r[i];
+                                                //$("input[type='checkbox'][name='listingitemid'][value='"+tld.itemId+"']").parent().parent().slideUp();
+                                                $("input[type='checkbox'][name='listingitemid'][value='"+tld.itemId+"']").parent().parent().prop("id",tld.itemId);
+                                                $("#"+tld.itemId).css('background-color','red');
+                                                $("#"+tld.itemId).hide(3000);
+                                                $("#"+tld.itemId).slideUp(3000);
                                             }
                                         },
                                             function (m, r) {
@@ -344,6 +363,7 @@
             for (var i = 0; i < item.length; i++) {
                 if ($(item[i])[0].checked) {
                     itemidStr += $(item[i])[0].value + ",";
+                    $("input[type='checkbox'][name='listingitemid'][value='"+$(item[i])[0].value+"']").parent().parent().css("backgroundColor", "#FB6C6C");
                 }
             }
             if(itemidStr==""){
@@ -470,13 +490,18 @@
                 alert("请选择需要移动的商品！");
                 return ;
             }
+            toFolder(idStr);
         }
         function getTitle(json){
             var html="";
-            if(json.title.length>20){
-                html = "<span title='"+json.title+"'>"+json.title.substr(0,20)+".....</span>";
+            if(json.title.length>40){
+                html = "<span title='"+json.title+"'><a target='_blank' href='"+serviceItemUrl+json.itemId+"'>"+json.title.substr(0,20)+"</br>"+json.title.substr(20,15)+".....</a></span>";
             }else{
-                html = json.title;
+                if(json.title.length>20){
+                    html = "<span title='"+json.title+"'><a target='_blank' href='"+serviceItemUrl+json.itemId+"'>"+json.title.substr(0,20)+"</br>"+json.title.substr(20,json.title.length-10)+"</a></span>";
+                }else{
+                    html = "<span title='"+json.title+"'><a target='_blank' href='"+serviceItemUrl+json.itemId+"'>"+json.title+"</a></span>";
+                }
             }
             var remark = "";
             if(json.remark!=null&&json.remark!=""){
@@ -489,6 +514,10 @@
             }
             return html;
         }
+        function getSku(json){
+            var html = "<span style='color:#8BB51B;'>"+json.sku+"</span>";
+            return html
+        }
         function onloadTable(urls){
             $("#itemTable").initTable({
                 url:urls,
@@ -496,43 +525,45 @@
                     {title:"选择",name:"itemName",width:"4%",align:"left",format:makeOption0},
                     {title:"图片",name:"Option1",width:"8%",align:"left",format:picUrl},
                     {title:"物品标题",name:"title",width:"8%",align:"left",format:getTitle},
-                    {title:"SKU",name:"sku",width:"4%",align:"left"},
+                    {title:"SKU",name:"sku",width:"4%",align:"left",format:getSku},
                     {title:"ebay账户",name:"ebayAccount",width:"8%",align:"left"},
-                    {title:"站点",name:"site",width:"4%",align:"left"},
+                    {title:"站点",name:"site",width:"4%",align:"left",format:getSiteImg},
                     {title:"刊登类型",name:"listingType",width:"8%",align:"left",format:listingType},
                     {title:"价格",name:"price",width:"10%",align:"left",format:getPriceHtml},
                     {title:"数量/已售",name:"Option1",width:"10%",align:"left",format:tjCount},
+                    {title:"刊登天数",name:"listingduration",width:"8%",align:"left"},
                     {title:"结束时间",name:"endtime",width:"8%",align:"left"},
                     {title:"操作",name:"Option1",width:"8%",align:"left",format:makeOption1}
                 ],
                 selectDataNow:false,
                 isrowClick:false,
-                showIndex:false,
-                isrowClick: true,
-                rowClickMethod: function (obj,o){
-                    if($("input[type='checkbox'][name='listingitemid'][val='"+obj.id+"']").prop("checked")){
-                        $("input[type='checkbox'][name='listingitemid'][val='"+obj.id+"']").prop("checked",false);
-                    }else{
-                        $("input[type='checkbox'][name='listingitemid'][val='"+obj.id+"']").prop("checked",true);
-                    }
-            }
+                showIndex:false
             });
             refreshTable();
+        }
+        function showText(obj){
+            $(obj).find("span").hide();
+            $(obj).find("input[type='hidden']").val($(obj).find("span").text());
+            $(obj).find("input[type='hidden']").prop("type","text").focus();
         }
         function getPriceHtml(json){
             var htm="";
             if("updatelog"!=nameFolder&&json.listingType=="FixedPriceItem") {
-                htm = "<div style='display:inline;'><input type=text name='price' onFocus='showImg(this)' ids='"+json.id+"' itemId='"+json.itemId+"' " +
-                        "size='1' style='height:20px;border: 1px solid #AA17A4;' class='form-control' value='"+json.price+"'/></br>" +
-                        "<img onclick='updateItemPrice(this)' style='display:none;' src='<c:url value ="/img/save_ion.gif"/>' />&nbsp;&nbsp;&nbsp;&nbsp;<img onclick='hideImg(this)' style='display:none;' src='<c:url value ="/img/undo1_re.gif"/>'/></div>"+"</br>" +
-                        "+$";
-                if(json.shippingPrice==null){
-                    htm+="0.00";
+                htm = "<div style='display:inline;' onclick='showText(this)'><span  style='color: dodgerblue;' >"+json.price+"</span>"+
+                        "<input onkeypress='return inputNUMAndPoint(event,this,2)' type='hidden' name='price' onblur='updateItemPrice(this)'" +
+                        " ids='"+json.id+"' itemId='"+json.itemId+"' " +
+                        "size='1' style='height:20px;border: 1px solid #AA17A4;' class='form-control'  oldval='"+json.price+"' value='"+json.price+"'/>&nbsp;" +json.currencyId+"<img src=''/></div></br>" ;
+                if(json.shippingPrice==null||parseInt(json.shippingPrice)==0){
+
                 }else{
-                    htm+=json.shippingPrice;
+                    htm+="+$"+json.shippingPrice+"&nbsp;"+json.currencyId;
                 }
             }else{
-                htm = json.price+"</br>+$"+json.shippingPrice;;
+                if(json.shippingPrice==null||parseInt(json.shippingPrice)==0){
+                    htm = json.price+"&nbsp;"+json.currencyId;
+                }else{
+                    htm = json.price+"&nbsp;"+json.currencyId+"</br>+$"+json.shippingPrice+"&nbsp;"+json.currencyId;
+                }
             }
 
             return htm;
@@ -549,27 +580,41 @@
         }
         //修改界面
         function updateItemPrice(obj){
-            var price=$(obj).parent().find("[type='text']").val();
-            var itemId=$(obj).parent().find("[type='text']").attr("itemId");
-            var textname = $(obj).parent().find("[type='text']").attr("name");
-            var ids = $(obj).parent().find("[type='text']").attr("ids");
+            $(obj).parent().find("span").text($(obj).val());
+            $(obj).parent().find("span").show();
+            $(obj).prop("type","hidden");
+            var price=$(obj).val();
+            var itemId=$(obj).attr("itemId");
+            var textname = $(obj).attr("name");
+            var ids = $(obj).attr("ids");
             var type=textname;
-            var url = path + "/ajax/updateListingData.do?itemId=" + itemId+"&price="+price+"&type="+type+"&ids="+ids;
-            $().invoke(url, {},
-                    [function (m, r) {
-                        alert(r);
-                        Base.token();
-                        if("updatelog"==nameFolder){
-                            onloadTableamend(loadurl);
-                        }else{
-                            onloadTable(loadurl);
-                        }
-                    },
-                        function (m, r) {
-                            alert(r);
+            if(price!=$(obj).attr("oldval")){
+                $(obj).parent().find("img").prop("src",path+"/img/loading.gif");
+                var url = path + "/ajax/updateListingData.do?itemId=" + itemId+"&price="+price+"&type="+type+"&ids="+ids;
+                $().invoke(url, {},
+                        [function (m, r) {
                             Base.token();
-                        }]
-            );
+                            if(type=="price") {
+                                $(obj).attr("oldval", r.price);
+                            }else{
+                                $(obj).attr("oldval", r.quantity);
+                            }
+                            $(obj).parent().find("img").prop("src","");
+                        },
+                            function (m, r) {
+                                Base.token();
+                                if(type=="price"){
+                                    $(obj).parent().find("span").text(r.price);
+                                    $(obj).val(r.price)
+                                }else{
+                                    $(obj).parent().find("span").text(r.quantity);
+                                    $(obj).val(r.quantity)
+                                }
+                                $(obj).parent().find("img").prop("src",path+"/img/tips.gif");
+                            }]
+                );
+            }
+
         }
         /**组装操作选项*/
         function makeOption0(json){
@@ -577,13 +622,15 @@
             return htm;
         }
         function picUrl(json){
-            var htm="<img width='50px' height='50px' src='"+json.picUrl+"'>";
+            var htm="<a target='_blank' href='"+serviceItemUrl+json.itemId+"'><img width='50px' height='50px' src='"+itemListIconUrl_+json.itemId+"'/></a>";
             return htm;
         }
         function tjCount(json){
             var htm="";
             if("updatelog"!=nameFolder&&json.listingType=="FixedPriceItem") {
-                htm="<div style='display:inline;'><input type=text name='quantity' onFocus='showImg(this)' ids='"+json.id+"' itemId='"+json.itemId+"' size='1'  style='height:20px;border: 1px solid #AA17A4;' class='form-control' value='"+json.quantity+"'/></br><img onclick='updateItemPrice(this)' style='display:none;' onkeypress='showImg(this)' src='<c:url value ="/img/save_ion.gif"/>' />&nbsp;&nbsp;&nbsp;&nbsp;<img onclick='hideImg(this)' style='display:none;' src='<c:url value ="/img/undo1_re.gif"/>'/></div></br>"+json.quantity+"/"+json.quantitysold;
+                htm="<div style='display:inline;' onclick='showText(this)'><span  style='color: dodgerblue;'>"+json.quantity+"</span>" +
+                        "<input type='hidden'  onkeypress='return inputOnlyNUM(event,this)' onblur='updateItemPrice(this)' name='quantity' onFocus='showImg(this)' ids='"+json.id+"' itemId='"+json.itemId+"' size='1'  style='height:20px;border: 1px solid #AA17A4;' " +
+                        "class='form-control' oldval='"+json.quantity+"' value='"+json.quantity+"'/>/"+json.quantitysold+" <img src=''/></div>";
             }else{
                 htm = json.quantity+"/"+json.quantitysold;
             }
@@ -639,11 +686,24 @@
                                 $().invoke(url, {},
                                         [function (m, r) {
                                             //alert(r);
-                                            Base.token();
+                                            /*Base.token();
                                             if("updatelog"==nameFolder){
                                                 onloadTableamend(loadurl);
                                             }else{
                                                 onloadTable(loadurl);
+                                            }*/
+                                            for(var i=0;i< r.length;i++){
+                                                var tld  = r[i];
+                                                var remark = "";
+                                                if(tld.remark!=null&&tld.remark!=""){
+                                                    if(tld.remark.length>25){
+                                                        remark = tld.remark.substr(0,25)+"......";
+                                                    }else{
+                                                        remark = tld.remark;
+                                                    }
+                                                    $("input[type='checkbox'][name='listingitemid'][value='"+tld.itemId+"']").parent().parent().find("td").eq(2).find(".newdf").html("备注："+remark);
+                                                    $("input[type='checkbox'][name='listingitemid'][value='"+tld.itemId+"']").parent().parent().find("td").eq(2).find(".newdf").prop("title",remark);
+                                                }
                                             }
                                         },
                                             function (m, r) {
@@ -669,7 +729,12 @@
             });
         }
         function  refreshTable(){
-            $("#itemTable").selectDataAfterSetParm({"bedDetailVO.deptId":"", "isTrue":0});
+            var selectValue = $("input[type='text'][name='selectvalue']").val();
+            var param={};
+            if(selectValue!=null&&selectValue!=""){
+                param={"queryValue":selectValue};
+            }
+            $("#itemTable").selectDataAfterSetParm(param);
         }
         //在线编辑
         var editPage = "";
@@ -677,7 +742,8 @@
             editPage = $.dialog({title: '编辑在线商品',
                 content: 'url:/xsddWeb/editListingItem.do?itemid='+itemid,
                 icon: 'succeed',
-                width:1000
+                width:1000,
+                height:600
             });
         }
 
@@ -704,7 +770,7 @@
             }
             if(idStr==""){
                 alert("请选择需要处理的商品！");
-                $(obj).val();
+                $(obj).val("");
                 return ;
             }
             if($(obj).val()=="listingEdit"){//在线编辑
@@ -712,14 +778,14 @@
             }else if($(obj).val()=="quickEdit"){//快速编辑
                 if(isab){
                     alert("不允许不同刊登类型进行编辑！");
-                    $(obj).val();
+                    $(obj).val("");
                     return;
                 }
                 quickEdit(idStr,listingType)
             }else if($(obj).val()=="remark"){//备注
                 remark(idStr)
             }
-            $(obj).val();
+            $(obj).val("");
         }
         //同步
     function synListingData(){
@@ -773,7 +839,40 @@
         );
         /**/
     }
+        function onselectAlls(obj){
+            var item = $("input[name='listingitemid']");
+            if($(obj).prop("checked")){
+                for (var i = 0; i < item.length; i++) {
+                    $($(item[i])[0]).prop("checked",true);
+                }
+            }else{
+                for (var i = 0; i < item.length; i++) {
+                    $($(item[i])[0]).prop("checked",false);
+                }
+            }
+        }
+        var siteListPage
+        function selectSiteList(obj){
+            var siteid = "";
+            $(obj).parent().find("a").each(function(i,d){
+                if($(d).attr("value")!=null&&$(d).attr("value")!=""){
+                    siteid+=$(d).attr("value")+",";
+                }
+            });
+            var urls = path+'/selectSiteList.do?siteidStr='+siteid;
+            siteListPage = $.dialog({title: '选择定时时间',
+                content: 'url:'+urls,
+                icon: 'succeed',
+                width:500,
+                lock:true
+            });
+        }
     </script>
+<style>
+    .newusa_i{
+        width: 74px;
+    }
+</style>
 </head>
 <body>
 <div class="new_all">
@@ -786,12 +885,13 @@
 
         <div class=Contentbox>
             <div class="new_usa" style="margin-top:20px;">
-                <li class="new_usa_list"><span class="newusa_i">选择国家：</span>
+                <li class="new_usa_list" id="li_countyselect"><span class="newusa_i">选择国家：</span>
                     <a href="javascript:void(0)" onclick="selectCounty(this)" value=""><span class="newusa_ici">全部</span></a>
-                    <a href="javascript:void(0)" onclick="selectCounty(this)" value="US"><span class="newusa_ici_1"><img src="<c:url value ="/img/usa_1.png"/>">美国</span></a>
-                    <a href="javascript:void(0)" onclick="selectCounty(this)" value="UK"><span class="newusa_ici_1"><img src="<c:url value ="/img/UK.jpg"/>">英国</span></a>
-                    <a href="javascript:void(0)" onclick="selectCounty(this)" value="Germany"><span class="newusa_ici_1"><img src="<c:url value ="/img/DE.png"/>">德国</span></a>
-                    <a href="javascript:void(0)" onclick="selectCounty(this)" value="Australia"><span class="newusa_ici_1"><img src="<c:url value ="/img/AU.jpg"/>">澳大利亚</span></a>
+                    <a href="javascript:void(0)" onclick="selectCounty(this)" value="311"><span class="newusa_ici_1"><img src="<c:url value ='/img/usa_1.png'/> ">美国</span></a>
+                    <a href="javascript:void(0)" onclick="selectCounty(this)" value="310"><span class="newusa_ici_1"><img src="<c:url value ='/img/UK.jpg'/> ">英国</span></a>
+                    <a href="javascript:void(0)" onclick="selectCounty(this)" value="298"><span class="newusa_ici_1"><img src="<c:url value ='/img/DE.png'/> ">德国</span></a>
+                    <a href="javascript:void(0)" onclick="selectCounty(this)" value="291"><span class="newusa_ici_1"><img src="<c:url value ='/img/AU.jpg'/> ">澳大利亚</span></a>
+                    <a href="javascript:void(0)" onclick="selectSiteList(this)"><span style="padding-left: 20px;vertical-align: middle;color: royalblue">更多...</span></a>
                 </li>
                 <li class="new_usa_list">
                     <span class="newusa_i">选择账号：</span>
@@ -826,31 +926,33 @@
                 <div class="newsearch">
                     <span class="newusa_i">搜索内容：</span>
                     <a href="javascript:void(0)" onclick="selectAllData(this)" value=""><span class="newusa_ici">全部</span></a>
-<span id="sleBG">
-<span id="sleHid">
-<select name="selecttype" class="select">
+<span id="sleBG" style="width:82px;background-position: 67px 10px;">
+<span id="sleHid" style="width: 80px;">
+<select name="selecttype" class="select" style="color: #737FA7;width: 80px;">
     <option selected="selected" value="">选择类型</option>
-    <option value="sku">sku</option>
+    <option value="sku">SKU</option>
     <option value="title">物品标题</option>
+    <option value="item_id">物品号</option>
+    <option value="docname">范本名称</option>
 </select>
 </span>
 </span>
 
                     <div class="vsearch">
-                        <input name="selectvalue" type="text" class="key_1"><input name="newbut" onclick="selectData()" type="button" class="key_2"></div>
+                        <input name="selectvalue" type="text" class="key_1" style="vtical-align:middle;line-height:100%;"><input name="newbut" onclick="selectData()" type="button" class="key_2"></div>
                 </div>
                 <div class="newds">
                     <div class="newsj_left">
 
-                        <span class="newusa_ici_del_in"><input type="checkbox" name="checkbox" id="checkbox"/></span>
+                        <span class="newusa_ici_del_in" style="padding-left: 8px;"><input type="checkbox" onclick="onselectAlls(this)" name="checkbox" id="checkbox"/></span>
 
-                        <div class="numlist">
-                            <div class="ui-select" style="margin-top:1px; width:10px">
-                                <select  onchange="changeSelect(this)">
-                                    <option value="">请选择</option>
-                                    <option value="listingEdit">在线编辑</option>
-                                    <option value="quickEdit">快速编辑</option>
-                                    <option value="remark">备注</option>
+                        <div class="numlist" style="padding-left: 8px;">
+                            <div class="ui-select" style="margin-top:1px; width:80px;min-width:0px;">
+                                <select  onchange="changeSelect(this)" style="width: 80px;padding: 0px;">
+                                    <option value="">&nbsp;&nbsp;&nbsp;&nbsp;请选择</option>
+                                    <option value="listingEdit">&nbsp;&nbsp;在线编辑</option>
+                                    <option value="quickEdit">&nbsp;&nbsp;快速编辑</option>
+                                    <option value="remark">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;备注</option>
                                 </select>
                             </div>
                             <%--<div class="ui-select" style="margin-top:1px; width:10px">

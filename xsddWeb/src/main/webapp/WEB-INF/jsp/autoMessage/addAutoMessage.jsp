@@ -158,6 +158,11 @@
             if(!$("#autoMessageForm").validationEngine("validate")){
                 return;
             }
+            var checkboxs=$("#regulation").find("input[type=checkbox]:checked");
+            if(checkboxs.length==0){
+                alert("选择规则至少选择一个");
+                return;
+            }
             var selectAllOrder=document.getElementById("selectAllOrder");
             if(selectAllOrder){
                 $("#allOrder").val("true");
@@ -390,7 +395,7 @@
                     <div class="new_tab_right"></div>
                     <dt id="svt1" >选择规则</dt>
                 </div>
-                <div style="padding: 20px;margin-top: 40px;">
+                <div id="regulation" style="padding: 20px;margin-top: 40px;">
                     <c:if test="${items!=null}">
                         <input type="checkbox" name="item" checked onclick="addItem();">&nbsp;订单商品包含指定商品<br/><br/>
                     </c:if>
@@ -415,17 +420,17 @@
                     <c:if test="${services==null&&internationalServices==null}">
                         <input type="checkbox" name="shippingService"  onclick="addShippingService();">&nbsp;买家选择的物流为指定物流方式<br/><br/>
                     </c:if>
-                    <c:if test="${order!=null}">
-                        <input type="checkbox" checked name="allOrder" onclick="addAllOrder();">&nbsp;所有订单<br/><br/>
-                    </c:if>
-                    <c:if test="${order==null}">
-                        <input type="checkbox" name="allOrder" onclick="addAllOrder();">&nbsp;所有订单<br/><br/>
-                    </c:if>
                     <c:if test="${exceptCountrys!=null}">
                         <input type="checkbox" checked name="exceptCountry" onclick="addExceptCountry();">&nbsp;订单目的地为指定国家之外<br/><br/>
                     </c:if>
                     <c:if test="${exceptCountrys==null}">
                         <input type="checkbox" name="exceptCountry" onclick="addExceptCountry();">&nbsp;订单目的地为指定国家之外<br/><br/>
+                    </c:if>
+                    <c:if test="${order!=null}">
+                        <input type="checkbox" checked name="allOrder" onclick="addAllOrder();">&nbsp;所有订单<br/><br/>
+                    </c:if>
+                    <c:if test="${order==null}">
+                        <input type="checkbox" name="allOrder" onclick="addAllOrder();">&nbsp;所有订单<br/><br/>
                     </c:if>
                 </div>
             </div>

@@ -152,8 +152,9 @@ function getULSelect(par){
     var inputid_=par["inputid"]==null?"":("id="+par["inputid"]);
     var inputval_=par["inputval"]==null?"":(par["inputval"]);
     var showname_=par["showname"]==null?"请选择":(par["showname"]);
+    var ulMarginLeft = par["marginLeft"]==null?"-10px":(par["marginLeft"]);
 
-    var hs="<ul "+ulid_+">" +
+    var hs="<ul style='margin-left: "+ulMarginLeft+"' "+ulid_+">" +
         "<li style='width: 70px;height: 25px;' class=\"select_box\">" +
         "<span style='color: blue;text-align: center'>"+showname_+"</span><ul class=\"son_ul\">";
     hs+="<input type='hidden' "+inputid_+" value="+inputval_+"  />";
@@ -210,7 +211,7 @@ function flashMessage_(erM){
 /**google自带的提示*/
 function chrome_Notice(tit,m) {
     var notification_ = null;
-    var pp={"body":m};
+    var pp={"body": m,"icon":"/xsddWeb/img/smalllogopic.gif"};
     if(tit==null || tit==""){
         tit="通知";
     }

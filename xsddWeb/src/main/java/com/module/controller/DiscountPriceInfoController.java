@@ -159,10 +159,10 @@ public class DiscountPriceInfoController extends BaseAction {
         tdpi.setDisEndtime(DateUtils.parseDateTime(disEndtime + ":00"));
         tdpi.setIsShippingfee(isShippingFee);
         if(!ObjectUtils.isLogicalNull(MadeForOutletComparisonPrice)){
-            tdpi.setMadeforoutletcomparisonprice(Long.parseLong(MadeForOutletComparisonPrice));
+            tdpi.setMadeforoutletcomparisonprice(Double.parseDouble(MadeForOutletComparisonPrice));
         }
         if(!ObjectUtils.isLogicalNull(MinimumAdvertisedPrice)){
-            tdpi.setMinimumadvertisedprice(Long.parseLong(MinimumAdvertisedPrice));
+            tdpi.setMinimumadvertisedprice(Double.parseDouble(MinimumAdvertisedPrice));
         }
         tdpi.setMinimumadvertisedpriceexposure("DuringCheckout");
         this.iTradingDiscountPriceInfo.saveDiscountpriceinfo(tdpi);

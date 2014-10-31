@@ -23,6 +23,15 @@
            timeToIdleSeconds="0"
             />
 
+    <!--临时存放数据，只保留很短的时间-->
+    <cache name="tempStoreData"
+           maxElementsOnDisk="20000"
+           maxElementsInMemory="20000"
+           eternal="false"
+           overflowToDisk="false"
+           timeToLiveSeconds="300"
+            />
+
 </ehcache>
 
 

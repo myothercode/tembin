@@ -34,12 +34,20 @@
 
         <div class="control-group">
             <!-- Text input-->
+            <label class="control-label" for="input01">邮箱</label>
+            <div class="controls">
+                <input type="text" placeholder="" class="input-xlarge validate[custom[email]]" name="email">
+                <p class="help-block"></p>
+            </div>
+        </div>
+        <%--<div class="control-group">
+            <!-- Text input-->
             <label class="control-label" for="input01">登录名</label>
             <div class="controls">
                 <input type="text" placeholder="" class="input-xlarge validate[required,custom[onlyLetterNumber]]" name="loginID">
                 <p class="help-block"></p>
             </div>
-        </div>
+        </div>--%>
 
         <div class="control-group">
         <label class="control-label">角色</label>
@@ -57,14 +65,14 @@
             </div>
         </div>
 
-        <div class="control-group">
+        <%--<div class="control-group">
             <!-- Text input-->
             <label class="control-label" for="input01">邮箱</label>
             <div class="controls">
                 <input type="text" placeholder="" class="input-xlarge validate[custom[email]]" name="email">
                 <p class="help-block"></p>
             </div>
-        </div>
+        </div>--%>
 
         <div class="control-group">
             <!-- Text input-->

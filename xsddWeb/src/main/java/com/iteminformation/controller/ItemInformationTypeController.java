@@ -99,7 +99,7 @@ public class ItemInformationTypeController extends BaseAction {
             type.setItemParentId(parent);
             PublicUserConfig config=iPublicUserConfig.selectUserConfigById(Long.valueOf(parent));
             if(config!=null){
-                type.setItemLevel(Integer.valueOf(config.getItemLevel()+1)+"");
+                type.setItemLevel((Integer.valueOf(config.getItemLevel())+1)+"");
             }
         }else{
             type.setItemLevel("1");

@@ -59,7 +59,11 @@ function getAttMainMenu(json,indiv,funName,attTable){
     var parentid=json[0]['itemParentId'];
     for(var i in finalm){
         var domid=replaceTSFH((finalm[i]));
-        var dv="<div id=div"+domid+" onclick="+funName+"(this,'"+parentid+"','"+attTable+"') class='att_mb-tag'>"+(finalm[i])+"</div>";
+         //var dv="<a data-toggle=\"modal\" href=\"#myModal\" ><img src=\"../../img/new_add.png\" width=\"18\" height=\"18\"> Country / Region of Manufacture</a>"
+        //var dv="<a id=div"+domid+" onclick="+funName+"(this,'"+parentid+"','"+attTable+"') class='att_mb-tag'>"+(finalm[i])+"</a>";
+        var dv="<a style='padding-left: 10px' id=div"+domid+" onclick="+funName+"(this,'"+parentid+"','"+attTable+"') data-toggle=\"modal\">" +
+            "<img  src="+path+"/img/new_add.png width=\"18\" height=\"18\">" +
+            ""+(finalm[i])+"</a>";
         $('#'+indiv).append(dv);
     }
     m=null;
@@ -77,16 +81,18 @@ function queryData(queryParm,parentid){
 
 /**点击div后的事件*/
 function afterClickAttr(obj, parentid,attTable) {
-    var domid=replaceTSFH($(obj).html());
-    var optionData = queryData($(obj).html(), parentid);
+    var ohtmlTem=$(obj).html();
+    var ohtml=ohtmlTem.substr(ohtmlTem.indexOf(">")+1,ohtmlTem.length-1);
+    var domid=replaceTSFH(ohtml);
+    var optionData = queryData(ohtml, parentid);
     var select = "<select id=\""+"_select"+domid+"\" class='easyui-combobox' style='width:200px;'>";
     for (var i in optionData) {
         select += "<option value=\"" + optionData[i]['itemEnName'] + "\">" + optionData[i]['itemEnName'] + "</option>";
     }
     select += "</select>";
 
-    var tr = "<tr id=tr"+domid+" >" + "<td style='text-align: center'><input type='hidden' name='name' value=\""+$(obj).html()+"\" >" +
-        $(obj).html() + "</td>" +
+    var tr = "<tr id=tr"+domid+" >" + "<td style='text-align: center'><input type='hidden' name='name' value=\""+ohtml+"\" >" +
+        ohtml + "</td>" +
         "<td onclick='onclickmulAttrTD(this)' style='text-align: center'><span name='values' style='color: rgb(30, 144, 255); display: inline;'>"+optionData[0]['itemEnName']+"</span>" +
         "<input id=_value"+domid+" type='hidden' name='value'>" + select + "</td>" +
         "<td style='text-align: center'>" + "<img src='/xsddWeb/img/del.png' onclick='removeThisTr(this)' />" + "</td></tr>";
@@ -106,7 +112,6 @@ function afterClickAttr(obj, parentid,attTable) {
     });
     //}catch (e){}
 }
-
 /**combox失去焦点的时候执行*/
 function onblurMulAttrInput(inpu){
 
@@ -124,7 +129,7 @@ function onblurMulAttrInput(inpu){
         if(bst==false){
             var selectid=$(inpu).parents("td").eq(0).find("select[id^='_select']").eq(0).attr("id");
             setTimeout(function(){
-                $('#attTable').find("span[name='values']").html($("#"+selectid).combobox('getValue'));
+                $('#'+selectid).siblings("span[name='values']").html($("#"+selectid).combobox('getValue'));
                 $('#attTable').find("span[class='combo']").hide();
                 $('#attTable').find("span[name='values']").show();
             },200);
@@ -132,7 +137,7 @@ function onblurMulAttrInput(inpu){
 
     },500);
 
-    return;  
+    return;
 }
 function onclickmulAttrTD(td){
     $(td).find("span").hide();
@@ -142,7 +147,7 @@ function onclickmulAttrTD(td){
         }
     });
     $(td).find("input").each(function(i,d){
-        if($(d).attr("id")==null){
+        if($(d).hasClass("combo-text")){
             $(d).focus();
         }
     });
@@ -170,7 +175,7 @@ function removeThisTr(a){
 /**对商品图片div进行重新排序*/
 function reSortItemPic(){
     var m=new Map();
-    $('#picture div').each(function(i,d){
+    $("ul[id^='picture']").find("li").each(function(i,d){
         var k=$(d).css("top");
         if(m.containsKey(k)){
             var kkArr= m.get(k);
@@ -198,10 +203,9 @@ function reSortItemPic(){
             }
         });
     }
-    $('#picture').empty();
+    $("ul[id^='picture']").empty();
     for ( var ii in domArr){
-        $('#picture').append($(domArr[ii])[0].outerHTML);
-
+        $("ul[id^='picture']").append($(domArr[ii])[0].outerHTML);
     }
     initDraug();
     domArr=null;
@@ -316,14 +320,30 @@ function checkLocalStorage(){
         }
     });
 }
-
+var timerPage
+function selectTimer(obj){
+    var urls = path+'/selectTimer.do';
+    timerPage = $.dialog({title: '选择定时时间',
+        content: 'url:'+urls,
+        icon: 'succeed',
+        width:500,
+        lock:true
+    });
+    //saveData(this,'timeSave')
+}
 /**保存并提交*/
 function saveData(objs,name) {
+    if($.type(objs)=="string"){
+        objs=$("a[name='"+objs+"']");
+    }
     bodyClick();//自定义属性
     asyCombox2InputData();//同步comebox的数值
-    reSortItemPic();//对经过排序的图片进行重新排列
+    //reSortItemPic();//对经过排序的图片进行重新排列,后台按前台这个序顺读取
     domReIndex("picture","PictureDetails");//对重新排列后的元素进行重新索引
     $("#dataMouth").val(name);
+    if(name=="othersave"){
+        $("#id").val(null);
+    }
     if(name=="Backgrounder"){
         $("#ListingMessage").val("1");
     }else{
@@ -380,7 +400,6 @@ function saveData(objs,name) {
     });
     $("#Description").val(myDescription.getContent());
     checkLocalStorage();
-    $("input[type='hidden'][name='timerListing']").val($("input[type='text'][name='timerStr']").val());
     var data = $('#form').serialize();
     var urll = "/xsddWeb/saveItem.do";
     $(objs).attr("disabled",true);
@@ -403,12 +422,71 @@ function saveData(objs,name) {
     )
 }
 
+/**
+ * 预览商品
+ */
+function previewItem(){
+    if(!$("#form").validationEngine("validate")){
+        return;
+    }
+    if(($("#showPics").find("img").length+$("#picMore").find("img").length/2)>8){
+        alert("最多只能上传8张图片，上传图片已超过上传限制！");
+        return;
+    }
+    var pciValue = new Map();
+    $("#moreAttrs tr td:nth-child(5)").each(function (i,d) {
+        if($(d).find("input[name='attr_Value']").val()!=undefined&&$(d).find("input[name='attr_Value']").val()!=""){
+            pciValue.put($(d).find("input[name='attr_Value']").val(),$(d).find("input[name='attr_Value']").val());
+        }
+    });
+    for(var i=0;i<pciValue.keys.length;i++){
+        $("input[type='hidden'][name='"+pciValue.keys[i]+"']").each(function(ii,dd){
+            $(dd).prop("name","Variations.Pictures.VariationSpecificPictureSet["+i+"].PictureURL["+ii+"]");
+        });
+        $("input[type='hidden'][name='VariationSpecificValue_"+pciValue.keys[i]+"']").prop("name","Variations.Pictures.VariationSpecificPictureSet["+i+"].VariationSpecificValue");
+    }
+
+    var nameList = $("input[type='hidden'][name='name']").each(function(i,d){
+        var name_= $(d).prop("name");
+        var t="ItemSpecifics.NameValueList["+i+"].";
+        $(d).prop("name",t+name_);
+    });
+    var valueList = $("input[type='hidden'][name='value']").each(function(i,d){
+        var name_= $(d).prop("name");
+        var t="ItemSpecifics.NameValueList["+i+"].";
+        $(d).prop("name",t+name_);
+    });
+
+    $("input[type='hidden'][name='attr_Name']").each(function(i,d){
+        var t="Variations.VariationSpecificsSet.NameValueList["+i+"].Name";
+        $(d).prop("name",t);
+    });
+    var len = $("#moreAttrs").find("tr").find("td").length/$("#moreAttrs").find("tr").length-5;
+    for(var j=0;j<len ;j++){
+        $("#moreAttrs tr:gt(0) td:nth-child("+(j+5)+")").each(function (i,d) {
+            $(d).find("input[name='attr_Value']").each(function(ii,dd){
+                $(dd).prop("name","Variations.VariationSpecificsSet.NameValueList["+j+"].Value["+i+"]");
+            });
+        });
+    }
+    $("#moreAttrs tr:gt(0)").each(function(i,d){
+        $(d).find("input[name='SKU'],input[name='StartPrice.value'],input[name='Quantity']").each(function(ii,dd){
+            var name_ = $(dd).prop("name");
+            $(dd).prop("name","Variations.Variation["+i+"]."+name_);
+        });
+    });
+    $("#Description").val(myDescription.getContent());
+    checkLocalStorage();
+    var data = $('#form').serialize();
+    window.open("/xsddWeb/previewItem.do?"+data,null,null,null);
+}
+
 function selectAccount(obj){
-    if($("input[type='radio'][name='listingType']:checked").val()==""||$("input[type='radio'][name='listingType']:checked").val()==null){
+    if($("select[name='listingType']").find("option:selected").val()==""||$("select[name='listingType']").find("option:selected").val()==null){
         alert("请先选择刊登类型！");
         $(obj).prop("checked",false);
     }
-    if($("input[type='radio'][name='listingType']:checked").val()=="2"&&$("input[type='checkbox'][name='ebayAccounts']:checked").length>1){
+    if($("select[name='listingType']").find("option:selected").val()=="2"&&$("input[type='checkbox'][name='ebayAccounts']:checked").length>1){
         alert("多属性不允许多账号刊登！");
         $(obj).prop("checked",false);
     }
@@ -417,7 +495,10 @@ function selectAccount(obj){
     initTitle();
     initPrice();
 }
-
+function getSiteImg(json){
+    var html='<img title="'+json.siteName+'" src="'+path+json.siteImg+'"/>';
+    return html;
+}
 /**判断是否显示图片上传按钮*/
 function isShowPicLink(){
 
@@ -432,10 +513,17 @@ function isShowPicLink(){
         var showStr = "<div class='panel' style='display: block'>";
         showStr +=" <section class='example' ><ul class='gbin1-list' style='padding-left: 20px;' id='picture_"+$(d).val()+"'></ul></section> ";
         showStr +=" <script type=text/plain id='picUrls_"+$(d).val()+"'></script> ";
-        showStr +=" <div style='padding-left: 60px;'><b class='new_button'><a href='javascript:void(0)' id='apicUrls_"+$(d).val()+"' onclick='selectPic(this)'>选择图片</a></b></div> </div> ";
+        showStr +=" <div style='padding-left: 120px;'>" +
+            "<b class='new_button'><a href='javascript:void(0)' id='apicUrls_"+$(d).val()+"' onclick='selectPic(this)'>选择图片</a></b>" +
+            "<b class='new_button'><a href='javascript:void(0)' id='apicUrlsSKU_" + $(d).val() + "' onclick='selectPic(this)' style=''>选择SKU图片</a></b>" +
+            "<b class='new_button'><a href='javascript:void(0)' id='apicUrlsOther_" + $(d).val() + "' onclick='selectPic(this)' style=''>选择外部图片</a></b>" +
+            "<b class='new_button'><a href='javascript:void(0)' id='apicUrlsclear_" + $(d).val() + "' onclick='clearAllPic(this)' style=''>清空所选图片</a></b>" +
+            "</div> </div> ";
         $("#showPics").append(showStr);
         $().image_editor.init("picUrls_"+$(d).val()); //编辑器的实例id
         $().image_editor.show("apicUrls_"+$(d).val()); //上传图片的按钮id        }
+        $().image_editor.show("apicUrlsSKU_" + $(d).val()); //上传图片的按钮id
+        $().image_editor.show("apicUrlsOther_" + $(d).val()); //上传图片的按钮id
         //增加标题跟数量与价格
     });
 }
@@ -486,7 +574,7 @@ function initPrice(){
 //选择产品
 var Porduct;
 function selectProduct(){
-    if($("input[type='radio'][name='listingType']:checked").val()==""||$("input[type='radio'][name='listingType']:checked").val()==null){
+    if($("select[name='listingType']").find("option:selected").val()==""||$("select[name='listingType']").find("option:selected").val()==null){
         alert("请先选择刊登类型！");
         return;
     }

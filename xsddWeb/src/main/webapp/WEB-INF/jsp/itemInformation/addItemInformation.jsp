@@ -111,7 +111,6 @@
 
         function addDiscription(){
             var trs=$("tr[scop=tr]");
-            console.debug(trs);
             var name=$("#informationName").val();
             if(trs.length>0){
                 alert("描述已经存在,请编辑");
@@ -122,8 +121,10 @@
                 content: 'url:'+url,
                 icon: 'succeed',
                 width:800,
-                height:750,
-                lock:true
+                height:700,
+                parent:api,
+                lock:true,
+                zIndex:2000
             });
         }
         function removeDiscription(ph){
@@ -140,8 +141,10 @@
                 content: 'url:'+url,
                 icon: 'succeed',
                 width:800,
-                height:750,
-                lock:true
+                height:700,
+                parent:api,
+                lock:true,
+                zIndex:2000
             });
         }
         $(document).ready(function () {

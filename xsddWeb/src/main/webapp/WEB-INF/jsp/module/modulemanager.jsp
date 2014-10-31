@@ -98,7 +98,6 @@
 <div class="new_all">
     <div class="here">当前位置：首页 > 刊登管理 > <b>模块管理</b></div>
     <div class="a_bal"></div>
-    <h3>模块管理</h3>
     <div class="tbbay"><a data-toggle="modal" href="javascript:void(0)" class=""  onclick="addModel()">新增</a></div>
     <div class="a_bal"></div>
     <div class="new">

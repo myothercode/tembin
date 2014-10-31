@@ -435,8 +435,8 @@ input.search {
 .content {
 	min-width: 400px;
 	min-height: 800px;
-	margin-bottom: 70px;
-	padding-bottom: 0px;
+	/*margin-bottom: 70px;
+	padding-bottom: 60px;*/
 	overflow: hidden;
 	position: relative;
 	background: #fff;
@@ -1081,7 +1081,7 @@ cursor: pointer;
 	width: 100%;
 }
 
-.Contentbox table tr{
+/*.Contentbox table tr{
 	border-bottom-width: 1px;
 	border-bottom-style: solid;
 	border-bottom-color: #EDF2F6;
@@ -1096,7 +1096,7 @@ cursor: pointer;
 	padding-top: 12px;
 	padding-bottom: 12px;
 	line-height: 22px;
-}
+}*/
 .new_hy{
 	float: left;
 	width: 100%;
@@ -1154,14 +1154,14 @@ cursor: pointer;
 	padding-left: 6px;
 }
 .maage_page{
-	width: 300px;
+	/*width: 300px;*/
 	height: 30px;
 	border: 1px solid #DDDDDD;
 	float: right;
 	margin-top: 20px;
 	margin-bottom: 20px;
 	border-radius: 4px;
-	padding-right: 5px;
+	padding-right: 1px;
 	padding-left: 5px;
 	color: #428bca;
 }
@@ -1780,7 +1780,7 @@ CURSOR: pointer
 .admin_user_input{
 	width: 308px;
 	float: left;
-	height: 40px;
+	height: 38px;
 	background-image: url(../../img/admin_user_input.png);
 	background-repeat: no-repeat;
 	background-position: 0px 0px;
@@ -1957,7 +1957,7 @@ color:#FFF;
 	background-image: url(../../img/num_type.gif);
 	background-repeat: no-repeat;
 	background-position: 0px 0px;
-	margin-top: 8px;
+	margin-top: 0px;
 }
 #newtipi li ul a{
 display: block; width: 89px;text-align:left;padding-left:22px;

@@ -52,15 +52,18 @@
             return getULSelect(pp);
         }
         function makeOption4(json){
-            var htm="";
+            var htm;
             if(json.casetype==1){
-                htm+="CASE<br/>";
+                htm[0]="CASE";
             }
             if(json.autotype==1){
-                htm+="自动消息<br/>";
+                htm[1]="自动消息";
             }
             if(json.messagetype==1){
-                htm+="message<br/>";
+                htm[2]="message";
+            }
+            for(){
+
             }
             return htm;
         }

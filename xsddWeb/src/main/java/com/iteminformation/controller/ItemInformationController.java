@@ -1,6 +1,10 @@
 package com.iteminformation.controller;
 
 import com.base.database.publicd.model.*;
+import com.base.database.trading.model.TradingAttrMores;
+import com.base.database.trading.model.TradingDataDictionary;
+import com.base.database.trading.model.TradingItem;
+import com.base.database.trading.model.TradingPublicLevelAttr;
 import com.base.domains.CommonParmVO;
 import com.base.domains.SessionVO;
 import com.base.domains.querypojos.ItemInformationQuery;
@@ -10,6 +14,7 @@ import com.base.userinfo.service.SystemUserManagerService;
 import com.base.utils.annotations.AvoidDuplicateSubmission;
 import com.base.utils.cache.DataDictionarySupport;
 import com.base.utils.cache.SessionCacheSupport;
+import com.base.utils.imageManage.service.ImageService;
 import com.common.base.utils.ajax.AjaxSupport;
 import com.common.base.web.BaseAction;
 import com.publicd.service.*;
@@ -54,14 +59,14 @@ public class ItemInformationController extends BaseAction {
     private IPublicItemPictureaddrAndAttr iPublicItemPictureaddrAndAttr;
     @Autowired
     private SystemUserManagerService systemUserManagerService;
+    @Autowired
+    private ImageService imageService;
     /*
    *纠纷列表
    */
     @RequestMapping("/itemInformationList.do")
     public ModelAndView itemInformationList(HttpServletRequest request,HttpServletResponse response,ModelMap modelMap){
-        List<PublicUserConfig> types= iPublicUserConfig.selectUserConfigByItemType("itemType");
         List<PublicUserConfig> remarks=iPublicUserConfig.selectUserConfigByItemType("remark");
-        modelMap.put("types",types);
         modelMap.put("remarks",remarks);
         return forword("/itemInformation/itemInformation",modelMap);
     }
@@ -104,6 +109,149 @@ public class ItemInformationController extends BaseAction {
         jsonBean.setList(lists);
         jsonBean.setTotal((int)page.getTotalCount());
         AjaxSupport.sendSuccessText("", jsonBean);
+    }
+
+    /*
+     *初始化添加备注
+     */
+    @RequestMapping("/addComment.do")
+    @AvoidDuplicateSubmission(needSaveToken = true)
+    public ModelAndView addComment(HttpServletRequest request,HttpServletResponse response,ModelMap modelMap){
+        String id=request.getParameter("id");
+        PublicItemInformation information=iPublicItemInformation.selectItemInformationByid(Long.valueOf(id));
+        modelMap.put("information",information);
+        return forword("/itemInformation/addComment",modelMap);
+    }
+
+    /*
+     *保存备注
+     */
+    @RequestMapping("/ajax/saveComment.do")
+    @AvoidDuplicateSubmission(needRemoveToken = true)
+    @ResponseBody
+    public void saveComment(HttpServletRequest request) throws Exception {
+        String id=request.getParameter("id");
+        String comment=request.getParameter("comment");
+        PublicItemInformation information=iPublicItemInformation.selectItemInformationByid(Long.valueOf(id));
+        information.setComment(comment);
+        iPublicItemInformation.saveItemInformation(information);
+        AjaxSupport.sendSuccessText("","保存成功");
+    }
+    @RequestMapping("/editItem.do")
+    @AvoidDuplicateSubmission(needSaveToken = true)
+    public ModelAndView editItem(HttpServletRequest request,HttpServletResponse response,@ModelAttribute( "initSomeParmMap" )ModelMap modelMap) throws Exception {
+        String id = request.getParameter("id");
+        List<TradingDataDictionary> lidata = DataDictionarySupport.getTradingDataDictionaryByType(DataDictionarySupport.DATA_DICT_SITE);
+        modelMap.put("siteList",lidata);
+        PublicItemInformation information=iPublicItemInformation.selectItemInformationByid(Long.valueOf(id));
+
+        TradingItem ti = new TradingItem();
+        if(information!=null){
+            ti.setItemName(information.getName());
+            ti.setSku(information.getSku());
+            ti.setDescription(information.getDescription());
+        }
+        modelMap.put("item",ti);
+        modelMap.put("imageUrlPrefix",imageService.getImageUrlPrefix());
+
+
+
+     /*   SessionVO c= SessionCacheSupport.getSessionVO();
+        //List<PublicUserConfig> ebayList = DataDictionarySupport.getPublicUserConfigByType(DataDictionarySupport.PUBLIC_DATA_DICT_PAYPAL, c.getId());
+        UsercontrollerEbayAccount ebay = this.iUsercontrollerEbayAccount.selectById(Long.parseLong(ti.getEbayAccount().toString()));
+        List<UsercontrollerEbayAccount> ebayList = new ArrayList();
+        ebayList.add(ebay);
+        modelMap.put("ebayList",ebayList);*/
+
+        /*List<TradingPicturedetails> litp = this.iTradingPictureDetails.selectByParentId(Long.parseLong(id));
+        for(TradingPicturedetails tp : litp){
+            List<TradingAttrMores> lipic = this.iTradingAttrMores.selectByParnetid(tp.getId(),"PictureURL");
+            if(lipic!=null&&lipic.size()>0){
+                modelMap.put("lipic",lipic);
+            }
+        }*/
+        SessionVO c= SessionCacheSupport.getSessionVO();
+        List<TradingAttrMores> lipic=new ArrayList<TradingAttrMores>();
+        List<PublicItemPictureaddrAndAttr> pictures=iPublicItemPictureaddrAndAttr.selectPictureaddrAndAttrByInformationId(information.getId(),"picture",c.getId());
+        for(PublicItemPictureaddrAndAttr picture:pictures){
+            TradingAttrMores detail=new TradingAttrMores();
+            detail.setAttr1(null);
+            detail.setValue(picture.getAttrvalue());
+            lipic.add(detail);
+        }
+        modelMap.put("lipic",lipic);
+
+
+        List<TradingPublicLevelAttr> lipa =new ArrayList<TradingPublicLevelAttr>();
+        List<PublicItemPictureaddrAndAttr> attrs=iPublicItemPictureaddrAndAttr.selectPictureaddrAndAttrByInformationId(information.getId(),"attr",c.getId());
+        for(PublicItemPictureaddrAndAttr attr:attrs){
+            TradingPublicLevelAttr levelAttr=new TradingPublicLevelAttr();
+            levelAttr.setName(attr.getAttrname());
+            levelAttr.setValue(attr.getAttrvalue());
+            lipa.add(levelAttr);
+        }
+        modelMap.put("lipa",lipa);
+
+        /*TradingVariations tvs = this.iTradingVariations.selectByParentId(ti.getId());
+        if(tvs!=null){
+            Map m = new HashMap();
+            m.put("userid",c.getId());
+            m.put("parentid",tvs.getId());
+            List<VariationQuery> liv = this.iTradingVariation.selectByParentId(m);
+            if(liv!=null&&liv.size()>0){
+                for(VariationQuery iv : liv){
+                    List<TradingPublicLevelAttr> litpa= this.iTradingPublicLevelAttr.selectByParentId("VariationSpecifics",iv.getId());
+                    for(TradingPublicLevelAttr tap : litpa){
+                        iv.setTradingPublicLevelAttr(this.iTradingPublicLevelAttr.selectByParentId(null,tap.getId()));
+                    }
+                }
+                modelMap.put("liv",liv);
+            }
+            TradingPublicLevelAttr tpla = this.iTradingPublicLevelAttr.selectByParentId("VariationSpecificsSet",tvs.getId()).get(0);
+            List<TradingPublicLevelAttr> litpa= this.iTradingPublicLevelAttr.selectByParentId("NameValueList",tpla.getId());
+            List li = new ArrayList();
+            for(TradingPublicLevelAttr tp :litpa){
+                li.add(this.iTradingAttrMores.selectByParnetid(tp.getId(),"Name").get(0));
+            }
+            modelMap.put("clso",li);
+
+            TradingPictures tpes = this.iTradingPictures.selectParnetId(tvs.getId());
+            if(tpes!=null) {
+                List<TradingPublicLevelAttr> livsps = this.iTradingPublicLevelAttr.selectByParentId("VariationSpecificPictureSet", tpes.getId());
+                List lipics = new ArrayList();
+                for (int i = 0; i < livsps.size(); i++) {
+                    Map ms = new HashMap();
+                    TradingPublicLevelAttr tpa = livsps.get(i);
+                    List<TradingPublicLevelAttr> livspsss = this.iTradingPublicLevelAttr.selectByParentId("VariationSpecificValue", tpa.getId());
+                    List<TradingAttrMores> litam = this.iTradingAttrMores.selectByParnetid(tpa.getId(), "MuAttrPictureURL");
+                    ms.put("litam", litam);
+                    ms.put("tamname", livspsss.get(0).getValue());
+                    lipics.add(ms);
+                }
+                if (lipics.size() > 0) {
+                    modelMap.put("lipics", lipics);
+                }
+            }
+        }
+        List<TradingPicturedetails> lipd = this.iTradingPictureDetails.selectByParentId(Long.parseLong(id));
+        for(TradingPicturedetails pd : lipd){
+            List<TradingAttrMores> litam = this.iTradingAttrMores.selectByParnetid(pd.getId(),"PictureURL");
+            modelMap.put("litam",litam);
+        }
+
+        TradingAddItem tai = this.iTradingAddItem.selectParentId(Long.parseLong(id));
+        if(tai!=null){
+            modelMap.put("tai",tai);
+        }
+
+        TradingTemplateInitTable ttit = this.iTradingTemplateInitTable.selectById(ti.getTemplateId());
+        if(ttit!=null){
+            List<TradingAttrMores> litam = this.iTradingAttrMores.selectByParnetidUuid(ttit.getId(),"TemplatePicUrl",ti.getUuid());
+            modelMap.put("templi",litam);
+        }
+        modelMap.put("ttit",ttit);
+        modelMap.put("imageUrlPrefix",imageService.getImageUrlPrefix());*/
+        return forword("item/addItem",modelMap);
     }
     /*
      *初始化添加商品界面
@@ -167,9 +315,9 @@ public class ItemInformationController extends BaseAction {
     public ModelAndView addRemark(HttpServletRequest request,HttpServletResponse response,
                                            @ModelAttribute( "initSomeParmMap" )ModelMap modelMap){
         String id=request.getParameter("id");
-        List<PublicUserConfig> parents=iPublicUserConfig.selectUserConfigByItemType("remark");
+        /*List<PublicUserConfig> parents=iPublicUserConfig.selectUserConfigByItemType("remark");*/
         modelMap.put("id",id);
-        modelMap.put("parents",parents);
+        /*modelMap.put("parents",parents);*/
         return forword("/itemInformation/addRemark",modelMap);
     }
     /*

@@ -33,6 +33,7 @@
 <link rel="stylesheet" type="text/css" href="<c:url value ="/js/jquery-easyui/themes/icon.css" />"/>
 
 <script type="text/javascript" src=<c:url value ="/js/jquery/jquery-1.9.0.min.js" /> ></script>
+<script type="text/javascript" src=<c:url value ="/js/jquery/jquery-migrate-1.2.1.min.js" /> ></script>
 <script type="text/javascript" src=<c:url value ="/js/base.js" /> ></script>
 <script type="text/javascript" src=<c:url value ="/js/util.js" /> ></script>
 <%--<script type="text/javascript" src=<c:url value ="/js/lhgdialog/lhgdialog.min.js" /> ></script>--%>
@@ -55,6 +56,7 @@
     var nowDateTime="<fmt:formatDate value="${nowDateTime}" pattern="yyyy-MM-dd HH:mm:ss"/>";
     var _token="<%=_token%>";
     var itemListIconUrl_="${itemListIconUrl}";
+    var serviceItemUrl = "${serviceItemUrl}";
 
     var _sku=null;
     var _jscacheVersion="${jscacheVersion}";

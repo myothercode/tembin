@@ -1,6 +1,7 @@
 package com.common.base.web;
 
 import com.base.utils.applicationcontext.ApplicationContextUtil;
+import com.base.utils.common.CommAutowiredClass;
 import com.base.utils.imageManage.service.ImageService;
 import com.common.base.utils.EditorSupportUtils;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
@@ -27,7 +28,9 @@ public class BaseAction {
         map.put("jscacheVersion","3");
         try {
             ImageService imageService= (ImageService) ApplicationContextUtil.getBean(ImageService.class);
+            CommAutowiredClass commAutowiredClass= (CommAutowiredClass) ApplicationContextUtil.getBean(CommAutowiredClass.class);
             map.put("itemListIconUrl",imageService.getItemListIconUrl());
+            map.put("serviceItemUrl",commAutowiredClass.serviceItemUrl);
         } catch (Exception e) {}
         return map;
     }

@@ -141,11 +141,22 @@ function getSystemMessage(p){
             if(data.strV1=="num"){
                 var re = eval("(" + r + ")");
                 //alert(re.systemMessageNum)
-                $("#systemMessageCount").html(re.systemMessageNum);
-                $("#ebayMessagesCount").html(re.ebayMessageNum);
-                $("#ebaymessageNotice").html("You have "+re.ebayMessageNum+" new notifications");
+                if(re.systemMessageNum==0){
+                    $("#systemMessageCount").hide()
+                }else{
+                    $("#systemMessageCount").html(re.systemMessageNum);
+                }
+
+                if(re.ebayMessageNum==0){
+                    $("#ebayMessagesCount").hide()
+                }else{
+                    $("#ebayMessagesCount").html(re.ebayMessageNum);
+                    $("#ebaymessageNotice").html("You have "+re.ebayMessageNum+" new notifications");
+                }
+
+
                 if(re.systemMessageNum !=0 || re.ebayMessageNum != 0){
-                    chrome_Notice("","你好！您当前有未读系统消息"+re.systemMessageNum+"条!ebay消息"+re.ebayMessageNum+"条!");
+                   // chrome_Notice("","你好！您当前有未读系统消息"+re.systemMessageNum+"条!ebay消息"+re.ebayMessageNum+"条!");
                 }
 
                 return;

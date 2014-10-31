@@ -3,12 +3,15 @@ package com.test.controller;
 import com.base.database.publicd.model.PublicDataDict;
 import com.base.database.publicd.model.PublicUserConfig;
 import com.base.database.trading.model.TradingDataDictionary;
+import com.base.database.userinfo.model.UsercontrollerOrg;
+import com.base.database.userinfo.model.UsercontrollerUser;
 import com.base.domains.LoginVO;
 import com.base.domains.SessionVO;
 import com.base.userinfo.service.UserInfoService;
 import com.base.utils.applicationcontext.ApplicationContextUtil;
 import com.base.utils.cache.DataDictionarySupport;
 import com.base.utils.cache.SessionCacheSupport;
+import com.base.utils.cache.TempStoreDataSupport;
 import com.base.utils.common.ObjectUtils;
 import com.base.utils.exception.Asserts;
 import com.base.utils.mailUtil.MailUtils;
@@ -78,18 +81,21 @@ public class TextContraller extends BaseAction {
         return forword("mainFrame",modelMap);
     }
 
-   /* *//**注册用户*//*
+   /* *//**注册用户*/
+    @RequestMapping("doReglogin.do")
     public void doReg(UsercontrollerUser user ,UsercontrollerOrg org,
                       HttpServletRequest request,HttpServletResponse response,
                               @ModelAttribute( "initSomeParmMap" )ModelMap modelMap){
-        Asserts.assertTrue(ObjectUtils.isNumOrChar(user.getUserLoginId()),"登录名只能由数字和字母组成!");
+        //Asserts.assertTrue(ObjectUtils.isNumOrChar(user.getUserLoginId()),"登录名只能由数字和字母组成!");
+        Asserts.assertTrue(StringUtils.isNotEmpty(user.getUserEmail()),"邮箱不能为空!");
         Asserts.assertTrue(StringUtils.isNotEmpty(user.getUserPassword()),"密码不能为空!");
+        user.setUserLoginId(user.getUserEmail());
         Map map =new HashMap();
         map.put("UsercontrollerUser",user);
         map.put("UsercontrollerOrg",org);
         userInfoService.regInsertUserInfo(map);
         AjaxSupport.sendSuccessText("success","注册成功!请登录!");
-    }*/
+    }
 
 
     /**登录操作*/
@@ -193,11 +199,11 @@ public class TextContraller extends BaseAction {
     @RequestMapping("/xxlogin.do")
     @ResponseBody
     public void xxlogin(HttpServletRequest request) throws Exception {
-        request.getSession().setAttribute("vvv","eee");
+        String x = TempStoreDataSupport.pullData(request.getSession().getId());
         //testService.serviceTest();
        // testService.testReturnPolicy();
 
-        AjaxSupport.sendSuccessText("啊", "dfd");
+        AjaxSupport.sendSuccessText("啊", x);
     }
 
     /**发送修改密码的验证码*/

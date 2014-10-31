@@ -60,7 +60,7 @@
             var hs="";
             hs+="<li style='height:25px' onclick=viewTemplateInitTable('"+json.id+"') value='"+json.id+"' doaction=\"look\" >查看</li>";
             hs+="<li style='height:25px' onclick=editTemplateInitTable('"+json.id+"') value='"+json.id+"' doaction=\"look\" >编辑</li>";
-            var pp={"liString":hs};
+            var pp={"liString":hs,"marginLeft":"-50px"};
             return getULSelect(pp);
         }
         function makeOption2(json){

@@ -1,16 +1,11 @@
 package com.common.controller;
 
-import com.baidu.ueditor.upload.StorageManager;
-import org.apache.commons.net.ftp.FTP;
-import org.apache.commons.net.ftp.FTPClient;
-import sun.net.ftp.impl.FtpClient;
 
 import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
-import sun.net.TelnetInputStream;
-import sun.net.TelnetOutputStream;
+
 
 
 /**

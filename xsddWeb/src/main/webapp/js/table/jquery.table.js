@@ -241,6 +241,8 @@
             htmlPage+=this.showOtherPage2();
             htmlPage+="<li onclick=\"$('#" + this.attr("id") + "').toPage(" + Next + ")\">></li>" ;
             htmlPage+="<li onclick=\"$('#" + this.attr("id") + "').toPage(" + GetLastPageNum + ")\">>|</li>" ;
+            htmlPage+="<li style='width: 50px'>To<input  style='width: 20px;height: 25px;margin-left: 5px;margin-top: 2px;' " +
+                "onkeydown=$('#" + this.attr("id") + "').toPage(this.value,event) /></li>";
             htmlPage+="</div>";
             return htmlPage;
         }else{
@@ -445,16 +447,25 @@
 		return options;
 	};
 	//跳转到制定页面
-	$.fn.toPage = function (pageNum) {
-		var option = this.data("option");
-		if(pageNum == option.sysParm["jsonBean.pageNum"]) {
-			return;
-		}
-		option.sysParm["jsonBean.pageNum"] = pageNum;
-		if(option.userParm != null) {
-			$.extend(option.sysParm, option.userParm);
-		}
-		this.createdTable();
+	$.fn.toPage = function (pageNum,e) {
+        if(e==null || e.keyCode==13){
+            pageNum=parseInt(pageNum);
+            if(new String(pageNum)=="NaN"){
+                var elem = e.srcElement||e.target;
+                elem.value="";
+                alert("请输入数字!")
+                return;}
+            var option = this.data("option");
+            if(pageNum == option.sysParm["jsonBean.pageNum"]) {
+                return;
+            }
+            option.sysParm["jsonBean.pageNum"] = pageNum;
+            if(option.userParm != null) {
+                $.extend(option.sysParm, option.userParm);
+            }
+            this.createdTable();
+        }
+
 	};
 	//当改变每页显示条数时候刷新到第一页面
 	$.fn.changePageCount = function (obj) {

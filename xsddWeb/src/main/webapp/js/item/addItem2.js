@@ -64,7 +64,7 @@ function loadDataBuyer(){
         columnData: [
             {title: "选择", name: "option1", width: "5%", align: "left", format: returnBuyer},
             {title:"名称",name:"name",width:"30%",align:"left"},
-            {title:"站点",name:"siteName",width:"5%",align:"left"},
+            {title:"站点",name:"siteName",width:"5%",align:"left",format:getSiteImg},
             {title:"买家要求",name:"option1",width:"45%",align:"left",format:makeOption3buyer},
             {title:"状态",name:"option1",width:"10%",align:"left",format:makeOption2},
             {title:"操作",name:"option1",width:"5%",align:"center",format:makeOption1buyer}
@@ -158,7 +158,7 @@ function loadPayOption(){
         columnData: [
             {title: "选项", name: "option1", width: "8%", align: "left", format: returnPay},
             {title:"名称",name:"payName",width:"8%",align:"left"},
-            {title:"站点",name:"siteName",width:"8%",align:"left"},
+            {title:"站点",name:"siteName",width:"8%",align:"left",format:getSiteImg},
             {title:"paypal账号",name:"payPalName",width:"8%",align:"left"},
             {title:"状态",name:"option1",width:"8%",align:"left",format:makeOption2},
             {title:"动作",name:"option1",width:"8%",align:"left",format:makeOption1paypal}
@@ -188,7 +188,7 @@ if(loadReturnpolicyV==true){return;}
         columnData: [
             {title: "选项", name: "option1", width: "5%", align: "left", format: returnReturnpolicy},
             {title:"名称",name:"name",width:"20%",align:"left"},
-            {title:"站点",name:"siteName",width:"10%",align:"left"},
+            {title:"站点",name:"siteName",width:"10%",align:"left",format:getSiteImg},
             {title:"退货明细",name:"option1",width:"50%",align:"left",format:makeOption3returnpolicy},
             {title:"数据状态",name:"option1",width:"10%",align:"left",format:makeOption2},
             {title:"操作",name:"option1",width:"5%",align:"left",format:makeOption1returnpolicy}
@@ -220,7 +220,7 @@ function loadShippingDeails(){
         columnData: [
             {title: "选项", name: "option1", width: "8%", align: "left", format: returnShippingDeails},
             {title:"名称",name:"shippingName",width:"8%",align:"left"},
-            {title:"站点",name:"siteName",width:"8%",align:"left"},
+            {title:"站点",name:"siteName",width:"8%",align:"left",format:getSiteImg},
             {title:"ebay账号",name:"option1",width:"8%",align:"left",format:showData},
             {title:"数据状态",name:"option1",width:"8%",align:"left",format:makeOption2},
             {title:"操作",name:"option1",width:"8%",align:"left",format:shippingmakeOption1}
@@ -401,7 +401,13 @@ function onShow(obj) {
     isShowPicLink();
 }
 //选择刊登 类型，判断显示
-function changeRadio(obj) {
+function changeRadio(th) {
+    var obj = "";
+    if($.type(th)=="object"){
+        obj = $(th).val();
+    }else{
+        obj = th;
+    }
     if (obj == "2") {
         if($("input[type='checkbox'][name='ebayAccounts']:checked").length>1){
             alert("多属性不允许多账号刊登！");
@@ -590,9 +596,10 @@ function addb(obj) {
 }
 function addPic(attrName, attrValue) {
     var str = "";
-    str += "<div><div>" + attrName + ":" + attrValue + "</div><script type=text/plain id='" + attrName + "." + attrValue + "' />";
-    str += "<div><b class='new_button'><a href='javascript:void(0)' id=" + attrValue + " onClick='selectPic(this)'>选择图片</a></b></div>";
-    str += "</div>";
+    str += "<div><div style='padding-top: 20px;'>" + attrName + ":" + attrValue + "</div> <section class='example' style='width: 1200px;'><ul class='gbin1-list' style='padding-left: 20px;' id='picturemore_"+attrValue+"'></ul></section> <script type=text/plain id='" + attrName + "." + attrValue + "' />";
+    str += "<div style='padding-left: 50px; '>" +
+        "<b style='height: 32px;margin-top: 20px;' class='new_button'><a href='javascript:void(0)' id=" + attrValue + " onClick='selectPic(this)'>选择图片</a></b>";
+    str += "</div></div>";
     return str;
 }
 
@@ -600,6 +607,7 @@ var afterUploadCallback = null;
 var sss;
 //当选择图片后生成图片地址
 function selectPic(a) {
+    //$().image_editor.show("apicUrls_" + ebayAccount); //上传图片的按钮id
     if(($("#showPics").find("img").length+$("#picMore").find("img").length/2)>8){
         setTimeout(function(){closeSelectPicWindow()},200) ;
         alert("最多只能上传8张图片，上传图片已超过上传张数！");
@@ -632,7 +640,6 @@ function deletePic(a){
 function addPictrueUrl(urls) {
     var ebayid = $("input[type='checkbox'][name='ebayAccounts']:checked").val();
     var siteid = $("select[name='site']").val();
-
     if (sss.indexOf("apicUrls")!=-1) {//商品图片
         var str = '';
         var urlss= '';
@@ -642,19 +649,19 @@ function addPictrueUrl(urls) {
             var idDuff=generateMixedRandom(5);
 
             str += '<li><div style="position:relative"><input type="hidden" name="pic_mackid"/> <input type="hidden" name="PictureDetails'+sss.substr(sss.indexOf("_"),sss.length)+'.PictureURL" value="' + urls[i].src + '">' +
-                '<img id=imgtemp'+idDuff+' src=' + imgsrc + ' height=\"80px\" width=\"80px\" />' +
-                '<a onclick="deletePic(this)" style="position: absolute;top: -45px;right: -15px;" href=\'javascript:void(0)\'>&times;</a></div>';
+                '<img id=imgtemp'+idDuff+' src=' + imgsrc + ' height=\"80px\" width=\"78px\" />' +
+                '<div style="text-align: right;background-color: dimgrey;"><img src="'+path+'/img/newpic_ico.png" onclick="removeThis(this)"></div></div>';
+            //<div style="text-align: right;background-color: dimgrey;"><img src="'+path+'/img/newpic_ico.png" onclick="removeThis(this)"></div>
             str += "</li>";
             urlss+=imgsrc+",";
             $("<img/>").attr({"src": imgsrc,"id":"_imgtemp"+idDuff}).load(function() {
                 if(this.width<1000 || this.height<1000){
                     var targgetImgIndex=subRight(this.id,5)//strGetNum(this.id);
-                    $("#imgtemp"+targgetImgIndex).wrap("<div style=\"border: solid red 1px;width: 85px;\"></div>");
+                    $("#imgtemp"+targgetImgIndex).wrap("<div style=\"border: solid red 1px;width: 80px;\"></div>");
                     afterTipFunction("imgtemp"+targgetImgIndex,"图像大小小于1000像素，可能会影响展示效果",true);
                 }
              $("#"+this.id).remove();
             });
-
         }
         var addhtml = $("#picture"+sss.substr(sss.indexOf("_"),sss.length)).append(str);
         str = "";
@@ -678,22 +685,22 @@ function addPictrueUrl(urls) {
     } else {//多属性图片
         var str = '';
         var urlss= '';
-        if($('#' + sss).parent().find("[name*='VariationSpecificValue_']").length==0){
-            $('#' + sss).before("<input type='hidden' name='VariationSpecificValue_" + sss + "' value='" + sss + "'>");
+        if($('#picturemore_' + sss).parent().find("[name*='VariationSpecificValue_']").length==0){
+            $('#picturemore_' + sss).append("<input type='hidden' name='VariationSpecificValue_" + sss + "' value='" + sss + "'>");
         }
         for (var i = 0; i < urls.length; i++) {
-            str+="<span><input type='hidden' name='pic_mackid_more'/><input type='hidden' name='" + sss + "' value='" + urls[i].src + "'><img src='" + urls[i].src.replace("@", ":") + "' height='50' width='50' /><img src='"+path+"/img/del.png' onclick='removeThis(this)'></span>";
+            str+="<li><div style='position:relative'><input type='hidden' name='pic_mackid_more'/><input type='hidden' name='" + sss + "' value='" + urls[i].src + "'><img src='" + urls[i].src.replace("@", ":") + "' height='80' width='78' /><div style='text-align: right;background-color: dimgrey;'><img src='"+path+"/img/newpic_ico.png' onclick='removeThis(this)'></div></div></li>";
             urlss+=urls[i].src.replace("@", ":")+",";
         }
-        var addhtmlstr = $('#' + sss).before(str);
+        var addhtmlstr = $('#picturemore_' + sss).append(str);
         str="";
         var url=path+"/ajax/saveListingPicUrl.do?urls="+urlss+"&siteid="+siteid+"&ebayid="+ebayid;
         $().invoke(url,{},
             [function(m,r){
                 for(var i =0;i< r.length;i++){
                     var tlu = r[i];
-                    var len = $("#"+sss).parent().find("input[type='hidden'][name='pic_mackid_more']").length- r.length;
-                    $("#"+sss).parent().find("input[type='hidden'][name='pic_mackid_more']").each(function(j,d){
+                    var len = $("#picturemore_"+sss).parent().find("input[type='hidden'][name='pic_mackid_more']").length- r.length;
+                    $("#picturemore_"+sss).parent().find("input[type='hidden'][name='pic_mackid_more']").each(function(j,d){
                         if($(d).val()==""&&(i+len)==j){
                             $(d).val(tlu.mackId);
                         }
@@ -719,7 +726,7 @@ function initDraug(){
     });
 }
 function removeThis(obj) {
-    $(obj).parent().remove();
+    $(obj).parent().parent().parent().remove();
 }
 //得到分类名称
 function getCategoryName(categoryId,siteId){
@@ -810,15 +817,13 @@ function selectTemplatePic(obj){
 }
 
 function templatePicShow(urls) {
-    var str="<div style='position:relative'>";
+    var str="";
     for (var i = 0; i < urls.length; i++) {
-        str += '<span style="padding-left: 14px;"><input type="hidden" name="blankimg" value="' + urls[i].src + '">' +
-            '<img src=' + urls[i].src + ' height=\"80px\" width=\"80px\" />' +
-            '<a onclick="removeTemplatePic(this)" style="position: absolute;top: 0px;" href=\'javascript:void(0)\'>&times;</a></span>';
+        str += '<li><div style="position:relative"><input type="hidden" name="blankimg" value="' + urls[i].src + '">' +
+            '<img src=' + urls[i].src + ' height=\"80px\" width=\"78px\" />' +
+            '<div style="text-align: right;background-color: dimgrey;"><img src="'+path+'/img/newpic_ico.png" onclick="removeThis(this)"></div></div></li>';
     }
-    str += "</div>";
-
-    $("#blankImg_main").append(str);
+    $("#showTemplatePic").append(str);
 }
 function removeTemplatePic(obj){
     $(obj).parent().remove();
@@ -839,4 +844,8 @@ function setTemplate(obj){
         $("#"+name).show();
         $("#template").hide();
     }
+}
+
+function clearAllPic(obj){
+    $(obj).parent().parent().parent().find("li").remove();
 }

@@ -138,15 +138,14 @@ function inputNUMAndPoint(e, obj, size)//添加keypress事件  只允许输入�
 	if(key == 8) {
 		return true;
 	}
-
 	var temp = (obj.value + String.fromCharCode(key)).match(/[.]/g);
 	if(temp != null) {
 		if(temp.length > 1) {
 			return false;
 		}
-		if((obj.value + String.fromCharCode(key)).split(".")[1].length > size) {
+		/*if((obj.value + String.fromCharCode(key)).split(".")[1].length > size) {
 			return false;
-		}
+		}*/
 	}
 	return /[0-9.]/.test(String.fromCharCode(key));
 }

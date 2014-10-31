@@ -7,13 +7,14 @@
 <title>注册</title>
     <link rel="stylesheet" type="text/css" href="<c:url value ="/css/compiled/layout.css"/> "/>
     <script type="text/javascript" src=<c:url value ="/js/jquery/jquery-1.9.0.min.js" /> ></script>
+    <script type="text/javascript" src=<c:url value ="/js/jquery-blockui/jquery.blockUI.min.js" /> ></script>
     <script type="text/javascript" src=<c:url value ="/js/base.js" /> ></script>
     <script type="text/javascript" src=<c:url value ="/js/util.js" /> ></script>
 
     <script type="text/javascript">
         var _token;
         $(document).ready(function(){
-            $(".admin_user_reg ul").css({"background-size":"100% 100%","height":"610px"})
+            $(".admin_user_reg ul").css({"background-size":"100% 100%","height":"790px"})
         });
 
         function doReg(){
@@ -78,26 +79,38 @@ body {
 <ul>
 <h1>注册</h1>
     <form id="regForm" method="post">
+        <li style="height: 15px;margin-top: 5px">邮箱</li>
+    <li>
+        <input name="userEmail" type="text" class="admin_user_input" id="userEmail" value=""  />
+    </li>
 
+        <li style="height: 15px;margin-top: 5px">姓名</li>
+        <li>
+            <input name="userName" type="text" class="admin_user_input" id="userName" value=""  />
+        </li>
+
+        <li style="height: 15px;margin-top: 5px">电话号码</li>
     <li>
-        <input name="userName" type="text" class="admin_user_input" id="name" value="姓名" onfocus="if(this.value=='姓名'){this.value='';}"  onblur="if(this.value==''){this.value='姓名';}" />
+        <input name="telPhone" type="text" class="admin_user_input" id="phone" value=""  />
     </li>
+
+        <li style="height: 15px;margin-top: 5px">公司名</li>
     <li>
-        <input name="userLoginId" type="text" class="admin_user_input" id="loginName" value="登录帐号" onfocus="if(this.value=='登录帐号'){this.value='';}"  onblur="if(this.value==''){this.value='登录帐号';}" />
+        <input name="orgName" type="text" class="admin_user_input" id="orgName" value=""  />
     </li>
-    <li>
-        <input name="telPhone" type="text" class="admin_user_input" id="phone" value="电话号码" onfocus="if(this.value=='电话号码'){this.value='';}"  onblur="if(this.value==''){this.value='电话号码';}" />
-    </li>
-    <li>
-        <input name="orgName" type="text" class="admin_user_input" id="orgName" value="公司名" onfocus="if(this.value=='公司名'){this.value='';}"  onblur="if(this.value==''){this.value='公司名';}" />
-    </li>
-<li>
-<input name="userEmail" type="text" class="admin_user_input" id="userEmail" value="请输入你的邮件地址" onfocus="if(this.value=='请输入你的邮件地址'){this.value='';}"  onblur="if(this.value==''){this.value='请输入你的邮件地址';}" />
-</li>
+
+        <li style="height: 15px;margin-top: 5px">输入密码</li>
 <li>
 <input title="输入密码" name="userPassword" type="password" class="admin_user_input" id="pword1" value=""  /></li>
-<li >
-<input title="确认密码" name="vps" type="password" class="admin_user_input" id="pword2" value=""  /></li>
+        <li style="height: 15px;margin-top: 5px">确认密码</li>
+        <li >
+       <input title="确认密码" name="vps" type="password" class="admin_user_input" id="pword2" value=""  />
+        </li>
+
+        <li style="height: 15px;margin-top: 5px">邀请码</li>
+        <li>
+            <input name="yqm" type="text" class="admin_user_input" id="yqm" value=""  />
+        </li>
 
     </form>
 

@@ -32,9 +32,9 @@
         </td>
     </tr>
 </table>
-<div align="right">
- <input type="button" value="保存" onclick="submitCommit();"/>
-&nbsp;<input type="button" value="关闭" onclick="closedialog();"/>
+<div class="modal-footer" align="right">
+    <button type="button" class="btn btn-newco" onclick="submitCommit();">保存</button>
+    <button type="button" class="btn btn-default" onclick="closedialog();" data-dismiss="modal">关闭</button>
 </div>
 <script type="text/javascript">
     var api = frameElement.api, W = api.opener;

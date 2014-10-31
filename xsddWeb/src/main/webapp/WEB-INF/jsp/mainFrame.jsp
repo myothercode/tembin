@@ -62,7 +62,7 @@
         dl .noneBold { font-weight:normal;}
     </style>
 </head>
-<body style=overflow:scroll;overflow-y:hidden;>
+<body style=overflow:scroll;overflow-y:scroll;>
 <form id="queryForm" action="/xsddWeb/order/queryOrdersList.do" target="contentMain">
 </form>
 <!-- navbar -->
@@ -162,7 +162,7 @@
     </ul>
 </div>
 
-<div id="contentMaindiv" class="content" style="top: 52px">
+<div id="contentMaindiv" class="content" style="top: 52px;">
     <iframe width="100%" height="100%" frameborder="0px" id="contentMain" name="contentMain">
 
     </iframe>
