@@ -151,16 +151,28 @@ function getULSelect(par){
     var ulid_=par["ulid"]==null?"":("id="+par["ulid"]);
     var inputid_=par["inputid"]==null?"":("id="+par["inputid"]);
     var inputval_=par["inputval"]==null?"":(par["inputval"]);
-    var showname_=par["showname"]==null?"请选择":(par["showname"]);
+
     var ulMarginLeft = par["marginLeft"]==null?"-10px":(par["marginLeft"]);
+
+    var firstLi=lis.substring(lis.indexOf("<li"),lis.indexOf("</li>")+5);
+    var ldom=$(firstLi);
+    var lfunction=ldom.attr("onclick");
+    var lvalue=ldom.attr("value");
+    var ldo=ldom.attr("doaction");
+    var lhtml=ldom.html();
+
+    var showname_=lhtml==null?"请选择":(lhtml);
+    lfunction=(lfunction==null)?"":("onclick="+lfunction);
+    lvalue=(lvalue==null)?"":("value="+lvalue);
+    ldo=(ldo==null)?"":("doaction="+ldo);
 
     var hs="<ul style='margin-left: "+ulMarginLeft+"' "+ulid_+">" +
         "<li style='width: 70px;height: 25px;' class=\"select_box\">" +
-        "<span style='color: blue;text-align: center'>"+showname_+"</span><ul class=\"son_ul\">";
+        "<span style='color: blue;text-align: center' "+lfunction+" "+lvalue+" "+ldo+">"+showname_+"</span><ul class=\"son_ul\">";
     hs+="<input type='hidden' "+inputid_+" value="+inputval_+"  />";
     hs+=lis.replace(/style='height:25px'/ig,"style='height:25px;text-align: center'");
     hs+="</ul></li></ul>";
-
+    ldom.remove();
     return hs;
 }
 
@@ -177,7 +189,7 @@ function initULSelect(){
         },function(){}
     );
     $('ul.son_ul li').click(function(){
-        $(this).parents('li').find('span').html($(this).html());
+       // $(this).parents('li').find('span').html($(this).html());
         $(this).parents('li').find('ul').slideUp();
     });
 }
@@ -239,6 +251,15 @@ function chrome_Notice(tit,m) {
             }
         });
     }
+}
+
+/**获取页面的宽和高*/
+function getCurrPageWH(){
+    var eHeight=(document.documentElement.scrollHeight > document.documentElement.clientHeight) ? document.documentElement.scrollHeight : document.documentElement.clientHeight;
+    //alert(eHeight)
+    var eWidth=(document.documentElement.scrollWidth>document.documentElement.clientWidth) ? document.documentElement.scrollWidth : document.documentElement.scrollWidth;
+    //alert(eWidth)
+    return {"eHeight":eHeight,"eWidth":eWidth};
 }
 
 

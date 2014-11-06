@@ -57,6 +57,7 @@ public class ListingDataTaskImpl implements com.task.service.IListingDataTask {
         ListingDataTaskExample tde = new ListingDataTaskExample();
         ListingDataTaskExample.Criteria c = tde.createCriteria();
         c.andTaskFlagEqualTo("0");
+
         return this.listingDataTaskMapper.selectByExampleWithBLOBs(tde);
     }
 }

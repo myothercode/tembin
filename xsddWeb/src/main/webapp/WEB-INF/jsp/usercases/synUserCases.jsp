@@ -11,6 +11,11 @@
 <html>
 <head>
     <title></title>
+    <style type="text/css">
+        body {
+            background-color: #ffffff;
+        }
+    </style>
     <script type="text/javascript" src=<c:url value ="/js/batchAjaxUtil.js" /> ></script>
     <script type="text/javascript">
         var api = frameElement.api, W = api.opener;
@@ -33,10 +38,13 @@
             W.refreshTable();
             W.userCases.close();
         }
+        function closedialog(){
+            W.userCases.close();
+        }
     </script>
 </head>
 <body>
-<form id="userCasesForm">
+<%--<form id="userCasesForm">
     <table>
         <tr>
             <td>请选择需要同步的ebay账号:</td>
@@ -57,6 +65,44 @@
             </td>
         </tr>
     </table>
-</form>
+</form>--%>
+<div class="modal-header">
+    <h4 class="modal-title" style="color:#2E98EE">同步纠纷管理</h4>
+    <div class="newtitle">请选择要同步的ebay账号</div>
+</div>
+<div class="modal-body">
+    <form class="form-horizontal" role="form" id="userCasesForm">
+        <table width="100%" border="0" style="margin-left:20px;">
+            <tbody>
+            <c:forEach items="${ebays}" var="ebay" varStatus="status" begin="0">
+                <c:if test="${status.index==0}">
+                    <tr>
+                        <td width="8%" rowspan="4">&nbsp;</td>
+                        <td width="92%" height="28"><input type="checkbox" name="checkbox" scope="checkbox" value="${ebay.id}" > ${ebay.ebayName}</td>
+                    </tr>
+                </c:if>
+                <c:if test="${status.index!=0}">
+                    <tr>
+                        <td width="92%" height="28"><input type="checkbox" name="checkbox" scope="checkbox" value="${ebay.id}" > ${ebay.ebayName}</td>
+                    </tr>
+                </c:if>
+
+            </c:forEach>
+         <%--   <tr>
+                <td width="92%" height="28"><input type="checkbox" name="checkbox" > vsadf</td>
+            </tr>
+            <tr>
+                <td width="92%" height="28"><input type="checkbox" name="checkbox" > vsadf</td>
+            </tr>
+            <tr>
+                <td width="92%" height="28"><input type="checkbox" name="checkbox" > vsadf</td>
+            </tr>--%>
+            </tbody></table>
+
+        <div class="modal-footer">
+            <button type="button" class="net_put" onclick="submitForm1();">同步</button>
+            <button type="button" class="net_put_1" data-dismiss="modal" onclick="closedialog();">关闭</button>
+        </div>
+    </form></div>
 </body>
 </html>

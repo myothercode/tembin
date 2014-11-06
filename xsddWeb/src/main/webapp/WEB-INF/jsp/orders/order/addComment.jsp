@@ -47,12 +47,24 @@
 </head>
 <body>
 <form id="addRemarkForm">
+    <br/><br/>
     <input type="hidden" name="orderid" value="${orderid}"/>
-    <br/><br/>&nbsp;备注信息:<input name="comment"  class="validate[required]" id="comment"/><br/>
+    <table align="center">
+        <tr>
+            <td>备注信息:</td>
+            <td><input name="comment"  class="form-controlsd  validate[required]" id="comment"/></td>
+        </tr>
+        <tr>
+            <td></td>
+            <td align="right"> <br/><br/><button type="button" class="net_put" onclick="submitCommit();">保存</button>
+                <button type="button" class="net_put_1" data-dismiss="modal" onclick="closedialog();">关闭</button></td>
+        </tr>
+    </table>
+    <%--<br/><br/>&nbsp;备注信息:<input name="comment"  class="form-controlsd  validate[required]" id="comment"/>--%>
 </form>
-<div class="modal-footer">
+<%--<div class="modal-footer">
     <button type="button" class="btn btn-newco" onclick="submitCommit();">保存</button>
     <button type="button" class="btn btn-default" onclick="closedialog();" data-dismiss="modal">关闭</button>
-</div>
+</div>--%>
 </body>
 </html>

@@ -16,6 +16,7 @@ import com.base.sampleapixml.BindAccountAPI;
 import com.base.userinfo.service.SystemUserManagerService;
 import com.base.userinfo.service.UserInfoService;
 import com.base.utils.annotations.AvoidDuplicateSubmission;
+import com.base.utils.cache.DataDictionarySupport;
 import com.base.utils.cache.SessionCacheSupport;
 import com.base.utils.common.DateUtils;
 import com.base.utils.threadpool.AddApiTask;
@@ -108,6 +109,21 @@ public class GetOrdersController extends BaseAction {
         modelMap.put("folders",configs);
         return forword("/orders/order/getOrdersList",modelMap);
     }
+    /**refleshTabRemark*/
+    @RequestMapping("/refleshTabRemark.do")
+    @ResponseBody
+    public void refleshTabRemark(CommonParmVO commonParmVO,HttpServletRequest request) throws Exception {
+        String folderType=request.getParameter("folderType");
+        List<PublicUserConfig> configs=new ArrayList<PublicUserConfig>();
+        List<PublicUserConfig> list=iPublicUserConfig.selectUserConfigByItemType(folderType);
+        for(PublicUserConfig config:list){
+            String value=config.getConfigValue();
+            if(StringUtils.isNotBlank(value)){
+                configs.add(config);
+            }
+        }
+        AjaxSupport.sendSuccessText("", configs);
+    }
     //选择文件夹
     @RequestMapping("/selectTabRemark.do")
     public ModelAndView selectTabRemark(HttpServletRequest request,HttpServletResponse response,ModelMap modelMap){
@@ -117,7 +133,38 @@ public class GetOrdersController extends BaseAction {
         modelMap.put("folderType",folderType);
         return forword("/orders/order/selectTabRemark",modelMap);
     }
-    //将文件夹设置到order中
+    //选择地区
+    @RequestMapping("/selectCountrys.do")
+    public ModelAndView selectCountrys(HttpServletRequest request,HttpServletResponse response,ModelMap modelMap){
+        List<TradingDataDictionary> lidata = DataDictionarySupport.getTradingDataDictionaryByType(DataDictionarySupport.DATA_DICT_DELTA);
+        List<TradingDataDictionary> li1 = new ArrayList();
+        List<String> names=new ArrayList<String>();
+        List<String> countryIds=new ArrayList<String>();
+        for(TradingDataDictionary tdd : lidata){
+            if(tdd.getName1().equals("International")){
+                li1.add(tdd);
+                names.add(tdd.getName());
+                countryIds.add(String.valueOf(tdd.getId()));
+            }
+        }
+        String root=request.getContextPath();
+        modelMap.put("countrys",li1);
+        modelMap.put("count",li1.size());
+        modelMap.put("names",names);
+        modelMap.put("countryIds",countryIds);
+        modelMap.put("root",root);
+        return forword("/orders/order/selectCountrys",modelMap);
+    }
+
+    /**获取国家*/
+    @RequestMapping("/selectCountry.do")
+    @ResponseBody
+    public void selectCountry(CommonParmVO commonParmVO,HttpServletRequest request) throws Exception {
+        String countryId=request.getParameter("countryId");
+        List<TradingDataDictionary> lidata = DataDictionarySupport.getTradingDataDictionaryByType(DataDictionarySupport.DATA_DICT_COUNTRY,Long.parseLong(countryId));
+        AjaxSupport.sendSuccessText("", lidata);
+    }
+    /*//将文件夹设置到order中
     @RequestMapping("/saveOrderTabremark.do")
     public void saveOrderTabremark(HttpServletRequest request,HttpServletResponse response,ModelMap modelMap) throws Exception {
         String id=request.getParameter("id");
@@ -129,7 +176,7 @@ public class GetOrdersController extends BaseAction {
         config.setConfigValue("true");
         iPublicUserConfig.saveUserConfig(config);
         AjaxSupport.sendSuccessText("", "添加文件夹成功");
-    }
+    }*/
     //删除文件夹
     @RequestMapping("/removeOrderTabremark.do")
     public void removeOrderTabremark(HttpServletRequest request,HttpServletResponse response,ModelMap modelMap) throws Exception {
@@ -220,7 +267,7 @@ public class GetOrdersController extends BaseAction {
             AjaxSupport.sendFailText("fail","文件夹不存在");
             return;
         }
-        AjaxSupport.sendSuccessText("","添加备注成功");
+        AjaxSupport.sendSuccessText("","已经移动到指定的文件夹中");
 
     }
     //保存文件夹
@@ -251,8 +298,9 @@ public class GetOrdersController extends BaseAction {
         PublicUserConfig config=new PublicUserConfig();
         config.setConfigType(folderType);
         config.setConfigName(tabName);
+        config.setConfigValue("true");
         iPublicUserConfig.saveUserConfig(config);
-        AjaxSupport.sendSuccessText("", "文件夹保存成功");
+        AjaxSupport.sendSuccessText("", config);
     }
     /**获取list数据的ajax方法*/
     @RequestMapping("/ajax/loadOrdersList.do")
@@ -1093,10 +1141,10 @@ public class GetOrdersController extends BaseAction {
         //-------
         request.getSession().setAttribute("dveId", d);
         Map map=new HashMap();
-       /* Date startTime2=DateUtils.subDays(new Date(),9);
-        Date endTime= DateUtils.addDays(startTime2, 9);*/
-        Date startTime2=DateUtils.subDays(new Date(),70);
-        Date endTime= DateUtils.addDays(startTime2, 70);
+        Date startTime2=DateUtils.subDays(new Date(),9);
+        Date endTime= DateUtils.addDays(startTime2, 9);
+       /* Date startTime2=DateUtils.subDays(new Date(),70);
+        Date endTime= DateUtils.addDays(startTime2, 70);*/
         Date end1= com.base.utils.common.DateUtils.turnToDateEnd(endTime);
         String start= DateUtils.DateToString(startTime2);
         String end=DateUtils.DateToString(end1);
@@ -1104,8 +1152,7 @@ public class GetOrdersController extends BaseAction {
         String token=userInfoService.getTokenByEbayID(ebay);
         //真实环境
         /*String token="AgAAAA**AQAAAA**aAAAAA**jek4VA**nY+sHZ2PrBmdj6wVnY+sEZ2PrA2dj6AFlIWnC5iEpAidj6x9nY+seQ**tSsCAA**AAMAAA**y8BaJPw6GUdbbbco8zXEwRR4Ttr9sLd78jL0FyYa0yonvk5hz1RY6DtKkaDtn9NuzluKeFZoqsNbujZP48S4QZhHVa5Dp0bDGqBdKaosolzsrPDm8qozoxbsTiWY8X/M5xev/YU2zJ42/JRGDlEdnQhwCASG1BcSo+DqXuG3asbj0INJr4/HsArf8cCYsPQCtUDkq5QJY6Rvil+Kla/dGhViTQ3gt7a4t3KjxKH+/jlhDU/6sUEKlvb2nY1gCmX8S9pU48c+4Vy6G6NpfcGUcIG/TXFWBTqU0R+v+/6DOIfDW8s90rrLSVMGFqnRxA2sexdEmVhyF5csBmv9+TVfjdyEZK5UgvDqWJHesuDMFTr0KIc8EtdnTQaE3YeZch15DdoEbqcyyBQBZHidBPdDHz/DkpTg7iq1953yKodm2y0mW6aaYAfc5beW+PoqMW8C3WwGJmWZqh3dBi+QEKznEJ9SRg43Bc3q2344JFY7YpIEfJDaQ36BHRcIZxLew8v7RIGL5YYO1BBdTolVV9/eMCQDsUB0mUeMYjxnH5w0K/6CDmJ9WNMQTblNol0x3vhJbil1L/CMP9KGEHj5Yqx0003MLL9Yod7nL89Zpy+a8I/E5byxFt21KZTGE90Ot0LyLpRXsotDwIm5+ZdvATsU6mGADX4tk970CpCeM487v9fn1opouaCBvknCINqXoSeGXLQ7uZFpeqkWts1lIWh9vEuuiuZa4vNoL7aCr+93LTFnsO6AsZp7dmboQcI96I/o";
-*/
-       /* String token="AgAAAA**AQAAAA**aAAAAA**j+o4VA**nY+sHZ2PrBmdj6wVnY+sEZ2PrA2dj6AFlICkCpSGoA6dj6x9nY+seQ**tSsCAA**AAMAAA**w9ucV7+/Za+QiC82KESb5VYCbY2/n18LiFAO6UdYHbIhnt/gYioIQe3Aq5aIUnCe3VHmXgHZ9EH4gNMhiqtdYLn4qYVRh3+MfdM58KycszijKBHb8ddmeiswKa7w5LjiMTBT1EZRByoQOuTcXpmnBIVDCSWS0QqIcwKHj7ZOdrpMVrkd/zZQgXWMeYSI/NiKsSGo7MLuEc4dsAz3ifgt/d00HQXrntrr8iwh4HpC8g80mNpQ/2yd/5ZM7mDBGFviMFgUuA2qIWua6/PpCRCmoUTL2t9YoCcOh5qScgUvyRj8qeJtcZ/4VrQT2c1r2Ud6/7EEpm8wDn11NaxLJqRZJN/BXT1SD7+5qf5W4CpIsHXN7Xklao2Y4qrKoGdxIKEs1Yya4T58Bs0PIv9Iupfz3ogibPK3KMETosJnUZxteo08JhEO8iWufLBEyfCK5gbVsueZz4BXYoARqcoeJ5Us3mDw26oxx5GtyVC7ipKefnmBghY5nbD1kzOZ9hAuFIyhjedZLj2qORajy7wnsa87A0YI6EOLIk1v7szqRUNPBsY4m2AFSYdAjLnwOiOirv0TbfYOS2ofMD1+AQPR5nbopvwLYYMUi/LlA3UUEU3zEzHpPP+A4rMIVUzjXEGgq0LzwipwtALpnS1CfOXq0FDayN3J6q2PLs0jveF+nmop8yOPkZRRyd4EtuCRYD+ADxQHRZ89+zVqwFg0xGVQe3r1V95wga23esmbmgVj2E5s7tq1GM8+e5SA/x3H9fzP6/pK";
+       *//* String token="AgAAAA**AQAAAA**aAAAAA**j+o4VA**nY+sHZ2PrBmdj6wVnY+sEZ2PrA2dj6AFlICkCpSGoA6dj6x9nY+seQ**tSsCAA**AAMAAA**w9ucV7+/Za+QiC82KESb5VYCbY2/n18LiFAO6UdYHbIhnt/gYioIQe3Aq5aIUnCe3VHmXgHZ9EH4gNMhiqtdYLn4qYVRh3+MfdM58KycszijKBHb8ddmeiswKa7w5LjiMTBT1EZRByoQOuTcXpmnBIVDCSWS0QqIcwKHj7ZOdrpMVrkd/zZQgXWMeYSI/NiKsSGo7MLuEc4dsAz3ifgt/d00HQXrntrr8iwh4HpC8g80mNpQ/2yd/5ZM7mDBGFviMFgUuA2qIWua6/PpCRCmoUTL2t9YoCcOh5qScgUvyRj8qeJtcZ/4VrQT2c1r2Ud6/7EEpm8wDn11NaxLJqRZJN/BXT1SD7+5qf5W4CpIsHXN7Xklao2Y4qrKoGdxIKEs1Yya4T58Bs0PIv9Iupfz3ogibPK3KMETosJnUZxteo08JhEO8iWufLBEyfCK5gbVsueZz4BXYoARqcoeJ5Us3mDw26oxx5GtyVC7ipKefnmBghY5nbD1kzOZ9hAuFIyhjedZLj2qORajy7wnsa87A0YI6EOLIk1v7szqRUNPBsY4m2AFSYdAjLnwOiOirv0TbfYOS2ofMD1+AQPR5nbopvwLYYMUi/LlA3UUEU3zEzHpPP+A4rMIVUzjXEGgq0LzwipwtALpnS1CfOXq0FDayN3J6q2PLs0jveF+nmop8yOPkZRRyd4EtuCRYD+ADxQHRZ89+zVqwFg0xGVQe3r1V95wga23esmbmgVj2E5s7tq1GM8+e5SA/x3H9fzP6/pK";
         */
         map.put("token", token);
 /*        map.put("token","AgAAAA**AQAAAA**aAAAAA**CLSRUQ**nY+sHZ2PrBmdj6wVnY+sEZ2PrA2dj6AFlYCjDJGCqA+dj6x9nY+seQ**FdYBAA**AAMAAA**w2sMbwlQ7TBHWxj9EsVedHQRI3+lonY9MDfiyayQbnFkjEanjL/yMCpS/D2B9xHRzRx+ppxWZkRPgeAKJvNotPLLrVTuEzOl5M7pi6Tw8+pzcmIEsOh7HQO78JlyFlvLc/ruE6/hG0E/HO1UX76YBwxp00N9f1NNUpo5u36D/TYsx5O2jXFTKkCOHwz6RW9vtN6TU39aLm+JQme2+NfFFXnbX8MHzoUiX7Sty0R88ZpX5wLp8ZdgXCEc5zZDQziYB1MSXF9hsmby5wKbxFF+OvW/zKADThk1gprgAgnEOucyoao+cUMHopLlYgMbjnLzdCXP5F9z+fkYTnKF6AEl5eHBpcKQGbPzswnKebRoBVw+bI2I1C/iq+PvBUyndFAexjrvlDQbEKr6qb6AWRVTTfkW2ce6a0ixRuCTq35zEpWpfAqkSKo+X23d/Q4V8R30rDXotOWDZL6o408cMO+UQ17uVA2arA1JNkYfc/AZ0T0z7ze5o/yp93jJPlDgi05Ut4fpCAMZw3X85GxrTlbEtawWgoyUbmMuv4f6QHZLZAerOaJA8DRJkzkzjJJ025bp1HvAECOc4ggdv0cofu4q96shssgNYYZJUPM+q4+0fnGK0pxQTNY9SV6vSaVCVoTZJo6vefW7OiHX2/eLoPKFuUfsKXXEv9OY71gD1xzYg/rpCMAqCTq1dKqqyT1R5fxANnoRX7vwkq+7jkCj2fAfKTnHi9mSuBFsilKLmnsqqWy3IGShMgdxiQwBEk6IWi9C");*/

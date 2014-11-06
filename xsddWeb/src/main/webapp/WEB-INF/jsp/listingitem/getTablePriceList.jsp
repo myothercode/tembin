@@ -10,6 +10,11 @@
 <html>
 <head>
     <title></title>
+    <style type="text/css">
+        body {
+            background-color: #ffffff;
+        }
+    </style>
     <script>
         var addTablePrice
         var apis = frameElement.api, W = apis.opener;
@@ -41,7 +46,7 @@
             hs+="<li style='height:25px' onclick=editTablePriceselect('"+json.id+"') value='"+json.id+"' doaction=\"look\" >查看</li>";
             hs+="<li style='height:25px' onclick=delTablePrice('"+json.id+"') value='"+json.id+"' doaction=\"look\" >删除</li>";
             hs+="<li style='height:25px' onclick=editTablePrice('"+json.id+"') value='"+json.id+"' doaction=\"look\" >编辑</li>";
-            var pp={"liString":hs};
+            var pp={"liString":hs,"marginLeft":"-50px"};
             return getULSelect(pp);
         }
         function selectDo(obj){
@@ -95,7 +100,7 @@
         }
 
         function addTablePrice(obj){
-            $(obj).attr({style:"color:red"});
+            /*$(obj).attr({style:"color:red"});*/
             addTablePrice = $.dialog({title: '新增调价',
                 content: 'url:' + path + '/addTablePrice.do',
                 icon: 'succeed',
@@ -108,13 +113,13 @@
         }
 
         function downloadTemplate(obj){
-            $(obj).attr({style:"color:red"});
+            /*$(obj).attr({style:"color:red"});*/
             var url=path+"/downloadTemplate.do";
             window.open(url);
         }
 
         function importTemplate(obj) {
-            $(obj).attr({style:"color:red"});
+            /*$(obj).attr({style:"color:red"});*/
             addTablePrice = $.dialog({title: '选择需要导入的文件',
                 content: 'url:' + path + '/importTemplate.do',
                 icon: 'succeed',
@@ -152,14 +157,14 @@
     </script>
 </head>
 <body>
-<div class="newsj_left">
-    <span class="newusa_ici_del" onclick="addTablePrice(this)">新增调价</span>
+<div class="newsj_left" style="padding: 10px;">
+<%--    <span class="newusa_ici_del" onclick="addTablePrice(this)">新增调价</span>--%>
     <span class="newusa_ici_del" onclick="downloadTemplate(this)">下载模板</span>
     <span class="newusa_ici_del"  onclick="importTemplate(this);">导入模板</span>
     <div class="tbbay"><a data-toggle="modal" href="javascript:void(0)" onclick="runPrice()" class="">执行调价</a></div>
 </div>
 
-<div id="TablePriceList">
+<div id="TablePriceList"  style="padding: 10px;">
 </div>
 </body>
 </html>

@@ -3,7 +3,7 @@ function addPayPal(){
     payPal=$.dialog({title: '新增付款选项',
         content: 'url:/xsddWeb/addPayPal.do',
         icon: 'succeed',
-        width:500,
+        width:800,
         lock:true
     });
     }
@@ -12,7 +12,7 @@ function editPayPal(id){
     payPal=$.dialog({title: '编辑付款选项',
         content: 'url:/xsddWeb/editPayPal.do?id='+id,
         icon: 'succeed',
-        width:500,
+        width:800,
         lock:true
     });
     }
@@ -20,7 +20,7 @@ function editPayPalselect(id){
     payPal=$.dialog({title: '查看付款选项',
         content: 'url:/xsddWeb/editPayPal.do?id='+id+'&type=01',
         icon: 'succeed',
-        width:500,
+        width:800,
         lock:true
     });
     }
@@ -46,7 +46,7 @@ function loadpaypal(){
             {title:"名称",name:"payName",width:"8%",align:"left"},
             {title:"站点",name:"siteName",width:"8%",align:"left",format:getSiteImg},
             {title:"paypal账号",name:"payPalName",width:"8%",align:"left"},
-            {title:"状态",name:"option1",width:"8%",align:"left",format:makeOption2},
+            {title:"状态",name:"option1",width:"8%",align:"left",format:makeOption2s},
             {title:"动作",name:"option1",width:"8%",align:"left",format:makeOption1paypal}
         ],
         selectDataNow:false,
@@ -59,15 +59,15 @@ function  refreshTablepaypal(){
     $("#paypallisttable").selectDataAfterSetParm({"bedDetailVO.deptId":"", "isTrue":0});
     }
 //数据状态
-function makeOption2(json){
+function makeOption2s(json){
     var htm=''
     if(json.checkFlag=="0"){
-    htm='已启用';
+        htm='<img src="'+path+'/img/new_yes.png"/>';
     }else{
-    htm='已禁用';
+        htm='<img src="'+path+'/img/new_no.png"/>';
     }
     return htm;
-    }
+}
 /**组装操作选项*/
 function makeOption1paypal(json){
     var hs="";

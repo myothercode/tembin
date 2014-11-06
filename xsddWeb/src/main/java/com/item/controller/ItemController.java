@@ -22,12 +22,10 @@ import com.base.sampleapixml.BindAccountAPI;
 import com.base.userinfo.service.SystemUserManagerService;
 import com.base.userinfo.service.UserInfoService;
 import com.base.utils.annotations.AvoidDuplicateSubmission;
+import com.base.utils.applicationcontext.ApplicationContextUtil;
 import com.base.utils.cache.DataDictionarySupport;
 import com.base.utils.cache.SessionCacheSupport;
-import com.base.utils.common.ConvertPOJOUtil;
-import com.base.utils.common.EncryptionUtil;
-import com.base.utils.common.MyCollectionsUtil;
-import com.base.utils.common.ObjectUtils;
+import com.base.utils.common.*;
 import com.base.utils.exception.Asserts;
 import com.base.utils.imageManage.service.ImageService;
 import com.base.utils.threadpool.AddApiTask;
@@ -43,6 +41,7 @@ import com.base.xmlpojo.trading.addproduct.attrclass.OriginalRetailPrice;
 import com.base.xmlpojo.trading.addproduct.attrclass.StartPrice;
 import com.common.base.utils.ajax.AjaxSupport;
 import com.common.base.web.BaseAction;
+import com.sitemessage.service.SiteMessageService;
 import com.sitemessage.service.SiteMessageStatic;
 import com.trading.service.*;
 import org.dom4j.Document;
@@ -126,6 +125,9 @@ public class ItemController extends BaseAction{
     private PublicDataDictMapper publicDataDictMapper;
     @Autowired
     private ITradingDataDictionary iTradingDataDictionary;
+
+    @Autowired
+    private ITradingListingData iTradingListingData;
     /**
      * 范本管理
      * @param request
@@ -222,6 +224,18 @@ public class ItemController extends BaseAction{
         if(folderid!=null&&!"".equals(folderid)){
             m.put("folderid",folderid);
         }
+        String descStr = request.getParameter("descStr");
+        if(descStr!=null&&!"".equals(descStr)){
+            m.put("descStr",descStr);
+        }else{
+            m.put("descStr","id");
+        }
+        String ascStr = request.getParameter("desStr");
+        if(ascStr!=null&&!"".equals(ascStr)){
+            m.put("desStr",ascStr);
+        }else{
+            m.put("desStr","desc");
+        }
         /**分页组装*/
         PageJsonBean jsonBean=commonParmVO.getJsonBean();
         Page page=jsonBean.toPage();
@@ -246,9 +260,9 @@ public class ItemController extends BaseAction{
         String [] ids =idStr.split(",");
         String folderid = request.getParameter("folderid");
 
-        List<TradingItem> litld = new ArrayList<TradingItem>();
+        List<TradingItemWithBLOBs> litld = new ArrayList<TradingItemWithBLOBs>();
         for(String id: ids){
-            TradingItem tld = this.iTradingItem.selectById(Long.parseLong(id));
+            TradingItemWithBLOBs tld = this.iTradingItem.selectByIdBL(Long.parseLong(id));
             tld.setFolderId(folderid);
             litld.add(tld);
         }
@@ -665,7 +679,7 @@ public class ItemController extends BaseAction{
     @RequestMapping("/saveItem.do")
     @AvoidDuplicateSubmission(needRemoveToken = true)
     @ResponseBody
-    public void saveItem(HttpServletRequest request,Item item,TradingItem tradingItem,Date timerListing) throws Exception {
+    public void saveItem(HttpServletRequest request,Item item,TradingItemWithBLOBs tradingItem,Date timerListing) throws Exception {
 
         String mouth = request.getParameter("dataMouth");
         if("save".equals(mouth)||"othersave".equals(mouth)){//保存范本、另存为新范本
@@ -1010,7 +1024,7 @@ public class ItemController extends BaseAction{
         }
     }
 
-    public void updateListingData(Item item,TradingItem tradingItem,HttpServletRequest request) throws Exception{
+    public void updateListingData(Item item,TradingItemWithBLOBs tradingItem,HttpServletRequest request) throws Exception{
         //保存商品信息到数据库中
         Map itemMap = this.iTradingItem.saveItem(item,tradingItem);
         TradingPaypal tpay = this.iTradingPayPal.selectById(tradingItem.getPayId());
@@ -1271,7 +1285,7 @@ public class ItemController extends BaseAction{
      * @return
      */
     @RequestMapping("/previewItem.do")
-    public ModelAndView previewItem(TradingItem tradingItem,Item item,HttpServletRequest request,HttpServletResponse response,@ModelAttribute( "initSomeParmMap" )ModelMap modelMap) throws Exception{
+    public ModelAndView previewItem(TradingItemWithBLOBs tradingItem,Item item,HttpServletRequest request,HttpServletResponse response,@ModelAttribute( "initSomeParmMap" )ModelMap modelMap) throws Exception{
         //保存商品信息到数据库中
         Map itemMap = this.iTradingItem.saveItem(item,tradingItem);
         TradingPaypal tpay = this.iTradingPayPal.selectById(tradingItem.getPayId());
@@ -1515,6 +1529,272 @@ public class ItemController extends BaseAction{
         return forword("/item/preview",modelMap);
     }
 
+    /**
+     * 检查ebay费
+     * @param request
+     * @param response
+     * @param modelMap
+     * @return
+     */
+    @RequestMapping("/ajax/checkEbayFee.do")
+    public void checkEbayFee(TradingItemWithBLOBs tradingItem,Item item,HttpServletRequest request,HttpServletResponse response,@ModelAttribute( "initSomeParmMap" )ModelMap modelMap) throws Exception{
+        //保存商品信息到数据库中
+        Map itemMap = this.iTradingItem.saveItem(item,tradingItem);
+        TradingPaypal tpay = this.iTradingPayPal.selectById(tradingItem.getPayId());
+        TradingItemAddress tadd = this.iTradingItemAddress.selectById(tradingItem.getItemLocationId());
+        TradingShippingdetails tshipping = this.iTradingShippingDetails.selectById(tradingItem.getShippingDeailsId());
+        TradingDiscountpriceinfo tdiscount = this.iTradingDiscountPriceInfo.selectById(tradingItem.getDiscountpriceinfoId());
+        TradingBuyerRequirementDetails tbuyer = this.iTradingBuyerRequirementDetails.selectById(tradingItem.getBuyerId());
+        TradingReturnpolicy treturn = this.iTradingReturnpolicy.selectById(tradingItem.getReturnpolicyId());
+
+        //组装刑登xml
+        //组装买家要求
+        if(tbuyer!=null) {
+            BuyerRequirementDetails brd = this.iTradingBuyerRequirementDetails.toXmlPojo(tradingItem.getBuyerId());
+            item.setBuyerRequirementDetails(brd);
+        }
+        //组装退货政策
+        if(treturn!=null) {
+            ReturnPolicy rp = this.iTradingReturnpolicy.toXmlPojo(tradingItem.getReturnpolicyId());
+            item.setReturnPolicy(rp);
+            item.getReturnPolicy().setReturnsAcceptedOption(DataDictionarySupport.getTradingDataDictionaryByID(Long.parseLong(item.getReturnPolicy().getReturnsAcceptedOption())).getValue());
+            item.getReturnPolicy().setReturnsWithinOption(DataDictionarySupport.getTradingDataDictionaryByID(Long.parseLong(item.getReturnPolicy().getReturnsWithinOption())).getValue());
+            item.getReturnPolicy().setRefundOption(DataDictionarySupport.getTradingDataDictionaryByID(Long.parseLong(item.getReturnPolicy().getRefundOption())).getValue());
+            item.getReturnPolicy().setShippingCostPaidByOption(DataDictionarySupport.getTradingDataDictionaryByID(Long.parseLong(item.getReturnPolicy().getShippingCostPaidByOption())).getValue());
+        }
+        //运输详情
+        if(tshipping!=null) {
+            ShippingDetails sd = this.iTradingShippingDetails.toXmlPojo(tradingItem.getShippingDeailsId());
+            item.setShippingDetails(sd);
+        }
+        String template = "";
+        if(tradingItem.getTemplateId()!=null){//如果选择了模板
+            TradingTemplateInitTable tttt = this.iTradingTemplateInitTable.selectById(tradingItem.getTemplateId());
+            template = tttt.getTemplateHtml();
+            String [] tempicUrls = request.getParameterValues("blankimg");//界面中添加的模板图片
+            if(tempicUrls!=null&&tempicUrls.length>0){//如果界面中模板图片不为空，那么替换模板中ＵＲＬ地址
+                org.jsoup.nodes.Document doc = org.jsoup.Jsoup.parse(template);
+                org.jsoup.select.Elements content = doc.getElementsByAttributeValue("name", "blankimg");
+                String url = "";
+                int j=0;
+                for(int i=0;i<content.size();i++){
+                    org.jsoup.nodes.Element el = content.get(i);
+                    url = el.attr("src");
+                    if(url.indexOf("blank.jpg")>0&&j<=tempicUrls.length){
+                        el.attr("src",tempicUrls[j]);
+                        j++;
+                    }
+                }
+                template=doc.html();
+            }
+
+            template = template.replace("{ProductDetail}",tradingItem.getDescription());
+            if(tttt!=null&&tradingItem.getSellerItemInfoId()!=null){//如果选择了卖家描述
+                TradingDescriptionDetailsWithBLOBs tdd = this.iTradingDescriptionDetails.selectById(tradingItem.getSellerItemInfoId());
+                template = template.replace("{PaymentMethodTitle}",tdd.getPayTitle()==null?"PayTitle":tdd.getPayTitle());
+                template = template.replace("{PaymentMethod}",tdd.getPayInfo());
+
+                template = template.replace("{ShippingDetailTitle}",tdd.getShippingTitle()==null?"ShippingTitle":tdd.getShippingTitle());
+                template = template.replace("{ShippingDetail}",tdd.getShippingInfo());
+
+                template = template.replace("{SalesPolicyTitle}",tdd.getGuaranteeTitle()==null?"GuaranteeTitle":tdd.getGuaranteeTitle());
+                template = template.replace("{SalesPolicy}",tdd.getGuaranteeInfo());
+
+                template = template.replace("{AboutUsTitle}",tdd.getFeedbackTitle()==null?"FeedbackTitle":tdd.getFeedbackTitle());
+                template = template.replace("{AboutUs}",tdd.getFeedbackInfo());
+
+                template = template.replace("{ContactUsTitle}",tdd.getContactTitle()==null?"ContactTitle":tdd.getContactTitle());
+                template = template.replace("{ContactUs}",tdd.getContactInfo());
+            }
+        }else{//未选择模板，
+            template+=item.getDescription()+"</br>";
+            if(tradingItem.getSellerItemInfoId()!=null){//如果选择了卖家描述
+                TradingDescriptionDetailsWithBLOBs tdd = this.iTradingDescriptionDetails.selectById(tradingItem.getSellerItemInfoId());
+
+                template+=tdd.getPayTitle()+"</br>"+tdd.getPayInfo()==null?"":tdd.getPayInfo()+"</br>";
+                template+=tdd.getShippingTitle()+"</br>"+tdd.getShippingInfo()==null?"":tdd.getShippingInfo()+"</br>";
+                template+=tdd.getGuaranteeTitle()+"</br>"+tdd.getGuaranteeInfo()==null?"":tdd.getGuaranteeInfo()+"</br>";
+                template+=tdd.getFeedbackTitle()+"</br>"+tdd.getFeedbackInfo()==null?"":tdd.getFeedbackInfo()+"</br>";
+                template+=tdd.getContactTitle()+"</br>"+tdd.getContactInfo()==null?"":tdd.getContactInfo()+"</br>";
+
+            }
+        }
+        item.setDescription(template);
+
+        if(request.getParameter("SecondaryCategory.CategoryID")==null||"".equals(request.getParameter("SecondaryCategory.CategoryID"))){
+            item.setSecondaryCategory(null);
+        }
+        TradingItemAddress tia = this.iTradingItemAddress.selectById(tradingItem.getItemLocationId());
+        Asserts.assertTrue(tia!=null,"物品所在地不能为空！");
+        item.setCountry(DataDictionarySupport.getTradingDataDictionaryByID(tia.getCountryId()).getValue());
+        item.setCurrency(DataDictionarySupport.getTradingDataDictionaryByID(Long.parseLong(item.getSite())).getValue1());
+        item.setSite(DataDictionarySupport.getTradingDataDictionaryByID(Long.parseLong(item.getSite())).getValue());
+        item.setPostalCode(tia.getPostalcode());
+
+        TradingPaypal tp = this.iTradingPayPal.selectById(tradingItem.getPayId());
+        if(tp!=null) {
+            item.setPayPalEmailAddress(payPalService.selectById(Long.parseLong(tp.getPaypal())).getEmail());
+        }
+        List<String> limo = new ArrayList();
+        limo.add("PayPal");
+        item.setPaymentMethods(limo);
+        item.setListingDuration(item.getListingDuration() == null ? "GTC" : item.getListingDuration());
+        item.setDispatchTimeMax(0);
+        if(item.getVariations()!=null) {
+            List<Variation> livt = item.getVariations().getVariation();
+            for(int i = 0 ; i<livt.size();i++){
+                Variation vtion = livt.get(i);
+                List<VariationSpecifics> livar = new ArrayList();
+                VariationSpecifics vsf = new VariationSpecifics();
+                List<NameValueList> linvls = item.getVariations().getVariationSpecificsSet().getNameValueList();
+                if(linvls!=null&&linvls.size()>0){
+                    List<NameValueList> linameList = new ArrayList();
+                    for(NameValueList vs : linvls){
+                        NameValueList nvl = new NameValueList();
+                        nvl.setName(vs.getName());
+                        List li = new ArrayList();
+                        li.add(vs.getValue().get(i));
+                        nvl.setValue(li);
+                        linameList.add(nvl);
+                    }
+                    vsf.setNameValueList(linameList);
+                }
+                livar.add(vsf);
+                vtion.setVariationSpecifics(livar);
+            }
+            item.getVariations().setVariation(livt);
+            item.getVariations().getPictures().setVariationSpecificName(item.getVariations().getVariationSpecificsSet().getNameValueList().get(0).getName());
+            if(item.getStartPrice()!=null){
+                tradingItem.setStartprice(item.getStartPrice().getValue());
+            }
+
+            List<NameValueList>  linvl= item.getVariations().getVariationSpecificsSet().getNameValueList();
+            for(NameValueList nvlst : linvl){
+                List<String> listr = nvlst.getValue();
+                listr = MyCollectionsUtil.listUnique(listr);
+                nvlst.setValue(listr);
+            }
+            item.getVariations().getVariationSpecificsSet().setNameValueList(linvl);
+        }
+
+        item.setListingType(item.getListingType().equals("2")?"FixedPriceItem":item.getListingType());
+
+        String xml="";
+        //当选择多账号时刊登
+        String [] paypals = request.getParameterValues("ebayAccounts");
+        String paypal = paypals[0];
+        item.setTitle(request.getParameter("Title_"+paypal));
+        item.setSubTitle(request.getParameter("SubTitle_"+paypal));
+        if(request.getParameter("Quantity_"+paypal)!=null&&!"".equals(request.getParameter("Quantity_"+paypal))){
+            item.setQuantity(Integer.parseInt(request.getParameter("Quantity_"+paypal)));
+        }
+        if(request.getParameter("StartPrice.value_"+paypal)!=null&&!"".equals(request.getParameter("StartPrice.value_"+paypal))){
+            StartPrice sp = new StartPrice();
+            sp.setValue(Double.parseDouble(request.getParameter("StartPrice.value_"+paypal)));
+            sp.setCurrencyID(DataDictionarySupport.getTradingDataDictionaryByID(Long.parseLong(tradingItem.getSite())).getValue1());
+            item.setStartPrice(sp);
+        }
+        String [] picurl = request.getParameterValues("PictureDetails_"+paypal+".PictureURL");
+        if(picurl!=null&&picurl.length>0){
+            PictureDetails pd = item.getPictureDetails();
+            if(pd==null){
+                pd = new PictureDetails();
+            }
+            List lipic = new ArrayList();
+            for(int i = 0;i<picurl.length;i++){
+                lipic.add(picurl[i]);
+            }
+            if(lipic.size()>0){
+                pd.setPictureURL(lipic);
+            }
+            item.setPictureDetails(pd);
+        }
+        getEbayPicUrl(item,tradingItem,request);
+        //getEbayPicUrl(item,tradingItem,paypal);
+        UsercontrollerEbayAccount ua = this.iUsercontrollerEbayAccount.selectById(Long.parseLong(paypal));
+        //PublicUserConfig pUserConfig = DataDictionarySupport.getPublicUserConfigByID(ua.getPaypalAccountId());
+        //如果配置ＥＢＡＹ账号时，选择强制使用paypal账号则用该账号
+        //item.setPayPalEmailAddress(pUserConfig.getConfigValue());
+        //定时刊登时，需要获取保存到数据库中的ＩＤ
+        if (item.getListingType().equals("Chinese")) {
+            AddItemRequest addItem = new AddItemRequest();
+            addItem.setXmlns("urn:ebay:apis:eBLBaseComponents");
+            addItem.setErrorLanguage("en_US");
+            addItem.setWarningLevel("High");
+            RequesterCredentials rc = new RequesterCredentials();
+            rc.seteBayAuthToken(ua.getEbayToken());
+            addItem.setRequesterCredentials(rc);
+            addItem.setItem(item);
+            xml = PojoXmlUtil.pojoToXml(addItem);
+            xml = "<?xml version=\"1.0\" encoding=\"utf-8\"?>" + xml;
+        } else {
+            if("2".equals(tradingItem.getListingtype())){
+                item.setStartPrice(null);
+            }
+            AddFixedPriceItemRequest addItem = new AddFixedPriceItemRequest();
+            addItem.setXmlns("urn:ebay:apis:eBLBaseComponents");
+            addItem.setErrorLanguage("en_US");
+            addItem.setWarningLevel("High");
+            RequesterCredentials rc = new RequesterCredentials();
+            rc.seteBayAuthToken(ua.getEbayToken());
+            addItem.setRequesterCredentials(rc);
+            addItem.setItem(item);
+            xml = PojoXmlUtil.pojoToXml(addItem);
+            xml = "<?xml version=\"1.0\" encoding=\"utf-8\"?>" + xml;
+        }
+        System.out.println(xml);
+        //Asserts.assertTrue(false, "错误");
+        UsercontrollerDevAccountExtend d = new UsercontrollerDevAccountExtend();
+        d.setApiSiteid(DataDictionarySupport.getTradingDataDictionaryByID(Long.parseLong(tradingItem.getSite())).getName1());
+        if (item.getListingType().equals("Chinese")) {
+            d.setApiCallName(APINameStatic.AddItem);
+        } else {
+            d.setApiCallName(APINameStatic.AddFixedPriceItem);
+        }
+        //String xml= BindAccountAPI.getSessionID(d.getRunname());
+
+        AddApiTask addApiTask = new AddApiTask();
+
+        Map<String, String> resMap = addApiTask.exec(d, xml, apiUrl);
+        String r1 = resMap.get("stat");
+        String res = resMap.get("message");
+        if ("fail".equalsIgnoreCase(r1)) {
+            AjaxSupport.sendFailText("fail", "提交数据不全，无法检查费用！");
+        }
+        String ack = SamplePaseXml.getVFromXmlString(res, "Ack");
+        System.out.println("-----------------");
+        System.out.println(res);
+        System.out.println("-----------------");
+        if ("Success".equalsIgnoreCase(ack) || "Warning".equalsIgnoreCase(ack)) {
+            /*String itemId = SamplePaseXml.getVFromXmlString(res, "ItemID");
+            tradingItem.setItemId(itemId);
+            tradingItem.setIsFlag("Success");
+            //this.iTradingItem.saveTradingItem(tradingItem);
+            modelMap.put("tradingItem",tradingItem);*/
+            Document document= DocumentHelper.parseText(res);
+            Element rootElt = document.getRootElement();
+            Element recommend = rootElt.element("Fees");
+            Iterator<Element> iter = recommend.elementIterator("Fee");
+            List<Map> lim = new ArrayList<Map>();
+            while (iter.hasNext()){
+                Element ment = iter.next();
+                System.out.println(Double.parseDouble(ment.elementText("Fee")));
+                System.out.println(ment.element("Fee").getText());
+                if(Double.parseDouble(ment.elementText("Fee"))>0){
+                    Map m = new HashMap();
+                    m.put("name",ment.elementText("Name"));
+                    m.put("value",ment.elementText("Fee"));
+                    lim.add(m);
+                }
+            }
+            AjaxSupport.sendSuccessText("message", lim);
+        } else {
+            //String errors = SamplePaseXml.getVFromXmlString(res, "Errors");
+            String errors  = SamplePaseXml.getSpecifyElementTextAllInOne(res,"Errors","LongMessage");
+            AjaxSupport.sendFailText("fail", "检查ebay费失败:"+errors);
+        }
+    }
+
     @RequestMapping("/ajax/listingItem.do")
     @ResponseBody
     public void listingItem(HttpServletRequest request,HttpServletResponse response,@ModelAttribute( "initSomeParmMap" )ModelMap modelMap) throws Exception {
@@ -1522,8 +1802,10 @@ public class ItemController extends BaseAction{
         String [] ids = idstr.split(",");
         AddApiTask addApiTask = new AddApiTask();
         String xml = "";
+        List<String> successmessage=new ArrayList<String>();
+        List<String> errormessage=new ArrayList<String>();
         for(int i=0;i<ids.length;i++){
-            TradingItem tradingItem = this.iTradingItem.selectById(Long.parseLong(ids[i]));
+            TradingItemWithBLOBs tradingItem = this.iTradingItem.selectByIdBL(Long.parseLong(ids[i]));
             Item item = this.iTradingItem.toItem(tradingItem);
             UsercontrollerEbayAccount ua = this.iUsercontrollerEbayAccount.selectById(Long.parseLong(tradingItem.getEbayAccount()));
             if(tradingItem.getListingtype().equals("Chinese")){
@@ -1558,7 +1840,8 @@ public class ItemController extends BaseAction{
             } else {
                 d.setApiCallName(APINameStatic.AddFixedPriceItem);
             }
-            TaskMessageVO taskMessageVO=new TaskMessageVO();
+            //后台刊登
+            /*TaskMessageVO taskMessageVO=new TaskMessageVO();
             taskMessageVO.setMessageContext("刊登");
             taskMessageVO.setMessageTitle("刊登操作");
             taskMessageVO.setMessageType(SiteMessageStatic.LISTING_MESSAGE_TYPE);
@@ -1567,9 +1850,33 @@ public class ItemController extends BaseAction{
             SessionVO sessionVO=SessionCacheSupport.getSessionVO();
             taskMessageVO.setMessageTo(sessionVO.getId());
             taskMessageVO.setObjClass(tradingItem);
-            addApiTask.execDelayReturn(d, xml, apiUrl, taskMessageVO);
+            addApiTask.execDelayReturn(d, xml, apiUrl, taskMessageVO);*/
+            //前台刊登
+            Map<String, String> resMap= addApiTask.exec(d, xml, apiUrl);
+            String res=resMap.get("message");
+            String ack = SamplePaseXml.getVFromXmlString(res,"Ack");
+            if(ack.equals("Success")||"Warning".equalsIgnoreCase(ack)){
+                tradingItem.setIsFlag("Success");
+                String itemId = SamplePaseXml.getVFromXmlString(res, "ItemID");
+                tradingItem.setItemId(itemId);
+                this.iTradingItem.saveTradingItem(tradingItem);
+                successmessage.add("商品SKU为："+tradingItem.getSku()+"，名称为："+tradingItem.getItemName()+"，刊登成功！");
+            }else{
+                Document document= DocumentHelper.parseText(res);
+                Element rootElt = document.getRootElement();
+                Element tl = rootElt.element("Errors");
+                String longMessage = tl.elementText("LongMessage");
+                errormessage.add("商品SKU为："+tradingItem.getSku()+"，名称为："+tradingItem.getItemName()+"，刊登失败！失败原因："+longMessage);
+            }
         }
-        AjaxSupport.sendSuccessText("message", "操作成功！结果请稍后查看消息！");
+        Map m = new HashMap();
+        if(successmessage.size()>0){
+            m.put("su",successmessage);
+        }
+        if(errormessage.size()>0){
+            m.put("er",errormessage);
+        }
+        AjaxSupport.sendSuccessText("message", m);
     }
 
     /**
@@ -1589,7 +1896,7 @@ public class ItemController extends BaseAction{
         if(ids!=null&&ids.length>0){
             try{
                 this.iTradingItem.delItem(ids);
-                AjaxSupport.sendSuccessText("","操作成功!");
+                AjaxSupport.sendSuccessText("",ids);
             }catch(Exception e){
                 e.printStackTrace();
                 AjaxSupport.sendSuccessText("","删除失败!");
@@ -1730,6 +2037,7 @@ public class ItemController extends BaseAction{
     public ModelAndView editMoreItem(HttpServletRequest request,HttpServletResponse response,@ModelAttribute( "initSomeParmMap" )ModelMap modelMap) throws Exception{
         String idsStr = request.getParameter("ids");
         String [] ids = idsStr.split(",");
+        modelMap.put("idsStr",idsStr);
         TradingItem tradingItem = this.iTradingItem.selectById(Long.parseLong(ids[0]));
         Item item = this.iTradingItem.toEditItem(tradingItem);
         modelMap.put("sku",tradingItem.getSku());
@@ -1832,269 +2140,401 @@ public class ItemController extends BaseAction{
     @RequestMapping("/ajax/saveMoreItem.do")
     @ResponseBody
     public void saveMoreItem(Item item,TradingItem tradingItem,HttpServletRequest request,HttpServletResponse response,@ModelAttribute( "initSomeParmMap" )ModelMap modelMap) throws Exception {
-        /*String [] selectType = request.getParameterValues("selectType");
+        String [] selectType = request.getParameterValues("selectType");
         String isUpdateFlag = request.getParameter("isUpdateFlag");
         String listingType = request.getParameter("listingType");
         String itemidStr = request.getParameter("ItemID");
+        String idsStr = request.getParameter("idsStr");
         String [] itemid = itemidStr.split(",");
-        for(int i=0;i<itemid.length;i++){
-            item.setItemID(itemid[i]);
-            if("1".equals(isUpdateFlag)){//需要更新范本
-                TradingItem tradingItem1=this.iTradingItem.selectByItemId(item.getItemID());
-                if(tradingItem1!=null){//更新数据库中的范本
-                    this.iTradingItem.updateTradingItem(item,tradingItem1);
-                }
-            }
-            TradingListingData tld = this.iTradingListingData.selectByItemid(item.getItemID());
+        String [] ids = idsStr.split(",");
 
-            Item ite = new Item();
-            List litla = new ArrayList();
-            ReviseItemRequest rir = new ReviseItemRequest();
-            rir.setXmlns("urn:ebay:apis:eBLBaseComponents");
-            rir.setErrorLanguage("en_US");
-            rir.setWarningLevel("High");
-            RequesterCredentials rc = new RequesterCredentials();
-            String ebayAccount = tld.getEbayAccount();
-            SessionVO c= SessionCacheSupport.getSessionVO();
-            List<UsercontrollerEbayAccount> liuea = this.iUsercontrollerEbayAccount.selectUsercontrollerEbayAccountByUserId(c.getId());
-            String token = "";
-            for(UsercontrollerEbayAccount uea:liuea){
-                if(ebayAccount.equals(uea.getEbayName())){
-                    token=this.iUsercontrollerEbayAccount.selectById(uea.getId()).getEbayToken();
-                }
-            }
-            rc.seteBayAuthToken(token);
-            rir.setRequesterCredentials(rc);
-            ite.setItemID(item.getItemID());
-            for(String str : selectType){
-                TradingListingAmendWithBLOBs tla = new TradingListingAmendWithBLOBs();
-                tla.setItem(Long.parseLong(tld.getItemId()));
-                tla.setParentId(tld.getId());
-                if(str.equals("StartPrice")){//改价格
-                    tla.setAmendType("StartPrice");
-                    if("FixedPriceItem".equals(listingType)) {
-                        ite.setStartPrice(item.getStartPrice());
-                        tla.setContent("将价格从" + tld.getPrice() + "修改为" + item.getStartPrice().getValue());
-                        tld.setPrice(item.getStartPrice().getValue());
-                        Item ites = new Item();
-                        ites.setItemID(item.getItemID());
-                        ites.setStartPrice(item.getStartPrice());
-                        rir.setItem(ites);
-                        tla.setCosxml("<?xml version=\"1.0\" encoding=\"utf-8\"?>"+PojoXmlUtil.pojoToXml(rir));
-                    }else if("2".equals(listingType)){
-                        tla.setContent("多属性价格调整！");
-                        ite.setVariations(item.getVariations());
-                        Item ites = new Item();
-                        ites.setItemID(item.getItemID());
-                        ites.setVariations(item.getVariations());
-                        rir.setItem(ites);
-                        tla.setCosxml("<?xml version=\"1.0\" encoding=\"utf-8\"?>"+PojoXmlUtil.pojoToXml(rir));
-                    }else if("Chinese".equals(listingType)){
-                        tla.setContent("将价格从" + tld.getPrice() + "修改为" + item.getStartPrice().getValue());
-                        tld.setPrice(item.getStartPrice().getValue());
-                        item.setBuyItNowPrice(item.getStartPrice().getValue());
-                        Item ites = new Item();
-                        ites.setItemID(item.getItemID());
-                        ites.setBuyItNowPrice(item.getBuyItNowPrice());
-                        rir.setItem(ites);
-                        tla.setCosxml("<?xml version=\"1.0\" encoding=\"utf-8\"?>"+PojoXmlUtil.pojoToXml(rir));
-                    }
+        for(int i=0;i<ids.length;i++){
+            TradingItemWithBLOBs tradingItem1=this.iTradingItem.selectByIdBL(Long.parseLong(ids[i]));
 
-                }else if(str.equals("Quantity")){//改数量
-                    tla.setAmendType("Quantity");
-                    tla.setContent("将数量从" + tld.getQuantity() + "修改为" + item.getQuantity());
-                    ite.setQuantity(item.getQuantity());
-                    tld.setQuantity(item.getQuantity().longValue());
-                    Item ites = new Item();
-                    ites.setItemID(item.getItemID());
-                    ites.setQuantity(item.getQuantity());
-                    rir.setItem(ites);
-                    tla.setCosxml("<?xml version=\"1.0\" encoding=\"utf-8\"?>"+PojoXmlUtil.pojoToXml(rir));
-                }else if(str.equals("PictureDetails")){//改图片
-                    tla.setAmendType("PictureDetails");
-                    tla.setContent("图片修改");
-
-                    Item ites = new Item();
-                    String [] pics = request.getParameterValues("PictureDetails_"+item.getItemID()+".PictureURL");
-                    PictureDetails pd = new PictureDetails();
-                    pd.setGalleryType("Gallery");
-                    pd.setGalleryURL(pics[0]);
-                    pd.setPhotoDisplay("PicturePack");
-                    List<String> listr = new ArrayList<String>();
-                    for(String pic:pics){
-                        String mackid = EncryptionUtil.md5Encrypt(pic);
-                        List<TradingListingpicUrl> litamss = this.iTradingListingPicUrl.selectByMackId(mackid);
-                        if(litamss==null||litamss.size()==0){
-                            listr.add(pic);
-                        }else {
-                            TradingListingpicUrl tam = litamss.get(0);
-                            listr.add(tam.getEbayurl());
+            if("1".equals(isUpdateFlag)&&tradingItem1.getItemId()!=null){//需要更新在线商
+                item.setItemID(tradingItem1.getItemId());
+                //TradingListingData tld = this.iTradingListingData.selectByItemid(item.getItemID());
+                UsercontrollerEbayAccount uea = this.iUsercontrollerEbayAccount.selectById(Long.parseLong(tradingItem1.getEbayAccount()));
+                Item ite = new Item();
+                List litla = new ArrayList();
+                ReviseItemRequest rir = new ReviseItemRequest();
+                rir.setXmlns("urn:ebay:apis:eBLBaseComponents");
+                rir.setErrorLanguage("en_US");
+                rir.setWarningLevel("High");
+                RequesterCredentials rc = new RequesterCredentials();
+                String ebayAccount = uea.getEbayAccount();
+                SessionVO c= SessionCacheSupport.getSessionVO();
+                String token =uea.getEbayToken();
+                rc.seteBayAuthToken(token);
+                rir.setRequesterCredentials(rc);
+                ite.setItemID(item.getItemID());
+                for(String str : selectType){
+                    TradingListingAmendWithBLOBs tla = new TradingListingAmendWithBLOBs();
+                    tla.setItem(Long.parseLong(tradingItem1.getItemId()));
+                    tla.setParentId(tradingItem1.getId());
+                    if(str.equals("StartPrice")){//改价格
+                        tla.setAmendType("StartPrice");
+                        if("FixedPriceItem".equals(listingType)) {
+                            ite.setStartPrice(item.getStartPrice());
+                            tla.setContent("将价格从" + tradingItem1.getStartprice() + "修改为" + item.getStartPrice().getValue());
+                            tradingItem1.setStartprice(item.getStartPrice().getValue());
+                            Item ites = new Item();
+                            ites.setItemID(item.getItemID());
+                            ites.setStartPrice(item.getStartPrice());
+                            rir.setItem(ites);
+                            tla.setCosxml("<?xml version=\"1.0\" encoding=\"utf-8\"?>"+PojoXmlUtil.pojoToXml(rir));
+                        }else if("2".equals(listingType)){
+                            tla.setContent("多属性价格调整！");
+                            ite.setVariations(item.getVariations());
+                            Item ites = new Item();
+                            ites.setItemID(item.getItemID());
+                            ites.setVariations(item.getVariations());
+                            rir.setItem(ites);
+                            tla.setCosxml("<?xml version=\"1.0\" encoding=\"utf-8\"?>"+PojoXmlUtil.pojoToXml(rir));
+                        }else if("Chinese".equals(listingType)){
+                            tla.setContent("将价格从" + tradingItem1.getStartprice() + "修改为" + item.getStartPrice().getValue());
+                            tradingItem1.setStartprice(item.getStartPrice().getValue());
+                            item.setBuyItNowPrice(item.getStartPrice().getValue());
+                            Item ites = new Item();
+                            ites.setItemID(item.getItemID());
+                            ites.setBuyItNowPrice(item.getBuyItNowPrice());
+                            rir.setItem(ites);
+                            tla.setCosxml("<?xml version=\"1.0\" encoding=\"utf-8\"?>"+PojoXmlUtil.pojoToXml(rir));
                         }
-                    }
-                    pd.setPictureURL(listr);
-                    ite.setPictureDetails(pd);
-                    ites.setPictureDetails(pd);
-                    ites.setItemID(item.getItemID());
-                    rir.setItem(ites);
-                    tla.setCosxml("<?xml version=\"1.0\" encoding=\"utf-8\"?>"+PojoXmlUtil.pojoToXml(rir));
-                }else if(str.equals("PayPal")){//改支付方式
-                    tla.setAmendType("PayPal");
-                    tla.setContent("支付方式修改");
-                    ite.setPayPalEmailAddress(item.getPayPalEmailAddress());
-                    Item ites = new Item();
-                    ites.setItemID(item.getItemID());
-                    ites.setPayPalEmailAddress(item.getPayPalEmailAddress());
-                    rir.setItem(ites);
-                    tla.setCosxml("<?xml version=\"1.0\" encoding=\"utf-8\"?>"+PojoXmlUtil.pojoToXml(rir));
-                }else if(str.equals("ReturnPolicy")){//改退货政策
-                    tla.setAmendType("ReturnPolicy");
-                    tla.setContent("退货政策修改");
-                    ite.setReturnPolicy(item.getReturnPolicy());
-                    Item ites = new Item();
-                    ites.setItemID(item.getItemID());
-                    ites.setReturnPolicy(item.getReturnPolicy());
-                    rir.setItem(ites);
-                    tla.setCosxml("<?xml version=\"1.0\" encoding=\"utf-8\"?>"+PojoXmlUtil.pojoToXml(rir));
-                }else if(str.equals("Title")){//改标题　
-                    tla.setAmendType("Title");
-                    tla.setContent("标题修改为："+item.getTitle());
-                    ite.setTitle(item.getTitle());
-                    tld.setTitle(item.getTitle());
-                    Item ites = new Item();
-                    ites.setItemID(item.getItemID());
-                    ites.setTitle(item.getTitle());
-                    rir.setItem(ites);
-                    tla.setCosxml("<?xml version=\"1.0\" encoding=\"utf-8\"?>"+PojoXmlUtil.pojoToXml(rir));
-                }else if(str.equals("Buyer")){//改买家要求
-                    tla.setAmendType("Buyer");
-                    tla.setContent("修改买家要求");
-                    ite.setBuyerRequirementDetails(item.getBuyerRequirementDetails());
-                    Item ites = new Item();
-                    ites.setItemID(item.getItemID());
-                    ites.setBuyerRequirementDetails(item.getBuyerRequirementDetails());
-                    rir.setItem(ites);
-                    tla.setCosxml("<?xml version=\"1.0\" encoding=\"utf-8\"?>"+PojoXmlUtil.pojoToXml(rir));
-                }else if(str.equals("SKU")){//改ＳＫＵ
-                    tla.setAmendType("SKU");
-                    tla.setContent("SKU修改为："+item.getSKU());
-                    ite.setSKU(item.getSKU());
-                    tld.setSku(item.getSKU());
-                    Item ites = new Item();
-                    ites.setItemID(item.getItemID());
-                    ites.setSKU(item.getSKU());
-                    rir.setItem(ites);
-                    tla.setCosxml("<?xml version=\"1.0\" encoding=\"utf-8\"?>"+PojoXmlUtil.pojoToXml(rir));
-                }else if(str.equals("PrimaryCategory")){//改分类
-                    tla.setAmendType("PrimaryCategory");
-                    tla.setContent("商品分类修改为:"+item.getPrimaryCategory().getCategoryID());
-                    ite.setPrimaryCategory(item.getPrimaryCategory());
-                    Item ites = new Item();
-                    ites.setItemID(item.getItemID());
-                    ites.setPrimaryCategory(item.getPrimaryCategory());
-                    rir.setItem(ites);
-                    tla.setCosxml("<?xml version=\"1.0\" encoding=\"utf-8\"?>"+PojoXmlUtil.pojoToXml(rir));
-                }else if(str.equals("ConditionID")){//改商品状态
-                    tla.setAmendType("ConditionID");
-                    tla.setContent("修改商品状态");
-                    ite.setConditionID(item.getConditionID());
-                    Item ites = new Item();
-                    ites.setItemID(item.getItemID());
-                    ites.setConditionID(item.getConditionID());
-                    rir.setItem(ites);
-                    tla.setCosxml("<?xml version=\"1.0\" encoding=\"utf-8\"?>"+PojoXmlUtil.pojoToXml(rir));
-                }else if(str.equals("Location")){//改运输到的地址
-                    tla.setAmendType("Location");
-                    ite.setLocation(item.getLocation());
-                    Item ites = new Item();
-                    ites.setItemID(item.getItemID());
-                    ites.setLocation(item.getLocation());
-                    rir.setItem(ites);
-                    tla.setCosxml("<?xml version=\"1.0\" encoding=\"utf-8\"?>"+PojoXmlUtil.pojoToXml(rir));
-                }else if(str.equals("DispatchTimeMax")){//最快处理时间
-                    tla.setAmendType("DispatchTimeMax");
-                    tla.setContent("修改处理时间");
-                    ite.setDispatchTimeMax(item.getDispatchTimeMax());
-                    Item ites = new Item();
-                    ites.setItemID(item.getItemID());
-                    ites.setDispatchTimeMax(item.getDispatchTimeMax());
-                    rir.setItem(ites);
-                    tla.setCosxml("<?xml version=\"1.0\" encoding=\"utf-8\"?>"+PojoXmlUtil.pojoToXml(rir));
-                }else if(str.equals("PrivateListing")){//改是否允许私人买
-                    tla.setAmendType("PrivateListing");
-                    ite.setPrivateListing(item.getPrivateListing());
-                    Item ites = new Item();
-                    ites.setItemID(item.getItemID());
-                    ites.setPrivateListing(item.getPrivateListing());
-                    rir.setItem(ites);
-                    tla.setCosxml("<?xml version=\"1.0\" encoding=\"utf-8\"?>"+PojoXmlUtil.pojoToXml(rir));
-                }else if(str.equals("ListingDuration")){//改刊登天数
-                    tla.setAmendType("ListingDuration");
-                    tla.setContent("修改刊登天数为："+item.getListingDuration());
-                    ite.setListingDuration(item.getListingDuration());
-                    Item ites = new Item();
-                    ites.setItemID(item.getItemID());
-                    ites.setListingDuration(item.getListingDuration());
-                    rir.setItem(ites);
-                    tla.setCosxml("<?xml version=\"1.0\" encoding=\"utf-8\"?>"+PojoXmlUtil.pojoToXml(rir));
-                }else if(str.equals("Description")){//改商品描述
-                    tla.setContent("修改商品描述");
-                    tla.setAmendType("Description");
-                    ite.setDescription(item.getDescription());
-                    Item ites = new Item();
-                    ites.setItemID(item.getItemID());
-                    ites.setDescription(item.getDescription());
-                    rir.setItem(ites);
-                    tla.setCosxml("<?xml version=\"1.0\" encoding=\"utf-8\"?>"+PojoXmlUtil.pojoToXml(rir));
-                }else if(str.equals("ShippingDetails")){//改运输详情
-                    tla.setAmendType("ShippingDetails");
-                    tla.setContent("修改运输详情");
-                    ShippingDetails sdf = item.getShippingDetails();
-                    String nottoLocation = request.getParameter("notLocationValue");
-                    if(!ObjectUtils.isLogicalNull(nottoLocation)){
-                        String noLocation[] =nottoLocation.split(",");
-                        List listr = new ArrayList();
-                        for(String nostr : noLocation){
-                            listr.add(nostr);
+
+                    }else if(str.equals("Quantity")){//改数量
+                        tla.setAmendType("Quantity");
+                        tla.setContent("将数量从" + tradingItem1.getQuantity() + "修改为" + item.getQuantity());
+                        ite.setQuantity(item.getQuantity());
+                        tradingItem1.setQuantity(item.getQuantity().longValue());
+                        Item ites = new Item();
+                        ites.setItemID(item.getItemID());
+                        ites.setQuantity(item.getQuantity());
+                        rir.setItem(ites);
+                        tla.setCosxml("<?xml version=\"1.0\" encoding=\"utf-8\"?>"+PojoXmlUtil.pojoToXml(rir));
+                    }else if(str.equals("PictureDetails")){//改图片
+                        tla.setAmendType("PictureDetails");
+                        tla.setContent("图片修改");
+
+                        Item ites = new Item();
+                        String [] pics = request.getParameterValues("PictureDetails_"+item.getItemID()+".PictureURL");
+                        PictureDetails pd = new PictureDetails();
+                        pd.setGalleryType("Gallery");
+                        pd.setGalleryURL(pics[0]);
+                        pd.setPhotoDisplay("PicturePack");
+                        List<String> listr = new ArrayList<String>();
+                        for(String pic:pics){
+                            String mackid = EncryptionUtil.md5Encrypt(pic);
+                            List<TradingListingpicUrl> litamss = this.iTradingListingPicUrl.selectByMackId(mackid);
+                            if(litamss==null||litamss.size()==0){
+                                listr.add(pic);
+                            }else {
+                                TradingListingpicUrl tam = litamss.get(0);
+                                listr.add(tam.getEbayurl());
+                            }
                         }
-                        sdf.setExcludeShipToLocation(listr);
+                        pd.setPictureURL(listr);
+                        ite.setPictureDetails(pd);
+                        ites.setPictureDetails(pd);
+                        ites.setItemID(item.getItemID());
+                        rir.setItem(ites);
+                        tla.setCosxml("<?xml version=\"1.0\" encoding=\"utf-8\"?>"+PojoXmlUtil.pojoToXml(rir));
+                    }else if(str.equals("PayPal")){//改支付方式
+                        tla.setAmendType("PayPal");
+                        tla.setContent("支付方式修改");
+                        ite.setPayPalEmailAddress(item.getPayPalEmailAddress());
+                        Item ites = new Item();
+                        ites.setItemID(item.getItemID());
+                        ites.setPayPalEmailAddress(item.getPayPalEmailAddress());
+                        rir.setItem(ites);
+                        tla.setCosxml("<?xml version=\"1.0\" encoding=\"utf-8\"?>"+PojoXmlUtil.pojoToXml(rir));
+                    }else if(str.equals("ReturnPolicy")){//改退货政策
+                        tla.setAmendType("ReturnPolicy");
+                        tla.setContent("退货政策修改");
+                        ite.setReturnPolicy(item.getReturnPolicy());
+                        Item ites = new Item();
+                        ites.setItemID(item.getItemID());
+                        ites.setReturnPolicy(item.getReturnPolicy());
+                        rir.setItem(ites);
+                        tla.setCosxml("<?xml version=\"1.0\" encoding=\"utf-8\"?>"+PojoXmlUtil.pojoToXml(rir));
+                    }else if(str.equals("Title")){//改标题　
+                        tla.setAmendType("Title");
+                        tla.setContent("标题修改为："+item.getTitle());
+                        ite.setTitle(item.getTitle());
+                        tradingItem1.setTitle(item.getTitle());
+                        Item ites = new Item();
+                        ites.setItemID(item.getItemID());
+                        ites.setTitle(item.getTitle());
+                        rir.setItem(ites);
+                        tla.setCosxml("<?xml version=\"1.0\" encoding=\"utf-8\"?>"+PojoXmlUtil.pojoToXml(rir));
+                    }else if(str.equals("Buyer")){//改买家要求
+                        tla.setAmendType("Buyer");
+                        tla.setContent("修改买家要求");
+                        ite.setBuyerRequirementDetails(item.getBuyerRequirementDetails());
+                        Item ites = new Item();
+                        ites.setItemID(item.getItemID());
+                        ites.setBuyerRequirementDetails(item.getBuyerRequirementDetails());
+                        rir.setItem(ites);
+                        tla.setCosxml("<?xml version=\"1.0\" encoding=\"utf-8\"?>"+PojoXmlUtil.pojoToXml(rir));
+                    }else if(str.equals("SKU")){//改ＳＫＵ
+                        tla.setAmendType("SKU");
+                        tla.setContent("SKU修改为："+item.getSKU());
+                        ite.setSKU(item.getSKU());
+                        tradingItem1.setSku(item.getSKU());
+                        Item ites = new Item();
+                        ites.setItemID(item.getItemID());
+                        ites.setSKU(item.getSKU());
+                        rir.setItem(ites);
+                        tla.setCosxml("<?xml version=\"1.0\" encoding=\"utf-8\"?>"+PojoXmlUtil.pojoToXml(rir));
+                    }else if(str.equals("PrimaryCategory")){//改分类
+                        tla.setAmendType("PrimaryCategory");
+                        tla.setContent("商品分类修改为:"+item.getPrimaryCategory().getCategoryID());
+                        ite.setPrimaryCategory(item.getPrimaryCategory());
+                        Item ites = new Item();
+                        ites.setItemID(item.getItemID());
+                        ites.setPrimaryCategory(item.getPrimaryCategory());
+                        rir.setItem(ites);
+                        tla.setCosxml("<?xml version=\"1.0\" encoding=\"utf-8\"?>"+PojoXmlUtil.pojoToXml(rir));
+                    }else if(str.equals("ConditionID")){//改商品状态
+                        tla.setAmendType("ConditionID");
+                        tla.setContent("修改商品状态");
+                        ite.setConditionID(item.getConditionID());
+                        Item ites = new Item();
+                        ites.setItemID(item.getItemID());
+                        ites.setConditionID(item.getConditionID());
+                        rir.setItem(ites);
+                        tla.setCosxml("<?xml version=\"1.0\" encoding=\"utf-8\"?>"+PojoXmlUtil.pojoToXml(rir));
+                    }else if(str.equals("Location")){//改运输到的地址
+                        tla.setAmendType("Location");
+                        ite.setLocation(item.getLocation());
+                        Item ites = new Item();
+                        ites.setItemID(item.getItemID());
+                        ites.setLocation(item.getLocation());
+                        rir.setItem(ites);
+                        tla.setCosxml("<?xml version=\"1.0\" encoding=\"utf-8\"?>"+PojoXmlUtil.pojoToXml(rir));
+                    }else if(str.equals("DispatchTimeMax")){//最快处理时间
+                        tla.setAmendType("DispatchTimeMax");
+                        tla.setContent("修改处理时间");
+                        ite.setDispatchTimeMax(item.getDispatchTimeMax());
+                        Item ites = new Item();
+                        ites.setItemID(item.getItemID());
+                        ites.setDispatchTimeMax(item.getDispatchTimeMax());
+                        rir.setItem(ites);
+                        tla.setCosxml("<?xml version=\"1.0\" encoding=\"utf-8\"?>"+PojoXmlUtil.pojoToXml(rir));
+                    }else if(str.equals("PrivateListing")){//改是否允许私人买
+                        tla.setAmendType("PrivateListing");
+                        ite.setPrivateListing(item.getPrivateListing());
+                        Item ites = new Item();
+                        ites.setItemID(item.getItemID());
+                        ites.setPrivateListing(item.getPrivateListing());
+                        rir.setItem(ites);
+                        tla.setCosxml("<?xml version=\"1.0\" encoding=\"utf-8\"?>"+PojoXmlUtil.pojoToXml(rir));
+                    }else if(str.equals("ListingDuration")){//改刊登天数
+                        tla.setAmendType("ListingDuration");
+                        tla.setContent("修改刊登天数为："+item.getListingDuration());
+                        ite.setListingDuration(item.getListingDuration());
+                        Item ites = new Item();
+                        ites.setItemID(item.getItemID());
+                        ites.setListingDuration(item.getListingDuration());
+                        rir.setItem(ites);
+                        tla.setCosxml("<?xml version=\"1.0\" encoding=\"utf-8\"?>"+PojoXmlUtil.pojoToXml(rir));
+                    }else if(str.equals("Description")){//改商品描述
+                        tla.setContent("修改商品描述");
+                        tla.setAmendType("Description");
+                        ite.setDescription(item.getDescription());
+                        Item ites = new Item();
+                        ites.setItemID(item.getItemID());
+                        ites.setDescription(item.getDescription());
+                        rir.setItem(ites);
+                        tla.setCosxml("<?xml version=\"1.0\" encoding=\"utf-8\"?>"+PojoXmlUtil.pojoToXml(rir));
+                    }else if(str.equals("ShippingDetails")){//改运输详情
+                        tla.setAmendType("ShippingDetails");
+                        tla.setContent("修改运输详情");
+                        ShippingDetails sdf = item.getShippingDetails();
+                        String nottoLocation = request.getParameter("notLocationValue");
+                        if(!ObjectUtils.isLogicalNull(nottoLocation)){
+                            String noLocation[] =nottoLocation.split(",");
+                            List listr = new ArrayList();
+                            for(String nostr : noLocation){
+                                listr.add(nostr);
+                            }
+                            sdf.setExcludeShipToLocation(listr);
+                        }
+                        ite.setShippingDetails(sdf);
+                        Item ites = new Item();
+                        ites.setItemID(item.getItemID());
+                        ites.setShippingDetails(item.getShippingDetails());
+                        rir.setItem(ites);
+                        tla.setCosxml("<?xml version=\"1.0\" encoding=\"utf-8\"?>"+PojoXmlUtil.pojoToXml(rir));
                     }
-                    ite.setShippingDetails(sdf);
-                    Item ites = new Item();
-                    ites.setItemID(item.getItemID());
-                    ites.setShippingDetails(item.getShippingDetails());
-                    rir.setItem(ites);
-                    tla.setCosxml("<?xml version=\"1.0\" encoding=\"utf-8\"?>"+PojoXmlUtil.pojoToXml(rir));
+                    litla.add(tla);
                 }
-                litla.add(tla);
+
+                String xml = "";
+                rir.setItem(ite);
+                xml = PojoXmlUtil.pojoToXml(rir);
+                xml = "<?xml version=\"1.0\" encoding=\"utf-8\"?>"+xml;
+                System.out.println(xml);
+
+                String returnString = this.cosPostXml(xml,APINameStatic.ReviseItem);
+                String ack = SamplePaseXml.getVFromXmlString(returnString,"Ack");
+                if("Success".equalsIgnoreCase(ack)||"Warning".equalsIgnoreCase(ack)){
+                    this.saveAmend(litla, "1");
+                }else{
+                    this.saveAmend(litla,"0");
+                    Document document= DocumentHelper.parseText(returnString);
+                    Element rootElt = document.getRootElement();
+                    Element tl = rootElt.element("Errors");
+                    String longMessage = tl.elementText("LongMessage");
+                    if(longMessage==null){
+                        longMessage = tl.elementText("ShortMessage");
+                    }
+                    this.saveSystemLog(longMessage,"在线修改商品报错",SiteMessageStatic.LISTING_DATA_UPDATE);
+                    AjaxSupport.sendFailText("fail",longMessage);
+                }
             }
-
-            String xml = "";
-            rir.setItem(ite);
-            xml = PojoXmlUtil.pojoToXml(rir);
-            xml = "<?xml version=\"1.0\" encoding=\"utf-8\"?>"+xml;
-            System.out.println(xml);
-
-            String returnString = this.cosPostXml(xml,APINameStatic.ReviseItem);
-            String ack = SamplePaseXml.getVFromXmlString(returnString,"Ack");
-            if("Success".equalsIgnoreCase(ack)||"Warning".equalsIgnoreCase(ack)){
-                this.saveAmend(litla,"1");
-                this.iTradingListingData.updateTradingListingData(tld);
-
-            }else{
-                this.saveAmend(litla,"0");
-                Document document= DocumentHelper.parseText(returnString);
-                Element rootElt = document.getRootElement();
-                Element tl = rootElt.element("Errors");
-                String longMessage = tl.elementText("LongMessage");
-                if(longMessage==null){
-                    longMessage = tl.elementText("ShortMessage");
-                }
-
-                this.saveSystemLog(longMessage,"在线修改商品报错",SiteMessageStatic.LISTING_DATA_UPDATE);
-                AjaxSupport.sendFailText("fail",longMessage);
+            if(tradingItem1!=null){//更新数据库中的范本
+                this.iTradingItem.updateTradingItem(item,tradingItem1);
             }
         }
-        AjaxSupport.sendSuccessText("message", "操作成功！");*/
+        AjaxSupport.sendSuccessText("message", "操作成功！");
     }
 
+
+    public String cosPostXml(String colStr,String month) throws Exception {
+        UsercontrollerDevAccountExtend d = userInfoService.getDevInfo(1L);
+        d.setApiSiteid("0");
+        d.setApiCallName(month);
+        AddApiTask addApiTask = new AddApiTask();
+        Map<String, String> resMap= addApiTask.exec(d, colStr, apiUrl);
+        String res=resMap.get("message");
+        String ack = SamplePaseXml.getVFromXmlString(res,"Ack");
+        if(ack.equals("Success")||"Warning".equalsIgnoreCase(ack)){
+            return res;
+        }else{
+            return res;
+        }
+
+    }
+
+    public void saveAmend(List<TradingListingAmendWithBLOBs> litlam,String isflag) throws Exception {
+        for(TradingListingAmendWithBLOBs tla : litlam){
+            ObjectUtils.toInitPojoForInsert(tla);
+            tla.setIsFlag(isflag);
+            this.iTradingListingData.insertTradingListingAmend(tla);
+        }
+    }
+
+    public void saveSystemLog(String context,String title,String type){
+        SiteMessageService siteMessageService= (SiteMessageService) ApplicationContextUtil.getBean(SiteMessageService.class);
+        TaskMessageVO taskMessageVO=new TaskMessageVO();
+        taskMessageVO.setMessageContext(context);
+        taskMessageVO.setMessageTitle(title);
+        taskMessageVO.setMessageType(type);
+        taskMessageVO.setMessageFrom("system");
+        SessionVO sessionVO=SessionCacheSupport.getSessionVO();
+        taskMessageVO.setMessageTo(sessionVO.getId());
+        taskMessageVO.setObjClass(null);
+        siteMessageService.addSiteMessage(taskMessageVO);
+    }
+
+    /**
+     * 取消定时任务
+     * @param request
+     * @param response
+     * @param modelMap
+     * @return
+     * @throws Exception
+     */
+    @RequestMapping("/ajax/delTradingTimer.do")
+    @ResponseBody
+    public void delTradingTimer(HttpServletRequest request,HttpServletResponse response,@ModelAttribute( "initSomeParmMap" )ModelMap modelMap) throws Exception {
+        String itemids = request.getParameter("itemids");
+        String [] itemid = itemids.split(",");
+        for(String id:itemid){
+            this.iTradingTimerListing.delTradingTimer(id);
+        }
+        AjaxSupport.sendSuccessText("message", "操作成功！");
+    }
+
+    /**
+     * 添加备注
+     * @param request
+     * @param response
+     * @param modelMap
+     * @return
+     * @throws Exception
+     */
+    @RequestMapping("/ajax/addItemRemark.do")
+    @ResponseBody
+    public void addItemRemark(HttpServletRequest request,HttpServletResponse response,@ModelAttribute( "initSomeParmMap" )ModelMap modelMap) throws Exception {
+        String id = request.getParameter("id");
+        String [] ids = id.split(",");
+        String remark = request.getParameter("remark");
+        List<TradingItem> litld = new ArrayList<TradingItem>();
+        for(int i=0;i<ids.length;i++) {
+            TradingItemWithBLOBs tradingItem = this.iTradingItem.selectByIdBL(Long.parseLong(ids[i]));
+            if(tradingItem!=null){
+                tradingItem.setRemark(remark);
+                this.iTradingItem.saveTradingItem(tradingItem);
+                litld.add(tradingItem);
+            }
+        }
+        AjaxSupport.sendSuccessText("",litld);
+    }
+
+    @RequestMapping("/ajax/timerListingItem.do")
+    @ResponseBody
+    public void timerListingItem(HttpServletRequest request,HttpServletResponse response,@ModelAttribute( "initSomeParmMap" )ModelMap modelMap) throws Exception {
+        String idstr = request.getParameter("id");
+        String timerStr = request.getParameter("timerStr");
+        String [] ids = idstr.split(",");
+        String xml = "";
+        for(int i=0;i<ids.length;i++){
+            TradingItemWithBLOBs tradingItem = this.iTradingItem.selectByIdBL(Long.parseLong(ids[i]));
+            Item item = this.iTradingItem.toItem(tradingItem);
+            UsercontrollerEbayAccount ua = this.iUsercontrollerEbayAccount.selectById(Long.parseLong(tradingItem.getEbayAccount()));
+            if(tradingItem.getListingtype().equals("Chinese")){
+                AddItemRequest addItem = new AddItemRequest();
+                addItem.setXmlns("urn:ebay:apis:eBLBaseComponents");
+                addItem.setErrorLanguage("en_US");
+                addItem.setWarningLevel("High");
+                RequesterCredentials rc = new RequesterCredentials();
+                rc.seteBayAuthToken(ua.getEbayToken());
+                addItem.setRequesterCredentials(rc);
+                addItem.setItem(item);
+                xml = PojoXmlUtil.pojoToXml(addItem);
+                xml = "<?xml version=\"1.0\" encoding=\"utf-8\"?>" + xml;
+            }else{
+                AddFixedPriceItemRequest addItem = new AddFixedPriceItemRequest();
+                addItem.setXmlns("urn:ebay:apis:eBLBaseComponents");
+                addItem.setErrorLanguage("en_US");
+                addItem.setWarningLevel("High");
+                RequesterCredentials rc = new RequesterCredentials();
+                rc.seteBayAuthToken(ua.getEbayToken());
+                addItem.setRequesterCredentials(rc);
+                addItem.setItem(item);
+                xml = PojoXmlUtil.pojoToXml(addItem);
+                xml = "<?xml version=\"1.0\" encoding=\"utf-8\"?>" + xml;
+            }
+            tradingItem.setListingWay("1");
+            this.iTradingItem.saveTradingItem(tradingItem);
+            System.out.println(xml);
+            TradingTimerListingWithBLOBs ttl = new TradingTimerListingWithBLOBs();
+            ttl.setItem(tradingItem.getId());
+            ttl.setTimer(DateUtils.parseDateTime(timerStr));
+            ttl.setTimerMessage(xml);
+            if (item.getListingType().equals("Chinese")) {
+                ttl.setApiMethod(APINameStatic.AddItem);
+            } else {
+                ttl.setApiMethod(APINameStatic.AddFixedPriceItem);
+            }
+            ttl.setEbayId(tradingItem.getEbayAccount());
+            ttl.setStateId(DataDictionarySupport.getTradingDataDictionaryByID(Long.parseLong(tradingItem.getSite())).getName1());
+            this.iTradingTimerListing.saveTradingTimer(ttl);
+
+        }
+
+        AjaxSupport.sendSuccessText("message", "操作成功！");
+    }
 }

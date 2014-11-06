@@ -60,6 +60,7 @@
 <c:url value="/css/compiled/gallery.css"/> type="text/css" media="screen"/>
 
 <script>
+
     var myDescription = null;
     var payid = '${item.payId}';
     var buyid = '${item.buyerId}';
@@ -292,6 +293,9 @@
     .price_div li em input{
         padding-right: 8px;
     }
+    body .dt{
+        font-size: 12px;
+    }
 </style>
 </head>
 <c:set var="item" value="${item}"/>
@@ -317,7 +321,7 @@
     <li>
         <dt>刊登类型</dt>
         <div class="ui-select dt5">
-            <select name="listingType" onchange="changeRadio(this)">
+            <select name="listingType" style="width: 300px;" onchange="changeRadio(this)">
                 <option value="Chinese">拍买</option>
                 <option value="FixedPriceItem">固价</option>
                 <option value="2">多属性</option>
@@ -328,7 +332,7 @@
     <li>
         <dt>站点</dt>
         <div class="ui-select dt5">
-            <select name="site">
+            <select name="site" style="width: 300px;">
                 <c:forEach items="${siteList}" var="sites">
                     <option value="${sites.id}">${sites.name}</option>
                 </c:forEach>
@@ -486,19 +490,23 @@
             </div>
         </div>
     </li>
+
     <h1>商品描述</h1>
-    <li style="height: 100%;">
+    <li style="height: 100%;padding-bottom: 20px;">
         <dt>描述</dt>
         <div class="new_left">
             <input type="hidden" name="Description" id="Description">
-            <script id="myDescription" type="text/plain" style="width:875px;height:300px;">${item.description}</script>
+            <script id="myDescription" type="text/plain" style="width:875px;height:470px;">${item.description}</script>
         </div>
     </li>
 
 </div>
+</br>
 <div >
-<div class="new_tab" style="width: 980px">
-    <dt class=new_ic_1 name=priceMessage onmouseover="setTab(this)">价格管理</dt>
+<div class="new_tab" style="width: 100%">
+    <div class="new_tab_left"></div>
+    <div class="new_tab_right" style="width: 10px;"></div>
+    <dt class=new_ic_1 name=priceMessage onmouseover="setTab(this)" style="font-size: 12px;">价格管理</dt>
     <dt name=pay onmouseover="setTab(this)">付款方式</dt>
     <dt name=shippingDeails onmouseover="setTab(this)">运输选项</dt>
     <dt name=itemLocation onmouseover="setTab(this)">物品所在地</dt>
@@ -513,7 +521,7 @@
     <li style="padding-top: 9px;">
         <dt>物品状况</dt>
         <div class="ui-select dt5">
-            <select name="ConditionID">
+            <select name="ConditionID"  style="width: 300px;">
                 <option selected="selected" value="1000">New</option>
                 <option value="1500">New other (see details)</option>
                 <option value="2000">Manufacturer refurbished</option>
@@ -525,8 +533,8 @@
     </li>
     <li>
         <dt>刊登天数</dt>
-        <div class="ui-select dt5">
-            <select name="ListingDuration">
+        <div class="ui-select dt5" >
+            <select name="ListingDuration"  style="width: 300px;">
                 <option value="Days_1">1 days</option>
                 <option value="Days_3">3 days</option>
                 <option value="Days_5">5 days</option>
@@ -595,13 +603,13 @@
     <br/>
     <br/>
 </div>
-<div name="showModel" id="buyer" style="display: none;width: 980px;height: 500px;"></div>
-<div name="showModel" id="discountpriceinfo" style="display: none;width: 980px;height: 500px"></div>
-<div name="showModel" id="itemLocation" style="display: none;width: 980px;height: 500px"></div>
-<div name="showModel" id="pay" style="display: none;width: 980px;height: 500px"></div>
-<div name="showModel" id="returnpolicy" style="display: none;width: 980px;height: 500px"></div>
-<div name="showModel" id="shippingDeails" style="display: none;width: 980px;height: 500px"></div>
-<div name="showModel" id="descriptiondetails" style="display: none;width: 980px;height: 500px"></div>
+<div name="showModel" id="buyer" style="display: none;width: 100%;height: 500px;"></div>
+<div name="showModel" id="discountpriceinfo" style="display: none;width: 100%;height: 500px"></div>
+<div name="showModel" id="itemLocation" style="display: none;width: 100%;height: 500px"></div>
+<div name="showModel" id="pay" style="display: none;width: 100%;height: 500px"></div>
+<div name="showModel" id="returnpolicy" style="display: none;width: 100%;height: 500px"></div>
+<div name="showModel" id="shippingDeails" style="display: none;width: 100%;height: 500px"></div>
+<div name="showModel" id="descriptiondetails" style="display: none;width: 100%;height: 500px"></div>
 </div>
 </div>
 <input type="hidden" name="id" id="id" value="${item.id}">
@@ -610,7 +618,7 @@
 </form>
 </div>
 
-<div id="new_view" class="new_view" style="position: fixed;bottom: 45px;overflow: visible" >
+<div id="new_view" class="new_view" style="position: fixed;bottom: 0px;overflow: visible" >
 
     <%--<li><a href="javascript:void(0)">预览</a></li>
     <li><a href="javascript:void(0)">检查eBay费</a></li>--%>
@@ -627,6 +635,8 @@
         <li><a href="javascript:void(0)" onclick="saveData(this,'updateListing')">更新在线刊登</a></li>
     </c:if>
     <li><a onclick="previewItem()" href="javascript:void(0)" target="_blank">预览</a></li>
+
+    <li><a onclick="checkEbayFee()" href="javascript:void(0)">检查ebay费</a></li>
     <%--<li><a href="javascript:void(0)">更新在线刊登</a></li>
     <li><a href="javascript:void(0)">更新</a></li>--%>
     <li><a href="javascript:void(0)" onclick="closeWindow()">关闭</a></li>

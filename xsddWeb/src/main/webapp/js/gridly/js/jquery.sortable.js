@@ -18,6 +18,7 @@ $.fn.sortable = function(options) {
 			return;
 		}
 		var index, items = $(this).children(options.items), connectWith = options.connectWith || false;
+        if(items[0]==null){return;}
 		var placeholder = $('<' + items[0].tagName + ' class="sortable-placeholder">');
 		var handle = options.handle, isHandle;
 		items.find(handle).mousedown(function() {

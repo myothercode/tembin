@@ -7,6 +7,7 @@ import com.base.database.trading.model.*;
 import com.base.domains.CommonParmVO;
 import com.base.domains.SessionVO;
 import com.base.domains.querypojos.ListingDataAmendQuery;
+import com.base.domains.querypojos.ListingDataQuery;
 import com.base.domains.querypojos.TablePriceQuery;
 import com.base.domains.userinfo.UsercontrollerDevAccountExtend;
 import com.base.domains.userinfo.UsercontrollerEbayAccountExtend;
@@ -206,7 +207,7 @@ public class ListingItemController extends BaseAction {
         response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
         response.setCharacterEncoding("UTF-8");
         String outputFile1= request.getSession().getServletContext().getRealPath("/");
-        String outputFile=outputFile1+"template\\template.xls";
+        String outputFile=outputFile1+"template/template.xls";
         response.setHeader("Content-Disposition","attachment;filename=template.xls");// 组装附件名称和格式
         InputStream fis = new BufferedInputStream(new FileInputStream(outputFile));
         byte[] buffer = new byte[fis.available()];
@@ -484,7 +485,13 @@ public class ListingItemController extends BaseAction {
             Map m = new HashMap();
             m.put("ebayAccount",uea.getEbayAccount());
             m.put("ebayName",uea.getEbayAccount());
-            m.put("maxDate",this.listingDataTaskQueryMapper.selectByMaxCreateDate(mpar).getCreateDate());
+            ListingDataTask ldt = this.listingDataTaskQueryMapper.selectByMaxCreateDate(mpar);
+            if(ldt==null){
+                m.put("maxDate","暂时未同步！");
+            }else{
+                m.put("maxDate",ldt.getCreateDate());
+            }
+
             lim.add(m);
         }
         AjaxSupport.sendSuccessText("", lim);
@@ -913,7 +920,7 @@ public class ListingItemController extends BaseAction {
                 }
             }
         }
-        AjaxSupport.sendSuccessText("message", "后台操作，请查看操作日志！");
+        AjaxSupport.sendSuccessText("message", "操作成功，请查看操作日志！");
     }
 
 
@@ -1072,7 +1079,6 @@ public class ListingItemController extends BaseAction {
         //rc.seteBayAuthToken("AgAAAA**AQAAAA**aAAAAA**W2xvUQ**nY+sHZ2PrBmdj6wVnY+sEZ2PrA2dj6AFlICkCpSGoA6dj6x9nY+seQ**GNABAA**AAMAAA**Vn4yBA7u+ZDMqwb6Sdip+KaomBablhv7dCVnFt5ksAUd7RjjA4ANJ4TQVoIAQ35NZQzalPoKaGzLBFhURJa2xpJPj/BMSb0ihuql4NDVCUOsPFoWMVPIwQdVQ6dZ29DL66dBcuiRgJsTakDttxgK02lfiBgiEP0YCruAhjIKFzZPSivuvkSqKn2HIFKjJq0VDlCvqaBgYkGm26ITKH9dQj/Ql9jK3BHeWA6GSZ+nR9HPIufHLdNpT4axILEd3Lg2X/d34+QoP46rGb4iwO64AzvOXcF//WE4MuJsTQ4d6qgw6DOajpDBL0PNq1n6HItAylImyPRzfvU8hw8neigieh3CtmjzjJ81bY/swlFQdPlV6zZVE99pegMT0DO9Fms5la8W3MSeoHgWdq4i7AR6GBjlh9W9x8z05I91wOx2wNJb0ETcbwl0YbWxs72K49FYF12CZbXQytfJZNLHi+X9/jFgf4TfdrJgagMhUqP9M6Of3R2POF/4+9j/y7s11M6aWw2oxsJ6VAZQKZXtZ5T6/UfP89VA7M1t68R6f6kVr5hoD5glQa2lIw6bIQR4tubYPTAhg5uPCjWifEwYJoV5VuwAk/WHKEvihNHrYGu3c1SMuJlHatLBx7vSNrFsPFWsmP6Z3I6bBRyjSY57KQwxM3SHJvvbYO8etfU+S1gCXuvFMarCCgxv8MhdDUhA/F6A3QE+KjW91xKz8BQ/UJKBS5kOJF13xqSh+j/zoH6EVmRDLvD0uAW7xsSAiMuwT5Kq");
         //测试
         String ebayAccount = tld.getEbayAccount();
-
         List<UsercontrollerEbayAccount> liuea = this.iUsercontrollerEbayAccount.selectUsercontrollerEbayAccountByUserId(c.getId());
         String token = "";
         for(UsercontrollerEbayAccount uea:liuea){
@@ -1145,10 +1151,22 @@ public class ListingItemController extends BaseAction {
         if(folderid!=null&&!"".equals(folderid)){
             map.put("folderid",folderid);
         }
+        String descStr = request.getParameter("descStr");
+        if(descStr!=null&&!"".equals(descStr)){
+            map.put("descStr",descStr);
+        }else{
+            map.put("descStr","tion.id");
+        }
+        String ascStr = request.getParameter("desStr");
+        if(ascStr!=null&&!"".equals(ascStr)){
+            map.put("desStr",ascStr);
+        }else{
+            map.put("desStr","desc");
+        }
         /**分页组装*/
         PageJsonBean jsonBean=commonParmVO.getJsonBean();
         Page page=jsonBean.toPage();
-        List<TradingListingData> paypalli = this.iTradingListingData.selectData(map,page);
+        List<ListingDataQuery> paypalli = this.iTradingListingData.selectData(map,page);
         jsonBean.setList(paypalli);
         jsonBean.setTotal((int)page.getTotalCount());
         AjaxSupport.sendSuccessText("",jsonBean);
@@ -1219,7 +1237,7 @@ public class ListingItemController extends BaseAction {
         for(int i=0;i<itemid.length;i++){
             item.setItemID(itemid[i]);
             if("1".equals(isUpdateFlag)){//需要更新范本
-                TradingItem tradingItem1=this.iTradingItem.selectByItemId(item.getItemID());
+                TradingItemWithBLOBs tradingItem1=this.iTradingItem.selectByItemId(item.getItemID());
                 if(tradingItem1!=null){//更新数据库中的范本
                     this.iTradingItem.updateTradingItem(item,tradingItem1);
                 }
@@ -1544,13 +1562,14 @@ public class ListingItemController extends BaseAction {
         UsercontrollerDevAccountExtend d = new UsercontrollerDevAccountExtend();
         d.setApiCallName(APINameStatic.ListingItemList);
         List<TradingDataDictionary> litdd = DataDictionarySupport.getTradingDataDictionaryByType("site");
+        TradingDataDictionary tdd = DataDictionarySupport.getTradingDataDictionaryByID(311L);
         List<UsercontrollerEbayAccount> liusereae = new ArrayList<UsercontrollerEbayAccount>();
         for(String ebayAccount : ebayAccounts){
             liusereae.add(this.iUsercontrollerEbayAccount.selectByEbayAccount(ebayAccount));
         }
         for(UsercontrollerEbayAccount ue : liusereae){
             UsercontrollerEbayAccount ues = this.iUsercontrollerEbayAccount.selectById(ue.getId());
-            for(TradingDataDictionary tdd:litdd){
+            //for(TradingDataDictionary tdd:litdd){
                 List<ListingDataTask> lidk = iListingDataTask.selectByflag(tdd.getName1(),ue.getEbayAccount());
                 if(lidk!=null&&lidk.size()>0){
                     for(ListingDataTask ldk:lidk){
@@ -1580,7 +1599,7 @@ public class ListingItemController extends BaseAction {
                 taskMessageVO.setMessageTo(sessionVO.getId());
                 taskMessageVO.setObjClass(new String[]{ues.getEbayAccount(),c.getId()+"",ues.getEbayToken(),tdd.getName1()});
                 addApiTask.execDelayReturn(d, colStr, apiUrl, taskMessageVO);
-            }
+            //}
         }
         AjaxSupport.sendSuccessText("message", "操作成功！后台正在同步数据,请稍后查看！");
     }

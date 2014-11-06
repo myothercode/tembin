@@ -17,6 +17,8 @@
         }
     </style>
     <script type="text/javascript" src=<c:url value ="/js/ueditor/ueditor.config.js" /> ></script>
+    <link rel="stylesheet" type="text/css" href="<c:url value ="/js/toolTip/css/toolTip.css"/> "/>
+    <script type="text/javascript" src=<c:url value ="/js/toolTip/js/toolTip.js" /> ></script>
     <%--产品信息--%>
     <script type="text/javascript">
         var itemInformation;
@@ -109,7 +111,7 @@
                 var htm = "<img src='"+path+"/img/new_yes.png'/>";
                 return htm;
             }else{
-                var htm = "<img src='"+path+"/img/new_no.png'/>";
+                var htm = "<img src='"+path+"/img/new_no.png' title=\"该商品没有图片\"   />";
                 return htm;
             }
         }
@@ -218,7 +220,7 @@
                 itemInformation=$.dialog({title: '添加标签',
                     content: 'url:'+url,
                     icon: 'succeed',
-                    width:1050,
+                    width:600,
                     lock:true
                 });
             }else{
@@ -404,14 +406,25 @@
 
             <div class="new_tab_ls">
                 <dt id="menu1" class="new_tab_1" onclick="setTab('menu',1,5)">商品列表</dt>
-                <dt id="menu2" class="new_tab_2" onclick="setTab('menu',2,5)">商品分类列表</dt>
+                <%--<dt id="menu2" class="new_tab_2" onclick="setTab('menu',2,5)">商品分类列表</dt>--%>
+                <dt id="menu2" class="new_tab_2" onclick="setTab('menu',3,5)">虚拟sku</dt>
             </div>
             <div class="Contentbox">
                 <div>
                     <div id="con_menu_1" style="display: block;">
                         <!--综合开始 -->
                         <div class="new_usa" style="margin-top:20px;">
-                            <li class="new_usa_list"><span class="newusa_i">按标签看：</span><span class="newusa_ici" scop="remark" onclick="onclickremark(null,0)">全部&nbsp;</span><a href="#"><span class="newusa_ici_1" scop="remark" onclick="onclickremark('null',1)">无标签&nbsp;</span></a><a href="#"><span class="newusa_ici_1">有电池&nbsp;</span></a><a href="#"><span class="newusa_ici_1">无电池&nbsp;</span></a></li>
+                            <li class="new_usa_list"><span class="newusa_i">按标签查看：</span><span class="newusa_ici" scop="remark" onclick="onclickremark(null,0)">全部&nbsp;</span><a href="#"><span class="newusa_ici_1" scop="remark" onclick="onclickremark('null',1)">无标签&nbsp;</span></a>
+                            <c:forEach items="${remarks}" var="remark" begin="0"  varStatus="status">
+                                <c:if test="${(status.index+2)%11==0}">
+                                    <li class="new_usa_list"><span class="newusa_i"></span><a href="#"><span class="newusa_ici_1" scop="remark" onclick="onclickremark('${remark.id}',${status.index+2})">${remark.configName}&nbsp;</span></a></li>
+                                </c:if>
+                                <c:if test="${(status.index+2)%11!=0}">
+                                    <a href="#"><span class="newusa_ici_1" scop="remark" onclick="onclickremark('${remark.id}',${status.index+2})">${remark.configName}&nbsp;</span></a>
+                                </c:if>
+
+                            </c:forEach>
+                            </li>
                             <li class="new_usa_list"><span class="newusa_i">信息状态：</span><span  class="newusa_ici" scop="information" onclick="onclickinformation(null,0)">全部&nbsp;</span><a href="#"><span class="newusa_ici_1" scop="information" onclick="onclickinformation('picture',1)">无图片&nbsp;</span></a><a href="#"><span class="newusa_ici_1" scop="information" onclick="onclickinformation('custom',2)">无报关信息&nbsp;</span></a><a href="#"><span class="newusa_ici_1" scop="information" onclick="onclickinformation('notAllnull',3)">信息不全&nbsp;</span></a></li>
                             <div class="newsearch">
                                 <span class="newusa_i">搜索内容：</span>
@@ -431,14 +444,14 @@
                                     <input type="hidden" id="informationForm"/>
                             </div>
                             <div class="newds">
-                                <div class="newsj_left">
+                                <div class="newsj_left" style="margin-left: 9px;">
                                     <span class="newusa_ici_del_in"><input type="checkbox" name="checkbox" id="checkbox" onclick="Allchecked(this);"></span>
                                     <span class="newusa_ici_del" onclick="addItemInformation();">添加商品</span>
                                     <span class="newusa_ici_del" onclick="importItemInformation();">导入商品</span>
                                     <span class="newusa_ici_del" onclick="exportItemInformation();">导出商品</span>
                                     <span class="newusa_ici_del" onclick="addRemark();">添加标签</span>
                                     <span class="newusa_ici_del" onclick="removeItemInformation();">删除商品</span>
-                                    <span class="newusa_ici_del" onclick="updateItemInformation();">修改商品分类</span>
+                                   <%-- <span class="newusa_ici_del" onclick="updateItemInformation();">修改商品分类</span>--%>
                                 </div>
                             </div>
                         </div>

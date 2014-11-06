@@ -46,8 +46,8 @@
             <list>
                 <value>classpath*:/baseJar/config/config.properties</value>
                 <value>classpath*:/baseJar/config/mail.properties</value>
-                <value>file:/var/config/config.properties</value>
-                <value>file:/var/config/mail.properties</value>
+                <value>file:/var/tembinConfig/config/config.properties</value>
+                <value>file:/var/tembinConfig/config/mail.properties</value>
             </list>
         </property>
     </bean>

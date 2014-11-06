@@ -28,6 +28,6 @@ public interface IPublicItemInformation {
 
     void exportItemInformation(List<PublicItemInformation> list,String outputFile,ServletOutputStream outputStream) throws Exception;
 
-    List<PublicItemInformation> importItemInformation(File file) throws Exception;
+    void importItemInformation(File file) throws Exception;
 
 }

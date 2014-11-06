@@ -3,6 +3,7 @@ package com.base.utils.scheduleabout.commontask;
 import com.base.database.keymove.mapper.KeyMoveListMapper;
 import com.base.database.keymove.model.KeyMoveList;
 import com.base.database.keymove.model.KeyMoveListExample;
+import com.base.database.trading.model.TradingItemWithBLOBs;
 import com.base.domains.userinfo.UsercontrollerDevAccountExtend;
 import com.base.sampleapixml.APINameStatic;
 import com.base.userinfo.service.UserInfoService;
@@ -36,8 +37,9 @@ public class KeyMoveListTaskRun extends BaseScheduledClass implements Scheduleda
         KeyMoveListExample kmle = new KeyMoveListExample();
         kmle.createCriteria().andTaskFlagEqualTo("0");
         List<KeyMoveList> likml = keyMapper.selectByExampleWithBLOBs(kmle);
-
-        likml = filterLimitList(likml);//限制每次的执行条数
+        if(likml!=null&&likml.size()>0&&likml.size()>=20) {
+            likml = filterLimitList(likml);//限制每次的执行条数
+        }
 
         List<Item> liitem = new ArrayList<Item>();
         for(KeyMoveList kml:likml){
@@ -49,42 +51,48 @@ public class KeyMoveListTaskRun extends BaseScheduledClass implements Scheduleda
                     "<ItemID>" + kml.getItemId() + "</ItemID>\n" +
                     "<DetailLevel>ReturnAll</DetailLevel>\n" +
                     "</GetItemRequest>";
-            try {
-                UsercontrollerDevAccountExtend d = userInfoService.getDevInfo(kml.getUserId());
-                d.setApiSiteid(DataDictionarySupport.getTradingDataDictionaryByID(Long.parseLong(kml.getSiteId())).getName1());
-                d.setApiCallName(APINameStatic.GetItem);
-                AddApiTask addApiTask = new AddApiTask();
-                CommAutowiredClass commPars = (CommAutowiredClass) ApplicationContextUtil.getBean(CommAutowiredClass.class);//获取注入的参数
-                Map<String, String> resMap = addApiTask.exec2(d, xml, commPars.apiUrl);
-                String res = resMap.get("message");
-                String ack = SamplePaseXml.getVFromXmlString(res, "Ack");
-                if("Success".equals(ack)){//ＡＰＩ成功请求，保存数据
-                    Item itemrs = SamplePaseXml.getItem(res);
-                    itemrs.setUUID(kml.getUserId()+"");
-                    itemrs.setSite(kml.getSiteId());
-                    iTradingItem.saveListingItem(itemrs,kml);
-                    //保存成功更新任务表
-                    kml.setTaskFlag("1");
-                    keyMapper.updateByPrimaryKeySelective(kml);
-                    liitem.add(itemrs);
-                }else{//ＡＰＩ请求失败
+            TradingItemWithBLOBs tradingItem = iTradingItem.selectByItemId(kml.getItemId());
+            if(tradingItem==null) {
+                try {
+                    UsercontrollerDevAccountExtend d = userInfoService.getDevInfo(kml.getUserId());
+                    d.setApiSiteid(DataDictionarySupport.getTradingDataDictionaryByID(Long.parseLong(kml.getSiteId())).getName1());
+                    d.setApiCallName(APINameStatic.GetItem);
+                    AddApiTask addApiTask = new AddApiTask();
+                    CommAutowiredClass commPars = (CommAutowiredClass) ApplicationContextUtil.getBean(CommAutowiredClass.class);//获取注入的参数
+                    Map<String, String> resMap = addApiTask.exec2(d, xml, commPars.apiUrl);
+                    String res = resMap.get("message");
+                    String ack = SamplePaseXml.getVFromXmlString(res, "Ack");
+                    if ("Success".equals(ack)) {//ＡＰＩ成功请求，保存数据
+                        Item itemrs = SamplePaseXml.getItem(res);
+                        itemrs.setUUID(kml.getUserId() + "");
+                        itemrs.setSite(kml.getSiteId());
+                        iTradingItem.saveListingItem(itemrs, kml);
+                        //保存成功更新任务表
+                        kml.setTaskFlag("1");
+                        keyMapper.updateByPrimaryKeySelective(kml);
+                        liitem.add(itemrs);
+                    } else {//ＡＰＩ请求失败
 
+                    }
+
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
-
-            } catch (Exception e) {
-                e.printStackTrace();
+            }else{
+                kml.setTaskFlag("1");
+                keyMapper.updateByPrimaryKeySelective(kml);
             }
         }
     }
 
     /**只从集合记录取多少条*/
     private List<KeyMoveList> filterLimitList(List<KeyMoveList> tlist){
-
-        List<KeyMoveList> x=new ArrayList<KeyMoveList>();
+        return filterLimitListFinal(tlist,20);
+        /*List<KeyMoveList> x=new ArrayList<KeyMoveList>();
         for (int i = 0;i<20;i++){
             x.add(tlist.get(i));
         }
-        return x;
+        return x;*/
     }
 
     public KeyMoveListTaskRun(){

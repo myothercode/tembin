@@ -83,7 +83,7 @@ function nextShows(obj){
                     function (m, r) {
                         alert(r);
                         $(obj).attr("disabled",false);
-                    }]
+                    }],{isConverPage:true}
         );
     }
 }

@@ -42,9 +42,21 @@ public class TradingShippingServiceOptionsImpl implements com.trading.service.IT
         TradingShippingserviceoptions pojo = new TradingShippingserviceoptions();
 
         ConvertPOJOUtil.convert(pojo,sso);
-        pojo.setShippingservicecost(sso.getShippingServiceCost().getValue());
-        pojo.setShippingserviceadditionalcost(sso.getShippingServiceAdditionalCost().getValue());
-        pojo.setShippingsurcharge(sso.getShippingSurcharge().getValue());
+        if(sso.getShippingServiceCost()!=null) {
+            pojo.setShippingservicecost(sso.getShippingServiceCost().getValue());
+        }else{
+            pojo.setShippingservicecost(0.00);
+        }
+        if(sso.getShippingServiceAdditionalCost()!=null) {
+            pojo.setShippingserviceadditionalcost(sso.getShippingServiceAdditionalCost().getValue());
+        }else{
+            pojo.setShippingserviceadditionalcost(0.00);
+        }
+        if(sso.getShippingSurcharge()!=null) {
+            pojo.setShippingsurcharge(sso.getShippingSurcharge().getValue());
+        }else{
+            pojo.setShippingsurcharge(0.00);
+        }
         return pojo;
     }
     @Override

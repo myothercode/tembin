@@ -2,6 +2,7 @@ package com.base.utils.scheduleabout;
 
 import com.base.utils.applicationcontext.ApplicationContextUtil;
 import com.trading.service.ITradingDataDictionary;
+import org.apache.log4j.Logger;
 import org.springframework.core.Ordered;
 
 /**
@@ -10,15 +11,24 @@ import org.springframework.core.Ordered;
  */
 //@Component
 public class DictInit implements Initable {
+    static Logger logger = Logger.getLogger(DictInit.class);
     /*@Override
     public void afterPropertiesSet() throws Exception {
         System.out.println("-----y----------xxxxxxxxxxxxxxxxxxxxxx------------------");
     }*/
     @Override
     public void init() {
-        ITradingDataDictionary d = (ITradingDataDictionary) ApplicationContextUtil.getBean(ITradingDataDictionary.class);
-        d.queryDictAll();
-        d.queryPublicDictAll();
+        try {
+            Object o=ApplicationContextUtil.getBean(ITradingDataDictionary.class);
+            if(o==null){MainTask.isDongInitMethod="no";logger.error("ApplicationContext还没有准备好！");return;}
+            ITradingDataDictionary d = (ITradingDataDictionary)o;
+            d.queryDictAll();
+            d.queryPublicDictAll();
+        } catch (Exception e) {
+            MainTask.isDongInitMethod="no";
+            logger.error("加载数据字典缓存失败！",e);
+        }
+        logger.info("加载数据字典成功!");
 
     }
 

@@ -24,7 +24,7 @@ function loadDesciption(){
         url:path + "/ajax/loadDescriptionDetailsList.do",
         columnData:[
             {title:"名称",name:"name",width:"8%",align:"left"},
-            {title:"数据状态",name:"option1",width:"8%",align:"left",format:makeOption2},
+            {title:"数据状态",name:"option1",width:"8%",align:"left",format:makeOption2s},
             {title:"操作",name:"option1",width:"8%",align:"left",format:makeOption1descript}
         ],
         selectDataNow:false,

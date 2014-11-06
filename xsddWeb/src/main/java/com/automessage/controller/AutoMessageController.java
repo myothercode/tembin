@@ -143,6 +143,35 @@ public class AutoMessageController extends BaseAction {
         modelMap.put("autoMessage",autoMessage);
         return forword("autoMessage/addAutoMessage",modelMap);
     }
+    /**添加备注初始化*/
+    @RequestMapping("/addComment.do")
+    public ModelAndView addComment(HttpServletRequest request,ModelMap modelMap){
+        String id=request.getParameter("id");
+        modelMap.put("id",id);
+        return forword("autoMessage/addComment",modelMap);
+    }
+
+    /**添加备注*/
+    @RequestMapping("/ajax/saveComment.do")
+    @ResponseBody
+    public void saveComment(CommonParmVO commonParmVO,HttpServletRequest request) throws Exception {
+        String id=request.getParameter("id");
+        String comment=request.getParameter("comment");
+        if(!StringUtils.isNotBlank(id)){
+            AjaxSupport.sendFailText("fail","该消息不存在,请核实");
+            return;
+        }
+        List<TradingAutoMessage> messages=iTradingAutoMessage.selectAutoMessageById(Long.valueOf(id));
+        if(messages.size()>0){
+            TradingAutoMessage message=messages.get(0);
+            message.setComment(comment);
+            iTradingAutoMessage.saveAutoMessage(message);
+            AjaxSupport.sendSuccessText("","保存成功");
+        }else{
+            AjaxSupport.sendFailText("fail","该消息不存在,请核实");
+            return;
+        }
+    }
     /**选择有效国家初始化*/
     @RequestMapping("/selectCountrys.do")
     public ModelAndView selectCountrys(HttpServletRequest request,HttpServletResponse response,ModelMap modelMap){
@@ -488,7 +517,9 @@ public class AutoMessageController extends BaseAction {
         if(StringUtils.isNotBlank(ebay)){
             message.setEbayemail(Integer.valueOf(ebay));
         }else{
-            message.setEbayemail(0);
+            /*message.setEbayemail(0);*/
+            //只有ebay message的时候
+            message.setEbayemail(1);
         }
         if(StringUtils.isNotBlank(email)){
             message.setEmail(Integer.valueOf(email));

@@ -328,11 +328,12 @@ public class AutoMessageTaskRun extends BaseScheduledClass implements Scheduleda
 
     /**只从集合记录取多少条*/
     private List<TradingOrderGetOrders> filterLimitList(List<TradingOrderGetOrders> tlist){
-        List<TradingOrderGetOrders> x=new ArrayList<TradingOrderGetOrders>();
+        return filterLimitListFinal(tlist,10);
+        /*List<TradingOrderGetOrders> x=new ArrayList<TradingOrderGetOrders>();
         for (int i = 0;i<10;i++){
             x.add(tlist.get(i));
         }
-        return x;
+        return x;*/
     }
 
     public AutoMessageTaskRun(){

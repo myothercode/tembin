@@ -9,10 +9,18 @@
     <import resource="classpath*:xsddWeb/spring/spring-Ehcache.xml" />
     <import resource="classpath*:baseJar/spring/applicationContext-cxfclient.xml" />
     <import resource="classpath*:baseJar/spring/scheduledConfig.xml" />
+    <!-- 添加javamelody支持 -->
+    <import resource="classpath:net/bull/javamelody/monitoring-spring.xml"/>
     <!--<import resource="classpath*:xsddWeb/spring/mailconfig.xml" />-->
     <!--<import resource="classpath*:xsddWeb/spring/applicationShiro.xml" />-->
 
-
+    <!--<bean id= "facadeMonitoringAdvisor" class="net.bull.javamelody.MonitoringSpringAdvisor" >
+        <property name ="pointcut" >
+            <bean class="org.springframework.aop.support.JdkRegexpMethodPointcut" >
+                <property name ="pattern" value="com.**.service.*" />&lt;!&ndash;正则表达式&ndash;&gt;
+            </bean>
+        </property>
+    </bean>-->
 
 
     <!-- define the SqlSessionFactory

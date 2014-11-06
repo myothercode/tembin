@@ -3,7 +3,7 @@ function addItemAddress(){
     itemAddressList=$.dialog({title: '新增物品所在地',
         content: 'url:/xsddWeb/addItemAddress.do',
         icon: 'succeed',
-        width:500,
+        width:800,
         lock:true
     });
 }
@@ -12,7 +12,7 @@ function editItemAddress(id){
     itemAddressList=$.dialog({title: '编辑物品所在地',
         content: 'url:/xsddWeb/editItemAddress.do?id='+id,
         icon: 'succeed',
-        width:500,
+        width:800,
         lock:true
     });
 }
@@ -25,7 +25,7 @@ function loadAddress(){
             {title:"地址",name:"address",width:"8%",align:"left"},
             {title:"国家",name:"countryName",width:"8%",align:"left"},
             {title:"邮编",name:"postalcode",width:"8%",align:"left"},
-            {title:"状态",name:"option1",width:"8%",align:"left",format:makeOption2},
+            {title:"状态",name:"option1",width:"8%",align:"left",format:makeOption2s},
             {title:"操作",name:"option1",width:"8%",align:"left",format:makeOption1address}
         ],
         selectDataNow:false,
@@ -57,7 +57,7 @@ function editItemAddressselect(id){
     itemAddressList=$.dialog({title: '查看付款选项',
         content: 'url:/xsddWeb/editItemAddress.do?id='+id+'&type=01',
         icon: 'succeed',
-        width:500,
+        width:800,
         lock:true
     });
 }

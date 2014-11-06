@@ -197,11 +197,14 @@ public class SynchronizeFeedBackTimerTaskRun extends BaseScheduledClass implemen
 
     /**只从集合记录取多少条*/
     private List<TaskFeedBack> filterLimitList(List<TaskFeedBack> tlist){
-        List<TaskFeedBack> x=new ArrayList<TaskFeedBack>();
+
+        return filterLimitListFinal(tlist,10);
+
+        /*List<TaskFeedBack> x=new ArrayList<TaskFeedBack>();
         for (int i = 0;i<10;i++){
             x.add(tlist.get(i));
         }
-        return x;
+        return x;*/
     }
 
     public SynchronizeFeedBackTimerTaskRun(){

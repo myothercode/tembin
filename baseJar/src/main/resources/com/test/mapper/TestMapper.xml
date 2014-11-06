@@ -6,7 +6,7 @@
  </select>
 
 <update id="updateTest" parameterType="map">
-    update testTable d set d.flag=#{flag} where d.id=#{id}
+    update testTable d set d.StringV=#{StringV} where d.id=#{id}
 </update>
 
 <select id="selectForCatchData" parameterType="map" resultType="com.base.database.publicd.model.PublicDataDict">

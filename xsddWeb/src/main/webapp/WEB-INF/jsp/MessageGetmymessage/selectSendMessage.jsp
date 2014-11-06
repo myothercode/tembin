@@ -20,7 +20,7 @@
         var api = frameElement.api, W = api.opener;
         $(document).ready(function(){
             $("#sendMessageTable").initTable({
-                url:path + "/sendMessage/ajax/loadSendMessageList.do?type=messageType",
+                url:path + "/sendMessage/ajax/loadSendMessageList.do?type=messageType&status=1",
                 columnData:[
                     {title:"",name:"pictureUrl",width:"2%",align:"left",format:makeOption3},
                     {title:"模板名称",name:"name",width:"8%",align:"left"},
@@ -56,7 +56,23 @@
             var checkboxs=$("input[type=checkbox][name=templateId]:checked");
             if(checkboxs.length==1){
                 var textarea=W.document.getElementById("textarea");
-                textarea.innerHTML=$(checkboxs[0]).attr("value1");
+                var content=$(checkboxs[0]).attr("value1");
+                content=content.replace("{Buyer_eBay_ID}","${order.buyeruserid}");
+                content=content.replace("{Carrier}","${order.shippingcarrierused}");
+                /*content=content.replace("{Carrier_TrackingURL}","${order.shipmenttrackingnumber}");*/
+                content=content.replace("{eBay_Item#}","${order.itemid}");
+                content=content.replace("{eBay_Item_Title}","${item.title}");
+                /*    content=content.replace("{Post_Date}","${order.buyeruserid}");*/
+                content=content.replace("{Payment_Date}","${order.paidtime}");
+                content=content.replace("{Paypal_Transaction_ID}","${paypal}");
+                content=content.replace("{Purchase_Quantity}","${order.quantitypurchased}");
+                content=content.replace("{Received_Amount}","${order.amountpaid}");
+                /* content=content.replace("{Recipient_Address}","${order.buyeruserid}");*/
+                content=content.replace("{Seller_eBay_ID}","${order.selleruserid}");
+                content=content.replace("{Seller_Email}","${order.selleremail}");
+                content=content.replace("{Today}","<fmt:formatDate value="${date}" pattern="yyyy-MM-dd HH:mm"/>");
+                content=content.replace("{Track_Code}","${order.shipmenttrackingnumber}");
+                textarea.innerHTML=content;
                 W.sentmessage.close();
             }else{
                 alert("请选择一个消息模板");

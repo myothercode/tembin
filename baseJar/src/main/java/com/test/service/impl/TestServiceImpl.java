@@ -1,10 +1,7 @@
 package com.test.service.impl;
 
 import com.base.database.trading.mapper.TradingPicturesMapper;
-import com.base.database.trading.model.TradingBuyerRequirementDetails;
-import com.base.database.trading.model.TradingItem;
-import com.base.database.trading.model.TradingPictures;
-import com.base.database.trading.model.TradingReturnpolicy;
+import com.base.database.trading.model.*;
 import com.base.mybatis.page.Page;
 import com.base.utils.common.ConvertPOJOUtil;
 import com.base.utils.exception.Asserts;
@@ -44,24 +41,13 @@ public class TestServiceImpl implements TestService {
    // @Transactional(propagation = Propagation.NOT_SUPPORTED)
     public void serviceTest(){
         Map map=new HashMap();
-        map.put("id","1");
+        map.put("id","58");
         map.put("StringV","caixuxxxxx");
-        Page page=new Page();
-        page.setCurrentPage(2);
-        page.setPageSize(3);
         //List<String> strings = testMapper.queryTest(map,page);
         testMapper.updateTest(map);
 
 
-        TradingPictures tradingPictures=new TradingPictures();
-        tradingPictures.setCreateTime(new Date());
-        tradingPictures.setUuid("hhh");
-        tradingPictures.setVariationspecificname("pp");
-        //tradingPicturesMapper.insertSelective(tradingPictures);
 
-        //testMapper.updateTest(map);
-        //Asserts.assertTrue(false,"错误");
-        //throw new RuntimeException("d");
     }
 
     @Override
@@ -442,7 +428,7 @@ public class TestServiceImpl implements TestService {
         pic.setVariationSpecificPictureSet(vspli);
         var.setPictures(pic);
         tem.setVariations(var);
-        TradingItem pojo = this.iTradingItem.toDAOPojo(tem);
+        TradingItemWithBLOBs pojo = this.iTradingItem.toDAOPojo(tem);
         //ConvertPOJOUtil.convert(pojo,tem);
 
         TradingBuyerRequirementDetails tbrd  = this.iTradingBuyerRequirementDetails.toDAOPojo(brd);

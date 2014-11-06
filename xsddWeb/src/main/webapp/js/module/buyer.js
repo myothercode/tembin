@@ -3,7 +3,7 @@ function addBuyer(){
     buyerRequire=$.dialog({title: '新增买家要求',
         content: 'url:/xsddWeb/addBuyer.do',
         icon: 'succeed',
-        width:500,
+        width:800,
         lock:true
     });
 }
@@ -12,7 +12,7 @@ function editBuyer(id){
     buyerRequire=$.dialog({title: '编辑买家要求',
         content: 'url:/xsddWeb/editBuyer.do?id='+id,
         icon: 'succeed',
-        width:500,
+        width:800,
         lock:true
     });
 }
@@ -20,7 +20,7 @@ function editBuyerselect(id){
     buyerRequire=$.dialog({title: '查看买家要求',
         content: 'url:/xsddWeb/editBuyer.do?id='+id+'&type=01',
         icon: 'succeed',
-        width:500,
+        width:800,
         lock:true
     });
 }
@@ -49,7 +49,7 @@ function loadbuyer(){
             {title:"名称",name:"name",width:"8%",align:"left"},
             {title:"站点",name:"siteName",width:"8%",align:"left",format:getSiteImg},
             {title:"买家要求",name:"option1",width:"8%",align:"left",format:makeOption3buyer},
-            {title:"状态",name:"option1",width:"8%",align:"left",format:makeOption2},
+            {title:"状态",name:"option1",width:"8%",align:"left",format:makeOption2s},
             {title:"操作",name:"option1",width:"8%",align:"left",format:makeOption1buyer}
         ],
         selectDataNow:false,

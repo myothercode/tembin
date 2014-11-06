@@ -175,7 +175,7 @@
             );
         }
         function selectSendMessage(){
-            var url=path+'/message/selectSendMessage.do?';
+            var url=path+'/message/selectSendMessage.do?transactionid=${order.transactionid}&seller=${order.selleruserid}&paypal=${paypals[0]}';
             sentmessage = $.dialog({title: '选择消息模板',
                 content:'url:'+url,
                 icon: 'succeed',
@@ -575,9 +575,7 @@
         </tbody></table>
 
 </div></div>
-<script src="../../js/jquery-latest.js"></script>
-<script src="../../js/bootstrap.min.js"></script>
-<script src="../../js/theme.js"></script>
+
 
 </div>
 <%--&lt;%&ndash;-----------------------------------------修改前----------------------------------------------&ndash;%&gt;

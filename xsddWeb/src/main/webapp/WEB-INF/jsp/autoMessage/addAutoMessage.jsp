@@ -263,10 +263,12 @@
                         </c:forEach>
                     </select>小时发送
                 </div>
-                <label class="control-label" style="width: 100px;" >发送方式&nbsp;</label>
+              <%--  <label class="control-label" style="width: 100px;" >发送方式&nbsp;</label>--%>
                 <!-- Multiple Checkboxes -->
                 <div class="controls">
-                    <label class="checkbox inline">
+                    <label class="checkbox inline" style="width: 150px;">
+                        <%--<input type="checkbox" name="ebay" value="1" checked disabled>EBAY MESSAGE</label>--%>
+                    <%--<label class="checkbox inline">
                         <c:if test="${autoMessage.ebayemail==1}">
                             <input type="checkbox" name="ebay" value="1" checked>eBay消息
                         </c:if>
@@ -281,7 +283,7 @@
                         <c:if test="${autoMessage.email!=1}">
                             <input type="checkbox" name="email" value="1">电邮
                         </c:if>
-                    </label>
+                    </label>--%>
                 </div>
             </div>
         </div>
@@ -436,8 +438,8 @@
             </div>
             <div  style="text-align: right;width: 800px;float: left">
                 <br/>
-                <button type="button" class="btn btn-primary" onclick="submitCommit();">保存</button>
-                <button type="button" class="btn btn-default" data-dismiss="modal" onclick="closedialog();">关闭</button>
+                <button type="button" class="net_put" onclick="submitCommit();">保存</button>
+                <button type="button" class="net_put_1" data-dismiss="modal" onclick="closedialog();">关闭</button>
             </div>
 
         </div>

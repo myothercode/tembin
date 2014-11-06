@@ -525,6 +525,66 @@ public class PublicItemPictureaddrAndAttrExample {
             return (Criteria) this;
         }
 
+        public Criteria andRemarkIdIsNull() {
+            addCriterion("remark_id is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andRemarkIdIsNotNull() {
+            addCriterion("remark_id is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andRemarkIdEqualTo(Long value) {
+            addCriterion("remark_id =", value, "remarkId");
+            return (Criteria) this;
+        }
+
+        public Criteria andRemarkIdNotEqualTo(Long value) {
+            addCriterion("remark_id <>", value, "remarkId");
+            return (Criteria) this;
+        }
+
+        public Criteria andRemarkIdGreaterThan(Long value) {
+            addCriterion("remark_id >", value, "remarkId");
+            return (Criteria) this;
+        }
+
+        public Criteria andRemarkIdGreaterThanOrEqualTo(Long value) {
+            addCriterion("remark_id >=", value, "remarkId");
+            return (Criteria) this;
+        }
+
+        public Criteria andRemarkIdLessThan(Long value) {
+            addCriterion("remark_id <", value, "remarkId");
+            return (Criteria) this;
+        }
+
+        public Criteria andRemarkIdLessThanOrEqualTo(Long value) {
+            addCriterion("remark_id <=", value, "remarkId");
+            return (Criteria) this;
+        }
+
+        public Criteria andRemarkIdIn(List<Long> values) {
+            addCriterion("remark_id in", values, "remarkId");
+            return (Criteria) this;
+        }
+
+        public Criteria andRemarkIdNotIn(List<Long> values) {
+            addCriterion("remark_id not in", values, "remarkId");
+            return (Criteria) this;
+        }
+
+        public Criteria andRemarkIdBetween(Long value1, Long value2) {
+            addCriterion("remark_id between", value1, value2, "remarkId");
+            return (Criteria) this;
+        }
+
+        public Criteria andRemarkIdNotBetween(Long value1, Long value2) {
+            addCriterion("remark_id not between", value1, value2, "remarkId");
+            return (Criteria) this;
+        }
+
         public Criteria andCreateUserIsNull() {
             addCriterion("create_user is null");
             return (Criteria) this;

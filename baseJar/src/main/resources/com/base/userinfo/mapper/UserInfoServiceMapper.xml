@@ -16,7 +16,7 @@
     <select id="queryPermissionByRoleID" resultType="com.base.domains.PermissionVO" parameterType="map" >
         select * from (
         select p.permission_id permissionID,p.permission_value permissionURL,p.permission_name permissionName ,
-        p.permission_level permissionLevel,p.permission_parent_id parentID,p.menu_class menuClass
+        p.permission_level permissionLevel,p.permission_parent_id parentID,p.menu_class menuClass,menu_order_num
         from usercontroller_role_permission rp
         INNER JOIN usercontroller_permission p on rp.permission_id=p.permission_id
         where rp.role_id in
@@ -27,10 +27,10 @@
 
         UNION ALL
         select p.permission_id permissionID,p.permission_value permissionURL,p.permission_name permissionName ,
-        p.permission_level permissionLevel,p.permission_parent_id parentID,p.menu_class menuClass
+        p.permission_level permissionLevel,p.permission_parent_id parentID,p.menu_class menuClass,menu_order_num
         from usercontroller_permission p
         where p.permission_level='1'
-        ) dd order by dd.permissionID asc
+        ) dd order by dd.menu_order_num asc , dd.permissionID asc
     </select>
     
     <select id="querySessionVOInfo" parameterType="com.base.domains.LoginVO" resultType="com.base.domains.SessionVO">

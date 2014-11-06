@@ -24,6 +24,7 @@
                 columnData:[
                     {title:"",name:"pictureUrl",width:"2%",align:"left",format:makeOption3},
                     {title:"标题",name:"subject",width:"8%",align:"left"},
+                    {title:"备注",name:"comment",width:"8%",align:"left"},
                     {title:"类型",name:"type",width:"8%",align:"left"},
                     {title:"指定国家",name:"country",width:"8%",align:"left"},
                     {title:"指定账号",name:"amount",width:"8%",align:"left"},
@@ -48,6 +49,7 @@
             var hs="";
             hs="<li style=\"height:25px;\"  onclick=editAutoMessage("+json.id+"); value='1' doaction=\"readed\" >编辑</li>";
             hs+="<li style=\"height:25px;\"  onclick=deleteAutoMessage("+json.id+"); value='1' doaction=\"look\" >删除</li>";
+            hs+="<li style=\"height:25px;\"  onclick=addComment("+json.id+"); value='1' doaction=\"look\" >备注</li>";
             var pp={"liString":hs};
             return getULSelect(pp);
         }
@@ -58,6 +60,15 @@
                 icon: 'succeed',
                 width:950,
                 height:600,
+                lock:true
+            });
+        }
+        function addComment(id){
+            var url=path+'/autoMessage/addComment.do?id='+id;
+            autoMessage=$.dialog({title: '添加备注',
+                content: 'url:'+url,
+                icon: 'succeed',
+                width:600,
                 lock:true
             });
         }

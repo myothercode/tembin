@@ -45,10 +45,58 @@
             }
 
         }
+        function closedialog(){
+            W.OrderGetOrders.close();
+        }
     </script>
 </head>
 <body>
-<form id="modifyOrderStatus">
+
+
+    <div class="modal-body">
+        <form id="modifyOrderStatus" class="form-horizontal" role="form">
+            <input type="hidden" name="selleruserid" value="${order.selleruserid}"/>
+            <input type="hidden" name="shippStatus" value="true">
+            <table width="100%" border="0" style="margin-left:20px;">
+                <tbody><tr>
+                    <td width="16%" height="28" align="right">Transactionid：</td>
+                    <td width="41%" height="28"><div class="newselect" style="margin-top:9px;">
+                        <input name="transactionid" value="${order.transactionid}" class="form-controlsd" type="text">
+                    </div></td>
+                    <td width="43%" height="28"></td>
+                </tr>
+                <tr>
+                    <td height="28" align="right">Itemid：</td>
+                    <td height="28"><div class="newselect" style="margin-top:9px;">
+                        <input name="itemid" value="${order.itemid}" class="form-controlsd" type="text">
+                    </div></td>
+                    <td height="28">&nbsp;</td>
+                </tr>
+                <tr>
+                    <td height="28" align="right">追踪号：</td>
+                    <td height="28"><div class="newselect" style="margin-top:9px;">
+                        <input name="ShipmentTrackingNumber" id="ShipmentTrackingNumber" class="form-controlsd" type="text">
+                    </div></td>
+                    <td height="28">&nbsp;</td>
+                </tr>
+                <tr>
+                    <td height="28" align="right">货运商：</td>
+                    <td height="28"><div class="newselect" style="margin-top:9px;">
+                        <input name="ShippingCarrierUsed" id="ShippingCarrierUsed" class="form-controlsd" type="text">
+                    </div></td>
+                    <td height="28">&nbsp;</td>
+                </tr>
+                <tr>
+                    <td height="28" align="right">&nbsp;</td>
+                    <td height="28" style=" padding-top:22px;"><button type="button" class="net_put" onclick="submitCommit();">保存</button><button type="button" class="net_put_1" data-dismiss="modal" onclick="closedialog();">关闭</button></td>
+                    <td height="28">&nbsp;</td>
+                </tr>
+                </tbody></table>
+
+        </form>
+    </div>
+
+<%--    <form id="modifyOrderStatus">
     <input type="hidden" name="selleruserid" value="${order.selleruserid}"/>
     <table id="statusTable">
         <tr>
@@ -76,6 +124,6 @@
         </tr>
     </table>
     <input type="button" value="修改发货状态" onclick="submitCommit();"/>
-</form>
+</form>--%>
 </body>
 </html>

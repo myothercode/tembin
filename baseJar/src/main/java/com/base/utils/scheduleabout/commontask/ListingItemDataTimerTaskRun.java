@@ -140,11 +140,14 @@ public class ListingItemDataTimerTaskRun extends BaseScheduledClass implements S
 
     /**只从集合记录取多少条*/
     private List<ListingDataTask> filterLimitList(List<ListingDataTask> tlist){
-        List<ListingDataTask> x=new ArrayList<ListingDataTask>();
+
+        return filterLimitListFinal(tlist,2);
+
+        /*List<ListingDataTask> x=new ArrayList<ListingDataTask>();
         for (int i = 0;i<2;i++){
             x.add(tlist.get(i));
         }
-        return x;
+        return x;*/
     }
 
     public ListingItemDataTimerTaskRun(){

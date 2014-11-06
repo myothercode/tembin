@@ -10,7 +10,6 @@ import com.base.userinfo.service.SystemUserManagerService;
 import com.base.userinfo.service.UserInfoService;
 import com.base.utils.annotations.AvoidDuplicateSubmission;
 import com.base.utils.cache.SessionCacheSupport;
-import com.base.utils.common.DateUtils;
 import com.common.base.utils.ajax.AjaxSupport;
 import com.common.base.web.BaseAction;
 import com.trading.service.ITradingMessageTemplate;
@@ -47,56 +46,23 @@ public class SendMessageController extends BaseAction{
     @ResponseBody
     public void loadSendMessageList(CommonParmVO commonParmVO,HttpServletRequest request) throws Exception {
         String status=request.getParameter("status");
-        String type=request.getParameter("type");
-        String time=request.getParameter("time");
-        String itemType=request.getParameter("itemType");
-        String content2=request.getParameter("content2");
+        String orderby=request.getParameter("orderby");
         Map m = new HashMap();
         /**分页组装*/
         PageJsonBean jsonBean=commonParmVO.getJsonBean();
         Page page=jsonBean.toPage();
-        Map ebayMap=new HashMap();
-        Date starttime=null;
-        Date endtime=null;
+        if(!StringUtils.isNotBlank(orderby)){
+            orderby=null;
+        }
         if(!StringUtils.isNotBlank(status)){
             status=null;
         }
-        if(!StringUtils.isNotBlank(type)){
-            type=null;
-        }
-        if(!StringUtils.isNotBlank(time)){
-            time=null;
-        }else{
-            if("2".equals(time)){
-                starttime= DateUtils.subDays(new Date(), 1);
-                Date endTime= DateUtils.addDays(starttime, 0);
-                endtime= com.base.utils.common.DateUtils.turnToDateEnd(endTime);
-            }else{
-                int days=Integer.parseInt(time);
-                starttime=DateUtils.subDays(new Date(),days-1);
-                Date endTime= DateUtils.addDays(starttime,days-1);
-                endtime= com.base.utils.common.DateUtils.turnToDateEnd(endTime);
-            }
-        }
-        if(!StringUtils.isNotBlank(itemType)||"0".equals(itemType)){
-            itemType=null;
-        }
-        if(!StringUtils.isNotBlank(content2)){
-            content2=null;
-        }
         SessionVO sessionVO= SessionCacheSupport.getSessionVO();
         List<MessageTemplateQuery> lists=new ArrayList<MessageTemplateQuery>();
-            /*m.put("sendMessage","notAutoSendMessage");
-            m.put("ebays",ebays);*/
-        m.put("starttime",starttime);
-        m.put("endtime",endtime);
         m.put("status",status);
-        m.put("type",type);
-        m.put("itemType",itemType);
-        m.put("content2",content2);
         m.put("userId",sessionVO.getId());
+        m.put("orderby",orderby);
         lists= iTradingMessageTemplate.selectMessageTemplateList(m, page);
-
         jsonBean.setList(lists);
         jsonBean.setTotal((int)page.getTotalCount());
         AjaxSupport.sendSuccessText("", jsonBean);

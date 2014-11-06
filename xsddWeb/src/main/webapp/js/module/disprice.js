@@ -29,7 +29,7 @@ function loadDisPrice(){
             {title:"结束时间",name:"disEndtime",width:"8%",align:"left"},
             {title:"折扣",name:"madeforoutletcomparisonprice",width:"8%",align:"left"},
             {title:"降价",name:"minimumadvertisedprice",width:"8%",align:"left"},
-            {title:"数据状态",name:"option1",width:"8%",align:"left",format:makeOption2},
+            {title:"数据状态",name:"option1",width:"8%",align:"left",format:makeOption2s},
             {title:"操作",name:"option1",width:"8%",align:"left",format:makeOption1}
         ],
         selectDataNow:false,

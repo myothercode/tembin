@@ -35,9 +35,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpServletRequest;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.net.UnknownHostException;
 import java.util.*;
 
 /**
@@ -120,7 +123,7 @@ public class TradingItemImpl implements com.trading.service.ITradingItem {
     private ITradingListingPicUrl iTradingListingPicUrl;
 
     @Override
-    public void saveTradingItem(TradingItem pojo) throws Exception {
+    public void saveTradingItem(TradingItemWithBLOBs pojo) throws Exception {
         if(pojo.getId()==null){
             ObjectUtils.toInitPojoForInsert(pojo);
             if(pojo.getUuid()==null){
@@ -137,14 +140,14 @@ public class TradingItemImpl implements com.trading.service.ITradingItem {
     }
 
     @Override
-    public void saveTradingItemList(List<TradingItem> liti) throws Exception {
-        for(TradingItem ti:liti){
+    public void saveTradingItemList(List<TradingItemWithBLOBs> liti) throws Exception {
+        for(TradingItemWithBLOBs ti:liti){
             this.saveTradingItem(ti);
         }
     }
     @Override
-    public TradingItem toDAOPojo(Item item) throws Exception {
-        TradingItem pojo = new TradingItem();
+    public TradingItemWithBLOBs toDAOPojo(Item item) throws Exception {
+        TradingItemWithBLOBs pojo = new TradingItemWithBLOBs();
         ConvertPOJOUtil.convert(pojo, item);
         ConvertPOJOUtil.convert(pojo, item.getBestOfferDetails());
         ConvertPOJOUtil.convert(pojo, item.getPrimaryCategory());
@@ -155,7 +158,7 @@ public class TradingItemImpl implements com.trading.service.ITradingItem {
     }
 
     @Override
-    public Map saveItem(Item item, TradingItem tradingItem1) throws Exception {
+    public Map saveItem(Item item, TradingItemWithBLOBs tradingItem1) throws Exception {
         //保存商品信息到数据库中
 
         if(item.getVariations()!=null){
@@ -181,7 +184,7 @@ public class TradingItemImpl implements com.trading.service.ITradingItem {
         //String [] dicUrl =
         Asserts.assertTrue(paypals!=null,"请选择一个paypal帐号!");
         for(int is =0;is<paypals.length;is++) {
-            TradingItem tradingItem = new TradingItem();
+            TradingItemWithBLOBs tradingItem = new TradingItemWithBLOBs();
             tradingItem = tradingItem1;
 
             tradingItem.setEbayAccount(paypals[is]);
@@ -739,10 +742,15 @@ public class TradingItemImpl implements com.trading.service.ITradingItem {
     }
 
     @Override
-    public TradingItem selectByItemId(String itemId){
+    public TradingItemWithBLOBs selectByIdBL(Long id){
+        return this.tradingItemMapper.selectByPrimaryKey(id);
+    }
+
+    @Override
+    public TradingItemWithBLOBs selectByItemId(String itemId){
         TradingItemExample tie = new TradingItemExample();
         tie.createCriteria().andItemIdEqualTo(itemId);
-        List<TradingItem> liti = this.tradingItemMapper.selectByExample(tie);
+        List<TradingItemWithBLOBs> liti = this.tradingItemMapper.selectByExampleWithBLOBs(tie);
         if(liti==null||liti.size()==0){
             return null;
         }else{
@@ -750,11 +758,11 @@ public class TradingItemImpl implements com.trading.service.ITradingItem {
         }
     }
     @Override
-    public void updateTradingItem(Item item, TradingItem tradingItem) throws Exception {
+    public void updateTradingItem(Item item, TradingItemWithBLOBs tradingItem) throws Exception {
         HttpServletRequest request = RequestResponseContext.getRequest();
         String [] selectType = request.getParameterValues("selectType");
         SessionVO c= SessionCacheSupport.getSessionVO();
-        tradingItem = new TradingItem();
+        tradingItem = new TradingItemWithBLOBs();
         TradingItem tradingItem1=this.selectByItemId(item.getItemID());
         for(String str : selectType){
             if(str.equals("StartPrice")){//改价格
@@ -864,6 +872,7 @@ public class TradingItemImpl implements com.trading.service.ITradingItem {
             }
         }
         tradingItem.setId(tradingItem1.getId());
+        this.tradingItemMapper.updateByPrimaryKeySelective(tradingItem);
     }
     @Override
     public void saveListingItem(Item item, KeyMoveList kml) throws Exception {
@@ -871,24 +880,37 @@ public class TradingItemImpl implements com.trading.service.ITradingItem {
             //Item item = liitem.get(is);
             TradingItemExample tie = new TradingItemExample();
             tie.createCriteria().andItemIdEqualTo(item.getItemID());
-            List<TradingItem> liti = this.tradingItemMapper.selectByExampleWithBLOBs(tie);
+            List<TradingItemWithBLOBs> liti = this.tradingItemMapper.selectByExampleWithBLOBs(tie);
             if(liti==null||liti.size()==0) {
-                TradingItem tradingItem = new TradingItem();
+                TradingItemWithBLOBs tradingItem = new TradingItemWithBLOBs();
                 ConvertPOJOUtil.convert(tradingItem, item);
-                tradingItem.setStartprice(item.getStartPrice().getValue());
+                if(item.getStartPrice()!=null) {
+                    tradingItem.setStartprice(item.getStartPrice().getValue());
+                }
+                tradingItem.setSite(item.getSite());
                 tradingItem.setIsFlag("Success");
                 tradingItem.setEbayAccount(kml.getPaypalId());
                 tradingItem.setCategoryid(item.getPrimaryCategory().getCategoryID());
                 tradingItem.setConditionid(item.getConditionID().longValue());
                 tradingItem.setCreateUser(kml.getUserId());
                 tradingItem.setItemName(item.getTitle());
+                tradingItem.setItemId(item.getItemID());
+                tradingItem.setListingduration(item.getListingDuration());
+                tradingItem.setQuantity(item.getQuantity().longValue());
+                tradingItem.setCurrency(item.getCurrency());
+                if(item.getOutOfStockControl()!=null) {
+                    tradingItem.setOutofstockcontrol(item.getOutOfStockControl() ? "1" : "0");
+                }else{
+                    tradingItem.setOutofstockcontrol("1");
+                }
+                tradingItem.setSku(item.getSKU());
+                tradingItem.setTitle(item.getTitle());
                 if(item.getListingType().equals("FixedPriceItem")&&item.getVariations()!=null){//多属性
                     tradingItem.setListingtype("2");
                 }else if(item.getListingType().equals("Chinese")){//拍卖
                     tradingItem.setListingtype(item.getListingType());
                 }else{//固价
                     tradingItem.setListingtype(item.getListingType());
-
                 }
                 this.saveTradingItem(tradingItem);
 
@@ -1029,11 +1051,15 @@ public class TradingItemImpl implements com.trading.service.ITradingItem {
                         this.iTradingPublicLevelAttr.deleteByParentID(null, tpla.getId());
                         if (linvls != null && linvls.size() > 0) {
                             for (NameValueList vs : linvls) {
-                                TradingPublicLevelAttr tpl = this.iTradingPublicLevelAttr.toDAOPojo(vs.getName(), vs.getValue().get(i));
-                                tpl.setParentUuid(tpla.getUuid());
-                                tpl.setParentId(tpla.getId());
+                                try {
+                                    TradingPublicLevelAttr tpl = this.iTradingPublicLevelAttr.toDAOPojo(vs.getName(), vs.getValue().get(i));
+                                    tpl.setParentUuid(tpla.getUuid());
+                                    tpl.setParentId(tpla.getId());
 
-                                this.iTradingPublicLevelAttr.savePublicLevelAttr(tpl);
+                                    this.iTradingPublicLevelAttr.savePublicLevelAttr(tpl);
+                                }catch(IndexOutOfBoundsException e){
+                                    continue;
+                                }
                             }
                         }
                     }
@@ -1130,24 +1156,33 @@ public class TradingItemImpl implements com.trading.service.ITradingItem {
                     this.iTradingAttrMores.deleteByParentId("PictureURL", tpicd.getId());
                     List<String> picurl = picd.getPictureURL();
                     for (int i = 0; i < picurl.size(); i++) {
-                        TradingAttrMores tam = this.iTradingAttrMores.toDAOPojo("PictureURL", picurl.get(i));
-                        tam.setParentId(tpicd.getId());
-                        tam.setParentUuid(tpicd.getUuid());
-                        this.iTradingAttrMores.saveAttrMores(tam);
-                        //new一个URL对象
-                        URL url = new URL(picurl.get(i));
-                        //打开链接
-                        HttpURLConnection conn = (HttpURLConnection)url.openConnection();
-                        //设置请求方式为"GET"
-                        conn.setRequestMethod("GET");
-                        //超时响应时间为5秒
-                        conn.setConnectTimeout(5 * 1000);
-                        //通过输入流获取图片数据
-                        InputStream inStream = conn.getInputStream();
-                        String stuff= MyStringUtil.getExtension(picurl.get(i), "");
-                        FtpUploadFile.ftpUploadFile(inStream, uu.getUserName() + "/" + item.getSKU(), stuff);
-                        inStream.close();
+                        try {
+                            TradingAttrMores tam = this.iTradingAttrMores.toDAOPojo("PictureURL", picurl.get(i));
+                            tam.setParentId(tpicd.getId());
+                            tam.setParentUuid(tpicd.getUuid());
+                            this.iTradingAttrMores.saveAttrMores(tam);
+                            //new一个URL对象
+                            URL url = new URL(picurl.get(i));
+                            //打开链接
+                            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                            //设置请求方式为"GET"
+                            conn.setRequestMethod("GET");
+                            //超时响应时间为5秒
+                            conn.setConnectTimeout(5 * 1000);
+                            //通过输入流获取图片数据
+                            InputStream inStream = conn.getInputStream();
+                            String stuff = MyStringUtil.getExtension(picurl.get(i), "");
+                            FtpUploadFile.ftpUploadFile(inStream, uu.getUserName() + "/" + item.getSKU(), stuff);
+                            inStream.close();
+                        }catch(FileNotFoundException e){
+                            continue;
+                        }catch(UnknownHostException e){
+                            continue;
+                        }catch(IOException e){
+                            continue;
+                        }
                     }
+
                 }
 
                 //保存属性值
@@ -1404,8 +1439,12 @@ public class TradingItemImpl implements com.trading.service.ITradingItem {
                         tradingShippingdetails.setCreateUser(kml.getUserId());
                         tradingShippingdetails.setEbayAccount(tradingItem.getEbayAccount());
                         tradingShippingdetails.setSite(tradingItem.getSite());
-                        tradingShippingdetails.setCountType(shippingDetails.getShippingServiceOptions().size() + "");
-                        tradingShippingdetails.setInterCountType(shippingDetails.getInternationalShippingServiceOption().size() + "");
+                        if(shippingDetails.getShippingServiceOptions()!=null) {
+                            tradingShippingdetails.setCountType(shippingDetails.getShippingServiceOptions().size() + "");
+                        }
+                        if(shippingDetails.getInternationalShippingServiceOption()!=null) {
+                            tradingShippingdetails.setInterCountType(shippingDetails.getInternationalShippingServiceOption().size() + "");
+                        }
 
                         this.iTradingShippingDetails.saveShippingDetails(tradingShippingdetails);
                         tradingItem.setShippingDeailsId(tradingShippingdetails.getId());
@@ -1441,7 +1480,7 @@ public class TradingItemImpl implements com.trading.service.ITradingItem {
                                 Map ms = new HashMap();
                                 ms.put("type","International transport");
                                 ms.put("value",tiss.getShippingservice());
-                                ms.put("parentId",tradingItem.getSite());
+                                //ms.put("parentId",tradingItem.getSite());
                                 List<TradingDataDictionary> litdd = DataDictionarySupport.getTradingDataDictionaryByMap(ms);
                                 tiss.setShippingservice(litdd.get(0).getId()+"");
                                 tiss.setParentId(tradingShippingdetails.getId());
@@ -1474,8 +1513,8 @@ public class TradingItemImpl implements com.trading.service.ITradingItem {
                     }else{
                         tradingItem.setShippingDeailsId(lits.get(0).getId());
                     }
-                    this.saveTradingItem(tradingItem);
                 }
+                this.saveTradingItem(tradingItem);
             }
             DataDictionarySupport.removePublicUserConfig(kml.getUserId());
         }
@@ -1516,7 +1555,7 @@ public class TradingItemImpl implements com.trading.service.ITradingItem {
     @Override
     public void copyItem(String[] ids,String ebayaccount) throws Exception {
         for(String id:ids){
-            TradingItem tradingItem = this.tradingItemMapper.selectByPrimaryKey(Long.parseLong(id));
+            TradingItemWithBLOBs tradingItem = this.tradingItemMapper.selectByPrimaryKey(Long.parseLong(id));
             //复制多属性
             TradingVariations tradvars = this.iTradingVariations.selectByParentId(tradingItem.getId());
             List<TradingPicturedetails> lipicd = this.iTradingPictureDetails.selectByParentId(tradingItem.getId());

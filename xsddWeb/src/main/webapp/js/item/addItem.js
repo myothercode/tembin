@@ -422,6 +422,86 @@ function saveData(objs,name) {
     )
 }
 
+
+function checkEbayFee(){
+    if(!$("#form").validationEngine("validate")){
+        return;
+    }
+    if(($("#showPics").find("img").length+$("#picMore").find("img").length/2)>8){
+        alert("最多只能上传8张图片，上传图片已超过上传限制！");
+        return;
+    }
+    var pciValue = new Map();
+    $("#moreAttrs tr td:nth-child(5)").each(function (i,d) {
+        if($(d).find("input[name='attr_Value']").val()!=undefined&&$(d).find("input[name='attr_Value']").val()!=""){
+            pciValue.put($(d).find("input[name='attr_Value']").val(),$(d).find("input[name='attr_Value']").val());
+        }
+    });
+    for(var i=0;i<pciValue.keys.length;i++){
+        $("input[type='hidden'][name='"+pciValue.keys[i]+"']").each(function(ii,dd){
+            $(dd).prop("name","Variations.Pictures.VariationSpecificPictureSet["+i+"].PictureURL["+ii+"]");
+        });
+        $("input[type='hidden'][name='VariationSpecificValue_"+pciValue.keys[i]+"']").prop("name","Variations.Pictures.VariationSpecificPictureSet["+i+"].VariationSpecificValue");
+    }
+
+    var nameList = $("input[type='hidden'][name='name']").each(function(i,d){
+        var name_= $(d).prop("name");
+        var t="ItemSpecifics.NameValueList["+i+"].";
+        $(d).prop("name",t+name_);
+    });
+    var valueList = $("input[type='hidden'][name='value']").each(function(i,d){
+        var name_= $(d).prop("name");
+        var t="ItemSpecifics.NameValueList["+i+"].";
+        $(d).prop("name",t+name_);
+    });
+
+    $("input[type='hidden'][name='attr_Name']").each(function(i,d){
+        var t="Variations.VariationSpecificsSet.NameValueList["+i+"].Name";
+        $(d).prop("name",t);
+    });
+    var len = $("#moreAttrs").find("tr").find("td").length/$("#moreAttrs").find("tr").length-5;
+    for(var j=0;j<len ;j++){
+        $("#moreAttrs tr:gt(0) td:nth-child("+(j+5)+")").each(function (i,d) {
+            $(d).find("input[name='attr_Value']").each(function(ii,dd){
+                $(dd).prop("name","Variations.VariationSpecificsSet.NameValueList["+j+"].Value["+i+"]");
+            });
+        });
+    }
+    $("#moreAttrs tr:gt(0)").each(function(i,d){
+        $(d).find("input[name='SKU'],input[name='StartPrice.value'],input[name='Quantity']").each(function(ii,dd){
+            var name_ = $(dd).prop("name");
+            $(dd).prop("name","Variations.Variation["+i+"]."+name_);
+        });
+    });
+    $("#Description").val(myDescription.getContent());
+    checkLocalStorage();
+    var data = $('#form').serialize();
+    var urll = path+"/ajax/checkEbayFee.do";
+    $().invoke(
+        urll,
+        data,
+        [function (m, r) {
+            var str = "";
+            if(r.length>0){
+                for(var i=0;i< r.length;i++) {
+                    var m = r[i];
+                    str+="<div>"+m.name+":"+ m.value+"</div>";
+                }
+            }else{
+                str+="<div>暂时未发现收费项目</div>";
+            }
+            var tent = "<div>"+str+"</div>";
+            var editPage = $.dialog({title: '收费项目',
+                content: tent,
+                icon: 'succeed',
+                width: 400
+            });
+        },
+            function (m, r) {
+                alert(r)
+            }]
+    )
+}
 /**
  * 预览商品
  */

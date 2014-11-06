@@ -28,10 +28,15 @@ public class MyDailyRollingFileAppender extends DailyRollingFileAppender {
 
     @Override
     public void activateOptions() {
-        String parent = System.getProperty("jboss.server.log.dir");   //以jboss为例
+        String osName = System.getProperty("os.name");
         if(StringUtils.hasText(fileName)) {
-            if(StringUtils.hasText(parent)) {
-                fileName = parent.endsWith(File.separator) ? (parent + fileName) : (parent + File.separator + fileName);
+            if(StringUtils.hasText(osName)) {
+                if(osName.indexOf("Windows")>-1){
+                    fileName="d:/log/rootpomTemBin.log";
+                }else {
+                    fileName="/var/tembinConfig/logs/rootpomTemBin.log";
+                }
+                //fileName = parent.endsWith(File.separator) ? (parent + fileName) : (parent + File.separator + fileName);
             } else if(StringUtils.hasText(defaultLogDirectory)) {
                 fileName = defaultLogDirectory.endsWith(File.separator) ? (defaultLogDirectory + fileName) : (
                         defaultLogDirectory + File.separator + fileName);

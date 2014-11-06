@@ -20,11 +20,11 @@
         var sendGetmymessage;
         $(document).ready(function(){
             $("#sendMessageTable").initTable({
-                url:path + "/sendMessage/ajax/loadSendMessageList.do?",
+                url:path + "/sendMessage/ajax/loadSendMessageList.do?status=1",
                 columnData:[
-                    {title:"模板名称",name:"name",width:"8%",align:"left"},
-                    {title:"消息类型",name:"content",width:"8%",align:"left",format:makeOption4},
-                    {title:"状态",name:"status",width:"8%",align:"left",format:makeOption2},
+                    {title:"模板名称",name:"name",width:"8%",align:"center"},
+                    {title:"<a href=\"javascript:#\" onclick=\"orderBy(this,'asc');\">消息类型</a>",name:"content",width:"8%",align:"center",format:makeOption4},
+                    {title:"状态",name:"status",width:"8%",align:"center",format:makeOption2},
                     {title:"操作",name:"countNum",width:"8%",align:"left",format:makeOption1}
                 ],
                 selectDataNow:false,
@@ -33,6 +33,52 @@
             });
             refreshTable();
         });
+        function refreshTable1(url){
+            $("#sendMessageTable").initTable({
+                url:url,
+                columnData:[
+                    {title:"模板名称",name:"name",width:"8%",align:"center"},
+                    {title:"<a href=\"javascript:#\" onclick=\"orderBy(this,'asc');\">消息类型</a>",name:"content",width:"8%",align:"center",format:makeOption4},
+                    {title:"状态",name:"status",width:"8%",align:"center",format:makeOption2},
+                    {title:"操作",name:"countNum",width:"8%",align:"left",format:makeOption1}
+                ],
+                selectDataNow:false,
+                isrowClick:false,
+                showIndex:false
+            });
+            refreshTable();
+        }
+        function orderBy(obj,orderby){
+            var htm="";
+            if(orderby=="asc"){
+               /* htm="&nbsp;<a href=\"javascript:#\" onclick=\"orderBy(this,'desc');\"><img src=\"<c:url value ="/img/desc.png" />\"/></a>";*/
+                htm="<a href=\"javascript:#\" onclick=\"orderBy(this,'desc');\">消息类型</a>";
+            }
+            if(orderby=="desc"){
+                 htm="<a href=\"javascript:#\" onclick=\"orderBy(this,'asc');\">消息类型</a>";
+            }
+            var status=0;
+            var checkbox=document.getElementById("checkboxStatus");
+            if(checkbox.checked){
+                status=0
+            }else{
+                status=1;
+            }
+            var url=path + "/sendMessage/ajax/loadSendMessageList.do?status="+status+"&orderby="+orderby;
+            $("#sendMessageTable").initTable({
+                url:url,
+                columnData:[
+                    {title:"模板名称",name:"name",width:"8%",align:"center"},
+                    {title:htm,name:"content",width:"8%",align:"center",format:makeOption4},
+                    {title:"状态",name:"status",width:"8%",align:"center",format:makeOption2},
+                    {title:"操作",name:"countNum",width:"8%",align:"left",format:makeOption1}
+                ],
+                selectDataNow:false,
+                isrowClick:false,
+                showIndex:false
+            });
+            refreshTable();
+        }
         function refreshTable(){
             $("#sendMessageTable").selectDataAfterSetParm({"bedDetailVO.deptId":"", "isTrue":0});
         }
@@ -52,20 +98,21 @@
             return getULSelect(pp);
         }
         function makeOption4(json){
-            var htm;
+            var htm="";
             if(json.casetype==1){
-                htm[0]="CASE";
+                htm+="CASE"+"/";
             }
             if(json.autotype==1){
-                htm[1]="自动消息";
+                htm+="自动消息"+"/";
             }
             if(json.messagetype==1){
-                htm[2]="message";
+                htm+="Message"+"/";
             }
-            for(){
-
+            if(htm==""){
+                return htm;
+            }else{
+                return htm.substring(0,htm.length-1);
             }
-            return htm;
         }
         function makeOption3(json){
             var htm = "<input type=\"checkbox\"  name=\"templateId\" value=" + json.id + ">";
@@ -145,14 +192,14 @@
             if(obj.checked){
                 url=path + "/sendMessage/ajax/loadSendMessageList.do?status=0";
             }else{
-                url=path + "/sendMessage/ajax/loadSendMessageList.do?";
+                url=path + "/sendMessage/ajax/loadSendMessageList.do?status=1";
             }
             $("#sendMessageTable").initTable({
                 url:url,
                 columnData:[
-                    {title:"模板名称",name:"name",width:"8%",align:"left"},
-                    {title:"消息类型",name:"content",width:"8%",align:"left",format:makeOption4},
-                    {title:"状态",name:"status",width:"8%",align:"left",format:makeOption2},
+                    {title:"模板名称",name:"name",width:"8%",align:"center"},
+                    {title:"<a href=\"javascript:#\" onclick=\"orderBy(this,'asc');\">消息类型</a>",name:"content",width:"8%",align:"center",format:makeOption4},
+                    {title:"状态",name:"status",width:"8%",align:"center",format:makeOption2},
                     {title:"操作",name:"countNum",width:"8%",align:"left",format:makeOption1}
                 ],
                 selectDataNow:false,
@@ -184,7 +231,7 @@
                 }
             }
         }
-        function querySelect(){
+        /*function querySelect(){
             var type=$("#type").val();
             var time=$("#time").val();
             var itemType=$("#itemTypeid").val();
@@ -192,10 +239,10 @@
             $("#sendMessageTable").initTable({
                 url:path + "/sendMessage/ajax/loadSendMessageList.do",
                 columnData:[
-                    {title:"",name:"pictureUrl",width:"2%",align:"left",format:makeOption3},
-                    {title:"模板名称",name:"name",width:"8%",align:"left"},
-                    {title:"内容",name:"content",width:"8%",align:"left"},
-                    {title:"状态",name:"status",width:"8%",align:"left",format:makeOption2},
+                    {title:"",name:"pictureUrl",width:"2%",align:"center",format:makeOption3},
+                    {title:"模板名称",name:"name",width:"8%",align:"center"},
+                    {title:"内容",name:"content",width:"8%",align:"center"},
+                    {title:"状态",name:"status",width:"8%",align:"center",format:makeOption2},
                     {title:"操作",name:"countNum",width:"8%",align:"left",format:makeOption1}
                 ],
                 selectDataNow:false,
@@ -204,7 +251,7 @@
             });
             $("#sendMessageTable").selectDataAfterSetParm({"bedDetailVO.deptId":"", "isTrue":0,"type":type,"time":time,"itemType":itemType,"content2":content2});
 
-        }
+        }*/
 
     </script>
 </head>
@@ -253,7 +300,7 @@
                         </div>--%>
 
                     </div>
-                    <li class="new_usa_list"><span class="newusa_ii"><input name="" type="checkbox" value="" onclick="viewForbidden(this);"></span><a href="#"><span class="newusa_ici_2" onclick="viewForbidden();">查看禁用的模板</span></a><div class="tbbay"><a data-toggle="modal" href="#myModal" class="">增加模板</a></div></li>
+                    <li class="new_usa_list"><span class="newusa_ii"><input id="checkboxStatus" type="checkbox" value="" onclick="viewForbidden(this);"></span><span <%--class="newusa_ici_2"--%> <%--onclick="viewForbidden();"--%>>显示已停用的模板</span><div class="tbbay"><a data-toggle="modal" href="#myModal" onclick="addMessageTemplate();" class="">增加模板</a></div></li>
                     <div id="sendMessageTable"></div>
                     <!--综合结束 -->
                 </div>

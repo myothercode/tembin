@@ -32,8 +32,16 @@
 		if(typeof obj == 'object') {
 			try {
 				$.extend(defaultOption, obj);
+                try{
+                    var pgCount_=$.cookie((this[0].id)+'_mytablePageNumParm');
+                    if(pgCount_!=null && $.isNumeric(pgCount_)){
+                        var pn_Num=defaultOption.sysParm["jsonBean.pageNum"];
+                        $.extend(defaultOption, {sysParm:{"jsonBean.pageNum":pn_Num,"jsonBean.pageCount":pgCount_}});
+                    }
+                }catch (e){console.log(e,"table设置报错")}
+
 				$(this).data("option", defaultOption);
-				if(defaultOption.selectDataNow) {					
+				if(defaultOption.selectDataNow) {
 					this.createdTable();					
 				}
 			} catch(e) {				
@@ -109,7 +117,7 @@
 		}
 		for(var i in option.columnData) {
 			var headThTitle = $("<th></th>").attr("width",
-				option.columnData[i]["width"]).html(option.columnData[i]["title"]);
+				option.columnData[i]["width"]).css("text-align",option.columnData[i]["align"] == undefined ? "center" : option.columnData[i]["align"]).html(option.columnData[i]["title"]);
 			headThTitle.appendTo(headTr);
 		}
 		headTr.appendTo(table);//构造列表头结束
@@ -127,14 +135,14 @@
 					var pagenum = parseInt(option.sysParm["jsonBean.pageNum"]);
 					var pagecount = parseInt(option.sysParm["jsonBean.pageCount"]);
 					var no = (pagenum - 1) * pagecount + (parseInt(i) + 1);
-					$("<td></td>").attr("style", "text-align:left;cursor: pointer;").html(no).appendTo(contentTr);
+					$("<td></td>").attr("style", "text-align:left;").html(no).appendTo(contentTr);
 				}
 
 				for(var j = 0; j < option.columnData.length; j++) {
 					if(option.columnData[j]["format"] == undefined) {
 						if(option.columnData[j]["showTips"] == undefined || option.columnData[j]["showTips"] == false) {
 							var contentTd = $("<td></td>").attr("style",
-									"tword-break:break-all;word-wrap:break-word;cursor: pointer;text-align:" + (option.columnData[j]["align"] == undefined ? "center" : option.columnData[j]["align"])).html((tableData[i][option.columnData[j]["name"]] == null) || (tableData[i][option.columnData[j]["name"]] == '') ? "&nbsp;" : tableData[i][option.columnData[j]["name"]]);
+									"tword-break:break-all;word-wrap:break-word;text-align:" + (option.columnData[j]["align"] == undefined ? "center" : option.columnData[j]["align"])).html((tableData[i][option.columnData[j]["name"]] == null) || (tableData[i][option.columnData[j]["name"]] == '') ? "&nbsp;" : tableData[i][option.columnData[j]["name"]]);
 							contentTd.appendTo(contentTr);
 						} else {
 							var wordWidth = $(this).width() * $.pointToFloatNumber(option.columnData[j]["width"]);
@@ -152,18 +160,18 @@
 							}
 							if(tableData[i][option.columnData[j]["name"]] == null || tableData[i][option.columnData[j]["name"]] == '') {
 								$("<td></td>").css("tword-break", "break-all").css("word-wrap",
-										"break-word").css("cursor", "pointer").css("text-align",
+										"break-word").css("cursor", "default").css("text-align",
 										option.columnData[j]["align"] == undefined ? "center" : option.columnData[j]["align"]).html((tdContent == null || tdContent == '') ? "&nbsp;" : tdContent).appendTo(contentTr);
 							} else {
 								$("<td></td>").css("tword-break", "break-all").css("word-wrap",
-										"break-word").css("cursor", "pointer").css("text-align",
+										"break-word").css("cursor", "default").css("text-align",
 										option.columnData[j]["align"] == undefined ? "center" : option.columnData[j]["align"]).attr("title",
 										(tableData[i][option.columnData[j]["name"]] == null) || (tableData[i][option.columnData[j]["name"]] == '') ? "&nbsp;" : tableData[i][option.columnData[j]["name"]]).html((tdContent == null || tdContent == '') ? "&nbsp;" : tdContent).appendTo(contentTr);
 							}
 						}
 					} else {
 						$("<td></td>").css("tword-break", "break-all").css("word-wrap", "break-word").css("cursor",
-								"pointer").css("text-align",
+								"default").css("text-align",
 								option.columnData[j]["align"] == undefined ? "center" : option.columnData[j]["align"]).html(option.columnData[j]["format"](option.allData[i])).appendTo(contentTr);
 					}
 				}
@@ -241,8 +249,8 @@
             htmlPage+=this.showOtherPage2();
             htmlPage+="<li onclick=\"$('#" + this.attr("id") + "').toPage(" + Next + ")\">></li>" ;
             htmlPage+="<li onclick=\"$('#" + this.attr("id") + "').toPage(" + GetLastPageNum + ")\">>|</li>" ;
-            htmlPage+="<li style='width: 50px'>To<input  style='width: 20px;height: 25px;margin-left: 5px;margin-top: 2px;' " +
-                "onkeydown=$('#" + this.attr("id") + "').toPage(this.value,event) /></li>";
+            htmlPage+="<li style='width: 50px;'><div style='height: 25px;float: left'>&nbsp;To</div><div><input  style='width: 20px;height: 25px;margin-left: 5px;margin-top: 2px;' " +
+                "onkeydown=$('#" + this.attr("id") + "').toPage(this.value,event) /></div></li>";
             htmlPage+="</div>";
             return htmlPage;
         }else{
@@ -586,8 +594,25 @@ function hidePageNumList2(parentId){
 }
 
 function changeMyTablePageCount (id,pageNum) {
+    try{$.cookie(id+'_mytablePageNumParm',(pageNum),{expires:7});}catch (e){console.log(e,"每页显示条数设置错误!")}
     var option = $("#"+id).data("option");
     option.sysParm["jsonBean.pageCount"] = pageNum;
     option.sysParm["jsonBean.pageNum"] = 1;
+
+    //var th1_T= $("#"+id).find("table[name='myTablePlug']").eq(0).css("height");
+
     $("#"+id).refresh();
+
+   /* var th2_= $("#"+id).find("table[name='myTablePlug']").eq(0).css("height").replace("px","");
+    var th1_=th1_T.replace("px","");
+
+    var vv= parseInt(th2_)-parseInt(th1_);
+
+    if(vv<0){
+        zjh_(vv);
+    }else{
+        zjh_();
+    }*/
+
+
 };

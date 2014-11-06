@@ -20,10 +20,10 @@
         var userCases;
         function getBindParm(){
             var url=path+"/userCases/getUserCases.do";
-            userCases=$.dialog({title: '同步订单',
+            userCases=$.dialog({title: '同步纠纷',
                 content: 'url:'+url,
                 icon: 'succeed',
-                width:1025,
+                width:600,
                 lock:true
             });
         }

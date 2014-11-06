@@ -62,8 +62,8 @@ public class SamplePaseXml {
         item.setListingDuration(element.elementText("ListingDuration"));
         item.setQuantity(Integer.parseInt(element.elementText("Quantity")));
         item.setPayPalEmailAddress(element.elementText("PayPalEmailAddress"));
-        item.setGetItFast(element.elementText("GetItFast").equals("false")?false:true);
-        item.setPrivateListing(element.elementText("PrivateListing").equals("true")?true:false);
+        item.setGetItFast("false".equals(element.elementText("GetItFast"))?false:true);
+        item.setPrivateListing("true".equals(element.elementText("PrivateListing"))?true:false);
         item.setDispatchTimeMax(Integer.parseInt(element.elementText("DispatchTimeMax")));
         item.setListingDuration(element.elementText("ListingDuration"));
         item.setDescription(element.elementText("Description"));
@@ -140,9 +140,15 @@ public class SamplePaseXml {
         Element buyere = element.element("BuyerRequirementDetails");
         if(buyere!=null) {
             Element maxiteme = buyere.element("MaximumItemRequirements");
-            mirs.setMaximumItemCount(Integer.parseInt(maxiteme.elementText("MaximumItemCount")));
-            mirs.setMinimumFeedbackScore(Integer.parseInt(maxiteme.elementText("MinimumFeedbackScore")));
-            brd.setMaximumItemRequirements(mirs);
+            if(maxiteme!=null) {
+                if (maxiteme.elementText("MaximumItemCount") != null) {
+                    mirs.setMaximumItemCount(Integer.parseInt(maxiteme.elementText("MaximumItemCount")));
+                }
+                if (maxiteme.elementText("MinimumFeedbackScore") != null) {
+                    mirs.setMinimumFeedbackScore(Integer.parseInt(maxiteme.elementText("MinimumFeedbackScore")));
+                }
+                brd.setMaximumItemRequirements(mirs);
+            }
 
             Element maxUnpaid = buyere.element("MaximumUnpaidItemStrikesInfo");
             MaximumUnpaidItemStrikesInfo muis = new MaximumUnpaidItemStrikesInfo();
@@ -328,7 +334,7 @@ public class SamplePaseXml {
         while(iter.hasNext()){
             TradingListingData item = new TradingListingData();
             Element element = iter.next();
-            item.setTitle(element.elementText("Title"));
+            item.setTitle(StringEscapeUtils.escapeXml(element.elementText("Title")));
             item.setItemId(element.elementText("ItemID"));
             item.setSite(element.elementText("Site"));
             item.setSku(element.elementText("SKU"));
@@ -403,6 +409,14 @@ public class SamplePaseXml {
         while(iter.hasNext()){
             Item item = new Item();
             Element element = iter.next();
+            Element elflag = element.element("SellingStatus").element("ListingStatus");
+            if(elflag!=null){//如查商品不在线，就不取在线商品
+                if(elflag.getText().equals("Active")){
+
+                }else{
+                    continue;
+                }
+            }
             item.setTitle(element.elementText("Title"));
             item.setCurrency(element.elementText("Currency"));
             item.setCountry(element.elementText("Country"));
@@ -443,9 +457,11 @@ public class SamplePaseXml {
             Element buyere = element.element("BuyerRequirementDetails");
             if(buyere!=null) {
                 Element maxiteme = buyere.element("MaximumItemRequirements");
-                mirs.setMaximumItemCount(Integer.parseInt(maxiteme.elementText("MaximumItemCount")));
-                mirs.setMinimumFeedbackScore(Integer.parseInt(maxiteme.elementText("MinimumFeedbackScore")));
-                brd.setMaximumItemRequirements(mirs);
+                if(maxiteme!=null) {
+                    mirs.setMaximumItemCount(Integer.parseInt(maxiteme.elementText("MaximumItemCount")));
+                    mirs.setMinimumFeedbackScore(Integer.parseInt(maxiteme.elementText("MinimumFeedbackScore")));
+                    brd.setMaximumItemRequirements(mirs);
+                }
 
                 Element maxUnpaid = buyere.element("MaximumUnpaidItemStrikesInfo");
                 MaximumUnpaidItemStrikesInfo muis = new MaximumUnpaidItemStrikesInfo();

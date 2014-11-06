@@ -16,15 +16,27 @@ public class ApplicationContextUtil implements ApplicationContextAware {
         this.context = contex;
     }
     public static ApplicationContext getContext() {
+        if(context==null){
+            return null;
+        }
         return context;
     }
     public final static Object getBean(String beanName) {
+        if(context==null){
+            return null;
+        }
         return context.getBean(beanName);
     }
     public final static Object getBean(String beanName, Class<?> requiredType) {
+        if(context==null){
+            return null;
+        }
         return context.getBean(beanName, requiredType);
     }
-    public final static Object getBean(Class<?> c){
-        return context.getBean(c);
+    public final static<T> T getBean(Class<?> c){
+        if(context==null){
+            return null;
+        }
+        return (T)context.getBean(c);
     }
 }

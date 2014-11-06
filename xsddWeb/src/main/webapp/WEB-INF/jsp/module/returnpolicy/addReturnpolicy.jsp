@@ -6,8 +6,8 @@
   To change this template use File | Settings | File Templates.
 --%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<%--<%@include file= "/WEB-INF/jsp/commonImport.jsp" %>--%>
-<%@include file= "/WEB-INF/jsp/smallFormImport.jsp" %>
+<%@include file= "/WEB-INF/jsp/commonImport.jsp" %>
+<%--<%@include file= "/WEB-INF/jsp/smallFormImport.jsp" %>--%>
 <html>
 <head>
     <title></title>
@@ -33,6 +33,9 @@
                     }]
         );
     }
+    function winClose(){
+        W.returnPolicy.close();
+    }
     $(document).ready(function () {
         $("#returnPolicyForm").validationEngine();
         var type = '${type}';
@@ -48,119 +51,128 @@
         }
     });
 </script>
+<style type="text/css">
+    body {
+        background-color: #ffffff;
+    }
+</style>
 
 <c:set value="${Returnpolicy}" var="Returnpolicy" />
 <body>
-<div style="width: 400px;">
-    <form class="form-horizontal"  id="returnPolicyForm">
-        <fieldset>
-            <div id="legend" class="">
-                <legend class="">退货政策</legend>
-            </div>
-            <div class="control-group">
-                <label class="control-label" for="input01">名称</label>
-                <div class="controls">
-                    <input type="text" placeholder="" class="input-xlarge validate[required]" name="name" id="name" value="${Returnpolicy.name}">
-                    <p class="help-block"></p>
-                    <input type="hidden" name="id" id="id" value="${Returnpolicy.id}">
-                </div>
-            </div>
-            <div class="control-group">
-                <label class="control-label">站点</label>
-                <div class="controls">
-                    <select name="site"  class="input-xlarge">
-                        <c:forEach items="${siteList}" var="sites">
-                            <c:if test="${Returnpolicy.site==sites.id}">
-                                <option value="${sites.id}" selected="selected">${sites.name}</option>
-                            </c:if>
-                            <c:if test="${Returnpolicy.site!=sites.id}">
-                                <option value="${sites.id}">${sites.name}</option>
-                            </c:if>
-                        </c:forEach>
-                    </select>
-                </div>
-            </div>
-            <div class="control-group">
-                <!-- Select Basic -->
-                <label class="control-label">退货政策</label>
-                <div class="controls">
-                    <select name="returnsacceptedoption"  class="input-xlarge">
-                        <c:forEach items="${acceptList}" var="accept">
-                            <c:if test="${Returnpolicy.returnsacceptedoption==accept.id}">
-                                <option value="${accept.id}" selected="selected">${accept.name}</option>
-                            </c:if>
-                            <c:if test="${Returnpolicy.returnsacceptedoption!=accept.id}">
-                                <option value="${accept.id}">${accept.name}</option>
-                            </c:if>
-                        </c:forEach>
-                    </select>
-                </div>
-            </div>
-            <div class="control-group">
-                <!-- Select Basic -->
-                <label class="control-label">退货天数</label>
-                <div class="controls">
-                    <select name="returnswithinoption" class="input-xlarge">
-                        <c:forEach items="${withinList}" var="within">
-                            <c:if test="${Returnpolicy.returnswithinoption==within.id}">
-                                <option value="${within.id}" selected="selected">${within.name}</option>
-                            </c:if>
-                            <c:if test="${Returnpolicy.returnswithinoption!=within.id}">
-                                <option value="${within.id}">${within.name}</option>
-                            </c:if>
-                        </c:forEach>
-                    </select>
-                </div>
-            </div>
-            <div class="control-group">
-                <!-- Select Basic -->
-                <label class="control-label">退款方式</label>
-                <div class="controls">
-                    <select name="refundoption"  class="input-xlarge">
-                        <c:forEach items="${refundList}" var="pay">
-                            <c:if test="${Returnpolicy.refundoption==pay.id}">
-                                <option value="${pay.id}" selected="selected">${pay.name}</option>
-                            </c:if>
-                            <c:if test="${Returnpolicy.refundoption!=pay.id}">
-                                <option value="${pay.id}">${pay.name}</option>
-                            </c:if>
-                        </c:forEach>
-                    </select>
-                </div>
-            </div>
-            <div class="control-group">
-                <!-- Select Basic -->
-                <label class="control-label">退货运费由谁承担</label>
-                <div class="controls">
-                    <select name="shippingcostpaidbyoption"  class="input-xlarge">
-                        <c:forEach items="${costPaidList}" var="pay">
-                            <c:if test="${Returnpolicy.shippingcostpaidbyoption==pay.id}">
-                                <option value="${pay.id}" selected="selected">${pay.name}</option>
-                            </c:if>
-                            <c:if test="${Returnpolicy.shippingcostpaidbyoption!=pay.id}">
-                                <option value="${pay.id}">${pay.name}</option>
-                            </c:if>
-                        </c:forEach>
-                    </select>
-                </div>
-            </div>
-            <div class="control-group">
-                <!-- Textarea -->
-                <label class="control-label">付款说明</label>
-                <div class="controls">
-                    <div class="textarea">
-                        <textarea type="" class="" name="description" cols="30" rows="5">${Returnpolicy.description}</textarea>
-                    </div>
-                </div>
-            </div>
-        </fieldset>
-    </form>
-    <div class="control-group" style="text-align: center;">
-        <div class="controls">
-            <button class="btn btn-success" onclick="submitForm();">确定</button>
-        </div>
-    </div>
+<div class="modal-header">
+    <div class="newtitle">退款政策</div>
 </div>
+<div class="modal-body">
+<form class="form-horizontal" role="form" id="returnPolicyForm">
+<table width="90%" border="0" style="margin-left:40px;">
+    <tr>
+        <td width="27%" height="28" align="right">名称：</td>
+        <td width="73%" height="28"><div class="newselect" style="margin-top:9px;">
+            <input type="text" placeholder="" class="form-controlsd validate[required]" name="name" id="name" value="${Returnpolicy.name}">
+            <input type="hidden" name="id" id="id" value="${Returnpolicy.id}">
+        </div></td>
+    </tr>
+    <tr>
+        <td height="28" align="right">站点：</td>
+        <td height="28" style=" padding-left:4px;"><div class="col-lg-10">
+            <div class="ui-select" style="margin-top:9px;">
+                <select name="site" style="width: 300px;">
+                    <c:forEach items="${siteList}" var="sites">
+                        <c:if test="${Returnpolicy.site==sites.id}">
+                            <option value="${sites.id}" selected="selected">${sites.name}</option>
+                        </c:if>
+                        <c:if test="${Returnpolicy.site!=sites.id}">
+                            <option value="${sites.id}">${sites.name}</option>
+                        </c:if>
+                    </c:forEach>
+                </select>
+            </div>
+        </div></td>
+    </tr>
+    <tr>
+        <td height="28" align="right">退货政策：</td>
+        <td height="28" style=" padding-left:4px;"><div class="col-lg-10">
+            <div class="ui-select" style="margin-top:9px;">
+                <select name="returnsacceptedoption" style="width:300px;">
+                    <c:forEach items="${acceptList}" var="accept">
+                        <c:if test="${Returnpolicy.returnsacceptedoption==accept.id}">
+                            <option value="${accept.id}" selected="selected">${accept.name}</option>
+                        </c:if>
+                        <c:if test="${Returnpolicy.returnsacceptedoption!=accept.id}">
+                            <option value="${accept.id}">${accept.name}</option>
+                        </c:if>
+                    </c:forEach>
+                </select>
+            </div>
+        </div></td>
+    </tr>
+    <tr>
+        <td height="28" align="right">退货天数：</td>
+        <td height="28" style=" padding-left:4px;"><div class="col-lg-10">
+            <div class="ui-select" style="margin-top:9px;">
+                <select name="returnswithinoption" style="width: 300px;">
+                    <c:forEach items="${withinList}" var="within">
+                        <c:if test="${Returnpolicy.returnswithinoption==within.id}">
+                            <option value="${within.id}" selected="selected">${within.name}</option>
+                        </c:if>
+                        <c:if test="${Returnpolicy.returnswithinoption!=within.id}">
+                            <option value="${within.id}">${within.name}</option>
+                        </c:if>
+                    </c:forEach>
+                </select>
+            </div>
+        </div></td>
+    </tr>
+    <tr>
+        <td height="28" align="right">退款方式：</td>
+        <td height="28" style=" padding-left:4px;"><div class="col-lg-10">
+            <div class="ui-select" style="margin-top:9px;">
+                <select name="refundoption" style="width: 300px;">
+                    <c:forEach items="${refundList}" var="pay">
+                        <c:if test="${Returnpolicy.refundoption==pay.id}">
+                            <option value="${pay.id}" selected="selected">${pay.name}</option>
+                        </c:if>
+                        <c:if test="${Returnpolicy.refundoption!=pay.id}">
+                            <option value="${pay.id}">${pay.name}</option>
+                        </c:if>
+                    </c:forEach>
+                </select>
+            </div>
+        </div></td>
+    </tr>
+    <tr>
+        <td height="28" align="right">退货费用由谁承担：</td>
+        <td height="28" style=" padding-left:4px;"><div class="col-lg-10">
+            <div class="ui-select" style="margin-top:9px;">
+                <select name="shippingcostpaidbyoption" style="width: 300px;">
+                    <c:forEach items="${costPaidList}" var="pay">
+                        <c:if test="${Returnpolicy.shippingcostpaidbyoption==pay.id}">
+                            <option value="${pay.id}" selected="selected">${pay.name}</option>
+                        </c:if>
+                        <c:if test="${Returnpolicy.shippingcostpaidbyoption!=pay.id}">
+                            <option value="${pay.id}">${pay.name}</option>
+                        </c:if>
+                    </c:forEach>
+                </select>
+            </div>
+        </div></td>
+    </tr>
 
+    <tr>
+        <td width="27%" height="28" align="right">付款说明：</td>
+        <td width="73%" height="28"><div class="col-lg-10" style="margin-top:9px;">
+            <textarea class="form-control"  name="description" cols="" rows="2" style="width:350px;">${Returnpolicy.description}</textarea>
+        </div></td>
+    </tr>
+    <tr >
+        <td height="28" align="right"></td>
+        <td height="28" style=" padding-top:22px;">
+            <button type="button" class="net_put" onclick="submitForm();">确定</button>
+            <button type="button" class="net_put_1" data-dismiss="modal" onclick="winClose()">关闭</button>
+        </td>
+    </tr>
+</table>
+</form>
+</div>
 </body>
 </html>

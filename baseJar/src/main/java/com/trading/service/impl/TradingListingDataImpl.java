@@ -9,6 +9,7 @@ import com.base.database.trading.model.TradingListingAmendWithBLOBs;
 import com.base.database.trading.model.TradingListingData;
 import com.base.database.trading.model.TradingListingDataExample;
 import com.base.domains.querypojos.ListingDataAmendQuery;
+import com.base.domains.querypojos.ListingDataQuery;
 import com.base.mybatis.page.Page;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -33,7 +34,7 @@ public class TradingListingDataImpl implements com.trading.service.ITradingListi
     @Autowired
     private TradingListingAmendMapper tradingListingAmendMapper;
     @Override
-    public List<TradingListingData> selectData(Map map, Page page){
+    public List<ListingDataQuery> selectData(Map map, Page page){
         return this.listingDataMapper.selectByExample(map,page);
     }
 

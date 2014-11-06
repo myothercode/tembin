@@ -23,7 +23,25 @@
             getMenu();
             getSystemMessage({"jsonBean.pageNum":1,"jsonBean.pageCount":1000,"readed":0,"strV1":"num"});
             getMessagesByTime();
+            setWandH();
+            setIndexUrl();
         });
+        /**设置主页地址*/
+        function setIndexUrl(){
+            $("#contentMain").attr("src",path+"/indexInit.do");
+        }
+        var mainHei_="";
+        var mainWidth_="";
+        function setWandH(){//设置宽度
+            var wi=getCurrPageWH();
+            mainWidth_=(parseInt(wi.eWidth)-275);
+            mainHei_=(parseInt(wi.eHeight)-70);
+            /*alert(wi.eHeight)
+            alert(document.documentElement.scrollHeight)*/
+            $("#contentMaindiv").css("width",mainWidth_+"px");
+            $("#contentMaindiv").css("height",mainHei_+"px");
+            //$("#contentMaindiv").css("height","94%");
+        }
         function cleanContent(obj){
             var cont= $(obj).val();
             if(cont=="SKU/内容") {
@@ -61,12 +79,14 @@
         dl dt span { float: right; color: #ff0000;}
         dl .noneBold { font-weight:normal;}
     </style>
+
 </head>
-<body style=overflow:scroll;overflow-y:scroll;>
+<body style=overflow-y:auto;overflow-x:hidden;>
 <form id="queryForm" action="/xsddWeb/order/queryOrdersList.do" target="contentMain">
 </form>
 <!-- navbar -->
-<header  class="navbar navbar-inverse" style="position: fixed;top: 0px;width: 100%;" role="banner">
+<div id="navbar">
+<header   class="navbar navbar-inverse" style="position: absolute;width: 100%;" role="banner">
     <div class="navbar-header">
         <button class="navbar-toggle" type="button" data-toggle="collapse" id="menu-toggler">
             <span class="sr-only">Toggle navigation</span>
@@ -153,6 +173,7 @@
         </li>
     </ul>
 </header>
+</div>
 <!-- end navbar -->
 
 <!-- sidebar -->
@@ -162,12 +183,13 @@
     </ul>
 </div>
 
-<div id="contentMaindiv" class="content" style="top: 52px;">
+
+<div id="contentMaindiv" class="content" style="position: absolute;top: 58px;overflow-x: hidden">
     <iframe width="100%" height="100%" frameborder="0px" id="contentMain" name="contentMain">
 
     </iframe>
 </div>
 
-
 </body>
+
 </html>

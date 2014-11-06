@@ -11,6 +11,11 @@
 <html>
 <head>
     <title></title>
+    <style type="text/css">
+        body {
+            background-color: #ffffff;
+        }
+    </style>
     <script type="text/javascript">
         var api = frameElement.api, W = api.opener;
         function closedialog(){
@@ -42,7 +47,8 @@
                     [function(m,r){
                         alert(r);
                         Base.token;
-                        W.refreshTable();
+                        var url=path + "/sendMessage/ajax/loadSendMessageList.do?status=1";
+                        W.refreshTable1(url);
                         W.sendGetmymessage.close();
                     },
                         function(m,r){
@@ -54,7 +60,10 @@
         $(document).ready(function(){
             $("#messageForm").validationEngine();
         });
-
+        function addcontent(obj){
+            var textarea=document.getElementById("textarea");
+            textarea.innerHTML+=obj.value;
+        }
     </script>
 </head>
 <body>
@@ -88,24 +97,46 @@
                     </c:if>
                 </div>
             </div>
-
             <label  class="newdt control-label" style="margin-top:9px;">模板名称</label>
             <div class="col-lg-10">
                 <div class="newselect" style="margin-top:9px;width: 750px;">
                     <input name="name" class="form-controlsd validate[required]" type="text" value="${template.name}">
                 </div>
             </div><br/>
+            <label  class="newdt control-label" style="margin-top:9px;">标签</label>
+            <div class="col-lg-10">
+                <div class="newselect" style="margin-top:9px;width: 750px;">
+                    <select onchange="addcontent(this);" class="form-controlsd" style="width: 200px;height: 35px;">
+                        <option value="">--选择--</option>
+                        <option value="{Buyer_eBay_ID}">Buyer_eBay_ID</option>
+                        <option value="{Carrier}">Carrier</option>
+                        <option value="{Carrier_TrackingURL}">Carrier_TrackingURL</option>
+                        <option value="{eBay_Item#}">eBay_Item#</option>
+                        <option value="{eBay_Item_Title}">eBay_Item_Title</option>
+                        <option value="{Post_Date}">Post_Date</option>
+                        <option value="{Payment_Date}">Payment_Date</option>
+                        <option value="{Paypal_Transaction_ID}">Paypal_Transaction_ID</option>
+                        <option value="{Purchase_Quantity}">Purchase_Quantity</option>
+                        <option value="{Received_Amount}">Received_Amount</option>
+                        <option value="{Recipient_Address}">Recipient_Address</option>
+                        <option value="{Seller_eBay_ID}">Seller_eBay_ID</option>
+                        <option value="{Seller_Email}">Seller_Email</option>
+                        <option value="{Today}">Today</option>
+                        <option value="{Track_Code}">Track_Code</option>
+                    </select>
+                </div>
+            </div><br/>
             <label  class="newdt control-label" style="margin-top:9px;">模板内容</label>
             <div class="col-lg-10">
                 <div class="newselect" style="margin-top:9px;width: 750px;">
-                <textarea name="content" class="form-control validate[required]" cols="" rows="4" style="width:600px;height: 200px;">${template.content}</textarea>
+                <textarea name="content" id="textarea" class="form-control validate[required]" cols="" rows="4" style="width:600px;height: 200px;">${template.content}</textarea>
                 </div>
             </div>
         </div>
     </form>
     <div class="modal-footer">
-        <button type="button" class="btn btn-primary" onclick="submitCommit();">保存</button>
-        <button type="button" class="btn btn-default" data-dismiss="modal" onclick="closedialog();">关闭</button>
+        <button type="button" class="net_put" onclick="submitCommit();">保存</button>
+        <button type="button" class="net_put_1" data-dismiss="modal" onclick="closedialog();">关闭</button>
     </div>
 </div>
 </body>

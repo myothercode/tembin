@@ -59,7 +59,7 @@ function showData(json){
     html+='<div style="color: #3B9EF3;">'+json.ebayName+'</div>';
     html+='<div><table style="border:1px solid #dddddd;" width="400px">';
     for(var i=0;i<json.lits.length;i++){
-        html+='<tr><td style="border:1px solid #dddddd;" width="220px">'+json.lits[i].shippingservice+'</td><td style="border:1px solid #dddddd;" width="60px">'+json.lits[i].shippingservicecost+'</td><td style="border:1px solid #dddddd;"  width="60px">'+json.lits[i].shippingserviceadditionalcost+'</td><td style="border:1px solid #dddddd;"  width="60px">'+json.lits[i].shippingsurcharge+'</td></tr>'
+        html+='<tr><td style="border:1px solid #dddddd;" width="220px">'+json.lits[i].shippingservice+'</td><td style="border:1px solid #dddddd;" width="60px">'+json.lits[i].shippingservicecost.toFixed(2)+'&nbsp'+json.currencyId+'</td><td style="border:1px solid #dddddd;"  width="60px">'+json.lits[i].shippingserviceadditionalcost.toFixed(2)+'&nbsp'+json.currencyId+'</td><td style="border:1px solid #dddddd;"  width="60px">'+json.lits[i].shippingsurcharge.toFixed(2)+'&nbsp'+json.currencyId+'</td></tr>';
     }
     html+='</table></div>';
     return html;

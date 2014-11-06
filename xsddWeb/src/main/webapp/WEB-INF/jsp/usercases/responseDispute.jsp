@@ -223,7 +223,23 @@
 
         }
     function selectSendMessage(){
-        $("#textarea3").val($("#template").val());
+        var content=$("#template").val();
+        content=content.replace("{Buyer_eBay_ID}","${cases.buyerid}");
+        content=content.replace("{Carrier}","${order.shippingcarrierused}");
+        content=content.replace("{Carrier_TrackingURL}","${order.shipmenttrackingnumber}");
+        content=content.replace("{eBay_Item#}","${cases.itemid}");
+        content=content.replace("{eBay_Item_Title}","${cases.itemtitle}");
+    /*    content=content.replace("{Post_Date}","${order.buyeruserid}");*/
+        content=content.replace("{Payment_Date}","${order.paidtime}");
+/*        content=content.replace("{Paypal_Transaction_ID}","${order.buyeruserid}");*/
+        content=content.replace("{Purchase_Quantity}","${order.quantitypurchased}");
+        content=content.replace("{Received_Amount}","${cases.caseamount}");
+       /* content=content.replace("{Recipient_Address}","${order.buyeruserid}");*/
+        content=content.replace("{Seller_eBay_ID}","${cases.sellerid}");
+        content=content.replace("{Seller_Email}","${order.selleremail}");
+        content=content.replace("{Today}","<fmt:formatDate value="${date}" pattern="yyyy-MM-dd HH:mm"/>");
+        content=content.replace("{Track_Code}","${order.shipmenttrackingnumber}");
+        $("#textarea3").val(content);
     }
     </script>
 </head>

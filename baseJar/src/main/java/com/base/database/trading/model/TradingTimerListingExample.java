@@ -2,7 +2,6 @@ package com.base.database.trading.model;
 
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
 
 public class TradingTimerListingExample {
@@ -190,32 +189,6 @@ public class TradingTimerListingExample {
                 throw new RuntimeException("Between values for " + property + " cannot be null");
             }
             criteria.add(new Criterion(condition, value1, value2));
-        }
-
-        protected void addCriterionForJDBCTime(String condition, Date value, String property) {
-            if (value == null) {
-                throw new RuntimeException("Value for " + property + " cannot be null");
-            }
-            addCriterion(condition, new java.sql.Time(value.getTime()), property);
-        }
-
-        protected void addCriterionForJDBCTime(String condition, List<Date> values, String property) {
-            if (values == null || values.size() == 0) {
-                throw new RuntimeException("Value list for " + property + " cannot be null or empty");
-            }
-            List<java.sql.Time> timeList = new ArrayList<java.sql.Time>();
-            Iterator<Date> iter = values.iterator();
-            while (iter.hasNext()) {
-                timeList.add(new java.sql.Time(iter.next().getTime()));
-            }
-            addCriterion(condition, timeList, property);
-        }
-
-        protected void addCriterionForJDBCTime(String condition, Date value1, Date value2, String property) {
-            if (value1 == null || value2 == null) {
-                throw new RuntimeException("Between values for " + property + " cannot be null");
-            }
-            addCriterion(condition, new java.sql.Time(value1.getTime()), new java.sql.Time(value2.getTime()), property);
         }
 
         public Criteria andIdIsNull() {
@@ -489,52 +462,52 @@ public class TradingTimerListingExample {
         }
 
         public Criteria andRunStartTimeEqualTo(Date value) {
-            addCriterionForJDBCTime("run_start_time =", value, "runStartTime");
+            addCriterion("run_start_time =", value, "runStartTime");
             return (Criteria) this;
         }
 
         public Criteria andRunStartTimeNotEqualTo(Date value) {
-            addCriterionForJDBCTime("run_start_time <>", value, "runStartTime");
+            addCriterion("run_start_time <>", value, "runStartTime");
             return (Criteria) this;
         }
 
         public Criteria andRunStartTimeGreaterThan(Date value) {
-            addCriterionForJDBCTime("run_start_time >", value, "runStartTime");
+            addCriterion("run_start_time >", value, "runStartTime");
             return (Criteria) this;
         }
 
         public Criteria andRunStartTimeGreaterThanOrEqualTo(Date value) {
-            addCriterionForJDBCTime("run_start_time >=", value, "runStartTime");
+            addCriterion("run_start_time >=", value, "runStartTime");
             return (Criteria) this;
         }
 
         public Criteria andRunStartTimeLessThan(Date value) {
-            addCriterionForJDBCTime("run_start_time <", value, "runStartTime");
+            addCriterion("run_start_time <", value, "runStartTime");
             return (Criteria) this;
         }
 
         public Criteria andRunStartTimeLessThanOrEqualTo(Date value) {
-            addCriterionForJDBCTime("run_start_time <=", value, "runStartTime");
+            addCriterion("run_start_time <=", value, "runStartTime");
             return (Criteria) this;
         }
 
         public Criteria andRunStartTimeIn(List<Date> values) {
-            addCriterionForJDBCTime("run_start_time in", values, "runStartTime");
+            addCriterion("run_start_time in", values, "runStartTime");
             return (Criteria) this;
         }
 
         public Criteria andRunStartTimeNotIn(List<Date> values) {
-            addCriterionForJDBCTime("run_start_time not in", values, "runStartTime");
+            addCriterion("run_start_time not in", values, "runStartTime");
             return (Criteria) this;
         }
 
         public Criteria andRunStartTimeBetween(Date value1, Date value2) {
-            addCriterionForJDBCTime("run_start_time between", value1, value2, "runStartTime");
+            addCriterion("run_start_time between", value1, value2, "runStartTime");
             return (Criteria) this;
         }
 
         public Criteria andRunStartTimeNotBetween(Date value1, Date value2) {
-            addCriterionForJDBCTime("run_start_time not between", value1, value2, "runStartTime");
+            addCriterion("run_start_time not between", value1, value2, "runStartTime");
             return (Criteria) this;
         }
 
@@ -549,52 +522,52 @@ public class TradingTimerListingExample {
         }
 
         public Criteria andRunEndTimeEqualTo(Date value) {
-            addCriterionForJDBCTime("run_end_time =", value, "runEndTime");
+            addCriterion("run_end_time =", value, "runEndTime");
             return (Criteria) this;
         }
 
         public Criteria andRunEndTimeNotEqualTo(Date value) {
-            addCriterionForJDBCTime("run_end_time <>", value, "runEndTime");
+            addCriterion("run_end_time <>", value, "runEndTime");
             return (Criteria) this;
         }
 
         public Criteria andRunEndTimeGreaterThan(Date value) {
-            addCriterionForJDBCTime("run_end_time >", value, "runEndTime");
+            addCriterion("run_end_time >", value, "runEndTime");
             return (Criteria) this;
         }
 
         public Criteria andRunEndTimeGreaterThanOrEqualTo(Date value) {
-            addCriterionForJDBCTime("run_end_time >=", value, "runEndTime");
+            addCriterion("run_end_time >=", value, "runEndTime");
             return (Criteria) this;
         }
 
         public Criteria andRunEndTimeLessThan(Date value) {
-            addCriterionForJDBCTime("run_end_time <", value, "runEndTime");
+            addCriterion("run_end_time <", value, "runEndTime");
             return (Criteria) this;
         }
 
         public Criteria andRunEndTimeLessThanOrEqualTo(Date value) {
-            addCriterionForJDBCTime("run_end_time <=", value, "runEndTime");
+            addCriterion("run_end_time <=", value, "runEndTime");
             return (Criteria) this;
         }
 
         public Criteria andRunEndTimeIn(List<Date> values) {
-            addCriterionForJDBCTime("run_end_time in", values, "runEndTime");
+            addCriterion("run_end_time in", values, "runEndTime");
             return (Criteria) this;
         }
 
         public Criteria andRunEndTimeNotIn(List<Date> values) {
-            addCriterionForJDBCTime("run_end_time not in", values, "runEndTime");
+            addCriterion("run_end_time not in", values, "runEndTime");
             return (Criteria) this;
         }
 
         public Criteria andRunEndTimeBetween(Date value1, Date value2) {
-            addCriterionForJDBCTime("run_end_time between", value1, value2, "runEndTime");
+            addCriterion("run_end_time between", value1, value2, "runEndTime");
             return (Criteria) this;
         }
 
         public Criteria andRunEndTimeNotBetween(Date value1, Date value2) {
-            addCriterionForJDBCTime("run_end_time not between", value1, value2, "runEndTime");
+            addCriterion("run_end_time not between", value1, value2, "runEndTime");
             return (Criteria) this;
         }
 
@@ -1055,6 +1028,76 @@ public class TradingTimerListingExample {
 
         public Criteria andUuidNotBetween(String value1, String value2) {
             addCriterion("uuid not between", value1, value2, "uuid");
+            return (Criteria) this;
+        }
+
+        public Criteria andCheckFlagIsNull() {
+            addCriterion("check_flag is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andCheckFlagIsNotNull() {
+            addCriterion("check_flag is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andCheckFlagEqualTo(String value) {
+            addCriterion("check_flag =", value, "checkFlag");
+            return (Criteria) this;
+        }
+
+        public Criteria andCheckFlagNotEqualTo(String value) {
+            addCriterion("check_flag <>", value, "checkFlag");
+            return (Criteria) this;
+        }
+
+        public Criteria andCheckFlagGreaterThan(String value) {
+            addCriterion("check_flag >", value, "checkFlag");
+            return (Criteria) this;
+        }
+
+        public Criteria andCheckFlagGreaterThanOrEqualTo(String value) {
+            addCriterion("check_flag >=", value, "checkFlag");
+            return (Criteria) this;
+        }
+
+        public Criteria andCheckFlagLessThan(String value) {
+            addCriterion("check_flag <", value, "checkFlag");
+            return (Criteria) this;
+        }
+
+        public Criteria andCheckFlagLessThanOrEqualTo(String value) {
+            addCriterion("check_flag <=", value, "checkFlag");
+            return (Criteria) this;
+        }
+
+        public Criteria andCheckFlagLike(String value) {
+            addCriterion("check_flag like", value, "checkFlag");
+            return (Criteria) this;
+        }
+
+        public Criteria andCheckFlagNotLike(String value) {
+            addCriterion("check_flag not like", value, "checkFlag");
+            return (Criteria) this;
+        }
+
+        public Criteria andCheckFlagIn(List<String> values) {
+            addCriterion("check_flag in", values, "checkFlag");
+            return (Criteria) this;
+        }
+
+        public Criteria andCheckFlagNotIn(List<String> values) {
+            addCriterion("check_flag not in", values, "checkFlag");
+            return (Criteria) this;
+        }
+
+        public Criteria andCheckFlagBetween(String value1, String value2) {
+            addCriterion("check_flag between", value1, value2, "checkFlag");
+            return (Criteria) this;
+        }
+
+        public Criteria andCheckFlagNotBetween(String value1, String value2) {
+            addCriterion("check_flag not between", value1, value2, "checkFlag");
             return (Criteria) this;
         }
     }

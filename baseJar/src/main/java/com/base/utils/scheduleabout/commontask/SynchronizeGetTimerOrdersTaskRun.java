@@ -1,27 +1,16 @@
 package com.base.utils.scheduleabout.commontask;
 
-import com.base.database.sitemessage.model.PublicSitemessage;
 import com.base.database.task.model.TaskGetOrders;
-import com.base.database.trading.model.*;
-import com.base.domains.userinfo.UsercontrollerDevAccountExtend;
-import com.base.sampleapixml.*;
 import com.base.utils.applicationcontext.ApplicationContextUtil;
-import com.base.utils.common.CommAutowiredClass;
 import com.base.utils.scheduleabout.BaseScheduledClass;
 import com.base.utils.scheduleabout.MainTask;
 import com.base.utils.scheduleabout.Scheduledable;
-import com.base.utils.threadpool.AddApiTask;
-import com.base.utils.threadpool.TaskMessageVO;
 import com.base.utils.threadpool.TaskPool;
-import com.base.utils.xmlutils.SamplePaseXml;
-import com.sitemessage.service.SiteMessageService;
-import com.sitemessage.service.SiteMessageStatic;
+import com.task.service.IScheduleGetTimerOrders;
 import com.task.service.ITaskGetOrders;
-import com.trading.service.*;
-import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
-import java.util.*;
+import java.util.List;
 
 /**
  * Created by Administrtor on 2014/8/29.
@@ -31,7 +20,9 @@ public class SynchronizeGetTimerOrdersTaskRun extends BaseScheduledClass impleme
     static Logger logger = Logger.getLogger(SynchronizeGetTimerOrdersTaskRun.class);
 
     public void synchronizeOrders(List<TaskGetOrders> taskGetOrders){
-        CommAutowiredClass commPars = (CommAutowiredClass) ApplicationContextUtil.getBean(CommAutowiredClass.class);//获取注入的参数
+        IScheduleGetTimerOrders iScheduleGetTimerOrders=(IScheduleGetTimerOrders) ApplicationContextUtil.getBean(IScheduleGetTimerOrders.class);
+        iScheduleGetTimerOrders.synchronizeOrders(taskGetOrders);
+        /*CommAutowiredClass commPars = (CommAutowiredClass) ApplicationContextUtil.getBean(CommAutowiredClass.class);//获取注入的参数
         SiteMessageService siteMessageService = (SiteMessageService) ApplicationContextUtil.getBean(SiteMessageService.class);
         ITradingOrderOrderVariationSpecifics iTradingOrderOrderVariationSpecifics=(ITradingOrderOrderVariationSpecifics) ApplicationContextUtil.getBean(ITradingOrderOrderVariationSpecifics.class);
         ITradingOrderGetOrders iTradingOrderGetOrders=(ITradingOrderGetOrders) ApplicationContextUtil.getBean(ITradingOrderGetOrders.class);
@@ -98,8 +89,8 @@ public class SynchronizeGetTimerOrdersTaskRun extends BaseScheduledClass impleme
                             map.put("page", i + "");
                             xml = BindAccountAPI.getGetOrders(map);
                             resMap = addApiTask.exec(d, xml, commPars.apiUrl);
-                      /*  Map<String, String>  resMap = addApiTask.exec(d, xml, "https://api.ebay.com/ws/api.dll");*/
-                   /* resMap = addApiTask.exec(d, xml, "https://api.ebay.com/ws/api.dll");*/
+                      *//*  Map<String, String>  resMap = addApiTask.exec(d, xml, "https://api.ebay.com/ws/api.dll");*//*
+                   *//* resMap = addApiTask.exec(d, xml, "https://api.ebay.com/ws/api.dll");*//*
                             r1 = resMap.get("stat");
                             res = resMap.get("message");
                             if ("fail".equalsIgnoreCase(r1)) {
@@ -343,7 +334,7 @@ public class SynchronizeGetTimerOrdersTaskRun extends BaseScheduledClass impleme
                                 return;
                             }
                             //同步account-----
-                            /*UsercontrollerDevAccountExtend ds=new UsercontrollerDevAccountExtend();
+                            *//*UsercontrollerDevAccountExtend ds=new UsercontrollerDevAccountExtend();
                             //----加了就是真实环境
                             //ds.setApiDevName("5d70d647-b1e2-4c7c-a034-b343d58ca425");
                             //ds.setApiAppName("sandpoin-23af-4f47-a304-242ffed6ff5b");
@@ -389,10 +380,10 @@ public class SynchronizeGetTimerOrdersTaskRun extends BaseScheduledClass impleme
                                 }
                             }else{
                                 return;
-                            }*/
+                            }*//*
                             //----------------
                             //同步外部交易
-                            /*d.setApiCallName("GetSellerTransactions");
+                            *//*d.setApiCallName("GetSellerTransactions");
                             String sellerxml = BindAccountAPI.GetSellerTransactions(taskGetOrder.getToken());//获取接受消息
                             Map<String, String> resSellerMap = addApiTask.exec(d, sellerxml, commPars.apiUrl);
                             //------------------------
@@ -414,7 +405,7 @@ public class SynchronizeGetTimerOrdersTaskRun extends BaseScheduledClass impleme
                                 }
                             } else {
                                 return;
-                            }*/
+                            }*//*
                             //---------------------------------------
                             order.setCreateUser(taskGetOrder.getUserid());
                             iTradingOrderGetOrders.saveOrderGetOrders(order);
@@ -443,7 +434,7 @@ public class SynchronizeGetTimerOrdersTaskRun extends BaseScheduledClass impleme
             }
         }catch(Exception e){
             e.printStackTrace();
-        }
+        }*/
     }
     @Override
     public void run(){
@@ -461,11 +452,14 @@ public class SynchronizeGetTimerOrdersTaskRun extends BaseScheduledClass impleme
 
     /**只从集合记录取多少条*/
     private List<TaskGetOrders> filterLimitList(List<TaskGetOrders> tlist){
-        List<TaskGetOrders> x=new ArrayList<TaskGetOrders>();
+
+        return filterLimitListFinal(tlist,2);
+
+        /*List<TaskGetOrders> x=new ArrayList<TaskGetOrders>();
         for (int i = 0;i<2;i++){
             x.add(tlist.get(i));
         }
-        return x;
+        return x;*/
     }
 
     public SynchronizeGetTimerOrdersTaskRun(){

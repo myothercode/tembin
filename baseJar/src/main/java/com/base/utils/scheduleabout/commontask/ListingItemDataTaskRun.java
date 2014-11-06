@@ -66,11 +66,12 @@ public class ListingItemDataTaskRun extends BaseScheduledClass implements Schedu
 
     /**只从集合记录取多少条*/
     private List<UsercontrollerEbayAccount> filterLimitList(List<UsercontrollerEbayAccount> tlist){
-        List<UsercontrollerEbayAccount> x=new ArrayList<UsercontrollerEbayAccount>();
+        return filterLimitListFinal(tlist,2);
+        /*List<UsercontrollerEbayAccount> x=new ArrayList<UsercontrollerEbayAccount>();
         for (int i = 0;i<2;i++){
             x.add(tlist.get(i));
         }
-        return x;
+        return x;*/
     }
 
     public ListingItemDataTaskRun(){

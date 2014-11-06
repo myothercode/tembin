@@ -300,6 +300,7 @@
 <body>
 <form id="form">
     <input type="hidden" name="ItemID" value="${itemidstr}">
+    <input type="hidden" name="idsStr" value="${idsStr}">
     <input type="hidden" name="listingType" value="${item.listingType}">
     <div id="selectId">
         <table width="70%">
@@ -355,7 +356,7 @@
                         </tr>
                         <tr>
                             <td align="right" style="width: 100px;"></td>
-                            <td><input type="checkbox" name="isUpdateFlag" value="1">是否更新范本</td>
+                            <td><input type="checkbox" name="isUpdateFlag" value="1">是否更新在线商品</td>
                         </tr>
                     </table>
                 </td>

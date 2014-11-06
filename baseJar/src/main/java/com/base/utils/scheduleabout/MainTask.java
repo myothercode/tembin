@@ -38,7 +38,9 @@ import java.util.List;
 @Component
 public class MainTask {
     static Logger logger = Logger.getLogger(MainTask.class);
-    private String isDongInitMethod="no";//是否已经执行了初始化方法
+
+    public static String isDongInitMethod="no";//是否已经执行了初始化字典的方法
+
     private CommAutowiredClass isStartTimerTask=null;
 
     public static final String LISTING_SCHEDULE="listSchedule";//定时刊登任务
@@ -110,8 +112,8 @@ public class MainTask {
 
     }
 
-    /**spring启动后执行一次任务*/
-    @Scheduled(cron="0/40 * *  * * ?")
+    /**spring启动后执行一次任务，加载数据字典*/
+    @Scheduled(cron="0/59 * *  * * ?")
     private void DoItAfterBoot() throws SchedulerException {
         if("no".equalsIgnoreCase(isDongInitMethod)){
             isDongInitMethod="yes";

@@ -46,7 +46,7 @@
         <property name="locations">
             <list>
                 <value>classpath*:/baseJar/config/db.properties</value>
-                <value>file:/var/config/db.properties</value>
+                <value>file:/var/tembinConfig/config/db.properties</value>
             </list>
         </property>
     </bean>

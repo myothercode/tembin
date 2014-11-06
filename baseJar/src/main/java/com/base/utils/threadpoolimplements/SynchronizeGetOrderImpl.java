@@ -88,10 +88,10 @@ public class SynchronizeGetOrderImpl implements ThreadPoolBaseInterFace {
         String ack = null;
         try {
             Map map=new HashMap();
-           /* Date startTime2= DateUtils.subDays(new Date(), 9);
-            Date endTime= DateUtils.addDays(startTime2, 9);*/
-            Date startTime2= DateUtils.subDays(new Date(),70);
-            Date endTime= DateUtils.addDays(startTime2,70);
+            Date startTime2= DateUtils.subDays(new Date(), 9);
+            Date endTime= DateUtils.addDays(startTime2, 9);
+           /* Date startTime2= DateUtils.subDays(new Date(),70);
+            Date endTime= DateUtils.addDays(startTime2,70);*/
             Date end1= com.base.utils.common.DateUtils.turnToDateEnd(endTime);
             String start= DateUtils.DateToString(startTime2);
             String end=DateUtils.DateToString(end1);
@@ -116,7 +116,7 @@ public class SynchronizeGetOrderImpl implements ThreadPoolBaseInterFace {
                         map.put("page", i + "");
                         String xml = BindAccountAPI.getGetOrders(map);
                         Map<String, String>  resMap = addApiTask.exec(d, xml, apiUrl);
-                      /*  Map<String, String>  resMap = addApiTask.exec(d, xml, "https://api.ebay.com/ws/api.dll");*/
+                       /* Map<String, String>  resMap = addApiTask.exec(d, xml, "https://api.ebay.com/ws/api.dll");*/
                    /* resMap = addApiTask.exec(d, xml, "https://api.ebay.com/ws/api.dll");*/
                         String r1 = resMap.get("stat");
                         res = resMap.get("message");
@@ -219,9 +219,9 @@ public class SynchronizeGetOrderImpl implements ThreadPoolBaseInterFace {
                         //------------同步订单商品-----------
                         d.setApiCallName(APINameStatic.GetItem);
                         //测试环境
-                       Map<String,String> itemresmap= GetOrderItemAPI.apiGetOrderItem(d, token, apiUrl, order.getItemid());
+                        Map<String,String> itemresmap= GetOrderItemAPI.apiGetOrderItem(d, token, apiUrl, order.getItemid());
                         //真实环境
-                       // Map<String,String> itemresmap= GetOrderItemAPI.apiGetOrderItem(d, token, "https://api.ebay.com/ws/api.dll", order.getItemid());
+                        /*Map<String,String> itemresmap= GetOrderItemAPI.apiGetOrderItem(d, token, "https://api.ebay.com/ws/api.dll", order.getItemid());*/
                         String itemr1 = itemresmap.get("stat");
                         String itemres = itemresmap.get("message");
                         if ("fail".equalsIgnoreCase(itemr1)) {

@@ -1,15 +1,13 @@
 package com.base.utils.scheduleabout.commontask;
 
 import com.base.database.trading.mapper.TradingTimerListingMapper;
-import com.base.database.trading.model.TradingItem;
-import com.base.database.trading.model.TradingTimerListingExample;
-import com.base.database.trading.model.TradingTimerListingWithBLOBs;
-import com.base.database.trading.model.UsercontrollerEbayAccount;
+import com.base.database.trading.model.*;
 import com.base.database.userinfo.mapper.UsercontrollerUserMapper;
 import com.base.database.userinfo.model.UsercontrollerUser;
 import com.base.domains.userinfo.UsercontrollerDevAccountExtend;
 import com.base.userinfo.service.UserInfoService;
 import com.base.utils.applicationcontext.ApplicationContextUtil;
+import com.base.utils.cache.TempStoreDataSupport;
 import com.base.utils.common.CommAutowiredClass;
 import com.base.utils.common.ObjectUtils;
 import com.base.utils.scheduleabout.BaseScheduledClass;
@@ -17,6 +15,8 @@ import com.base.utils.scheduleabout.MainTask;
 import com.base.utils.scheduleabout.Scheduledable;
 import com.base.utils.threadpool.AddApiTask;
 import com.base.utils.xmlutils.SamplePaseXml;
+import com.test.service.Test1Service;
+import com.test.service.TestService;
 import com.trading.service.ITradingItem;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -34,18 +34,32 @@ public class TimeListingItemTaskRunAble extends BaseScheduledClass implements Sc
     static Logger logger = Logger.getLogger(TimeListingItemTaskRunAble.class);
     @Override
     public void run() {
+        String isRunging = TempStoreDataSupport.pullData(getScheduledType());
+        if(StringUtils.isNotEmpty(isRunging)){return;}
+        TempStoreDataSupport.pushData(getScheduledType(),"x");
+        /*TestService testService=ApplicationContextUtil.getBean(TestService.class);
+
+        Test1Service test1Service=ApplicationContextUtil.getBean(Test1Service.class);
+        testService.serviceTest();
+        if(true){throw new RuntimeException("d");}
+        test1Service.serviceTest();
+
+        if(true){return;}*/
+
+        TradingTimerListingMapper timeMapper = (TradingTimerListingMapper) ApplicationContextUtil.getBean(TradingTimerListingMapper.class);
+        TradingTimerListingExample texample=new TradingTimerListingExample();
+        texample.createCriteria().andTimerLessThanOrEqualTo(new Date()).andTimerFlagEqualTo("0").andCheckFlagEqualTo("0");
+        List<TradingTimerListingWithBLOBs> listingWithBLOBses= timeMapper.selectByExampleWithBLOBs(texample);/**查询出有哪些刊登任务是需要执行的*/
+        if(ObjectUtils.isLogicalNull(listingWithBLOBses)){
+            TempStoreDataSupport.removeData(getScheduledType());
+            return;
+        }
+
         UserInfoService userInfoService= (UserInfoService) ApplicationContextUtil.getBean(UserInfoService.class);
         UsercontrollerUserMapper user = (UsercontrollerUserMapper) ApplicationContextUtil.getBean(UsercontrollerUserMapper.class);
         CommAutowiredClass commV = (CommAutowiredClass) ApplicationContextUtil.getBean(CommAutowiredClass.class);
-        TradingTimerListingMapper timeMapper = (TradingTimerListingMapper) ApplicationContextUtil.getBean(TradingTimerListingMapper.class);
-        ITradingItem iTradingItem = (ITradingItem) ApplicationContextUtil.getBean(ITradingItem.class);
 
-        TradingTimerListingExample texample=new TradingTimerListingExample();
-        texample.createCriteria().andTimerLessThanOrEqualTo(new Date()).andTimerFlagIsNull();
-        List<TradingTimerListingWithBLOBs> listingWithBLOBses= timeMapper.selectByExampleWithBLOBs(texample);/**查询出有哪些刊登任务是需要执行的*/
-        if(ObjectUtils.isLogicalNull(listingWithBLOBses)){
-            return;
-        }
+        ITradingItem iTradingItem = (ITradingItem) ApplicationContextUtil.getBean(ITradingItem.class);
 
         if(listingWithBLOBses.size()>20){
             listingWithBLOBses =filterLimitList(listingWithBLOBses);
@@ -87,7 +101,7 @@ public class TimeListingItemTaskRunAble extends BaseScheduledClass implements Sc
                 String ack = SamplePaseXml.getVFromXmlString(res, "Ack");
                 if ("Success".equalsIgnoreCase(ack) || "Warning".equalsIgnoreCase(ack)) {
                     String itemId = SamplePaseXml.getVFromXmlString(res, "ItemID");
-                    TradingItem tradingItem=new TradingItem();
+                    TradingItemWithBLOBs tradingItem=new TradingItemWithBLOBs();
                     tradingItem.setId(withBLOBs.getItem());
                     tradingItem.setItemId(itemId);
                     tradingItem.setIsFlag("Success");
@@ -102,19 +116,19 @@ public class TimeListingItemTaskRunAble extends BaseScheduledClass implements Sc
                 timeMapper.updateByPrimaryKeySelective(t);
             }
         }
-
-
-
+        TempStoreDataSupport.removeData(getScheduledType());
     }
 
     /**只从集合记录取多少条*/
     private List<TradingTimerListingWithBLOBs> filterLimitList(List<TradingTimerListingWithBLOBs> tlist){
 
-        List<TradingTimerListingWithBLOBs> x=new ArrayList<TradingTimerListingWithBLOBs>();
+       return filterLimitListFinal(tlist,20);
+
+        /*List<TradingTimerListingWithBLOBs> x=new ArrayList<TradingTimerListingWithBLOBs>();
         for (int i = 0;i<20;i++){
             x.add(tlist.get(i));
         }
-        return x;
+        return x;*/
     }
 
     public TimeListingItemTaskRunAble(){

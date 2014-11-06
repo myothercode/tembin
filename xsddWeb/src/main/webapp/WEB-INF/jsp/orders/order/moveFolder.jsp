@@ -116,25 +116,33 @@
     </script>
 </head>
 <body>
-<table>
-    <tr>
-        <td></td>
-        <td>文件夹名称</td>
-    </tr>
-    <c:forEach items="${folders}" var="folder">
-        <tr>
-            <td>
-                <input type="hidden" name="remarkFlag" value="${folder.configName}"/>
-                <input type="radio" name="redio" value="${folder.id}"/>
-            </td>
-            <td>${folder.configName}</td>
-        </tr>
-    </c:forEach>
-</table>
+    <form class="form-horizontal" role="form">
+        <table width="100%" border="0">
 
+        <tbody><tr>
+            <td width="13%" height="33" align="right"></td>
+            <td width="87%" height="33" style="padding-top:8px;">
+                <table width="100%" border="0">
+                    <tbody><tr>
+                        <td width="10%" height="30">选择文件夹</td>
+                        <td width="15%" height="30">文件夹名称</td>
+                    </tr>
+                    <c:forEach items="${folders}" var="folder">
+                    <tr>
+                        <td height="24" valign="middle"><input type="hidden" name="remarkFlag" value="${folder.configName}"/><input type="radio" name="redio" value="${folder.id}"/></td>
+                        <td height="24" valign="middle">${folder.configName}</td>
+                        <td height="24" valign="middle"></td>
+                    </tr>
+                    </c:forEach>
+                    </tbody></table>
+            </td>
+        </tr>
+        </tbody></table>
+
+    </form>
 <div class="modal-footer">
-    <button type="button" class="btn btn-newco" onclick="submitCommit();">保存</button>
-    <button type="button" class="btn btn-default" onclick="closedialog();" data-dismiss="modal">关闭</button>
+    <button type="button" class="net_put" onclick="submitCommit();">保存</button>
+    <button type="button" class="net_put_1" data-dismiss="modal" onclick="closedialog();">关闭</button>
 </div>
 </body>
 </html>

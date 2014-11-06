@@ -44,7 +44,7 @@
     </script>
 </head>
 <body>
-<div class="modal-body" style="height: 400px;">
+<div class="modal-body">
     <form id="orderForm" class="form-horizontal" role="form">
         <table>
             <tr>
@@ -62,8 +62,10 @@
         </table>
     </form>
     <div class="modal-footer">
-        <button type="button" class="btn btn-primary" onclick="submitForm1();">同步</button>
-        <button type="button" class="btn btn-default" data-dismiss="modal" onclick="closedialog();">关闭</button>
+        <button type="button" class="net_put" onclick="submitForm1();">保存</button>
+        <button type="button" class="net_put_1" data-dismiss="modal" onclick="closedialog();">关闭</button>
+<%--        <button type="button" class="btn btn-primary" onclick="submitForm1();">同步</button>
+        <button type="button" class="btn btn-default" data-dismiss="modal" onclick="closedialog();">关闭</button>--%>
     </div>
 </div>
 </body>

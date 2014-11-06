@@ -12,6 +12,11 @@
 <html>
 <head>
     <title></title>
+    <style type="text/css">
+        body {
+            background-color: #ffffff;
+        }
+    </style>
     <script type="text/javascript" src=<c:url value ="/js/batchAjaxUtil.js" /> ></script>
     <script type="text/javascript">
         var api = frameElement.api, W = api.opener;
@@ -44,11 +49,14 @@
             W.MessageGetmymessage.close();
             W.refreshTable();
         }
+        function closedialog(){
+            W.MessageGetmymessage.close();
+        }
     </script>
     
 </head>
 <body>
-<form id="ebayForm">
+<%--<form id="ebayForm">
     <input type="hidden" name="id" value="1">
     <table>
         <tr>
@@ -58,12 +66,12 @@
         <tr>
             <td></td>
             <td>
-                <%--<select name="ebayId">--%>
+                &lt;%&ndash;<select name="ebayId">&ndash;%&gt;
                     <c:forEach items="${ebays}" var="ebay">
                         <input type="checkbox" scope="checkbox" value="${ebay.id}"/>${ebay.ebayName}<br/>
-                        <%--<option value="${ebay.id}">${ebay.ebayName}</option>--%>
+                        &lt;%&ndash;<option value="${ebay.id}">${ebay.ebayName}</option>&ndash;%&gt;
                     </c:forEach>
-            <%--    </select>--%>
+            &lt;%&ndash;    </select>&ndash;%&gt;
             </td>
         </tr>
         <tr>
@@ -73,6 +81,45 @@
             </td>
         </tr>
     </table>
-</form>
+</form>--%>
+
+<div class="modal-header">
+    <h4 class="modal-title" style="color:#2E98EE"></h4>
+    <div class="newtitle">请选择要同步的ebay账号</div>
+</div>
+<div class="modal-body">
+    <form class="form-horizontal" role="form" id="ebayForm">
+        <table width="100%" border="0" style="margin-left:20px;">
+            <tbody>
+            <c:forEach items="${ebays}" var="ebay" varStatus="status" begin="0">
+                <c:if test="${status.index==0}">
+                    <tr>
+                        <td width="8%" rowspan="4">&nbsp;</td>
+                        <td width="92%" height="28"><input type="checkbox" name="checkbox" scope="checkbox" value="${ebay.id}" > ${ebay.ebayName}</td>
+                    </tr>
+                </c:if>
+                <c:if test="${status.index!=0}">
+                    <tr>
+                        <td width="92%" height="28"><input type="checkbox" name="checkbox" scope="checkbox" value="${ebay.id}" > ${ebay.ebayName}</td>
+                    </tr>
+                </c:if>
+
+            </c:forEach>
+            <%--   <tr>
+                   <td width="92%" height="28"><input type="checkbox" name="checkbox" > vsadf</td>
+               </tr>
+               <tr>
+                   <td width="92%" height="28"><input type="checkbox" name="checkbox" > vsadf</td>
+               </tr>
+               <tr>
+                   <td width="92%" height="28"><input type="checkbox" name="checkbox" > vsadf</td>
+               </tr>--%>
+            </tbody></table>
+
+        <div class="modal-footer">
+            <button type="button" class="net_put" onclick="submitForm1();">同步</button>
+            <button type="button" class="net_put_1" data-dismiss="modal" onclick="closedialog();">关闭</button>
+        </div>
+    </form></div>
 </body>
 </html>

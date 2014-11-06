@@ -45,8 +45,14 @@
                 }
             });
             if(name.indexOf("myFolder_")==-1){
+                if(name=="timeProduct"){
+                    $("#selectMoreType").append("<option value='delTimer'>&nbsp;&nbsp;取消定时</option>");
+                }else{
+                    $("#selectMoreType option[value='delTimer']").remove();
+                }
                 loadurl=map.get(name);
             }else{
+                $("#selectMoreType option[value='delTimer']").remove();
                 loadurl=path + "/ajax/loadItemList.do?1=1&folderid="+$(obj).attr("val");
             }
             onloadTable(loadurl);
@@ -169,6 +175,7 @@
             loadurl = urls;
             onloadTable(loadurl);
         }
+        var OrderGetOrders;
         function addTabRemark(){
             var url=path+"/order/selectTabRemark.do?folderType=modelFolder";
             OrderGetOrders=$.dialog({title: '选择文件夹',
@@ -177,7 +184,30 @@
                 width:800
             });
         }
-
+        //--------------------------
+        function refleshTabRemark(folderType){
+            var url=path+"/order/refleshTabRemark.do?folderType="+folderType;
+            $().invoke(url,null,
+                    [function(m,r){
+                        var div=document.getElementById("tab");
+                        var remarks=$(div).find("dt[scop=tabRemark]");
+                        for(var i=0;i<remarks.length;i++){
+                            $(remarks[i]).remove();
+                        }
+                        var htm="";
+                        for(var i=0;i< r.length;i++){
+                            htm+="<dt scop=\"tabRemark\" name='myFolder_" + i + "' val='" + r[i].id + "' class=new_tab_2 onclick='setTab(this)'>" + r[i].configName + "</dt>";
+                        }
+                        $(div).append(htm);
+                        Base.token;
+                    },
+                        function(m,r){
+                            alert(r);
+                            Base.token();
+                        }]
+            );
+        }
+        //----------------------------------------
         $(document).ready(function(){
             var url=path+"/ajax/selfFolder.do?folderType=modelFolder";
             $().invoke(url,{},
@@ -188,7 +218,7 @@
                                 + '<dt name="timeProduct" class=new_tab_2 onclick="setTab(this)">定时</dt>';
                         if (r != null) {
                             for (var i = 0; i < r.length; i++) {
-                                htmlstr += "<dt name='myFolder_" + i + "' val='" + r[i].id + "' class=new_tab_2 onclick='setTab(this)'>" + r[i].configName + "</dt>";
+                                htmlstr += "<dt scop=\"tabRemark\" name='myFolder_" + i + "' val='" + r[i].id + "' class=new_tab_2 onclick='setTab(this)'>" + r[i].configName + "</dt>";
                             }
                         }
                         $("#tab").html(htmlstr);
@@ -211,19 +241,55 @@
             var html='<img title="'+json.siteName+'" src="'+path+json.siteImg+'"/>';
             return html;
         }
+        function getDuration(json){
+            var html="";
+            if(json.itemId!=null&&json.itemId!="") {
+                if(json.listingduration.indexOf("Days_")!=-1){
+                    html = "<a target='_blank' href='" + serviceItemUrl + json.itemId + "'>" + json.listingduration.substr(json.listingduration.indexOf("_")+1,json.listingduration.length) + "</a>"
+                }else{
+                    html = "<a target='_blank' href='" + serviceItemUrl + json.itemId + "'>" + json.listingduration + "</a>"
+                }
+            }else{
+                if(json.listingduration.indexOf("Days_")!=-1){
+                    html=json.listingduration.substr(json.listingduration.indexOf("_")+1,json.listingduration.length);
+                }else{
+                    html=json.listingduration;
+                }
+
+            }
+            return html;
+        }
+
+        var descStatic
+        function orderList(obj){
+            var des = "";
+            if($(obj).attr("val")=="0"){//默认状态为降序，之前为升序
+                $(obj).attr("val","1");
+                des="desc";
+            }else{
+                $(obj).attr("val","0");
+                des="asc";
+            }
+            descStatic=$(obj).attr("val");
+            var desc = $(obj).attr("colu");
+            onloadTable(loadurl+"&descStr="+desc+"&desStr="+des);
+            $("#itemTable").find("span[colu='"+desc+"']").attr("val",descStatic);
+
+        }
+
         function onloadTable(urls){
             $("#itemTable").initTable({
                 url:urls,
                 columnData:[
-                    {title:"选择",name:"selectName",width:"4%",align:"left",format:makeOption0},
-                    {title:"图片",name:"pucURLS",width:"8%",align:"left",format:picUrl},
-                    {title:"名称/SKU",name:"itemName",width:"8%",align:"left",format:itemName},
-                    {title:"站点",name:"siteName",width:"8%",align:"left",format:getSiteImg},
-                    {title:"刊登类型",name:"listingtype",width:"8%",align:"left",format:listingType},
-                    {title:"eBay账户",name:"ebayaccountname",width:"8%",align:"left"},
-                    {title:"刊登天数",name:"listingduration",width:"8%",align:"left"},
-                    {title:"在线",name:"isFlag",width:"8%",align:"left",format:itemstatus},
-                    {title:"操作",name:"option1",width:"8%",align:"left",format:makeOption1}
+                    {title:"选择",name:"selectName",width:"3%",align:"left",format:makeOption0},
+                    {title:"图片",name:"pucURLS",width:"6%",align:"left",format:picUrl},
+                    {title:"<span onclick='orderList(this)' style='cursor: pointer;' colu='item_name' val='0'>名称/SKU</span>",name:"itemName",width:"26%",align:"left",format:itemName},
+                    {title:"<span onclick='orderList(this)' style='cursor: pointer;' colu='Site' val='0'>站点</span>",name:"siteName",width:"5%",align:"center",format:getSiteImg},
+                    {title:"<span onclick='orderList(this)' style='cursor: pointer;' colu='ListingType' val='0'>刊登类型</span>",name:"listingtype",width:"6%",align:"center",format:listingType},
+                    {title:"<span onclick='orderList(this)' style='cursor: pointer;' colu='ebay_account' val='0'>eBay账户</span>",name:"ebayaccountname",width:"12%",align:"left"},
+                    {title:"<span onclick='orderList(this)' style='cursor: pointer;' colu='ListingDuration' val='0'>刊登天数</span>",name:"listingduration",width:"8%",align:"center",format:getDuration},
+                    {title:"<span onclick='orderList(this)' style='cursor: pointer;' colu='is_flag' val='0'>在线</span>",name:"isFlag",width:"5%",align:"center",format:itemstatus},
+                    {title:"&nbsp;&nbsp;操作",name:"option1",width:"4%",align:"left",format:makeOption1}
                 ],
                 selectDataNow:false,
                 isrowClick:false,
@@ -270,9 +336,20 @@
             return "<img width='16' title='"+titlestr+"' height='16' src='"+path+"/img/"+htm+"'>";
         }
         function itemName(json){
-            var htm="<span style='color:#5F93D7;'><a  onclick='editItem("+json.id+")' href='javascript:void(0)'>"+json.itemName+"</a></span></br>"+json.sku;
+            var htm="<span style='color:#5F93D7;word-break:break-all;'><a style='line-height: 19px;' onclick='editItem("+json.id+")' href='javascript:void(0)'>"+json.itemName+"</a></span></br><span style='color:#8BB51B;'>"+json.sku+"</span>";
             if(json.itemId!=null&&json.itemId!=""){
-                htm="<span style='color:#5F93D7;'><a  onclick='editItem("+json.id+")' href='javascript:void(0)'>"+json.itemName+"<a></span></br><a target='_blank' href='"+serviceItemUrl+json.itemId+"'>"+json.sku+"</a>";
+                htm="<span style='color:#5F93D7;word-break:break-all;'><a style='line-height: 19px;' onclick='editItem("+json.id+")' href='javascript:void(0)'>"+json.itemName+"<a></span></br><a target='_blank' href='"+serviceItemUrl+json.itemId+"'><span style='color:#8BB51B;'>"+json.sku+"</span></a>";
+            }
+            var remark = "";
+            if(json.remark!=null&&json.remark!=""){
+                if(json.remark.length>25){
+                    remark = json.remark.substr(0,25)+"......";
+                }else{
+                    remark = json.remark;
+                }
+                htm+="</br><span class='newdf' style='margin-top: -6px;' title='"+json.remark+"'>备注："+remark+"</span>";
+            }else{
+                htm+="</br><span class='newdf' title='' style='display: none;margin-top: -6px;'></span>";
             }
             return htm;
         }
@@ -293,11 +370,75 @@
             hs+="<li style='height:25px' onclick=copyItem('"+json.id+"') value='"+json.id+"' doaction=\"look\" >复制</li>";
             hs+="<li style='height:25px' onclick=renameItem('"+json.id+"') value='"+json.id+"' doaction=\"look\" >重命名</li>";
             hs+="<li style='height:25px' onclick=toFolder('"+json.id+"') value='"+json.id+"' doaction=\"look\" >移动</li>";
+            hs+="<li style='height:25px' onclick=selectTimer('"+json.id+"') value='"+json.id+"' doaction=\"look\" >定时刊登</li>";
             hs+="<li style='height:25px' onclick=listingItem('"+json.id+"','"+json.isFlag+"') value='"+json.id+"' doaction=\"look\" >立即刊登</li>";
+            if($("#selectMoreType").find("option[value='delTimer']").length>0){
+                hs+="<li style='height:25px' onclick=delTradingTimer('"+json.id+"') value='"+json.id+"' doaction=\"look\" >取消定时</li>";
+            }
+            hs+="<li style='height:25px' onclick=addRemark('"+json.id+"','"+json.remark+"') value='"+json.id+"' doaction=\"look\" >备注</li>";
             var pp={"liString":hs};
             return getULSelect(pp);
         }
 
+        //备注
+        function addRemark(id,remark){
+            if(remark==undefined){
+                remark="";
+            }else{
+                remark = $("input[type='checkbox'][name='modelid'][val='" + id + "']").parent().parent().find("td").eq(2).find(".newdf").text().substr(3);
+            }
+            var tent = "<div class='textarea'>备注：<textarea cols='30' rows='5' id='centents' >"+remark+"</textarea></div>";
+            var editPage = $.dialog({title: '备注',
+                content: tent,
+                icon: 'tips.gif',
+                width: 400,
+                button: [
+                    {
+                        name: '确定',
+                        callback: function (iwins, enter) {
+                            var reason = "";
+                            /*if (iwins.parent.document.getElementById("centents").value == "") {
+                                alert("备注必填！");
+                                return false;
+                            } else {*/
+                                //alert(iwins.parent.document.getElementById("centents").selectedIndex);
+                                reason = iwins.parent.document.getElementById("centents").value;
+                                //alert(reason);
+                                var url = path + "/ajax/addItemRemark.do?id=" + id+"&remark="+reason;
+                                $().invoke(url, {},
+                                        [function (m, r) {
+                                            for(var i=0;i< r.length;i++){
+                                                var tld  = r[i];
+                                                var remark = "";
+                                                if(tld.remark!=null&&tld.remark!=""){
+                                                    if(tld.remark.length>25){
+                                                        remark = tld.remark.substr(0,25)+"......";
+                                                    }else{
+                                                        remark = tld.remark;
+                                                    }
+                                                    if(remark==null||remark==""||remark.length==0){
+                                                        $("input[type='checkbox'][name='modelid'][val='"+tld.id+"']").parent().parent().find("td").eq(2).find(".newdf").hide();
+                                                    }else {
+                                                        $("input[type='checkbox'][name='modelid'][val='" + tld.id + "']").parent().parent().find("td").eq(2).find(".newdf").show();
+                                                        $("input[type='checkbox'][name='modelid'][val='" + tld.id + "']").parent().parent().find("td").eq(2).find(".newdf").html("备注：" + remark);
+                                                        $("input[type='checkbox'][name='modelid'][val='" + tld.id + "']").parent().parent().find("td").eq(2).find(".newdf").prop("title", remark);
+                                                    }
+                                                }else{
+                                                    $("input[type='checkbox'][name='modelid'][val='"+tld.id+"']").parent().parent().find("td").eq(2).find(".newdf").hide();
+                                                }
+                                            }
+                                        },
+                                            function (m, r) {
+                                                alert(r);
+                                                Base.token();
+                                            }]
+                                );
+                            }
+                        //}
+                    }
+                ]
+            });
+        }
         function  refreshTable(){
             var selectValue = $("input[type='text'][name='selectvalue']").val();
             var param={};
@@ -405,24 +546,60 @@
                 var url = path+"/ajax/listingItem.do?id="+idStr;
                 $().invoke(url, {},
                         [function (m, r) {
-                            alert(r);
+                            var su = r.su;
+                            var er = r.er;
+                            var tent = "<div>";
+                            if(su!=null){
+                                for(var i = 0;i<su.length;i++){
+                                    tent+="<div>"+su[i]+"</div>";
+                                }
+                            }
+                            if(er!=null){
+                                for(var i = 0;i<er.length;i++){
+                                    tent+="<div>"+er[i]+"</div>";
+                                }
+                            }
+                            tent+="</div>";
+                            var editPage = $.dialog({title: '刊登明细',
+                                content: tent,
+                                icon: 'succeed',
+                                width: 400
+                            });
                             onloadTable(loadurl);
                         },
                             function (m, r) {
                                 alert(r);
-                            }]
+                            }],{isConverPage:true}
                 );
             },null);
         }else{
             var url = path+"/ajax/listingItem.do?id="+idStr;
             $().invoke(url, {},
                     [function (m, r) {
-                        alert(r);
+                        var su = r.su;
+                        var er = r.er;
+                        var tent = "<div>";
+                        if(su!=null){
+                            for(var i = 0;i<su.length;i++){
+                                tent+="<div>"+su[i]+"</div>";
+                            }
+                        }
+                        if(er!=null){
+                            for(var i = 0;i<er.length;i++){
+                                tent+="<div>"+er[i]+"</div>";
+                            }
+                        }
+                        tent+="</div>";
+                        var editPage = $.dialog({title: '刊登明细',
+                            content: tent,
+                            icon: 'succeed',
+                            width: 400
+                        });
                         onloadTable(loadurl);
                     },
                         function (m, r) {
                             alert(r);
-                        }]
+                        }],{isConverPage:true}
             );
         }
 
@@ -463,7 +640,14 @@
             renameItem(idStr)
         }else if($(obj).val()=="editMoreItem"){
             editMoreItem(idStr);
+        }else if($(obj).val()=="timeProduct"){
+            delTradingTimer(idStr);
+        }else if($(obj).val()=="remark"){
+            addRemark(idStr);
+        }else if($(obj).val()=="timerListingItem"){
+            selectTimer(idStr);
         }
+        $(obj).val("");
     }
     var editMorepage
     function editMoreItem(idStr){
@@ -489,7 +673,7 @@
                     htmlstr += "</div>";
                     var editPage = $.dialog({title: '选择Ebay账号',
                         content: htmlstr,
-                        icon: 'succeed',
+                        icon: 'tips.gif',
                         width: 400,
                         button: [
                             {
@@ -534,9 +718,15 @@
             var url = path+"/ajax/delItem.do?ids="+idStr;
             $().invoke(url, {},
                     [function (m, r) {
-                        alert(r);
+                        //alert(r);
                         Base.token();
-                        onloadTable(loadurl);
+                        //onloadTable(loadurl);
+                        for(var i=0;i<r.length;i++){
+                            var id = r[i];
+                            $("input[type='checkbox'][name='modelid'][val='"+id+"']").parent().parent().prop("id",id);
+                            $("#"+id).hide(1500);
+                            $("#"+id).slideUp(1500);
+                        }
                     },
                         function (m, r) {
                             Base.token();
@@ -588,13 +778,53 @@
             }
         });
         var urls = path+'/selectSiteList.do?siteidStr='+siteid;
-        siteListPage = $.dialog({title: '选择定时时间',
+        siteListPage = $.dialog({title: '选择站点',
             content: 'url:'+urls,
             icon: 'succeed',
             width:500,
             lock:true
         });
     }
+
+    function delTradingTimer(itemids){
+        var url = path + "/ajax/delTradingTimer.do?itemids=" + itemids;
+        $().invoke(url, {},
+                [function (m, r) {
+                    alert(r);
+                    /*Base.token();
+                    onloadTable(loadurl);*/
+                },
+                    function (m, r) {
+                        alert(r);
+                        /*Base.token();*/
+                    }]
+        );
+    }
+
+        var timerPage
+        function selectTimer(obj){
+            $("#idStr").val(obj)
+            var urls = path+'/selectTimer.do';
+            timerPage = $.dialog({title: '选择定时时间',
+                content: 'url:'+urls,
+                icon: 'succeed',
+                width:500,
+                lock:true
+            });
+            //saveData(this,'timeSave')
+        }
+        //重写方法，不可改变方法名称
+        function saveData(a,b){
+            var url = path+"/ajax/timerListingItem.do?id="+$("#idStr").val()+"&timerStr="+$("#timerListing").val();
+            $().invoke(url, {},
+                    [function (m, r) {
+                        alert(r);
+                    },
+                        function (m, r) {
+                            alert(r);
+                        }],{isConverPage:true}
+            );
+        }
     </script>
     <style>
         .newusa_i{
@@ -607,6 +837,8 @@
     <div class="here">当前位置：首页 > 刊登管理 > <b>范本</b></div>
     <div class="a_bal"></div>
     <div class="new">
+        <input type="hidden" name="timerListing" id="timerListing">
+        <input type="hidden" id="idStr">
         <div class="new_tab_ls" id="tab">
 
         </div>
@@ -644,7 +876,6 @@
     <option selected="selected" value="">选择类型</option>
     <option value="sku">SKU</option>
     <option value="title">物品标题</option>
-    <option value="item_id">物品号</option>
     <option value="item_name">范本名称</option>
 </select>
 </span>
@@ -656,18 +887,20 @@
                 <div class="newds">
                     <div class="newsj_left">
 
-                        <span class="newusa_ici_del_in" style="padding-left: 8px;">
+                        <span class="newusa_ici_del_in" style="padding-left: 4px;">
                             <input type="checkbox" onclick="onselectAlls(this);" name="checkbox" id="checkbox"/>
                         </span>
 
                         <div class="numlist" style="padding-left: 8px;">
                             <div class="ui-select" style="margin-top:1px; width:80px;min-width:0px;">
-                                <select onchange="changeSelect(this)" style="width: 80px;padding: 0px;">
+                                <select onchange="changeSelect(this)" id="selectMoreType" style="width: 80px;padding: 0px;">
                                     <option value="">&nbsp;&nbsp;&nbsp;&nbsp;请选择</option>
                                     <option value="del">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;删除</option>
                                     <option value="copy">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;复制</option>
+                                    <option value="timerListingItem">&nbsp;&nbsp;定时刊登</option>
                                     <option value="rename">&nbsp;&nbsp;&nbsp;&nbsp;重命名</option>
                                     <option value="editMoreItem">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;编辑</option>
+                                    <option value="remark">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;备注</option>
                                 </select>
                             </div>
                         </div>

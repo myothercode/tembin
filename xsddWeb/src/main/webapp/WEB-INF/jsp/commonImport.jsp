@@ -34,6 +34,7 @@
 
 <script type="text/javascript" src=<c:url value ="/js/jquery/jquery-1.9.0.min.js" /> ></script>
 <script type="text/javascript" src=<c:url value ="/js/jquery/jquery-migrate-1.2.1.min.js" /> ></script>
+<script type="text/javascript" src=<c:url value ="/js/jquery/jquery.cookie.js" /> ></script>
 <script type="text/javascript" src=<c:url value ="/js/base.js" /> ></script>
 <script type="text/javascript" src=<c:url value ="/js/util.js" /> ></script>
 <%--<script type="text/javascript" src=<c:url value ="/js/lhgdialog/lhgdialog.min.js" /> ></script>--%>
@@ -61,6 +62,75 @@
     var _sku=null;
     var _jscacheVersion="${jscacheVersion}";
 
+
+    /**页面加载完成后执行的方法*/
+    $(document).ready(function(){
+        showBanner_(false);
+        /**滚动条滚动到顶部和底部的时候触发事件显示和隐藏banner栏*/
+        $(window).scroll(function() {
+            if($(document).scrollTop()>0){//如果不是在顶端，隐藏顶部栏
+                hideBanner_();
+
+            };
+
+            if($(document).scrollTop() <= 0){//如果到顶端，显示顶部栏
+                showBanner_(true);
+
+            }
+
+        });
+    });
+    var bbs_=true;
+    var bbc_=true;
+    function showBanner_(o){
+        if(parent.document==document){return}
+            $("#navbar",parent.document.body).show();
+            $("#contentMaindiv",parent.document.body).css("top","58px");
+        if(!o){
+            $("#contentMaindiv",parent.document.body).css("height",(parseInt(parent.mainHei_)-60)+"px");
+
+            return;
+        }
+if(bbs_){
+    var parentDivH = $("#contentMaindiv",parent.document.body).css("height").replace("px");
+    $("#contentMaindiv",parent.document.body).css("height",(parseInt(parentDivH)-60)+"px");
+    bbc_=true;
+    bbs_=false;
+}
+    }
+    function hideBanner_(){
+        if(parent.document==document){return;}
+        $("#navbar",parent.document.body).hide();
+        $("#contentMaindiv",parent.document.body).css("top","0px");
+
+        if(bbc_){
+            var parentDivH = $("#contentMaindiv",parent.document.body).css("height").replace("px");
+            $("#contentMaindiv",parent.document.body).css("height",(parseInt(parentDivH)+60)+"px");
+            bbc_=false;
+            bbs_=true;
+        }
+
+    }
+    /*function zjh_(pheight){
+        if(parent.document==document){return;}
+        var wi=getCurrPageWH();
+        if(pheight==null){
+            $("#contentMaindiv",parent.document.body).css("height",(parseInt(wi.eHeight)+65)+"px");
+            $(parent.document.body).css("height",(parseInt(wi.eHeight)+65)+"px");
+        }else{
+            var th_= parseInt(wi.eHeight);
+            $("#contentMaindiv",parent.document.body).css("height",(th_+pheight+100)+"px");
+            var eHeight1=(parent.document.documentElement.scrollHeight > parent.document.documentElement.clientHeight) ? parent.document.documentElement.scrollHeight : parent.document.documentElement.clientHeight;
+            $(parent.document.body).css("height",(eHeight1+pheight+10)+"px");
+        }
+
+    }
+    function jsh_(){
+        if(parent.document==document){return}
+        var wi=getCurrPageWH();
+        $("#contentMaindiv",parent.document.body).css("height",(parseInt(wi.eHeight)-65)+"px");
+        $(parent.document.body).css("height",(parseInt(wi.eHeight)-65)+"px");
+    }*/
 
     /**关闭弹窗的时候会统一执行的方法*/
     function doitAfterCloseLhgDiolag(){
@@ -91,9 +161,5 @@
             return localStorage.getItem("tiancheng_jscacheVersion");
         }
         cleanLocalStorageFunction();
-
-
-
-
 
 </script>

@@ -26,7 +26,7 @@
         <if test="status!=null">
             and template.status = #{status}
         </if>
-        <if test="starttime!=null">
+        <!--<if test="starttime!=null">
             and template.create_time >= #{starttime}
         </if>
         <if test="endtime!=null">
@@ -51,9 +51,20 @@
                 and template.content like "%"#{content2}"%"
             </if>
 
-        </if>
+        </if>-->
         <if test="userId!=null">
             and template.create_user =#{userId}
+        </if>
+        <if test="orderby!=null">
+            <if test="orderby=='asc'">
+                order by template.caseType asc,template.autoType asc,template.messageType asc
+            </if>
+            <if test="orderby=='desc'">
+                order by template.caseType DESC,template.autoType DESC,template.messageType DESC
+            </if>
+        </if>
+        <if test="orderby==null">
+            order by template.id DESC
         </if>
         <!--<if test="ebays!=null">
             and addmembermessage.sender in

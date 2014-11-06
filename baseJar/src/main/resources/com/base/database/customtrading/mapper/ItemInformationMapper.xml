@@ -29,7 +29,8 @@
         select itemInformation.*,dic.config_name typeName,attr.attrValue pictureUrl,dic1.config_name remark
         from public_item_information itemInformation
         left join public_user_config dic on itemInformation.type_id=dic.id
-        left join public_user_config dic1 on itemInformation.remark_id=dic1.id
+        left join public_item_pictureaddr_and_attr attr1 on attr1.attrType="remark" and itemInformation.id=attr1.itemInformation_id
+        left join public_user_config dic1 on attr1.remark_id=dic1.id
         left join public_item_pictureaddr_and_attr attr on itemInformation.id=attr.itemInformation_id
         where 1=1
         <if test="id!=null">
@@ -40,7 +41,7 @@
                 and itemInformation.remark_id is null
             </if>
             <if test="remark!='null'">
-                and itemInformation.remark_id =#{remark}
+                and attr1.remark_id =#{remark}
             </if>
         </if>
         <if test="information!=null">

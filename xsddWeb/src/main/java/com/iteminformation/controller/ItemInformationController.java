@@ -1,10 +1,7 @@
 package com.iteminformation.controller;
 
 import com.base.database.publicd.model.*;
-import com.base.database.trading.model.TradingAttrMores;
-import com.base.database.trading.model.TradingDataDictionary;
-import com.base.database.trading.model.TradingItem;
-import com.base.database.trading.model.TradingPublicLevelAttr;
+import com.base.database.trading.model.*;
 import com.base.domains.CommonParmVO;
 import com.base.domains.SessionVO;
 import com.base.domains.querypojos.ItemInformationQuery;
@@ -145,7 +142,7 @@ public class ItemInformationController extends BaseAction {
         modelMap.put("siteList",lidata);
         PublicItemInformation information=iPublicItemInformation.selectItemInformationByid(Long.valueOf(id));
 
-        TradingItem ti = new TradingItem();
+        TradingItemWithBLOBs ti = new TradingItemWithBLOBs();
         if(information!=null){
             ti.setItemName(information.getName());
             ti.setSku(information.getSku());
@@ -410,10 +407,10 @@ public class ItemInformationController extends BaseAction {
             f.mkdirs();
         }
         file.transferTo(f);
-        List<PublicItemInformation> list= iPublicItemInformation.importItemInformation(f);
-        for(PublicItemInformation itemInformation:list){
+        iPublicItemInformation.importItemInformation(f);
+      /*  for(PublicItemInformation itemInformation:list){
             iPublicItemInformation.saveItemInformation(itemInformation);
-        }
+        }*/
         modelMap.put("flag","true");
         return forword("/itemInformation/importItemInformation",modelMap);
     }
@@ -425,8 +422,47 @@ public class ItemInformationController extends BaseAction {
     @ResponseBody
     public void saveremark(HttpServletRequest request) throws Exception {
         String remark=request.getParameter("remark");
-        String id=request.getParameter("id");
-        String parentid=request.getParameter("parentid");
+        String id1=request.getParameter("id");
+        List<Long> list=new ArrayList<Long>();
+        String[] id1s=id1.split(",");
+        String[] remarks=remark.split(",");
+        for(int i=0;i<id1s.length;i++){
+            list.add(Long.valueOf(id1s[i]));
+        }
+        if(remarks.length==0){
+            AjaxSupport.sendFailText("fail","请先添加标签");
+            return;
+        }
+        if(list.size()==0){
+            AjaxSupport.sendFailText("fail","没有商品id");
+            return;
+        }
+        SessionVO sessionVO=SessionCacheSupport.getSessionVO();
+        for(Long id:list){
+            List<PublicItemPictureaddrAndAttr> andAttrs=iPublicItemPictureaddrAndAttr.selectPictureaddrAndAttrByInformationId(id,"remark",sessionVO.getId());
+            for(PublicItemPictureaddrAndAttr andAttr:andAttrs){
+                iPublicItemPictureaddrAndAttr.deletePublicItemPictureaddrAndAttr(andAttr);
+            }
+            for(String remark1:remarks){
+                PublicUserConfig config=iPublicUserConfig.selectUserConfigByItemTypeName("remark",remark1);
+                if(config==null){
+                    config=new PublicUserConfig();
+                    config.setConfigType("remark");
+                    config.setConfigName(remark1);
+                    iPublicUserConfig.saveUserConfig(config);
+                }
+                PublicItemPictureaddrAndAttr attr=new PublicItemPictureaddrAndAttr();
+                attr.setAttrtype("remark");
+                attr.setRemarkId(config.getId());
+                attr.setIteminformationId(id);
+                iPublicItemPictureaddrAndAttr.saveItemPictureaddrAndAttr(attr);
+            }
+             PublicItemInformation itemInformation=iPublicItemInformation.selectItemInformationByid(id);
+             itemInformation.setRemarkId(1l);
+             iPublicItemInformation.saveItemInformation(itemInformation);
+        }
+        AjaxSupport.sendSuccessText("", "添加成功!");
+        /*String parentid=request.getParameter("parentid");
         if(StringUtils.isNotBlank(id)){
             PublicUserConfig config=new PublicUserConfig();
             config.setConfigType("remark");
@@ -445,7 +481,7 @@ public class ItemInformationController extends BaseAction {
             itemInformation.setRemarkId(config.getId());
             iPublicItemInformation.saveItemInformation(itemInformation);
             AjaxSupport.sendSuccessText("", "添加成功!");
-        }
+        }*/
 
     }
     /*

@@ -5,12 +5,10 @@ import com.base.database.publicd.mapper.PublicItemInformationMapper;
 import com.base.database.publicd.model.*;
 import com.base.domains.querypojos.ItemInformationQuery;
 import com.base.mybatis.page.Page;
+import com.base.utils.cache.SessionCacheSupport;
 import com.base.utils.common.ObjectUtils;
 import com.base.utils.exception.Asserts;
-import com.publicd.service.IPublicItemCustom;
-import com.publicd.service.IPublicItemInventory;
-import com.publicd.service.IPublicItemSupplier;
-import com.publicd.service.IPublicUserConfig;
+import com.publicd.service.*;
 import org.apache.poi.hssf.usermodel.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -48,6 +46,9 @@ public class PublicItemInformationImpl implements com.publicd.service.IPublicIte
 
     @Autowired
     private IPublicItemInventory iPublicItemInventory;
+
+    @Autowired
+    private IPublicItemPictureaddrAndAttr iPublicItemPictureaddrAndAttr;
 
 
     @Override
@@ -146,30 +147,54 @@ public class PublicItemInformationImpl implements com.publicd.service.IPublicIte
                 config=iPublicUserConfig.selectUserConfigById(typeid);
                 cells[2]=config.getConfigName();
             }
-            Long remarkid=list.get(i).getRemarkId();
+            List<PublicItemPictureaddrAndAttr> attrs=iPublicItemPictureaddrAndAttr.selectPictureaddrAndAttrByInformationId(list.get(i).getId(),"remark",list.get(i).getCreateUser());
+            String remarkName="";
+            for(PublicItemPictureaddrAndAttr attr:attrs){
+                PublicUserConfig config=new PublicUserConfig();
+                Long remarkId=attr.getRemarkId();
+                config=iPublicUserConfig.selectUserConfigById(remarkId);
+                remarkName+=config.getConfigName()+",";
+            }
+            if(attrs.size()>0){
+                remarkName=remarkName.substring(0,remarkName.length()-1);
+            }
+            cells[3]=remarkName;
+            /*Long remarkid=list.get(i).getRemarkId();
             if(remarkid!=null){
                 PublicUserConfig config=new PublicUserConfig();
                 config=iPublicUserConfig.selectUserConfigById(typeid);
                 cells[3]=config.getConfigName();
-            }
+            }*/
             cells[4]=list.get(i).getDescription();
             Long supid=list.get(i).getSupplierId();
             if(supid!=null){
                 PublicItemSupplier supplier=new PublicItemSupplier();
                 supplier=iPublicItemSupplier.selectItemSupplierByid(supid);
-                cells[5]=supplier.getName();
+                if(supplier!=null){
+                    cells[5]=supplier.getName();
+                }else{
+                    cells[5]="";
+                }
             }
             Long total=list.get(i).getInventoryId();
             if(total!=null){
                 PublicItemInventory inventory=new PublicItemInventory();
                 inventory=iPublicItemInventory.selectItemInventoryByid(total);
-                cells[6]=inventory.getTotal()+"";
+                if(inventory!=null){
+                    cells[6]=inventory.getTotal()+"";
+                }else{
+                    cells[6]="";
+                }
             }
             Long customid=list.get(i).getCustomId();
             if(customid!=null){
                 PublicItemCustom custom=new PublicItemCustom();
                 custom=iPublicItemCustom.selectItemCustomByid(customid);
-                cells[7]=custom.getName();
+                if(custom!=null){
+                    cells[7]=custom.getName();
+                }else{
+                    cells[7]="";
+                }
             }
             for(int j=0;j<cells.length;j++){
                 HSSFCell cell = row.createCell(j);// 第一列
@@ -198,49 +223,95 @@ public class PublicItemInformationImpl implements com.publicd.service.IPublicIte
     }
 
     @Override
-    public List<PublicItemInformation> importItemInformation(File file) throws Exception {
+    public void importItemInformation(File file) throws Exception {
         InputStream inputStream=new FileInputStream(file);
         HSSFWorkbook workbook = new HSSFWorkbook(inputStream);
         int total = workbook.getNumberOfSheets();
-        List<PublicItemInformation> list=new ArrayList<PublicItemInformation>();
         for(int i=0;i<total;i++){
             HSSFSheet sheet = workbook.getSheetAt(i);
             for(int j=1;j<=sheet.getLastRowNum();j++){
                 PublicItemInformation itemInformation=new PublicItemInformation();
                 HSSFRow row=sheet.getRow(j);
-                String name=row.getCell(0).toString();
-                String sku=row.getCell(1).toString();
-                String type=row.getCell(2).toString();
-                String remark=row.getCell(3).toString();
-                String description=row.getCell(4).toString();
-                String supplier=row.getCell(5).toString();
-                String inventory=row.getCell(6).toString();
-                String custom=row.getCell(7).toString();
+                String name="";
+                String sku="";
+                String type="";
+                String remark="";
+                String description="";
+                String supplier="";
+                if(row.getCell(0)!=null){
+                   name=row.getCell(0).toString();
+                }
+                if(row.getCell(1)!=null){
+                   sku=row.getCell(1).toString();
+                }
+                if(row.getCell(2)!=null){
+                   type=row.getCell(2).toString();
+                }
+                if(row.getCell(3)!=null){
+                   remark=row.getCell(3).toString();
+                }
+                if(row.getCell(4)!=null){
+                   description=row.getCell(4).toString();
+                }
+                if(row.getCell(5)!=null){
+                   supplier=row.getCell(5).toString();
+                }
+                /*String inventory=row.getCell(6).toString();
+                String custom=row.getCell(7).toString();*/
                 PublicItemInformation itemInformation1=selectItemInformationBySKU(sku);
                 if(itemInformation1!=null){
-                    itemInformation=itemInformation1;
+                    itemInformation.setId(itemInformation1.getId());
                 }
-                itemInformation.setName(name);
-                itemInformation.setSku(sku);
+                if(name!=null){
+                    itemInformation.setName(name);
+                }
+                if(sku!=null){
+                    itemInformation.setSku(sku);
+                }
                 PublicUserConfig type1=iPublicUserConfig.selectUserConfigByItemTypeName("itemType",type);
                 if(type1!=null){
                     itemInformation.setTypeId(type1.getId());
                 }
-                PublicUserConfig remark1=iPublicUserConfig.selectUserConfigByItemTypeName("remark",remark);
-                if(remark1!=null){
-                    itemInformation.setRemarkId(remark1.getId());
+                if(description!=null){
+                    itemInformation.setDescription(description);
                 }
-                itemInformation.setDescription(description);
                 PublicItemSupplier supplier1=iPublicItemSupplier.selectItemSupplierByName(supplier);
                 if(supplier1!=null){
                     itemInformation.setSupplierId(supplier1.getId());
                 }
-                list.add(itemInformation);
+                saveItemInformation(itemInformation);
+                String[] remarks=remark.split(",");
+                if(remarks.length>0){
+                    List<PublicItemPictureaddrAndAttr> attrs=iPublicItemPictureaddrAndAttr.selectPictureaddrAndAttrByInformationId(itemInformation.getId(),"remark", SessionCacheSupport.getSessionVO().getId());
+                    if(attrs.size()>0){
+                        for(PublicItemPictureaddrAndAttr attr:attrs){
+                            iPublicItemPictureaddrAndAttr.deletePublicItemPictureaddrAndAttr(attr);
+                        }
+                    }
+                }
+                for(String remark1:remarks){
+                    PublicUserConfig remark2=iPublicUserConfig.selectUserConfigByItemTypeName("remark",remark1);
+                    if(remark2==null){
+                        remark2=new PublicUserConfig();
+                        remark2.setConfigName(remark1);
+                        remark2.setConfigType("remark");
+                        remark2.setUserId(itemInformation.getCreateUser());
+                        iPublicUserConfig.saveUserConfig(remark2);
+                    }
+                    PublicItemPictureaddrAndAttr attr=new PublicItemPictureaddrAndAttr();
+                    attr.setRemarkId(remark2.getId());
+                    attr.setIteminformationId(itemInformation.getId());
+                    attr.setAttrtype("remark");
+                    iPublicItemPictureaddrAndAttr.saveItemPictureaddrAndAttr(attr);
+                }
+                if(remarks.length>0){
+                    itemInformation.setRemarkId(1L);
+                    saveItemInformation(itemInformation);
+                }
                /* for(int x=0;x<8;x++){
 
                 }*/
             }
         }
-        return list;
     }
 }

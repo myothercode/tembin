@@ -14,7 +14,7 @@
     <script type="text/javascript">
         var _token;
         $(document).ready(function(){
-            $(".admin_user_reg ul").css({"background-size":"100% 100%","height":"790px"})
+           // $(".admin_user_reg ul").css({"background-size":"100% 100%","height":"790px"})
         });
 
         function doReg(){
@@ -78,7 +78,48 @@ body {
 <div class="admin_user_reg">
 <ul>
 <h1>注册</h1>
-    <form id="regForm" method="post">
+<form id="regForm" method="post">
+    <li style="margin-bottom:20px">
+        <input name="userEmail" type="text" class="admin_user_input aemail_1"
+               id="userEmail" value="你的邮箱" onfocus="if(this.value=='你的邮箱'){this.value='';}"  onblur="if(this.value==''){this.value='你的邮箱';}" />
+    </li>
+    <li style="margin-bottom:20px">
+        <input name="userName" type="text" class="admin_user_input aemail_1"
+               id="userName" value="姓名" onfocus="if(this.value=='姓名'){this.value='';}"  onblur="if(this.value==''){this.value='姓名';}" />
+    </li>
+    <li style="margin-bottom:20px">
+        <input name="telPhone" type="text" class="admin_user_input aemail_6"
+               id="phone" value="电话号码" onfocus="if(this.value=='电话号码'){this.value='';}"  onblur="if(this.value==''){this.value='电话号码';}" />
+    </li>
+    <li style="margin-bottom:20px">
+        <input name="orgName" type="text" class="admin_user_input aemail_7"
+               id="orgName" value="公司名" onfocus="if(this.value=='公司名'){this.value='';}"  onblur="if(this.value==''){this.value='公司名';}" />
+    </li>
+    <li style="margin-bottom:20px">
+        <input name="userPassword" type="password" class="admin_user_input aemail_4"
+               id="pword1" value=""  /></li>
+    <li style="margin-bottom:10px">
+        <input name="psw2" type="password" class="admin_user_input aemail_5" id="pword2" value="" /></li>
+    <li style="margin-bottom:10px">
+        <input name="yqm" type="text" class="admin_user_input aemail_5" id="yqm" value="邀请码" onfocus="if(this.value=='邀请码'){this.value='';}"  onblur="if(this.value==''){this.value='邀请码';}" /></li>
+
+    <li class="nbb"  style=" height:32px;"></li>
+</form>
+    <li style="height:65px;">
+        <table width="100%" border="0" cellpadding="0" cellspacing="0">
+            <tr>
+                <td width="50%" align="center"><a href="#">
+                    <input onclick="doReg()" type="button" name="button" id="button" value="注册" class="admin_but"/>
+                </a></td>
+                <td width="50%" align="center"><a href="#">
+                    <input onclick="document.location.href='login.jsp'" type="button" name="button2" id="button2" value="返回" class="admin_but_1"/>
+                </a></td>
+            </tr>
+        </table>
+        <a href="#"></a> <a href="#"></a></li>
+
+
+    <%--<form id="regForm" method="post">
         <li style="height: 15px;margin-top: 5px">邮箱</li>
     <li>
         <input name="userEmail" type="text" class="admin_user_input" id="userEmail" value=""  />
@@ -116,7 +157,7 @@ body {
 
 <li><input onclick="document.location.href='login.jsp'" type="button" name="button" id="button" value="返回" class="admin_3">
     <input type="button" onclick="doReg()" name="button" id="button1" value="注册" class="admin_4" />
-</li>
+</li>--%>
 </ul>
 
 

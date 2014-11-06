@@ -434,6 +434,13 @@ a .icon-flip-vertical:before {
 	background-repeat: no-repeat;
 	background-position: 0px 0px;
 }
+
+.icon-sconfig{
+    background-image: url(../../img/aa2.png);
+    background-repeat: no-repeat;
+    background-position: 0px 0px;
+}
+
 .icon-gear:before,
 .icon-cog:before {
   content: "\f013";

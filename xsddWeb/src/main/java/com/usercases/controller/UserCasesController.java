@@ -368,6 +368,7 @@ public class UserCasesController extends BaseAction{
         modelMap.put("content",content);
         modelMap.put("information",information);
         modelMap.put("templates",ts);
+        modelMap.put("date",new Date());
         return forword("usercases/responseDispute",modelMap);
     }
     /*

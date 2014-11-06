@@ -1,6 +1,7 @@
 package com.base.utils.threadpoolimplements;
 
 import com.base.database.trading.model.TradingItem;
+import com.base.database.trading.model.TradingItemWithBLOBs;
 import com.base.utils.common.ObjectUtils;
 import com.base.utils.threadpool.TaskMessageVO;
 import com.base.utils.xmlutils.SamplePaseXml;
@@ -26,7 +27,7 @@ public class DelayListingItemImpl implements ThreadPoolBaseInterFace {
     public <T> void doWork(String res,T... t) {
         if(StringUtils.isEmpty(res)){return;}
         TaskMessageVO taskMessageVO = (TaskMessageVO)t[0];
-        TradingItem tradingItem = (TradingItem) taskMessageVO.getObjClass();
+        TradingItemWithBLOBs tradingItem = (TradingItemWithBLOBs) taskMessageVO.getObjClass();
         String ack = null;
         String itemId=null;
         try {

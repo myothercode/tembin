@@ -3,7 +3,7 @@ function addReturnpolicy(){
     returnPolicy=$.dialog({title: '新增退款选项',
         content: 'url:/xsddWeb/addReturnpolicy.do',
         icon: 'succeed',
-        width:500,
+        width:800,
         lock:true
     });
 }
@@ -11,7 +11,7 @@ function editReturnpolicy(id){
     returnPolicy=$.dialog({title: '编辑退款选项',
         content: 'url:/xsddWeb/editReturnpolicy.do?id='+id,
         icon: 'succeed',
-        width:500,
+        width:800,
         lock:true
     });
 }
@@ -43,7 +43,7 @@ function loadreturnpolicy(){
             {title:"名称",name:"name",width:"8%",align:"left"},
             {title:"站点",name:"siteName",width:"8%",align:"left",format:getSiteImg},
             {title:"退货明细",name:"option1",width:"8%",align:"left",format:makeOption3returnpolicy},
-            {title:"数据状态",name:"option1",width:"8%",align:"left",format:makeOption2},
+            {title:"数据状态",name:"option1",width:"8%",align:"left",format:makeOption2s},
             {title:"操作",name:"option1",width:"8%",align:"left",format:makeOption1returnpolicy}
         ],
         selectDataNow:false,
@@ -70,7 +70,7 @@ function editReturnPolicyselect(id){
     returnPolicy=$.dialog({title: '编辑退款选项',
         content: 'url:/xsddWeb/editReturnpolicy.do?id='+id+'&type=01',
         icon: 'succeed',
-        width:500,
+        width:800,
         lock:true
     });
 }

@@ -29,6 +29,7 @@
     </script>
 </head>
 <body>
+<a href="<c:url value ="/upload/upload.xls"/> "><font color="blue">请先下载excel模板</font></a>
 <input id="flag" type="hidden" name="flag" value="${flag}">
 <form id="improtForm" action="/information/ajax/importInformation.do" method="post" enctype="multipart/form-data" >
     <input type="file" name="file"/>

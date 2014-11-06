@@ -111,12 +111,11 @@
                 $("input[type='text'],[type='radio'],[type='checkbox']").each(function(i,d){
                     $(d).attr("disabled",true);
                 });
-                $("input[type='button']").each(function(i,d){
-                    $(d).hide();
-                });
+
                 $("select").each(function(i,d){
                     $(d).attr("disabled",true);
                 });
+                $("button").hide();
             }
         });
         function showFlag(obj){
@@ -126,63 +125,81 @@
                 $("#buyerShow").show();
             }
         }
+        function winClose(){
+            W.buyerRequire.close();
+        }
     </script>
+    <style type="text/css">
+        body {
+            background-color: #ffffff;
+        }
+    </style>
 </head>
 <body>
+<div class="newtitle_1" style="margin: 15px;">支付方式</div>
+<div style="padding-left: 80px;">
     <form id="buyerRequireForm">
         <input type="hidden" name="id" value="${buyerRequires.id}"/>
         <table>
             <tr>
-                <td>名称:</td>
-                <td><input type="text" name="buyName" id="buyName" value="${buyerRequires.name}"></td>
+                <td align="right">名称:</td>
+                <td>
+                    <div class="newselect" style="margin-top:9px;">
+                        <input type="text" class="form-controlsd" name="buyName" id="buyName" value="${buyerRequires.name}">
+                    </div>
+                </td>
             </tr>
             <tr>
-                <td>站点:</td>
-                <td>
-                    <select name="site">
-                        <c:forEach items="${siteList}" var="sites">
-                            <option value="${sites.id}">${sites.name}</option>
-                        </c:forEach>
-                    </select>
+                <td align="right">站点:</td>
+                <td style=" padding-left:4px;">
+                    <div class="col-lg-10">
+                        <div class="ui-select" style="margin-top:9px;">
+                            <select name="site" style="width: 300px;">
+                                <c:forEach items="${siteList}" var="sites">
+                                    <option value="${sites.id}">${sites.name}</option>
+                                </c:forEach>
+                            </select>
+                        </div>
+                    </div>
                 </td>
             </tr>
             <tr>
                 <td>买家要求:</td>
                 <td>
-                    <div><input type="radio" name="buyer_flag" value="1" checked onclick="showFlag('1')"/> 允许所有买家购买我的物品</div>
-                    <div><input type="radio" name="buyer_flag" value="0" onclick="showFlag('0')"/> 不允许以下买家购买我的物品</div>
+                    <div>&nbsp;<input type="radio" name="buyer_flag" value="1" checked onclick="showFlag('1')"/> 允许所有买家购买我的物品</div>
+                    <div>&nbsp;<input type="radio" name="buyer_flag" value="0" onclick="showFlag('0')"/> 不允许以下买家购买我的物品</div>
                     <div id="buyerShow" style="margin-left: 25px;display: none;">
                         <div><input type="checkbox" name="LinkedPayPalAccount" value="0"/>没有 PayPal 账户</div>
                         <div><input type="checkbox" name="ShipToRegistrationCountry" value="0"/>主要运送地址在我的运送范围之外</div>
                         <div><input type="checkbox" name="MaximumUnpaidItemStrikesInfo" onclick="checkData(this)"/>
-                            曾收到<select name="Unpaid_count" disabled="disabled">
+                            曾收到 <div class="ui-select" style="width:4px;"><select name="Unpaid_count" disabled="disabled" style="width: 100px;">
                                 <option value="2">2</option>
                                 <option value="3">3</option>
                                 <option value="4">4</option>
                                 <option value="5">5</option>
-                            </select>个弃标个案，在过去<select name="Unpaid_period" disabled="disabled">
+                            </select></div>个弃标个案，在过去<div class="ui-select" style="width:4px;"><select  style="width: 100px;" name="Unpaid_period" disabled="disabled">
                                 <option value="30">30</option>
                                 <option value="180">180</option>
                                 <option value="360">360</option>
-                            </select>天
+                            </select></div>天
                         </div>
                         <div><input type="checkbox" name="MaximumBuyerPolicyViolations"  onclick="checkData(this)"/>
-                            曾收到<select name="Policy_count" disabled="disabled">
+                            曾收到<div class="ui-select" style="width:4px;"><select name="Policy_count" disabled="disabled" style="width: 100px;">
                             <option value="4">4</option>
                             <option value="5">5</option>
                             <option value="6">6</option>
                             <option value="7">7</option>
-                        </select>个违反政策检举，在过去<select name="Policy_period" disabled="disabled">
+                        </select></div>个违反政策检举，在过去<div class="ui-select" style="width:4px;"><select name="Policy_period" disabled="disabled" style="width: 100px;">
                             <option value="30">30</option>
                             <option value="180">180</option>
-                        </select>天
+                        </select></div>天
                         </div>
-                        <div><input type="checkbox" name="MinimumFeedbackScore_flag" onclick="checkData(this)"/>信用指标等于或低于：<select name="MinimumFeedbackScore" disabled="disabled">
+                        <div><input type="checkbox" name="MinimumFeedbackScore_flag" onclick="checkData(this)"/>信用指标等于或低于：<div class="ui-select" style="width:4px;"><select  style="width: 100px;" name="MinimumFeedbackScore" disabled="disabled">
                             <option value="-1">-1</option>
                             <option value="-2">-2</option>
                             <option value="-3">-3</option>
-                        </select></div>
-                        <div><input type="checkbox" name="MaximumItemCount_flag" onclick="checkData(this)"/>在过去10天内曾出价或购买我的物品，已达到我所设定的限制 <select name="MaximumItemCount" disabled="disabled">
+                        </select></div></div>
+                        <div><input type="checkbox" name="MaximumItemCount_flag" onclick="checkData(this)"/>在过去10天内曾出价或购买我的物品，已达到我所设定的限制 <div class="ui-select" style="width:4px;"><select  style="width: 100px;" name="MaximumItemCount" disabled="disabled">
                             <option value="1">1</option>
                             <option value="2">2</option>
                             <option value="3">3</option>
@@ -197,20 +214,24 @@
                             <option value="50">50</option>
                             <option value="75">75</option>
                             <option value="100">100</option>
-                        </select></div>
-                        <div style="margin-left: 15px;"><input type="checkbox" name="FeedbackScore_falg" onclick="checkData(this)"/>这项限制只适用于买家信用指数等于或低于 <select name="FeedbackScore" disabled="disabled">
+                        </select></div></div>
+                        <div style="margin-left: 15px;"><input type="checkbox" name="FeedbackScore_falg" onclick="checkData(this)"/>这项限制只适用于买家信用指数等于或低于 <div class="ui-select" style="width:4px;"><select  style="width: 100px;" name="FeedbackScore" disabled="disabled">
                             <option value="5">5</option>
                             <option value="4">4</option>
                             <option value="3">3</option>
                             <option value="2">2</option>
                             <option value="1">1</option>
                             <option value="0">0</option>
-                        </select></div>
+                        </select></div></div>
                     </div>
-                    <div><input type="button" value="确定" onclick="submitCommit();"/></div>
                 </td>
             </tr>
         </table>
     </form>
+</div>
+<div class="modal-footer" style="margin: 15px;">
+    <button type="button" class="net_put" onclick="submitCommit()">确认</button>
+    <button type="button" class="net_put_1" data-dismiss="modal" onclick="winClose()">关闭</button>
+</div>
 </body>
 </html>

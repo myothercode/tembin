@@ -51,7 +51,7 @@
                 $("#discountPriceInfoListTable").show();
                 loadDisPrice();
             }
-
+            //$("#showAddButton").css("z-index","10000");
         }
         $(document).ready(function(){
             loadShipping();
@@ -90,6 +90,7 @@
             }else if(modelname=="discountPriceInfo"){
                 adddiscountpriceinfo();
             }
+
         }
 
     </script>
@@ -98,8 +99,8 @@
 <div class="new_all">
     <div class="here">当前位置：首页 > 刊登管理 > <b>模块管理</b></div>
     <div class="a_bal"></div>
-    <div class="tbbay"><a data-toggle="modal" href="javascript:void(0)" class=""  onclick="addModel()">新增</a></div>
-    <div class="a_bal"></div>
+    <%--<div class="tbbay"><a data-toggle="modal" href="javascript:void(0)" class=""  onclick="addModel()">新增</a></div>--%>
+<%--    <div class="a_bal"></div>--%>
     <div class="new">
         <div class="new_tab_ls" id="selectModel">
             <dt id=menu1 name="shipping" class=new_tab_1 onclick="setTab(this)">运输选项</dt>
@@ -111,10 +112,15 @@
             <dt id=menu7 name="discountPriceInfo" class=new_tab_2 onclick="setTab(this)">折扣信息</dt>
         </div>
     </div>
+    <div class="tbbay" id="showAddButton" style="background-image:url(null);position: absolute;top: 76px;right: 40px;z-index: 10000;">
+        <img src="img/adds.png" onclick="addModel()">
+        <%--<a data-toggle="modal" href="javascript:void(0)" class=""  onclick="addModel()">新增</a>--%>
+    </div>
     <div id="cent">
         <%--<iframe src="/xsddWeb/shippingDetailsList.do" id="module_frame" height="600px" frameborder="0" width="100%">
 
         </iframe>--%>
+
         <div id="shippingDetailsList"></div>
         <div id="ItemAddressListTable"></div>
         <div id="paypallisttable"></div>

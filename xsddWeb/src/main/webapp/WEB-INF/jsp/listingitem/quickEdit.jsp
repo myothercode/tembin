@@ -32,7 +32,7 @@
                     },
                         function(m,r){
                             alert(r);
-                        }]
+                        }],{isConverPage:true}
             );
         }
     </script>

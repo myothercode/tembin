@@ -48,9 +48,9 @@ var ueditorToolBar={
 function makeOption2(json){
     var htm=''
     if(json.checkFlag=="0"){
-        htm='已启用';
+        htm='<img src="'+path+'/img/new_yes.png"/>';
     }else{
-        htm='已禁用';
+        htm='<img src="'+path+'/img/new_no.png"/>';
     }
     return htm;
 }
@@ -715,6 +715,7 @@ function addPictrueUrl(urls) {
     initDraug();//初始化拖动图片
 }
 function initDraug(){
+    if($('.gbin1-list')==null){console.log("没有可设置拖动的table");return;}
     $('.gbin1-list').sortable().bind('sortupdate', function() {
         $('#msg').html('position changed').fadeIn(200).delay(1000).fadeOut(200);
     });

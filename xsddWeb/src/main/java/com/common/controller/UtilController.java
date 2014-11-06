@@ -479,21 +479,7 @@ i++;
         List<Item> li = new ArrayList();
         for(String id : userId){
             UsercontrollerEbayAccount uea = this.usercontrollerEbayAccountMapper.selectByPrimaryKey(Long.parseLong(id));
-            colStr = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n" +
-                    "<GetSellerListRequest xmlns=\"urn:ebay:apis:eBLBaseComponents\">\n" +
-                    "<RequesterCredentials>\n" +
-                    "<eBayAuthToken>"+uea.getEbayToken()+"</eBayAuthToken>\n" +
-                    "</RequesterCredentials>\n" +
-                    "<Pagination ComplexType=\"PaginationType\">\n" +
-                    "\t<EntriesPerPage>100</EntriesPerPage>\n" +
-                    "\t<PageNumber>1</PageNumber>\n" +
-                    "</Pagination>\n" +
-                    "<StartTimeFrom>"+startFrom+"</StartTimeFrom>\n" +
-                    "<StartTimeTo>"+startTo+"</StartTimeTo>\n" +
-                    "<UserID>"+uea.getEbayName()+"</UserID>\n" +
-                    "<GranularityLevel>Coarse</GranularityLevel>\n" +
-                    "<DetailLevel>ItemReturnDescription</DetailLevel>\n" +
-                    "</GetSellerListRequest>";
+            colStr = this.getMoveCosXml(uea.getEbayToken(),"1",startFrom,startTo,uea.getEbayAccount());
             System.out.println(colStr);
             UsercontrollerDevAccountExtend d = userInfoService.getDevInfo(uea.getUserId());
             d.setApiSiteid(sitedata.getName1());
@@ -506,42 +492,16 @@ i++;
                 //String totalNumber = SamplePaseXml.getVFromXmlString(res, "ReturnedItemCountActual");
                 Element el = SamplePaseXml.getApiElement(res, "PaginationResult");
                 String totalNumber = el.elementText("TotalNumberOfEntries");
-                li.addAll(SamplePaseXml.getItemElememt(res));
-                if(Integer.parseInt(totalNumber)>100){
-                    int patesize=0;
-                    if(Integer.parseInt(totalNumber)/100>0){
-                        if(Integer.parseInt(totalNumber)-Integer.parseInt(totalNumber)/100*100>0){
-                            patesize=Integer.parseInt(totalNumber)/100+1;
-                        }else{
-                            patesize=Integer.parseInt(totalNumber)/100;
-                        }
-                    }else{
-                        patesize=1;
-                    }
-                    for(int i=2;i<=patesize;i++){
-                        colStr = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n" +
-                                "<GetSellerListRequest xmlns=\"urn:ebay:apis:eBLBaseComponents\">\n" +
-                                "<RequesterCredentials>\n" +
-                                "<eBayAuthToken>"+uea.getEbayToken()+"</eBayAuthToken>\n" +
-                                "</RequesterCredentials>\n" +
-                                "<Pagination ComplexType=\"PaginationType\">\n" +
-                                "\t<EntriesPerPage>100</EntriesPerPage>\n" +
-                                "\t<PageNumber>"+i+"</PageNumber>\n" +
-                                "</Pagination>\n" +
-                                "<StartTimeFrom>"+startFrom+"</StartTimeFrom>\n" +
-                                "<StartTimeTo>"+startTo+"</StartTimeTo>\n" +
-                                "<UserID>"+uea.getEbayName()+"</UserID>\n" +
-                                "<GranularityLevel>Coarse</GranularityLevel>\n" +
-                                "<DetailLevel>ItemReturnDescription</DetailLevel>\n" +
-                                "</GetSellerListRequest>";
-                        resMap = addApiTask.exec(d, colStr, apiUrl);
-                        res = resMap.get("message");
-                        String acks = SamplePaseXml.getVFromXmlString(res, "Ack");
-                        if("Success".equals(acks)) {//ＡＰＩ成功请求，保存数据
-                            li.addAll(SamplePaseXml.getItemElememt(res));
-                        }else{//ＡＰＩ请求失败
-                            AjaxSupport.sendFailText("fail","请求数据失败！");
-                        }
+                String pageSize = el.elementText("TotalNumberOfPages");
+                for(int i=1;i<=Integer.parseInt(pageSize);i++){
+                    String xml = this.getMoveCosXml(uea.getEbayToken(),i+"",startFrom,startTo,uea.getEbayAccount());
+                    resMap = addApiTask.exec(d, xml, apiUrl);
+                    res = resMap.get("message");
+                    String acks = SamplePaseXml.getVFromXmlString(res, "Ack");
+                    if("Success".equals(acks)) {//ＡＰＩ成功请求，保存数据
+                        li.addAll(SamplePaseXml.getItemElememt(res));
+                    }else{//ＡＰＩ请求失败
+                        continue;
                     }
                 }
             }else{//ＡＰＩ请求失败
@@ -568,9 +528,26 @@ i++;
                 }
             }
         }
-        AjaxSupport.sendSuccessText("message", "操作成功！");
+        AjaxSupport.sendSuccessText("message", "已成功记录到任务表，过一段时间就会从把数据搬到我们的范本页面！");
     }
-
+    public String getMoveCosXml(String token,String page,String satartfrom,String startto,String ebayneam){
+        String colStr = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n" +
+                "<GetSellerListRequest xmlns=\"urn:ebay:apis:eBLBaseComponents\">\n" +
+                "<RequesterCredentials>\n" +
+                "<eBayAuthToken>"+token+"</eBayAuthToken>\n" +
+                "</RequesterCredentials>\n" +
+                "<Pagination ComplexType=\"PaginationType\">\n" +
+                "\t<EntriesPerPage>100</EntriesPerPage>\n" +
+                "\t<PageNumber>"+page+"</PageNumber>\n" +
+                "</Pagination>\n" +
+                "<StartTimeFrom>"+satartfrom+"</StartTimeFrom>\n" +
+                "<StartTimeTo>"+startto+"</StartTimeTo>\n" +
+                "<UserID>"+ebayneam+"</UserID>\n" +
+                "<GranularityLevel>Coarse</GranularityLevel>\n" +
+                "<DetailLevel>ItemReturnDescription</DetailLevel>\n" +
+                "</GetSellerListRequest>";
+        return colStr;
+    }
     public String cosPost(){
         return "";
     }

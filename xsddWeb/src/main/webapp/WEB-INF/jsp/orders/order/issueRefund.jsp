@@ -12,6 +12,11 @@
 <html>
 <head>
     <title></title>
+    <style type="text/css">
+        body {
+            background-color: #ffffff;
+        }
+    </style>
     <style>
         .table-a table{border:1px solid rgba(0, 0, 0, 0.23)
         }
@@ -61,8 +66,10 @@
 </form>
 </div>
 <div class="modal-footer">
-    <button type="button" class="btn btn-newco" onclick="submit3();">确定</button>
-    <button type="button" class="btn btn-default" onclick="closedialog();" data-dismiss="modal">关闭</button>
+    <button type="button" class="net_put" onclick="submit3();">保存</button>
+    <button type="button" class="net_put_1" data-dismiss="modal" onclick="closedialog();">关闭</button>
+<%--    <button type="button" class="btn btn-newco" onclick="submit3();">确定</button>
+    <button type="button" class="btn btn-default" onclick="closedialog();" data-dismiss="modal">关闭</button>--%>
 </div> </td>
 </body>
 </html>

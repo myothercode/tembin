@@ -34,11 +34,16 @@
             });
             if(nameFolder=="updatelog"){
                 $("#amendlog").show();
+                $("div .newds").hide();
+                $("div .newsearch").css({"margin-bottom":"0px"});
                 $("[name='attrshow']").each(function(i,d){
                     $(d).hide();
                 });
+
             }else{
                 $("#amendlog").hide();
+                $("div .newds").show();
+                $("div .newsearch").css({"margin-bottom":"20px"});
                 $("[name='attrshow']").each(function(i,d){
                     $(d).show();
                 });
@@ -103,18 +108,17 @@
             return html;
         }
         function onloadTableamend(urls){
-            $("#itemTable").initTable({
+            $("#itemListingTable").initTable({
                 url:urls,
                 columnData:[
-                    {title:"图片",name:"Option1",width:"6%",align:"left",format:picUrl},
+                    {title:"图片",name:"Option1",width:"4%",align:"left",format:picUrl},
                     {title:"物品标题",name:"title",width:"8%",align:"left"},
-                    {title:"SKU",name:"sku",width:"8%",align:"left"},
+                    {title:"SKU",name:"sku",width:"8%",align:"center"},
                     {title:"ebay账户",name:"ebayAccount",width:"8%",align:"left"},
-                    {title:"站点",name:"site",width:"8%",align:"left",format:getSiteImg},
-                    {title:"刊登类型",name:"listingType",width:"8%",align:"left",format:listingType},
-                    {title:"价格",name:"price",width:"8%",align:"left"},
-                    {title:"数量/已售",name:"price",width:"8%",align:"left"},
-                    {title:"商品数量",name:"Option1",width:"8%",align:"left",format:tjCount},
+                    {title:"站点",name:"site",width:"4%",align:"center",format:getSiteImg},
+                    {title:"刊登类型",name:"listingType",width:"6%",align:"center",format:listingType},
+                    {title:"价格",name:"price",width:"8%",align:"center",format:getPriceHtml},
+                    {title:"数量/已售",name:"price",width:"8%",align:"center",format:tjCount},
                     {title:"修改时间",name:"amendTime",width:"8%",align:"left"},
                     {title:"操作内容",name:"content",width:"8%",align:"left"},
                     {title:"状态",name:"content",width:"4%",align:"left",format:itemstatus},
@@ -341,8 +345,8 @@
                                                 //$("input[type='checkbox'][name='listingitemid'][value='"+tld.itemId+"']").parent().parent().slideUp();
                                                 $("input[type='checkbox'][name='listingitemid'][value='"+tld.itemId+"']").parent().parent().prop("id",tld.itemId);
                                                 $("#"+tld.itemId).css('background-color','red');
-                                                $("#"+tld.itemId).hide(3000);
-                                                $("#"+tld.itemId).slideUp(3000);
+                                                $("#"+tld.itemId).hide(1500);
+                                                $("#"+tld.itemId).slideUp(1500);
                                             }
                                         },
                                             function (m, r) {
@@ -373,6 +377,7 @@
             endItemByid(itemidStr);
 
         }
+        var OrderGetOrders;
         function addTabRemark(){
             var url=path+"/order/selectTabRemark.do?folderType=listingFolder";
             OrderGetOrders=$.dialog({title: '选择文件夹',
@@ -396,6 +401,31 @@
                 height:400
             });
         }
+        //--------------------------
+        function refleshTabRemark(folderType){
+            var url=path+"/order/refleshTabRemark.do?folderType="+folderType;
+            $().invoke(url,null,
+                    [function(m,r){
+                        var div=document.getElementById("tab");
+                        var remarks=$(div).find("dt[scop=tabRemark]");
+                        for(var i=0;i<remarks.length;i++){
+                            $(remarks[i]).remove();
+                        }
+                        var htm="";
+                        for(var i=0;i< r.length;i++){
+                            htm += "<dt scop=\"tabRemark\"  name='myFolder_" + i + "' val='" + r[i].id + "' class=new_tab_2 onclick='setTab(this)'>" + r[i].configName + "</dt>";
+                        }
+                        $(div).append(htm);
+                        Base.token;
+                    },
+                        function(m,r){
+                            alert(r);
+                            Base.token();
+                        }]
+            );
+        }
+        //----------------------------------------
+
         $(document).ready(function(){
             var url=path+"/ajax/selfFolder.do?folderType=listingFolder";
             $().invoke(url,{},
@@ -406,7 +436,7 @@
                                 +'<dt name="updatelog" class=new_tab_2 onclick="setTab(this)">在线修改日志</dt>';
                         if(r!=null) {
                             for (var i = 0; i < r.length; i++) {
-                                htmlstr += "<dt name='myFolder_" + i + "' val='" + r[i].id + "' class=new_tab_2 onclick='setTab(this)'>" + r[i].configName + "</dt>";
+                                htmlstr += "<dt scop=\"tabRemark\"  name='myFolder_" + i + "' val='" + r[i].id + "' class=new_tab_2 onclick='setTab(this)'>" + r[i].configName + "</dt>";
                             }
                         }
                         $("#tab").html(htmlstr);
@@ -494,15 +524,16 @@
         }
         function getTitle(json){
             var html="";
-            if(json.title.length>40){
-                html = "<span title='"+json.title+"'><a target='_blank' href='"+serviceItemUrl+json.itemId+"'>"+json.title.substr(0,20)+"</br>"+json.title.substr(20,15)+".....</a></span>";
+            if(json.title.length>70){
+                html = "<span style='word-break:break-all;' title='"+json.title+"'><a target='_blank' href='"+serviceItemUrl+json.itemId+"'>"+json.title.substr(0,70)+".....</a></span>";
             }else{
                 if(json.title.length>20){
-                    html = "<span title='"+json.title+"'><a target='_blank' href='"+serviceItemUrl+json.itemId+"'>"+json.title.substr(0,20)+"</br>"+json.title.substr(20,json.title.length-10)+"</a></span>";
+                    html = "<span style='word-break:break-all;' title='"+json.title+"'><a target='_blank' href='"+serviceItemUrl+json.itemId+"'>"+json.title+"</a></span>";
                 }else{
-                    html = "<span title='"+json.title+"'><a target='_blank' href='"+serviceItemUrl+json.itemId+"'>"+json.title+"</a></span>";
+                    html = "<span style='word-break:break-all;' title='"+json.title+"'><a target='_blank' href='"+serviceItemUrl+json.itemId+"'>"+json.title+"</a></span>";
                 }
             }
+            html+="</br><span>物品号："+json.itemId+"</span>";
             var remark = "";
             if(json.remark!=null&&json.remark!=""){
                 if(json.remark.length>25){
@@ -511,35 +542,70 @@
                     remark = json.remark;
                 }
                 html+="<span class='newdf' title='"+json.remark+"'>备注："+remark+"</span>";
+            }else{
+                html+="<span class='newdf' title='' style='display: none'></span>";
             }
             return html;
         }
         function getSku(json){
-            var html = "<span style='color:#8BB51B;'>"+json.sku+"</span>";
+            var html = "&nbsp;&nbsp;<a target='_blank' href='"+serviceItemUrl+json.itemId+"'><span style='color:#8BB51B;'>"+json.sku+"</span></a>";
+            if(json.docId!=null&&json.docId!="") {
+                html += "</br>&nbsp;&nbsp;<a target='_blank' href='" + path + "/editItem.do?id=" + json.docId + "' title='" + json.docTitle + "'><span>" + json.docTitle.substr(0, 6) + "...</span></a>";
+            }
             return html
         }
+        var descStatic
+        function orderList(obj){
+            var des = "";
+            if($(obj).attr("val")=="0"){//默认状态为降序，之前为升序
+                $(obj).attr("val","1");
+                des="desc";
+            }else{
+                $(obj).attr("val","0");
+                des="asc";
+            }
+            descStatic=$(obj).attr("val");
+            var desc = $(obj).attr("colu");
+            onloadTable(loadurl+"&descStr="+desc+"&desStr="+des);
+            $("#itemListingTable").find("span[colu='"+desc+"']").attr("val",descStatic);
+
+        }
         function onloadTable(urls){
-            $("#itemTable").initTable({
+            $("#itemListingTable").initTable({
                 url:urls,
                 columnData:[
-                    {title:"选择",name:"itemName",width:"4%",align:"left",format:makeOption0},
-                    {title:"图片",name:"Option1",width:"8%",align:"left",format:picUrl},
-                    {title:"物品标题",name:"title",width:"8%",align:"left",format:getTitle},
-                    {title:"SKU",name:"sku",width:"4%",align:"left",format:getSku},
-                    {title:"ebay账户",name:"ebayAccount",width:"8%",align:"left"},
-                    {title:"站点",name:"site",width:"4%",align:"left",format:getSiteImg},
-                    {title:"刊登类型",name:"listingType",width:"8%",align:"left",format:listingType},
-                    {title:"价格",name:"price",width:"10%",align:"left",format:getPriceHtml},
-                    {title:"数量/已售",name:"Option1",width:"10%",align:"left",format:tjCount},
-                    {title:"刊登天数",name:"listingduration",width:"8%",align:"left"},
-                    {title:"结束时间",name:"endtime",width:"8%",align:"left"},
-                    {title:"操作",name:"Option1",width:"8%",align:"left",format:makeOption1}
+                    {title:"选择",name:"itemName",width:"2%",align:"left",format:makeOption0},
+                    {title:"图片",name:"Option1",width:"3%",align:"left",format:picUrl},
+                    {title:"<span onclick='orderList(this)' style='cursor: pointer;' colu='title' val='0'>物品标题</span>",name:"title",width:"16%",align:"left",format:getTitle},
+                    {title:"<span onclick='orderList(this)' style='cursor: pointer;' colu='sku' val='0'>&nbsp;&nbsp;SKU</span>/范本",name:"sku",width:"8%",align:"left",format:getSku},
+                    {title:"<span onclick='orderList(this)' style='cursor: pointer;' colu='ebay_account' val='0'>ebay账户</span>",name:"ebayAccount",width:"4%",align:"left"},
+                    {title:"<span onclick='orderList(this)' style='cursor: pointer;' colu='site' val='0'>站点</span>",name:"site",width:"2%",align:"left",format:getSiteImg},
+                    {title:"<span onclick='orderList(this)' style='cursor: pointer;' colu='listing_type' val='0'>刊登类型</span>",name:"listingType",width:"4%",align:"center",format:listingType},
+                    {title:"价格",name:"price",width:"6%",align:"center",format:getPriceHtml},
+                    {title:"数量/<span onclick='orderList(this)' style='cursor: pointer;' colu='QuantitySold' val='0'>已售</span>",name:"Option1",width:"6%",align:"center",format:tjCount},
+                    {title:"<span onclick='orderList(this)' style='cursor: pointer;' colu='ListingDuration' val='0'>刊登天数</span>",name:"listingduration",width:"4%",align:"center",format:getDuration},
+                    {title:"<span onclick='orderList(this)' style='cursor: pointer;' colu='EndTime' val='0'>结束时间</span>",name:"endtime",width:"3%",align:"left",format:getendTime},
+                    {title:"&nbsp;&nbsp;操作",name:"Option1",width:"4%",align:"left",format:makeOption1}
                 ],
                 selectDataNow:false,
                 isrowClick:false,
                 showIndex:false
             });
             refreshTable();
+        }
+        function getendTime(json){
+            html="";
+            html = json.endtime.replace(" ","</br>")
+            return html;
+        }
+        function getDuration(json){
+            var html = "";
+            if(json.listingduration.indexOf("Days_")!=-1){
+                html=json.listingduration.substr(json.listingduration.indexOf("_")+1,json.listingduration.length);
+            }else{
+                html=json.listingduration;
+            }
+            return html;
         }
         function showText(obj){
             $(obj).find("span").hide();
@@ -549,20 +615,20 @@
         function getPriceHtml(json){
             var htm="";
             if("updatelog"!=nameFolder&&json.listingType=="FixedPriceItem") {
-                htm = "<div style='display:inline;' onclick='showText(this)'><span  style='color: dodgerblue;' >"+json.price+"</span>"+
+                htm = "<div style='display:inline;' onclick='showText(this)'><span  style='color: dodgerblue;' >"+json.price.toFixed(2)+"</span>"+
                         "<input onkeypress='return inputNUMAndPoint(event,this,2)' type='hidden' name='price' onblur='updateItemPrice(this)'" +
                         " ids='"+json.id+"' itemId='"+json.itemId+"' " +
-                        "size='1' style='height:20px;border: 1px solid #AA17A4;' class='form-control'  oldval='"+json.price+"' value='"+json.price+"'/>&nbsp;" +json.currencyId+"<img src=''/></div></br>" ;
+                        "  class='newinputt'  oldval='"+json.price.toFixed(2)+"' value='"+json.price.toFixed(2)+"'/>&nbsp;" +json.currencyId+"<img src=''/></div></br>" ;
                 if(json.shippingPrice==null||parseInt(json.shippingPrice)==0){
 
                 }else{
-                    htm+="+$"+json.shippingPrice+"&nbsp;"+json.currencyId;
+                    htm+="+$"+json.shippingPrice.toFixed(2)+"&nbsp;"+json.currencyId;
                 }
             }else{
                 if(json.shippingPrice==null||parseInt(json.shippingPrice)==0){
-                    htm = json.price+"&nbsp;"+json.currencyId;
+                    htm = json.price.toFixed(2)+"&nbsp;"+json.currencyId;
                 }else{
-                    htm = json.price+"&nbsp;"+json.currencyId+"</br>+$"+json.shippingPrice+"&nbsp;"+json.currencyId;
+                    htm = json.price.toFixed(2)+"&nbsp;"+json.currencyId+"</br>+$"+json.shippingPrice.toFixed(2)+"&nbsp;"+json.currencyId;
                 }
             }
 
@@ -610,7 +676,7 @@
                                     $(obj).parent().find("span").text(r.quantity);
                                     $(obj).val(r.quantity)
                                 }
-                                $(obj).parent().find("img").prop("src",path+"/img/tips.gif");
+                                $(obj).parent().find("img").prop("src",path+"/img/tips.png");
                             }]
                 );
             }
@@ -626,11 +692,12 @@
             return htm;
         }
         function tjCount(json){
+            //style='width:35px;padding-left:0px;padding-right:0px;height:20px;border: 1px solid #AA17A4;'
             var htm="";
             if("updatelog"!=nameFolder&&json.listingType=="FixedPriceItem") {
                 htm="<div style='display:inline;' onclick='showText(this)'><span  style='color: dodgerblue;'>"+json.quantity+"</span>" +
-                        "<input type='hidden'  onkeypress='return inputOnlyNUM(event,this)' onblur='updateItemPrice(this)' name='quantity' onFocus='showImg(this)' ids='"+json.id+"' itemId='"+json.itemId+"' size='1'  style='height:20px;border: 1px solid #AA17A4;' " +
-                        "class='form-control' oldval='"+json.quantity+"' value='"+json.quantity+"'/>/"+json.quantitysold+" <img src=''/></div>";
+                        "<input type='hidden'  onkeypress='return inputOnlyNUM(event,this)' onblur='updateItemPrice(this)' name='quantity' onFocus='showImg(this)' ids='"+json.id+"' itemId='"+json.itemId+"' size='1' " +
+                        "class='newinputt' oldval='"+json.quantity+"' value='"+json.quantity+"'/>/"+json.quantitysold+" <img src=''/></div>";
             }else{
                 htm = json.quantity+"/"+json.quantitysold;
             }
@@ -645,7 +712,7 @@
                 hs += "<li style='height:25px' onclick=edit('" + json.itemId + "') value='" + json.id + "' doaction=\"look\" >在线编辑</li>";
                 hs += "<li style='height:25px' onclick=endItemByid('" + json.itemId + "') value='" + json.id + "' doaction=\"look\" >提前结束</li>";
                 hs += "<li style='height:25px' onclick=quickEdit('" + json.id + "','"+json.listingType+"') value='" + json.id + "' doaction=\"look\" >快速编辑</li>";
-                hs += "<li style='height:25px' onclick=remark('" + json.id + "') value='" + json.id + "' doaction=\"look\" >备注</li>";
+                hs += "<li style='height:25px' onclick=remark('" + json.id + "','"+json.remark+"') value='" + json.id + "' doaction=\"look\" >备注</li>";
                 hs += "<li style='height:25px' onclick=selectLog('" + json.id + "') value='" + json.id + "' doaction=\"look\" >查看日志</li>";
             }
             var pp={"liString":hs};
@@ -664,21 +731,26 @@
             });
         }
         //备注
-        function remark(id){
-            var tent = "<div class='textarea'>备注：<textarea cols='30' rows='5' id='centents' ></textarea></div>";
+        function remark(id,remark){
+            if(remark==undefined){
+                remark="";
+            }else{
+                remark = $("input[type='checkbox'][name='listingitemid'][val='" + id + "']").parent().parent().find("td").eq(2).find(".newdf").text().substr(3);
+            }
+            var tent = "<div class='textarea'>备注：<textarea cols='30' rows='5' id='centents' >"+remark+"</textarea></div>";
             var editPage = $.dialog({title: '备注',
                 content: tent,
-                icon: 'succeed',
+                icon: 'tips.gif',
                 width: 400,
                 button: [
                     {
                         name: '确定',
                         callback: function (iwins, enter) {
                             var reason = "";
-                            if (iwins.parent.document.getElementById("centents").value == "") {
+                            /*if (iwins.parent.document.getElementById("centents").value == "") {
                                 alert("备注必填！");
                                 return false;
-                            } else {
+                            } else {*/
                                 //alert(iwins.parent.document.getElementById("centents").selectedIndex);
                                 reason = iwins.parent.document.getElementById("centents").value;
                                 //alert(reason);
@@ -701,8 +773,11 @@
                                                     }else{
                                                         remark = tld.remark;
                                                     }
+                                                    $("input[type='checkbox'][name='listingitemid'][value='"+tld.itemId+"']").parent().parent().find("td").eq(2).find(".newdf").show();
                                                     $("input[type='checkbox'][name='listingitemid'][value='"+tld.itemId+"']").parent().parent().find("td").eq(2).find(".newdf").html("备注："+remark);
                                                     $("input[type='checkbox'][name='listingitemid'][value='"+tld.itemId+"']").parent().parent().find("td").eq(2).find(".newdf").prop("title",remark);
+                                                }else{
+                                                    $("input[type='checkbox'][name='listingitemid'][value='"+tld.itemId+"']").parent().parent().find("td").eq(2).find(".newdf").hide();
                                                 }
                                             }
                                         },
@@ -711,7 +786,7 @@
                                                 Base.token();
                                             }]
                                 );
-                            }
+                            //}
                         }
                     }
                 ]
@@ -734,7 +809,7 @@
             if(selectValue!=null&&selectValue!=""){
                 param={"queryValue":selectValue};
             }
-            $("#itemTable").selectDataAfterSetParm(param);
+            $("#itemListingTable").selectDataAfterSetParm(param);
         }
         //在线编辑
         var editPage = "";
@@ -944,7 +1019,7 @@
                 <div class="newds">
                     <div class="newsj_left">
 
-                        <span class="newusa_ici_del_in" style="padding-left: 8px;"><input type="checkbox" onclick="onselectAlls(this)" name="checkbox" id="checkbox"/></span>
+                        <span class="newusa_ici_del_in" style="padding-left: 4px;"><input type="checkbox" onclick="onselectAlls(this)" name="checkbox" id="checkbox"/></span>
 
                         <div class="numlist" style="padding-left: 8px;">
                             <div class="ui-select" style="margin-top:1px; width:80px;min-width:0px;">
@@ -973,7 +1048,7 @@
                     width="100%">
             </iframe>--%>
 <div style="width: 100%;float: left;height: 5px"></div>
-            <div id="itemTable" >
+            <div id="itemListingTable" >
             </div>
         </div>
 

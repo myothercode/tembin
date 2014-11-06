@@ -18,6 +18,7 @@ public class PageJsonBean {
 	//结果集
 	private List<?> list;
 
+
 	public PageJsonBean() {
 		pageNum = 1;
 		pageCount = 10;

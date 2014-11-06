@@ -1,6 +1,6 @@
 /*表格样式*/
 .tab_ZY { text-align:left; border-collapse:collapse;}
-.tab_ZY th { height: 40px;border-top:0px solid #b7c0c7; border-bottom:0px solid #b7c0c7;text-align:left; padding:7px 0 7px 2px; background:#F7F7F7;font-weight: bold}
+.tab_ZY th { height: 40px;border-top:0px solid #b7c0c7; border-bottom:1px solid #b7c0c7;text-align:left; padding:7px 0 7px 2px; background:#F7F7F7;font-weight: bold}
 .tab_ZY td { padding:7px 2px; border-bottom:1px solid #dddddd; color:#111111;background:#ffffff}
 .tab_ZY tr.alt td{background:#ffffff}
 .tab_ZY tr.over td{background:#e8f1ff; border-bottom:1px solid #bfd9ff; border-top:1px solid #bfd9ff;}

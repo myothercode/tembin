@@ -294,11 +294,12 @@ public class FeedBackAutoMessageTaskRun extends BaseScheduledClass implements Sc
 
     /**只从集合记录取多少条*/
     private List<TradingFeedBackDetail> filterLimitList(List<TradingFeedBackDetail> tlist){
-        List<TradingFeedBackDetail> x=new ArrayList<TradingFeedBackDetail>();
+        return filterLimitListFinal(tlist,20);
+        /*List<TradingFeedBackDetail> x=new ArrayList<TradingFeedBackDetail>();
         for (int i = 0;i<20;i++){
             x.add(tlist.get(i));
         }
-        return x;
+        return x;*/
     }
 
     public FeedBackAutoMessageTaskRun(){
