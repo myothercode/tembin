@@ -7,8 +7,8 @@
 --%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%--<%@include file= "/WEB-INF/jsp/commonImport.jsp" %>--%>
-<%@include file= "/WEB-INF/jsp/smallFormImport.jsp" %>
+<%@include file= "/WEB-INF/jsp/commonImport.jsp" %>
+<%--<%@include file= "/WEB-INF/jsp/smallFormImport.jsp" %>--%>
 <html>
 <c:set value="${dis}" var="dis" />
 <head>
@@ -85,10 +85,80 @@
                         }]
             );
         }
+        function winClose(){
+            W.discountPriceInfo.close();
+        }
     </script>
+    <style type="text/css">
+        body {
+            background-color: #ffffff;
+        }
+    </style>
 </head>
 <body>
-<div style="width: 400px;">
+<div class="modal-header">
+    <div class="newtitle">折扣选项</div>
+</div>
+<div class="modal-body">
+    <form class="form-horizontal" role="form" id="discountPriceInfoForm">
+        <table width="90%" border="0" style="margin-left:40px;">
+            <tr>
+                <td width="13%" height="28" align="right">名称：</td>
+                <td width="87%" height="28"><div class="newselect" style="margin-top:9px;">
+                    <input type="text" name="name" id="name" value="${dis.name}"   placeholder="" class="form-controlsd validate[required]">
+                    <input type="hidden" name="id" id="id" value="${dis.id}">
+                </div></td>
+            </tr>
+
+            <tr>
+                <td height="28" align="right">帐户：</td>
+                <td height="28" style=" padding-left:4px;"><div class="col-lg-10">
+                    <div class="ui-select" style="margin-top:9px;">
+                        <select name="ebayAccount"  class="validate[required]" style="width: 300px;">
+                            <c:forEach var="li" items="${userli}">
+                                <c:if test="${li.id==dis.ebayAccount}">
+                                    <option value="${li.id}" selected="selected">${li.ebayName}</option>
+                                </c:if>
+                                <c:if test="${li.id!=dis.ebayAccount}">
+                                    <option value="${li.id}">${li.ebayName}</option>
+                                </c:if>
+                            </c:forEach>
+                        </select>
+                    </div>
+                </div></td>
+            </tr>
+            <tr>
+                <td width="13%" height="28" align="right">开始时间：</td>
+                <td width="87%" height="28"><div class="newselect" style="margin-top:9px;">
+                    <input name="disStarttime"  class="form-controlsd validate[required]" id="disStarttime" value="<fmt:formatDate value="${dis.disStarttime}" pattern="yyyy-MM-dd HH:mm"/>" type="text" onfocus="WdatePicker({isShowWeek:true,dateFmt:'yyyy-MM-dd HH:mm'})"/>
+                </div></td>
+            </tr>
+            <tr>
+                <td width="13%" height="28" align="right">结束时间：</td>
+                <td width="87%" height="28"><div class="newselect" style="margin-top:9px;">
+                    <input name="disEndtime"  class="form-controlsd validate[required]" id="disEndtime" value="<fmt:formatDate value="${dis.disEndtime}" pattern="yyyy-MM-dd HH:mm"/>" type="text" onfocus="WdatePicker({isShowWeek:true,dateFmt:'yyyy-MM-dd HH:mm'})"/>
+                </div></td>
+            </tr>
+            <tr>
+                <td width="13%" height="28" align="right">优惠明细：</td>
+                <td width="87%" height="28"><br>
+                    <input type="checkbox" id="selectflag">价格折扣（不包括拍卖物品）<br>
+                    <input type="radio" name="a1" value="a1" checked>在原价上给予折扣<input type="text" id="MadeForOutletComparisonPrice"  class="newintput validate[custom[number]]" style="width: 40px;" name="MadeForOutletComparisonPrice" value="${dis.madeforoutletcomparisonprice}" size="10">%<br>
+                    <input type="radio" name="a1"  value="a2">在原价上降价<input type="text" id="MinimumAdvertisedPrice" class="newintput validate[custom[number]]"  style="width: 40px;" name="MinimumAdvertisedPrice" value="${dis.minimumadvertisedprice}" disabled="disabled" size="10"><br>
+                    <input type="checkbox" id="isShippingFee" name="isShippingFee" value="1">免运费（用于第一运输方法）</td>
+            </tr>
+            <tr >
+                <td height="28" align="right"></td>
+                <td height="28" style=" padding-top:22px;">
+                    <button type="button" class="net_put" onclick="submitCommit()">确定</button>
+                    <button type="button" class="net_put_1" data-dismiss="modal" onclick="winClose()">关闭</button>
+                </td>
+            </tr>
+        </table>
+        </form>
+    </div>
+
+<%--<div style="width: 400px;">
     <form class="form-horizontal"  id="discountPriceInfoForm">
         <fieldset>
             <div id="legend" class="">
@@ -156,7 +226,7 @@
             <button class="btn btn-success" onclick="submitCommit()">确定</button>
         </div>
     </div>
-</div>
+</div>--%>
 
 </body>
 </html>

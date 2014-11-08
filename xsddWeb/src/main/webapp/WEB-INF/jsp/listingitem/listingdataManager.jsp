@@ -316,8 +316,8 @@
                     "<option value='Sold'>Sold</option></select></div>";
             var editPage = $.dialog({title: '提前结束原因',
                 content: tent,
-                icon: 'succeed',
-                width: 400,
+                icon: 'tips.gif',
+                width: 200,
                 button: [
                     {
                         name: '确定',
@@ -464,8 +464,8 @@
                         htmlstr += "</div>";
                         var editPage = $.dialog({title: '选择移动到的文件夹',
                             content: htmlstr,
-                            icon: 'succeed',
-                            width: 400,
+                            icon: 'tips.gif',
+                            width: 200,
                             button: [
                                 {
                                     name: '确定',
@@ -737,11 +737,11 @@
             }else{
                 remark = $("input[type='checkbox'][name='listingitemid'][val='" + id + "']").parent().parent().find("td").eq(2).find(".newdf").text().substr(3);
             }
-            var tent = "<div class='textarea'>备注：<textarea cols='30' rows='5' id='centents' >"+remark+"</textarea></div>";
+            var tent = "<div class='textarea'>备注：<textarea cols='45' rows='5' id='centents' >"+remark+"</textarea></div>";
             var editPage = $.dialog({title: '备注',
                 content: tent,
                 icon: 'tips.gif',
-                width: 400,
+                width: 300,
                 button: [
                     {
                         name: '确定',

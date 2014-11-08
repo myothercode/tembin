@@ -201,21 +201,22 @@ public class UserManageController extends BaseAction {
     }
 
 
-    @RequestMapping("queryEbaysForCurrUser")
+    @RequestMapping("queryEbaysForCurrUser.do")
     @ResponseBody
     /**取得当前系统帐号对应的ebay帐号信息*/
     public void queryEbaysForCurrUser(com.base.domains.querypojos.CommonParmVO commonParmVO){
         Map map=new HashMap();
         PageJsonBean jsonBean = commonParmVO.getJsonBean();
-        jsonBean.setPageCount(1000);
-        jsonBean.setPageNum(1);
-        List<UsercontrollerEbayAccountExtend> ebayAccountExtendList= userInfoService.getEbayAccountForCurrUser();
+        Page page=jsonBean.toPage();
+        //jsonBean.setPageCount(1000);
+        //jsonBean.setPageNum(1);
+        List<UsercontrollerEbayAccountExtend> ebayAccountExtendList= userInfoService.getEbayAccountForCurrUser(new HashMap(),page);
         for (UsercontrollerEbayAccountExtend u : ebayAccountExtendList){
             if(u==null){continue;}
             u.setEbayToken("");
         }
         jsonBean.setList(ebayAccountExtendList);
-        jsonBean.setTotal(1);
+        jsonBean.setTotal((int) page.getTotalCount());
         AjaxSupport.sendSuccessText("",jsonBean);
         return;
     }

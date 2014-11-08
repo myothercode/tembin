@@ -7,6 +7,7 @@ import com.base.domains.PermissionVO;
 import com.base.domains.RoleVO;
 import com.base.domains.SessionVO;
 import com.base.domains.userinfo.UsercontrollerEbayAccountExtend;
+import com.base.mybatis.page.Page;
 
 import java.util.List;
 import java.util.Map;
@@ -31,7 +32,7 @@ public interface UserInfoServiceMapper {
     public List<UsercontrollerEbayAccountExtend> queryEbayAccountForUser(Map map);
 
     /**查询指定用户帐号绑定的ebay帐号*/
-    public List<UsercontrollerEbayAccountExtend> queryAllEbayAccountForUser(Map map);
+    public List<UsercontrollerEbayAccountExtend> queryAllEbayAccountForUser(Map map,Page page);
 
     /**根据ebay账户id查找token*/
     public UsercontrollerEbayAccount getTokenByEbayID(Long id);

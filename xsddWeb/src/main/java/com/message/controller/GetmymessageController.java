@@ -262,7 +262,7 @@ public class GetmymessageController extends BaseAction{
         jsonBean.setTotal((int)page.getTotalCount());
         AjaxSupport.sendSuccessText("", jsonBean);
     }
- /*   @RequestMapping("/viewMessageAddmymessage.do")
+    @RequestMapping("/viewMessageAddmymessage.do")
     @AvoidDuplicateSubmission(needSaveToken = true)
     public ModelAndView viewMessageAddmymessage(HttpServletRequest request,HttpServletResponse response,@ModelAttribute( "initSomeParmMap" )ModelMap modelMap) throws Exception {
         String itemid=request.getParameter("itemid");
@@ -319,11 +319,11 @@ public class GetmymessageController extends BaseAction{
             List<TradingOrderGetSellerTransactions> sellerTransactions=iTradingOrderGetSellerTransactions.selectTradingOrderGetSellerTransactionsByTransactionId(order.getTransactionid());
             if(sellerTransactions!=null&&sellerTransactions.size()>0){
                 palpays.add(sellerTransactions.get(0).getExternaltransactionid());
-                *//*UsercontrollerEbayAccount u= iUsercontrollerEbayAccount.selectByEbayAccount(order.getSelleruserid());
+                /*UsercontrollerEbayAccount u= iUsercontrollerEbayAccount.selectByEbayAccount(order.getSelleruserid());
                 Map map =new HashMap();
                 map.put("paypalId",u.getId());
                 map.put("transactionID",sellerTransactions.get(0).getExternaltransactionid());
-                PaypalVO acc = payPalService.getTransactionDetails(map);*//*
+                PaypalVO acc = payPalService.getTransactionDetails(map);*/
                 Map map =new HashMap();
                 map.put("paypalId",1l);
                 map.put("transactionID","4RJ37607494399203");
@@ -378,8 +378,8 @@ public class GetmymessageController extends BaseAction{
         }else{
             modelMap.put("flag","false");
         }
-       *//* modelMap.put("messages",messages);
-        modelMap.put("messageID",messages.get(0).getMessageid());*//*
+       /* modelMap.put("messages",messages);
+        modelMap.put("messageID",messages.get(0).getMessageid());*/
         modelMap.put("addMessage1",addMessages1);
         modelMap.put("orders",lists);
         String rootpath=request.getContextPath();
@@ -392,7 +392,7 @@ public class GetmymessageController extends BaseAction{
 
         modelMap.put("accs",accs);
         return forword("orders/order/viewOrderGetOrders",modelMap);
-    }*/
+    }
    /**
      * 查看消息
      * @param request
@@ -419,7 +419,7 @@ public class GetmymessageController extends BaseAction{
 
         dev.setApiCallName(APINameStatic.GetMyMessages);
         request.getSession().setAttribute("dveId", dev);
-        List<UsercontrollerEbayAccountExtend> ebays = userInfoService.getEbayAccountForCurrUser();
+        List<UsercontrollerEbayAccountExtend> ebays = userInfoService.getEbayAccountForCurrUser(new HashMap(),Page.newAOnePage());
         Map m=new HashMap();
         m.put("messageID",messageID);
         m.put("ebays",ebays);
@@ -629,7 +629,7 @@ public class GetmymessageController extends BaseAction{
     @ResponseBody
     public ModelAndView GetmymessageEbay(@ModelAttribute( "initSomeParmMap" )ModelMap modelMap){
       /*  Asserts.assertTrue(commonParmVO.getId() != null, "参数获取失败！");*/
-        List<UsercontrollerEbayAccountExtend> ebays = userInfoService.getEbayAccountForCurrUser();
+        List<UsercontrollerEbayAccountExtend> ebays = userInfoService.getEbayAccountForCurrUser(new HashMap(),Page.newAOnePage());
         modelMap.put("ebays",ebays);
         return forword("MessageGetmymessage/GetmymessageEbay",modelMap);
     }

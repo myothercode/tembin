@@ -3,7 +3,7 @@ function adddiscountpriceinfo(){
     discountPriceInfo= $.dialog({title: '新增折扣选项',
         content: 'url:/xsddWeb/addDiscountPriceInfo.do',
         icon: 'succeed',
-        width:600,
+        width:800,
         lock:true
     });
 }
@@ -12,7 +12,7 @@ function editdiscountpriceinfo(id){
     discountPriceInfo= $.dialog({title: '编辑折扣选项',
         content: 'url:/xsddWeb/editDiscountPriceInfo.do?id='+id,
         icon: 'succeed',
-        width:600,
+        width:800,
         lock:true
     });
 }
@@ -51,7 +51,7 @@ function editdiscountpriceinfoSelect(id){
     discountPriceInfo= $.dialog({title: '编辑折扣选项',
         content: 'url:/xsddWeb/editDiscountPriceInfo.do?id='+id+'&&type=01',
         icon: 'succeed',
-        width:600,
+        width:800,
         lock:true
     });
 }

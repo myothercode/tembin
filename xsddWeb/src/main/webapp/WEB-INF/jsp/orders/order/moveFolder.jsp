@@ -32,14 +32,17 @@
                         [function(m,r){
                             alert(r);
                             var divs= W.document.getElementsByName("newbut");
-                            for(var v=5;v<=divs.length;v++){
+                            for(var v=5;v<divs.length;v++){
                                 var vv="#OrderGetOrdersListTable"+v;
-                                var table= W.document.getElementById(vv);
+                               /* var table= W.document.getElementById(vv);*/
                                 var me= W.document.getElementById("con_menu_"+v);
-                                me.style.display="block";
-                                W.refreshTable7(vv);
-                                me.style.display="none";
+                                if(me){
+                                    me.style.display="block";
+                                    W.refreshTable7(vv);
+                                    me.style.display="none";
+                                }
                             }
+                            W.setTab("menu",${table},${table1});
                             W.OrderGetOrders.close();
                             Base.token;
                         },

@@ -90,7 +90,7 @@
 
         </li>--%>
     </ul>
-</div><div class="foot_new">携宇科技版权所有</div>
+</div><div class="foot_new"></div>
 </div>
 </form>
 

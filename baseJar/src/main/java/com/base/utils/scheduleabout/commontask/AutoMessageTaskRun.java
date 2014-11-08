@@ -7,6 +7,7 @@ import com.base.sampleapixml.APINameStatic;
 import com.base.sampleapixml.BindAccountAPI;
 import com.base.utils.applicationcontext.ApplicationContextUtil;
 import com.base.utils.cache.DataDictionarySupport;
+import com.base.utils.cache.TempStoreDataSupport;
 import com.base.utils.common.CommAutowiredClass;
 import com.base.utils.scheduleabout.BaseScheduledClass;
 import com.base.utils.scheduleabout.MainTask;
@@ -21,7 +22,10 @@ import com.trading.service.*;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
-import java.util.*;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Created by Administrtor on 2014/8/29.
@@ -46,6 +50,7 @@ public class AutoMessageTaskRun extends BaseScheduledClass implements Scheduleda
                 Map<String,String> messageMap=autoSendMessage(order,token,d,"收到买家付款");
                 if("false".equals(messageMap.get("flag"))){
                     if("自动消息设置的时间没到到".equals(messageMap.get("message"))){
+                        TempStoreDataSupport.removeData("task_"+getScheduledType());
                         return;
                     }else {
                         SiteMessageService siteMessageService = (SiteMessageService) ApplicationContextUtil.getBean(SiteMessageService.class);
@@ -62,6 +67,7 @@ public class AutoMessageTaskRun extends BaseScheduledClass implements Scheduleda
                             taskMessageVO.setOrderAndSeller(order.getOrderid()+order.getSelleruserid());
                             siteMessageService.addSiteMessage(taskMessageVO);
                         }
+                        TempStoreDataSupport.removeData("task_"+getScheduledType());
                         return;
                     }
                 }
@@ -102,6 +108,7 @@ public class AutoMessageTaskRun extends BaseScheduledClass implements Scheduleda
                 Map<String,String> messageMap=autoSendMessage(order,token,d,"标记已发货");
                 if("false".equals(messageMap.get("flag"))){
                     if("自动消息设置的时间没到到".equals(messageMap.get("message"))){
+                        TempStoreDataSupport.removeData("task_"+getScheduledType());
                         return;
                     }else {
                         SiteMessageService siteMessageService = (SiteMessageService) ApplicationContextUtil.getBean(SiteMessageService.class);
@@ -118,6 +125,7 @@ public class AutoMessageTaskRun extends BaseScheduledClass implements Scheduleda
                             taskMessageVO.setOrderAndSeller(order.getOrderid()+order.getSelleruserid());
                             siteMessageService.addSiteMessage(taskMessageVO);
                         }
+                        TempStoreDataSupport.removeData("task_"+getScheduledType());
                         return;
                     }
                 }
@@ -260,8 +268,28 @@ public class AutoMessageTaskRun extends BaseScheduledClass implements Scheduleda
                                 }
                             }
                             String body=templates.get(0).getContent();
+                            body=body.replace("{Buyer_eBay_ID}",order.getBuyeruserid());
+                            body=body.replace("{Carrier}",order.getShippingcarrierused());
+                            body=body.replace("{eBay_Item#}",order.getItemid());
+                            body=body.replace("{eBay_Item_Title}",order.getTitle());
+                            body=body.replace("{Payment_Date}",order.getPaidtime()+"");
+                            body=body.replace("{Purchase_Quantity}",order.getQuantitypurchased());
+                            body=body.replace("{Received_Amount}",order.getAmountpaid());
+                            body=body.replace("{Seller_eBay_ID}",order.getSelleruserid());
+                            body=body.replace("{Seller_Email}",order.getSelleremail());
+                            body=body.replace("{Today}",new Date()+"");
+                            body=body.replace("{Track_Code}",order.getShipmenttrackingnumber());
                             String subject=templates.get(0).getName();
+                            //--测试环境
                             d.setApiCallName(APINameStatic.AddMemberMessageAAQToPartner);
+                            //--真实环境
+                          /*  d=new UsercontrollerDevAccountExtend();
+                            d.setApiDevName("5d70d647-b1e2-4c7c-a034-b343d58ca425");
+                            d.setApiAppName("sandpoin-23af-4f47-a304-242ffed6ff5b");
+                            d.setApiCertName("165cae7e-4264-4244-adff-e11c3aea204e");
+                            d.setApiCompatibilityLevel("883");
+                            d.setApiSiteid("0");
+                            d.setApiCallName(APINameStatic.AddMemberMessageAAQToPartner);*/
                             Map map=new HashMap();
                             messageMap.put("body",body);
                             messageMap.put("subject",subject);
@@ -272,7 +300,10 @@ public class AutoMessageTaskRun extends BaseScheduledClass implements Scheduleda
                             map.put("buyeruserid",order.getBuyeruserid());
                             String xml = BindAccountAPI.getAddMemberMessageAAQToPartner(map);
                             AddApiTask addApiTask = new AddApiTask();
-                            Map<String, String> resMap = addApiTask.exec(d, xml, commPars.apiUrl);
+                            //--测试环境
+                                Map<String, String> resMap = addApiTask.exec2(d, xml, commPars.apiUrl);
+                            //--真实环境
+                            /*Map<String, String> resMap = addApiTask.exec2(d, xml,"https://api.ebay.com/ws/api.dll");*/
                             String r1 = resMap.get("stat");
                             String res = resMap.get("message");
                             if ("fail".equalsIgnoreCase(r1)) {
@@ -309,6 +340,9 @@ public class AutoMessageTaskRun extends BaseScheduledClass implements Scheduleda
         if(i>30){
             return;
         }
+        String isRunging = TempStoreDataSupport.pullData("task_" + getScheduledType());
+        if(StringUtils.isNotEmpty(isRunging)){return;}
+        TempStoreDataSupport.pushData("task_" + getScheduledType(), "x");
         ITradingOrderGetOrders iTradingOrderGetOrders=(ITradingOrderGetOrders) ApplicationContextUtil.getBean(ITradingOrderGetOrders.class);
         List<TradingOrderGetOrders> paids= iTradingOrderGetOrders.selectOrderGetOrdersBySendPaidMessage();
         List<TradingOrderGetOrders> ships= iTradingOrderGetOrders.selectOrderGetOrdersBySendShipMessage();
@@ -321,6 +355,7 @@ public class AutoMessageTaskRun extends BaseScheduledClass implements Scheduleda
         try{
             sendAutoMessage(paids);
             sendAutoMessage1(ships);
+            TempStoreDataSupport.removeData("task_"+getScheduledType());
         }catch (Exception e){
             e.printStackTrace();
         }

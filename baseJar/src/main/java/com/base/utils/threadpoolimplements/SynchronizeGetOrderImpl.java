@@ -90,8 +90,8 @@ public class SynchronizeGetOrderImpl implements ThreadPoolBaseInterFace {
             Map map=new HashMap();
             Date startTime2= DateUtils.subDays(new Date(), 9);
             Date endTime= DateUtils.addDays(startTime2, 9);
-           /* Date startTime2= DateUtils.subDays(new Date(),70);
-            Date endTime= DateUtils.addDays(startTime2,70);*/
+            /*Date startTime2= DateUtils.subDays(new Date(),90);
+            Date endTime= DateUtils.addDays(startTime2,90);*/
             Date end1= com.base.utils.common.DateUtils.turnToDateEnd(endTime);
             String start= DateUtils.DateToString(startTime2);
             String end=DateUtils.DateToString(end1);
@@ -115,8 +115,10 @@ public class SynchronizeGetOrderImpl implements ThreadPoolBaseInterFace {
                     if (i != 1) {
                         map.put("page", i + "");
                         String xml = BindAccountAPI.getGetOrders(map);
+                        //--测试环境
                         Map<String, String>  resMap = addApiTask.exec(d, xml, apiUrl);
-                       /* Map<String, String>  resMap = addApiTask.exec(d, xml, "https://api.ebay.com/ws/api.dll");*/
+                        //--真实环境
+                      /*  Map<String, String>  resMap = addApiTask.exec(d, xml, "https://api.ebay.com/ws/api.dll");*/
                    /* resMap = addApiTask.exec(d, xml, "https://api.ebay.com/ws/api.dll");*/
                         String r1 = resMap.get("stat");
                         res = resMap.get("message");
@@ -204,6 +206,7 @@ public class SynchronizeGetOrderImpl implements ThreadPoolBaseInterFace {
                                 UsercontrollerEbayAccount ebay=iUsercontrollerEbayAccount.selectByEbayAccount(order.getSelleruserid());
                                 for(TradingAutoMessage partner:partners){
                                     if(partner.getCreateUser()==ebay.getUserId()){
+                                   /* if(partner.getCreateUser()==1){*/
                                         int day=partner.getDay();
                                         int hour=partner.getHour();
                                         Date date=order.getLastmodifiedtime();

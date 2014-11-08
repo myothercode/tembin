@@ -2,13 +2,14 @@ package com.base.utils.scheduleabout.commontask;
 
 import com.base.database.task.model.ListingDataTask;
 import com.base.database.trading.mapper.TradingListingDataMapper;
-import com.base.database.trading.mapper.UsercontrollerEbayAccountMapper;
-import com.base.database.trading.model.*;
+import com.base.database.trading.model.TradingListingData;
+import com.base.database.trading.model.TradingListingDataExample;
+import com.base.database.trading.model.TradingListingSuccess;
 import com.base.domains.userinfo.UsercontrollerDevAccountExtend;
 import com.base.sampleapixml.APINameStatic;
 import com.base.userinfo.service.UserInfoService;
 import com.base.utils.applicationcontext.ApplicationContextUtil;
-import com.base.utils.cache.DataDictionarySupport;
+import com.base.utils.cache.TempStoreDataSupport;
 import com.base.utils.common.CommAutowiredClass;
 import com.base.utils.common.DateUtils;
 import com.base.utils.scheduleabout.BaseScheduledClass;
@@ -17,20 +18,23 @@ import com.base.utils.scheduleabout.Scheduledable;
 import com.base.utils.threadpool.AddApiTask;
 import com.base.utils.xmlutils.SamplePaseXml;
 import com.task.service.IListingDataTask;
-import com.task.service.impl.ListingDataTaskImpl;
+import com.trading.service.ITradingListingSuccess;
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.dom4j.Document;
-import org.dom4j.DocumentException;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Created by Administrtor on 2014/8/29.
- * 在线商品每晚执行，定时任务
+ * 在线商品每2分钟执行，定时任务
  */
 public class ListingItemDataTimerTaskRun extends BaseScheduledClass implements Scheduledable {
     static Logger logger = Logger.getLogger(ListingItemDataTimerTaskRun.class);
@@ -59,6 +63,7 @@ public class ListingItemDataTimerTaskRun extends BaseScheduledClass implements S
         UserInfoService userInfoService = (UserInfoService) ApplicationContextUtil.getBean(UserInfoService.class);
         TradingListingDataMapper tldm = (TradingListingDataMapper) ApplicationContextUtil.getBean(TradingListingDataMapper.class);
         CommAutowiredClass commPars = (CommAutowiredClass) ApplicationContextUtil.getBean(CommAutowiredClass.class);//获取注入的参数
+        ITradingListingSuccess iTradingListingSuccess = (ITradingListingSuccess) ApplicationContextUtil.getBean(ITradingListingSuccess.class);
         SimpleDateFormat dft = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         Date beginDate = new Date();
         Calendar date = Calendar.getInstance();
@@ -110,6 +115,19 @@ public class ListingItemDataTimerTaskRun extends BaseScheduledClass implements S
                             }else{
                                 tldm.insertSelective(td);
                             }
+                            List<TradingListingSuccess> litls = iTradingListingSuccess.selectByItemid(td.getItemId());
+                            if(litls==null||litls.size()==0){
+                                TradingListingSuccess tls = new TradingListingSuccess();
+                                tls.setItemId(td.getItemId());
+                                tls.setStartDate(td.getStarttime());
+                                tls.setEndDate(td.getEndtime());
+                                iTradingListingSuccess.save(tls);
+                            }else{
+                                TradingListingSuccess tls = litls.get(0);
+                                tls.setStartDate(td.getStarttime());
+                                tls.setEndDate(td.getEndtime());
+                                iTradingListingSuccess.save(tls);
+                            }
                         }
                     }
                 }
@@ -124,6 +142,9 @@ public class ListingItemDataTimerTaskRun extends BaseScheduledClass implements S
     }
     @Override
     public void run() {
+        String isRunging = TempStoreDataSupport.pullData("task_"+getScheduledType());
+        if(StringUtils.isNotEmpty(isRunging)){return;}
+        TempStoreDataSupport.pushData("task_" + getScheduledType(), "x");
         IListingDataTask iListingDataTask = (IListingDataTask) ApplicationContextUtil.getBean(IListingDataTask.class);
         List<ListingDataTask> lildt = iListingDataTask.selectByTimerTaskflag();
         if(lildt.size()>2){
@@ -136,6 +157,7 @@ public class ListingItemDataTimerTaskRun extends BaseScheduledClass implements S
             ldt.setCreateDate(new Date());
             iListingDataTask.saveListDataTask(ldt);
         }
+        TempStoreDataSupport.removeData("task_"+getScheduledType());
     }
 
     /**只从集合记录取多少条*/

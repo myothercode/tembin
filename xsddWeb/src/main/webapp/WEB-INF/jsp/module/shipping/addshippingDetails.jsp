@@ -51,7 +51,7 @@
             var intertable = "";
             intertable +=' <table name="interMoreTable">';
             intertable +=' <tr> ';
-            intertable +=' <td colspan="2">第'+count+'运输</td> ';
+            intertable +=' <td colspan="2" style="padding-left: 100px;">第'+count+'运输</td> ';
             intertable +=' </tr> ';
             intertable +=' <tr> ';
             intertable +=' <td align="right" width="200">运输方式</td> ';
@@ -175,7 +175,7 @@
             var tables = "";
             tables +=' <table name="moreTable">';
             tables +=' <tr> ';
-            tables +=' <td colspan="2">第'+count+'运输</td> ';
+            tables +=' <td colspan="2" style="padding-left: 100px;">第'+count+'运输</td> ';
             tables +=' </tr> ';
             tables +=' <tr> ';
             tables +=' <td align="right"  width="200">运输方式</td> ';
@@ -408,6 +408,7 @@
     </script>
 </head>
 <body>
+<br/>
 <form id="form">
     <table width="100%">
         <tr>
@@ -543,7 +544,7 @@
         </tr>
         <tr>
             <td colspan="2" style="padding-left: 70px;">
-                <table>
+                <table style="margin-left: 100px;">
                     <tr>
                         <td align="right">处理时间</td>
                         <td>

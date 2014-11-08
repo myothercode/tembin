@@ -157,6 +157,9 @@
     </script>
 </head>
 <body>
+<div class="modal-header">
+    <h4 class="modal-title">表格调价列表</h4>
+</div>
 <div class="newsj_left" style="padding: 10px;">
 <%--    <span class="newusa_ici_del" onclick="addTablePrice(this)">新增调价</span>--%>
     <span class="newusa_ici_del" onclick="downloadTemplate(this)">下载模板</span>

@@ -71,8 +71,13 @@
             }
             var productname = $("input[type='radio'][name='information']:checked").attr("productname");
             var productsku = $("input[type='radio'][name='information']:checked").attr("productsku");
+            W._sku = productsku;
+            W.document.getElementById('itemName').value=productname;
+            W.document.getElementById('sku').value=productsku;
+            W.isShowPicLink();
+            initDraug();
             var ss = new Array() ;
-            var ahref = W.document.getElementsByTagName("a");
+            var ahref = $(W.document.getElementById("showPics")).find("a");
             var j=0;
             for(var i = 0;i<ahref.length;i++){
                 if(ahref[i].id!=null&&ahref[i].id!=""){
@@ -85,21 +90,16 @@
                     urll,
                     {},
                     [function (m, r) {
-
                         for(var js = 0;js<ss.length;js++){
                             var str = '';
                             for(var i =0;i< r.length;i++){
                                 str += '<li><div style="position:relative"><input type="hidden" name="PictureDetails_'+ ss[js]+'.PictureURL" value="' + r[i].attrvalue + '">' +
-                                        '<img src=' + r[i].attrvalue + ' height="100%" width="100%" />' +
-                                        '<a onclick="deletePic(this)" style="position: absolute;top: -45px;right: -15px;" href=\'javascript:void(0)\'>&times;</a></div>';
+                                        '<img src=' + r[i].attrvalue + ' height="80px" width="80px" />' +
+                                        '<div style="text-align: right;background-color: dimgrey;"><img src="'+path+'/img/newpic_ico.png" onclick="removeThis(this)"></div></div>';
                                 str += "</li>";
                             }
                             $(W.document.getElementById("picture_"+ss[js])).html(str);
                         }
-                        initDraug();
-                        W._sku = productsku;
-                        W.document.getElementById('itemName').value=productname;
-                        W.document.getElementById('sku').value=productsku;
                         W.Porduct.close();
                     },
                         function (m, r) {

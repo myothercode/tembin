@@ -38,7 +38,7 @@
 <script type="text/javascript" src=<c:url value ="/js/base.js" /> ></script>
 <script type="text/javascript" src=<c:url value ="/js/util.js" /> ></script>
 <%--<script type="text/javascript" src=<c:url value ="/js/lhgdialog/lhgdialog.min.js" /> ></script>--%>
-<script type="text/javascript" src=<c:url value ="/js/lhgdialog/lhgdialog.js" /> ></script>
+<script type="text/javascript" src=<c:url value ="/js/lhgdialog/lhgdialog.js?skin=idialog" /> ></script>
 <script type="text/javascript" src=<c:url value ="/js/My97DatePicker/WdatePicker.js" /> ></script>
 <script type="text/javascript" src=<c:url value ="/js/jquery-blockui/jquery.blockUI.min.js" /> ></script>
 <script type="text/javascript" src=<c:url value ="/js/table/jquery.table.js" /> ></script>

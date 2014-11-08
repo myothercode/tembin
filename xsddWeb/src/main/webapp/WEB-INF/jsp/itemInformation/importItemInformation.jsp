@@ -29,11 +29,29 @@
     </script>
 </head>
 <body>
+<br/><br/>
 <a href="<c:url value ="/upload/upload.xls"/> "><font color="blue">请先下载excel模板</font></a>
 <input id="flag" type="hidden" name="flag" value="${flag}">
 <form id="improtForm" action="/information/ajax/importInformation.do" method="post" enctype="multipart/form-data" >
     <input type="file" name="file"/>
     <input type="submit" value="导入" onclick="upload(this.form)">
 </form>
+<%--<div class="modal-body">
+    <form class="form-horizontal" role="form">
+        <table width="100%" border="0" style="margin-left:40px;">
+            <tbody><tr>
+                <td width="16%" height="28" align="right"></td>
+                <td width="41%" height="28"><input type="button" value="选择文件" size="30" onclick="f.click()" class="net_put_2">
+                    <input type="file" id="f" onchange="this.form.submit()" name="f" style="position:absolute; filter:alpha(opacity=0); opacity:0; width:30px; " size="1"> 未选择任何文件 <button type="button" class="net_put">导入</button></td>
+                <td width="43%" height="28"></td>
+            </tr>
+            <tr>
+                <td height="28" align="right">&nbsp;</td>
+                <td height="28" style=" padding-top:22px;"><button type="button" class="net_put">保存</button><button type="button" class="net_put_1" data-dismiss="modal">关闭</button></td>
+                <td height="28">&nbsp;</td>
+            </tr>
+            </tbody></table>
+
+    </form></div>--%>
 </body>
 </html>

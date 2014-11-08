@@ -22,23 +22,30 @@
     <link rel="stylesheet" type="text/css" href="<c:url value ="/css/compiled/layout.css"/> "/>
     <link rel="stylesheet" type="text/css" href="<c:url value ="/css/compiled/elements.css"/>"/>
     <link rel="stylesheet" type="text/css" href="<c:url value ="/css/compiled/icons.css"/>"/>
+    <link rel="stylesheet" type="text/css" href="<c:url value ="/css/basecss/base.css" />"/>
     <!-- libraries -->
     <link href="<c:url value ="/css/lib/font-awesome.css"/>" type="text/css" rel="stylesheet" />
     <!-- this page specific styles -->
     <link rel="stylesheet" href="<c:url value ="/css/compiled/gallery.css"/>" type="text/css" media="screen" />
 
-
     <script type="text/javascript" src=<c:url value ="/js/jquery/jquery-1.9.0.min.js" /> ></script>
     <script type="text/javascript" src=<c:url value ="/js/jquery/jquery-migrate-1.2.1.min.js" /> ></script>
+    <script type="text/javascript" src=<c:url value ="/js/jquery/jquery.cookie.js" /> ></script>
     <script src="<c:url value ="/js/bootstrap.min.js"/>"></script>
     <script src="<c:url value ="/js/theme.js"/>"></script>
+    <script src="<c:url value ="/js/indexpagejs/feedBackReport.js"/>"></script>
+    <script src="<c:url value ="/js/indexpagejs/itemReport.js"/>"></script>
+    <script type="text/javascript" src=<c:url value ="/js/base.js" /> ></script>
+    <script type="text/javascript" src=<c:url value ="/js/util.js" /> ></script>
+    <script type="text/javascript" src=<c:url value ="/js/jquery-blockui/jquery.blockUI.min.js" /> ></script>
     <script src="<c:url value ="/js/indexpagejs/jquery-ui-1.10.2.custom.min.js"/>"></script>
-    <script src="<c:url value ="/js/indexpagejs/jquery.knob.js"/>"></script>
+    <%--<script src="<c:url value ="/js/indexpagejs/jquery.knob.js"/>"></script>
     <script src="<c:url value ="/js/indexpagejs/jquery.flot.js"/>"></script>
     <script src="<c:url value ="/js/indexpagejs/jquery.flot.stack.js"/>"></script>
-    <script src="<c:url value ="/js/indexpagejs/jquery.flot.resize.js"/>"></script>
+    <script src="<c:url value ="/js/indexpagejs/jquery.flot.resize.js"/>"></script>--%>
     <script src="<c:url value ="/js/indexpagejs/highcharts.js"/>"></script>
     <script src="<c:url value ="/js/indexpagejs/exporting.js"/>"></script>
+    <script type="text/javascript" src=<c:url value ="/js/table/jquery.table.js" /> ></script>
     <script src="<c:url value ="/js/indexpagejs/indexMain.js"/>"></script>
 
     <style type="text/css">
@@ -46,21 +53,34 @@
             background-color: #ffffff;
         }
     </style>
+    <script type="text/javascript">
+        function selectTime(index,date){
+            var as1=$("span[name=time]");
+            for(var i=0;i<as1.length;i++){
+                if(i==index){
+                    $(as1[i]).attr("class","newusa_ici");
+                }else{
+                    $(as1[i]).attr("class","newusa_ici_1");
+                }
+            }
+            getCharData(doKnobs,_getOrderCountData,{"time":date});//单量走势
+        }
+    </script>
 </head>
 <body>
 <div>
 <div class="new_all">
-<div class="here">当前店铺： <img src="img/home_logo_user.png" width="160" height="34"></div>
+<div class="here">当前店铺： EBAY<%--<img src="img/home_logo_user.png" width="160" height="34">--%></div>
 <div class="a_bal"></div>
 <div class=Contentbox>
 <div class="new_index">
-    <li style="background:#EE6E69;margin-right:2%;">
-        <span>订单代办事项</span>
-        分配失败 ( 3 )
-    </li>
+    <a href="<c:url value ="/message/MessageGetmymessageList.do"/>"><li style="background:#EE6E69;margin-right:2%;">
+        <span>CASE消息<%--订单代办事项--%></span>
+        发送失败( ${caseMessages} )<%--分配失败 ( 3 )--%>
+    </li></a>
     <li style="background:#48BCFF;margin-right:2%;">
-        <span>订单代办事项</span>
-        分配失败 ( 3 )
+        <span>EBAY消息<%--订单代办事项--%></span>
+        发送失败( ${ebayMessages} )<%--分配失败 ( 3 )--%>
     </li>
     <li style="background:#6ABF0E">
         <span>订单代办事项</span>
@@ -69,47 +89,12 @@
 </div>
 <div class="a_bal"></div>
 <div class="new_index_2">
-<ul class="pbd" style="margin-right:2%">
-    <h1>信用评价</h1>
-    <table width="100%" border="0">
-        <tr style="font-size:14px;">
-            <td height="30" bgcolor="#F7F7F7">&nbsp;</td>
-            <td width="10%" height="30" align="center" bgcolor="#F7F7F7"><strong>今天</strong></td>
-            <td width="10%" height="30" align="center" bgcolor="#F7F7F7"><strong> 昨天</strong></td>
-            <td width="10%" height="30" align="center" bgcolor="#F7F7F7"><strong> 本周</strong></td>
-            <td width="10%" height="30" align="center" bgcolor="#F7F7F7"><strong> 上周               </strong></td>
-            <td width="10%" height="30" align="center" bgcolor="#F7F7F7"><strong>本月               </strong></td>
-            <td width="10%" height="30" align="center" bgcolor="#F7F7F7"><strong>上月</strong></td>
-        </tr>
-        <tr style="color:#6B9A0F">
-            <td height="40" valign="middle"><img src="img/new_one_1.png" width="24" height="24"> 正评<br /></td>
-            <td height="40" align="center">3</td>
-            <td height="40" align="center">33</td>
-            <td height="40" align="center">33</td>
-            <td height="40" align="center">33</td>
-            <td height="40" align="center">33</td>
-            <td height="40" align="center">33</td>
-        </tr>
-        <tr style="color:#FF7D00">
-            <td height="40" valign="middle"><img src="img/new_one_2.png" width="24" height="24"> 中评</td>
-            <td height="40" align="center">3</td>
-            <td height="40" align="center">3</td>
-            <td height="40" align="center">3</td>
-            <td height="40" align="center">3</td>
-            <td height="40" align="center">33</td>
-            <td height="40" align="center">33</td>
-        </tr>
-        <tr style="color:#FF0000">
-            <td height="40" valign="middle"><img src="img/new_one_3.png" width="24" height="24"> 负评</td>
-            <td height="40" align="center">3</td>
-            <td height="40" align="center">3</td>
-            <td height="40" align="center">3</td>
-            <td height="40" align="center">3</td>
-            <td height="40" align="center">33</td>
-            <td height="40" align="center">33</td>
-        </tr>
-    </table>
-</ul>
+    <ul class="pbd" style="margin-right:2%">
+        <h1><img src="img/ebay_index.png" width="40" height="17"> 账户</h1>
+        <div style="width: 100%" id="ebay_indexdiv"></div>
+    </ul>
+
+
 <ul>
     <h1>Paypal <div class="ui-select" style="width:110px; margin-top:-5px; line-height:14px;">
         <select>
@@ -117,92 +102,14 @@
             <option value="AK">所有帐户</option>
         </select>
     </div></h1>
-    <table width="100%" border="0">
-        <tr style="font-size:14px;">
-            <td bgcolor="#F7F7F7">&nbsp;</td>
-            <td width="13%" align="center" bgcolor="#F7F7F7"><strong>今天</strong></td>
-            <td width="13%" align="center" bgcolor="#F7F7F7"><strong> 昨天</strong></td>
-            <td width="13%" align="center" bgcolor="#F7F7F7"><strong> 本周</strong></td>
-            <td width="13%" align="center" bgcolor="#F7F7F7"><strong> 上周               </strong></td>
-            <td width="13%" align="center" bgcolor="#F7F7F7"><strong>本月               </strong></td>
-            <td width="13%" align="center" bgcolor="#F7F7F7"><strong>上月</strong></td>
-        </tr>
-        <tr>
-            <td valign="middle"><strong>Paypal收款</strong><br /></td>
-            <td align="center">140.23</td>
-            <td align="center">3307.92</td>
-            <td align="center">8533.89</td>
-            <td align="center">8533.89</td>
-            <td align="center">8533.89</td>
-            <td align="center">8533.89</td>
-        </tr>
-        <tr>
-            <td valign="middle"><strong>Paypal收款</strong><br /></td>
-            <td align="center">140.23</td>
-            <td align="center">3307.92</td>
-            <td align="center">8533.89</td>
-            <td align="center">8533.89</td>
-            <td align="center">8533.89</td>
-            <td align="center">8533.89</td>
-        </tr>
-        <tr>
-            <td valign="middle"><strong>Paypal收款</strong><br /></td>
-            <td align="center">140.23</td>
-            <td align="center">3307.92</td>
-            <td align="center">8533.89</td>
-            <td align="center">8533.89</td>
-            <td align="center">8533.89</td>
-            <td align="center">8533.89</td>
-        </tr>
-        <tr>
-            <td valign="middle"><strong>Paypal收款</strong><br /></td>
-            <td align="center">140.23</td>
-            <td align="center">3307.92</td>
-            <td align="center">8533.89</td>
-            <td align="center">8533.89</td>
-            <td align="center">8533.89</td>
-            <td align="center">8533.89</td>
-        </tr>
-    </table>
+    <div id="indexPayPal"></div>
+
 </ul>
+
 <ul class="pbd" style="margin-right:2%">
-    <h1><img src="img/ebay_index.png" width="40" height="17"> 账户</h1>
-    <table width="100%" border="0">
-        <tr style="font-size:14px;">
-            <td width="25%" bgcolor="#F7F7F7"><strong>eBay帐户</strong></td>
-            <td width="25%" align="center" bgcolor="#F7F7F7"><strong>信用评价</strong></td>
-            <td width="25%" align="center" bgcolor="#F7F7F7"><strong>秘钥有效期</strong></td>
-            <td width="25%" align="center" bgcolor="#F7F7F7"><strong> eBay状态</strong></td>
-        </tr>
-        <tr>
-            <td valign="middle">rose<br /></td>
-            <td align="center">100</td>
-            <td align="center">09/15/2014 19:14</td>
-            <td align="center">有效</td>
-        </tr>
-        <tr>
-            <td valign="middle">rose<br /></td>
-            <td align="center">100</td>
-            <td align="center">09/15/2014 19:14</td>
-            <td align="center">有效</td>
-        </tr>
-        <tr>
-            <td valign="middle">rose<br /></td>
-            <td align="center">100</td>
-            <td align="center">09/15/2014 19:14</td>
-            <td align="center">有效</td>
-        </tr>
-        <tr>
-            <td valign="middle">rose<br /></td>
-            <td align="center">100</td>
-            <td align="center">09/15/2014 19:14</td>
-            <td align="center">有效</td>
-        </tr>
-    </table>
-</ul>
-<ul>
     <h1>刊登</h1>
-    <table width="100%" border="0">
+    <div id="itemReportTable"></div>
+    <%--<table width="100%" border="0">
         <tr style="font-size:14px;">
             <td bgcolor="#F7F7F7"><strong>（拍卖/固价）</strong></td>
             <td width="12%" align="center" bgcolor="#F7F7F7"><strong>今天</strong></td>
@@ -266,12 +173,16 @@
             <td align="center">8533</td>
             <td align="center">8533</td>
         </tr>
-    </table>
+    </table>--%>
 </ul>
+    <ul >
+        <h1>信用评价</h1>
+        <div id="feedBackReportTable"></div>
+    </ul>
 <h1>单量走势</h1>
 <div class="a_bal"></div>
-<li><span class="newusa_iv">选择账户</span><span class="newusa_ici">全部</span><a href="#"><span class="newusa_ici_1">TO(eBay)</span></a><a href="#"><span class="newusa_ici_1">TO(eBay)</span></a></li>
-<li><span class="newusa_iv">选择时间</span><span class="newusa_ici">15天内</span><a href="#"><span class="newusa_ici_1">30天内</span></a><a href="#"><span class="newusa_ici_1">30天内</span></a></li>
+<li><span class="newusa_iv">选择账户</span><a href="#"><span class="newusa_ici">全部</span></a><a href="#"><span class="newusa_ici_1">TO(eBay)</span></a><a href="#"><span class="newusa_ici_1">TO(eBay)</span></a></li>
+<li><span class="newusa_iv">选择时间</span><a href="javascript:#"><span class="newusa_ici" name="time" onclick="selectTime(0,'15')">15天内</span></a><a href="javascript:#"><span class="newusa_ici_1" name="time" onclick="selectTime(1,'30')">30天内</span></a><a  href="javascript:#" ><span name="time" onclick="selectTime(2,'1')" class="newusa_ici_1">1年内</span></a></li>
 <div class="ico_list">
     <div id="statsChart" style="width: 100%; height: 100%; "></div>
 </div>

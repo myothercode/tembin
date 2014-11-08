@@ -350,6 +350,7 @@ function saveData(objs,name) {
         $("#ListingMessage").val("0");
     }
     if(!$("#form").validationEngine("validate")){
+        $('#form').validationEngine('updatePromptsPosition')
         return;
     }
     if(($("#showPics").find("img").length+$("#picMore").find("img").length/2)>8){

@@ -8,6 +8,7 @@ import com.base.database.trading.model.TradingOrderAddMemberMessageAAQToPartner;
 import com.base.domains.userinfo.UsercontrollerDevAccountExtend;
 import com.base.sampleapixml.APINameStatic;
 import com.base.utils.applicationcontext.ApplicationContextUtil;
+import com.base.utils.cache.TempStoreDataSupport;
 import com.base.utils.scheduleabout.BaseScheduledClass;
 import com.base.utils.scheduleabout.MainTask;
 import com.base.utils.scheduleabout.Scheduledable;
@@ -19,6 +20,7 @@ import com.sitemessage.service.SiteMessageService;
 import com.sitemessage.service.SiteMessageStatic;
 import com.task.service.ITaskFeedBack;
 import com.trading.service.*;
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.dom4j.Element;
 
@@ -70,29 +72,35 @@ public class SynchronizeFeedBackTimerTaskRun extends BaseScheduledClass implemen
                             if(partners.size()==0&&"Positive".equals(feedBackDetail.getCommenttype())){
                                 List<PublicSitemessage> list1=siteMessageService.selectPublicSitemessageByMessage("synchronize_feed_back_timer_FAIL", "评价定时任务:没有(收到买家的正评)自动消息"+taskFeedBack.getEbayname());
                                 if(list1!=null&&list1.size()>0){
+                                    TempStoreDataSupport.removeData("task_"+getScheduledType());
                                     return;
                                 }
                                 taskMessageVO.setMessageContext("没有对应的自动消息,"+taskFeedBack.getEbayname()+"请先创建(收到买家的正评)自动消息");
                                 taskMessageVO.setOrderAndSeller("评价定时任务:没有(收到买家的正评)自动消息"+taskFeedBack.getEbayname());
                                 siteMessageService.addSiteMessage(taskMessageVO);
+                                TempStoreDataSupport.removeData("task_"+getScheduledType());
                                 return;
                             }else if(partners.size()==0&&"Neutral".equals(feedBackDetail.getCommenttype())){
                                 List<PublicSitemessage> list1=siteMessageService.selectPublicSitemessageByMessage("synchronize_feed_back_timer_FAIL", "评价定时任务:没有(收到买家的中评)自动消息"+taskFeedBack.getEbayname());
                                 if(list1!=null&&list1.size()>0){
+                                    TempStoreDataSupport.removeData("task_"+getScheduledType());
                                     return;
                                 }
                                 taskMessageVO.setMessageContext("没有对应的自动消息,"+taskFeedBack.getEbayname()+"请先创建(收到买家的中评)自动消息");
                                 taskMessageVO.setOrderAndSeller("评价定时任务:没有(收到买家的中评)自动消息"+taskFeedBack.getEbayname());
                                 siteMessageService.addSiteMessage(taskMessageVO);
+                                TempStoreDataSupport.removeData("task_"+getScheduledType());
                                 return;
                             }else if(partners.size()==0&&"Negative".equals(feedBackDetail.getCommenttype())){
                                 List<PublicSitemessage> list1=siteMessageService.selectPublicSitemessageByMessage("synchronize_feed_back_timer_FAIL", "评价定时任务:没有(收到买家的负评)自动消息"+taskFeedBack.getEbayname());
                                 if(list1!=null&&list1.size()>0){
+                                    TempStoreDataSupport.removeData("task_"+getScheduledType());
                                     return;
                                 }
                                 taskMessageVO.setMessageContext("没有对应的自动消息,"+taskFeedBack.getEbayname()+"请先创建(收到买家的负评)自动消息");
                                 taskMessageVO.setOrderAndSeller("评价定时任务:没有(收到买家的负评)自动消息"+taskFeedBack.getEbayname());
                                 siteMessageService.addSiteMessage(taskMessageVO);
+                                TempStoreDataSupport.removeData("task_"+getScheduledType());
                                 return;
                             }
                             for(TradingAutoMessage partner:partners){
@@ -120,6 +128,7 @@ public class SynchronizeFeedBackTimerTaskRun extends BaseScheduledClass implemen
                 }else{
                     List<PublicSitemessage> list1=siteMessageService.selectPublicSitemessageByMessage("synchronize_feed_back_timer_FAIL", "评价定时任务:" + taskFeedBack.getId());
                     if(list1!=null&&list1.size()>0){
+                        TempStoreDataSupport.removeData("task_"+getScheduledType());
                         return;
                     }
                     TaskMessageVO taskMessageVO = new TaskMessageVO();
@@ -130,6 +139,7 @@ public class SynchronizeFeedBackTimerTaskRun extends BaseScheduledClass implemen
                     taskMessageVO.setMessageFrom("system");
                     taskMessageVO.setOrderAndSeller("评价定时任务:"+taskFeedBack.getId());
                     siteMessageService.addSiteMessage(taskMessageVO);
+                    TempStoreDataSupport.removeData("task_"+getScheduledType());
                     return;
                 }
             }
@@ -177,7 +187,7 @@ public class SynchronizeFeedBackTimerTaskRun extends BaseScheduledClass implemen
         d.setApiSiteid("0");
         d.setApiCallName(APINameStatic.GetFeedbackRequest);
         AddApiTask addApiTask = new AddApiTask();
-        Map<String, String> resMap= addApiTask.exec(d, colStr, "https://api.ebay.com/ws/api.dll");
+        Map<String, String> resMap= addApiTask.exec2(d, colStr, "https://api.ebay.com/ws/api.dll");
         String res=resMap.get("message");
         return res;
     }
@@ -187,12 +197,18 @@ public class SynchronizeFeedBackTimerTaskRun extends BaseScheduledClass implemen
         if(i>30){
             return;
         }
+
+        String isRunging = TempStoreDataSupport.pullData("task_"+getScheduledType());
+        if(StringUtils.isNotEmpty(isRunging)){return;}
+        TempStoreDataSupport.pushData("task_" + getScheduledType(), "x");
+
         ITaskFeedBack iTaskFeedBack = (ITaskFeedBack) ApplicationContextUtil.getBean(ITaskFeedBack.class);
         List<TaskFeedBack> feedBacks=iTaskFeedBack.selectTaskFeedBackByFlagIsFalseOrderBysaveTime();
         if(feedBacks.size()>2){
             feedBacks=filterLimitList(feedBacks);
         }
         synchronizeFeedBack(feedBacks);
+        TempStoreDataSupport.removeData("task_"+getScheduledType());
     }
 
     /**只从集合记录取多少条*/

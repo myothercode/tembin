@@ -8,8 +8,6 @@ import com.base.sampleapixml.APINameStatic;
 import com.base.sampleapixml.BindAccountAPI;
 import com.base.sampleapixml.GetOrderItemAPI;
 import com.base.sampleapixml.GetOrdersAPI;
-import com.base.utils.applicationcontext.ApplicationContextUtil;
-import com.base.utils.common.CommAutowiredClass;
 import com.base.utils.threadpool.AddApiTask;
 import com.base.utils.threadpool.TaskMessageVO;
 import com.base.utils.xmlutils.SamplePaseXml;
@@ -21,6 +19,7 @@ import com.trading.service.*;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -36,6 +35,8 @@ import java.util.Map;
 @Transactional(rollbackFor = Exception.class)
 public class ScheduleGetTimerOrdersImpl implements IScheduleGetTimerOrders {
     static Logger logger = Logger.getLogger(ScheduleGetTimerOrdersImpl.class);
+    @Value("${EBAY.API.URL}")
+    private String apiUrl;
     @Autowired
     private SiteMessageService siteMessageService;
     @Autowired
@@ -84,9 +85,10 @@ public class ScheduleGetTimerOrdersImpl implements IScheduleGetTimerOrders {
     private ITaskGetOrders iTaskGetOrders;
 
 
+
     @Override
     public void synchronizeOrders(List<TaskGetOrders> taskGetOrders) {
-        CommAutowiredClass commPars = (CommAutowiredClass) ApplicationContextUtil.getBean(CommAutowiredClass.class);
+        /*CommAutowiredClass commPars = (CommAutowiredClass) ApplicationContextUtil.getBean(CommAutowiredClass.class);*/
         try{
             for(TaskGetOrders taskGetOrder:taskGetOrders){
                 UsercontrollerDevAccountExtend d = new UsercontrollerDevAccountExtend();//开发者帐号id
@@ -99,7 +101,7 @@ public class ScheduleGetTimerOrdersImpl implements IScheduleGetTimerOrders {
                 map.put("page","1");
                 String xml = BindAccountAPI.getGetOrders(map);
                 AddApiTask addApiTask = new AddApiTask();
-                Map<String, String> resMap = addApiTask.exec(d, xml, commPars.apiUrl);
+                Map<String, String> resMap = addApiTask.exec2(d, xml,apiUrl);
                 String r1 = resMap.get("stat");
                 String res = resMap.get("message");
                 if ("fail".equalsIgnoreCase(r1)) {
@@ -129,9 +131,9 @@ public class ScheduleGetTimerOrdersImpl implements IScheduleGetTimerOrders {
                         if (i != 1) {
                             map.put("page", i + "");
                             xml = BindAccountAPI.getGetOrders(map);
-                            resMap = addApiTask.exec(d, xml, commPars.apiUrl);
-                      /*  Map<String, String>  resMap = addApiTask.exec(d, xml, "https://api.ebay.com/ws/api.dll");*/
-                   /* resMap = addApiTask.exec(d, xml, "https://api.ebay.com/ws/api.dll");*/
+                            resMap = addApiTask.exec2(d, xml,apiUrl);
+                      /*  Map<String, String>  resMap = addApiTask.exec2(d, xml, "https://api.ebay.com/ws/api.dll");*/
+                   /* resMap = addApiTask.exec2(d, xml, "https://api.ebay.com/ws/api.dll");*/
                             r1 = resMap.get("stat");
                             res = resMap.get("message");
                             if ("fail".equalsIgnoreCase(r1)) {
@@ -233,7 +235,7 @@ public class ScheduleGetTimerOrdersImpl implements IScheduleGetTimerOrders {
                             //------------同步订单商品-----------
                             d.setApiCallName(APINameStatic.GetItem);
                             //测试环境
-                            Map<String,String> itemresmap= GetOrderItemAPI.apiGetOrderItem(d, taskGetOrder.getToken(), commPars.apiUrl, order.getItemid());
+                            Map<String,String> itemresmap= GetOrderItemAPI.apiGetOrderItem(d, taskGetOrder.getToken(),apiUrl, order.getItemid());
                             //真实环境
                             // Map<String,String> itemresmap= GetOrderItemAPI.apiGetOrderItem(d, token, "https://api.ebay.com/ws/api.dll", order.getItemid());
                             String itemr1 = itemresmap.get("stat");
@@ -396,9 +398,9 @@ public class ScheduleGetTimerOrdersImpl implements IScheduleGetTimerOrders {
                             accountmap.put("toTime", taskGetOrder.getTotime());
                             String accountxml = BindAccountAPI.getGetAccount(accountmap);
                             //真实环境
-                            //Map<String, String> accountresmap = addApiTask.exec(ds, accountxml, "https://api.ebay.com/ws/api.dll");
+                            //Map<String, String> accountresmap = addApiTask.exec2(ds, accountxml, "https://api.ebay.com/ws/api.dll");
                             //测试环境
-                            Map<String, String> accountresmap = addApiTask.exec(d, accountxml, commPars.apiUrl);
+                            Map<String, String> accountresmap = addApiTask.exec2(d, accountxml,apiUrl);
                             String accountr1 = accountresmap.get("stat");
                             String accountres = accountresmap.get("message");
                             if ("fail".equalsIgnoreCase(accountr1)) {
@@ -426,7 +428,7 @@ public class ScheduleGetTimerOrdersImpl implements IScheduleGetTimerOrders {
                             //同步外部交易
                             /*d.setApiCallName("GetSellerTransactions");
                             String sellerxml = BindAccountAPI.GetSellerTransactions(taskGetOrder.getToken());//获取接受消息
-                            Map<String, String> resSellerMap = addApiTask.exec(d, sellerxml, commPars.apiUrl);
+                            Map<String, String> resSellerMap = addApiTask.exec2(d, sellerxml,apiUrl);
                             //------------------------
                             String sellerR1 = resSellerMap.get("stat");
                             String sellerRes = resSellerMap.get("message");

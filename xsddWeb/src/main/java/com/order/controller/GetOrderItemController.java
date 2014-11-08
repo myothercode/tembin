@@ -59,7 +59,7 @@ public class GetOrderItemController extends BaseAction {
         /**分页组装*/
         PageJsonBean jsonBean=commonParmVO.getJsonBean();
         Page page=jsonBean.toPage();
-        List<UsercontrollerEbayAccountExtend> ebays=userInfoService.getEbayAccountForCurrUser();
+        List<UsercontrollerEbayAccountExtend> ebays=userInfoService.getEbayAccountForCurrUser(new HashMap(),Page.newAOnePage());
         SessionVO sessionVO= SessionCacheSupport.getSessionVO();
         Map map=new HashMap();
         map.put("ebays",ebays);
@@ -78,7 +78,7 @@ public class GetOrderItemController extends BaseAction {
     @AvoidDuplicateSubmission(needSaveToken = true)
     @ResponseBody
     public ModelAndView GetOrder(@ModelAttribute( "initSomeParmMap" )ModelMap modelMap){
-        List<UsercontrollerEbayAccountExtend> ebays = userInfoService.getEbayAccountForCurrUser();
+        List<UsercontrollerEbayAccountExtend> ebays = userInfoService.getEbayAccountForCurrUser(new HashMap(),Page.newAOnePage());
         modelMap.put("ebays",ebays);
         return forword("orders/orderItem/synOrderItem",modelMap);
     }

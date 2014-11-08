@@ -24,6 +24,7 @@
     </style>
 </head>
 <body>
+<br/>
 <div>
     <h1>卖家描述</h1>
 <form  id="descriptionDetailsForm" >

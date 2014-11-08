@@ -51,6 +51,7 @@
 <%--<form id="addRemarkForm">
     <br/><br/>&nbsp;文件夹名称:<input name="tabName"  class="validate[required]" id="tabName"/><br/>
 </form>--%>
+
 <div class="modal-header">
     <div class="newtitle_1" style="margin-top:20px;">新增文件夹</div>
     <form id="addRemarkForm">

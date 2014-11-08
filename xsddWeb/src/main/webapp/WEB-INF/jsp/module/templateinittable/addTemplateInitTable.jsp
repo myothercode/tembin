@@ -48,6 +48,7 @@
     }
 </script>
 <body>
+<br/>
 <div style="height: 500px">
     <form id="TemplateInitTableForm">
         <input type="hidden" name="id" value="${TemplateInitTable.id}"/>

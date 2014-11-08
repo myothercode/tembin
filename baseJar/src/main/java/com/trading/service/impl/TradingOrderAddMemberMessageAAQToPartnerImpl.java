@@ -79,4 +79,15 @@ public class TradingOrderAddMemberMessageAAQToPartnerImpl implements com.trading
         List<TradingOrderAddMemberMessageAAQToPartner> list=tradingOrderAddMemberMessageAAQToPartnerMapper.selectByExample(example);
         return list;
     }
+
+    @Override
+    public List<TradingOrderAddMemberMessageAAQToPartner> selectTradingOrderAddMemberMessageAAQToPartnerByTypeAndReplied(Integer type, String replied,Long Userid) {
+        TradingOrderAddMemberMessageAAQToPartnerExample example=new TradingOrderAddMemberMessageAAQToPartnerExample();
+        TradingOrderAddMemberMessageAAQToPartnerExample.Criteria cr=example.createCriteria();
+        cr.andMessagetypeEqualTo(type);
+        cr.andRepliedEqualTo(replied);
+        cr.andCreateUserEqualTo(Userid);
+        List<TradingOrderAddMemberMessageAAQToPartner> list=tradingOrderAddMemberMessageAAQToPartnerMapper.selectByExample(example);
+        return list;
+    }
 }

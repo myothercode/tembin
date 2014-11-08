@@ -9,6 +9,7 @@ import com.base.sampleapixml.APINameStatic;
 import com.base.userinfo.service.UserInfoService;
 import com.base.utils.applicationcontext.ApplicationContextUtil;
 import com.base.utils.cache.DataDictionarySupport;
+import com.base.utils.cache.TempStoreDataSupport;
 import com.base.utils.common.CommAutowiredClass;
 import com.base.utils.scheduleabout.BaseScheduledClass;
 import com.base.utils.scheduleabout.MainTask;
@@ -17,6 +18,7 @@ import com.base.utils.threadpool.AddApiTask;
 import com.base.utils.xmlutils.SamplePaseXml;
 import com.base.xmlpojo.trading.addproduct.Item;
 import com.trading.service.ITradingItem;
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import java.util.ArrayList;
@@ -31,6 +33,9 @@ public class KeyMoveListTaskRun extends BaseScheduledClass implements Scheduleda
     static Logger logger = Logger.getLogger(KeyMoveListTaskRun.class);
     @Override
     public void run() {
+        String isRunging = TempStoreDataSupport.pullData("task_"+getScheduledType());
+        if(StringUtils.isNotEmpty(isRunging)){return;}
+        TempStoreDataSupport.pushData("task_" + getScheduledType(), "x");
         KeyMoveListMapper keyMapper = (KeyMoveListMapper) ApplicationContextUtil.getBean(KeyMoveListMapper.class);
         UserInfoService userInfoService = (UserInfoService) ApplicationContextUtil.getBean(UserInfoService.class);
         ITradingItem iTradingItem = (ITradingItem) ApplicationContextUtil.getBean(ITradingItem.class);
@@ -82,6 +87,7 @@ public class KeyMoveListTaskRun extends BaseScheduledClass implements Scheduleda
                 kml.setTaskFlag("1");
                 keyMapper.updateByPrimaryKeySelective(kml);
             }
+            TempStoreDataSupport.removeData("task_"+getScheduledType());
         }
     }
 

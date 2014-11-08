@@ -808,7 +808,7 @@ function selectTemplate() {
         content: 'url:' + path + '/selectTemplate.do',
         icon: 'succeed',
         lock: true,
-        width: 650,
+        width: 850,
         height: 600
     });
 }

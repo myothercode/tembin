@@ -1,25 +1,34 @@
 /**
  * Created by Administrator on 2014/11/5.
  */
-
+var _token;
+var _getOrderCountData="/xsddWeb/getOrderCountData.do";
+var _getTrenchData="/xsddWeb/getTrenchData.do";
 $(document).ready(function(){
-    doContainer();
-    doKnobs();
+    queryIndexEbayList();//查询ebay账户
+    queryPaypalList();
+   // doContainer();
+    getCharData(doContainer,_getTrenchData,{});//渠道分布
+    getCharData(doKnobs,_getOrderCountData,{});//单量走势
+    loadFeedBackReportData();
+    loadItemReportData();
 });
 
 /**处理container容器的初始化方法*/
-function doContainer(){
-    $('#container').highcharts({
+function doContainer(xzb,r){
+    var h = new Highcharts.Chart({
         chart: {
+            renderTo:"container",
             plotBackgroundColor: null,
             plotBorderWidth: null,
             plotShadow: false
+            //events:{load:function(){alert(1)}}
         },
         title: {
-            text: ''
+            text: '渠道分布'
         },
         tooltip: {
-            pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
+            pointFormat: '{series.name}: <b>{point.y:.1f}</b>'
         },
         plotOptions: {
             pie: {
@@ -34,28 +43,98 @@ function doContainer(){
                 }
             }
         },
-        series: [{
-            type: 'pie',
-            name: 'Browser share',
-            data: [
-                {name:'Firefox',"y":45.0},
-                ['IE',       26.8],
-                {
-                    name: 'Chrome',
-                    y: 12.8,
-                    sliced: true,
-                    selected: true
-                },
-                ['Safari',    8.5],
-                ['Opera',     6.2],
-                ['Others',   0.7]
-            ]
-        }]
+        series: r,
+        credits: {
+            enabled : false, //设置false就不会显示右下角的官网链接
+//右下角连接的显示位置
+            position:{ align: 'right',x: -8, verticalAlign: 'bottom',y: -390 },
+//右下角链接的地址href:'<%=basePath%>shop/newOrder/orderPre/orderSearch4HighCharts.do?type=1',
+            text:'区域图表',//右下角连接的名字
+            style : {cursor:'pointer',color:'#909090',fontSize:'20px'}
+        }
     });
+
+    //alert(h.series)
+    //getCharData(h,"/xsddWeb/getTrenchData.do",{});
 }
-/**处理Knobs的初始化*/
-function doKnobs(){
-    // jQuery Knobs
+
+/**获取图表数据*/
+function getCharData(obj,url,data){
+    if(obj==null || url ==null){return;}
+    if(data==null){data={}}
+    $().invoke(
+        url,
+        data,
+        [function(m,r){
+            //console.log(r.length)
+            //obj.series[0].name=(r[0].name);
+            //obj.series[0].setData(r[0].data);
+            obj(m,r);
+        },
+        function(m,r){
+            alert(r);
+        }]
+    );
+}
+
+
+
+
+/**处理单量走势的初始化*/
+function doKnobs(xzb,r){
+    var h = new Highcharts.Chart({
+        chart: {
+            renderTo:"statsChart",
+            type:"line"
+            //events:{load:function(){alert(1)}}
+        },
+        title: {
+            text: '单量走势'
+        },
+        subtitle: {
+            text: '..'
+        },
+        tooltip: {
+            //pointFormat: '{series.name}: <b>{point.y:.1f}</b>'
+            valueSuffix: '单'
+        },
+        /*legend: {
+            layout: 'vertical',
+            //align: 'rigth',
+            verticalAlign: 'middle',
+            borderWidth: 0
+        },*/
+        xAxis: {
+            //categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun','Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+            categories: eval(xzb)
+        },
+        yAxis: {
+            title: {
+                text: '走势图'
+            },
+            plotLines: [{
+                value: 0,
+                width: 1,
+                color: '#808080'
+            }]
+        },
+        series: r,
+        credits: {
+            enabled : false, //设置false就不会显示右下角的官网链接
+//右下角连接的显示位置
+            position:{ align: 'right',x: -8, verticalAlign: 'bottom',y: -390 },
+            text:'区域图表',//右下角连接的名字
+            style : {cursor:'pointer',color:'#909090',fontSize:'20px'}
+        }
+    });
+
+    //alert(h.series)
+    //getCharData(h,"/xsddWeb/getOrderCountData.do",{});
+
+
+
+
+    /*// jQuery Knobs
     $(".knob").knob();
     // jQuery UI Sliders
     $(".slider-sample1").slider({
@@ -145,8 +224,9 @@ function doKnobs(){
             $("#tooltip").remove();
             previousPoint = null;
         }
-    });
+    });*/
 }
+/*
 function showTooltip(x, y, contents) {
     $('<div id="tooltip">' + contents + '</div>').css( {
         position: 'absolute',
@@ -159,4 +239,88 @@ function showTooltip(x, y, contents) {
         'background-color': '#000',
         opacity: 0.80
     }).appendTo("body").fadeIn(200);
+}*/
+
+/**获取ebay帐号列表*/
+function queryIndexEbayList(){
+    $("#ebay_indexdiv").initTable({
+        url:"/xsddWeb/user/queryEbaysForCurrUser.do",
+        columnData:[
+            {title:"代码",name:"ebayNameCode",width:"8%",align:"left"},
+            {title:"ebay账户",name:"ebayName",width:"8%",align:"left"},
+            {title:"信用评价",name:"",width:"8%",align:"left"},
+            {title:"密钥有效期",name:"op",width:"8%",align:"left",format:mCanUseDate},
+            {title:"状态",name:"op",width:"8%",align:"left",format:makeStatus}
+        ],
+        selectDataNow:false,
+        isrowClick:false,
+        showIndex:false,
+        sysParm: {"jsonBean.pageNum": 1, "jsonBean.pageCount": 1000},
+        onlyFirstPage:true
+    });
+    refreshIndexEbayTable({});
+}
+/**刷新列表*/
+function refreshIndexEbayTable(p){
+    if(p==null){p={}}
+    $("#ebay_indexdiv").selectDataAfterSetParm(p);
+}
+/**组装密钥有效期*/
+function mCanUseDate(json){
+    //var da=json['useTimeStart']+" 至 "+json['useTimeEnd'];
+    var da=json['useTimeEnd'];
+    return da;
+}
+/**状态*/
+function makeStatus(json){
+    var imgurlpr="/xsddWeb/img/";
+    if(json.ebayStatus==1 || json.ebayStatus=='1'){
+        imgurlpr+="new_yes.png";
+    }else if(json.ebayStatus==0 || json.ebayStatus=='0'){
+        imgurlpr+="new_no.png";
+    }else{
+        imgurlpr+="";
+    }
+
+    return "<img src='"+imgurlpr+"' />";
+}
+
+/**获取paypal帐号列表*/
+function queryPaypalList(){
+    $("#indexPayPal").initTable({
+        url:"/xsddWeb/paypal/queryPaypalList.do",
+        columnData:[
+            {title:"paypal帐号",name:"paypalAccount",width:"8%",align:"left"},
+            {title:"今天",name:"",width:"8%",align:"left"},
+            {title:"昨天",name:"",width:"8%",align:"left"},
+            {title:"本周",name:"",width:"8%",align:"left"},
+            {title:"上周",name:"",width:"8%",align:"left"},
+            {title:"本月",name:"",width:"8%",align:"left"},
+            {title:"上月",name:"",width:"8%",align:"left"},
+            {title:"状态",name:"op",width:"8%",align:"left",format:makePaypalStatus}
+        ],
+        selectDataNow:false,
+        isrowClick:false,
+        showIndex:false,
+        sysParm: {"jsonBean.pageNum": 1, "jsonBean.pageCount": 1000},
+        onlyFirstPage:true
+    });
+    refreshPayPalTable({});
+}
+/**状态*/
+function makePaypalStatus(json){
+    var imgurlpr="/xsddWeb/img/";
+    if(json.status==1 || json.status=='1'){
+        imgurlpr+="new_yes.png";
+    }else if(json.status==0 || json.status=='0'){
+        imgurlpr+="new_no.png";
+    }else{
+        imgurlpr+="";
+    }
+    return "<img src='"+imgurlpr+"' />";
+}
+/**刷新paypal列表*/
+function refreshPayPalTable(p){
+    if(p==null){p={}}
+    $("#indexPayPal").selectDataAfterSetParm(p);
 }

@@ -16,6 +16,7 @@ import com.base.database.userinfo.model.UsercontrollerUserRole;
 import com.base.domains.*;
 import com.base.domains.userinfo.UsercontrollerDevAccountExtend;
 import com.base.domains.userinfo.UsercontrollerEbayAccountExtend;
+import com.base.mybatis.page.Page;
 import com.base.userinfo.mapper.UserInfoServiceMapper;
 import com.base.utils.cache.SessionCacheSupport;
 import com.base.utils.common.EncryptionUtil;
@@ -113,12 +114,12 @@ public class UserInfoServiceImpl implements com.base.userinfo.service.UserInfoSe
 
     @Override
     /**查询当前系统账户绑定了哪些ebay账户*/
-    public List<UsercontrollerEbayAccountExtend> getEbayAccountForCurrUser(){
+    public List<UsercontrollerEbayAccountExtend> getEbayAccountForCurrUser(Map map1,Page page){
         SessionVO sessionVO = SessionCacheSupport.getSessionVO();
         Map map =new HashMap();
         map.put("userID",sessionVO.getId());
         map.put("resultNum","all");
-        List<UsercontrollerEbayAccountExtend> ebayAccounts=userInfoServiceMapper.queryAllEbayAccountForUser(map);
+        List<UsercontrollerEbayAccountExtend> ebayAccounts=userInfoServiceMapper.queryAllEbayAccountForUser(map,page);
         return ebayAccounts;
     }
 

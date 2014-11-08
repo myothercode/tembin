@@ -5,6 +5,7 @@ import com.base.domains.querypojos.OrderGetOrdersQuery;
 import com.base.mybatis.page.Page;
 
 import javax.servlet.ServletOutputStream;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -32,4 +33,6 @@ public interface ITradingOrderGetOrders {
     List<TradingOrderGetOrders> selectOrderGetOrdersBySendPaidMessage();
 
     List<TradingOrderGetOrders> selectOrderGetOrdersBySendShipMessage();
+
+    List<TradingOrderGetOrders> selectOrderGetOrdersByeBayAccountAndTime(String ebay,Date start,Date end);
 }

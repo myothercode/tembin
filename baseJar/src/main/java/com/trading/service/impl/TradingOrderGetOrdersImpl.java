@@ -7,6 +7,7 @@ import com.base.database.trading.model.TradingOrderGetOrdersExample;
 import com.base.domains.querypojos.OrderGetOrdersQuery;
 import com.base.domains.userinfo.UsercontrollerEbayAccountExtend;
 import com.base.mybatis.page.Page;
+import com.base.userinfo.service.SystemUserManagerService;
 import com.base.utils.common.ObjectUtils;
 import com.base.utils.exception.Asserts;
 import org.apache.commons.lang.StringUtils;
@@ -19,9 +20,7 @@ import javax.servlet.ServletOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * 退货政策
@@ -36,6 +35,8 @@ public class TradingOrderGetOrdersImpl implements com.trading.service.ITradingOr
 
     @Autowired
     private OrderGetOrdersMapper orderGetOrdersMapper;
+    @Autowired
+    private SystemUserManagerService systemUserManagerService;
     @Override
     public void saveOrderGetOrders(TradingOrderGetOrders OrderGetOrders) throws Exception {
         if(OrderGetOrders.getId()==null){
@@ -229,6 +230,26 @@ public class TradingOrderGetOrdersImpl implements com.trading.service.ITradingOr
         cr.andPaypalflagIsNull();
         cr.andShippedflagIsNotNull();
         cr.andSendmessagetimeLessThan(new Date());
+        List<TradingOrderGetOrders> list=tradingOrderGetOrdersMapper.selectByExample(example);
+        return list;
+    }
+
+    @Override
+    public List<TradingOrderGetOrders> selectOrderGetOrdersByeBayAccountAndTime(String ebay, Date start,Date end) {
+        TradingOrderGetOrdersExample example=new TradingOrderGetOrdersExample();
+        TradingOrderGetOrdersExample.Criteria cr=example.createCriteria();
+        if(ebay!=null){
+            cr.andSelleruseridEqualTo(ebay);
+        }else{
+            Map ebayMap=new HashMap();
+            List<UsercontrollerEbayAccountExtend> ebays=systemUserManagerService.queryCurrAllEbay(ebayMap);
+            List<String> ebayNames=new ArrayList<String>();
+            for(UsercontrollerEbayAccountExtend ebayAccountExtend:ebays){
+                ebayNames.add(ebayAccountExtend.getEbayName());
+            }
+            cr.andSelleruseridIn(ebayNames);
+        }
+        cr.andPaidtimeBetween(start,end);
         List<TradingOrderGetOrders> list=tradingOrderGetOrdersMapper.selectByExample(example);
         return list;
     }

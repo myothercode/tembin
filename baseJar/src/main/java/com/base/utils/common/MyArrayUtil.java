@@ -1,5 +1,8 @@
 package com.base.utils.common;
 
+import com.google.common.base.Function;
+
+import java.lang.reflect.Array;
 import java.util.*;
 
 /**
@@ -31,5 +34,17 @@ public class MyArrayUtil {
          set.add(a[i]);
         }
         return (T[])set.toArray();
+    }
+
+    /**将一个类型的数组转为另一个类型的数组*/
+    public static <S, D> D[] transform(S[] ts, Class<D> clazz, Function<S, D> function) {
+        if(ObjectUtils.isLogicalNull(ts))
+            return (D[]) Array.newInstance(clazz, 0);
+        D[] ds = (D[]) Array.newInstance(clazz, ts.length);
+        for(int i = 0;i < ts.length;i++) {
+            D d = function.apply(ts[i]);
+            ds[i] = d;
+        }
+        return ds;
     }
 }

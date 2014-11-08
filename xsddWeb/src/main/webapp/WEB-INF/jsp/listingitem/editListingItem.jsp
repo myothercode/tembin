@@ -29,7 +29,8 @@
 <script>
 var myDescription=null;
 function nextShows(obj){
-    if(obj.value=="下一步"){
+
+    if($(obj).text()=="下一步"){
         var j=1;
         $("input[type='checkbox'][name='selectType']").each(function(i,d){
             if($(d).prop("checked")){
@@ -43,7 +44,7 @@ function nextShows(obj){
         }
         $("#selectId").hide();
         $("#showId").show();
-        obj.value="确定";
+        $(obj).text("确定");
         $("#previousShow").show();
     }else{
         var moreTable  = $("table[name='moreTable']").each(function(i,d){
@@ -96,7 +97,7 @@ function previousShows(obj){
     $("#show1").show();
     $("#show2").show();
     $("#show3").show();
-    $("#nextShow").val("下一步");
+    $("#nextShow").text("下一步");
 }
 var api = frameElement.api, W = api.opener;
 function closeWin(){
@@ -298,10 +299,13 @@ setTimeout(function(){
 </script>
 </head>
 <body>
+<div class="modal-header">
+    <h4 class="modal-title" style="color:#2E98EE">在线编辑商品</h4>
+</div>
 <form id="form">
 <input type="hidden" name="ItemID" value="${itemidstr}">
 <input type="hidden" name="listingType" value="${item.listingType}">
-<div id="selectId">
+<div id="selectId" style="padding-left: 100px;padding-top: 20px;padding-bottom: 20px;">
     <table width="70%">
         <tr>
             <td><input type="checkbox" name="selectType" value="StartPrice">价格</td>
@@ -329,7 +333,7 @@ setTimeout(function(){
         </tr>
     </table>
 </div>
-<div>
+<div style="padding-left: 40px;">
 <table id="showId" style="display: none;">
 <tr id="show1">
     <td colspan="2" width="80%">
@@ -716,11 +720,16 @@ setTimeout(function(){
 </tr>
 </table>
 </div>
-<div>
+<div class="modal-footer">
+    <button type="button" onclick="nextShows(this)" id="nextShow" class="net_put">下一步</button>
+    <button type="button"  onclick="previousShows(this)" id="previousShow" style="display: none;" class="net_put">上一步</button>
+    <button type="button" class="net_put_1" data-dismiss="modal" onclick="closeWin()">关闭</button>
+</div>
+<%--<div>
     <input type="button" value="下一步" onclick="nextShows(this)" id="nextShow">
     <input type="button" value="上一步" onclick="previousShows(this)" id="previousShow" style="display: none;">
     <input type="button" value="关闭" onclick="closeWin()">
-</div>
+</div>--%>
 </form>
 </body>
 <script>
@@ -774,13 +783,35 @@ setTimeout(function(){
             $("#delinter").hide();
         }
     }
+    function getCount(name){
+        var count = $("table[name='"+name+"']").length;
+        var str = '';
+        count=count+1;
+        if(count==1){
+            str='一';
+        }else if(count==2){
+            str='二'
+        } else if(count==3){
+            str='三'
+        } else if(count==4){
+            str='四'
+        } else if(count==5){
+            str='五'
+        }else if(count==6){
+            str='六'
+        }else if(count==7){
+            str='七'
+        }
+        return str;
+    }
     //创国内运输表
     function createTables(obj1,obj2,obj3,obj4,obj5){
         //用于国内运输选项
+        var cont= getCount("moreTable");
         var tables = "";
         tables +=' <table name="moreTable">';
         tables +=' <tr> ';
-        tables +=' <td colspan="2">第一运输</td> ';
+        tables +=' <td colspan="2">第'+cont+'运输</td> ';
         tables +=' </tr> ';
         tables +=' <tr> ';
         tables +=' <td align="right"  width="200">运输方式</td> ';
@@ -820,10 +851,11 @@ setTimeout(function(){
     }
     function createInterTables(obj1,obj2,obj3){
         //用于国际运输选项
+        var cont= getCount("interMoreTable");
         var intertable = "";
         intertable +=' <table name="interMoreTable">';
         intertable +=' <tr> ';
-        intertable +=' <td colspan="2">第一运输</td> ';
+        intertable +=' <td colspan="2">第'+cont+'运输</td> ';
         intertable +=' </tr> ';
         intertable +=' <tr> ';
         intertable +=' <td align="right" width="200">运输方式</td> ';

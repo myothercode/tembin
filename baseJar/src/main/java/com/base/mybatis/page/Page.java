@@ -108,4 +108,13 @@ public class Page extends RowBounds implements Serializable {
 	public int getLimit() {
 		return getPageSize();
 	}
+
+    /**获取一个单页状态下的Page*/
+    public static Page newAOnePage(){
+        Page page=new Page();
+        page.setCurrentPage(1);
+        page.setPageSize(10000);
+        page.setTotalCount(1);
+        return page;
+    }
 }

@@ -7,6 +7,7 @@ import com.base.sampleapixml.APINameStatic;
 import com.base.sampleapixml.BindAccountAPI;
 import com.base.utils.applicationcontext.ApplicationContextUtil;
 import com.base.utils.cache.DataDictionarySupport;
+import com.base.utils.cache.TempStoreDataSupport;
 import com.base.utils.common.CommAutowiredClass;
 import com.base.utils.scheduleabout.BaseScheduledClass;
 import com.base.utils.scheduleabout.MainTask;
@@ -18,6 +19,7 @@ import com.base.utils.xmlutils.SamplePaseXml;
 import com.sitemessage.service.SiteMessageService;
 import com.sitemessage.service.SiteMessageStatic;
 import com.trading.service.*;
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import java.util.*;
@@ -56,6 +58,7 @@ public class FeedBackAutoMessageTaskRun extends BaseScheduledClass implements Sc
                 }
                 if ("false".equals(messageMap.get("flag"))) {
                     if("自动消息设置的时间没到到".equals(messageMap.get("message"))){
+                        TempStoreDataSupport.removeData("task_"+getScheduledType());
                         return;
                     }else {
                         SiteMessageService siteMessageService = (SiteMessageService) ApplicationContextUtil.getBean(SiteMessageService.class);
@@ -72,6 +75,7 @@ public class FeedBackAutoMessageTaskRun extends BaseScheduledClass implements Sc
                             taskMessageVO.setOrderAndSeller(detail.getCommentinguser()+detail.getItemid());
                             siteMessageService.addSiteMessage(taskMessageVO);
                         }
+                        TempStoreDataSupport.removeData("task_"+getScheduledType());
                         return;
                     }
                 }
@@ -104,6 +108,7 @@ public class FeedBackAutoMessageTaskRun extends BaseScheduledClass implements Sc
                     taskMessageVO.setOrderAndSeller(detail.getCommentinguser()+detail.getItemid());
                     siteMessageService.addSiteMessage(taskMessageVO);
                 }
+                TempStoreDataSupport.removeData("task_"+getScheduledType());
                 return;
             }
         }
@@ -239,7 +244,7 @@ public class FeedBackAutoMessageTaskRun extends BaseScheduledClass implements Sc
                             map.put("buyeruserid",order.getBuyeruserid());
                             String xml = BindAccountAPI.getAddMemberMessageAAQToPartner(map);
                             AddApiTask addApiTask = new AddApiTask();
-                            Map<String, String> resMap = addApiTask.exec(d, xml, commPars.apiUrl);
+                            Map<String, String> resMap = addApiTask.exec2(d, xml, commPars.apiUrl);
                             String r1 = resMap.get("stat");
                             String res = resMap.get("message");
                             if ("fail".equalsIgnoreCase(r1)) {
@@ -276,6 +281,9 @@ public class FeedBackAutoMessageTaskRun extends BaseScheduledClass implements Sc
         if(i>30){
             return;
         }
+        String isRunging = TempStoreDataSupport.pullData("task_" + getScheduledType());
+        if(StringUtils.isNotEmpty(isRunging)){return;}
+        TempStoreDataSupport.pushData("task_" + getScheduledType(), "x");
         ITradingFeedBackDetail iTradingFeedBackDetail=(ITradingFeedBackDetail) ApplicationContextUtil.getBean(ITradingFeedBackDetail.class);
         List<String> types=new ArrayList<String>();
         types.add("Negative");
@@ -287,6 +295,7 @@ public class FeedBackAutoMessageTaskRun extends BaseScheduledClass implements Sc
         }
         try{
             sendAutoMessage(details);
+            TempStoreDataSupport.removeData("task_"+getScheduledType());
         }catch (Exception e){
             e.printStackTrace();
         }

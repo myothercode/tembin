@@ -46,9 +46,12 @@ public class MainTask {
     public static final String LISTING_SCHEDULE="listSchedule";//定时刊登任务
     public static final String KEY_MOVE_LIST_TASK="keyMoveListTask";//一键搬家任务
     public static final String LISTING_DATA="tradingListData";//在线数据同步每晚12点执行
+    public static final String LISTING_REPORT="listingReport";//在线数据同步每晚12点执行
     public static final String LISTING_TIMER_TASK_DATA="tradingListtimertask";//在线数据同步每两分钟执行
     public static final String SET_DEV_ZERO="setDevZero";//将开发帐号的调用次数清零
-    public static final String AUTO_MESSAGE="autoMessage";//定时发送自动消息
+    public static final String
+
+            AUTO_MESSAGE="autoMessage";//定时发送自动消息
     public static final String FEEDBACK_AUTOM_ESSAGE="FeedBackAutoMessageTaskRun";//定时发送评价自动消息
     public static final String SYNCHRONIZE_GET_ORDERS="synchronize_get_orders";//定时每天插入账号去获取订单
     public static final String SYNCHRONIZE_GET_TIMER_ORDERS="synchronize_get_timer_orders";//定时同步订单每两分钟
@@ -145,6 +148,7 @@ public class MainTask {
         doList.add(LISTING_DATA);
         doList.add(SYNCHRONIZE_GET_ORDERS);
         doList.add(SYNCHRONIZE_FEED_BACK);
+        doList.add(LISTING_REPORT);
         List<String> taskList=new ArrayList<String>();
         if("false".equalsIgnoreCase(isStartTimerTask.isStartTimerTask)){
             return;

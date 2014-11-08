@@ -1,6 +1,7 @@
 package com.trading.service;
 
 import com.base.database.trading.model.TradingFeedBackDetail;
+import com.base.domains.querypojos.FeedBackReportQuery;
 
 import java.util.List;
 import java.util.Map;
@@ -18,4 +19,6 @@ public interface ITradingFeedBackDetail {
     int selectByCount(Map m);
 
     TradingFeedBackDetail selectFeedBackDetailByBuyerAndFeedBackId(String buyer,String feedBackId);
+
+    List<FeedBackReportQuery> selectFeedBackReportList(String type);
 }

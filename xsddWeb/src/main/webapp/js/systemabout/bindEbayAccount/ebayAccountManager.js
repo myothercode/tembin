@@ -22,6 +22,7 @@ function queryEbayList(){
         selectDataNow:false,
         isrowClick:false,
         showIndex:false,
+        sysParm: {"jsonBean.pageNum": 1, "jsonBean.pageCount": 1000},
         onlyFirstPage:true
     });
     refreshRoleTable({});

@@ -50,6 +50,11 @@
             W.payPal.close();
         }
     </script>
+    <style type="text/css">
+        body {
+            background-color: #ffffff;
+        }
+    </style>
 </head>
 <c:set value="${paypal}" var="paypal" />
 <body>

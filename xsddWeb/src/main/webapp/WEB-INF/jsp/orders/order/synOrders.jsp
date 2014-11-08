@@ -35,7 +35,7 @@
 
     function xxx(opt){
         alert(opt);
-        W.refreshTable();
+        W.refreshTable1();
         W.OrderGetOrders.close();
     }
     function closedialog(){

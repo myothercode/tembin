@@ -137,6 +137,7 @@
             </tr>
     </c:forEach>
 </table>--%>
+<br/><br/>
 <div class="modal-body">
     <form class="form-horizontal" role="form">
         <div class="newtitle_1" style="margin-top:-22px;">新增文件夹</div><table width="100%" border="0">

@@ -1,5 +1,6 @@
 package com.base.utils.threadpoolimplements;
 
+import com.base.database.customtrading.mapper.ListingItemReportMapper;
 import com.base.database.trading.mapper.TradingListingDataMapper;
 import com.base.database.trading.model.*;
 import com.base.domains.SessionVO;
@@ -12,10 +13,7 @@ import com.base.utils.threadpool.AddApiTask;
 import com.base.utils.threadpool.TaskMessageVO;
 import com.base.utils.xmlutils.SamplePaseXml;
 import com.sitemessage.service.SiteMessageStatic;
-import com.trading.service.ITradingCasePaymentDetail;
-import com.trading.service.ITradingCaseResponseHistory;
-import com.trading.service.ITradingGetEBPCaseDetail;
-import com.trading.service.ITradingListingData;
+import com.trading.service.*;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.dom4j.Document;
@@ -43,6 +41,10 @@ public class SynchronizeUserListingItemDataImpl implements ThreadPoolBaseInterFa
     public TradingListingDataMapper tldm;
     @Value("${EBAY.API.URL}")
     private String apiUrl;
+    @Autowired
+    private ListingItemReportMapper listingItemReportMapper;
+    @Autowired
+    private ITradingListingSuccess iTradingListingSuccess;
     @Override
     public <T> void doWork(String ebpRes, T... t) {
         if(StringUtils.isEmpty(ebpRes)){return;}
@@ -101,6 +103,19 @@ public class SynchronizeUserListingItemDataImpl implements ThreadPoolBaseInterFa
                                 tldm.updateByPrimaryKeySelective(td);
                             }else{
                                 tldm.insertSelective(td);
+                            }
+                            List<TradingListingSuccess> litls = this.iTradingListingSuccess.selectByItemid(td.getItemId());
+                            if(litls==null||litls.size()==0){
+                                TradingListingSuccess tls = new TradingListingSuccess();
+                                tls.setItemId(td.getItemId());
+                                tls.setStartDate(td.getStarttime());
+                                tls.setEndDate(td.getEndtime());
+                                this.iTradingListingSuccess.save(tls);
+                            }else{
+                                TradingListingSuccess tls = litls.get(0);
+                                tls.setStartDate(td.getStarttime());
+                                tls.setEndDate(td.getEndtime());
+                                this.iTradingListingSuccess.save(tls);
                             }
                         }
                     }else{

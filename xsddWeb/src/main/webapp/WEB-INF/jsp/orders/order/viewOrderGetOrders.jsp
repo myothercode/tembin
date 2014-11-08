@@ -560,6 +560,9 @@
                     <input type="hidden" name="buyeruserid" value="${order.buyeruserid}">
                     <input type="hidden" name="selleruserid" value="${order.selleruserid}">
                     <input type="hidden" name="transactionid" value="${order.transactionid}">
+                    <input type="hidden" name="itemid1" value="${addMessage1[0].itemid}">
+                    <input type="hidden" name="buyeruserid1" value="${addMessage1[0].recipientid}">
+                    <input type="hidden" name="selleruserid1" value="${addMessage1[0].sender}">
                     <input type="hidden" name="subject" value="${addMessage1[0].subject}">
                 <textarea name="body"  id="textarea" style="width:772px;" rows="5"  class="newco_one validate[required]"></textarea><div class="modal-footer" style="margin-top:20px; float:left; width:100%;">
                 </form>

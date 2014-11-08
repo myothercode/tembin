@@ -18,8 +18,8 @@ import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
-
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
@@ -508,6 +508,7 @@ public class SamplePaseXml {
             tfbd.setTransactionid(element.elementText("TransactionID"));
             tfbd.setOrderlineitemid(element.elementText("OrderLineItemID"));
             tfbd.setItemtitle(element.elementText("ItemTitle"));
+            tfbd.setCreateTime(new Date());
             if(element.elementText("ItemPrice")!=null) {
                 tfbd.setItemprice(Double.parseDouble(element.elementText("ItemPrice")));
             }

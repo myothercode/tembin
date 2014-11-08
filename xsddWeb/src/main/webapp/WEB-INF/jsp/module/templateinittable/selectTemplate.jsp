@@ -10,6 +10,11 @@
 <%@include file= "/WEB-INF/jsp/commonImport.jsp" %>
 <html>
 <head>
+    <style type="text/css">
+        body {
+            background-color: #ffffff;
+        }
+    </style>
     <title></title>
     <script type="text/javascript">
         var imageUrlPrefix = '${imageUrlPrefix}';
@@ -83,10 +88,14 @@
     </script>
 </head>
 <body>
-<div>
-    <input type="button" value="确定" onclick="returnTemplate()">
+
+<div class="modal-header">
+        <h4 class="modal-title" style="color:#2E98EE">选择模板<span style="float:right; "></h4>
 </div>
-<div id="templateInitTableListTable"></div>
+<div style="padding: 10px;">
+    <button type="button" onclick="returnTemplate()" class="net_put">确定</button>
+</div>
+<div id="templateInitTableListTable" style="padding: 10px;"></div>
 <div style="display:none;position:absolute;" id="template">
     <img src="Timg" width="300" height="300"/>
 </div>

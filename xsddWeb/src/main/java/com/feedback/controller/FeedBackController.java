@@ -1,17 +1,26 @@
 package com.feedback.controller;
 
+import com.base.database.customtrading.mapper.ItemReportMapper;
 import com.base.database.trading.model.TradingFeedBackDetail;
+import com.base.database.trading.model.TradingListingReport;
 import com.base.domains.querypojos.CommonParmVO;
+import com.base.domains.querypojos.FeedBackReportQuery;
+import com.base.domains.querypojos.ListingItemReportQuery;
+import com.base.domains.querypojos.TablePriceQuery;
 import com.base.domains.userinfo.UsercontrollerDevAccountExtend;
+import com.base.mybatis.page.Page;
+import com.base.mybatis.page.PageJsonBean;
 import com.base.sampleapixml.APINameStatic;
 import com.base.userinfo.service.UserInfoService;
 import com.base.utils.cache.DataDictionarySupport;
+import com.base.utils.common.DateUtils;
 import com.base.utils.threadpool.AddApiTask;
 import com.base.utils.xmlutils.SamplePaseXml;
 import com.common.base.utils.ajax.AjaxResponse;
 import com.common.base.utils.ajax.AjaxSupport;
 import com.common.base.web.BaseAction;
 import com.trading.service.ITradingFeedBackDetail;
+import com.trading.service.ITradingListingSuccess;
 import org.dom4j.Element;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -23,9 +32,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by Administrtor on 2014/8/16.
@@ -39,7 +46,11 @@ public class FeedBackController extends BaseAction {
     @Autowired
     private UserInfoService userInfoService;
 
+    @Autowired
+    private ItemReportMapper itemReportMapper;
 
+    @Autowired
+    private ITradingListingSuccess iTradingListingSuccess;
     @RequestMapping("/ajax/saveFeedBackAll.do")
     @ResponseBody
     public void saveFeedBackAll(ModelMap modelMap,CommonParmVO commonParmVO) throws Exception {
@@ -47,6 +58,90 @@ public class FeedBackController extends BaseAction {
         this.pingDaoList("Neutral");
         this.pingDaoList("Negative");
         AjaxSupport.sendSuccessText("message", "操作成功！");
+    }
+
+    /**
+     * 首页统计反馈信息
+     * @param modelMap
+     * @param commonParmVO
+     * @throws Exception
+     */
+    @RequestMapping("/ajax/getFeedBackReportList.do")
+    @ResponseBody
+    public void getFeedBackReportList(ModelMap modelMap,CommonParmVO commonParmVO) throws Exception {
+        Map basem = new HashMap();
+        basem.put("0","Positive");
+        basem.put("1","Neutral");
+        basem.put("2","Negative");
+        List<FeedBackReportQuery> li1 = this.iTradingFeedBackDetail.selectFeedBackReportList("1");//当天
+        List<FeedBackReportQuery> li2 = this.iTradingFeedBackDetail.selectFeedBackReportList("2");//昨天
+        List<FeedBackReportQuery> li3 = this.iTradingFeedBackDetail.selectFeedBackReportList("3");//本周
+        List<FeedBackReportQuery> li4 = this.iTradingFeedBackDetail.selectFeedBackReportList("4");//上周
+        List<FeedBackReportQuery> li5 = this.iTradingFeedBackDetail.selectFeedBackReportList("5");//本月
+        List<FeedBackReportQuery> li6 = this.iTradingFeedBackDetail.selectFeedBackReportList("6");//上月
+        List<Map> lim = new ArrayList<Map>();
+        for(int i=0;i<basem.size();i++){
+            Map mvalue = new HashMap();
+            mvalue.put("dataType",basem.get(i+""));
+            for(int j=0;j<li1.size();j++){
+                if(basem.get(i+"").equals(li1.get(j).getReturnType())){
+                    mvalue.put("day",li1.get(j).getTjNumber());
+                }
+            }
+            if(mvalue.get("day")==null){
+                mvalue.put("day","0");
+            }
+
+            for(int j=0;j<li2.size();j++){
+                if(basem.get(i+"").equals(li2.get(j).getReturnType())){
+                    mvalue.put("yesterday",li2.get(j).getTjNumber());
+                }
+            }
+            if(mvalue.get("yesterday")==null){
+                mvalue.put("yesterday","0");
+            }
+            for(int j=0;j<li3.size();j++){
+                if(basem.get(i+"").equals(li3.get(j).getReturnType())){
+                    mvalue.put("week",li3.get(j).getTjNumber());
+                }
+            }
+            if(mvalue.get("week")==null){
+                mvalue.put("week","0");
+            }
+            for(int j=0;j<li4.size();j++){
+                if(basem.get(i+"").equals(li4.get(j).getReturnType())){
+                    mvalue.put("thatweek",li4.get(j).getTjNumber());
+                }
+            }
+            if(mvalue.get("thatweek")==null){
+                mvalue.put("thatweek","0");
+            }
+
+            for(int j=0;j<li5.size();j++){
+                if(basem.get(i+"").equals(li5.get(j).getReturnType())){
+                    mvalue.put("month",li5.get(j).getTjNumber());
+                }
+            }
+            if(mvalue.get("month")==null){
+                mvalue.put("month","0");
+            }
+            for(int j=0;j<li6.size();j++){
+                if(basem.get(i+"").equals(li6.get(j).getReturnType())){
+                    mvalue.put("thatmonth",li6.get(j).getTjNumber());
+                }
+            }
+            if(mvalue.get("thatmonth")==null){
+                mvalue.put("thatmonth","0");
+            }
+            lim.add(mvalue);
+        }
+        PageJsonBean jsonBean=commonParmVO.getJsonBean();
+        Page page=jsonBean.toPage();
+        page.setPageSize(1000);
+        jsonBean.setList(lim);
+        jsonBean.setTotal((int)page.getTotalCount());
+        AjaxSupport.sendSuccessText("",jsonBean);
+        AjaxSupport.sendSuccessText("message", jsonBean);
     }
 
     @RequestMapping("/ajax/getCountSize.do")
@@ -110,5 +205,76 @@ public class FeedBackController extends BaseAction {
         Map<String, String> resMap= addApiTask.exec(d, colStr, "https://api.ebay.com/ws/api.dll");
         String res=resMap.get("message");
         return res;
+    }
+
+    /**
+     * 首页统计刊登信息
+     * @param modelMap
+     * @param commonParmVO
+     * @throws Exception
+     */
+    @RequestMapping("/ajax/getItemReportList.do")
+    @ResponseBody
+    public void getItemReportList(ModelMap modelMap,CommonParmVO commonParmVO) throws Exception {
+        Map m = new HashMap();
+        m.put("datestr", DateUtils.formatDate(new Date()));
+        List<TradingListingReport> lim = this.itemReportMapper.selectItemReportList(m);
+        //当天刊登
+        List<ListingItemReportQuery> dayListing = this.iTradingListingSuccess.selectListingItemReport("1","1",null);
+        //本周刊登
+        List<ListingItemReportQuery> weekListing = this.iTradingListingSuccess.selectListingItemReport("3","1",null);
+        //本月刊登
+        List<ListingItemReportQuery> monthListing = this.iTradingListingSuccess.selectListingItemReport("5","1",null);
+        //当天结束刊登
+        List<ListingItemReportQuery> dayendListing = this.iTradingListingSuccess.selectListingItemReport("1","2",null);
+        //本周结束刊登
+        List<ListingItemReportQuery> weekendListing = this.iTradingListingSuccess.selectListingItemReport("3","2",null);
+        //本月结束刊登
+        List<ListingItemReportQuery> monthendListing = this.iTradingListingSuccess.selectListingItemReport("5","2",null);
+
+        //当天结束刊登买出去有
+        List<ListingItemReportQuery> dayendListingSold = this.iTradingListingSuccess.selectListingItemReport("1","2","1");
+        //本周结束刊登买出去有
+        List<ListingItemReportQuery> weekendListingSold = this.iTradingListingSuccess.selectListingItemReport("3","2","1");
+        //本月结束刊登买出去有
+        List<ListingItemReportQuery> monthendListingSold = this.iTradingListingSuccess.selectListingItemReport("5","2","1");
+
+        for(TradingListingReport tlr : lim){
+            if(tlr.getDatatype().equals("1")&&dayListing.size()>0){
+                tlr.setDay(dayListing.get(0).getTjNumber());
+            }
+            if(tlr.getDatatype().equals("1")&&weekListing.size()>0){
+                tlr.setWeek(weekListing.get(0).getTjNumber());
+            }
+            if(tlr.getDatatype().equals("1")&&monthListing.size()>0){
+                tlr.setMonth(monthListing.get(0).getTjNumber());
+            }
+
+            if(tlr.getDatatype().equals("2")&&dayendListing.size()>0){
+                tlr.setDay(dayendListing.get(0).getTjNumber());
+            }
+            if(tlr.getDatatype().equals("2")&&weekendListing.size()>0){
+                tlr.setWeek(weekendListing.get(0).getTjNumber());
+            }
+            if(tlr.getDatatype().equals("2")&&monthendListing.size()>0){
+                tlr.setMonth(monthendListing.get(0).getTjNumber());
+            }
+            if(tlr.getDatatype().equals("3")&&dayendListingSold.size()>0){
+                tlr.setDay(dayendListingSold.get(0).getTjNumber());
+            }
+            if(tlr.getDatatype().equals("3")&&weekendListingSold.size()>0){
+                tlr.setWeek(weekendListingSold.get(0).getTjNumber());
+            }
+            if(tlr.getDatatype().equals("3")&&monthendListingSold.size()>0){
+                tlr.setMonth(monthendListingSold.get(0).getTjNumber());
+            }
+        }
+        PageJsonBean jsonBean=commonParmVO.getJsonBean();
+        Page page=jsonBean.toPage();
+        page.setPageSize(1000);
+        jsonBean.setList(lim);
+        jsonBean.setTotal((int)page.getTotalCount());
+        AjaxSupport.sendSuccessText("",jsonBean);
+        AjaxSupport.sendSuccessText("message", jsonBean);
     }
 }

@@ -94,7 +94,7 @@ public class UserCasesController extends BaseAction{
     @AvoidDuplicateSubmission(needSaveToken = true)
     @ResponseBody
     public ModelAndView getUserCases(@ModelAttribute( "initSomeParmMap" )ModelMap modelMap){
-        List<UsercontrollerEbayAccountExtend> ebays = userInfoService.getEbayAccountForCurrUser();
+        List<UsercontrollerEbayAccountExtend> ebays = userInfoService.getEbayAccountForCurrUser(new HashMap(),Page.newAOnePage());
         modelMap.put("ebays",ebays);
         return forword("usercases/synUserCases",modelMap);
     }

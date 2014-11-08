@@ -7,6 +7,7 @@ import com.base.domains.LoginVO;
 import com.base.domains.SessionVO;
 import com.base.domains.userinfo.UsercontrollerDevAccountExtend;
 import com.base.domains.userinfo.UsercontrollerEbayAccountExtend;
+import com.base.mybatis.page.Page;
 
 import java.util.List;
 import java.util.Map;
@@ -27,7 +28,7 @@ public interface UserInfoService {
     void updateEbayAccount(UsercontrollerEbayAccount ebayAccount);
 
     /**查询当前系统账户绑定了哪些ebay账户*/
-    List<UsercontrollerEbayAccountExtend> getEbayAccountForCurrUser();
+    List<UsercontrollerEbayAccountExtend> getEbayAccountForCurrUser(Map map1,Page page);
 
     /**根据ebay帐号id 查询token*/
     String getTokenByEbayID(Long ebayID);

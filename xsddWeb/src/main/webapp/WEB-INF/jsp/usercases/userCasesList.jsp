@@ -267,13 +267,13 @@
     </form>
     <div class="new_usa">
 
-        <li class="new_usa_list"><span class="newusa_i">选择账号：</span><a href="#"><span scop="account" onclick="selectAccount(null,0);" class="newusa_ici_1">&nbsp;全部&nbsp;&nbsp;</span></a><a href="#"><span scop="account" onclick="selectAccount('ebay',1);" class="newusa_ici_1">eBay账号&nbsp</span></a><a href="#"><span scop="account" onclick="selectAccount(null,2);" class="newusa_ici_1">亚马逊账号</span></a><a href="#"><span scop="account" onclick="selectAccount(null,3);" class="newusa_ici_1">亚马逊账号</span></a><a href="#"><span scop="account" onclick="selectAccount(null,4);" class="newusa_ici_1">亚马逊账号</span></a><a href="#"><span scop="account" onclick="selectAccount(null,5);" class="newusa_ici_1">亚马逊账号</span></a></li>
-        <li class="new_usa_list"><span class="newusa_i">纠纷类型：</span><a href="#"><span scop="type" onclick="selectType(null,0);" class="newusa_ici_1">&nbsp;全部&nbsp;&nbsp;</span></a><a href="#"><span scop="type" onclick="selectType('BuyerHasNotPaid',1);" class="newusa_ici_1">未付款&nbsp;</span></a><a href="#"><span scop="type" onclick="selectType('ItemNotReceived',2);" class="newusa_ici_1">未收到物品</span></a><a href="#"><span scop="type" onclick="selectType('SignificantlyNotAsDescribed',3);" class="newusa_ici_1">描述不符&nbsp;</span></a></li>
-        <li class="new_usa_list"><span class="newusa_i">处理状态：</span><a href="#"><span scop="status" onclick="selectStatus(null,0);" class="newusa_ici_1">&nbsp;全部&nbsp;&nbsp;</span></a><a href="#"><span scop="status" onclick="selectStatus('1',1);" class="newusa_ici_1">已处理&nbsp;</span></a><a href="#"><span scop="status" onclick="selectStatus('0',2);" class="newusa_ici_1">未处理&nbsp;</span></a></li>
+        <li class="new_usa_list"><span class="newusa_i">选择账号：</span><a href="#"><span scop="account" onclick="selectAccount(null,0);" class="newusa_ici">&nbsp;全部&nbsp;&nbsp;</span></a><a href="#"><span scop="account" onclick="selectAccount('ebay',1);" class="newusa_ici_1">eBay账号&nbsp</span></a><a href="#"><span scop="account" onclick="selectAccount(null,2);" class="newusa_ici_1">亚马逊账号</span></a><a href="#"><span scop="account" onclick="selectAccount(null,3);" class="newusa_ici_1">亚马逊账号</span></a><a href="#"><span scop="account" onclick="selectAccount(null,4);" class="newusa_ici_1">亚马逊账号</span></a><a href="#"><span scop="account" onclick="selectAccount(null,5);" class="newusa_ici_1">亚马逊账号</span></a></li>
+        <li class="new_usa_list"><span class="newusa_i">纠纷类型：</span><a href="#"><span scop="type" onclick="selectType(null,0);" class="newusa_ici">&nbsp;全部&nbsp;&nbsp;</span></a><a href="#"><span scop="type" onclick="selectType('BuyerHasNotPaid',1);" class="newusa_ici_1">未付款&nbsp;</span></a><a href="#"><span scop="type" onclick="selectType('ItemNotReceived',2);" class="newusa_ici_1">未收到物品</span></a><a href="#"><span scop="type" onclick="selectType('SignificantlyNotAsDescribed',3);" class="newusa_ici_1">描述不符&nbsp;</span></a></li>
+        <li class="new_usa_list"><span class="newusa_i">处理状态：</span><a href="#"><span scop="status" onclick="selectStatus(null,0);" class="newusa_ici">&nbsp;全部&nbsp;&nbsp;</span></a><a href="#"><span scop="status" onclick="selectStatus('1',1);" class="newusa_ici_1">已处理&nbsp;</span></a><a href="#"><span scop="status" onclick="selectStatus('0',2);" class="newusa_ici_1">未处理&nbsp;</span></a></li>
         <div class="newsearch">
-            <span class="newusa_i">搜索内容：</span><a href="#"><span scop="days" onclick="selectDays(null,0);" class="newusa_ici_1">&nbsp;全部&nbsp;&nbsp;</span></a><a href="#"><span scop="days" onclick="selectDays('1',1);" class="newusa_ici_1">&nbsp;今天&nbsp;&nbsp;</span></a><a href="#"><span scop="days" onclick="selectDays('2',2);" class="newusa_ici_1">&nbsp;昨天&nbsp;&nbsp;</span></a><a href="#"><span scop="days" onclick="selectDays('7',3);" class="newusa_ici_1">7天以内&nbsp;</span></a><a href="#"><span scop="days" onclick="selectDays('30',4);" class="newusa_ici_1">30天以内&nbsp;</span></a>
-            <span style="float: left;color: #5F93D7;">从</span><input style="float: left;color: #5F93D7;width: 90px;height: 26px;" id="starttime"  type="text" onfocus="WdatePicker({isShowWeek:true,dateFmt:'yyyy-MM-dd'})"/>
-            <span style="float: left;color: #5F93D7;">到</span><input style="float: left;color: #5F93D7;width: 90px;height: 26px;margin-right: 20px;" id="endtime"  type="text" onfocus="WdatePicker({isShowWeek:true,dateFmt:'yyyy-MM-dd'})"/>
+            <span class="newusa_i">搜索内容：</span><a href="#"><span scop="days" onclick="selectDays(null,0);" class="newusa_ici">&nbsp;全部&nbsp;&nbsp;</span></a><a href="#"><span scop="days" onclick="selectDays('1',1);" class="newusa_ici_1">&nbsp;今天&nbsp;&nbsp;</span></a><a href="#"><span scop="days" onclick="selectDays('2',2);" class="newusa_ici_1">&nbsp;昨天&nbsp;&nbsp;</span></a><a href="#"><span scop="days" onclick="selectDays('7',3);" class="newusa_ici_1">7天以内&nbsp;</span></a><a href="#"><span scop="days" onclick="selectDays('30',4);" class="newusa_ici_1">30天以内&nbsp;</span></a>
+            <span style="float: left;color: #5F93D7;">从</span><input class="form-controlsd " style="float: left;color: #5F93D7;width: 90px;height: 26px;border-color: #d0dde9;" id="starttime"  type="text" onfocus="WdatePicker({isShowWeek:true,dateFmt:'yyyy-MM-dd'})"/>
+            <span style="float: left;color: #5F93D7;">到</span><input class="form-controlsd " style="float: left;color: #5F93D7;width: 90px;height: 26px;margin-right: 20px;border-color: #d0dde9;" id="endtime"  type="text" onfocus="WdatePicker({isShowWeek:true,dateFmt:'yyyy-MM-dd'})"/>
 <span id="sleBG">
 <span id="sleHid">
 <select id="selectName" name="type" class="select">
@@ -617,9 +617,9 @@
 </div>
 
 
-<script src="../../js/jquery-latest.js"></script>
+<%--<script src="../../js/jquery-latest.js"></script>
 <script src="../../js/bootstrap.min.js"></script>
-<script src="../../js/theme.js"></script>
+<script src="../../js/theme.js"></script>--%>
 
 </div></div></div></div></div></div>
 </body>
