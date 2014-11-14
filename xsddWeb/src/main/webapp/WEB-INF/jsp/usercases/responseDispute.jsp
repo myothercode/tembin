@@ -25,7 +25,7 @@
                     "<input type='text' name='number'/>" +
                     "<br/>Which carrier did you use?<br/> " +
                     "<input type='text' name=\"carrier\"/><br/>" +
-                    "[<a href=\"javascript:viod()\" onclick=''>View your tracking information</a>]" +
+                    "[<a href=\"javascript:viod(0)\" onclick=''>View your tracking information</a>]" +
                     "<div class=\"table-a\">" +
                     "<table align=\"center\"  border=\"0\" cellpadding=\"0\" cellspacing=\"0\" style=\"width: 400px;\" >" +
                     "<tr><td align=\"center\" style=\"width: 200px;\"><b>Traking #:</b></td><td>-</td></tr>" +
@@ -121,7 +121,7 @@
                         function(m,r){
                             alert(r);
                             Base.token();
-                        }]
+                        }],{isConverPage:true}
             );
         }
         function sendWithoutNum(){
@@ -139,7 +139,7 @@
                         function(m,r){
                             alert(r);
                             Base.token();
-                        }]
+                        }],{isConverPage:true}
             );
         }
         function sendRefund(){
@@ -148,6 +148,7 @@
             }
             var url=path+"/userCases/sendRefund.do?";
             var data=$("#sendRefund").serialize();
+            var date1={isConverPage:true};
             $().invoke(url,data,
                     [function(m,r){
                         alert(r);
@@ -157,7 +158,7 @@
                         function(m,r){
                             alert(r);
                             Base.token();
-                        }]
+                        }],{isConverPage:true}
             );
         }
         function sendMessageForm(){
@@ -175,7 +176,7 @@
                         function(m,r){
                             alert(r);
                             Base.token();
-                        }]
+                        }],{isConverPage:true}
             );
         }
         function closedialog(){
@@ -364,7 +365,7 @@
                     <td height="32" align="left"><input name="carrier" type="text" class="form-controlsd" value="${order.shippingcarrierused}"></td>
                 </tr>
                 <tr>
-                    <td height="32" align="left">[ <a href="#" onclick="queryTrack();"><font color="#5F93D7">View your tracking information</font></a> ]
+                    <td height="32" align="left">[ <a href="javascript:void(0)" onclick="queryTrack();"><font color="#5F93D7">View your tracking information</font></a> ]
                         <span class="voknet"></span></td>
                 </tr>
                 <tr>
@@ -527,8 +528,9 @@
 </tr>
 <tr>
     <td width="772"><div class="modal-footer">
+        <div style="bottom: 1px;">
         <button type="button" class="btn btn-newco" onclick="submit3();">回复</button>
-        <button type="button" class="btn btn-default" onclick="closedialog();" data-dismiss="modal">关闭</button>
+        <button type="button" class="btn btn-default" onclick="closedialog();" data-dismiss="modal">关闭</button></div>
     </div> </td>
 </tr>
 </tbody></table>
@@ -545,14 +547,14 @@
 <div><b>Choose one of the following:</b></div>
 <div class="table-a">
     <table border="0" cellpadding="0" cellspacing="0" style="width: 560px;" >
-        <tr><td><a href="javascript:viod()" onclick="verifyTrack();"><b>Verify tracking information</b>(Buyer's preference)</a></td></tr>
+        <tr><td><a href="javascript:viod(0)" onclick="verifyTrack();"><b>Verify tracking information</b>(Buyer's preference)</a></td></tr>
         <tr id="verify"><td>
             Please verify that this tracking information is correct and click Submit to continue.If it is incorrect,please re-enter your tracking number.<br/>
             What is your tracking number?<br/>
             <input type="text" name="number"/><br/>
             Which carrier did you use?<br/>
             <input type="text" name="carrier"/><br/>
-            [<a href="javascript:viod()">View your tracking information</a>]
+            [<a href="javascript:viod(0)">View your tracking information</a>]
             <div class="table-a">
                 <table align="center"  border="0" cellpadding="0" cellspacing="0" style="width: 400px;" >
                     <tr><td align="center" style="width: 200px;"><b>Traking #:</b></td><td>-</td></tr>
@@ -561,9 +563,9 @@
                 </table>
             </div>
         </td></tr>
-        <tr><td><a href="javascript:viod()" onclick="submit1();"><b>I shipped the item without tracking information</b></a></td></tr>
-        <tr><td><a href="javascript:viod()"><b>Issue a full refund</b></a></td></tr>
-        <tr><td><a href="javascript:viod()" onclick="sendMessage();"><b>Send a message</b></a>
+        <tr><td><a href="javascript:viod(0)" onclick="submit1();"><b>I shipped the item without tracking information</b></a></td></tr>
+        <tr><td><a href="javascript:viod(0)"><b>Issue a full refund</b></a></td></tr>
+        <tr><td><a href="javascript:viod(0)" onclick="sendMessage();"><b>Send a message</b></a>
             <div id="senddispute">
                 &lt;%&ndash;<textarea name="sendmessage" style="width: 500px;height: 200px;"></textarea>&ndash;%&gt;
             </div>

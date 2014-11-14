@@ -28,4 +28,8 @@ public interface ITradingMessageGetmymessage {
     List<TradingMessageGetmymessage> selectMessageGetmymessageByMessageId(String messageID);
 
     List<TradingMessageGetmymessage> selectMessageGetmymessageByItemIdAndSender(String itemid,String sender,String recipient );
+
+    TradingMessageGetmymessage selectMessageGetmymessageById(Long id);
+
+    List<TradingMessageGetmymessage> selectMessageGetmymessageByReplied(Long userId);
 }

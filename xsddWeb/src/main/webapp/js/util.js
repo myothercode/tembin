@@ -36,6 +36,44 @@ function getSysDate() {
 	return y + "-" + m + "-" + d;
 }
 
+/**判断是否是日期时间格式返回值为itime,idate,idatetime,none,date*/
+function strIsDateOrTime(str){
+    if(str==null || str=='' || str=='null'){return "none";}
+    if($.type(str)=='date'){return "date"}
+    if($.type(str)!='string'){return "none"}
+
+    //首先判断是否是完整的日期时间
+    var reg = /^(\d{1,4})(-|\/)(\d{1,2})\2(\d{1,2}) (\d{1,2}):(\d{1,2}):(\d{1,2})$/;
+    var r = str.match(reg);
+    if(r==null){}else{
+    var d= new Date(r[1], r[3]-1,r[4],r[5],r[6],r[7]);
+    if (d.getFullYear()==r[1]&&(d.getMonth()+1)==r[3]&&d.getDate()==r[4]&&d.getHours()==r[5]&&d.getMinutes()==r[6]&&d.getSeconds()==r[7]){
+        return "idatetime";
+    }};
+
+    /**第二判断是否是日期格式*/
+    r=null;
+    d=null;
+    r=str.match(/^(\d{1,4})(-|\/)(\d{1,2})\2(\d{1,2})$/);
+    if(r==null){}else{
+        d= new Date(r[1], r[3]-1, r[4]);
+        if((d.getFullYear()==r[1]&&(d.getMonth()+1)==r[3]&&d.getDate()==r[4])){
+            return "idate";
+        }
+    }
+    /**判断是否是时间格式*/
+    r=null;
+    d=null;
+    r=str.match(/^(\d{1,2})(:)?(\d{1,2})\2(\d{1,2})$/);
+    if(r==null){}else{
+        if (r[1]>24 || r[3]>60 || r[4]>60){return "none";}else{
+            return "itime";
+        }
+    }
+    return "none";
+}
+
+
 //加减乘除
 function accAdd(arg1, arg2) {
 	var r1, r2, m, c;

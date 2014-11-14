@@ -27,7 +27,7 @@
 <hr/>
 <table>
     <tr>
-        <td colspan="2"><a onclick="ebayurl();" href="void()">${order.title}</a></td>
+        <td colspan="2"><a onclick="ebayurl();" href="javascript:void(0)">${order.title}</a></td>
     </tr>
     <tr>
         <td>Item No.:</td>

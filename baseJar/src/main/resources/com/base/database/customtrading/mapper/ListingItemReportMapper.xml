@@ -21,7 +21,60 @@
         <if test="(datetype==5 or datetype==6) and flag==1">
             and DATE_FORMAT(su.start_date, '%Y-%m') = #{datestr}
         </if>
+        <if test="(datetype==1 or datetype==2) and flag==2">
+            and DATE_FORMAT(su.end_date, '%Y-%m-%d') = #{datestr}
+        </if>
+        <if test="(datetype==3 or datetype==4) and flag==2">
+            and DATE_FORMAT(su.end_date, '%Y-%m-%d') >= #{startDate} and  #{endDate}>=DATE_FORMAT(su.end_date, '%Y-%m-%d')
+        </if>
+        <if test="(datetype==5 or datetype==6) and flag==2">
+            and DATE_FORMAT(su.end_date, '%Y-%m') = #{datestr}
+        </if>
 
+        <if test="soldflag!=null">
+            and lid.QuantitySold>0
+        </if>
+    </select>
+
+
+    <select id="selectListingItemReportFee" resultMap="BaseResultMap" parameterType="map">
+        select ${datetype} returnType,sum(su.listing_fee) tjNumber from trading_listing_success su left JOIN trading_listing_data lid on su.item_id=lid.item_id where 1=1
+        <if test="(datetype==1 or datetype==2) and flag==1">
+            and DATE_FORMAT(su.start_date, '%Y-%m-%d') = #{datestr}
+        </if>
+        <if test="(datetype==3 or datetype==4) and flag==1">
+            and DATE_FORMAT(su.start_date, '%Y-%m-%d') >= #{startDate} and  #{endDate}>=DATE_FORMAT(su.start_date, '%Y-%m-%d')
+        </if>
+        <if test="(datetype==5 or datetype==6) and flag==1">
+            and DATE_FORMAT(su.start_date, '%Y-%m') = #{datestr}
+        </if>
+        <if test="(datetype==1 or datetype==2) and flag==2">
+            and DATE_FORMAT(su.end_date, '%Y-%m-%d') = #{datestr}
+        </if>
+        <if test="(datetype==3 or datetype==4) and flag==2">
+            and DATE_FORMAT(su.end_date, '%Y-%m-%d') >= #{startDate} and  #{endDate}>=DATE_FORMAT(su.end_date, '%Y-%m-%d')
+        </if>
+        <if test="(datetype==5 or datetype==6) and flag==2">
+            and DATE_FORMAT(su.end_date, '%Y-%m') = #{datestr}
+        </if>
+
+        <if test="soldflag!=null">
+            and lid.QuantitySold>0
+        </if>
+    </select>
+
+
+    <select id="selectListingItemSales" resultMap="BaseResultMap" parameterType="map">
+        select ${datetype} returnType,ROUND(sum(lid.QuantitySold)/sum(lid.Quantity)*100,2) tjNumber from trading_listing_success su ,trading_listing_data lid where su.item_id=lid.item_id and lid.is_flag='0'
+        <if test="(datetype==1 or datetype==2) and flag==1">
+            and DATE_FORMAT(su.start_date, '%Y-%m-%d') = #{datestr}
+        </if>
+        <if test="(datetype==3 or datetype==4) and flag==1">
+            and DATE_FORMAT(su.start_date, '%Y-%m-%d') >= #{startDate} and  #{endDate}>=DATE_FORMAT(su.start_date, '%Y-%m-%d')
+        </if>
+        <if test="(datetype==5 or datetype==6) and flag==1">
+            and DATE_FORMAT(su.start_date, '%Y-%m') = #{datestr}
+        </if>
         <if test="(datetype==1 or datetype==2) and flag==2">
             and DATE_FORMAT(su.end_date, '%Y-%m-%d') = #{datestr}
         </if>

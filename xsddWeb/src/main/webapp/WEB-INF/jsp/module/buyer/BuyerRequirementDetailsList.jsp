@@ -19,7 +19,7 @@
     <script>
         var buyerRequire;
         function addBuyer(){
-            buyerRequire=$.dialog({title: '新增买家要求',
+            buyerRequire=openMyDialog({title: '新增买家要求',
                 content: 'url:/xsddWeb/addBuyer.do',
                 icon: 'succeed',
                 width:500,
@@ -28,7 +28,7 @@
         }
 
         function editBuyer(id){
-            buyerRequire=$.dialog({title: '编辑买家要求',
+            buyerRequire=openMyDialog({title: '编辑买家要求',
                 content: 'url:/xsddWeb/editBuyer.do?id='+id,
                 icon: 'succeed',
                 width:500,
@@ -36,7 +36,7 @@
             });
         }
         function editBuyerselect(id){
-            buyerRequire=$.dialog({title: '查看买家要求',
+            buyerRequire=openMyDialog({title: '查看买家要求',
                 content: 'url:/xsddWeb/editBuyer.do?id='+id+'&type=01',
                 icon: 'succeed',
                 width:500,

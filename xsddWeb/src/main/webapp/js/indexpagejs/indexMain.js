@@ -12,6 +12,17 @@ $(document).ready(function(){
     getCharData(doKnobs,_getOrderCountData,{});//单量走势
     loadFeedBackReportData();
     loadItemReportData();
+
+    showBanner_(false);
+    /**滚动条滚动到顶部和底部的时候触发事件显示和隐藏banner栏*/
+    $(window).scroll(function() {
+        if($(document).scrollTop()>0){//如果不是在顶端，隐藏顶部栏
+            hideBanner_();
+        };
+        if($(document).scrollTop() <= 0){//如果到顶端，显示顶部栏
+            showBanner_(true);
+        }
+    });
 });
 
 /**处理container容器的初始化方法*/
@@ -25,7 +36,8 @@ function doContainer(xzb,r){
             //events:{load:function(){alert(1)}}
         },
         title: {
-            text: '渠道分布'
+            //text: '渠道分布'
+            text: ''
         },
         tooltip: {
             pointFormat: '{series.name}: <b>{point.y:.1f}</b>'
@@ -89,7 +101,8 @@ function doKnobs(xzb,r){
             //events:{load:function(){alert(1)}}
         },
         title: {
-            text: '单量走势'
+            //text: '单量走势'
+            text: ''
         },
         subtitle: {
             text: '..'
@@ -268,8 +281,15 @@ function refreshIndexEbayTable(p){
 /**组装密钥有效期*/
 function mCanUseDate(json){
     //var da=json['useTimeStart']+" 至 "+json['useTimeEnd'];
-    var da=json['useTimeEnd'];
-    return da;
+   // alert(json['useTimeEnd'])
+
+    if(strIsDateOrTime(json['useTimeEnd'])=='idatetime'){
+        return new Date(json['useTimeEnd']).format("yyyy-MM-dd")
+    }
+    return json['useTimeEnd']
+    /*var t= new Date().format("yyyy-MM-dd");
+    //var da=json['useTimeEnd'];
+    return t;*/
 }
 /**状态*/
 function makeStatus(json){
@@ -323,4 +343,38 @@ function makePaypalStatus(json){
 function refreshPayPalTable(p){
     if(p==null){p={}}
     $("#indexPayPal").selectDataAfterSetParm(p);
+}
+
+
+/**页面加载完成后执行的方法*/
+var bbs_=true;
+var bbc_=true;
+function showBanner_(o){
+    if(parent.document==document){return}
+    $("#navbar",parent.document.body).show();
+    $("#contentMaindiv",parent.document.body).css("top","58px");
+    if(!o){
+        $("#contentMaindiv",parent.document.body).css("height",(parseInt(parent.mainHei_)-60)+"px");
+
+        return;
+    }
+    if(bbs_){
+        var parentDivH = $("#contentMaindiv",parent.document.body).css("height").replace("px");
+        $("#contentMaindiv",parent.document.body).css("height",(parseInt(parentDivH)-60)+"px");
+        bbc_=true;
+        bbs_=false;
+    }
+}
+function hideBanner_(){
+    if(parent.document==document){return;}
+    $("#navbar",parent.document.body).hide();
+    $("#contentMaindiv",parent.document.body).css("top","0px");
+
+    if(bbc_){
+        var parentDivH = $("#contentMaindiv",parent.document.body).css("height").replace("px");
+        $("#contentMaindiv",parent.document.body).css("height",(parseInt(parentDivH)+60)+"px");
+        bbc_=false;
+        bbs_=true;
+    }
+
 }

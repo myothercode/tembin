@@ -89,4 +89,15 @@
         <property name="rejectedExecutionHandler"> <bean class="java.util.concurrent.ThreadPoolExecutor$CallerRunsPolicy" /> </property>
     </bean>
 
+
+    <!--内部任务的线程池-->
+    <bean id="otherScheduledThreadPoolTaskExecutor"
+          class="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor">
+        <property name="corePoolSize" value="10" />  <!-- 并发线程数,想达到真正的并发效果,最好对应CPU的线程数及核心数 -->
+        <property name="keepAliveSeconds" value="30" />
+        <property name="maxPoolSize" value="30" />     <!-- 最大线程池容量 -->
+        <property name="queueCapacity" value="35" />   <!-- 超过最大线程池容量后,允许的线程队列数 -->
+        <property name="rejectedExecutionHandler"> <bean class="java.util.concurrent.ThreadPoolExecutor$CallerRunsPolicy" /> </property>
+    </bean>
+
 </beans>

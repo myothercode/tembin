@@ -35,4 +35,8 @@ public interface ITradingOrderGetOrders {
     List<TradingOrderGetOrders> selectOrderGetOrdersBySendShipMessage();
 
     List<TradingOrderGetOrders> selectOrderGetOrdersByeBayAccountAndTime(String ebay,Date start,Date end);
+
+    TradingOrderGetOrders selectOrderGetOrdersById(Long id);
+
+    void deleteOrderGetOrders(Long id) throws Exception;
 }

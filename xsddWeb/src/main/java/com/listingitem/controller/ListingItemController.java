@@ -1,5 +1,6 @@
 package com.listingitem.controller;
 
+import com.base.aboutpaypal.service.PayPalService;
 import com.base.database.customtrading.mapper.ListingDataTaskQueryMapper;
 import com.base.database.publicd.model.PublicUserConfig;
 import com.base.database.task.model.ListingDataTask;
@@ -41,6 +42,7 @@ import org.apache.commons.lang.math.NumberUtils;
 import org.apache.poi.hssf.usermodel.*;
 import org.apache.poi.ss.usermodel.Picture;
 import org.dom4j.Document;
+import org.dom4j.DocumentException;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -90,6 +92,11 @@ public class ListingItemController extends BaseAction {
     private ListingDataTaskQueryMapper listingDataTaskQueryMapper;
     @Autowired
     private ITradingListingPicUrl iTradingListingPicUrl;
+
+    @Autowired
+    private ITradingListingSuccess iTradingListingSuccess;
+    @Autowired
+    private PayPalService payPalService;
 
     @RequestMapping("/getListingItemList.do")
     public ModelAndView getListingItemList(HttpServletRequest request, HttpServletResponse response, ModelMap modelMap) throws Exception {
@@ -755,6 +762,7 @@ public class ListingItemController extends BaseAction {
                 tla.setIsFlag("1");
                 tld.setIsFlag("1");
                 this.iTradingListingData.updateTradingListingData(tld);
+                this.saveEndListingItem(res,tld.getItemId());
                 litld.add(tld);
             }else{
                 String resStr = "";
@@ -769,6 +777,20 @@ public class ListingItemController extends BaseAction {
             this.iTradingListingData.insertTradingListingAmend(tla);
         }
         AjaxSupport.sendSuccessText("",litld);
+    }
+
+    public void saveEndListingItem(String xml,String itemId){
+        List<TradingListingSuccess> litls = this.iTradingListingSuccess.selectByItemid(itemId);
+        try {
+            String EndTime = SamplePaseXml.getVFromXmlString(xml, "EndTime");
+            if(litls!=null&&litls.size()>0){
+                TradingListingSuccess tls = litls.get(0);
+                tls.setEndDate(DateUtils.returnDate(EndTime));
+                this.iTradingListingSuccess.save(tls);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public String costXml(String itemid,String reason,String token){
@@ -931,6 +953,106 @@ public class ListingItemController extends BaseAction {
         String [] itemidStr = itemid.split(",");
         TradingListingData tldata = this.iTradingListingData.selectByItemid(itemidStr[0]);
         UsercontrollerEbayAccount uea = this.iUsercontrollerEbayAccount.selectByEbayAccount(tldata.getEbayAccount());
+            modelMap.put("sku",tldata.getSku());
+            modelMap.put("ebayAccount",tldata.getItemId());
+            /*modelMap.put("lipic",item.getPictureDetails().getPictureURL());*/
+            Map m = new HashMap();
+            m.put("type","site");
+            m.put("value",tldata.getSite());
+            List<TradingDataDictionary> litdd = DataDictionarySupport.getTradingDataDictionaryByMap(m);
+            if(litdd!=null&&litdd.size()>0){
+                modelMap.put("tdd",litdd.get(0));
+            }
+            modelMap.put("tldata",tldata);
+            modelMap.put("itemidstr",itemid);
+            SessionVO c= SessionCacheSupport.getSessionVO();
+
+            Map map =new HashMap();
+            map.put("userId",c.getId());
+            PageJsonBean jsonBean=new PageJsonBean();
+            jsonBean.setPageCount(1000);
+            jsonBean.setPageNum(1);
+            List<UsercontrollerPaypalAccount> paypalAccounts = payPalService.queryPayPalList(map, jsonBean.toPage());
+            modelMap.put("paypalList",paypalAccounts);
+
+            List<TradingDataDictionary> lidata = DataDictionarySupport.getTradingDataDictionaryByType(DataDictionarySupport.DATA_DICT_SITE);
+            modelMap.put("siteList",lidata);
+
+            List<TradingDataDictionary> acceptList = DataDictionarySupport.getTradingDataDictionaryByType(DataDictionarySupport.RETURNS_ACCEPTED_OPTION);
+            modelMap.put("acceptList",acceptList);
+
+            List<TradingDataDictionary> withinList = DataDictionarySupport.getTradingDataDictionaryByType(DataDictionarySupport.RETURNS_WITHIN_OPTION);
+            modelMap.put("withinList",withinList);
+
+            List<TradingDataDictionary> refundList = DataDictionarySupport.getTradingDataDictionaryByType(DataDictionarySupport.REFUND_OPTION);
+            modelMap.put("refundList",refundList);
+
+            List<TradingDataDictionary> costPaidList = DataDictionarySupport.getTradingDataDictionaryByType(DataDictionarySupport.SHIPPING_COST_PAID);
+            modelMap.put("costPaidList",costPaidList);
+
+            List<TradingDataDictionary> lidatas = this.iTradingDataDictionary.selectDictionaryByType("country");
+            modelMap.put("countryList",lidatas);
+            Long siteid = 0L;
+            for(TradingDataDictionary tdd : lidata){
+                if(tdd.getValue().equals(tldata.getSite())){
+                    siteid=tdd.getId();
+                    break;
+                }
+            }
+            modelMap.put("siteid",siteid);
+            List<TradingDataDictionary> litype = DataDictionarySupport.getTradingDataDictionaryByType(DataDictionarySupport.DATA_DICT_SHIPPING_TYPE,siteid);
+            List<TradingDataDictionary> li1 = new ArrayList<TradingDataDictionary>();
+            List<TradingDataDictionary> li2 = new ArrayList<TradingDataDictionary>();
+            List<TradingDataDictionary> li3 = new ArrayList<TradingDataDictionary>();
+            List<TradingDataDictionary> li4 = new ArrayList<TradingDataDictionary>();
+            List<TradingDataDictionary> li5 = new ArrayList<TradingDataDictionary>();
+            for(TradingDataDictionary tdd:litype){
+                if(tdd.getName1().equals("Economy services")){
+                    li1.add(tdd);
+                }else if(tdd.getName1().equals("Expedited services")){
+                    li2.add(tdd);
+                }else if(tdd.getName1().equals("One-day services")){
+                    li3.add(tdd);
+                }else if(tdd.getName1().equals("Other services")){
+                    li4.add(tdd);
+                }else if(tdd.getName1().equals("Standard services")){
+                    li5.add(tdd);
+                }
+            }
+            modelMap.put("li1",li1);
+            modelMap.put("li2",li2);
+            modelMap.put("li3",li3);
+            modelMap.put("li4",li4);
+            modelMap.put("li5",li5);
+
+            List<TradingDataDictionary> liinter = DataDictionarySupport.getTradingDataDictionaryByType(DataDictionarySupport.DATA_DICT_SHIPPINGINTER_TYPE);
+            List<TradingDataDictionary> inter1 = new ArrayList();
+            List<TradingDataDictionary> inter2 = new ArrayList();
+            for(TradingDataDictionary tdd:liinter){
+                if(tdd.getName1().equals("Expedited services")){
+                    inter1.add(tdd);
+                }else if(tdd.getName1().equals("Other services")){
+                    inter2.add(tdd);
+                }
+            }
+            modelMap.put("inter1",inter1);
+            modelMap.put("inter2",inter2);
+
+            List<TradingDataDictionary> lipackage = DataDictionarySupport.getTradingDataDictionaryByType(DataDictionarySupport.DATA_DICT_SHIPPINGPACKAGE);
+
+            modelMap.put("lipackage",lipackage);
+
+            List<PublicUserConfig> ebayList = DataDictionarySupport.getPublicUserConfigByType(DataDictionarySupport.PUBLIC_DATA_DICT_EBAYACCOUNT, c.getId());
+            modelMap.put("ebayList",ebayList);
+        return forword("listingitem/editListingItem",modelMap);
+    }
+
+    @RequestMapping("/ajax/getListingItem.do")
+    public void getListingItem(HttpServletRequest request, HttpServletResponse response, ModelMap modelMap) throws Exception {
+        String itemid = request.getParameter("itemid");
+        String [] itemidStr = itemid.split(",");
+        TradingListingData tldata = this.iTradingListingData.selectByItemid(itemidStr[0]);
+        UsercontrollerEbayAccount uea = this.iUsercontrollerEbayAccount.selectByEbayAccount(tldata.getEbayAccount());
         String xml = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n" +
                 "<GetItemRequest xmlns=\"urn:ebay:apis:eBLBaseComponents\">\n" +
                 "<RequesterCredentials>\n" +
@@ -940,103 +1062,17 @@ public class ListingItemController extends BaseAction {
                 "<DetailLevel>ReturnAll</DetailLevel>\n" +
                 "</GetItemRequest>";
         String res = this.cosPostXml(xml,APINameStatic.GetItem);
-            String ack = SamplePaseXml.getVFromXmlString(res,"Ack");
-            if("Success".equalsIgnoreCase(ack)||"Warning".equalsIgnoreCase(ack)){
-                Item item = null;
-                if(res!=null){
-                    item = SamplePaseXml.getItem(res);
-                }
-
-                modelMap.put("sku",item.getSKU());
-                modelMap.put("ebayAccount",item.getItemID());
-                modelMap.put("lipic",item.getPictureDetails().getPictureURL());
-
-
-
-
-                modelMap.put("item",item);
-                modelMap.put("itemidstr",itemid);
-                SessionVO c= SessionCacheSupport.getSessionVO();
-                List<PublicUserConfig> paypalList = DataDictionarySupport.getPublicUserConfigByType(DataDictionarySupport.PUBLIC_DATA_DICT_PAYPAL, c.getId());
-                modelMap.put("paypalList",paypalList);
-
-                List<TradingDataDictionary> lidata = DataDictionarySupport.getTradingDataDictionaryByType(DataDictionarySupport.DATA_DICT_SITE);
-                modelMap.put("siteList",lidata);
-
-                List<TradingDataDictionary> acceptList = DataDictionarySupport.getTradingDataDictionaryByType(DataDictionarySupport.RETURNS_ACCEPTED_OPTION);
-                modelMap.put("acceptList",acceptList);
-
-                List<TradingDataDictionary> withinList = DataDictionarySupport.getTradingDataDictionaryByType(DataDictionarySupport.RETURNS_WITHIN_OPTION);
-                modelMap.put("withinList",withinList);
-
-                List<TradingDataDictionary> refundList = DataDictionarySupport.getTradingDataDictionaryByType(DataDictionarySupport.REFUND_OPTION);
-                modelMap.put("refundList",refundList);
-
-                List<TradingDataDictionary> costPaidList = DataDictionarySupport.getTradingDataDictionaryByType(DataDictionarySupport.SHIPPING_COST_PAID);
-                modelMap.put("costPaidList",costPaidList);
-
-                List<TradingDataDictionary> lidatas = this.iTradingDataDictionary.selectDictionaryByType("country");
-                modelMap.put("countryList",lidatas);
-                Long siteid = 0L;
-                for(TradingDataDictionary tdd : lidata){
-                    if(tdd.getValue().equals(item.getSite())){
-                        siteid=tdd.getId();
-                        break;
-                    }
-                }
-                modelMap.put("siteid",siteid);
-                List<TradingDataDictionary> litype = DataDictionarySupport.getTradingDataDictionaryByType(DataDictionarySupport.DATA_DICT_SHIPPING_TYPE,siteid);
-                List<TradingDataDictionary> li1 = new ArrayList<TradingDataDictionary>();
-                List<TradingDataDictionary> li2 = new ArrayList<TradingDataDictionary>();
-                List<TradingDataDictionary> li3 = new ArrayList<TradingDataDictionary>();
-                List<TradingDataDictionary> li4 = new ArrayList<TradingDataDictionary>();
-                List<TradingDataDictionary> li5 = new ArrayList<TradingDataDictionary>();
-                for(TradingDataDictionary tdd:litype){
-                    if(tdd.getName1().equals("Economy services")){
-                        li1.add(tdd);
-                    }else if(tdd.getName1().equals("Expedited services")){
-                        li2.add(tdd);
-                    }else if(tdd.getName1().equals("One-day services")){
-                        li3.add(tdd);
-                    }else if(tdd.getName1().equals("Other services")){
-                        li4.add(tdd);
-                    }else if(tdd.getName1().equals("Standard services")){
-                        li5.add(tdd);
-                    }
-                }
-                modelMap.put("li1",li1);
-                modelMap.put("li2",li2);
-                modelMap.put("li3",li3);
-                modelMap.put("li4",li4);
-                modelMap.put("li5",li5);
-
-                List<TradingDataDictionary> liinter = DataDictionarySupport.getTradingDataDictionaryByType(DataDictionarySupport.DATA_DICT_SHIPPINGINTER_TYPE);
-                List<TradingDataDictionary> inter1 = new ArrayList();
-                List<TradingDataDictionary> inter2 = new ArrayList();
-                for(TradingDataDictionary tdd:liinter){
-                    if(tdd.getName1().equals("Expedited services")){
-                        inter1.add(tdd);
-                    }else if(tdd.getName1().equals("Other services")){
-                        inter2.add(tdd);
-                    }
-                }
-                modelMap.put("inter1",inter1);
-                modelMap.put("inter2",inter2);
-
-                List<TradingDataDictionary> lipackage = DataDictionarySupport.getTradingDataDictionaryByType(DataDictionarySupport.DATA_DICT_SHIPPINGPACKAGE);
-
-                modelMap.put("lipackage",lipackage);
-
-                List<PublicUserConfig> ebayList = DataDictionarySupport.getPublicUserConfigByType(DataDictionarySupport.PUBLIC_DATA_DICT_EBAYACCOUNT, c.getId());
-                modelMap.put("ebayList",ebayList);
-            }else{
-                Asserts.assertTrue(false,"查询数据报错！");
+        String ack = SamplePaseXml.getVFromXmlString(res,"Ack");
+        if("Success".equalsIgnoreCase(ack)||"Warning".equalsIgnoreCase(ack)) {
+            Item item = null;
+            if (res != null) {
+                item = SamplePaseXml.getItem(res);
             }
-
-
-            return forword("listingitem/editListingItem",modelMap);
+            AjaxSupport.sendSuccessText("",item);
+        }else{
+            Asserts.assertTrue(false,"查询数据报错！");
+        }
     }
-
 
     @RequestMapping("/ajax/updateListingData.do")
     @ResponseBody

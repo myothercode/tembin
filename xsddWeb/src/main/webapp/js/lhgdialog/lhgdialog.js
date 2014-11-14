@@ -265,7 +265,7 @@ lhgdialog.fn = lhgdialog.prototype =
 		.time( config.time )
 		[config.show?'show':'hide'](true).zindex();
 		
-		config.focus && that.focus();
+		false && that.focus();//取消对话框默认焦点   chace.cai
 		config.lock && that.lock();
 		that._ie6PngFix()._addEvent();
 		

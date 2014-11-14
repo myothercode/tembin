@@ -249,9 +249,27 @@ public class TradingOrderGetOrdersImpl implements com.trading.service.ITradingOr
             }
             cr.andSelleruseridIn(ebayNames);
         }
-        cr.andPaidtimeBetween(start,end);
+        if(start!=null&&end!=null){
+            cr.andPaidtimeBetween(start,end);
+        }
         List<TradingOrderGetOrders> list=tradingOrderGetOrdersMapper.selectByExample(example);
         return list;
+    }
+
+    @Override
+    public TradingOrderGetOrders selectOrderGetOrdersById(Long id) {
+        TradingOrderGetOrdersExample example=new TradingOrderGetOrdersExample();
+        TradingOrderGetOrdersExample.Criteria cr=example.createCriteria();
+        cr.andIdEqualTo(id);
+        List<TradingOrderGetOrders> list=tradingOrderGetOrdersMapper.selectByExample(example);
+        return list!=null&&list.size()>0?list.get(0):null;
+    }
+
+    @Override
+    public void deleteOrderGetOrders(Long id) throws Exception {
+        if(id!=null){
+            tradingOrderGetOrdersMapper.deleteByPrimaryKey(id);
+        }
     }
 
 

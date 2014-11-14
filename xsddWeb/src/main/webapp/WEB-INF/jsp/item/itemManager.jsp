@@ -178,7 +178,7 @@
         var OrderGetOrders;
         function addTabRemark(){
             var url=path+"/order/selectTabRemark.do?folderType=modelFolder";
-            OrderGetOrders=$.dialog({title: '选择文件夹',
+            OrderGetOrders=openMyDialog({title: '选择文件夹',
                 content: 'url:'+url,
                 icon: 'succeed',
                 width:800
@@ -388,7 +388,7 @@
                 remark = $("input[type='checkbox'][name='modelid'][val='" + id + "']").parent().parent().find("td").eq(2).find(".newdf").text().substr(3);
             }
             var tent = "<div class='textarea'>备注：<textarea cols='30' rows='5' id='centents' >"+remark+"</textarea></div>";
-            var editPage = $.dialog({title: '备注',
+            var editPage = openMyDialog({title: '备注',
                 content: tent,
                 icon: 'tips.gif',
                 width: 400,
@@ -458,7 +458,7 @@
                             htmlstr+="<div><input type='radio' name='folderid' value='"+r[i].id+"'/>"+r[i].configName+"</div>";
                         }
                         htmlstr += "</div>";
-                        var editPage = $.dialog({title: '选择移动到的文件夹',
+                        var editPage = openMyDialog({title: '选择移动到的文件夹',
                             content: htmlstr,
                             icon: 'succeed',
                             width: 400,
@@ -560,7 +560,7 @@
                                 }
                             }
                             tent+="</div>";
-                            var editPage = $.dialog({title: '刊登明细',
+                            var editPage = openMyDialog({title: '刊登明细',
                                 content: tent,
                                 icon: 'succeed',
                                 width: 400
@@ -590,7 +590,7 @@
                             }
                         }
                         tent+="</div>";
-                        var editPage = $.dialog({title: '刊登明细',
+                        var editPage = openMyDialog({title: '刊登明细',
                             content: tent,
                             icon: 'succeed',
                             width: 400
@@ -652,7 +652,7 @@
     var editMorepage
     function editMoreItem(idStr){
         var urls = path+'/editMoreItem.do?ids='+idStr;
-        editMorepage = $.dialog({title: '批量修改范本',
+        editMorepage = openMyDialog({title: '批量修改范本',
             content: 'url:'+urls,
             icon: 'succeed',
             width:1000,
@@ -671,7 +671,7 @@
                         htmlstr+="<div><input type='radio' name='ebayAccount' value='"+r[i].id+"'/>"+r[i].ebayName+"</div>";
                     }
                     htmlstr += "</div>";
-                    var editPage = $.dialog({title: '选择Ebay账号',
+                    var editPage = openMyDialog({title: '选择Ebay账号',
                         content: htmlstr,
                         icon: 'tips.gif',
                         width: 400,
@@ -738,7 +738,7 @@
     //重命名
     function renameItem(idStr){
         var htmlstr = "<div>请输入名称：<input type='text' name='fileName' id='fileName'/></div>";
-        $.dialog({title: '请输入名称',
+        openMyDialog({title: '请输入名称',
             content: htmlstr,
             icon: 'succeed',
             width: 400,
@@ -778,7 +778,7 @@
             }
         });
         var urls = path+'/selectSiteList.do?siteidStr='+siteid;
-        siteListPage = $.dialog({title: '选择站点',
+        siteListPage = openMyDialog({title: '选择站点',
             content: 'url:'+urls,
             icon: 'succeed',
             width:500,
@@ -805,7 +805,7 @@
         function selectTimer(obj){
             $("#idStr").val(obj)
             var urls = path+'/selectTimer.do';
-            timerPage = $.dialog({title: '选择定时时间',
+            timerPage = openMyDialog({title: '选择定时时间',
                 content: 'url:'+urls,
                 icon: 'succeed',
                 width:500,

@@ -38,7 +38,7 @@
             var remarks=$("input[name=label]");
             var remark="";
             if(remarks.length==0){
-                alert("请添加标签");
+                alert("请先添加标签");
                 return;
             }else{
                 for(var i=0;i<remarks.length;i++){
@@ -146,7 +146,7 @@
                             li_id = 0;
                         }
                         $(".label_box").css("display", "block");
-                        var text = "<a href='javascript:#' style='padding: 3px 5px 3px 5px;margin-left: 5px;margin-top:3px;border: 1px solid #aaaaaa;border-radius: 3px;position: relative;line-height: 30px;' onclick='deletes(this);' ><i class=\"icon-remove-sign\" style='margin-right: 2px;'></i><span >" + str + "</span></a><input type='hidden' name='label' value='" + str + "'>";
+                        var text = "<a href='javascript:#' style='padding: 3px 5px 3px 5px;margin-left: 5px;margin-top:3px;border: 1px solid #aaaaaa;border-radius: 3px;position: relative;line-height: 30px;' onclick='deletes(this);' ><i class=\"icon-remove-sign\" style='margin-right: 2px;'></i><span >" + str + "</span><input type='hidden' name='label' value='" + str + "'></a>";
                         var spans=$("#addRemark").find("span");
                         for(var i=0;i<spans.length;i++){
                             var span=spans[i].innerHTML;

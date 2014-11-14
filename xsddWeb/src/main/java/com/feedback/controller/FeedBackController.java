@@ -239,35 +239,103 @@ public class FeedBackController extends BaseAction {
         //本月结束刊登买出去有
         List<ListingItemReportQuery> monthendListingSold = this.iTradingListingSuccess.selectListingItemReport("5","2","1");
 
+
+        //计算刊登费用
+        //当天刊登费
+        List<ListingItemReportQuery> dayListingFee = this.iTradingListingSuccess.selectListingItemReportFee("1","1",null);
+        //本周刊登费
+        List<ListingItemReportQuery> weekListingFee = this.iTradingListingSuccess.selectListingItemReportFee("3","1",null);
+        //本月刊登费
+        List<ListingItemReportQuery> monthListingFee = this.iTradingListingSuccess.selectListingItemReportFee("5","1",null);
+
+
+        //当天结束刊登费
+        List<ListingItemReportQuery> dayListingEndFee = this.iTradingListingSuccess.selectListingItemReportFee("1","2",null);
+        //本周结束刊登费
+        List<ListingItemReportQuery> weekListingEndFee = this.iTradingListingSuccess.selectListingItemReportFee("3","2",null);
+        //本月结束刊登费
+        List<ListingItemReportQuery> monthListingEndFee = this.iTradingListingSuccess.selectListingItemReportFee("5","2",null);
+
+
+        //当天销售比
+        List<ListingItemReportQuery> dayListingSales = this.iTradingListingSuccess.selectListingItemSales("1","1",null);
+        //昨天销售比
+        List<ListingItemReportQuery> yesterdayListingSales = this.iTradingListingSuccess.selectListingItemSales("2","1",null);
+        //本周销售比
+        List<ListingItemReportQuery> weekListingSales = this.iTradingListingSuccess.selectListingItemReportFee("3","1",null);
+        //上周销售比
+        List<ListingItemReportQuery> thatweekListingSales = this.iTradingListingSuccess.selectListingItemReportFee("4","1",null);
+        //本月销售比
+        List<ListingItemReportQuery> monthListingSales = this.iTradingListingSuccess.selectListingItemReportFee("5","1",null);
+        //上月销售比
+        List<ListingItemReportQuery> thatmonthListingSales = this.iTradingListingSuccess.selectListingItemReportFee("6","1",null);
+
+
         for(TradingListingReport tlr : lim){
             if(tlr.getDatatype().equals("1")&&dayListing.size()>0){
-                tlr.setDay(dayListing.get(0).getTjNumber());
+                tlr.setDay(dayListing.get(0).getTjNumber()==null?"0":dayListing.get(0).getTjNumber());
             }
             if(tlr.getDatatype().equals("1")&&weekListing.size()>0){
-                tlr.setWeek(weekListing.get(0).getTjNumber());
+                tlr.setWeek(weekListing.get(0).getTjNumber()==null?"0":weekListing.get(0).getTjNumber());
             }
             if(tlr.getDatatype().equals("1")&&monthListing.size()>0){
-                tlr.setMonth(monthListing.get(0).getTjNumber());
+                tlr.setMonth(monthListing.get(0).getTjNumber()==null?"0":monthListing.get(0).getTjNumber());
             }
-
             if(tlr.getDatatype().equals("2")&&dayendListing.size()>0){
-                tlr.setDay(dayendListing.get(0).getTjNumber());
+                tlr.setDay(dayendListing.get(0).getTjNumber()==null?"0":dayendListing.get(0).getTjNumber());
             }
             if(tlr.getDatatype().equals("2")&&weekendListing.size()>0){
-                tlr.setWeek(weekendListing.get(0).getTjNumber());
+                tlr.setWeek(weekendListing.get(0).getTjNumber()==null?"0":weekendListing.get(0).getTjNumber());
             }
             if(tlr.getDatatype().equals("2")&&monthendListing.size()>0){
-                tlr.setMonth(monthendListing.get(0).getTjNumber());
+                tlr.setMonth(monthendListing.get(0).getTjNumber()==null?"0":monthendListing.get(0).getTjNumber());
             }
             if(tlr.getDatatype().equals("3")&&dayendListingSold.size()>0){
-                tlr.setDay(dayendListingSold.get(0).getTjNumber());
+                tlr.setDay(dayendListingSold.get(0).getTjNumber()==null?"0":dayendListingSold.get(0).getTjNumber());
             }
             if(tlr.getDatatype().equals("3")&&weekendListingSold.size()>0){
-                tlr.setWeek(weekendListingSold.get(0).getTjNumber());
+                tlr.setWeek(weekendListingSold.get(0).getTjNumber()==null?"0":weekendListingSold.get(0).getTjNumber());
             }
             if(tlr.getDatatype().equals("3")&&monthendListingSold.size()>0){
-                tlr.setMonth(monthendListingSold.get(0).getTjNumber());
+                tlr.setMonth(monthendListingSold.get(0).getTjNumber()==null?"0":monthendListingSold.get(0).getTjNumber());
             }
+            if(tlr.getDatatype().equals("4")&&dayListingSales.size()>0){
+                tlr.setDay(dayListingSales.get(0).getTjNumber()==null?"0.00%":dayListingSales.get(0).getTjNumber()+"%");
+            }
+            if(tlr.getDatatype().equals("4")&&yesterdayListingSales.size()>0){
+                tlr.setYesterday(yesterdayListingSales.get(0).getTjNumber()==null?"0.00%":yesterdayListingSales.get(0).getTjNumber()+"%");
+            }
+            if(tlr.getDatatype().equals("4")&&weekListingSales.size()>0){
+                tlr.setWeek(weekListingSales.get(0).getTjNumber()==null?"0.00%":weekListingSales.get(0).getTjNumber()+"%");
+            }
+            if(tlr.getDatatype().equals("4")&&thatweekListingSales.size()>0){
+                tlr.setThatweek(thatweekListingSales.get(0).getTjNumber()==null?"0.00%":thatweekListingSales.get(0).getTjNumber()+"%");
+            }
+            if(tlr.getDatatype().equals("4")&&monthListingSales.size()>0){
+                tlr.setMonth(monthListingSales.get(0).getTjNumber()==null?"0.00%":monthListingSales.get(0).getTjNumber()+"%");
+            }
+            if(tlr.getDatatype().equals("4")&&thatmonthListingSales.size()>0){
+                tlr.setThatmonth(thatmonthListingSales.get(0).getTjNumber()==null?"0.00%":thatmonthListingSales.get(0).getTjNumber()+"%");
+            }
+            if(tlr.getDatatype().equals("5")&&dayListingFee.size()>0){
+                tlr.setDay(dayListingFee.get(0).getTjNumber()==null?"0.00":dayListingFee.get(0).getTjNumber());
+            }
+            if(tlr.getDatatype().equals("5")&&weekListingFee.size()>0){
+                tlr.setWeek(weekListingFee.get(0).getTjNumber()==null?"0.00":weekListingFee.get(0).getTjNumber());
+            }
+            if(tlr.getDatatype().equals("5")&&monthListingFee.size()>0){
+                tlr.setMonth(monthListingFee.get(0).getTjNumber()==null?"0.00":monthListingFee.get(0).getTjNumber());
+            }
+            if(tlr.getDatatype().equals("6")&&dayListingEndFee.size()>0){
+                tlr.setDay(dayListingEndFee.get(0).getTjNumber()==null?"0.00":dayListingEndFee.get(0).getTjNumber());
+            }
+            if(tlr.getDatatype().equals("6")&&weekListingEndFee.size()>0){
+                tlr.setWeek(weekListingEndFee.get(0).getTjNumber()==null?"0.00":weekListingEndFee.get(0).getTjNumber());
+            }
+            if(tlr.getDatatype().equals("6")&&monthListingEndFee.size()>0){
+                tlr.setMonth(monthListingEndFee.get(0).getTjNumber()==null?"0.00":monthListingEndFee.get(0).getTjNumber());
+            }
+
         }
         PageJsonBean jsonBean=commonParmVO.getJsonBean();
         Page page=jsonBean.toPage();

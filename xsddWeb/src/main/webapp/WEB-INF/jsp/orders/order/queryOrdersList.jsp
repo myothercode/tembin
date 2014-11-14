@@ -106,11 +106,11 @@
              var htm1="|<a target=\"_blank\" href=\"javascript:void(0)\" onclick=\"modifyOrderStatus('"+json.transactionid+"');\">修改发货状态</a>";*/
             /*var htm="<div class=\"ui-select\" style=\"width:106px\" >" +
              "<select onchange=\"selectOperation('"+json.orderid+"','"+json.transactionid+"','"+json.selleruserid+"',this); \" name=\"ui-select\" style=\"margin-left:-3px;\">" +
-             "<option value=\"0\"><a href=\"javascript:#\">--请选择--</a></option>" +
-             "<option value=\"1\"><a href=\"javascript:#\">查看详情</a></option>" +
-             "<option value=\"2\"><a href=\"javascript:#\">修改发货状态</a></option>" +
-             "<option value=\"3\"><a href=\"javascript:#\">发送消息</a></option>" +
-             "<option value=\"4\"><a href=\"javascript:#\">退款功能</a></option>" +
+             "<option value=\"0\"><a href=\"javascript:void(0)\">--请选择--</a></option>" +
+             "<option value=\"1\"><a href=\"javascript:void(0)\">查看详情</a></option>" +
+             "<option value=\"2\"><a href=\"javascript:void(0)\">修改发货状态</a></option>" +
+             "<option value=\"3\"><a href=\"javascript:void(0)\">发送消息</a></option>" +
+             "<option value=\"4\"><a href=\"javascript:void(0)\">退款功能</a></option>" +
              "</select>" +
              "</div>";*/
             var hs="";

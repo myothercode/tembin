@@ -32,8 +32,11 @@ public class DelayListingItemImpl implements ThreadPoolBaseInterFace {
         String itemId=null;
         try {
             itemId = SamplePaseXml.getVFromXmlString(res, "ItemID");
+
             ack=SamplePaseXml.getVFromXmlString(res, "Ack");
-            if ("Success".equalsIgnoreCase(ack) || "Warning".equalsIgnoreCase(ack)) {}
+            if ("Success".equalsIgnoreCase(ack) || "Warning".equalsIgnoreCase(ack)) {
+                this.iTradingItem.saveListingSuccess(res,itemId);
+            }
             else {return;}
         } catch (Exception e) {
             logger.error("解析xml出错,请稍后到ebay网站确认结果,itemid:"+itemId,e);

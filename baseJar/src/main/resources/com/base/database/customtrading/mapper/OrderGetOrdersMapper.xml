@@ -35,6 +35,7 @@
       <result column="addressOwner" jdbcType="VARCHAR" property="addressowner" />
       <result column="shippingCarrierUsed" jdbcType="VARCHAR" property="shippingcarrierused" />
       <result column="shipmentTrackingNumber" jdbcType="VARCHAR" property="shipmenttrackingnumber" />
+      <result column="trackStatus" jdbcType="VARCHAR" property="trackstatus" />
       <result column="externalAddressID" jdbcType="VARCHAR" property="externaladdressid" />
       <result column="subtotal" jdbcType="VARCHAR" property="subtotal" />
       <result column="total" jdbcType="VARCHAR" property="total" />
@@ -58,6 +59,9 @@
       <result column="folder" jdbcType="VARCHAR" property="folder" />
       <result column="sellerUserID" jdbcType="VARCHAR" property="selleruserid" />
       <result column="variationSKU" jdbcType="VARCHAR" property="variationsku" />
+      <result column="paypalFlag" jdbcType="INTEGER" property="paypalflag" />
+      <result column="shippedFlag" jdbcType="INTEGER" property="shippedflag" />
+      <result column="sendMessageTime" jdbcType="TIMESTAMP" property="sendmessagetime" />
       <result column="create_user" jdbcType="BIGINT" property="createUser" />
       <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
       <result column="uuid" jdbcType="VARCHAR" property="uuid" />
@@ -74,14 +78,29 @@
             and OrderGetOrders.folder=#{folderId}
         </if>
         <if test="itemType!=null">
-            <if test="itemType=='orderId'">
-                and OrderGetOrders.orderID=#{content}
+            <if test="itemType=='itemId'">
+                and OrderGetOrders.itemID like "%"#{content}"%"
             </if>
             <if test="itemType=='sku'">
-                and OrderGetOrders.sKU=#{content}
+                and OrderGetOrders.sKU like "%"#{content}"%"
             </if>
             <if test="itemType=='title'">
                 and OrderGetOrders.title like "%"#{content}"%"
+            </if>
+            <if test="itemType=='buyerId'">
+                and OrderGetOrders.buyerUserID like "%"#{content}"%"
+            </if>
+            <if test="itemType=='trackNum'">
+                and OrderGetOrders.shipmentTrackingNumber like "%"#{content}"%"
+            </if>
+            <if test="itemType=='person'">
+                and OrderGetOrders.name like "%"#{content}"%"
+            </if>
+            <if test="itemType=='buyerEmail'">
+                and OrderGetOrders.buyerEmail like "%"#{content}"%"
+            </if>
+            <if test="itemType=='comment'">
+                and OrderGetOrders.comment like "%"#{content}"%"
             </if>
         </if>
         <if test="framConten!=null">
@@ -96,6 +115,17 @@
             </if>
             <if test="typeQ=='multiattribute'">
                 and item.listingType="FixedPriceItem" and variation.orderItem_id is not  null
+            </if>
+        </if>
+        <if test="statusQ1!=null">
+            <if test="statusQ1==2">
+                and OrderGetOrders.shipmentTrackingNumber is not null
+            </if>
+            <if test="statusQ1==3">
+                and OrderGetOrders.trackStatus = 3 or  OrderGetOrders.trackStatus = 4
+            </if>
+            <if test="statusQ1==4">
+                and OrderGetOrders.trackStatus = 1 or  OrderGetOrders.trackStatus = 2
             </if>
         </if>
         <if test="status!=null">

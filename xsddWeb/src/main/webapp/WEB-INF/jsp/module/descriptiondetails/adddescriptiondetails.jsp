@@ -26,7 +26,7 @@
 <body>
 <br/>
 <div>
-    <h1>卖家描述</h1>
+   <%-- <h1>卖家描述</h1>--%>
 <form  id="descriptionDetailsForm" >
     <input type="hidden" name="id"  value="${DescriptionDetails.id}" />
     <input type="hidden" name="payInfo" id="Payment"/>

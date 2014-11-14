@@ -278,7 +278,12 @@
                     });
                 </c:forEach>
             },500);
-
+            var dispatchtimemax='${tradingShippingdetails.dispatchtimemax}'
+            var getitfast='${tradingShippingdetails.getitfast}'
+            $("select[name='dispatchtimemax']").find("option[value='"+dispatchtimemax+"']").attr("selected",true);
+            if(getitfast!=null&&getitfast!=""){
+                $("input[type='checkbox'][name='getitfast']").attr("checked",true);
+            }
             var type = '${type}';
             if(type=="01"){
                 $("input[type='text']").each(function(i,d){
@@ -341,7 +346,7 @@
             var api = frameElement.api, W = api.opener;
             var sdid = '${tradingShippingdetails.id}';
             var sdname = '${tamstr}';
-            par = $.dialog({title: '不运送地选项',
+            par = openMyDialog({title: '不运送地选项',
                 content: 'url:/xsddWeb/locationList.do?parentId='+sdid+"&parentName="+sdname,
                 icon: 'succeed',
                 width:800,
@@ -411,12 +416,12 @@
 <br/>
 <form id="form">
     <table width="100%">
-        <tr>
+        <%--<tr>
             <td colspan="2" style="padding-left: 50px;">
                 运输选项
                 <hr/>
             </td>
-        </tr>
+        </tr>--%>
         <tr>
             <td align="right" width="200">名称</td>
             <td>
@@ -548,7 +553,7 @@
                     <tr>
                         <td align="right">处理时间</td>
                         <td>
-                            <select name="DispatchTimeMax">
+                            <select name="dispatchtimemax">
                                 <option value="0">0</option>
                                 <option value="1">1</option>
                                 <option value="2">2</option>
@@ -560,7 +565,7 @@
                                 <option value="20">20</option>
                                 <option value="30">30</option>
                             </select>
-                            工作日<input type="checkbox" name="GetItFast" value="1">快速寄货
+                            工作日<input type="checkbox" name="getitfast" value="1">快速寄货
                         </td>
                     </tr>
                 </table>
@@ -598,7 +603,7 @@
         </tr>
         <tr>
             <td colspan="2" style="padding-left: 70px;">
-                <span id="notLocationName"></span>
+                <span id="notLocationName" style="line-height: 32px;"></span>
                 <input type="hidden" name="notLocationValue" id="notLocationValue" value="${tamvaluestr}">
                 <br/>
                 <a href="javascript:void(0)" onclick="createNoLocationList()" style="display: none;" id="createNoLocationList">创建不运送地区列表</a>

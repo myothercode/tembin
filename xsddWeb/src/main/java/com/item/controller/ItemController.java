@@ -91,6 +91,9 @@ public class ItemController extends BaseAction{
     private ITradingPictureDetails iTradingPictureDetails;
     @Value("${EBAY.API.URL}")
     private String apiUrl;
+
+    @Value("${EBAY.SANDBOX.API.URL}")
+    private String sandboxApiUrl;
     @Autowired
     private ITradingPublicLevelAttr iTradingPublicLevelAttr;
     @Autowired
@@ -1009,6 +1012,7 @@ public class ItemController extends BaseAction{
                             tradingItem.setItemId(itemId);
                             tradingItem.setIsFlag("Success");
                             this.iTradingItem.saveTradingItem(tradingItem);
+                            this.iTradingItem.saveListingSuccess(res,itemId);
                             AjaxSupport.sendSuccessText("message", "操作成功！");
                         } else {
                             //String errors = SamplePaseXml.getVFromXmlString(res, "Errors");
@@ -1503,7 +1507,7 @@ public class ItemController extends BaseAction{
 
         AddApiTask addApiTask = new AddApiTask();
 
-        Map<String, String> resMap = addApiTask.exec(d, xml, apiUrl);
+        Map<String, String> resMap = addApiTask.exec(d, xml, sandboxApiUrl);
         String r1 = resMap.get("stat");
         String res = resMap.get("message");
         if ("fail".equalsIgnoreCase(r1)) {
@@ -1755,7 +1759,7 @@ public class ItemController extends BaseAction{
 
         AddApiTask addApiTask = new AddApiTask();
 
-        Map<String, String> resMap = addApiTask.exec(d, xml, apiUrl);
+        Map<String, String> resMap = addApiTask.exec(d, xml, sandboxApiUrl);
         String r1 = resMap.get("stat");
         String res = resMap.get("message");
         if ("fail".equalsIgnoreCase(r1)) {
@@ -1778,8 +1782,6 @@ public class ItemController extends BaseAction{
             List<Map> lim = new ArrayList<Map>();
             while (iter.hasNext()){
                 Element ment = iter.next();
-                System.out.println(Double.parseDouble(ment.elementText("Fee")));
-                System.out.println(ment.element("Fee").getText());
                 if(Double.parseDouble(ment.elementText("Fee"))>0){
                     Map m = new HashMap();
                     m.put("name",ment.elementText("Name"));
@@ -1860,6 +1862,7 @@ public class ItemController extends BaseAction{
                 String itemId = SamplePaseXml.getVFromXmlString(res, "ItemID");
                 tradingItem.setItemId(itemId);
                 this.iTradingItem.saveTradingItem(tradingItem);
+                this.iTradingItem.saveListingSuccess(res,itemId);
                 successmessage.add("商品SKU为："+tradingItem.getSku()+"，名称为："+tradingItem.getItemName()+"，刊登成功！");
             }else{
                 Document document= DocumentHelper.parseText(res);

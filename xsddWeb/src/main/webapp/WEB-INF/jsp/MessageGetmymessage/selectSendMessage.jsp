@@ -37,7 +37,7 @@
             $("#sendMessageTable").selectDataAfterSetParm({"bedDetailVO.deptId":"", "isTrue":0});
         }
         function makeOption3(json){
-            var htm = "<input type=\"checkbox\"  name=\"templateId\" value=" + json.id + " value1="+json.content+">";
+            var htm = "<input type=\"radio\"  name=\"templateId\" value=" + json.id + " value1="+json.content+"><div style='display: none'><span id='"+json.id+"'>"+json.content+"</span></div>";
             return htm;
         }
         function makeOption2(json){
@@ -53,10 +53,11 @@
             W.sentmessage.close();
         }
         function submitCommit(){
-            var checkboxs=$("input[type=checkbox][name=templateId]:checked");
+            var checkboxs=$("input[type=radio][name=templateId]:checked");
             if(checkboxs.length==1){
                 var textarea=W.document.getElementById("textarea");
-                var content=$(checkboxs[0]).attr("value1");
+                var id=$(checkboxs[0]).attr("value");
+                var content=document.getElementById(id).innerHTML;
                 content=content.replace("{Buyer_eBay_ID}","${order.buyeruserid}");
                 content=content.replace("{Carrier}","${order.shippingcarrierused}");
                 /*content=content.replace("{Carrier_TrackingURL}","${order.shipmenttrackingnumber}");*/

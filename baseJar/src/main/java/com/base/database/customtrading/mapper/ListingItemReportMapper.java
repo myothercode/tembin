@@ -14,4 +14,19 @@ public interface ListingItemReportMapper {
      * @return
      */
     List<ListingItemReportQuery> selectListingItemReportList(Map map);
+
+    /**
+     *
+     * @param map
+     * @return
+     */
+    List<ListingItemReportQuery> selectListingItemReportFee(Map map);
+
+    /**
+     *
+     * @param map
+     * @return
+     */
+    List<ListingItemReportQuery> selectListingItemSales(Map map);
+
 }

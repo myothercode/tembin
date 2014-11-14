@@ -108,10 +108,10 @@ body {
     <li style="height:65px;">
         <table width="100%" border="0" cellpadding="0" cellspacing="0">
             <tr>
-                <td width="50%" align="center"><a href="#">
+                <td width="50%" align="center"><a href="javascript:void(0)">
                     <input onclick="doReg()" type="button" name="button" id="button" value="注册" class="admin_but"/>
                 </a></td>
-                <td width="50%" align="center"><a href="#">
+                <td width="50%" align="center"><a href="javascript:void(0)">
                     <input onclick="document.location.href='login.jsp'" type="button" name="button2" id="button2" value="返回" class="admin_but_1"/>
                 </a></td>
             </tr>

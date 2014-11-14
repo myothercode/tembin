@@ -53,7 +53,7 @@
 </form>--%>
 
 <div class="modal-header">
-    <div class="newtitle_1" style="margin-top:20px;">新增文件夹</div>
+    <%--<div class="newtitle_1" style="margin-top:20px;">新增文件夹</div>--%>
     <form id="addRemarkForm">
     <table width="100%" border="0" style="margin-top:20px;">
 

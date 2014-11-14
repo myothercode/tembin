@@ -19,4 +19,6 @@ public interface ITradingGetUserCases {
     List<UserCasesQuery> selectGetUserCases(Map map, Page page);
 
     TradingGetUserCases selectUserCasesById(Long id);
+
+    List<TradingGetUserCases> selectGetUserCasesByHandled(Long userId);
 }

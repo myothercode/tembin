@@ -20,7 +20,7 @@
     <script>
         var descDiag="";
         function addDescriptionDetails(){
-            descDiag=$.dialog({title: '新增卖家描述',
+            descDiag=openMyDialog({title: '新增卖家描述',
                 content: 'url:/xsddWeb/addDescriptionDetails.do',
                 icon: 'succeed',
                 width:1025,
@@ -28,7 +28,7 @@
             });
         }
         function editDescriptionDetails(id){
-            descDiag= $.dialog({title: '编辑卖家描述',
+            descDiag= openMyDialog({title: '编辑卖家描述',
                 content: 'url:/xsddWeb/editDescriptionDetails.do?id='+id,
                 icon: 'succeed',
                 width:1025,
@@ -80,7 +80,7 @@
             $(obj).val("");
         }
         function editDescriptionDetailsselect(id){
-            returnPolicy=$.dialog({title: '查看退货政策',
+            returnPolicy=openMyDialog({title: '查看退货政策',
                 content: 'url:/xsddWeb/editDescriptionDetails.do?id='+id+'&type=01',
                 icon: 'succeed',
                 width:1025,

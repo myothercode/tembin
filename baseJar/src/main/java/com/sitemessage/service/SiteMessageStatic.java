@@ -24,6 +24,7 @@ public class SiteMessageStatic {
         messageMap.put("synchronize_get_order_timer","定时同步订单");
         messageMap.put("synchronize_feed_back_timer","定时获取评价");
         messageMap.put("update_listing_data_message_type","范本修改在线商品");
+        messageMap.put("listing_key_move_message_type","一键搬家");
     }
 
     /**刊登的消息类型*/
@@ -39,10 +40,14 @@ public class SiteMessageStatic {
     /**上传图片的消息类型*/
     public static final String LISTING_PIC_URL_BEAN="listing_pic_url_bean";
 
+    /**上传图片的消息类型*/
+    public static final String LISTING_KEY_MOVE_BEAN="listing_key_move_bean";
     /**刊登成功的消息类型*/
     public static final String LISTING_ITEM_BEAN="listing_item_bean";
     /**同步在线商品*/
     public static final String SYN_MESSAGE_LISTING_DATA_TYPE="syn_message_listing_data_type";
+    /**一键搬家*/
+    public static final String LISTING_KEY_MOVE_MESSAGE_TYPE = "listing_key_move_message_type";
 
     /**同步在线商品bean*/
     public static final String SYN_MESSAGE_LISTING_DATA_BEAN="syn_message_listing_data_bean";

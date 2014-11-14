@@ -331,52 +331,62 @@ public class TradingListingReportExample {
             return (Criteria) this;
         }
 
-        public Criteria andDayEqualTo(Integer value) {
+        public Criteria andDayEqualTo(String value) {
             addCriterion("day =", value, "day");
             return (Criteria) this;
         }
 
-        public Criteria andDayNotEqualTo(Integer value) {
+        public Criteria andDayNotEqualTo(String value) {
             addCriterion("day <>", value, "day");
             return (Criteria) this;
         }
 
-        public Criteria andDayGreaterThan(Integer value) {
+        public Criteria andDayGreaterThan(String value) {
             addCriterion("day >", value, "day");
             return (Criteria) this;
         }
 
-        public Criteria andDayGreaterThanOrEqualTo(Integer value) {
+        public Criteria andDayGreaterThanOrEqualTo(String value) {
             addCriterion("day >=", value, "day");
             return (Criteria) this;
         }
 
-        public Criteria andDayLessThan(Integer value) {
+        public Criteria andDayLessThan(String value) {
             addCriterion("day <", value, "day");
             return (Criteria) this;
         }
 
-        public Criteria andDayLessThanOrEqualTo(Integer value) {
+        public Criteria andDayLessThanOrEqualTo(String value) {
             addCriterion("day <=", value, "day");
             return (Criteria) this;
         }
 
-        public Criteria andDayIn(List<Integer> values) {
+        public Criteria andDayLike(String value) {
+            addCriterion("day like", value, "day");
+            return (Criteria) this;
+        }
+
+        public Criteria andDayNotLike(String value) {
+            addCriterion("day not like", value, "day");
+            return (Criteria) this;
+        }
+
+        public Criteria andDayIn(List<String> values) {
             addCriterion("day in", values, "day");
             return (Criteria) this;
         }
 
-        public Criteria andDayNotIn(List<Integer> values) {
+        public Criteria andDayNotIn(List<String> values) {
             addCriterion("day not in", values, "day");
             return (Criteria) this;
         }
 
-        public Criteria andDayBetween(Integer value1, Integer value2) {
+        public Criteria andDayBetween(String value1, String value2) {
             addCriterion("day between", value1, value2, "day");
             return (Criteria) this;
         }
 
-        public Criteria andDayNotBetween(Integer value1, Integer value2) {
+        public Criteria andDayNotBetween(String value1, String value2) {
             addCriterion("day not between", value1, value2, "day");
             return (Criteria) this;
         }
@@ -391,52 +401,62 @@ public class TradingListingReportExample {
             return (Criteria) this;
         }
 
-        public Criteria andYesterdayEqualTo(Integer value) {
+        public Criteria andYesterdayEqualTo(String value) {
             addCriterion("yesterday =", value, "yesterday");
             return (Criteria) this;
         }
 
-        public Criteria andYesterdayNotEqualTo(Integer value) {
+        public Criteria andYesterdayNotEqualTo(String value) {
             addCriterion("yesterday <>", value, "yesterday");
             return (Criteria) this;
         }
 
-        public Criteria andYesterdayGreaterThan(Integer value) {
+        public Criteria andYesterdayGreaterThan(String value) {
             addCriterion("yesterday >", value, "yesterday");
             return (Criteria) this;
         }
 
-        public Criteria andYesterdayGreaterThanOrEqualTo(Integer value) {
+        public Criteria andYesterdayGreaterThanOrEqualTo(String value) {
             addCriterion("yesterday >=", value, "yesterday");
             return (Criteria) this;
         }
 
-        public Criteria andYesterdayLessThan(Integer value) {
+        public Criteria andYesterdayLessThan(String value) {
             addCriterion("yesterday <", value, "yesterday");
             return (Criteria) this;
         }
 
-        public Criteria andYesterdayLessThanOrEqualTo(Integer value) {
+        public Criteria andYesterdayLessThanOrEqualTo(String value) {
             addCriterion("yesterday <=", value, "yesterday");
             return (Criteria) this;
         }
 
-        public Criteria andYesterdayIn(List<Integer> values) {
+        public Criteria andYesterdayLike(String value) {
+            addCriterion("yesterday like", value, "yesterday");
+            return (Criteria) this;
+        }
+
+        public Criteria andYesterdayNotLike(String value) {
+            addCriterion("yesterday not like", value, "yesterday");
+            return (Criteria) this;
+        }
+
+        public Criteria andYesterdayIn(List<String> values) {
             addCriterion("yesterday in", values, "yesterday");
             return (Criteria) this;
         }
 
-        public Criteria andYesterdayNotIn(List<Integer> values) {
+        public Criteria andYesterdayNotIn(List<String> values) {
             addCriterion("yesterday not in", values, "yesterday");
             return (Criteria) this;
         }
 
-        public Criteria andYesterdayBetween(Integer value1, Integer value2) {
+        public Criteria andYesterdayBetween(String value1, String value2) {
             addCriterion("yesterday between", value1, value2, "yesterday");
             return (Criteria) this;
         }
 
-        public Criteria andYesterdayNotBetween(Integer value1, Integer value2) {
+        public Criteria andYesterdayNotBetween(String value1, String value2) {
             addCriterion("yesterday not between", value1, value2, "yesterday");
             return (Criteria) this;
         }
@@ -451,52 +471,62 @@ public class TradingListingReportExample {
             return (Criteria) this;
         }
 
-        public Criteria andWeekEqualTo(Integer value) {
+        public Criteria andWeekEqualTo(String value) {
             addCriterion("week =", value, "week");
             return (Criteria) this;
         }
 
-        public Criteria andWeekNotEqualTo(Integer value) {
+        public Criteria andWeekNotEqualTo(String value) {
             addCriterion("week <>", value, "week");
             return (Criteria) this;
         }
 
-        public Criteria andWeekGreaterThan(Integer value) {
+        public Criteria andWeekGreaterThan(String value) {
             addCriterion("week >", value, "week");
             return (Criteria) this;
         }
 
-        public Criteria andWeekGreaterThanOrEqualTo(Integer value) {
+        public Criteria andWeekGreaterThanOrEqualTo(String value) {
             addCriterion("week >=", value, "week");
             return (Criteria) this;
         }
 
-        public Criteria andWeekLessThan(Integer value) {
+        public Criteria andWeekLessThan(String value) {
             addCriterion("week <", value, "week");
             return (Criteria) this;
         }
 
-        public Criteria andWeekLessThanOrEqualTo(Integer value) {
+        public Criteria andWeekLessThanOrEqualTo(String value) {
             addCriterion("week <=", value, "week");
             return (Criteria) this;
         }
 
-        public Criteria andWeekIn(List<Integer> values) {
+        public Criteria andWeekLike(String value) {
+            addCriterion("week like", value, "week");
+            return (Criteria) this;
+        }
+
+        public Criteria andWeekNotLike(String value) {
+            addCriterion("week not like", value, "week");
+            return (Criteria) this;
+        }
+
+        public Criteria andWeekIn(List<String> values) {
             addCriterion("week in", values, "week");
             return (Criteria) this;
         }
 
-        public Criteria andWeekNotIn(List<Integer> values) {
+        public Criteria andWeekNotIn(List<String> values) {
             addCriterion("week not in", values, "week");
             return (Criteria) this;
         }
 
-        public Criteria andWeekBetween(Integer value1, Integer value2) {
+        public Criteria andWeekBetween(String value1, String value2) {
             addCriterion("week between", value1, value2, "week");
             return (Criteria) this;
         }
 
-        public Criteria andWeekNotBetween(Integer value1, Integer value2) {
+        public Criteria andWeekNotBetween(String value1, String value2) {
             addCriterion("week not between", value1, value2, "week");
             return (Criteria) this;
         }
@@ -511,52 +541,62 @@ public class TradingListingReportExample {
             return (Criteria) this;
         }
 
-        public Criteria andThatweekEqualTo(Integer value) {
+        public Criteria andThatweekEqualTo(String value) {
             addCriterion("thatweek =", value, "thatweek");
             return (Criteria) this;
         }
 
-        public Criteria andThatweekNotEqualTo(Integer value) {
+        public Criteria andThatweekNotEqualTo(String value) {
             addCriterion("thatweek <>", value, "thatweek");
             return (Criteria) this;
         }
 
-        public Criteria andThatweekGreaterThan(Integer value) {
+        public Criteria andThatweekGreaterThan(String value) {
             addCriterion("thatweek >", value, "thatweek");
             return (Criteria) this;
         }
 
-        public Criteria andThatweekGreaterThanOrEqualTo(Integer value) {
+        public Criteria andThatweekGreaterThanOrEqualTo(String value) {
             addCriterion("thatweek >=", value, "thatweek");
             return (Criteria) this;
         }
 
-        public Criteria andThatweekLessThan(Integer value) {
+        public Criteria andThatweekLessThan(String value) {
             addCriterion("thatweek <", value, "thatweek");
             return (Criteria) this;
         }
 
-        public Criteria andThatweekLessThanOrEqualTo(Integer value) {
+        public Criteria andThatweekLessThanOrEqualTo(String value) {
             addCriterion("thatweek <=", value, "thatweek");
             return (Criteria) this;
         }
 
-        public Criteria andThatweekIn(List<Integer> values) {
+        public Criteria andThatweekLike(String value) {
+            addCriterion("thatweek like", value, "thatweek");
+            return (Criteria) this;
+        }
+
+        public Criteria andThatweekNotLike(String value) {
+            addCriterion("thatweek not like", value, "thatweek");
+            return (Criteria) this;
+        }
+
+        public Criteria andThatweekIn(List<String> values) {
             addCriterion("thatweek in", values, "thatweek");
             return (Criteria) this;
         }
 
-        public Criteria andThatweekNotIn(List<Integer> values) {
+        public Criteria andThatweekNotIn(List<String> values) {
             addCriterion("thatweek not in", values, "thatweek");
             return (Criteria) this;
         }
 
-        public Criteria andThatweekBetween(Integer value1, Integer value2) {
+        public Criteria andThatweekBetween(String value1, String value2) {
             addCriterion("thatweek between", value1, value2, "thatweek");
             return (Criteria) this;
         }
 
-        public Criteria andThatweekNotBetween(Integer value1, Integer value2) {
+        public Criteria andThatweekNotBetween(String value1, String value2) {
             addCriterion("thatweek not between", value1, value2, "thatweek");
             return (Criteria) this;
         }
@@ -571,52 +611,62 @@ public class TradingListingReportExample {
             return (Criteria) this;
         }
 
-        public Criteria andMonthEqualTo(Integer value) {
+        public Criteria andMonthEqualTo(String value) {
             addCriterion("month =", value, "month");
             return (Criteria) this;
         }
 
-        public Criteria andMonthNotEqualTo(Integer value) {
+        public Criteria andMonthNotEqualTo(String value) {
             addCriterion("month <>", value, "month");
             return (Criteria) this;
         }
 
-        public Criteria andMonthGreaterThan(Integer value) {
+        public Criteria andMonthGreaterThan(String value) {
             addCriterion("month >", value, "month");
             return (Criteria) this;
         }
 
-        public Criteria andMonthGreaterThanOrEqualTo(Integer value) {
+        public Criteria andMonthGreaterThanOrEqualTo(String value) {
             addCriterion("month >=", value, "month");
             return (Criteria) this;
         }
 
-        public Criteria andMonthLessThan(Integer value) {
+        public Criteria andMonthLessThan(String value) {
             addCriterion("month <", value, "month");
             return (Criteria) this;
         }
 
-        public Criteria andMonthLessThanOrEqualTo(Integer value) {
+        public Criteria andMonthLessThanOrEqualTo(String value) {
             addCriterion("month <=", value, "month");
             return (Criteria) this;
         }
 
-        public Criteria andMonthIn(List<Integer> values) {
+        public Criteria andMonthLike(String value) {
+            addCriterion("month like", value, "month");
+            return (Criteria) this;
+        }
+
+        public Criteria andMonthNotLike(String value) {
+            addCriterion("month not like", value, "month");
+            return (Criteria) this;
+        }
+
+        public Criteria andMonthIn(List<String> values) {
             addCriterion("month in", values, "month");
             return (Criteria) this;
         }
 
-        public Criteria andMonthNotIn(List<Integer> values) {
+        public Criteria andMonthNotIn(List<String> values) {
             addCriterion("month not in", values, "month");
             return (Criteria) this;
         }
 
-        public Criteria andMonthBetween(Integer value1, Integer value2) {
+        public Criteria andMonthBetween(String value1, String value2) {
             addCriterion("month between", value1, value2, "month");
             return (Criteria) this;
         }
 
-        public Criteria andMonthNotBetween(Integer value1, Integer value2) {
+        public Criteria andMonthNotBetween(String value1, String value2) {
             addCriterion("month not between", value1, value2, "month");
             return (Criteria) this;
         }
@@ -631,52 +681,62 @@ public class TradingListingReportExample {
             return (Criteria) this;
         }
 
-        public Criteria andThatmonthEqualTo(Integer value) {
+        public Criteria andThatmonthEqualTo(String value) {
             addCriterion("thatmonth =", value, "thatmonth");
             return (Criteria) this;
         }
 
-        public Criteria andThatmonthNotEqualTo(Integer value) {
+        public Criteria andThatmonthNotEqualTo(String value) {
             addCriterion("thatmonth <>", value, "thatmonth");
             return (Criteria) this;
         }
 
-        public Criteria andThatmonthGreaterThan(Integer value) {
+        public Criteria andThatmonthGreaterThan(String value) {
             addCriterion("thatmonth >", value, "thatmonth");
             return (Criteria) this;
         }
 
-        public Criteria andThatmonthGreaterThanOrEqualTo(Integer value) {
+        public Criteria andThatmonthGreaterThanOrEqualTo(String value) {
             addCriterion("thatmonth >=", value, "thatmonth");
             return (Criteria) this;
         }
 
-        public Criteria andThatmonthLessThan(Integer value) {
+        public Criteria andThatmonthLessThan(String value) {
             addCriterion("thatmonth <", value, "thatmonth");
             return (Criteria) this;
         }
 
-        public Criteria andThatmonthLessThanOrEqualTo(Integer value) {
+        public Criteria andThatmonthLessThanOrEqualTo(String value) {
             addCriterion("thatmonth <=", value, "thatmonth");
             return (Criteria) this;
         }
 
-        public Criteria andThatmonthIn(List<Integer> values) {
+        public Criteria andThatmonthLike(String value) {
+            addCriterion("thatmonth like", value, "thatmonth");
+            return (Criteria) this;
+        }
+
+        public Criteria andThatmonthNotLike(String value) {
+            addCriterion("thatmonth not like", value, "thatmonth");
+            return (Criteria) this;
+        }
+
+        public Criteria andThatmonthIn(List<String> values) {
             addCriterion("thatmonth in", values, "thatmonth");
             return (Criteria) this;
         }
 
-        public Criteria andThatmonthNotIn(List<Integer> values) {
+        public Criteria andThatmonthNotIn(List<String> values) {
             addCriterion("thatmonth not in", values, "thatmonth");
             return (Criteria) this;
         }
 
-        public Criteria andThatmonthBetween(Integer value1, Integer value2) {
+        public Criteria andThatmonthBetween(String value1, String value2) {
             addCriterion("thatmonth between", value1, value2, "thatmonth");
             return (Criteria) this;
         }
 
-        public Criteria andThatmonthNotBetween(Integer value1, Integer value2) {
+        public Criteria andThatmonthNotBetween(String value1, String value2) {
             addCriterion("thatmonth not between", value1, value2, "thatmonth");
             return (Criteria) this;
         }

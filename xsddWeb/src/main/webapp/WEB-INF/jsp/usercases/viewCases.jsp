@@ -66,7 +66,7 @@ PayPal 交易号(ID #${transaction.externaltransactionid})<br/>
     </tr>
     <tr>
         <td><img src="${pic}" style="width: 50px;height: 50px;"></td>
-        <td><a href="void()" onclick="urlpath();">${order.title}</a></td>
+        <td><a href="javascript:void(0)" onclick="urlpath();">${order.title}</a></td>
         <td>${order.quantitypurchased}</td>
         <td>${order.transactionprice}</td>
         <td>${order.amountpaid}</td>

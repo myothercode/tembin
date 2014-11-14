@@ -58,9 +58,9 @@
 </head>
 <c:set value="${paypal}" var="paypal" />
 <body>
-<div class="modal-header">
+<%--<div class="modal-header">
     <div class="newtitle">支付方式</div>
-</div>
+</div>--%>
 <div class="modal-body">
     <form class="form-horizontal" role="form" id="payPalForm">
         <table width="90%" border="0" style="margin-left:40px;">

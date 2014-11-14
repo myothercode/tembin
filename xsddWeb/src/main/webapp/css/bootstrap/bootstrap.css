@@ -5763,7 +5763,6 @@ body.modal-open,
 	padding-left: 150px;
 	font-family: "微软雅黑", "宋体", Arial;
 }
-
 .modal-footer:before,
 .modal-footer:after {
   display: table;
@@ -5797,12 +5796,41 @@ body.modal-open,
 .modal-footer .btn-block + .btn-block {
   margin-left: 0;
 }
+.modal.fade .modal_dialog_new {
+  -webkit-transform: translate(0, -25%);
+      -ms-transform: translate(0, -25%);
+          transform: translate(0, -25%);
+  -webkit-transition: -webkit-transform 0.3s ease-out;
+     -moz-transition: -moz-transform 0.3s ease-out;
+       -o-transition: -o-transform 0.3s ease-out;
+          transition: transform 0.3s ease-out;
+}
 
+.modal.in .modal_dialog_new {
+  -webkit-transform: translate(0, 0);
+      -ms-transform: translate(0, 0);
+          transform: translate(0, 0);
+}
+
+.modal_dialog_new {
+  z-index: 1050;
+  width: auto;
+  padding: 10px;
+  margin-right: auto;
+  margin-left: auto;
+}
 @media screen and (min-width: 900px) {
   .modal-dialog {
 	right: auto;
 	left: 50%;
 	width: 900px;
+	padding-top: 80px;
+	padding-bottom: 30px;
+  }
+    .modal_dialog_new {
+	right: auto;
+	left: 50%;
+	width: 1200px;
 	padding-top: 80px;
 	padding-bottom: 30px;
   }

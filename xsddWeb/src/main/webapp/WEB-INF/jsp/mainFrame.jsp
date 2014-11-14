@@ -19,12 +19,14 @@
 
     <title></title>
     <script type="text/javascript">
+        var csRightHeight;
         $(document).ready(function(){
             getMenu();
             getSystemMessage({"jsonBean.pageNum":1,"jsonBean.pageCount":1000,"readed":0,"strV1":"num"});
             getMessagesByTime();
             setWandH();
             setIndexUrl();
+            csRightHeight=$("#contentMaindiv").css("height").replace("px","");
         });
         /**设置主页地址*/
         function setIndexUrl(){
@@ -120,12 +122,12 @@
                     <div class="notifications" id="notifications">
                         <h3 id="ebaymessageNotice">You have x new notifications</h3>
 
-                        <a href="#" class="item">
+                        <a href="javascript:void(0)" class="item">
                             <i class="icon-download-alt"></i> no message
                             <span class="time"><i class="icon-time"></i> 1 day.</span>
                         </a>
                         <div class="footer">
-                            <a href="#" class="logout">View all notifications</a>
+                            <a href="javascript:void(0)" class="logout">View all notifications</a>
                         </div>
                     </div>
                 </div>
@@ -184,7 +186,7 @@
 </div>
 
 
-<div id="contentMaindiv" class="content" style="position: absolute;top: 58px;overflow-x: hidden">
+<div id="contentMaindiv" class="content" style="position: absolute;top: 58px;overflow-x: hidden;">
     <iframe width="100%" height="100%" frameborder="0px" id="contentMain" name="contentMain">
 
     </iframe>

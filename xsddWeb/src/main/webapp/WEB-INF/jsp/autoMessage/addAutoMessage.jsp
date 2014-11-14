@@ -24,7 +24,7 @@
         var selectCountry1;
         function selectCountrys(){
             var url=path+'/autoMessage/selectCountrys.do?';
-            selectCountry1 = $.dialog({title: '有效国家',
+            selectCountry1 = openMyDialog({title: '有效国家',
                 content:'url:'+url,
                 icon: 'succeed',
                 width:800,
@@ -36,7 +36,7 @@
         }
         function selectExceptCountrys(){
             var url=path+'/autoMessage/selectExceptCountrys.do?';
-            selectCountry1 = $.dialog({title: '指定国家之外',
+            selectCountry1 = openMyDialog({title: '指定国家之外',
                 content:'url:'+url,
                 icon: 'succeed',
                 width:800,
@@ -48,7 +48,7 @@
         }
         function selectItems(){
             var url=path+'/autoMessage/selectItems.do?';
-            selectCountry1 = $.dialog({title: '指定商品',
+            selectCountry1 = openMyDialog({title: '指定商品',
                 content:'url:'+url,
                 icon: 'succeed',
                 width:800,
@@ -60,7 +60,7 @@
         }
         function selectAmounts(){
             var url=path+'/autoMessage/selectAmounts.do?';
-            selectCountry1 = $.dialog({title: '指定账号',
+            selectCountry1 = openMyDialog({title: '指定账号',
                 content:'url:'+url,
                 icon: 'succeed',
                 width:800,
@@ -72,7 +72,7 @@
         }
         function selectShippingServices(){
             var url=path+'/autoMessage/selectShippingServices.do?';
-            selectCountry1 = $.dialog({title: '指定物流',
+            selectCountry1 = openMyDialog({title: '指定物流',
                 content:'url:'+url,
                 icon: 'succeed',
                 width:800,
@@ -84,7 +84,7 @@
         }
         function selectMessageTemplate(){
             var url=path+'/autoMessage/selectMessageTemplate.do?';
-            selectCountry1 = $.dialog({title: '选择模块',
+            selectCountry1 = openMyDialog({title: '选择模块',
                 content:'url:'+url,
                 icon: 'succeed',
                 width:800,
@@ -97,7 +97,7 @@
         function addcountry(){
             var country=$("input[type=checkbox][name=country]");
             if(country[0].checked){
-                var htm="<div id='selectCountry'>订单目的地:<a id='selectCountrys' href='#' onclick='selectCountrys();'>指定国家</a><br/></div>"
+                var htm="<div id='selectCountry'>订单目的地:<a id='selectCountrys' href='javascript:void(0);' onclick='selectCountrys();'>指定国家</a><br/></div>"
                 $("#addMarket").append($(htm));
             }else{
                 $("#selectCountry").remove();
@@ -107,7 +107,7 @@
         function addExceptCountry(){
             var country=$("input[type=checkbox][name=exceptCountry]");
             if(country[0].checked){
-                var htm="<div id='selectExceptCountry'>订单目的地:<a id='selectExceptCountrys' href='#' onclick='selectExceptCountrys();'>指定国家之外</a><br/></div>"
+                var htm="<div id='selectExceptCountry'>订单目的地:<a id='selectExceptCountrys' href='javascript:void(0)' onclick='selectExceptCountrys();'>指定国家之外</a><br/></div>"
                 $("#addMarket").append($(htm));
             }else{
                 $("#selectExceptCountry").remove();
@@ -127,7 +127,7 @@
         function addItem(){
             var item=$("input[type=checkbox][name=item]");
             if(item[0].checked){
-                var htm="<div id='selectItem'>订单商品:<a id='selectItems' href='#' onclick='selectItems();'>指定商品</a><br/></div>"
+                var htm="<div id='selectItem'>订单商品:<a id='selectItems' href='javascript:void(0)' onclick='selectItems();'>指定商品</a><br/></div>"
                 $("#addMarket").append($(htm));
             }else{
                 $("#selectItem").remove();
@@ -137,7 +137,7 @@
         function addAmount(){
             var amount=$("input[type=checkbox][name=amount]");
             if(amount[0].checked){
-                var htm="<div id='selectAmount'>订单来源:<a id='selectAmounts' href='#' onclick='selectAmounts();'>指定账号</a><br/></div>"
+                var htm="<div id='selectAmount'>订单来源:<a id='selectAmounts' href='javascript:void(0)' onclick='selectAmounts();'>指定账号</a><br/></div>"
                 $("#addMarket").append($(htm));
             }else{
                 $("#selectAmount").remove();
@@ -147,7 +147,7 @@
         function addShippingService(){
             var amount=$("input[type=checkbox][name=shippingService]");
             if(amount[0].checked){
-                var htm="<div id='selectShippingService'>买家选择的物流:<a id='selectShippingServices' href='#' onclick='selectShippingServices();'>指定物流方式</a><br/></div>"
+                var htm="<div id='selectShippingService'>买家选择的物流:<a id='selectShippingServices' href='javascript:void(0)' onclick='selectShippingServices();'>指定物流方式</a><br/></div>"
                 $("#addMarket").append($(htm));
             }else{
                 $("#selectShippingService").remove();
@@ -316,8 +316,8 @@
                     <dt id="svt1" >条件描述</dt>
                 </div>
                 <div style="padding: 20px;margin-top: 40px;" id="addMarket">
-                    <c:if test="${items!=null}">
-                        <div id='selectItem'>订单商品:<a id='selectItems' href='#' onclick='selectItems();'>
+                    <c:if test="${items[0]!=null}">
+                        <div id='selectItem'>订单商品:<a id='selectItems' href='javascript:void(0)' onclick='selectItems();'>
                             <c:forEach items="${items}" var="item" varStatus="status">
                                 <c:if test="${status.index==(status.count-1)}">
                                     ${item.value}
@@ -328,8 +328,8 @@
                             </c:forEach>
                         </a><br/></div>
                     </c:if>
-                    <c:if test="${countrys!=null}">
-                        <div id='selectCountry'>订单目的地:<a id='selectCountrys' href='#' onclick='selectCountrys();'>
+                    <c:if test="${countrys[0]!=null}">
+                        <div id='selectCountry'>订单目的地:<a id='selectCountrys' href='javascript:void(0)' onclick='selectCountrys();'>
                             <c:forEach items="${countrys}" var="item" varStatus="status">
                                 <c:if test="${status.index==(status.count-1)}">
                                     ${item.value}
@@ -340,8 +340,8 @@
                             </c:forEach>
                         </a><br/></div>
                     </c:if>
-                    <c:if test="${amounts!=null}">
-                        <div id='selectAmount'>订单来源:<a id='selectAmounts' href='#' onclick='selectAmounts();'>
+                    <c:if test="${amounts[0]!=null}">
+                        <div id='selectAmount'>订单来源:<a id='selectAmounts' href='javascript:void(0)' onclick='selectAmounts();'>
                             <c:forEach items="${amounts}" var="item" varStatus="status">
                                 <c:if test="${status.index==(status.count-1)}">
                                     ${item.value}
@@ -352,8 +352,8 @@
                             </c:forEach>
                         </a><br/></div>
                     </c:if>
-                    <c:if test="${services!=null||internationalServices!=null}">
-                        <div id='selectShippingService'>买家选择的物流:<a id='selectShippingServices' href='#' onclick='selectShippingServices();'>
+                    <c:if test="${services[0]!=null||internationalServices[0]!=null}">
+                        <div id='selectShippingService'>买家选择的物流:<a id='selectShippingServices' href='javascript:void(0)' onclick='selectShippingServices();'>
                             国内运输方式:
                             <c:forEach items="${services}" var="item" varStatus="status">
                                 <c:if test="${status.index==(status.count-1)}">
@@ -377,8 +377,8 @@
                     <c:if test="${order!=null}">
                         <div id='selectAllOrder'>所有订单:所有的订单<br/></div>
                     </c:if>
-                    <c:if test="${exceptCountrys!=null}">
-                        <div id='selectExceptCountry'>订单目的地:<a id='selectExceptCountrys' href='#' onclick='selectExceptCountrys();'>
+                    <c:if test="${exceptCountrys[0]!=null}">
+                        <div id='selectExceptCountry'>订单目的地:<a id='selectExceptCountrys' href='javascript:void(0)' onclick='selectExceptCountrys();'>
                             <c:forEach items="${exceptCountrys}" var="item" varStatus="status">
                                 <c:if test="${status.index==(status.count-1)}">
                                     ${item.value}之外
@@ -398,34 +398,34 @@
                     <dt id="svt1" >选择规则</dt>
                 </div>
                 <div id="regulation" style="padding: 20px;margin-top: 40px;">
-                    <c:if test="${items!=null}">
+                    <c:if test="${items[0]!=null}">
                         <input type="checkbox" name="item" checked onclick="addItem();">&nbsp;订单商品包含指定商品<br/><br/>
                     </c:if>
-                    <c:if test="${items==null}">
+                    <c:if test="${items[0]==null}">
                         <input type="checkbox" name="item"  onclick="addItem();">&nbsp;订单商品包含指定商品<br/><br/>
                     </c:if>
-                    <c:if test="${countrys!=null}">
+                    <c:if test="${countrys[0]!=null}">
                         <input type="checkbox" name="country" checked onclick="addcountry();">&nbsp;订单目的地为指定国家<br/><br/>
                     </c:if>
-                    <c:if test="${countrys==null}">
+                    <c:if test="${countrys[0]==null}">
                         <input type="checkbox" name="country" onclick="addcountry();">&nbsp;订单目的地为指定国家<br/><br/>
                     </c:if>
-                    <c:if test="${amounts!=null}">
+                    <c:if test="${amounts[0]!=null}">
                         <input type="checkbox" name="amount" checked onclick="addAmount();">&nbsp;订单来源为指定账号<br/><br/>
                     </c:if>
-                    <c:if test="${amounts==null}">
+                    <c:if test="${amounts[0]==null}">
                         <input type="checkbox" name="amount"  onclick="addAmount();">&nbsp;订单来源为指定账号<br/><br/>
                     </c:if>
-                    <c:if test="${services!=null||internationalServices!=null}">
+                    <c:if test="${services[0]!=null||internationalServices[0]!=null}">
                         <input type="checkbox" name="shippingService" checked onclick="addShippingService();">&nbsp;买家选择的物流为指定物流方式<br/><br/>
                     </c:if>
-                    <c:if test="${services==null&&internationalServices==null}">
+                    <c:if test="${services[0]==null&&internationalServices[0]==null}">
                         <input type="checkbox" name="shippingService"  onclick="addShippingService();">&nbsp;买家选择的物流为指定物流方式<br/><br/>
                     </c:if>
-                    <c:if test="${exceptCountrys!=null}">
+                    <c:if test="${exceptCountrys[0]!=null}">
                         <input type="checkbox" checked name="exceptCountry" onclick="addExceptCountry();">&nbsp;订单目的地为指定国家之外<br/><br/>
                     </c:if>
-                    <c:if test="${exceptCountrys==null}">
+                    <c:if test="${exceptCountrys[0]==null}">
                         <input type="checkbox" name="exceptCountry" onclick="addExceptCountry();">&nbsp;订单目的地为指定国家之外<br/><br/>
                     </c:if>
                     <c:if test="${order!=null}">

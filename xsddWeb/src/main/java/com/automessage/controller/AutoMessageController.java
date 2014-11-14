@@ -10,6 +10,7 @@ import com.base.domains.userinfo.UsercontrollerEbayAccountExtend;
 import com.base.mybatis.page.Page;
 import com.base.mybatis.page.PageJsonBean;
 import com.base.userinfo.service.SystemUserManagerService;
+import com.base.utils.annotations.AvoidDuplicateSubmission;
 import com.base.utils.cache.DataDictionarySupport;
 import com.base.utils.cache.SessionCacheSupport;
 import com.common.base.utils.ajax.AjaxSupport;
@@ -468,15 +469,17 @@ public class AutoMessageController extends BaseAction {
             String[] itemIds1=itemIds.split(",");
             String[] skus=sku.split(",");
             for(int i=0;i<itemIds1.length;i++){
-                TradingAutoMessageAttr attr=new TradingAutoMessageAttr();
-                attr.setType("orderItem");
-                if(StringUtils.isNotBlank(autoMessageId)){
-                    attr.setAutomessageId(Long.valueOf(autoMessageId));
+                if(StringUtils.isNotBlank(itemIds1[i])){
+                    TradingAutoMessageAttr attr=new TradingAutoMessageAttr();
+                    attr.setType("orderItem");
+                    if(StringUtils.isNotBlank(autoMessageId)){
+                        attr.setAutomessageId(Long.valueOf(autoMessageId));
+                    }
+                    attr.setDictionaryId(Long.valueOf(itemIds1[i]));
+                    attr.setValue(skus[i]);
+                    iTradingAutoMessageAttr.saveAutoMessageAttr(attr);
+                    list.add(attr.getId());
                 }
-                attr.setDictionaryId(Long.valueOf(itemIds1[i]));
-                attr.setValue(skus[i]);
-                iTradingAutoMessageAttr.saveAutoMessageAttr(attr);
-                list.add(attr.getId());
             }
             AjaxSupport.sendSuccessText("", list);
         }else{
@@ -559,11 +562,13 @@ public class AutoMessageController extends BaseAction {
         if(StringUtils.isNotBlank(orderItems)){
             String[] orderItems1=orderItems.split(",");
             for(int i=0;i<orderItems1.length;i++){
-                List<TradingAutoMessageAttr> orderItem=iTradingAutoMessageAttr.selectAutoMessageListById(Long.valueOf(orderItems1[i]));
-                if(orderItem!=null&&orderItem.size()>0){
-                    TradingAutoMessageAttr country=orderItem.get(0);
-                    country.setAutomessageId(message.getId());
-                    iTradingAutoMessageAttr.saveAutoMessageAttr(country);
+                if(StringUtils.isNotBlank(orderItems)){
+                    List<TradingAutoMessageAttr> orderItem=iTradingAutoMessageAttr.selectAutoMessageListById(Long.valueOf(orderItems1[i]));
+                    if(orderItem!=null&&orderItem.size()>0){
+                        TradingAutoMessageAttr country=orderItem.get(0);
+                        country.setAutomessageId(message.getId());
+                        iTradingAutoMessageAttr.saveAutoMessageAttr(country);
+                    }
                 }
             }
         }
@@ -618,6 +623,26 @@ public class AutoMessageController extends BaseAction {
         }else{
             AjaxSupport.sendFailText("fail","自动消息不存在");
             return;
+        }
+        AjaxSupport.sendSuccessText("", "删除成功");
+    }
+
+    //批量删除autoMessage
+    @RequestMapping("/ajax/deleteAutoMessages.do")
+    @AvoidDuplicateSubmission(needRemoveToken = true)
+    @ResponseBody
+    public void deleteAutoMessages(HttpServletRequest request) throws Exception {
+        String id1=request.getParameter("id");
+        String[] ids=id1.split(",");
+        for(int i=0;i<ids.length;i++){
+            TradingAutoMessage message=new TradingAutoMessage();
+            Long id= Long.valueOf(ids[i]);
+            message.setId(id);
+            List<TradingAutoMessageAttr> attrs=iTradingAutoMessageAttr.selectAutoMessageListByMessageId(message.getId());
+            for(TradingAutoMessageAttr attr:attrs){
+                iTradingAutoMessageAttr.deleteAutoMessageAttr(attr);
+            }
+            iTradingAutoMessage.deleteAutoMessage(message);
         }
         AjaxSupport.sendSuccessText("", "删除成功");
     }

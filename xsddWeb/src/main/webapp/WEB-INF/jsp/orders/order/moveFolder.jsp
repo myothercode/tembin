@@ -25,6 +25,7 @@
             <c:forEach items="${orderids}" begin="0" varStatus="status">
                 date=date+"&orderid[${status.index}]=${orderids[status.index]}";
             </c:forEach>
+            console.debug(date);
             if(folderId){
                 var data=null;
                 var url=path+"/order/saveFolder.do?folderId="+folderId+date;
@@ -32,7 +33,7 @@
                         [function(m,r){
                             alert(r);
                             var divs= W.document.getElementsByName("newbut");
-                            for(var v=5;v<divs.length;v++){
+                            for(var v=5;v<=divs.length;v++){
                                 var vv="#OrderGetOrdersListTable"+v;
                                /* var table= W.document.getElementById(vv);*/
                                 var me= W.document.getElementById("con_menu_"+v);

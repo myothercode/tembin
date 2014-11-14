@@ -1,10 +1,11 @@
 body {
-  font-family: 'Open Sans', sans-serif;
-  background-color: #f7f7f7;
-  position: relative;
-  margin: 0px;
-  font-size: 12px;
-  padding: 0px;
+    font-family: 'Open Sans', sans-serif;
+    background-color: #f7f7f7;
+    position: relative;
+    margin: 0px;
+    font-size: 12px;
+    padding: 0px;
+
   /*-webkit-font-smoothing: antialiased;*/
 }
 
@@ -13,8 +14,8 @@ h1, h2, h3, h4, h5 {
 	line-height: inherit;
 	color: #29323d;
 	font-family: "微软雅黑", "宋体", Arial;
-	font-size: 21px;
-	font-weight: normal;
+    font-size: 16px;
+    font-weight: bold;
 }
 h1 small, h2 small, h3 small, h4 small, h5 small {
   margin-left: 15px;
@@ -434,9 +435,9 @@ input.search {
 
 .content {
 	min-width: 400px;
-	min-height: 400px;
-	/*margin-bottom: 70px;
-	padding-bottom: 60px;*/
+    min-height: 400px;
+    /*margin-bottom: 70px;
+    padding-bottom: 60px;*/
 	overflow: hidden;
 	position: relative;
 	background: #fff;
@@ -735,8 +736,8 @@ input.search {
 	height: 1px;
 	width: 100%;
 	background-color: #DEE3EA;
-	margin-top: 10px;
-	margin-bottom: 10px;
+    margin-top: 1px;
+    margin-bottom: 2px;
 }
 .new_left{
 	float: left;
@@ -1061,16 +1062,16 @@ input.search {
 }
 .new_tab_ls dt{
 	font-family: "微软雅黑", "宋体", Arial;
-	font-size: 12px;
+    font-size: 12px;
 	line-height: 27px;
 	font-weight: bold;
 	float: left;
 	height: 27px;
-	/*width: 118px;*/
+    /*width: 118px;*/
 	margin-top: 3px;
 	text-align: center;
-	margin-right: 5px;
-	margin-left: 5px;
+    margin-right: 5px;
+    margin-left: 5px;
 	cursor: pointer;
     padding-left: 10px;
     padding-right: 10px;
@@ -1186,14 +1187,14 @@ cursor: pointer;
 	padding-left: 6px;
 }
 .maage_page{
-	/*width: 300px;*/
+    /*width: 300px;*/
 	height: 30px;
 	border: 1px solid #DDDDDD;
 	float: right;
 	margin-top: 20px;
 	margin-bottom: 20px;
 	border-radius: 4px;
-	padding-right: 1px;
+    padding-right: 1px;
 	padding-left: 5px;
 	color: #428bca;
 }
@@ -1427,7 +1428,7 @@ cursor: pointer;
 .new_tab_1{
 	color: #fff;
 	font-family: "微软雅黑", "宋体", Arial;
-	font-size: 12px;
+    font-size: 12px;
 	line-height: 31px;
 	font-weight: bold;
 	background-image: url(../../img/new_tab_2.png);
@@ -1463,11 +1464,10 @@ cursor: pointer;
 .new_tab_2{
 	color: #333;
 	font-family: "微软雅黑", "宋体", Arial;
-	font-size: 12px;
+    font-size: 12px;
 	line-height: 31px;
 	font-weight: bold;
 	background-image: url(../../img/new_tab_1.png);
-    background-size:99% 100%;
 	background-repeat: no-repeat;
 	background-position: 0px 0px;
 	float: left;
@@ -1475,8 +1475,8 @@ cursor: pointer;
 	width: 118px;
 	margin-top: 5px;
 	text-align: center;
-	margin-right: 10px;
-	margin-left: 10px;
+    margin-right: 10px;
+    margin-left: 10px;
 }
 .new_tab_2_ii{
 	color: #333;
@@ -1709,7 +1709,7 @@ cursor: pointer;
 	color: #2495F4;FONT-SIZE: 16px; FLOAT: right; MARGIN-RIGHT: 10px
 }
 .listbox div {
-	BORDER-RIGHT: #6ce26c 2px solid; PADDING-RIGHT: 0.5em; BORDER-TOP: #A1C7F5 0px solid; DISPLAY: none; PADDING-LEFT: 0.5em; BACKGROUND: #fff; PADDING-BOTTOM: 0.5em; BORDER-LEFT: #6ce26c 2px solid; TEXT-INDENT: 10px; LINE-HEIGHT: 22px; PADDING-TOP: 0.5em; BORDER-BOTTOM: #6ce26c 0px solid;margin-bottom:20px;
+	BORDER-RIGHT: #6ce26c 2px solid; PADDING-RIGHT: 0.5em; BORDER-TOP: ##A1C7F5 0px solid; DISPLAY: none; PADDING-LEFT: 0.5em; BACKGROUND: #fff; PADDING-BOTTOM: 0.5em; BORDER-LEFT: #6ce26c 2px solid; TEXT-INDENT: 10px; LINE-HEIGHT: 22px; PADDING-TOP: 0.5em; BORDER-BOTTOM: #6ce26c 0px solid;margin-bottom:20px;
 }
 .jq div {
 	font-family: "微软雅黑", "宋体", Arial;
@@ -2058,7 +2058,7 @@ color:#FFF;
 	background-image: url(../../img/num_type.gif);
 	background-repeat: no-repeat;
 	background-position: 0px 0px;
-	margin-top: 0px;
+	margin-top: 8px;
 }
 #newtipi li ul a{
 display: block; width: 89px;text-align:left;padding-left:22px;
@@ -2070,6 +2070,51 @@ color:#fff;
 left: auto;
 }
 #newtipi li.sfhover ul {
+left: auto;
+}
+#vspic {
+	line-height: 12px;
+	list-style-type: none;
+	position: absolute;
+	text-align: center;
+}
+#vspic a {
+	color: #FFF;
+	display: block;
+
+
+	
+}
+#vspic a:hover {
+color:#FFF;
+}
+#vspic li{
+	margin-left:120px;
+}
+#vspic li ul {
+	line-height: 25px;
+	list-style-type: none;
+	text-align: left;
+	margin-left:-200px;
+	left: -1200em;
+	position: absolute;
+	z-index:10000;
+}
+#vspic li ul li{ background:#446A8F;
+width:58px;;
+margin-top:-3px;
+float:left;
+}
+#vspic li ul a{
+display: block; text-align:center;padding-left:2px;
+}
+#vspic li ul a:hover {
+color:#fff;
+}
+#vspic li:hover ul {
+left: auto;
+}
+#vspic li.sfhover ul {
 left: auto;
 }
 .newdata{margin-bottom:6px; margin-right:9px;float: left;}
@@ -2198,7 +2243,7 @@ left: auto;
 	background-position: right bottom;
 }
 .Paypal{
-	background-image: url(../../img/paypal.png);
+    background-image: url(../../img/paypal.png);
 	background-repeat: no-repeat;
 	background-position: right bottom;
 }
@@ -2351,16 +2396,16 @@ left: auto;
 }
 .new_index li{
 	float: left;
-	width: 32%;
-	height: 140px;
+    width: 20%;
+    height: 100px;
 	list-style-type: none;
 	font-family: "微软雅黑", "宋体", Arial;
 	font-size: 18px;
 	color: #FFF;
-	line-height: 50px;
+    line-height: 40px;
 	text-align: center;
-	padding-top: 20px;
-	padding-bottom: 20px;
+    padding-top: 15px;
+    padding-bottom: 15px;
 	border-radius: 10px;
 }
 .new_index li span{
@@ -2383,7 +2428,7 @@ left: auto;
 }
 .new_index_2 ul{
 	float: left;
-	width: 48%;
+    width: 49%;
 	margin: 0px;
 	padding: 0px;
 	font-family: "微软雅黑", "宋体", Arial;
@@ -2391,8 +2436,8 @@ left: auto;
 .new_index_2 h1{
 	float: left;
 	width:100%;
-	margin: 0px;
-	padding-bottom:15px;
+    margin-top: 30px;
+    padding-bottom:5px;
 }
 .new_index_2 li{
 	width: 100%;
@@ -2431,8 +2476,9 @@ left: auto;
 	line-height:30px;
 }
 .neq li{
-	color:#4F7599;
-	line-height:30px;
+	color: #4F7599;
+	line-height: 30px;
+	font-size: 12px;
 }
 .aemail_1{
 	background-image: url(../../img/aemail_1.png);

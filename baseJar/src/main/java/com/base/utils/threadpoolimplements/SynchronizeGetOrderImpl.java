@@ -1,5 +1,7 @@
 package com.base.utils.threadpoolimplements;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.base.database.trading.model.*;
 import com.base.domains.userinfo.UsercontrollerDevAccountExtend;
 import com.base.sampleapixml.APINameStatic;
@@ -13,11 +15,19 @@ import com.base.utils.xmlutils.SamplePaseXml;
 import com.sitemessage.service.SiteMessageStatic;
 import com.trading.service.*;
 import org.apache.commons.lang.StringUtils;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.net.URI;
+import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
@@ -88,10 +98,10 @@ public class SynchronizeGetOrderImpl implements ThreadPoolBaseInterFace {
         String ack = null;
         try {
             Map map=new HashMap();
-            Date startTime2= DateUtils.subDays(new Date(), 9);
-            Date endTime= DateUtils.addDays(startTime2, 9);
-            /*Date startTime2= DateUtils.subDays(new Date(),90);
-            Date endTime= DateUtils.addDays(startTime2,90);*/
+          /*  Date startTime2= DateUtils.subDays(new Date(), 9);
+            Date endTime= DateUtils.addDays(startTime2, 9);*/
+            Date startTime2= DateUtils.subDays(new Date(),90);
+            Date endTime= DateUtils.addDays(startTime2,90);
             Date end1= com.base.utils.common.DateUtils.turnToDateEnd(endTime);
             String start= DateUtils.DateToString(startTime2);
             String end=DateUtils.DateToString(end1);
@@ -150,6 +160,12 @@ public class SynchronizeGetOrderImpl implements ThreadPoolBaseInterFace {
                                 order.setId(l.getId());
                             }
                         }
+                        //-----获取跟踪号状态-----------
+                        if(order.getShipmenttrackingnumber()!=null){
+                            String trackStatus=queryTrack(order);
+                            order.setTrackstatus(trackStatus);
+                        }
+
                         //--------------自动发送消息-------------------------
                         List<TradingOrderAddMemberMessageAAQToPartner> addmessages=iTradingOrderAddMemberMessageAAQToPartner.selectTradingOrderAddMemberMessageAAQToPartnerByTransactionId(order.getTransactionid(),2,order.getSelleruserid());
                         if(addmessages!=null&&addmessages.size()>0){
@@ -444,6 +460,34 @@ public class SynchronizeGetOrderImpl implements ThreadPoolBaseInterFace {
             logger.error("解析xml出错,请稍后到ebay网站确认结果");
             return;
         }
+    }
+    public String queryTrack(TradingOrderGetOrders order) throws Exception {
+        BufferedReader in = null;
+        String content = null;
+        String trackNum=order.getShipmenttrackingnumber();
+        String token=(URLEncoder.encode("RXYaxblwfBeNY+2zFVDbCYTz91r+VNWmyMTgXE4v16gCffJam2FcsPUpiau6F8Yk"));
+        String url="http://api.91track.com/track?culture=zh-CN&numbers="+trackNum+"&token="+token;
+        /*String url="http://api.91track.com/track?culture=en&numbers="+"RD275816257CN"+"&token="+token;*/
+        HttpClient client=new DefaultHttpClient();
+        HttpGet get=new HttpGet();
+        get.setURI(new URI(url));
+        HttpResponse response = client.execute(get);
+
+        in = new BufferedReader(new InputStreamReader(response.getEntity()
+                .getContent()));
+        StringBuffer sb = new StringBuffer("");
+        String line ="";
+        String NL = System.getProperty("line.separator");
+        while ((line = in.readLine()) != null) {
+            sb.append(line + NL);
+        }
+        in.close();
+        content = sb.toString();
+        String[] arr=content.split(",");
+        String content1="{"+arr[1]+"}";
+        JSONObject json = JSON.parseObject(content1);
+        String status=json.getString("Status");
+        return status;
     }
     private String dateToString(Date date){
         String d=null;

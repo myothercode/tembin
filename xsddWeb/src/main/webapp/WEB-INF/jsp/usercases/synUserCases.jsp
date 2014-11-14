@@ -67,7 +67,7 @@
     </table>
 </form>--%>
 <div class="modal-header">
-    <h4 class="modal-title" style="color:#2E98EE">同步纠纷管理</h4>
+    <%--<h4 class="modal-title" style="color:#2E98EE">同步纠纷管理</h4>--%>
     <div class="newtitle">请选择要同步的ebay账号</div>
 </div>
 <div class="modal-body">

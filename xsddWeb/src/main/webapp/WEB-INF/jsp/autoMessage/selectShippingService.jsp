@@ -120,8 +120,10 @@
     </tr>
 </table>
 <div class="modal-footer" style="text-align: right;width: 700px;">
-    <button type="button" class="btn btn-primary" onclick="submitCommit();">保存</button>
-    <button type="button" class="btn btn-default" data-dismiss="modal" onclick="closedialog();">关闭</button>
+    <button type="button" class="net_put" onclick="submitCommit();">保存</button>
+    <button type="button" class="net_put_1" data-dismiss="modal" onclick="closedialog();">关闭</button>
+<%--    <button type="button" class="btn btn-primary" onclick="submitCommit();">保存</button>
+    <button type="button" class="btn btn-default" data-dismiss="modal" onclick="closedialog();">关闭</button>--%>
 </div>
 
 <div class="label_box">

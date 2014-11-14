@@ -112,7 +112,7 @@
             <dt id=menu7 name="discountPriceInfo" class=new_tab_2 onclick="setTab(this)">折扣信息</dt>
         </div>
     </div>
-    <div class="tbbay" id="showAddButton" style="background-image:url(null);position: absolute;top: 76px;right: 40px;z-index: 10000;">
+    <div class="tbbay" id="showAddButton" style="background-image:url(null);position: absolute;top: 60px;right: 40px;z-index: 10000;">
         <img src="img/adds.png" onclick="addModel()">
         <%--<a data-toggle="modal" href="javascript:void(0)" class=""  onclick="addModel()">新增</a>--%>
     </div>

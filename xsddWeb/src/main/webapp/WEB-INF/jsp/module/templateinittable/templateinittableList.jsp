@@ -14,7 +14,7 @@
     <script type="text/javascript">
         var TemplateInitTable;
         function addTemplateInitTable(){
-            TemplateInitTable=$.dialog({title: '新增模板选项',
+            TemplateInitTable=openMyDialog({title: '新增模板选项',
                 content: 'url:/xsddWeb/addTemplateInitTable.do',
                 icon: 'succeed',
                 width:1025,
@@ -22,7 +22,7 @@
             });
         }
         function editTemplateInitTable(id){
-            TemplateInitTable=$.dialog({title: '编辑模板描述',
+            TemplateInitTable=openMyDialog({title: '编辑模板描述',
                 content: 'url:/xsddWeb/editTemplateInitTable.do?id='+id,
                 icon: 'succeed',
                 width:1025,
@@ -30,10 +30,11 @@
             });
         }
         function viewTemplateInitTable(id){
-            TemplateInitTable=$.dialog({title: '查看模板',
+            TemplateInitTable=openMyDialog({title: '查看模板',
                 content: 'url:/xsddWeb/viewTemplateInitTable.do?id='+id,
                 icon: 'succeed',
                 width:1025,
+                height:750,
                 lock:true
             });
         }

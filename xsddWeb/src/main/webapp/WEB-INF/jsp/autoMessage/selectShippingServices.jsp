@@ -29,7 +29,7 @@
                 return;
             }else{
                 var url=path+'/autoMessage/selectShippingService.do?siteId='+siteId;
-                selectShippingService1 = $.dialog({title: '选择运输方式',
+                selectShippingService1 = openMyDialog({title: '选择运输方式',
                     content:'url:'+url,
                     icon: 'succeed',
                     width:800,
@@ -118,8 +118,10 @@
         </div>
     </div>
     <div class="modal-footer" style="text-align: right;width: 700px;">
-        <button type="button" class="btn btn-primary" onclick="submitCommit();">保存</button>
-        <button type="button" class="btn btn-default" data-dismiss="modal" onclick="closedialog();">关闭</button>
+        <button type="button" class="net_put" onclick="submitCommit();">保存</button>
+        <button type="button" class="net_put_1" data-dismiss="modal" onclick="closedialog();">关闭</button>
+   <%--     <button type="button" class="btn btn-primary" onclick="submitCommit();">保存</button>
+        <button type="button" class="btn btn-default" data-dismiss="modal" onclick="closedialog();">关闭</button>--%>
     </div>
 </div>
 

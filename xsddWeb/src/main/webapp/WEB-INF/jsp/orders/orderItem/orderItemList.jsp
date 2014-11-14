@@ -41,7 +41,7 @@
         }
         function viewOrder(id){
             var url=path+'/order/vieworderItem.do?orderid='+id;
-            orderItem=$.dialog({title: '查看订单详情',
+            orderItem=openMyDialog({title: '查看订单详情',
                 content: 'url:'+url,
                 icon: 'succeed',
                 width:1000,
@@ -51,7 +51,7 @@
         }*/
         function getBindParm(){
             var url=path+"/orderItem/GetOrder.do";
-            orderItem=$.dialog({title: '同步订单商品',
+            orderItem=openMyDialog({title: '同步订单商品',
                 content: 'url:'+url,
                 icon: 'succeed',
                 width:1025,

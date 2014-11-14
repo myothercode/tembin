@@ -35,6 +35,7 @@
     <result column="addressOwner" jdbcType="VARCHAR" property="addressowner" />
     <result column="shippingCarrierUsed" jdbcType="VARCHAR" property="shippingcarrierused" />
     <result column="shipmentTrackingNumber" jdbcType="VARCHAR" property="shipmenttrackingnumber" />
+    <result column="trackStatus" jdbcType="VARCHAR" property="trackstatus" />
     <result column="externalAddressID" jdbcType="VARCHAR" property="externaladdressid" />
     <result column="subtotal" jdbcType="VARCHAR" property="subtotal" />
     <result column="total" jdbcType="VARCHAR" property="total" />
@@ -140,12 +141,12 @@
     lastModifiedTime, paymentMethod, status, shippingdetails_id, selectedShippingService, 
     selectedShippingServiceCost, creatingUserRole, createdTime, paymentMethods, name, 
     street1, street2, cityName, stateOrProvince, country, countryName, phone, postalCode, 
-    addressID, addressOwner, shippingCarrierUsed, shipmentTrackingNumber, externalAddressID, 
-    subtotal, total, digitalDelivery, buyerEmail, sellerEmail, sellingManagerSales, itemID, 
-    sKU, title, quantityPurchased, transactionID, sellingManagerSalesRecordNumber, transactionPrice, 
-    paidTime, shippedTime, actualShippingCost, actualHandlingCost, buyerUserID, comment, 
-    folder, sellerUserID, variationSKU, paypalFlag, shippedFlag, sendMessageTime, create_user, 
-    create_time, uuid
+    addressID, addressOwner, shippingCarrierUsed, shipmentTrackingNumber, trackStatus, 
+    externalAddressID, subtotal, total, digitalDelivery, buyerEmail, sellerEmail, sellingManagerSales, 
+    itemID, sKU, title, quantityPurchased, transactionID, sellingManagerSalesRecordNumber, 
+    transactionPrice, paidTime, shippedTime, actualShippingCost, actualHandlingCost, 
+    buyerUserID, comment, folder, sellerUserID, variationSKU, paypalFlag, shippedFlag, 
+    sendMessageTime, create_user, create_time, uuid
   </sql>
   <select id="selectByExample" parameterType="com.base.database.trading.model.TradingOrderGetOrdersExample" resultMap="BaseResultMap">
     <!--
@@ -208,7 +209,7 @@
       cityName, stateOrProvince, country, 
       countryName, phone, postalCode, 
       addressID, addressOwner, shippingCarrierUsed, 
-      shipmentTrackingNumber, externalAddressID, 
+      shipmentTrackingNumber, trackStatus, externalAddressID, 
       subtotal, total, digitalDelivery, 
       buyerEmail, sellerEmail, sellingManagerSales, 
       itemID, sKU, title, 
@@ -229,7 +230,7 @@
       #{cityname,jdbcType=VARCHAR}, #{stateorprovince,jdbcType=VARCHAR}, #{country,jdbcType=VARCHAR}, 
       #{countryname,jdbcType=VARCHAR}, #{phone,jdbcType=VARCHAR}, #{postalcode,jdbcType=VARCHAR}, 
       #{addressid,jdbcType=VARCHAR}, #{addressowner,jdbcType=VARCHAR}, #{shippingcarrierused,jdbcType=VARCHAR}, 
-      #{shipmenttrackingnumber,jdbcType=VARCHAR}, #{externaladdressid,jdbcType=VARCHAR}, 
+      #{shipmenttrackingnumber,jdbcType=VARCHAR}, #{trackstatus,jdbcType=VARCHAR}, #{externaladdressid,jdbcType=VARCHAR}, 
       #{subtotal,jdbcType=VARCHAR}, #{total,jdbcType=VARCHAR}, #{digitaldelivery,jdbcType=VARCHAR}, 
       #{buyeremail,jdbcType=VARCHAR}, #{selleremail,jdbcType=VARCHAR}, #{sellingmanagersales,jdbcType=VARCHAR}, 
       #{itemid,jdbcType=VARCHAR}, #{sku,jdbcType=VARCHAR}, #{title,jdbcType=VARCHAR}, 
@@ -334,6 +335,9 @@
       </if>
       <if test="shipmenttrackingnumber != null">
         shipmentTrackingNumber,
+      </if>
+      <if test="trackstatus != null">
+        trackStatus,
       </if>
       <if test="externaladdressid != null">
         externalAddressID,
@@ -510,6 +514,9 @@
       </if>
       <if test="shipmenttrackingnumber != null">
         #{shipmenttrackingnumber,jdbcType=VARCHAR},
+      </if>
+      <if test="trackstatus != null">
+        #{trackstatus,jdbcType=VARCHAR},
       </if>
       <if test="externaladdressid != null">
         #{externaladdressid,jdbcType=VARCHAR},
@@ -704,6 +711,9 @@
       <if test="record.shipmenttrackingnumber != null">
         shipmentTrackingNumber = #{record.shipmenttrackingnumber,jdbcType=VARCHAR},
       </if>
+      <if test="record.trackstatus != null">
+        trackStatus = #{record.trackstatus,jdbcType=VARCHAR},
+      </if>
       <if test="record.externaladdressid != null">
         externalAddressID = #{record.externaladdressid,jdbcType=VARCHAR},
       </if>
@@ -831,6 +841,7 @@
       addressOwner = #{record.addressowner,jdbcType=VARCHAR},
       shippingCarrierUsed = #{record.shippingcarrierused,jdbcType=VARCHAR},
       shipmentTrackingNumber = #{record.shipmenttrackingnumber,jdbcType=VARCHAR},
+      trackStatus = #{record.trackstatus,jdbcType=VARCHAR},
       externalAddressID = #{record.externaladdressid,jdbcType=VARCHAR},
       subtotal = #{record.subtotal,jdbcType=VARCHAR},
       total = #{record.total,jdbcType=VARCHAR},
@@ -954,6 +965,9 @@
       </if>
       <if test="shipmenttrackingnumber != null">
         shipmentTrackingNumber = #{shipmenttrackingnumber,jdbcType=VARCHAR},
+      </if>
+      <if test="trackstatus != null">
+        trackStatus = #{trackstatus,jdbcType=VARCHAR},
       </if>
       <if test="externaladdressid != null">
         externalAddressID = #{externaladdressid,jdbcType=VARCHAR},
@@ -1079,6 +1093,7 @@
       addressOwner = #{addressowner,jdbcType=VARCHAR},
       shippingCarrierUsed = #{shippingcarrierused,jdbcType=VARCHAR},
       shipmentTrackingNumber = #{shipmenttrackingnumber,jdbcType=VARCHAR},
+      trackStatus = #{trackstatus,jdbcType=VARCHAR},
       externalAddressID = #{externaladdressid,jdbcType=VARCHAR},
       subtotal = #{subtotal,jdbcType=VARCHAR},
       total = #{total,jdbcType=VARCHAR},

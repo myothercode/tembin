@@ -19,7 +19,7 @@
     <script>
         var returnShipping;
         function addshippingDetails(){
-            returnShipping=$.dialog({title: '新增运送选项',
+            returnShipping=openMyDialog({title: '新增运送选项',
                 content: 'url:/xsddWeb/addshippingDetails.do',
                 icon: 'succeed',
                 width:1000,
@@ -28,7 +28,7 @@
         }
 
         function editshippingDetails(id){
-            returnShipping=$.dialog({title: '编辑运送选项',
+            returnShipping=openMyDialog({title: '编辑运送选项',
                 content: 'url:/xsddWeb/editshippingDetails.do?id='+id,
                 icon: 'succeed',
                 width:1000,
@@ -101,7 +101,7 @@
             );
         }
         function editshippingDetailsselect(id){
-            returnShipping=$.dialog({title: '编辑运送选项',
+            returnShipping=openMyDialog({title: '编辑运送选项',
                 content: 'url:/xsddWeb/editshippingDetails.do?id='+id+'&type=01',
                 icon: 'succeed',
                 width:1000,

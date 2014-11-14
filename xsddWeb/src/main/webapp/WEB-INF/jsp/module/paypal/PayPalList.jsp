@@ -19,7 +19,7 @@
     <script type="text/javascript">
         var payPal;
         function addPayPal(){
-            payPal=$.dialog({title: '新增付款选项',
+            payPal=openMyDialog({title: '新增付款选项',
                 content: 'url:/xsddWeb/addPayPal.do',
                 icon: 'succeed',
                 width:500,
@@ -28,7 +28,7 @@
         }
 
         function editPayPal(id){
-            payPal=$.dialog({title: '编辑付款选项',
+            payPal=openMyDialog({title: '编辑付款选项',
                 content: 'url:/xsddWeb/editPayPal.do?id='+id,
                 icon: 'succeed',
                 width:500,
@@ -36,7 +36,7 @@
             });
         }
         function editPayPalselect(id){
-            payPal=$.dialog({title: '查看付款选项',
+            payPal=openMyDialog({title: '查看付款选项',
                 content: 'url:/xsddWeb/editPayPal.do?id='+id+'&type=01',
                 icon: 'succeed',
                 width:500,

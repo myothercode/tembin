@@ -69,6 +69,9 @@
         cleanLocalStorageFunction();
 
 
-
+    /**将弹出窗口统一到一处*/
+    function openMyDialog(parm){
+        return $.dialog(parm);
+    }
 
 </script>

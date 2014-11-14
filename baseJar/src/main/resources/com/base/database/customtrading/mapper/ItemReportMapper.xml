@@ -19,9 +19,8 @@
 
     <select id="selectItemReportList" resultMap="BaseResultMap" parameterType="map">
         select rep.* from trading_listing_report rep  where 1=1
-        <if test="datestr==null">
-            and DATE_FORMAT(rep.create_date, '%Y-%m-%d') = #{datestr}
-        </if>
+        and DATE_FORMAT(rep.create_date, '%Y-%m-%d') = (select DATE_FORMAT(max(ret.create_date), '%Y-%m-%d')
+        from trading_listing_report ret)
         order by rep.datatype asc
     </select>
 </mapper>

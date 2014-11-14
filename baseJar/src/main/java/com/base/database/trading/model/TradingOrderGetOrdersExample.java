@@ -2175,6 +2175,76 @@ public class TradingOrderGetOrdersExample {
             return (Criteria) this;
         }
 
+        public Criteria andTrackstatusIsNull() {
+            addCriterion("trackStatus is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andTrackstatusIsNotNull() {
+            addCriterion("trackStatus is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andTrackstatusEqualTo(String value) {
+            addCriterion("trackStatus =", value, "trackstatus");
+            return (Criteria) this;
+        }
+
+        public Criteria andTrackstatusNotEqualTo(String value) {
+            addCriterion("trackStatus <>", value, "trackstatus");
+            return (Criteria) this;
+        }
+
+        public Criteria andTrackstatusGreaterThan(String value) {
+            addCriterion("trackStatus >", value, "trackstatus");
+            return (Criteria) this;
+        }
+
+        public Criteria andTrackstatusGreaterThanOrEqualTo(String value) {
+            addCriterion("trackStatus >=", value, "trackstatus");
+            return (Criteria) this;
+        }
+
+        public Criteria andTrackstatusLessThan(String value) {
+            addCriterion("trackStatus <", value, "trackstatus");
+            return (Criteria) this;
+        }
+
+        public Criteria andTrackstatusLessThanOrEqualTo(String value) {
+            addCriterion("trackStatus <=", value, "trackstatus");
+            return (Criteria) this;
+        }
+
+        public Criteria andTrackstatusLike(String value) {
+            addCriterion("trackStatus like", value, "trackstatus");
+            return (Criteria) this;
+        }
+
+        public Criteria andTrackstatusNotLike(String value) {
+            addCriterion("trackStatus not like", value, "trackstatus");
+            return (Criteria) this;
+        }
+
+        public Criteria andTrackstatusIn(List<String> values) {
+            addCriterion("trackStatus in", values, "trackstatus");
+            return (Criteria) this;
+        }
+
+        public Criteria andTrackstatusNotIn(List<String> values) {
+            addCriterion("trackStatus not in", values, "trackstatus");
+            return (Criteria) this;
+        }
+
+        public Criteria andTrackstatusBetween(String value1, String value2) {
+            addCriterion("trackStatus between", value1, value2, "trackstatus");
+            return (Criteria) this;
+        }
+
+        public Criteria andTrackstatusNotBetween(String value1, String value2) {
+            addCriterion("trackStatus not between", value1, value2, "trackstatus");
+            return (Criteria) this;
+        }
+
         public Criteria andExternaladdressidIsNull() {
             addCriterion("externalAddressID is null");
             return (Criteria) this;

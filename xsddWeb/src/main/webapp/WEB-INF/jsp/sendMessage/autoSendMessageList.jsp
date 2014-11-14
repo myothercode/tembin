@@ -135,7 +135,7 @@
                             <div class="newds">
                                 <div class="newsj_left"><span class="newusa_ici_del_in"><input type="checkbox" name="checkbox" id="checkbox" onclick="Allchecked(this);"></span>
                                     <span class="newusa_ici_del" onclick="removeAutoSendMessage();">删除</span><%--<div class="page_num">显示20条</div>--%>
-                                </div><div class="tbbay"><a href="#">添加模板</a></div>
+                                </div><div class="tbbay"><a href="javascript:void(0)">添加模板</a></div>
                             </div>
                         </div>
                         <div id="autoSendMessageTable"></div>

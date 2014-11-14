@@ -20,7 +20,7 @@
         var userCases;
         function getBindParm(){
             var url=path+"/userCases/getUserCases.do";
-            userCases=$.dialog({title: '同步纠纷',
+            userCases=openMyDialog({title: '同步纠纷',
                 content: 'url:'+url,
                 icon: 'succeed',
                 width:600,
@@ -112,7 +112,7 @@
         }
         function synDetails(id){
             var url=path+"/userCases/synDetails.do?id="+id;
-            userCases=$.dialog({title: '同步纠纷详情',
+            userCases=openMyDialog({title: '同步纠纷详情',
                 content: 'url:'+url,
                 icon: 'succeed',
                 width:1025,
@@ -121,7 +121,7 @@
         }
         function viewDetails(id,sellerid){
             var url=path+"/userCases/viewDetails.do?transactionid="+id+"&sellerid="+sellerid;
-            userCases=$.dialog({title: '查看纠纷详情',
+            userCases=openMyDialog({title: '查看纠纷详情',
                 content: 'url:'+url,
                 icon: 'succeed',
                 width:1025,
@@ -130,14 +130,14 @@
         }
         function handleDispute(id,sellerid){
             /*var url=path+"/userCases/handleDispute.do?transactionid="+id;
-            userCases=$.dialog({title: '处理纠纷',
+            userCases=openMyDialog({title: '处理纠纷',
                 content: 'url:'+url,
                 icon: 'succeed',
                 width:600,
                 height:350
             });*/
             var url=path+"/userCases/responseDispute.do?transactionid="+id+"&sellerid="+sellerid;
-            CaseDetails=$.dialog({title: '响应纠纷',
+            CaseDetails=openMyDialog({title: '响应纠纷',
                 content: 'url:'+url,
                 icon: 'succeed',
                 width:1100,
@@ -183,6 +183,7 @@
                     $(accounts[i]).attr("class","newusa_ici_1");
                 }
             }
+            submitCommit();
         }
         function selectType(name,count){
             var types=$("span[scop=type]");
@@ -194,6 +195,7 @@
                     $(types[i]).attr("class","newusa_ici_1");
                 }
             }
+            submitCommit();
         }
         function selectStatus(name,count){
             var status=$("span[scop=status]");
@@ -205,6 +207,7 @@
                     $(status[i]).attr("class","newusa_ici_1");
                 }
             }
+            submitCommit();
         }
         function selectDays(name,count){
             var days=$("span[scop=days]");
@@ -218,6 +221,7 @@
                     $(days[i]).attr("class","newusa_ici_1");
                 }
             }
+            submitCommit();
         }
     </script>
 </head>
@@ -235,7 +239,7 @@
 <div class="here">当前位置：首页 &gt; 客服管理 &gt; <b>CASE管理</b></div>
 <div class="a_bal"></div>
 <div class="new">
-<h2>eBay官方调整E邮宝接口，截至九月底将停止使用原E邮宝，需要您重新授权E邮宝</h2>
+<%--<h2>eBay官方调整E邮宝接口，截至九月底将停止使用原E邮宝，需要您重新授权E邮宝</h2>--%>
 <div class="Contentbox">
     <script type="text/javascript">
         function menuFix() {
@@ -267,11 +271,11 @@
     </form>
     <div class="new_usa">
 
-        <li class="new_usa_list"><span class="newusa_i">选择账号：</span><a href="#"><span scop="account" onclick="selectAccount(null,0);" class="newusa_ici">&nbsp;全部&nbsp;&nbsp;</span></a><a href="#"><span scop="account" onclick="selectAccount('ebay',1);" class="newusa_ici_1">eBay账号&nbsp</span></a><a href="#"><span scop="account" onclick="selectAccount(null,2);" class="newusa_ici_1">亚马逊账号</span></a><a href="#"><span scop="account" onclick="selectAccount(null,3);" class="newusa_ici_1">亚马逊账号</span></a><a href="#"><span scop="account" onclick="selectAccount(null,4);" class="newusa_ici_1">亚马逊账号</span></a><a href="#"><span scop="account" onclick="selectAccount(null,5);" class="newusa_ici_1">亚马逊账号</span></a></li>
-        <li class="new_usa_list"><span class="newusa_i">纠纷类型：</span><a href="#"><span scop="type" onclick="selectType(null,0);" class="newusa_ici">&nbsp;全部&nbsp;&nbsp;</span></a><a href="#"><span scop="type" onclick="selectType('BuyerHasNotPaid',1);" class="newusa_ici_1">未付款&nbsp;</span></a><a href="#"><span scop="type" onclick="selectType('ItemNotReceived',2);" class="newusa_ici_1">未收到物品</span></a><a href="#"><span scop="type" onclick="selectType('SignificantlyNotAsDescribed',3);" class="newusa_ici_1">描述不符&nbsp;</span></a></li>
-        <li class="new_usa_list"><span class="newusa_i">处理状态：</span><a href="#"><span scop="status" onclick="selectStatus(null,0);" class="newusa_ici">&nbsp;全部&nbsp;&nbsp;</span></a><a href="#"><span scop="status" onclick="selectStatus('1',1);" class="newusa_ici_1">已处理&nbsp;</span></a><a href="#"><span scop="status" onclick="selectStatus('0',2);" class="newusa_ici_1">未处理&nbsp;</span></a></li>
+        <li class="new_usa_list"><span class="newusa_i">选择账号：</span><a href="javascript:void(0)"><span scop="account" onclick="selectAccount(null,0);" class="newusa_ici">&nbsp;全部&nbsp;&nbsp;</span></a><a href="javascript:void(0)"><span scop="account" onclick="selectAccount('ebay',1);" class="newusa_ici_1">eBay账号&nbsp</span></a><a href="javascript:void(0)"><span scop="account" onclick="selectAccount(null,2);" class="newusa_ici_1">亚马逊账号</span></a><a href="javascript:void(0)"><span scop="account" onclick="selectAccount(null,3);" class="newusa_ici_1">亚马逊账号</span></a><a href="javascript:void(0)"><span scop="account" onclick="selectAccount(null,4);" class="newusa_ici_1">亚马逊账号</span></a><a href="javascript:void(0)"><span scop="account" onclick="selectAccount(null,5);" class="newusa_ici_1">亚马逊账号</span></a></li>
+        <li class="new_usa_list"><span class="newusa_i">纠纷类型：</span><a href="javascript:void(0)"><span scop="type" onclick="selectType(null,0);" class="newusa_ici">&nbsp;全部&nbsp;&nbsp;</span></a><a href="javascript:void(0)"><span scop="type" onclick="selectType('BuyerHasNotPaid',1);" class="newusa_ici_1">未付款&nbsp;</span></a><a href="javascript:void(0)"><span scop="type" onclick="selectType('ItemNotReceived',2);" class="newusa_ici_1">未收到物品</span></a><a href="javascript:void(0)"><span scop="type" onclick="selectType('SignificantlyNotAsDescribed',3);" class="newusa_ici_1">描述不符&nbsp;</span></a></li>
+        <li class="new_usa_list"><span class="newusa_i">处理状态：</span><a href="javascript:void(0)"><span scop="status" onclick="selectStatus(null,0);" class="newusa_ici">&nbsp;全部&nbsp;&nbsp;</span></a><a href="javascript:void(0)"><span scop="status" onclick="selectStatus('1',1);" class="newusa_ici_1">已处理&nbsp;</span></a><a href="javascript:void(0)"><span scop="status" onclick="selectStatus('0',2);" class="newusa_ici_1">未处理&nbsp;</span></a></li>
         <div class="newsearch">
-            <span class="newusa_i">搜索内容：</span><a href="#"><span scop="days" onclick="selectDays(null,0);" class="newusa_ici">&nbsp;全部&nbsp;&nbsp;</span></a><a href="#"><span scop="days" onclick="selectDays('1',1);" class="newusa_ici_1">&nbsp;今天&nbsp;&nbsp;</span></a><a href="#"><span scop="days" onclick="selectDays('2',2);" class="newusa_ici_1">&nbsp;昨天&nbsp;&nbsp;</span></a><a href="#"><span scop="days" onclick="selectDays('7',3);" class="newusa_ici_1">7天以内&nbsp;</span></a><a href="#"><span scop="days" onclick="selectDays('30',4);" class="newusa_ici_1">30天以内&nbsp;</span></a>
+            <span class="newusa_i">搜索内容：</span><a href="javascript:void(0)"><span scop="days" onclick="selectDays(null,0);" class="newusa_ici">&nbsp;全部&nbsp;&nbsp;</span></a><a href="javascript:void(0)"><span scop="days" onclick="selectDays('1',1);" class="newusa_ici_1">&nbsp;今天&nbsp;&nbsp;</span></a><a href="javascript:void(0)"><span scop="days" onclick="selectDays('2',2);" class="newusa_ici_1">&nbsp;昨天&nbsp;&nbsp;</span></a><a href="javascript:void(0)"><span scop="days" onclick="selectDays('7',3);" class="newusa_ici_1">7天以内&nbsp;</span></a><a href="javascript:void(0)"><span scop="days" onclick="selectDays('30',4);" class="newusa_ici_1">30天以内&nbsp;</span></a>
             <span style="float: left;color: #5F93D7;">从</span><input class="form-controlsd " style="float: left;color: #5F93D7;width: 90px;height: 26px;border-color: #d0dde9;" id="starttime"  type="text" onfocus="WdatePicker({isShowWeek:true,dateFmt:'yyyy-MM-dd'})"/>
             <span style="float: left;color: #5F93D7;">到</span><input class="form-controlsd " style="float: left;color: #5F93D7;width: 90px;height: 26px;margin-right: 20px;border-color: #d0dde9;" id="endtime"  type="text" onfocus="WdatePicker({isShowWeek:true,dateFmt:'yyyy-MM-dd'})"/>
 <span id="sleBG">
@@ -292,15 +296,15 @@
             <div class="newsj_left">
             </div><div>
             <div id="newtipi">
-                <%--<li class=""><a href="#">显示20条</a>
+                <%--<li class=""><a href="javascript:void(0)">显示20条</a>
                     <ul>
-                        <li><a href="#">自定义显示</a></li>
-                        <li><a href="#">自定义显示</a></li>
-                        <li><a href="#">自定义显示</a></li>
+                        <li><a href="javascript:void(0)">自定义显示</a></li>
+                        <li><a href="javascript:void(0)">自定义显示</a></li>
+                        <li><a href="javascript:void(0)">自定义显示</a></li>
                     </ul>
                 </li>--%>
             </div></div>
-            <div class="tbbay"><a data-toggle="modal" onclick="getBindParm();">同步纠纷</a></div>
+            <div class="tbbay"><a data-toggle="modal" href="javascript:void(0)" onclick="getBindParm();">同步纠纷</a></div>
             <%--<div class="tbbay"><a data-toggle="modal" href="#userall" class="">展开管理</a></div>--%>
         </div>
     </div>
@@ -335,11 +339,11 @@
     <div class="page_newlist">
         <%--<div>
             <div id="newtipi">
-                <li><a href="#">显示20条</a>
+                <li><a href="javascript:void(0)">显示20条</a>
                     <ul>
-                        <li><a href="#">自定义显示</a></li>
-                        <li><a href="#">自定义显示</a></li>
-                        <li><a href="#">自定义显示</a></li>
+                        <li><a href="javascript:void(0)">自定义显示</a></li>
+                        <li><a href="javascript:void(0)">自定义显示</a></li>
+                        <li><a href="javascript:void(0)">自定义显示</a></li>
                     </ul>
                 </li>
             </div></div> 共 <span style="color:#F00">3000</span> 条记录 <span style="color:#F00">300</span> 页

@@ -46,10 +46,10 @@
         }*/
         function addRemark(){
             var url=path+"/order/addTabRemark.do?folderType=${folderType}";
-            selectTabRemark=$.dialog({title: '新建文件夹',
+            selectTabRemark=openMyDialog({title: '新建文件夹',
                 content: 'url:'+url,
                 icon: 'succeed',
-                width:800,
+                width:500,
                 parent:api,
                 lock:true,
                 zIndex:2000
@@ -88,6 +88,7 @@
                             alert(r);
                             W.refleshTabRemark("${folderType}");
                             $("input[value="+folderId+"]").parent().parent().remove();
+                            W.location.reload();
                             Base.token;
                             /*window.location.reload();*/
                             /*W.selectTabRemark.close();*/
@@ -103,8 +104,8 @@
         }
         function addRemark1(folder){
             console.debug(folder);
-           /* var tr="<tr><td><input type=\"radio\" name=\"redio\" value=\""+folder.id+"\"/></td><td>"+folder.configName+"</td><td><a href=\"javascript:#\" onclick=\"removeRemark("+folder.id+");\">删除文件夹</a></td></tr>";
-            */var tr="<tr><td height=\"24\" valign=\"middle\"><input type=\"radio\" name=\"radio\" id=\"radio\" value=\""+folder.id+"\"></td><td height=\"24\" valign=\"middle\">"+folder.configName+"</td><td height=\"24\" valign=\"middle\"><a href=\"javascript:#\" onclick=\"removeRemark("+folder.id+");\">删除</a></td></tr>";
+           /* var tr="<tr><td><input type=\"radio\" name=\"redio\" value=\""+folder.id+"\"/></td><td>"+folder.configName+"</td><td><a href=\"javascript:void(0)\" onclick=\"removeRemark("+folder.id+");\">删除文件夹</a></td></tr>";
+            */var tr="<tr><td height=\"24\" valign=\"middle\"><input type=\"radio\" name=\"radio\" id=\"radio\" value=\""+folder.id+"\"></td><td height=\"24\" valign=\"middle\">"+folder.configName+"</td><td height=\"24\" valign=\"middle\"><a href=\"javascript:void(0)\" onclick=\"removeRemark("+folder.id+");\">删除</a></td></tr>";
             $("#addTable").append(tr);
         }
         function closedialog(){
@@ -116,7 +117,7 @@
     </script>
 </head>
 <body>
-<%--<a href="javascript:#" onclick="addRemark();">新增文件夹</a>--%>
+<%--<a href="javascript:void(0)" onclick="addRemark();">新增文件夹</a>--%>
 
 <%--<table>
     <tr>
@@ -132,15 +133,15 @@
                 </td>&ndash;%&gt;
                 <td height="24" valign="middle">${folder.configName}</td>
                 &lt;%&ndash;<td>${folder.configName}</td>&ndash;%&gt;
-                <td height="24" valign="middle"><a href="javascript:#" onclick="removeRemark(${folder.id});">删除</a></td>
-                &lt;%&ndash;<td><a href="javascript:#" onclick="removeRemark(${folder.id});">删除文件夹</a></td>&ndash;%&gt;
+                <td height="24" valign="middle"><a href="javascript:void(0)" onclick="removeRemark(${folder.id});">删除</a></td>
+                &lt;%&ndash;<td><a href="javascript:void(0)" onclick="removeRemark(${folder.id});">删除文件夹</a></td>&ndash;%&gt;
             </tr>
     </c:forEach>
 </table>--%>
 <br/><br/>
 <div class="modal-body">
     <form class="form-horizontal" role="form">
-        <div class="newtitle_1" style="margin-top:-22px;">新增文件夹</div><table width="100%" border="0">
+        <%--<div class="newtitle_1" style="margin-top:-22px;">新增文件夹</div>--%><table width="100%" border="0" align="center">
 
         <tbody><tr>
             <td width="13%" height="33" align="right"></td>
@@ -148,14 +149,14 @@
                 <table id="addTable" width="100%" border="0">
                     <tbody><tr>
                         <td width="4%" height="30">&nbsp;</td>
-                        <td width="15%" height="30">择文件夹名称</td>
-                        <td width="81%" height="30">操作</td>
+                        <td width="47%" height="30">择文件夹名称</td>
+                        <td width="47%" height="30">操作</td>
                     </tr>
                     <c:forEach items="${folders}" var="folder">
                         <tr>
                             <td height="24" valign="middle"><input type="radio" name="radio" id="radio" value="${folder.id}"></td>
                             <td height="24" valign="middle">${folder.configName}</td>
-                            <td height="24" valign="middle"><a href="javascript:#" onclick="removeRemark(${folder.id});">删除</a></td>
+                            <td height="24" valign="middle"><a href="javascript:void(0)" onclick="removeRemark(${folder.id});">删除</a></td>
                         </tr>
                     </c:forEach>
                     </tbody></table>

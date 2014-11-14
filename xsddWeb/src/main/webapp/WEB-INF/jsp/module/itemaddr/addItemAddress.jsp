@@ -59,9 +59,9 @@
 <c:set value="${itemAddress}" var="item"/>
 <body>
 
-<div class="modal-header">
+<%--<div class="modal-header">
     <div class="newtitle">物品所在地</div>
-</div>
+</div>--%>
 <div class="modal-body">
     <form class="form-horizontal" role="form" id="itemAddressForm">
         <table width="90%" border="0" style="margin-left:40px;">

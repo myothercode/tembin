@@ -55,7 +55,7 @@
         }
         function addAutoMessage(){
             var url=path+'/autoMessage/addAutoMessage.do?';
-            autoMessage=$.dialog({title: '自动消息',
+            autoMessage=openMyDialog({title: '自动消息',
                 content: 'url:'+url,
                 icon: 'succeed',
                 width:950,
@@ -65,7 +65,7 @@
         }
         function addComment(id){
             var url=path+'/autoMessage/addComment.do?id='+id;
-            autoMessage=$.dialog({title: '添加备注',
+            autoMessage=openMyDialog({title: '添加备注',
                 content: 'url:'+url,
                 icon: 'succeed',
                 width:600,
@@ -74,7 +74,7 @@
         }
         function editAutoMessage(id){
             var url=path+'/autoMessage/addAutoMessage.do?id='+id;
-            autoMessage=$.dialog({title: '自动消息',
+            autoMessage=openMyDialog({title: '自动消息',
                 content: 'url:'+url,
                 icon: 'succeed',
                 width:950,
@@ -96,6 +96,39 @@
                         }]
             );
         }
+        function deleteAutoMessages(){
+            var checkboxs=$(document).find("input[type=checkbox][name=templateId]:checked");
+            var id="";
+            for(var i=0;i<checkboxs.length;i++){
+                if(i==(checkboxs.length-1)){
+                    id+=$(checkboxs[i]).attr("value");
+                }else{
+                    id+=$(checkboxs[i]).attr("value")+",";
+                }
+            }
+            var url=path+"/autoMessage/ajax/deleteAutoMessages.do?id="+id;
+            $().invoke(url,null,
+                    [function(m,r){
+                        alert(r);
+                        refreshTable();
+                        Base.token();
+                    },
+                        function(m,r){
+                            alert(r);
+                            Base.token();
+                        }]
+            );
+        }
+        function selectCheckboxs(obj){
+            var checkboxs=$(document).find("input[type=checkbox][name=templateId]");
+            for(var i=0;i<checkboxs.length;i++){
+                if(obj.checked){
+                    checkboxs[i].checked=true;
+                }else{
+                    checkboxs[i].checked=false;
+                }
+            }
+        }
     </script>
 </head>
 <body>
@@ -109,8 +142,8 @@
                 <div id="con_menu_1" >
                     <div class="new_usa" style="margin-top:20px;">
                         <div class="newds">
-                            <div class="newsj_left"><span class="newusa_ici_del_in"><input type="checkbox" name="checkbox" id="checkbox"></span>
-                                <span class="newusa_ici_del">删除</span><div id="newtipi">
+                            <div class="newsj_left" style="padding: 2px;"><span class="newusa_ici_del_in"><input type="checkbox" name="checkbox" id="checkbox" onclick="selectCheckboxs(this);"></span>
+                                <span class="newusa_ici_del" onclick="deleteAutoMessages();">删除</span><div id="newtipi">
 
                                 </div>
                             </div><div class="tbbay"><a data-toggle="modal" href="#myModal" class="" onclick="addAutoMessage();">添加模板</a></div>

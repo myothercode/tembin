@@ -4,6 +4,11 @@ import com.base.utils.applicationcontext.ApplicationContextUtil;
 import com.base.utils.common.AppcenterClassFinder;
 import com.base.utils.common.CommAutowiredClass;
 import com.base.utils.common.MyClassUtil;
+import com.base.utils.scheduleother.StaticParam;
+import com.base.utils.scheduleother.domain.ImageCheckVO;
+import com.base.utils.scheduleother.dorun.ImageCheckTaskPut;
+import com.base.utils.scheduleother.dorun.ImageCheckTaskTake;
+import com.base.utils.scheduleother.dorun.ScheduleOtherBase;
 import com.base.utils.threadpool.TaskPool;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -73,8 +78,9 @@ public class MainTask {
         doList.add(SYNCHRONIZE_GET_TIMER_ORDERS);
         doList.add(SYNCHRONIZE_FEED_BACK_TIMER);
         if (isStartTimerTask==null) {
-            isStartTimerTask = (CommAutowiredClass) ApplicationContextUtil.getBean(CommAutowiredClass.class);
+            isStartTimerTask = ApplicationContextUtil.getBean(CommAutowiredClass.class);
         }
+        if(isStartTimerTask==null){return;}
 
         List<String> taskList=new ArrayList<String>();
         if("false".equalsIgnoreCase(isStartTimerTask.isStartTimerTask)){
@@ -173,6 +179,47 @@ public class MainTask {
                 TaskPool.scheduledThreadPoolTaskExecutor.execute(s);
             }
         }
+    }
+
+
+    /**内部循环任务，基本不涉及到api的*/
+   // @Scheduled(cron="0 0/1 *  * * ?")
+    public void mainMethodOther() throws InterruptedException {
+
+        if (isStartTimerTask==null) {
+            isStartTimerTask = (CommAutowiredClass) ApplicationContextUtil.getBean(CommAutowiredClass.class);
+        }
+        List<String> doList=new ArrayList<String>();
+        doList.add(StaticParam.IMG_CHECK_SC);
+
+        List<String> taskList=new ArrayList<String>();
+
+        List<String> taskListTe=Arrays.asList(StringUtils.split(isStartTimerTask.isStartTimerTask,","));
+
+        for (String t :taskListTe){
+            if(doList.contains(t)){//判断该任务师傅在可执行列表中
+                taskList.add(t);
+            }else {
+                continue;
+            }
+        }
+        if(taskList.isEmpty()){return;}
+
+        /**=========任务开始============*/
+        List<Class<? extends ScheduleOtherBase>> classList = AppcenterClassFinder.getInstance()
+                .findSubClass(ScheduleOtherBase.class);
+        List<? extends ScheduleOtherBase> scheduledableList = MyClassUtil.newInstance(classList);
+
+
+
+        if(!TaskPool.threadIsAliveByName(StaticParam.IMG_CHECK_SC_TAKE)){
+            Runnable runnable=new ImageCheckTaskTake(null);
+            TaskPool.otherScheduledThreadPoolTaskExecutor.execute(runnable);
+        }
+        ImageCheckVO imageCheckVO=new ImageCheckVO();
+        imageCheckVO.setUrl("123");
+        Runnable r=new ImageCheckTaskPut(imageCheckVO);
+        TaskPool.otherScheduledThreadPoolTaskExecutor.execute(r);
     }
 
 

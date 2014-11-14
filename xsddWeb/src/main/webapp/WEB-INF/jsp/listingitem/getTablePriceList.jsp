@@ -74,7 +74,7 @@
             );
         }
         function editTablePrice(id){
-            addTablePrice = $.dialog({title: '编辑调价',
+            addTablePrice = openMyDialog({title: '编辑调价',
                 content: 'url:' + path + '/editTablePrice.do?id='+id,
                 icon: 'succeed',
                 parent: apis,
@@ -85,7 +85,7 @@
             });
         }
         function editTablePriceselect(id){
-            addTablePrice = $.dialog({title: '查看调价',
+            addTablePrice = openMyDialog({title: '查看调价',
                 content: 'url:' + path + '/editTablePrice.do?id='+id+'&type=01',
                 icon: 'succeed',
                 parent: apis,
@@ -101,7 +101,7 @@
 
         function addTablePrice(obj){
             /*$(obj).attr({style:"color:red"});*/
-            addTablePrice = $.dialog({title: '新增调价',
+            addTablePrice = openMyDialog({title: '新增调价',
                 content: 'url:' + path + '/addTablePrice.do',
                 icon: 'succeed',
                 parent: apis,
@@ -120,7 +120,7 @@
 
         function importTemplate(obj) {
             /*$(obj).attr({style:"color:red"});*/
-            addTablePrice = $.dialog({title: '选择需要导入的文件',
+            addTablePrice = openMyDialog({title: '选择需要导入的文件',
                 content: 'url:' + path + '/importTemplate.do',
                 icon: 'succeed',
                 width: 400,

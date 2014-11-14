@@ -32,10 +32,12 @@ import com.base.utils.common.UUIDUtil;
 import com.base.utils.exception.Asserts;
 import com.base.utils.httpclient.HttpClientUtil;
 import com.base.utils.threadpool.AddApiTask;
+import com.base.utils.threadpool.TaskMessageVO;
 import com.base.utils.xmlutils.SamplePaseXml;
 import com.base.xmlpojo.trading.addproduct.Item;
 import com.common.base.utils.ajax.AjaxSupport;
 import com.common.base.web.BaseAction;
+import com.sitemessage.service.SiteMessageStatic;
 import com.test.mapper.TestMapper;
 import com.trading.service.ITradingDataDictionary;
 import com.trading.service.ITradingItem;
@@ -485,7 +487,20 @@ i++;
             d.setApiSiteid(sitedata.getName1());
             d.setApiCallName(APINameStatic.ListingItemList);
             AddApiTask addApiTask = new AddApiTask();
-            Map<String, String> resMap = addApiTask.exec(d, colStr, apiUrl);
+            TaskMessageVO taskMessageVO=new TaskMessageVO();
+            taskMessageVO.setMessageContext("刊登");
+            taskMessageVO.setMessageTitle("刊登操作");
+            taskMessageVO.setMessageType(SiteMessageStatic.LISTING_KEY_MOVE_MESSAGE_TYPE);
+            taskMessageVO.setBeanNameType(SiteMessageStatic.LISTING_KEY_MOVE_BEAN);
+            taskMessageVO.setMessageFrom("system");
+            SessionVO sessionVO=SessionCacheSupport.getSessionVO();
+            taskMessageVO.setMessageTo(sessionVO.getId());
+            taskMessageVO.setSendOrNotSend(false);
+            taskMessageVO.setObjClass(new String[]{uea.getEbayAccount(),uea.getEbayToken(),sitedata.getName1(),id,sitedata.getId()+""});
+            addApiTask.execDelayReturn(d, colStr, apiUrl, taskMessageVO);
+            AjaxSupport.sendSuccessText("message", "操作成功！结果请稍后查看消息！");
+
+            /*Map<String, String> resMap = addApiTask.exec(d, colStr, apiUrl);
             String res = resMap.get("message");
             String ack = SamplePaseXml.getVFromXmlString(res, "Ack");
             if("Success".equals(ack)) {//ＡＰＩ成功请求，保存数据
@@ -506,9 +521,9 @@ i++;
                 }
             }else{//ＡＰＩ请求失败
                 AjaxSupport.sendFailText("fail","请求数据失败！");
-            }
+            }*/
         }
-        List<Item> liitem = new ArrayList<Item>();
+        /*List<Item> liitem = new ArrayList<Item>();
         for(String id : userId) {
             UsercontrollerEbayAccount uea = this.usercontrollerEbayAccountMapper.selectByPrimaryKey(Long.parseLong(id));
             for (Item item : li) {
@@ -527,7 +542,7 @@ i++;
                     this.keyMoveListMapper.insertSelective(kml);
                 }
             }
-        }
+        }*/
         AjaxSupport.sendSuccessText("message", "已成功记录到任务表，过一段时间就会从把数据搬到我们的范本页面！");
     }
     public String getMoveCosXml(String token,String page,String satartfrom,String startto,String ebayneam){

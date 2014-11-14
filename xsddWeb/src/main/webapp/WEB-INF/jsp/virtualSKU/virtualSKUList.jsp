@@ -23,8 +23,8 @@
                 <div>
                     <!--综合开始 -->
                     <div class="new_usa">
-                        <li class="new_usa_list"><span class="newusa_i">按标签看：全部</span><span class="newusa_ici">无标签</span><a href="#"><span class="newusa_ici_1">有电池</span></a><a href="#"><span class="newusa_ici_1">无电池</span></a></li>
-                        <li class="new_usa_list"><span class="newusa_i">信息状态：全部</span><span class="newusa_ici">无图片</span><a href="#"><span class="newusa_ici_1">无报关信息</span></a><a href="#"><span class="newusa_ici_1">信息不全</span></a></li>
+                        <li class="new_usa_list"><span class="newusa_i">按标签看：全部</span><span class="newusa_ici">无标签</span><a href="javascript:void(0)"><span class="newusa_ici_1">有电池</span></a><a href="javascript:void(0)"><span class="newusa_ici_1">无电池</span></a></li>
+                        <li class="new_usa_list"><span class="newusa_i">信息状态：全部</span><span class="newusa_ici">无图片</span><a href="javascript:void(0)"><span class="newusa_ici_1">无报关信息</span></a><a href="javascript:void(0)"><span class="newusa_ici_1">信息不全</span></a></li>
                         <div class="newsearch">
                             <span class="newusa_i">搜索内容：全部</span>
 <span id="sleBG">

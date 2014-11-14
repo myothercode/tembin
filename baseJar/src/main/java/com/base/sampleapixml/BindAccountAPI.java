@@ -118,10 +118,10 @@ public class BindAccountAPI {
                 "  <RequesterCredentials>" +
                 "    <eBayAuthToken>"+map.get("token")+"</eBayAuthToken>" +
                 "  </RequesterCredentials>" +
-                "  <ModTimeFrom>"+map.get("fromTime")+"</ModTimeFrom>" +
-                "  <ModTimeTo>"+map.get("toTime")+"</ModTimeTo>" +
-              /*  "<CreateTimeFrom>"+map.get("fromTime")+"</CreateTimeFrom>" +
-                "<CreateTimeTo>"+map.get("toTime")+"</CreateTimeTo>"+*/
+            /*    "  <ModTimeFrom>"+map.get("fromTime")+"</ModTimeFrom>" +
+                "  <ModTimeTo>"+map.get("toTime")+"</ModTimeTo>" +*/
+                "<CreateTimeFrom>"+map.get("fromTime")+"</CreateTimeFrom>" +
+                "<CreateTimeTo>"+map.get("toTime")+"</CreateTimeTo>"+
                 "  <OrderRole>Seller</OrderRole>" +
                 "<Pagination>" +
                 "<EntriesPerPage>100</EntriesPerPage>" +

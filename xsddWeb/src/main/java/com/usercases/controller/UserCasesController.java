@@ -903,6 +903,7 @@ public class UserCasesController extends BaseAction{
         String content1="{"+arr[1]+"}";
        /* String content1="{\"age\":66,\"name\":\"老张头\"}";*/
         JSONObject json = JSON.parseObject(content1);
+        json.getString("Status");
         AjaxSupport.sendSuccessText("message", json);
     }
 }

@@ -80,9 +80,11 @@ public class ShippingDetailsController extends BaseAction{
         for(ShippingdetailsQuery sq:lisq){
             List<TradingShippingserviceoptions> lits = this.iTradingShippingServiceOptions.selectByParentId(sq.getId());
             for(TradingShippingserviceoptions ts: lits){
-                TradingDataDictionary tdds = DataDictionarySupport.getTradingDataDictionaryByID(Long.parseLong(ts.getShippingservice()));
-                if(tdds!=null) {
-                    ts.setShippingservice(tdds.getName());
+                if(ts.getShippingservice()!=null){
+                    TradingDataDictionary tdds = DataDictionarySupport.getTradingDataDictionaryByID(Long.parseLong(ts.getShippingservice()));
+                    if(tdds!=null) {
+                        ts.setShippingservice(tdds.getName());
+                    }
                 }
             }
             sq.setLits(lits);

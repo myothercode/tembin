@@ -59,9 +59,9 @@
 
 <c:set value="${Returnpolicy}" var="Returnpolicy" />
 <body>
-<div class="modal-header">
+<%--<div class="modal-header">
     <div class="newtitle">退款政策</div>
-</div>
+</div>--%>
 <div class="modal-body">
 <form class="form-horizontal" role="form" id="returnPolicyForm">
 <table width="90%" border="0" style="margin-left:40px;">

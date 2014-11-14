@@ -78,7 +78,7 @@
                     <td width="50%" align="center"><a href="javascript:redirtRegPage()">注册</a></td>
                 </tr>
             </table>
-            <a href="#"></a> <a href="#"></a></li>
+            <a href="javascript:void(0)"></a> <a href="javascript:void(0)"></a></li>
         <%--<li style="text-align: right;margin-top: 0px;">
             <input onclick="jzcheck(this)" type="checkbox" id="jzw" /><label for="jzw">记住密码</label>&nbsp;
             <button style="margin-top: 10px;margin-right: 10px" type="button" onclick="subLoginForm()" name="button" id="button"  class="admin_1">登录 </button>

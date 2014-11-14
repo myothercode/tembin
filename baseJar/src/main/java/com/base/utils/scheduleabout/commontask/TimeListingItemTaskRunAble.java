@@ -111,6 +111,7 @@ public class TimeListingItemTaskRunAble extends BaseScheduledClass implements Sc
                     tradingItem.setItemId(itemId);
                     tradingItem.setIsFlag("Success");
                     iTradingItem.saveTradingItem(tradingItem);
+                    iTradingItem.saveListingSuccess(res,itemId);
                 }
 
             } catch (Exception e) {

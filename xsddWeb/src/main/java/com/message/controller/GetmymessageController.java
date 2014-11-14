@@ -182,7 +182,24 @@ public class GetmymessageController extends BaseAction{
             lists=iTradingOrderAddMemberMessageAAQToPartner.selectTradingOrderAddMemberMessageAAQToPartner(m, page);
         }
         jsonBean.setList(lists);
+        jsonBean.setTotal((int)page.getTotalCount());
         AjaxSupport.sendSuccessText("",jsonBean);
+    }
+    /**标记为已读*/
+    @RequestMapping("/ajax/markReaded.do")
+    @ResponseBody
+    public void markReaded(HttpServletRequest request) throws Exception {
+        String ids1=request.getParameter("value");
+        String[] ids=ids1.split(",");
+        for(int i=0;i<ids.length;i++){
+            Long id= Long.valueOf(ids[i]);
+            TradingMessageGetmymessage message=iTradingMessageGetmymessage.selectMessageGetmymessageById(id);
+            if(message!=null){
+                message.setRead("true");
+                iTradingMessageGetmymessage.saveMessageGetmymessage(message);
+            }
+        }
+        AjaxSupport.sendSuccessText("", "已标记为已读");
     }
     /**获取list数据的ajax方法*/
     @RequestMapping("/ajax/loadMessageGetmymessageList.do")
@@ -720,10 +737,10 @@ public class GetmymessageController extends BaseAction{
         d.setApiCallName(APINameStatic.GetMyMessages);
         request.getSession().setAttribute("dveId", d);
 
-       Date startTime2= com.base.utils.common.DateUtils.subDays(new Date(),6);
-        Date endTime= DateUtils.addDays(startTime2, 6);
-      /*  Date startTime2= com.base.utils.common.DateUtils.subDays(new Date(),90);
-        Date endTime= DateUtils.addDays(startTime2, 90);*/
+   /*    Date startTime2= com.base.utils.common.DateUtils.subDays(new Date(),6);
+        Date endTime= DateUtils.addDays(startTime2, 6);*/
+        Date startTime2= com.base.utils.common.DateUtils.subDays(new Date(),90);
+        Date endTime= DateUtils.addDays(startTime2, 90);
         /*MutualWithdrawalAgreementLate*/
 
 

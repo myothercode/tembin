@@ -106,8 +106,9 @@
     </div>
 
 
-
+<div style="bottom: 1px;">
     <input type="button" value="保存" onclick="submitCommit();"/>
+</div>
 </div>
 
 </body>

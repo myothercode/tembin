@@ -59,29 +59,57 @@
             for(var i=0;i<as1.length;i++){
                 if(i==index){
                     $(as1[i]).attr("class","newusa_ici");
+                    $("#time").val(date);
                 }else{
                     $(as1[i]).attr("class","newusa_ici_1");
                 }
             }
-            getCharData(doKnobs,_getOrderCountData,{"time":date});//单量走势
+            var amount=$("#amount").val();
+            getCharData(doKnobs,_getOrderCountData,{"time":date,"amount":amount});//单量走势
+        }
+        function selectday(index,date){
+            var as1=$("span[name=day]");
+            for(var i=0;i<as1.length;i++){
+                if(i==index){
+                    $(as1[i]).attr("class","newusa_ici");
+                }else{
+                    $(as1[i]).attr("class","newusa_ici_1");
+                }
+            }
+            getCharData(doContainer,_getTrenchData,{"day":date});//渠道分布
+        }
+        function selectAmount(index,date){
+            var as1=$("span[name=amount]");
+            for(var i=0;i<as1.length;i++){
+                if(i==index){
+                    $(as1[i]).attr("class","newusa_ici");
+                    $("#amount").val(date);
+                }else{
+                    $(as1[i]).attr("class","newusa_ici_1");
+
+                }
+            }
+            var time=$("#time").val();
+            getCharData(doKnobs,_getOrderCountData,{"time":time,"amount":date});//单量走势
         }
     </script>
 </head>
 <body>
 <div>
 <div class="new_all">
-<div class="here">当前店铺： EBAY<%--<img src="img/home_logo_user.png" width="160" height="34">--%></div>
+<div class="here"><%--当前店铺： EBAY<img src="img/home_logo_user.png" width="160" height="34">--%></div>
 <div class="a_bal"></div>
 <div class=Contentbox>
-<div class="new_index">
-    <a href="<c:url value ="/message/MessageGetmymessageList.do"/>"><li style="background:#EE6E69;margin-right:2%;">
-        <span>CASE消息<%--订单代办事项--%></span>
-        发送失败( ${caseMessages} )<%--分配失败 ( 3 )--%>
+<div class="new_index" style="padding-left: 5px">
+    <a href="<c:url value ="/userCases/userCasesList.do"/>"><li style="background:#EE6E69;margin-right:2%;">
+        <span>CASE<%--订单代办事项--%></span>
+        未处理的( ${caseMessages} )<%--分配失败 ( 3 )--%>
     </li></a>
+    <a href="<c:url value ="/message/MessageGetmymessageList.do"/>">
     <li style="background:#48BCFF;margin-right:2%;">
         <span>EBAY消息<%--订单代办事项--%></span>
-        发送失败( ${ebayMessages} )<%--分配失败 ( 3 )--%>
-    </li>
+        未处理的( ${ebayMessages} )<%--分配失败 ( 3 )--%>
+    </li></a>
     <li style="background:#6ABF0E">
         <span>订单代办事项</span>
         分配失败 ( 3 )
@@ -89,91 +117,27 @@
 </div>
 <div class="a_bal"></div>
 <div class="new_index_2">
-    <ul class="pbd" style="margin-right:2%">
+    <ul <%--class="pbd"--%> style="margin-right:2%">
         <h1><img src="img/ebay_index.png" width="40" height="17"> 账户</h1>
         <div style="width: 100%" id="ebay_indexdiv"></div>
     </ul>
 
 
 <ul>
-    <h1>Paypal <div class="ui-select" style="width:110px; margin-top:-5px; line-height:14px;">
-        <select>
+    <h1>Paypal <%--<div class="ui-select" style="width:110px; margin-top:-5px; line-height:14px;">
+        &lt;%&ndash;<select>
             <option value="AK">所有帐户</option>
             <option value="AK">所有帐户</option>
-        </select>
-    </div></h1>
+        </select>&ndash;%&gt;
+    </div>--%></h1>
     <div id="indexPayPal"></div>
 
 </ul>
 
-<ul class="pbd" style="margin-right:2%">
+<ul <%--class="pbd"--%> style="margin-right:2%">
     <h1>刊登</h1>
     <div id="itemReportTable"></div>
-    <%--<table width="100%" border="0">
-        <tr style="font-size:14px;">
-            <td bgcolor="#F7F7F7"><strong>（拍卖/固价）</strong></td>
-            <td width="12%" align="center" bgcolor="#F7F7F7"><strong>今天</strong></td>
-            <td width="12%" align="center" bgcolor="#F7F7F7"><strong> 昨天</strong></td>
-            <td width="12%" align="center" bgcolor="#F7F7F7"><strong> 本周</strong></td>
-            <td width="12%" align="center" bgcolor="#F7F7F7"><strong> 上周               </strong></td>
-            <td width="12%" align="center" bgcolor="#F7F7F7"><strong>本月               </strong></td>
-            <td width="12%" align="center" bgcolor="#F7F7F7"><strong>上月</strong></td>
-        </tr>
-        <tr>
-            <td valign="middle">新刊登物品</td>
-            <td align="center">14</td>
-            <td align="center">330</td>
-            <td align="center">853</td>
-            <td align="center">85</td>
-            <td align="center">8533</td>
-            <td align="center">8533</td>
-        </tr>
-        <tr>
-            <td valign="middle">结束的刊登物品</td>
-            <td align="center">14</td>
-            <td align="center">330</td>
-            <td align="center">853</td>
-            <td align="center">85</td>
-            <td align="center">8533</td>
-            <td align="center">8533</td>
-        </tr>
-        <tr>
-            <td valign="middle">结束并卖出的刊登物品</td>
-            <td align="center">14</td>
-            <td align="center">330</td>
-            <td align="center">853</td>
-            <td align="center">85</td>
-            <td align="center">8533</td>
-            <td align="center">8533</td>
-        </tr>
-        <tr>
-            <td valign="middle">销售比</td>
-            <td align="center">14</td>
-            <td align="center">330</td>
-            <td align="center">853</td>
-            <td align="center">85</td>
-            <td align="center">8533</td>
-            <td align="center">8533</td>
-        </tr>
-        <tr>
-            <td valign="middle">刊登费（新刊登）</td>
-            <td align="center">14</td>
-            <td align="center">330</td>
-            <td align="center">853</td>
-            <td align="center">85</td>
-            <td align="center">8533</td>
-            <td align="center">8533</td>
-        </tr>
-        <tr>
-            <td valign="middle">刊登费（结束的刊登）</td>
-            <td align="center">14</td>
-            <td align="center">330</td>
-            <td align="center">853</td>
-            <td align="center">85</td>
-            <td align="center">8533</td>
-            <td align="center">8533</td>
-        </tr>
-    </table>--%>
+
 </ul>
     <ul >
         <h1>信用评价</h1>
@@ -181,14 +145,20 @@
     </ul>
 <h1>单量走势</h1>
 <div class="a_bal"></div>
-<li><span class="newusa_iv">选择账户</span><a href="#"><span class="newusa_ici">全部</span></a><a href="#"><span class="newusa_ici_1">TO(eBay)</span></a><a href="#"><span class="newusa_ici_1">TO(eBay)</span></a></li>
-<li><span class="newusa_iv">选择时间</span><a href="javascript:#"><span class="newusa_ici" name="time" onclick="selectTime(0,'15')">15天内</span></a><a href="javascript:#"><span class="newusa_ici_1" name="time" onclick="selectTime(1,'30')">30天内</span></a><a  href="javascript:#" ><span name="time" onclick="selectTime(2,'1')" class="newusa_ici_1">1年内</span></a></li>
+    <input type="hidden" id="time"/>
+    <input type="hidden" id="amount"/>
+<li><span class="newusa_iv">选择账户</span><a href="javascript:void(0)"><span class="newusa_ici" name="amount" onclick="selectAmount(0,null);">全部</span></a>
+    <c:forEach items="${ebays}" var="ebay" begin="0" varStatus="status">
+        <a href="javascript:void(0)"><span class="newusa_ici_1" name="amount" onclick="selectAmount(${status.index+1},'${ebay.ebayName}');">${ebay.ebayNameCode}<%--TO(eBay)--%></span></a>
+    </c:forEach>
+</li>
+<li><span class="newusa_iv">选择时间</span><a href="javascript:void(0)"><span class="newusa_ici" name="time" onclick="selectTime(0,'15')">15天内</span></a><a href="javascript:void(0)"><span class="newusa_ici_1" name="time" onclick="selectTime(1,'30')">30天内</span></a><a  href="javascript:#" ><span name="time" onclick="selectTime(2,'1')" class="newusa_ici_1">1年内</span></a></li>
 <div class="ico_list">
     <div id="statsChart" style="width: 100%; height: 100%; "></div>
 </div>
 <h1>渠道分布</h1>
 <div class="a_bal"></div>
-<li><span class="newusa_iv">选择时间</span><span class="newusa_ici">15天内</span><a href="#"><span class="newusa_ici_1">30天内</span></a><a href="#"><span class="newusa_ici_1">30天内</span></a></li>
+<li><span class="newusa_iv">选择时间</span><a href="javascript:void(0)"><span class="newusa_ici" name="day" onclick="selectday(0,'15')">15天内</span></a><a href="javascript:void(0)"><span class="newusa_ici_1" name="day" onclick="selectday(1,'30')">30天内</span></a><a href="javascript:void(0)"><span class="newusa_ici_1" name="day" onclick="selectday(2,'1')">1年内</span></a></li>
 
 <div class="ico_bin">
     <div id="container" style="min-width: 200px; height: 600px; max-width: 600px; margin: 0 auto"></div>

@@ -1,18 +1,20 @@
 package com.base.utils.common;
 
+import com.base.database.customtrading.mapper.SystemLogQueryMapper;
 import com.base.database.userinfo.mapper.SystemLogMapper;
 import com.base.database.userinfo.model.SystemLog;
 import com.base.domains.SessionVO;
+import com.base.domains.querypojos.SystemLogQuery;
+import com.base.mybatis.page.Page;
 import com.base.utils.applicationcontext.ApplicationContextUtil;
 import com.base.utils.applicationcontext.RequestResponseContext;
 import com.base.utils.cache.SessionCacheSupport;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpServletRequest;
 import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Created by Administrator on 2014/10/14.
@@ -22,6 +24,7 @@ public class SystemLogUtils {
 
     public static final String FIND_PASSWORD="findPassword";//找回密码事件
     public static final String NO_API_Message="noApiMessage";//不系统通知的时候记录失败日志
+    public static final String ORDER_OPERATE_RECORD="orderOperateRecord";//订单操作记录
 
     /**祝需要传入三个值
      * log.setEventname();
@@ -75,6 +78,10 @@ public class SystemLogUtils {
         return ip;
 
     }
-
+    public static List<SystemLogQuery> selectSystemLogList(Map map,Page page){
+        SystemLogQueryMapper systemLogQueryMapper = (SystemLogQueryMapper) ApplicationContextUtil.getBean(SystemLogQueryMapper.class);
+        List<SystemLogQuery> list=systemLogQueryMapper.selectSystemLogList(map,page);
+        return list;
+    }
 
 }

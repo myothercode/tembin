@@ -52,7 +52,7 @@
         <li id="spaninfo">
             <table width="325" border="0" cellpadding="0" cellspacing="0">
                 <tr>
-                    <td><a href="#" style="color: #FF6600; margin-top: -22px; line-height: 12px;">验证邮件将发送至邮箱，请注意查收！</a></td>
+                    <td><a href="javascript:void(0)" style="color: #FF6600; margin-top: -22px; line-height: 12px;">验证邮件将发送至邮箱，请注意查收！</a></td>
                 </tr>
             </table>
         </li>
@@ -70,7 +70,7 @@
                     </a></td>
                 </tr>
             </table>
-            <a href="#"></a> <a href="#"></a></li>
+            <a href="javascript:void(0)"></a> <a href="javascript:void(0)"></a></li>
     </ul>
 
 

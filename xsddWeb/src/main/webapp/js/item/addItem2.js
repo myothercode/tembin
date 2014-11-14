@@ -729,6 +729,12 @@ function initDraug(){
 function removeThis(obj) {
     $(obj).parent().parent().parent().remove();
 }
+function hiddenTemPic(){
+    $("#showTemplate").hide();
+}
+function showTemPic(){
+    $("#showTemplate").show();
+}
 //得到分类名称
 function getCategoryName(categoryId,siteId){
     var url=path+"/ajax/getCategoryName.do?categoryId="+categoryId+"&siteId="+siteId;
@@ -800,7 +806,17 @@ function setTab(obj) {
     }
 }
 function closeWindow(){
-    document.location = path+"/itemManager.do";
+    if(document.location.href.indexOf("information")!=-1){
+        var api = frameElement.api, W = api.opener;
+        W.itemInformation.close();
+    }else{
+        if(parent.location.href.indexOf("mainFrame.do")!=-1){
+            document.location = path+"/itemManager.do";
+        }else{
+            window.close();
+        }
+    }
+
 }
 var selectTemplates;
 function selectTemplate() {

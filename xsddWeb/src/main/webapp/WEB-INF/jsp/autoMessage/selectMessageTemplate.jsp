@@ -74,7 +74,8 @@
 <body>
 <div id="sendMessageTable"></div><br/><br/><br/><br/>
 <div class="modal-footer" style="text-align: right;width: 750px;">
-    <button type="button" class="btn btn-default" data-dismiss="modal" onclick="closedialog();">关闭</button>
+    <button type="button" class="net_put_1" data-dismiss="modal" onclick="closedialog();">关闭</button>
+<%--    <button type="button" class="btn btn-default" data-dismiss="modal" onclick="closedialog();">关闭</button>--%>
 </div>
 </body>
 </html>

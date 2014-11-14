@@ -83,10 +83,10 @@
     </table>
 </form>--%>
 
-<div class="modal-header">
+<%--<div class="modal-header">
     <h4 class="modal-title" style="color:#2E98EE"></h4>
     <div class="newtitle">请选择要同步的ebay账号</div>
-</div>
+</div>--%>
 <div class="modal-body">
     <form class="form-horizontal" role="form" id="ebayForm">
         <table width="100%" border="0" style="margin-left:20px;">

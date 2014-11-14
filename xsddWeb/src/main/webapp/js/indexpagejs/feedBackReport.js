@@ -23,11 +23,11 @@ function loadFeedBackReportData(){
 function getName(json){
     var html = "";
     if(json.dataType=="Positive"){
-        html="<img src='img/new_one_1.png' width='24' height='24'>正评";
+        html="<img src='img/new_one_1.gif'>&nbsp;正评";
     }else if(json.dataType=="Neutral"){
-        html="<img src='img/new_one_2.png' width='24' height='24'>中评";
+        html="<img src='img/new_one_2.gif'>&nbsp;中评";
     }else if(json.dataType=="Negative"){
-        html="<img src='img/new_one_3.png' width='24' height='24'>负评";
+        html="<img src='img/new_one_3.gif'>&nbsp;负评";
     }
     return html;
 }

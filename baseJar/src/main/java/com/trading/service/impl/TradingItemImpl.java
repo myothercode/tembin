@@ -30,6 +30,11 @@ import com.publicd.service.*;
 import com.trading.service.*;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.http.impl.cookie.DateParseException;
+import org.dom4j.Document;
+import org.dom4j.DocumentException;
+import org.dom4j.DocumentHelper;
+import org.dom4j.Element;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -121,6 +126,10 @@ public class TradingItemImpl implements com.trading.service.ITradingItem {
     private PayPalService payPalService;
     @Autowired
     private ITradingListingPicUrl iTradingListingPicUrl;
+    @Autowired
+    private ITradingListingReport iTradingListingReport;
+    @Autowired
+    private ITradingListingSuccess iTradingListingSuccess;
 
     @Override
     public void saveTradingItem(TradingItemWithBLOBs pojo) throws Exception {
@@ -1964,5 +1973,50 @@ public class TradingItemImpl implements com.trading.service.ITradingItem {
         item.setListingType(item.getListingType().equals("2")?"FixedPriceItem":item.getListingType());
         item.setUUID(null);
         return item;
+    }
+
+    /**
+     * 刊登成功后，保存成功后时间，及费用信息
+     * @param xml
+     * @param itemId
+     * @throws DateParseException
+     */
+    @Override
+    public void saveListingSuccess(String xml,String itemId) throws DateParseException {
+        List<TradingListingSuccess> litls = this.iTradingListingSuccess.selectByItemid(itemId);
+        Document document= null;
+        try {
+            document = DocumentHelper.parseText(xml);
+        } catch (DocumentException e) {
+            e.printStackTrace();
+        }
+        Element rootElt = document.getRootElement();
+        Element recommend = rootElt.element("Fees");
+        Iterator<Element> iter = recommend.elementIterator("Fee");
+        List<Map> lim = new ArrayList<Map>();
+
+        Double fee = 0.00;
+        String currency = "";
+        Date startDate=DateUtils.returnDate(rootElt.elementText("StartTime"));
+        Date endDate=DateUtils.returnDate(rootElt.elementText("EndTime"));
+        while (iter.hasNext()){
+            Element ment = iter.next();
+            fee+=Double.parseDouble(ment.elementText("Fee"));
+            currency = ment.element("Fee").attributeValue("currencyID");
+        }
+        if(litls!=null&&litls.size()>0){
+            TradingListingSuccess tls = litls.get(0);
+            tls.setListingFee(fee);
+            tls.setCurrency(currency);
+            this.iTradingListingSuccess.save(tls);
+        }else{
+            TradingListingSuccess tls = new TradingListingSuccess();
+            tls.setStartDate(startDate);
+            tls.setEndDate(endDate);
+            tls.setListingFee(fee);
+            tls.setCurrency(currency);
+            tls.setItemId(itemId);
+            this.iTradingListingSuccess.save(tls);
+        }
     }
 }

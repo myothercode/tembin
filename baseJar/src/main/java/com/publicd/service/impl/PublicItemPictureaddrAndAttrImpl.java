@@ -47,6 +47,18 @@ public class PublicItemPictureaddrAndAttrImpl implements com.publicd.service.IPu
     }
 
     @Override
+    public List<PublicItemPictureaddrAndAttr> selectPictureaddrAndAttrByRemarkIdAndNotInformationId(Long RemarkId, Long InformationId, String type, Long userid) {
+        PublicItemPictureaddrAndAttrExample example=new PublicItemPictureaddrAndAttrExample();
+        PublicItemPictureaddrAndAttrExample.Criteria cr=example.createCriteria();
+        cr.andRemarkIdEqualTo(RemarkId);
+        cr.andIteminformationIdNotEqualTo(InformationId);
+        cr.andAttrtypeEqualTo(type);
+        cr.andCreateUserEqualTo(userid);
+        List<PublicItemPictureaddrAndAttr> list=PublicItemPictureaddrAndAttrMapper.selectByExample(example);
+        return list;
+    }
+
+    @Override
     public void deletePublicItemPictureaddrAndAttr(PublicItemPictureaddrAndAttr ItemPictureaddrAndAttr) throws Exception {
         if(ItemPictureaddrAndAttr!=null&&ItemPictureaddrAndAttr.getId()!=null){
             PublicItemPictureaddrAndAttrMapper.deleteByPrimaryKey(ItemPictureaddrAndAttr.getId());

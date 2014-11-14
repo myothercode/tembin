@@ -64,7 +64,7 @@
         //在线编辑
         var editPage = "";
         function edit(itemid){
-            editPage = $.dialog({title: '编辑在线商品',
+            editPage = openMyDialog({title: '编辑在线商品',
                 content: 'url:/xsddWeb/editListingItem.do?itemid='+itemid,
                 icon: 'succeed',
                 width:1000

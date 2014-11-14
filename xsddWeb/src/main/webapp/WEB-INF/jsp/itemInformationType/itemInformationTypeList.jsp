@@ -42,7 +42,7 @@
 
         function addType(){
             var url=path+"/informationType/addType.do?";
-            itemInformationType=$.dialog({title: '添加商品分类',
+            itemInformationType=openMyDialog({title: '添加商品分类',
                 content: 'url:'+url,
                 icon: 'succeed',
                 width:400,
@@ -51,7 +51,7 @@
         }
         function addChildType(id){
             var url=path+"/informationType/addType.do?id="+id;
-            itemInformationType=$.dialog({title: '添加子分类',
+            itemInformationType=openMyDialog({title: '添加子分类',
                 content: 'url:'+url,
                 icon: 'succeed',
                 width:400,

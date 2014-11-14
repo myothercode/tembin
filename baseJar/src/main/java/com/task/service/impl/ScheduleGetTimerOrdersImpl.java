@@ -1,5 +1,7 @@
 package com.task.service.impl;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.base.database.sitemessage.model.PublicSitemessage;
 import com.base.database.task.model.TaskGetOrders;
 import com.base.database.trading.model.*;
@@ -17,12 +19,20 @@ import com.task.service.IScheduleGetTimerOrders;
 import com.task.service.ITaskGetOrders;
 import com.trading.service.*;
 import org.apache.commons.lang.StringUtils;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.net.URI;
+import java.net.URLEncoder;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -163,6 +173,11 @@ public class ScheduleGetTimerOrdersImpl implements IScheduleGetTimerOrders {
                                 if (l.getTransactionid().equals(order.getTransactionid())) {
                                     order.setId(l.getId());
                                 }
+                            }
+                            //-----获取跟踪号状态-----------
+                            if(order.getShipmenttrackingnumber()!=null){
+                                String trackStatus=queryTrack(order);
+                                order.setTrackstatus(trackStatus);
                             }
                             //--------------自动发送消息-------------------------
                             List<TradingOrderAddMemberMessageAAQToPartner> addmessages=iTradingOrderAddMemberMessageAAQToPartner.selectTradingOrderAddMemberMessageAAQToPartnerByTransactionId(order.getTransactionid(),2,order.getSelleruserid());
@@ -478,5 +493,34 @@ public class ScheduleGetTimerOrdersImpl implements IScheduleGetTimerOrders {
         }catch(Exception e){
             e.printStackTrace();
         }
+    }
+
+    public String queryTrack(TradingOrderGetOrders order) throws Exception {
+        BufferedReader in = null;
+        String content = null;
+        String trackNum=order.getShipmenttrackingnumber();
+        String token=(URLEncoder.encode("RXYaxblwfBeNY+2zFVDbCYTz91r+VNWmyMTgXE4v16gCffJam2FcsPUpiau6F8Yk"));
+        String url="http://api.91track.com/track?culture=zh-CN&numbers="+trackNum+"&token="+token;
+        /*String url="http://api.91track.com/track?culture=en&numbers="+"RD275816257CN"+"&token="+token;*/
+        HttpClient client=new DefaultHttpClient();
+        HttpGet get=new HttpGet();
+        get.setURI(new URI(url));
+        HttpResponse response = client.execute(get);
+
+        in = new BufferedReader(new InputStreamReader(response.getEntity()
+                .getContent()));
+        StringBuffer sb = new StringBuffer("");
+        String line ="";
+        String NL = System.getProperty("line.separator");
+        while ((line = in.readLine()) != null) {
+            sb.append(line + NL);
+        }
+        in.close();
+        content = sb.toString();
+        String[] arr=content.split(",");
+        String content1="{"+arr[1]+"}";
+        JSONObject json = JSON.parseObject(content1);
+        String status=json.getString("Status");
+        return status;
     }
 }

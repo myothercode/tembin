@@ -92,7 +92,7 @@
             return;
         }
 if(bbs_){
-    var parentDivH = $("#contentMaindiv",parent.document.body).css("height").replace("px");
+    var parentDivH = $("#contentMaindiv",parent.document.body).css("height").replace("px","");
     $("#contentMaindiv",parent.document.body).css("height",(parseInt(parentDivH)-60)+"px");
     bbc_=true;
     bbs_=false;
@@ -135,6 +135,10 @@ if(bbs_){
     /**关闭弹窗的时候会统一执行的方法*/
     function doitAfterCloseLhgDiolag(){
         Base.token();
+    }
+    /**将弹出窗口统一到一处*/
+    function openMyDialog(parm){
+        return $.dialog(parm);
     }
 
     /**清除本地缓存*/

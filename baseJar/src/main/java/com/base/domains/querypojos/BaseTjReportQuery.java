@@ -9,7 +9,7 @@ public class BaseTjReportQuery{
 
     private String returnType;
 
-    private int tjNumber;
+    private String tjNumber;
 
     public String getReturnType() {
         return returnType;
@@ -19,11 +19,11 @@ public class BaseTjReportQuery{
         this.returnType = returnType;
     }
 
-    public int getTjNumber() {
+    public String getTjNumber() {
         return tjNumber;
     }
 
-    public void setTjNumber(int tjNumber) {
+    public void setTjNumber(String tjNumber) {
         this.tjNumber = tjNumber;
     }
 }

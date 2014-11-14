@@ -24,7 +24,7 @@
         var OrderSendEvaluateMessage;
         function evaluateBuy(){
             var url=path+'/order/initSendEvaluateMessage.do?transactionid=${order.transactionid}&selleruserid=${order.selleruserid}';
-            OrderSendEvaluateMessage=$.dialog({title: '评价',
+            OrderSendEvaluateMessage=openMyDialog({title: '评价',
                 content: 'url:'+url,
                 icon: 'succeed',
                 width:800,

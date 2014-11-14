@@ -105,4 +105,23 @@ public class TradingMessageGetmymessageImpl implements com.trading.service.ITrad
         List<TradingMessageGetmymessage> list=TradingMessageGetmymessageMapper.selectByExampleWithBLOBs(example);
         return list;
     }
+
+    @Override
+    public TradingMessageGetmymessage selectMessageGetmymessageById(Long id) {
+        TradingMessageGetmymessageExample example=new TradingMessageGetmymessageExample();
+        TradingMessageGetmymessageExample.Criteria cr=example.createCriteria();
+        cr.andIdEqualTo(id);
+        List<TradingMessageGetmymessage> list=TradingMessageGetmymessageMapper.selectByExample(example);
+        return (list!=null&&list.size()>0)?list.get(0):null;
+    }
+
+    @Override
+    public List<TradingMessageGetmymessage> selectMessageGetmymessageByReplied(Long userId) {
+        TradingMessageGetmymessageExample example=new TradingMessageGetmymessageExample();
+        TradingMessageGetmymessageExample.Criteria cr=example.createCriteria();
+        cr.andCreateUserEqualTo(userId);
+        cr.andRepliedEqualTo("false");
+        List<TradingMessageGetmymessage> list=TradingMessageGetmymessageMapper.selectByExample(example);
+        return list;
+    }
 }

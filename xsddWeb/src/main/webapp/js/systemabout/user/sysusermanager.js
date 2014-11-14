@@ -131,17 +131,19 @@ function openAdduserWindow(userid){
     }else{
         url+="addSubUserInit.do";
     }
-openAdduserWindowD = $.dialog({
-    title:'',
-    id : "dig" + (new Date()).getTime(),
-    content:"url:"+url,
-    width : 600,
-    height : 600,
-    max:false,
-    min:false,
-    lock : true
+openAdduserWindowD = openMyDialog(
+    {
+        title:'',
+        id : "dig" + (new Date()).getTime(),
+        content:"url:"+url,
+        width : 600,
+        height : 600,
+        max:false,
+        min:false,
+        lock : true
 
-});
+    }
+);
     url="";
 }
 

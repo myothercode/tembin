@@ -6,6 +6,7 @@ import com.base.database.trading.model.TradingItemWithBLOBs;
 import com.base.domains.querypojos.ItemQuery;
 import com.base.mybatis.page.Page;
 import com.base.xmlpojo.trading.addproduct.Item;
+import org.apache.http.impl.cookie.DateParseException;
 
 import java.util.List;
 import java.util.Map;
@@ -44,4 +45,6 @@ public interface ITradingItem {
     void copyItem(String[] ids, String ebayaccount) throws Exception;
 
     Item toEditItem(TradingItem tradingItem) throws Exception;
+
+    void saveListingSuccess(String xml, String itemId) throws DateParseException;
 }

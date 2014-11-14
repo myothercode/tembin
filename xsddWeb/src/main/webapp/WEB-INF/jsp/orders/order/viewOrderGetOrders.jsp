@@ -1,3 +1,4 @@
+<%@ page import="java.util.Date" %>
 <%--
   Created by IntelliJ IDEA.
   User: Administrtor
@@ -23,6 +24,8 @@
         var clone=null;
         var api = frameElement.api, W = api.opener;
         var flag=false;
+        var s="";
+        var r1="";
         $(document).ready(function(){
           /*  var orders=${orders};
             for(var i=0;i<orders.length;i++){
@@ -34,7 +37,6 @@
             $("#frameRight").attr("src",path + "/order/viewOrderAbstractRight.do?orderId=${orderId}");
             $("#frameDown").attr("src",path + "/order/viewOrderAbstractDown.do?orderId=${orderId}");*/
             $("#frameBuyHistory").attr("src",path + "/order/viewOrderBuyHistory.do?orderId=${orderId}");
-
         });
         function dialogClose(){
             W.OrderGetOrders.close();
@@ -44,7 +46,7 @@
         var viewsendMessage1= W.OrderGetOrders;
         function sendMessage(){
             var url=path+'/order/initOrdersSendMessage.do?orderid=${order.orderid}';
-            viewsendMessage=$.dialog({title: '发送消息',
+            viewsendMessage=openMyDialog({title: '发送消息',
                 content: 'url:'+url,
                 icon: 'succeed',
                 width:800,
@@ -165,18 +167,54 @@
             $().invoke(url,data,
                     [function(m,r){
                         alert(r);
-                        window.location.reload();
+                        var content=$("#textarea").val();
+                        var myDate=new Date();
+                        var mytime=myDate.toLocaleString();
+                        var year=mytime.substring(0,4);
+                        var month=mytime.substring(5,7);
+                        var day=mytime.substring(8,10);
+                        var time1=myDate.getHours()+":"+myDate.getMinutes()+":"+myDate.getSeconds();
+                        var day1=year+"-"+month+"-"+day+" ";
+                        var div="<p class=\"admin\">"+s+"</p>"+
+                        "<div class=\"admin_co\">"+
+                                "<div class=\"admin_co_1\"></div>"+
+                        "<ul>Hi "+r1+".: )<br/>"+content+"";
+                        div+="<span>发送于:"+day1+time1+"</span>";
+                        /*div+="<span style=\"color: red\">发送失败于:"+day1+time1+"!</span>";*/
+                        div+="</ul>"+
+                        "<div class=\"admin_co_2\"></div></div>"+
+                        "<div class=\"dpan\"></div>";
+                        $("#add").append(div);
+                        document.getElementById("textarea").innerHTML="";
                         Base.token;
                     },
                         function(m,r){
                             alert(r);
+                            var content=$("#textarea").val();
+                            var myDate=new Date();
+                            var mytime=myDate.toLocaleString();
+                            var year=mytime.substring(0,4);
+                            var month=mytime.substring(5,7);
+                            var day=mytime.substring(8,10);
+                            var time1=myDate.getHours()+":"+myDate.getMinutes()+":"+myDate.getSeconds();
+                            var day1=year+"-"+month+"-"+day+" ";
+                            var div="<p class=\"admin\">"+s+"</p>"+
+                                    "<div class=\"admin_co\">"+
+                                    "<div class=\"admin_co_1\"></div>"+
+                                    "<ul>Hi "+r1+".: )<br/>"+content+"";
+                           /* div+="<span>发送于:"+day1+time1+"</span>";*/
+                            div+="<span style=\"color: red\">发送失败于:"+day1+time1+"!</span>";
+                            div+="</ul>"+
+                                    "<div class=\"admin_co_2\"></div></div>"+
+                                    "<div class=\"dpan\"></div>";
+                            $("#add").append(div);
                             Base.token();
-                        }]
+                        }],{isConverPage:true}
             );
         }
         function selectSendMessage(){
             var url=path+'/message/selectSendMessage.do?transactionid=${order.transactionid}&seller=${order.selleruserid}&paypal=${paypals[0]}';
-            sentmessage = $.dialog({title: '选择消息模板',
+            sentmessage = openMyDialog({title: '选择消息模板',
                 content:'url:'+url,
                 icon: 'succeed',
                 width:800,
@@ -465,11 +503,11 @@
             </td>
         </tr>
         <tr>
-            <td width="772" align="center" bgcolor="#F6F6F6" style="color:#2395F3">查看更多历史信息...</td>
+            <%--<td width="772" align="center" bgcolor="#F6F6F6" style="color:#2395F3">查看更多历史信息...</td>--%>
         </tr>
         <tr>
             <td>
-                <div class="newbook">
+                <div id="add" class="newbook" style="height: 350px;">
                     <p style="text-align: right;">
                         <c:if test="${flag=='true'}">
                             ${order.buyeruserid}&nbsp;
@@ -488,24 +526,27 @@
                         <div class="user_co">
                             <div class="user_co_1"></div>
                             <ul>Hi ${addMessage.recipientid}.: )<br/> ${addMessage.body}
-                                <span>发送与:<fmt:formatDate value="${addMessage.createTime}" pattern="yyyy-MM-dd HH:mm:ss"/></span>
+                                <span>发送于:<fmt:formatDate value="${addMessage.createTime}" pattern="yyyy-MM-dd HH:mm:ss"/></span>
                             </ul>
                             <div class="user_co_2"></div>
                         </div>
                         <div class="dpan"></div>
                     </c:if>
                     <c:if test="${addMessage.sender==recipient}">
-
+                        <script type="text/javascript">
+                             s="${addMessage.sender}";
+                             r1="${addMessage.recipientid}";
+                        </script>
                         <p class="admin">${addMessage.sender}</p>
 
                         <div class="admin_co">
                             <div class="admin_co_1"></div>
                             <ul>Hi ${addMessage.recipientid}.: )<br/>${addMessage.body}
                                 <c:if test="${addMessage.replied=='true'}">
-                                    <span>发送与:<fmt:formatDate value="${addMessage.createTime}" pattern="yyyy-MM-dd HH:mm:ss"/></span>
+                                    <span>发送于:<fmt:formatDate value="${addMessage.createTime}" pattern="yyyy-MM-dd HH:mm:ss"/></span>
                                 </c:if>
                                 <c:if test="${addMessage.replied=='false'}">
-                                    <span style="color: red">发送失败与:<fmt:formatDate value="${addMessage.createTime}" pattern="yyyy-MM-dd HH:mm:ss"/>!</span>
+                                    <span style="color: red">发送失败于:<fmt:formatDate value="${addMessage.createTime}" pattern="yyyy-MM-dd HH:mm:ss"/>!</span>
                                 </c:if>
                             </ul>
                             <div class="admin_co_2"></div>

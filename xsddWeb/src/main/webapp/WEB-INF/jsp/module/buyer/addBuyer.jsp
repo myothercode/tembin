@@ -136,7 +136,7 @@
     </style>
 </head>
 <body>
-<div class="newtitle_1" style="margin: 15px;">支付方式</div>
+<%--<div class="newtitle_1" style="margin: 15px;">买家要求</div>--%>
 <div style="padding-left: 80px;">
     <form id="buyerRequireForm">
         <input type="hidden" name="id" value="${buyerRequires.id}"/>

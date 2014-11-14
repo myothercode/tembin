@@ -48,11 +48,11 @@
 <body>
 <form id="addRemarkForm">
     <br/><br/>
-    <input type="hidden" name="orderid" value="${orderid}"/>
+    <input type="hidden" name="orderid" value="${order.orderid}"/>
     <table align="center">
         <tr>
             <td>备注信息:</td>
-            <td><input name="comment"  class="form-controlsd  validate[required]" id="comment"/></td>
+            <td><input name="comment" value="${order.comment}"  class="form-controlsd  validate[required]" id="comment"/></td>
         </tr>
         <tr>
             <td></td>

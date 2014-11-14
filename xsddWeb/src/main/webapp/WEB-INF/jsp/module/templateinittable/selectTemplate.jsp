@@ -83,6 +83,7 @@
             var api = frameElement.api, W = api.opener;
             W.document.getElementById('templateId').value=$("input[type='radio'][name='templateId']:checked").val();
             W.document.getElementById('templateUrl').src=imageUrlPrefix+$("input[type='radio'][name='templateId']:checked").attr("src");
+            W.showTemPic();
             W.selectTemplates.close();
         }
     </script>

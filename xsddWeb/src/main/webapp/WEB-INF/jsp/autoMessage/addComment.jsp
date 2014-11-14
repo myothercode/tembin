@@ -11,6 +11,11 @@
 <html>
 <head>
     <title></title>
+    <style type="text/css">
+        body {
+            background-color: #ffffff;
+        }
+    </style>
     <script type="text/javascript">
         var api = frameElement.api, W = api.opener;
         $(document).ready(function(){
@@ -57,6 +62,8 @@
                 <br/>
                 <button type="button" class="net_put" onclick="submitCommit();">保存</button>
                 <button type="button" class="net_put_1" data-dismiss="modal" onclick="closedialog();">关闭</button>
+        <%--        <button type="button" class="net_put" onclick="submitCommit();">保存</button>
+                <button type="button" class="net_put_1" data-dismiss="modal" onclick="closedialog();">关闭</button>--%>
             </div>
         </form></div>
 

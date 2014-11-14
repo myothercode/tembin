@@ -85,7 +85,14 @@
         }
         function editItem(id){
             var url = path + "/information/editItem.do?id="+id;
-            itemInformation=$.dialog({title: '快速刊登',
+            /*itemInformation=$.dialog({title: '快速刊登',
+                content: 'url:'+url,
+                icon: 'succeed',
+                width:1050,
+                height:700,
+                lock:true
+            });*/
+            itemInformation=openMyDialog({title: '快速刊登',
                 content: 'url:'+url,
                 icon: 'succeed',
                 width:1050,
@@ -95,7 +102,13 @@
         }
         function addComment(id){
             var url = path + "/information/addComment.do?id="+id;
-            itemInformation=$.dialog({title: '备注',
+           /* itemInformation=$.dialog({title: '备注',
+                content: 'url:'+url,
+                icon: 'succeed',
+                width:600,
+                lock:true
+            });*/
+            itemInformation=openMyDialog({title: '备注',
                 content: 'url:'+url,
                 icon: 'succeed',
                 width:600,
@@ -121,7 +134,14 @@
         }
         function addItemInformation(){
             var url=path+"/information/addItemInformation.do";
-            itemInformation=$.dialog({title: '添加或修改商品信息',
+            /*itemInformation=$.dialog({title: '添加或修改商品信息',
+                content: 'url:'+url,
+                icon: 'succeed',
+                width:1050,
+                height:700,
+                lock:true
+            });*/
+            itemInformation=openMyDialog({title: '添加或修改商品信息',
                 content: 'url:'+url,
                 icon: 'succeed',
                 width:1050,
@@ -176,7 +196,7 @@
             var id=$("input[type='checkbox'][name='templateId']:checked");
             if(id.length==1){
                 var url=path+"/information/addItemInformation.do?id="+$(id[0]).val();
-                itemInformation=$.dialog({title: '添加或修改商品信息',
+                itemInformation=openMyDialog({title: '添加或修改商品信息',
                     content: 'url:'+url,
                     icon: 'succeed',
                     width:1050,
@@ -191,7 +211,7 @@
         }
         function updateItemInformation1(id){
             var url=path+"/information/addItemInformation.do?id="+id;
-            itemInformation=$.dialog({title: '添加或修改商品信息',
+            itemInformation=openMyDialog({title: '添加或修改商品信息',
                 content: 'url:'+url,
                 icon: 'succeed',
                 width:1050,
@@ -217,7 +237,7 @@
             }
             if(id.length>0){
                 var url=path+"/information/addRemark.do?id="+id2;
-                itemInformation=$.dialog({title: '添加标签',
+                itemInformation=openMyDialog({title: '添加标签',
                     content: 'url:'+url,
                     icon: 'succeed',
                     width:600,
@@ -255,7 +275,7 @@
         }
         function importItemInformation(){
             var url=path+"/information/importItemInformation.do";
-            itemInformation=$.dialog({title: '请选择导入的excel文件',
+            itemInformation=openMyDialog({title: '请选择导入的excel文件',
                 content: 'url:'+url,
                 icon: 'succeed',
                 width:1050,
@@ -296,6 +316,7 @@
                     $(arr[i]).attr("class","newusa_ici_1");
                 }
             }
+            submitCommit();
         }
         function onclickinformation(information,n){
             var arr=$("span[scop=information]");
@@ -307,6 +328,7 @@
                     $(arr[i]).attr("class","newusa_ici_1");
                 }
             }
+            submitCommit();
         }
         function submitCommit(){
 
@@ -357,7 +379,7 @@
 
         function addType(){
             var url=path+"/informationType/addType.do?";
-            itemInformationType=$.dialog({title: '添加商品分类',
+            itemInformationType=openMyDialog({title: '添加商品分类',
                 content: 'url:'+url,
                 icon: 'succeed',
                 width:400,
@@ -366,7 +388,7 @@
         }
         function addChildType(id){
             var url=path+"/informationType/addType.do?id="+id;
-            itemInformationType=$.dialog({title: '添加子分类',
+            itemInformationType=openMyDialog({title: '添加子分类',
                 content: 'url:'+url,
                 icon: 'succeed',
                 width:400,
@@ -417,9 +439,12 @@
                             <li class="new_usa_list"><span class="newusa_i">按标签查看：</span><span class="newusa_ici" scop="remark" onclick="onclickremark(null,0)">全部&nbsp;</span><a href="#"><span class="newusa_ici_1" scop="remark" onclick="onclickremark('null',1)">无标签&nbsp;</span></a>
                             <c:forEach items="${remarks}" var="remark" begin="0"  varStatus="status">
                                 <c:if test="${(status.index+2)%11==0}">
-                                    <li class="new_usa_list"><span class="newusa_i"></span><a href="#"><span class="newusa_ici_1" scop="remark" onclick="onclickremark('${remark.id}',${status.index+2})">${remark.configName}&nbsp;</span></a></li>
+                                    <li class="new_usa_list"><span class="newusa_i"></span><a href="#"><span class="newusa_ici_1" scop="remark" onclick="onclickremark('${remark.id}',${status.index+2})">${remark.configName}&nbsp;</span></a>
                                 </c:if>
-                                <c:if test="${(status.index+2)%11!=0}">
+                                <c:if test="${(status.index+2)%11==10}">
+                                    <a href="#"><span class="newusa_ici_1" scop="remark" onclick="onclickremark('${remark.id}',${status.index+2})">${remark.configName}&nbsp;</span></a></li>
+                                </c:if>
+                                <c:if test="${(status.index+2)%11!=0&&(status.index+2)%11!=10}">
                                     <a href="#"><span class="newusa_ici_1" scop="remark" onclick="onclickremark('${remark.id}',${status.index+2})">${remark.configName}&nbsp;</span></a>
                                 </c:if>
 

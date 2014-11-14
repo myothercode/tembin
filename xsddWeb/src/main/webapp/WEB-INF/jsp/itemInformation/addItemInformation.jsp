@@ -95,14 +95,26 @@
             for(var i=0;i<pictures.length;i++){
                 $(pictures[i]).attr("name","Picture["+i+"]");
             }
-            var url=path+"/information/ajax/saveItemInformation.do";
+            var remarks=$("input[name=label]");
+            var remark="";
+            if(remarks.length!=0){
+                for(var i=0;i<remarks.length;i++){
+                    if(i==(remarks.length-1)){
+                        remark+=$(remarks[i]).val();
+                    }else{
+                        remark+=$(remarks[i]).val()+",";
+                    }
+                }
+            }
+            var url=path+"/information/ajax/saveItemInformation.do?remark="+remark;
             var data=$("#informationForm").serialize();
             $().invoke(url,data,
                     [function(m,r){
                         alert(r);
-                        W.refreshTable();
-                        W.itemInformation.close();
-                        Base.token();
+                        /*W.refreshTable();*/
+                        /*W.itemInformation.close();*/
+                    /*    Base.token();*/
+                        W.location.reload();
                     },
                         function(m,r){
                             alert(r);
@@ -122,7 +134,7 @@
                 return;
             }
             var url=path+"/information/addDiscription.do?name="+name;
-            adddiscription=$.dialog({title: '添加描述',
+            adddiscription=openMyDialog({title: '添加描述',
                 content: 'url:'+url,
                 icon: 'succeed',
                 width:800,
@@ -142,7 +154,7 @@
             var name=$("#informationName").val();
             var descriptionName=$("#descriptionName").val();
             var url=path+"/information/addDiscription.do?descriptionName="+descriptionName+"&name="+name;
-            adddiscription=$.dialog({title: '编辑描述',
+            adddiscription=openMyDialog({title: '编辑描述',
                 content: 'url:'+url,
                 icon: 'succeed',
                 width:800,
@@ -166,6 +178,7 @@
         }
         function addPictrueUrl(urls) {
            /* if (sss.indexOf("apicUrls")!=-1) {//商品图片*/
+            /*
                 var str = '';
                 str += "<ul class='gbin1-list'>";
                 for (var i = 0; i < urls.length; i++) {
@@ -176,18 +189,53 @@
                 }
                 str += "</ul>";
                 $("#picture").append(str);
-                str = "";
+                str = "";*/
+            var str = '';
+            /*str += "<ul class='gbin1-list'>";*/
+            for (var i = 0; i < urls.length; i++) {
+                /*str += '<li><div style="position:relative"><input type="hidden" name="Picture" value="' + urls[i].src.replace("@", ":") + '">' +
+                 '<img src=' + urls[i].src.replace("@", ":") + ' style="width: 50px;height: 50px;" />' +
+                 '<a href=\'javascritp:void(0)\' onclick=\'removeThis(this)\'>移除</a></span></div>';
+                 str += "</li>";*/
+                str+="<td class=\"spic\" style=\"margin-left: 20px;\">"+
+                        "<div id=\"vspic\">" +
+                        "<li><a href=\"javascritp:void(0)\"><img src=\"<c:url value ="/img/a1xl.png" />\" width=\"18\" height=\"18\"></a>" +
+                        "<ul>" +
+                        "<li><a href=\"javascritp:void(0)\" onclick=\"removeThis(this)\">删除</a></li>" +
+                        "<li><a href=\"javascritp:void(0)\" onclick=\"connectPicture('"+ urls[i].src.replace("@", ":") +"')\">复制链接</a></li>" +
+                        "</ul>" +
+                        "</li>" +
+                        "</div>" +
+                        "<div class=\"a1fd\"><a href=\"javascritp:void(0)\"><img src=\"<c:url value ="/img/a1fd.png" />\"></a></div>" +
+                        "<img src=\"" + urls[i].src.replace("@", ":") +"\" width=\"120\" height=\"110\"></td>";
+            }
+            /* str += "</ul>";*/
+            /*$("#picture").append(str);*/
+            $("#addpictureId").append(str);
+            str = "";
         }
         function removeThis(a){
-            $(a).parent().parent().remove();
+            $(a).parent().parent().parent().parent().parent().remove();
         }
         $(document).ready(function(){
             $("#informationForm").validationEngine();
         });
+        function addLength(obj){
+            this.value='';
+            $(obj).attr("style","width: auto;background-color: #fff;border-radius: 5px;");
+        }
+        function subLength(obj){
+            if(obj.value==''){obj.value='';obj.style.color='#999';}
+            $(obj).attr("style","width: 40px;background-color: #fff;border-radius: 5px;");
+            $(obj).val("");
+        }
+       function connectPicture(url){
+            window.open(url);
+        }
     </script>
 </head>
 <body>
-<form id="informationForm">
+<%--<form id="informationForm">
 <input type="hidden" name="id" value="${itemInformation.id}"/>
 <input type="hidden" name="inventoryid" value="${inventory.id}"/>
 <input type="hidden" name="customid" value="${custom.id}"/>
@@ -255,7 +303,7 @@
     <tr>
         <td></td><td>描述</td><td>
         <div id="addDiscription">
-            <%--<input type="hidden" name="descriptionName" value="${itemInformation.description}"/>--%>
+            &lt;%&ndash;<input type="hidden" name="descriptionName" value="${itemInformation.description}"/>&ndash;%&gt;
             <c:if test="${itemInformation!=null}">
                 <c:if test="${itemInformation.description!=null}">
                     <table id="discriptionTable" border="1" cellpadding="0" cellspacing="0" style="width: 400px;">
@@ -268,15 +316,15 @@
                                 <input type="hidden" name="discription" value="${itemInformation.description}" />
                             </td>
                             <td>
-                                <a href="javascript:void();" onclick="editDiscription(this);">编辑</a>&nbsp;
-                                <a href="javascript:void();" onclick="removeDiscription(this);">移除</a>
+                                <a href="javascript:void(0);" onclick="editDiscription(this);">编辑</a>&nbsp;
+                                <a href="javascript:void(0);" onclick="removeDiscription(this);">移除</a>
                             </td>
                         </tr>
                      </table>
                 </c:if>
             </c:if>
         </div>
-        <br/><a href="javascript:void();" onclick="addDiscription();">添加描述</a></td>
+        <br/><a href="javascript:void(0);" onclick="addDiscription();">添加描述</a></td>
     </tr>
     <tr>
         <td></td><td>自定义物品属性</td><td>
@@ -295,7 +343,7 @@
                 </c:if>
             </table>
         </div>
-        <a href="javascript:void()" onclick="addAttrabute();">添加</a></td>
+        <a href="javascript:void(0);" onclick="addAttrabute();">添加</a></td>
     </tr>
     <tr><td colspan="3"><hr/></td></tr>
     <tr>
@@ -311,7 +359,7 @@
     </tr>
     <tr>
         <c:if test="${supplier==null}">
-            <td></td><td></td><td><a href="javascript:void()" onclick="addSupplier();">添加</a><br/>
+            <td></td><td></td><td><a href="javascript:void(0);" onclick="addSupplier();">添加</a><br/>
         </c:if>
         <c:if test="${supplier!=null}">
             <td></td><td></td><td><br/>
@@ -376,11 +424,285 @@
     </tr>
     <tr><td colspan="3"><hr/></td></tr>
 </table>
+<table style="margin-left: 50px;">
+    <tr>
+        <td>标签:</td>
+        &lt;%&ndash;<td><div id="addRemark" class="form-controlsd" ><input &lt;%&ndash;onblur="subLength(this);"&ndash;%&gt; onclick="addLength(this);" type="text" class="form-controlsd" style="width: 40px;height: 20px;">&lt;%&ndash;<input type="text" class="form-controlsd" style="width: 260px;height: 20px;">&ndash;%&gt;</div></td>&ndash;%&gt;
+        <td><ul id="addRemark" style="padding: 3px 5px 3px 5px;border: 1px solid lightgray;width: 360px;background-color: #ffffff;margin-top: 3px;">
+            <c:forEach items="${configs}" var="config">
+                <a href='javascript:void(0)' style='padding: 3px 5px 3px 5px;margin-left: 5px;margin-top:3px;border: 1px solid #aaaaaa;border-radius: 3px;position: relative;line-height: 30px;' onclick='deletes(this);' ><i class="icon-remove-sign" style='margin-right: 2px;'></i><span >${config.configName}</span><input type='hidden' name='label' value='${config.configName}'></a>
+            </c:forEach>
+            <input style="width:40px;background-color: #fff;border-radius: 5px;" id="kk"type="text" value="" onfocus="addLength(this)" onblur="subLength(this)" onkeyup="this.style.color='#333';" onclick="addLength(this)" /></ul></td>
+    </tr>
+    <tr>
+        <td></td>
+        <td><span style="color: #0000ff">请使用【enter】键添加标签</span></td>
+    </tr>
+    <tr></tr>
+    <tr>
+        <td></td>
+        &lt;%&ndash;  <td>您可能需要的标签:<br/>&ndash;%&gt;
+
+        </td>
+    </tr>
+</table>
+</form>--%>
+<%---------------------------------------------------------------------------------------------------------------%>
+
+    <div class="modal-body">
+        <script type="text/javascript">
+            function setvTab(name,cursel,n){
+                for(i=1;i<=n;i++){
+                    var svt=document.getElementById(name+i);
+                    var con=document.getElementById("new_"+name+"_"+i);
+                    svt.className=i==cursel?"new_ic_1":"";
+                    con.style.display=i==cursel?"block":"none";
+                }
+            }
+        </script>
+<br/><br/>
+<form id="informationForm">
+    <input type="hidden" name="id" value="${itemInformation.id}"/>
+    <input type="hidden" name="inventoryid" value="${inventory.id}"/>
+    <input type="hidden" name="customid" value="${custom.id}"/>
+    <input type="hidden" name="supplierid" value="${supplier.id}"/>
+            <table width="100%" border="0" style="margin-top:-20px;">
+                <tbody><tr>
+                    <td style="line-height:16px;"><%--<p><span style="color: #2395F3; font-size: 16px; font-family: '微软雅黑', '宋体', Arial">编辑商品</span><span style="float:right; "><button type="button" class="net_put_clo" data-dismiss="modal"></button></span></p>--%>
+                        <p>你也可以选择导入商品，<a href="#" style=" color:#2395F3; font-size:12px; font-family: '微软雅黑', '宋体', Arial">+去导入</a></p></td>
+                </tr>
+                <tr>
+                    <td><div class="new_tab">
+                        <div class="new_tab_left"></div>
+                        <div class="new_tab_right"></div>
+                        <dt id="svt1" class="new_ic_1" onclick="setvTab('svt',1,4)">基本信息</dt>
+                        <dt id="svt2" onclick="setvTab('svt',2,4)" class="">相关信息</dt>
+                        <span style="float:right; margin-top:8px; margin-right:10px;">
+                            <script type=text/plain id='picUrls'></script>
+                            <a href="javascript:void(0)" id="apicUrls" onclick="addpicture(this)"><img src="<c:url value ="/img/apic_dr.png" />" width="75" height="15"></a></span>
+                    </div></td>
+                </tr>
+
+                </tbody></table>
+            <div id="new_svt_1" class="hover" style="display: block;background-color: #ffffff;">
+                <link href="css/compiled/layout.css" rel="stylesheet" type="text/css">
+                <table width="100%" border="0" style="margin-left:40px;">
+
+                    <tbody><tr>
+                        <td height="46" align="right">商品名称：</td>
+                        <td height="46" width="86%"><div class="newselect">
+                                <input  class="form-controlsd validate[required]" type="text" id="informationName" name="name" value="${itemInformation.name}">
+                        </div></td>
+                    </tr>
+
+                    <tr>
+                        <td width="14%" height="46" align="right">商品SKU：</td>
+                        <td height="46" width="86%"><div class="newselect">
+                            <input  class="form-controlsd validate[required]" type="text" id="sku" name="sku" value="${itemInformation.sku}">
+                        </div></td>
+                    </tr>
+                    <tr>
+                        <td width="14%" height="46" align="right">长：</td>
+                        <td height="46" width="86%"><div class="newselect">
+                            <input name="length" value="${inventory.length}" class="form-controlsd" type="text">
+                        </div></td>
+                    </tr>
+                    <tr>
+                        <td width="14%" height="46" align="right">宽：</td>
+                        <td height="46" width="86%"><div class="newselect">
+                            <input name="width" value="${inventory.width}" class="form-controlsd" type="text">
+                        </div></td>
+                    </tr>
+                    <tr>
+                        <td width="14%" height="46" align="right">高：</td>
+                        <td height="46" width="86%"><div class="newselect">
+                            <input name="height" value="${inventory.height}" class="form-controlsd" type="text">
+                        </div></td>
+                    </tr>
+                    <tr>
+                        <td width="14%" height="46" align="right">重量：</td>
+                        <td height="46" width="86%"><div class="newselect">
+                            <input name="weight" value="${custom.weight}" class="form-controlsd" type="text">
+                        </div></td>
+                    </tr>
+                    <tr>
+                        <td width="14%" height="46" align="right">采购价：</td>
+                        <td height="46" width="86%"><div class="newselect">
+                            <input name="supplierPrice" value="${supplier.price}" class="form-controlsd" type="text">
+                        </div></td>
+                    </tr>
+              <%--      <tr>
+                        <table style="margin-left: 50px;">
+                            <td>标签:</td>
+                                <td><ul id="addRemark" style="padding: 3px 5px 3px 5px;border: 1px solid lightgray;width: 360px;background-color: #ffffff;margin-top: 3px;">
+                                    <c:forEach items="${configs}" var="config">
+                                        <a href='javascript:void(0)' style='padding: 3px 5px 3px 5px;margin-left: 5px;margin-top:3px;border: 1px solid #aaaaaa;border-radius: 3px;position: relative;line-height: 30px;' onclick='deletes(this);' ><i class="icon-remove-sign" style='margin-right: 2px;'></i><span >${config.configName}</span><input type='hidden' name='label' value='${config.configName}'></a>
+                                    </c:forEach>
+                                    <input style="width:40px;background-color: #fff;border-radius: 5px;" id="kk"type="text" value="" onfocus="addLength(this)" onblur="subLength(this)" onkeyup="this.style.color='#333';" onclick="addLength(this)" /></ul></td>
+                        </table>
+                    </tr>--%>
+                    <tr>
+                        <td width="14%" height="46" align="right">标签：</td>
+                        <td height="46" width="86%"><div class="newselect">
+                            <%--<input name="" class="form-controlsd" type="text">--%>
+                                <ul id="addRemark"  style="padding: 3px 5px 3px 5px;border: 1px solid lightgray;width: 300px;border-radius: 4px;margin-left: 4px;background-color: #ffffff;margin-top: 3px;float: left">
+                                    <c:forEach items="${configs}" var="config">
+                                        <a href='javascript:void(0)' style='padding: 3px 5px 3px 5px;margin-left: 5px;margin-top:3px;border: 1px solid #aaaaaa;border-radius: 3px;position: relative;line-height: 30px;' onclick='deletes(this);' ><i class="icon-remove-sign" style='margin-right: 2px;'></i><span >${config.configName}</span><input type='hidden' name='label' value='${config.configName}'></a>
+                                    </c:forEach>
+                                    <input style="width:40px;background-color: #fff;border-radius: 5px;" id="kk"type="text" value="" onfocus="addLength(this)" onblur="subLength(this)" onkeyup="this.style.color='#333';" onclick="addLength(this)" /></ul>
+                        </div></td>
+                    </tr>
+                    <tr>
+                        <td width="14%" height="22" align="right"></td>
+                        <td height="22" width="86%"><div class="newselect" style=" color:#597791">
+                            请使用【enter】键添加标签
+                        </div></td>
+                    </tr>
+                    <tr>
+                        <td width="14%" align="right"></td>
+                        <td width="86%">
+                            你可能需要的标签：</td>
+                    </tr>
+                    <tr>
+                        <td width="14%" height="0" align="right"></td>
+                        <td height="0" width="86%">
+                            <span class="pipi">+ 电子产品（7231）</span><span class="pipi">+ 跟卖（1）</span></td>
+                    </tr>
+                    <tr>
+                        <td height="28" align="right"></td>
+                        <td style=" padding-top:22px;" height="28"><button type="button" class="net_put">下一步</button> <button type="button" class="net_put_1" style="font-size: 5px;">相关信息</button></td>
+                    </tr>
+                    </tbody></table>
+            </div>
+            <div style="display: none;" id="new_svt_2">
+                <link href="css/compiled/layout.css" rel="stylesheet" type="text/css">
+                <table width="100%" border="0">
+                    <tbody><tr id="addPictureId">
+                    <c:forEach items="${pictures}" var="picture" begin="0" varStatus="status">
+                        <td class="spic" style="margin-left: 20px;">
+                            <div id="vspic">
+                                <li><a href="#"><img src="<c:url value ="/img/a1xl.png" />" width="18" height="18"></a>
+                                    <ul>
+                                        <li><a href="javascritp:void(0)" onclick="removeThis(this)">删除</a></li>
+                                        <li><a href="javascritp:void(0)" onclick="connectPicture('${picture.attrvalue}')">复制链接</a></li>
+                                    </ul>
+                                </li>
+                            </div>
+                            <div class="a1fd"><a href="#"><img src="<c:url value ="/img/a1fd.png" />"></a></div>
+                            <img src="${picture.attrvalue}" width="120" height="110"></td>
+                       <%-- <td><div class="spic"><img src="img/pic_d.jpg" width="120" height="110"></div></td>
+                        <td><div class="spic"><img src="img/pic_d.jpg" width="120" height="110"></div></td>--%>
+                    </c:forEach>
+                     </tr>
+
+                  <%--  <tr>
+                        <td></td><td>图片</td><td>
+                        <div class="panel" style="display: block">
+                            <section class='example'>
+                                <div id="picture" class="gridly">
+                                    <c:if test="${pictures!=null}">
+                                        <ul>
+                                            <c:forEach items="${pictures}" var="picture">
+                                                <li>
+                                                    <div>
+                                                        <input type="hidden" name="Picture" value="${picture.attrvalue}">
+                                                        <img src="${picture.attrvalue}" style="width: 50px;"/>
+                                                        <a href="javascritp:void(0)" onclick="removeThis(this)">移除</a>
+                                                    </div>
+                                                </li>
+                                            </c:forEach>
+                                        </ul>
+                                    </c:if>
+                                </div>
+                            </section>
+                            <script type=text/plain id='picUrls'></script>
+                            <div style="padding-left: 60px;"><a href="javascript:void(0)" id="apicUrls" onclick="addpicture(this)">选择图片</a></div>
+                        </div>
+                        <br/>
+                    </td>
+                    </tr>--%>
+                    </tbody></table>
+            </div>
+
 </form>
+
+<%--//----------------------------------------------------------------------------------------------%>
+<div style="bottom: 1px;">
 <div class="modal-footer">
     <button type="button" class="net_put" onclick="submitCommit();">保存</button>
     <button type="button" class="net_put_1" data-dismiss="modal" onclick="closedialog();">关闭</button>
 </div>
+</div>
+<script type="text/javascript">
+    var lablId = -1;
+
+    $(function() {
+        $("#kk").blur(function() {
+            if (isNan(this.value) != false) {
+                this.value = '';
+                this.style.color = '#999';
+            }
+        });
+    });
+    $(document).ready(function() {
+        $("#kk").keydown(function(event) {
+            if (event.keyCode == 13) {
+                var str = $("#kk").val();
+                if (isNan(str) != true) {
+                    var li_id = $(".label li:last-child").attr('id');
+                    if (li_id != undefined) {
+                        li_id = li_id.split('_');
+                        li_id = parseInt(li_id[1]) + 1;
+                    } else {
+                        li_id = 0;
+                    }
+                    $(".label_box").css("display", "block");
+                    var text = "<a href='javascript:#' style='padding: 3px 5px 3px 5px;margin-left: 5px;margin-top:3px;border: 1px solid #aaaaaa;border-radius: 3px;position: relative;line-height: 30px;' onclick='deletes(this);' ><i class=\"icon-remove-sign\" style='margin-right: 2px;'></i><span >" + str + "</span><input type='hidden' name='label' value='" + str + "'></a>";
+                    var spans=$("#addRemark").find("span");
+                    for(var i=0;i<spans.length;i++){
+                        var span=spans[i].innerHTML;
+                        if(str==span){
+                            return;
+                        }
+                    }
+                    $("#kk").before(text);
+                }
+                $("#kk").val("");
+                $("#kk").attr("style","width: auto;background-color: #fff;border-radius: 5px;");
+            }
+        })
+    });
+    function isNan(obj) {
+        try {
+            return obj == 0 ? true: !obj
+        } catch(e) {
+            return true;
+        }
+    }
+
+
+    function deletes(obj) {
+        $(obj).remove();
+    }
+
+    function addlabl(id) {
+        if (lablId == id) {
+            return;
+        }
+        lablId = id;
+        var str = $("#add_" + id).text();
+        var li_id = $(".label li:last-child").attr('id');
+        if (li_id != undefined) {
+            li_id = li_id.split('_');
+            li_id = parseInt(li_id[1]) + 1;
+        } else {
+            li_id = 0;
+        }
+        $(".label_box").css("display", "block");
+        var text = "<li id='li_" + li_id + "'><a href='javascript:;' onclick='deletes(" + li_id + ");' ><img src='images/label_03.png' class='label-pic'>" + str + "</a><input type='hidden' name='label[" + li_id + "].name' value='" + str + "'></li>";
+        $(".label").append(text);
+    }
+</script>
 <%--//--------------------------------------------------------------------------%>
 <%--<div class="modal-content">
     <div class="modal-header">

@@ -314,7 +314,7 @@
                     "<option value='OtherListingError'>OtherListingError</option>" +
                     "<option value='SellToHighBidder'>SellToHighBidder</option>" +
                     "<option value='Sold'>Sold</option></select></div>";
-            var editPage = $.dialog({title: '提前结束原因',
+            var editPage = openMyDialog({title: '提前结束原因',
                 content: tent,
                 icon: 'tips.gif',
                 width: 200,
@@ -380,7 +380,7 @@
         var OrderGetOrders;
         function addTabRemark(){
             var url=path+"/order/selectTabRemark.do?folderType=listingFolder";
-            OrderGetOrders=$.dialog({title: '选择文件夹',
+            OrderGetOrders=openMyDialog({title: '选择文件夹',
                 content: 'url:'+url,
                 icon: 'succeed',
                 width:800
@@ -393,7 +393,7 @@
         var tablePricewin=null;
         function tablePrice(obj){
             var url=path+"/getTablePriceList.do";
-            tablePricewin=$.dialog({title: '表格调价列表',
+            tablePricewin=openMyDialog({title: '表格调价列表',
                 content: 'url:'+url,
                 icon: 'succeed',
                 width:800,
@@ -462,7 +462,7 @@
                             htmlstr+="<div><input type='radio' name='folderid' value='"+r[i].id+"'/>"+r[i].configName+"</div>";
                         }
                         htmlstr += "</div>";
-                        var editPage = $.dialog({title: '选择移动到的文件夹',
+                        var editPage = openMyDialog({title: '选择移动到的文件夹',
                             content: htmlstr,
                             icon: 'tips.gif',
                             width: 200,
@@ -548,9 +548,9 @@
             return html;
         }
         function getSku(json){
-            var html = "&nbsp;&nbsp;<a target='_blank' href='"+serviceItemUrl+json.itemId+"'><span style='color:#8BB51B;'>"+json.sku+"</span></a>";
+            var html = "&nbsp;&nbsp;<a target='_blank' href='" + path + "/editItem.do?id=" + json.docId + "' title='" + json.docTitle + "'><span>" + json.docTitle.substr(0, 6) + "...</span></a>";
             if(json.docId!=null&&json.docId!="") {
-                html += "</br>&nbsp;&nbsp;<a target='_blank' href='" + path + "/editItem.do?id=" + json.docId + "' title='" + json.docTitle + "'><span>" + json.docTitle.substr(0, 6) + "...</span></a>";
+                html += "</br>&nbsp;&nbsp;<a target='_blank' href='"+serviceItemUrl+json.itemId+"'><span style='color:#8BB51B;'>"+json.sku+"</span></a>";
             }
             return html
         }
@@ -577,7 +577,7 @@
                     {title:"选择",name:"itemName",width:"2%",align:"left",format:makeOption0},
                     {title:"图片",name:"Option1",width:"3%",align:"left",format:picUrl},
                     {title:"<span onclick='orderList(this)' style='cursor: pointer;' colu='title' val='0'>物品标题</span>",name:"title",width:"16%",align:"left",format:getTitle},
-                    {title:"<span onclick='orderList(this)' style='cursor: pointer;' colu='sku' val='0'>&nbsp;&nbsp;SKU</span>/范本",name:"sku",width:"8%",align:"left",format:getSku},
+                    {title:"<span onclick='orderList(this)' style='cursor: pointer;' colu='sku' val='0'>&nbsp;&nbsp;范本</span>/SKU",name:"sku",width:"8%",align:"left",format:getSku},
                     {title:"<span onclick='orderList(this)' style='cursor: pointer;' colu='ebay_account' val='0'>ebay账户</span>",name:"ebayAccount",width:"4%",align:"left"},
                     {title:"<span onclick='orderList(this)' style='cursor: pointer;' colu='site' val='0'>站点</span>",name:"site",width:"2%",align:"left",format:getSiteImg},
                     {title:"<span onclick='orderList(this)' style='cursor: pointer;' colu='listing_type' val='0'>刊登类型</span>",name:"listingType",width:"4%",align:"center",format:listingType},
@@ -722,7 +722,7 @@
         var quickEdits;
         function quickEdit(id,listingType){
             var url=path+"/quickEdit.do?id="+id+"&&listingType="+listingType;
-            quickEdits=$.dialog({title: '快速编辑',
+            quickEdits=openMyDialog({title: '快速编辑',
                 content: 'url:'+url,
                 icon: 'succeed',
                 width:1000,
@@ -738,7 +738,7 @@
                 remark = $("input[type='checkbox'][name='listingitemid'][val='" + id + "']").parent().parent().find("td").eq(2).find(".newdf").text().substr(3);
             }
             var tent = "<div class='textarea'>备注：<textarea cols='45' rows='5' id='centents' >"+remark+"</textarea></div>";
-            var editPage = $.dialog({title: '备注',
+            var editPage = openMyDialog({title: '备注',
                 content: tent,
                 icon: 'tips.gif',
                 width: 300,
@@ -795,7 +795,7 @@
         //查看日志
         function selectLog(id){
             var url=path+"/getListItemDataAmend.do?parentId="+id;
-            tablePricewin=$.dialog({title: '修改在线商品日志',
+            tablePricewin=openMyDialog({title: '修改在线商品日志',
                 content: 'url:'+url,
                 icon: 'succeed',
                 width:800,
@@ -814,11 +814,11 @@
         //在线编辑
         var editPage = "";
         function edit(itemid){
-            editPage = $.dialog({title: '编辑在线商品',
+            editPage = openMyDialog({title: '编辑在线商品',
                 content: 'url:/xsddWeb/editListingItem.do?itemid='+itemid,
                 icon: 'succeed',
-                width:1000,
-                height:600
+                width:800,
+                height:400
             });
         }
 
@@ -872,7 +872,7 @@
                         ten+="<div><input type='checkbox' name='ebayAccount' id='ebayAccount' value='"+r[i].ebayAccount+"'/>"+r[i].ebayName+"(<font color='blue'>最近同步时间："+r[i].maxDate+"</font>)</div>";
                     }
                     ten+="</div>";
-                    $.dialog({title: '选择EBAY账号',
+                    openMyDialog({title: '选择EBAY账号',
                         content: ten,
                         icon: 'succeed',
                         width: 400,
@@ -935,7 +935,7 @@
                 }
             });
             var urls = path+'/selectSiteList.do?siteidStr='+siteid;
-            siteListPage = $.dialog({title: '选择定时时间',
+            siteListPage = openMyDialog({title: '选择定时时间',
                 content: 'url:'+urls,
                 icon: 'succeed',
                 width:500,

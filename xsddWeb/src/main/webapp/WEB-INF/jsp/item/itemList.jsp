@@ -15,7 +15,7 @@
         function addItem(){
             document.location = path+"/addItem.do";
             //window.open("/xsddWeb/addItem.do");
-           /* returnItem=$.dialog({title: '新增商品',
+           /* returnItem=openMyDialog({title: '新增商品',
                 content: 'url:/xsddWeb/addItem.do',
                 icon: 'succeed',
                 width:1200
@@ -26,7 +26,7 @@
 
         function editItem(id){
             parent.document.location = path+"/editItem.do?id="+id;
-            /*returnItem=$.dialog({title: '编辑商品',
+            /*returnItem=openMyDialog({title: '编辑商品',
                 content: 'url:/xsddWeb/editItem.do?id='+id,
                 icon: 'succeed',
                 width:1200

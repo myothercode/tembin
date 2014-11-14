@@ -1,7 +1,10 @@
 package com.iteminformation.controller;
 
 import com.base.database.publicd.model.*;
-import com.base.database.trading.model.*;
+import com.base.database.trading.model.TradingAttrMores;
+import com.base.database.trading.model.TradingDataDictionary;
+import com.base.database.trading.model.TradingItemWithBLOBs;
+import com.base.database.trading.model.TradingPublicLevelAttr;
 import com.base.domains.CommonParmVO;
 import com.base.domains.SessionVO;
 import com.base.domains.querypojos.ItemInformationQuery;
@@ -264,6 +267,8 @@ public class ItemInformationController extends BaseAction {
         PublicItemSupplier supplier=null;
         List<PublicItemPictureaddrAndAttr> pictures=null;
         List<PublicItemPictureaddrAndAttr> attrs=null;
+        List<PublicUserConfig> configs=new ArrayList<PublicUserConfig>();
+        SessionVO sessionVO=SessionCacheSupport.getSessionVO();
         if(StringUtils.isNotBlank(id)){
             itemInformation=iPublicItemInformation.selectItemInformationByid(Long.valueOf(id));
             if(itemInformation.getInventoryId()!=null){
@@ -276,10 +281,21 @@ public class ItemInformationController extends BaseAction {
                 supplier=iPublicItemSupplier.selectItemSupplierByid(itemInformation.getSupplierId());
             }
             SessionVO c= SessionCacheSupport.getSessionVO();
+
             pictures=iPublicItemPictureaddrAndAttr.selectPictureaddrAndAttrByInformationId(itemInformation.getId(),"picture",c.getId());
             attrs=iPublicItemPictureaddrAndAttr.selectPictureaddrAndAttrByInformationId(itemInformation.getId(),"attr",c.getId());
+            if(itemInformation!=null){
+                List<PublicItemPictureaddrAndAttr> andAttrs=iPublicItemPictureaddrAndAttr.selectPictureaddrAndAttrByInformationId(itemInformation.getId(),"remark",sessionVO.getId());
+                for(PublicItemPictureaddrAndAttr andAttr:andAttrs){
+                    PublicUserConfig publicUserConfig=iPublicUserConfig.selectUserConfigById(andAttr.getRemarkId());
+                    if(publicUserConfig!=null){
+                        configs.add(publicUserConfig);
+                    }
+                }
+            }
         }
         List<PublicUserConfig> types=iPublicUserConfig.selectUserConfigByItemType("itemType");
+        String root=request.getContextPath();
         modelMap.put("types",types);
         modelMap.put("itemInformation",itemInformation);
         modelMap.put("inventory",inventory);
@@ -287,6 +303,8 @@ public class ItemInformationController extends BaseAction {
         modelMap.put("supplier",supplier);
         modelMap.put("pictures",pictures);
         modelMap.put("attrs",attrs);
+        modelMap.put("configs", configs);
+        modelMap.put("root",root);
         return forword("/itemInformation/addItemInformation",modelMap);
     }
     /*
@@ -441,6 +459,12 @@ public class ItemInformationController extends BaseAction {
         for(Long id:list){
             List<PublicItemPictureaddrAndAttr> andAttrs=iPublicItemPictureaddrAndAttr.selectPictureaddrAndAttrByInformationId(id,"remark",sessionVO.getId());
             for(PublicItemPictureaddrAndAttr andAttr:andAttrs){
+                List<PublicItemPictureaddrAndAttr> list1=iPublicItemPictureaddrAndAttr.selectPictureaddrAndAttrByRemarkIdAndNotInformationId(andAttr.getRemarkId(),id,"remark",sessionVO.getId());
+                if(list1.size()==0||list1==null){
+                    PublicUserConfig config=new PublicUserConfig();
+                    config.setId(andAttr.getRemarkId());
+                    iPublicUserConfig.deleteUserConfig(config);
+                }
                 iPublicItemPictureaddrAndAttr.deletePublicItemPictureaddrAndAttr(andAttr);
             }
             for(String remark1:remarks){
@@ -491,9 +515,10 @@ public class ItemInformationController extends BaseAction {
     @AvoidDuplicateSubmission(needRemoveToken = true)
     @ResponseBody
     public void saveItemInformation(HttpServletRequest request) throws Exception {
+        String remark=request.getParameter("remark");
         String name=request.getParameter("name");
         String sku=request.getParameter("sku");
-        String itemType=request.getParameter("itemType");
+       /* String itemType=request.getParameter("itemType");*/
         String warning=request.getParameter("warning");
         String length=request.getParameter("length");
         String width=request.getParameter("width");
@@ -550,7 +575,22 @@ public class ItemInformationController extends BaseAction {
             AjaxSupport.sendFailText("fail","sku不能为空");
             return;
         }
-        if(supplierId!=null){
+        if(supplierid!=null){
+            PublicItemSupplier supplier=new PublicItemSupplier();
+            supplier.setSupplierid(supplierId);
+            supplier.setName(supplierName);
+            supplier.setRemark(supplierRemark);
+            supplier.setSuppersku(supperSku);
+            supplier.setCurrency(supplierCurrency);
+            if(StringUtils.isNotBlank(supplierPrice)){
+                supplier.setPrice(Double.valueOf(supplierPrice));
+            }
+            if(StringUtils.isNotBlank(supplierid)){
+                supplier.setId(Long.valueOf(supplierid));
+            }
+            iPublicItemSupplier.saveItemSupplier(supplier);
+            itemInformation.setSupplierId(supplier.getId());
+        }else{
             PublicItemSupplier supplier=new PublicItemSupplier();
             supplier.setSupplierid(supplierId);
             supplier.setName(supplierName);
@@ -606,7 +646,7 @@ public class ItemInformationController extends BaseAction {
         }
         itemInformation.setName(name);
         itemInformation.setSku(sku);
-        itemInformation.setTypeId(Long.valueOf(itemType));
+       /* itemInformation.setTypeId(Long.valueOf(itemType));*/
         if(StringUtils.isNotBlank(id)){
             itemInformation.setId(Long.valueOf(id));
         }
@@ -640,6 +680,50 @@ public class ItemInformationController extends BaseAction {
             attr.setIteminformationId(itemInformation.getId());
             attr.setAttrtype("attr");
             iPublicItemPictureaddrAndAttr.saveItemPictureaddrAndAttr(attr);
+        }
+        SessionVO sessionVO=SessionCacheSupport.getSessionVO();
+        if(StringUtils.isNotBlank(remark)){
+            String[] remarks=remark.split(",");
+            List<PublicItemPictureaddrAndAttr> andAttrs=iPublicItemPictureaddrAndAttr.selectPictureaddrAndAttrByInformationId(itemInformation.getId(),"remark",sessionVO.getId());
+            for(PublicItemPictureaddrAndAttr andAttr:andAttrs){
+                List<PublicItemPictureaddrAndAttr> list1=iPublicItemPictureaddrAndAttr.selectPictureaddrAndAttrByRemarkIdAndNotInformationId(andAttr.getRemarkId(),itemInformation.getId(),"remark",sessionVO.getId());
+                if(list1.size()==0||list1==null){
+                    PublicUserConfig config=new PublicUserConfig();
+                    config.setId(andAttr.getRemarkId());
+                    iPublicUserConfig.deleteUserConfig(config);
+                }
+                iPublicItemPictureaddrAndAttr.deletePublicItemPictureaddrAndAttr(andAttr);
+            }
+            for(String remark1:remarks){
+                PublicUserConfig config=iPublicUserConfig.selectUserConfigByItemTypeName("remark",remark1);
+                if(config==null){
+                    config=new PublicUserConfig();
+                    config.setConfigType("remark");
+                    config.setConfigName(remark1);
+                    iPublicUserConfig.saveUserConfig(config);
+                }
+                PublicItemPictureaddrAndAttr attr=new PublicItemPictureaddrAndAttr();
+                attr.setAttrtype("remark");
+                attr.setRemarkId(config.getId());
+                attr.setIteminformationId(itemInformation.getId());
+                iPublicItemPictureaddrAndAttr.saveItemPictureaddrAndAttr(attr);
+            }
+            itemInformation.setRemarkId(1l);
+            iPublicItemInformation.saveItemInformation(itemInformation);
+        }else{
+            List<PublicItemPictureaddrAndAttr> andAttrs=iPublicItemPictureaddrAndAttr.selectPictureaddrAndAttrByInformationId(itemInformation.getId(),"remark",sessionVO.getId());
+            for(PublicItemPictureaddrAndAttr andAttr:andAttrs){
+                List<PublicItemPictureaddrAndAttr> list1=iPublicItemPictureaddrAndAttr.selectPictureaddrAndAttrByRemarkIdAndNotInformationId(andAttr.getRemarkId(),itemInformation.getId(),"remark",sessionVO.getId());
+                if(list1.size()==0||list1==null){
+                    PublicUserConfig config=new PublicUserConfig();
+                    config.setId(andAttr.getRemarkId());
+                    iPublicUserConfig.deleteUserConfig(config);
+                }
+                iPublicItemPictureaddrAndAttr.deletePublicItemPictureaddrAndAttr(andAttr);
+            }
+            itemInformation.setRemarkId(null);
+            iPublicItemInformation.saveItemInformation(itemInformation);
+
         }
         AjaxSupport.sendSuccessText("", "操作成功!");
     }

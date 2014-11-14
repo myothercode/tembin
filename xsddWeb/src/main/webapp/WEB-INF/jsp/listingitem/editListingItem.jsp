@@ -28,14 +28,56 @@
 <c:url value="/css/compiled/gallery.css"/> type="text/css" media="screen"/>
 <script>
 var myDescription=null;
+var isload = false;
+var isclic = false;
+function next(obj){
+    isclic = true;
+    $("#bodyid").block({ message: "<h1>正在查询数据，请等待...</h1>",css: {
+        width: "250",
+        backgroundColor: "#7EC0EE",
+        border: "2px solid #104E8B"
+    }});
+    if(isload){
+        nextShows(obj);
+        $("#bodyid").unblock();
+    }/*else{
+        setTimeout(function(){
+            if(isload){
+                nextShows(obj);
+                $("#bodyid").unblock();
+            }else{
+                setTimeout(function(){
+                    if(isload){
+                        nextShows(obj);
+                        $("#bodyid").unblock();
+                    }
+                },4000);
+            }
+        },4000);
+    }*/
+}
 function nextShows(obj){
-
+    /*if(!isload){
+        *//*$.dialog({ id:'test14', cover:true, html:'我不能对页面进行操作了', lockScroll:true });*//*
+        //$.blockUI()
+        *//*$.blockUI({ message: "<h1>WAIT 3s ....</h1>",css: {
+            width: "250",
+            backgroundColor: "#7EC0EE",
+            border: "2px solid #104E8B"
+        }  });*//*
+        setTimeout(function(){
+            alert("aaaaaaaaaaaaaaaaa");
+            nextShows(obj);
+        },3000);
+    }*/
     if($(obj).text()=="下一步"){
         var j=1;
         $("input[type='checkbox'][name='selectType']").each(function(i,d){
             if($(d).prop("checked")){
                 j++;
                 $("#"+$(d).val()).show();
+            }else{
+                $("#"+$(d).val()).hide();
             }
         });
         if(j==1){
@@ -103,16 +145,214 @@ var api = frameElement.api, W = api.opener;
 function closeWin(){
     W.editPage.close();
 }
+function loadListingItem(itemId,ebayAccount,siteid){
+    var urll = path+"/ajax/getListingItem.do?itemid="+itemId;
+    $().invoke(
+            urll,
+            {},
+            [function (m, r) {
+                var item = r;
+                if(item.variations==null){//初始化价格数量
+                    var html='<table style="width:95%">';
+                    html+='<tr id="StartPrice" style="display: none;">';
+                    html+='<td  style="width: 116px;text-align: right;padding-right: 20px;">价格</td>';
+                    html+='<td><input type="text" onkeypress="return inputNUMAndPoint(event,this,2)" name="StartPrice.Value" class="validate[required,custom[number]] form-control" value="'+item.startPrice.value+'"></td>';
+                    html+='</tr>';
+                    html+='<tr id="Quantity" style="display: none;">';
+                    html+='<td style="width: 116px;text-align: right;padding-right: 20px;">数量</td>';
+                    html+='<td><input type="text" name="Quantity"  onkeypress="return inputOnlyNUM(event,this)" class="validate[required,custom[integer]] form-control" value="'+item.quantity+'"></td>';
+                    html+='</tr>';
+                    html+='</talbe>';
+                    $("#isvar").html(html);
+                }else{//多属性数量价格
+                    var html='<table>'+
+                            '<tr>'+
+                            '<td>SKU</td>'+
+                            '<td>数量</td>'+
+                            '<td>价格</td>';
+                    for(var i=0;i<item.variations.variationSpecificsSet.nameValueList.length;i++){
+                        var nvl = item.variations.variationSpecificsSet.nameValueList[i];
+                        html+='<td>'+nvl.name+'</td>'
+                    }
+                    html+="</tr>";
+                    for(var i=0;i<item.variations.variation.length;i++){
+                        tion = item.variations.variation[i];
+                        html+='<tr>';
+                        html+='<td><input type="text" name="Variations.Variation['+i+'].SKU" class="form-control" value="'+tion.sKU+'"></td>'+
+                        '<td><input type="text" name="Variations.Variation['+i+'].Quantity" class="form-control" onkeypress="return inputOnlyNUM(event,this)" value="'+tion.quantity+'"></td>'+
+                        '<td><input type="text" name="Variations.Variation['+i+'].StartPrice.value" class="form-control" onkeypress="return inputNUMAndPoint(event,this,2)" value="'+tion.startPrice.value+'"></td>';
+                        for(var j =0;j<tion.variationSpecifics.length;j++){
+                            var vs = tion.variationSpecifics[j];
+                            for(var n=0;n<vs.nameValueList.length;n++){
+                                var nvls = vs.nameValueList[n];
+                                html+='<td>';
+                                for(var s=0;s<nvls.value.length;s++){
+                                    html+=nvls.value[s];
+                                }
+                                html+='</td>';
+                            }
+                        }
+                        html+='</tr>';
+                    }
+                    html+='</table>';
+                    $("#isvar").html(html);
+                }
+                //加载图片信息
+                var picstr = '';
+                if(item.pictureDetails.pictureURL!=null) {
+                    var showStr = "<div class='panel' style='display: block'>";
+                    showStr += " <section class='example'><ul class='gbin1-list' style='padding-left: 20px;' id='picture_" + ebayAccount + "'></ul></section> ";
+                    showStr += " <script type=text/plain id='picUrls_" + ebayAccount + "'/>";
+
+                    showStr += "<div style='height: 110px;'></div> <div style='padding-left: 60px;'>&nbsp;&nbsp;&nbsp;&nbsp;" +
+                            "<b class='new_button'><a href='javascript:void(0)' id='apicUrls_" + ebayAccount + "' onclick='selectPic(this)' style=''>选择图片</a></b>" +
+                            "<b class='new_button'><a href='javascript:void(0)' id='apicUrlsSKU_" + ebayAccount + "' onclick='selectPic(this)' style=''>选择SKU图片</a></b>" +
+                            "<b class='new_button'><a href='javascript:void(0)' id='apicUrlsOther_" + ebayAccount + "' onclick='selectPic(this)' style=''>选择外部图片</a></b>" +
+                            "<b class='new_button'><a href='javascript:void(0)' id='apicUrlsclear_" + ebayAccount + "' onclick='clearAllPic(this)' style=''>清空所选图片</a></b>" +
+                            "</div> </div> ";
+                    $("#showPics").append(showStr);
+                    $().image_editor.init("picUrls_" + ebayAccount); //编辑器的实例id
+                    $().image_editor.show("apicUrls_" + ebayAccount); //上传图片的按钮id
+                    $().image_editor.show("apicUrlsSKU_" + ebayAccount); //上传图片的按钮id
+                    $().image_editor.show("apicUrlsOther_" + ebayAccount); //上传图片的按钮id
+                    for(var i=0;i<item.pictureDetails.pictureURL.length;i++){
+                        var lipic = item.pictureDetails.pictureURL[i];
+                        picstr += '<li><div style="position:relative"><input type="hidden" name="PictureDetails_' + ebayAccount + '.PictureURL" value="'+lipic+'">' +
+                                '<img src=${lipic} height="80px" width="78px" />' +
+                                '<div style="text-align: right;background-color: dimgrey;width: 78px;"><img src="' + path + '/img/newpic_ico.png" onclick="removeThis(this)"></div>';
+                        picstr += "</li>";
+                    }
+                    $("#picture_" + ebayAccount).append(picstr);
+                }
+                //加载付款信息
+                $("select[name='PayPalEmailAddress']").find("option[value='"+item.payPalEmailAddress+"']").attr("selected",true);
+                //加载退货政策
+                $("select[name='ReturnPolicy.RefundOption']").find("option[value='"+item.returnPolicy.refundOption+"']").attr("selected",true);
+                $("select[name='ReturnPolicy.ReturnsWithinOption']").find("option[value='"+item.returnPolicy.returnsWithinOption+"']").attr("selected",true);
+                $("select[name='ReturnPolicy.ReturnsAcceptedOption']").find("option[value='"+item.returnPolicy.returnsAcceptedOption+"']").attr("selected",true);
+                $("select[name='ReturnPolicy.ShippingCostPaidByOption']").find("option[value='"+item.returnPolicy.shippingCostPaidByOption+"']").attr("selected",true)
+                $("textarea[name='ReturnPolicy.Description']").text(item.returnPolicy.description);
+                //加载描述信息
+                myDescription = UE.getEditor('myDescription');
+                myDescription.setContent(item.description);
+                //加载标题
+                $("input[name='Title']").val(item.title);
+                //加载买家要求
+                var policyCount = item.buyerRequirementDetails.maximumBuyerPolicyViolations.count;
+                var policyPeriod = item.buyerRequirementDetails.maximumBuyerPolicyViolations.period;
+                $("select[name='BuyerRequirementDetails.MaximumBuyerPolicyViolations.Count']").find("option[value='"+policyCount+"']").attr("selected",true);
+                $("select[name='BuyerRequirementDetails.MaximumBuyerPolicyViolations.Count']").attr("disabled",false);
+                $("select[name='BuyerRequirementDetails.MaximumBuyerPolicyViolations.Period']").find("option[value='"+policyPeriod+"']").attr("selected",true);
+                $("select[name='BuyerRequirementDetails.MaximumBuyerPolicyViolations.Period']").attr("disabled",false);
+                if(policyCount!=""||policyCount!=""){
+                    $("input[name='MaximumBuyerPolicyViolations']").attr("checked",true);
+                }
+                var unpaidCount  = item.buyerRequirementDetails.maximumUnpaidItemStrikesInfo.count;
+                var unpaidPeriod = item.buyerRequirementDetails.maximumUnpaidItemStrikesInfo.period;
+                $("select[name='BuyerRequirementDetails.MaximumUnpaidItemStrikesInfo.Count']").find("option[value='"+unpaidCount+"']").attr("selected",true);
+                $("select[name='BuyerRequirementDetails.MaximumUnpaidItemStrikesInfo.Count']").attr("disabled",false);
+                //$("select[name='BuyerRequirementDetails.MaximumUnpaidItemStrikesInfo.Period']").find("option[value='"+unpaidPeriod+"']").attr("selected",true);
+                $("select[name='BuyerRequirementDetails.MaximumUnpaidItemStrikesInfo.Period']").attr("disabled",false);
+                if(unpaidCount!=""||unpaidPeriod!=""){
+                    $("input[name='MaximumUnpaidItemStrikesInfo']").attr("checked",true);
+                }
+                var LinkedPayPalAccount = item.buyerRequirementDetails.linkedPayPalAccount;
+                $("input[name='BuyerRequirementDetails.LinkedPayPalAccount']").attr("checked",LinkedPayPalAccount==""?false:LinkedPayPalAccount);
+                var ShipToRegistrationCountry = item.buyerRequirementDetails.shipToRegistrationCountry;
+                $("input[name='BuyerRequirementDetails.ShipToRegistrationCountry']").attr("checked",ShipToRegistrationCountry==""?false:ShipToRegistrationCountry);
+                if(item.buyerRequirementDetails.maximumItemRequirements!=null){
+                    var MaximumItemCount = item.buyerRequirementDetails.maximumItemRequirements.maximumItemCount;
+                    var MinimumFeedbackScore = item.buyerRequirementDetails.maximumItemRequirements.minimumFeedbackScore;
+                    var MinimumFeedbackScores = item.buyerRequirementDetails.minimumFeedbackScore;
+                    $("select[name='BuyerRequirementDetails.MaximumItemRequirements.MaximumItemCount']").find("option[value='"+MaximumItemCount+"']").attr("selected",true);
+                    if(MaximumItemCount!=""){
+                        $("select[name='BuyerRequirementDetails.MaximumItemRequirements.MaximumItemCount']").attr("disabled",false);
+                        $("input[name='MaximumItemCount_flag']").attr("checked",true);
+                    }
+                    $("select[name='BuyerRequirementDetails.MaximumItemRequirements.MinimumFeedbackScore']").find("option[value='"+MinimumFeedbackScore+"']").attr("selected",true);
+                    if(MinimumFeedbackScore!=""){
+                        $("select[name='BuyerRequirementDetails.MaximumItemRequirements.MinimumFeedbackScore']").attr("disabled",false);
+                        $("input[name='FeedbackScore_falg']").attr("checked",true);
+                    }
+                    $("select[name='BuyerRequirementDetails.MinimumFeedbackScore']").find("option[value='"+MinimumFeedbackScores+"']").attr("selected",true);
+                    if(MinimumFeedbackScores!=""){
+                        $("select[name='BuyerRequirementDetails.MinimumFeedbackScore']").attr("disabled",false);
+                        $("input[name='MinimumFeedbackScore_flag']").attr("checked",true);
+                    }
+                }
+
+                //加载ＳＫＵ
+                $("input[name='SKU']").val(item.sKU);
+                //加载分类
+                $("input[name='PrimaryCategory.CategoryId']").val(item.primaryCategory.categoryID);
+                //加载运输选项
+                //国内运输选项
+                if(item.shippingDetails!=null&&item.shippingDetails.shippingServiceOptions!=null){
+                    for(var i=0;i<item.shippingDetails.shippingServiceOptions.length;i++){
+                        var shi = item.shippingDetails.shippingServiceOptions[i];
+                        $("#shippingMore").append(createTables(shi.shippingService,shi.shippingServiceCost.value,shi.freeShipping,shi.shippingServiceAdditionalCost.value,shi.shippingSurcharge.value));
+                    }
+                    selectSite(siteid);
+                }
+                //国际运输选项
+                if(item.shippingDetails!=null&&item.shippingDetails.internationalShippingServiceOption!=null){
+                    for(var i=0;i<item.shippingDetails.internationalShippingServiceOption.length;i++){
+                        var shi = item.shippingDetails.internationalShippingServiceOption[i];
+                        var ss = $("#inter").append(createInterTables(shi.shippingService,shi.shippingServiceCost.value,shi.shippingServiceAdditionalCost.value));
+                        for(var j=0;j<shi.shipToLocation.length;j++){
+                            var tolo = shi.shipToLocation[j];
+                            $(ss).find("[name='ShipToLocation']").each(function(i,d){
+                                if($(d).val()==tolo){
+                                    $(d).attr("checked",true);
+                                }
+                            });
+                        }
+                    }
+                }
+                //物品状况
+                $("select[name='ConditionID']").find("option[value='"+item.conditionID+"']").attr("selected",true);
+                //物品所在地
+                $("input[name='Location']").val(item.location);
+                $("input[name='PostalCode']").val(item.postalCode);
+                $("select[name='Country']").find("option[value='"+item.country+"']").attr("selected",true);
+                //处理时间
+
+                var GetItFast = item.getItFast;
+                $("select[name='DispatchTimeMax']").find("option[value='"+item.dispatchTimeMax+"']").attr("selected",true);
+                $("input[name='GetItFast']").attr("checked",GetItFast);
+                //
+                var ListingDuration = item.listingDuration;
+                var PrivateListing = item.privateListing;
+                //刊登天数
+                $("select[name='ListingDuration']").find("option[value='"+ListingDuration+"']").attr("selected",true);
+                $("input[name='PrivateListing']").attr("checked",PrivateListing);
+
+                isload=true;
+                if(isclic){//如果数据加载完成前，就点击了下一步，那么关闭遮罩层，并执行下一步方法
+                    nextShows($("button[type='button'][id='nextShow']"));
+                    $("#bodyid").unblock();
+                }
+            },
+                function (m, r) {
+
+                }]
+    );
+}
+
 
 $(document).ready(function() {
     //$().image_editor.init("picUrls"); //编辑器的实例id
     //$().image_editor.show("apicUrls"); //上传图片的按钮id
+    //异步加载在线商品
+    var ebayAccount = '${ebayAccount}';
+    var itemidstr= '${itemidstr}';
+    loadListingItem(itemidstr,ebayAccount,'${siteid}');
+
     _sku = '${sku}';
     var paypal = '${item.payPalEmailAddress}';
     $("select[name='PayPalEmailAddress']").find("option[value='"+paypal+"']").attr("selected",true);
     var RefundOption = '${item.returnPolicy.refundOption}';
     $("select[name='ReturnPolicy.RefundOption']").find("option[value='"+RefundOption+"']").attr("selected",true);
-
     var ReturnsWithinOption = '${item.returnPolicy.returnsWithinOption}';
     $("select[name='ReturnPolicy.ReturnsWithinOption']").find("option[value='"+ReturnsWithinOption+"']").attr("selected",true);
     var ReturnsAcceptedOption = '${item.returnPolicy.returnsAcceptedOption}';
@@ -205,7 +445,7 @@ $(document).ready(function() {
     $("#incount").text(title.length);
 
     var picstr = '';
-    var ebayAccount = '${ebayAccount}';
+
     <c:if test="${lipic!=null}">
     var showStr = "<div class='panel' style='display: block'>";
     showStr += " <section class='example'><ul class='gbin1-list' style='padding-left: 20px;' id='picture_" + ebayAccount + "'></ul></section> ";
@@ -241,11 +481,12 @@ function checkData(obj){
 }
 var CategoryType;
 function selectType(){
-    CategoryType=$.dialog({title: '选择商品分类',
+    CategoryType=openMyDialog({title: '选择商品分类',
         content: 'url:'+path+'/category/initSelectCategoryPage.do',
         icon: 'succeed',
-        width:650,
-        lock:true
+        zIndex:2000,
+        width: 650,
+        lock: true
     });
 }
 function incount(obj){
@@ -297,14 +538,23 @@ setTimeout(function(){
     </c:forEach>
 },500);
 </script>
+<style type="text/css">
+    body {
+        background-color: #ffffff;
+    }
+    #showId td{
+        padding: 5px;
+    }
+</style>
 </head>
-<body>
+<body id="bodyid">
 <div class="modal-header">
     <h4 class="modal-title" style="color:#2E98EE">在线编辑商品</h4>
 </div>
 <form id="form">
 <input type="hidden" name="ItemID" value="${itemidstr}">
 <input type="hidden" name="listingType" value="${item.listingType}">
+<input type="hidden" name="site" value="${siteid}">
 <div id="selectId" style="padding-left: 100px;padding-top: 20px;padding-bottom: 20px;">
     <table width="70%">
         <tr>
@@ -333,8 +583,8 @@ setTimeout(function(){
         </tr>
     </table>
 </div>
-<div style="padding-left: 40px;">
-<table id="showId" style="display: none;">
+<div style="padding-left: 5px;">
+<table id="showId" style="display: none;width: 100%;">
 <tr id="show1">
     <td colspan="2" width="80%">
         <br/>
@@ -347,15 +597,15 @@ setTimeout(function(){
         <table>
             <tr>
                 <td align="right" style="width: 100px;">站点</td>
-                <td>${item.site}</td>
+                <td>${tldata.site}</td>
             </tr>
             <tr>
                 <td align="right" style="width: 100px;">货币</td>
-                <td>${item.currency}</td>
+                <td>${tdd.value1}</td>
             </tr>
             <tr>
                 <td align="right" style="width: 100px;">ebay账户</td>
-                <td>${item.seller.userID}</td>
+                <td>${tldata.ebayAccount}</td>
             </tr>
             <tr>
                 <td align="right" style="width: 100px;"></td>
@@ -371,70 +621,37 @@ setTimeout(function(){
         <hr/>
     </td>
 </tr>
-<c:if test="${item.variations ==null}">
-    <tr id="StartPrice" style="display: none;">
-        <td>价格</td>
-        <td><input type="text" name="StartPrice.Value" class="validate[required,custom[number]]" value="${item.startPrice.value}"></td>
-    </tr>
-    <tr id="Quantity" style="display: none;">
-        <td>数量</td>
-        <td><input type="text" name="Quantity" class="validate[required,custom[integer]]" value="${item.quantity}"></td>
-    </tr>
-</c:if>
-<c:if test="${item.variations !=null}">
-    <tr>
-        <td colspan="2">
-            <table>
-                <tr>
-                    <td>SKU</td>
-                    <td>数量</td>
-                    <td>价格</td>
-                    <c:forEach items="${item.variations.variationSpecificsSet.nameValueList}" var="nvl">
-                        <td>${nvl.name}</td>
-                    </c:forEach>
-                </tr>
-                <c:forEach items="${item.variations.variation}" var="tion" varStatus="start">
-                    <tr>
-                        <td><input type="text" name="Variations.Variation[${start.index}].SKU" value="${tion.SKU}"></td>
-                        <td><input type="text" name="Variations.Variation[${start.index}].Quantity" value="${tion.quantity}"></td>
-                        <td><input type="text" name="Variations.Variation[${start.index}].StartPrice.value" value="${tion.startPrice.value}"></td>
-                        <c:forEach items="${tion.variationSpecifics}" var="vs">
-                            <c:forEach items="${vs.nameValueList}" var="nvls">
-                                <td>
-                                    <c:forEach items="${nvls.value}" var="val">
-                                        ${val}
-                                    </c:forEach>
-                                </td>
-                            </c:forEach>
-                        </c:forEach>
-                    </tr>
-                </c:forEach>
-            </table>
-        </td>
-    </tr>
-</c:if>
-<tr id="PictureDetails" style="display: none;">
-    <td>图片</td>
+<tr style="border-bottom: 1px solid #e5e5e5;">
+    <td id="isvar"  colspan="2">
+
+    </td>
+</tr>
+
+<tr id="PictureDetails" style="display: none;border-bottom: 1px solid #e5e5e5;">
+    <td style="width: 20px;text-align: right;padding-right: 20px;">图片</td>
     <td>
         <div id="showPics">
             <%--<div id="picture"></div>
             <script type=text/plain id='picUrls'></script>
             <div><a href="javascript:void(0)" id="apicUrls" onclick="selectPic(this)">选择图片</a></div>--%>
         </div>
+        </hr>
     </td>
 </tr>
-<tr id="PayPal" style="display: none;">
-    <td>付款</td>
+<tr id="PayPal" style="display: none;border-bottom: 1px solid #e5e5e5;">
+    <td style="width: 20px;text-align: right;padding-right: 20px;">付款</td>
     <td>
-        <table>
+        <table width="100%">
             <tr>
-                <td>paypal账号:</td>
+                <td style="width: 120px;text-align: right">paypal账号:</td>
                 <td>
-                    <select name="PayPalEmailAddress">
+                    <div class="ui-select">
+                    <select name="PayPalEmailAddress" style="width: 300px;">
                         <c:forEach items="${paypalList}" var="pay">
-                            <option value="${pay.configValue}">${pay.configName}</option>
+                            <option value="${pay.email}">${pay.paypalAccount}</option>
                         </c:forEach>
                     </select>
+                    </div>
                 </td>
             </tr>
             <%--<tr>
@@ -446,75 +663,85 @@ setTimeout(function(){
         </table>
     </td>
 </tr>
-<tr id="ReturnPolicy" style="display: none;">
-    <td>退货政策</td>
+<tr id="ReturnPolicy" style="display: none;border-bottom: 1px solid #e5e5e5;">
+    <td style="width: 20px;text-align: right;padding-right: 20px;">退货政策</td>
     <td>
-        <table>
+        <table width="100%">
             <tr>
-                <td>退货政策:</td>
+                <td style="text-align: right;width: 120px;">退货政策:</td>
                 <td>
-                    <select name="ReturnPolicy.ReturnsAcceptedOption">
+                    <div class="ui-select">
+                    <select name="ReturnPolicy.ReturnsAcceptedOption" style="width: 300px;">
                         <c:forEach items="${acceptList}" var="accept">
                             <option value="${accept.value}">${accept.name}</option>
                         </c:forEach>
                     </select>
+                    </div>
                 </td>
             </tr>
             <tr>
-                <td>退货天数:</td>
+                <td style="text-align: right">退货天数:</td>
                 <td>
-                    <select name="ReturnPolicy.ReturnsWithinOption">
+                    <div class="ui-select">
+                    <select name="ReturnPolicy.ReturnsWithinOption" style="width: 300px;">
                         <c:forEach items="${withinList}" var="within">
                             <option value="${within.value}">${within.name}</option>
                         </c:forEach>
                     </select>
+                    </div>
                 </td>
             </tr>
             <tr>
-                <td>退款方式:</td>
+                <td style="text-align: right">退款方式:</td>
                 <td>
-                    <select name="ReturnPolicy.RefundOption">
+                    <div class="ui-select">
+                    <select name="ReturnPolicy.RefundOption" style="width: 300px;">
                         <c:forEach items="${refundList}" var="pay">
                             <option value="${pay.value}">${pay.name}</option>
                         </c:forEach>
                     </select>
+                    </div>
                 </td>
             </tr>
             <tr>
-                <td>退货运费由谁承担:</td>
+                <td style="text-align: right">退货运费由谁承担:</td>
                 <td>
-                    <select name="ReturnPolicy.ShippingCostPaidByOption">
+                    <div class="ui-select">
+                    <select name="ReturnPolicy.ShippingCostPaidByOption" style="width: 300px;">
                         <c:forEach items="${costPaidList}" var="pay">
                             <option value="${pay.value}">${pay.name}</option>
                         </c:forEach>
                     </select>
+                    </div>
                 </td>
             </tr>
             <tr>
-                <td>付款说明:</td>
+                <td style="text-align: right">付款说明:</td>
                 <td>
-                    <textarea name="ReturnPolicy.Description" cols="30" rows="5">${item.returnPolicy.description}</textarea>
+                    <textarea name="ReturnPolicy.Description" cols="46" rows="5">${item.returnPolicy.description}</textarea>
                 </td>
             </tr>
         </table>
     </td>
 </tr>
-<tr id="Description" style="display: none;">
-    <td>描述</td>
+<tr id="Description" style="display: none;border-bottom: 1px solid #e5e5e5;">
+    <td style="width: 20px;text-align: right;padding-right: 20px;">描述</td>
     <td>
         <input type="hidden" name="Description">
-        <script id="myDescription" type="text/plain" style="width:775px;height:300px;">${item.description}</script>
+        <script id="myDescription" type="text/plain" style="width:600px;height:200px;">${item.description}</script>
     </td>
 </tr>
-<tr id="Title" style="display: none;">
-    <td>标题</td>
+<tr id="Title" style="display: none;border-bottom: 1px solid #e5e5e5;">
+    <td style="width: 20px;text-align: right;padding-right: 20px;">标题</td>
     <td>
-        <input type="text" name="Title" size="100"  onkeyup="incount(this)"  class="validate[required,maxSize[80]]" value="${item.title}">
-        <span id="incount">0</span>/80
+        <div class="new_left">
+            <input type="text" name="Title" size="80"  onkeyup="incount(this)"  class="validate[required,maxSize[80]] form-control" value="${item.title}">
+            <span id="incount">0</span>/80
+        </div>
     </td>
 </tr>
-<tr id="Buyer" style="display: none;">
-    <td>买家要求</td>
+<tr id="Buyer" style="display: none;border-bottom: 1px solid #e5e5e5;">
+    <td style="width: 20px;text-align: right;padding-right: 20px;">买家要求</td>
     <td>
         <div><input type="radio" name="buyer_flag" value="1"/> 允许所有买家购买我的物品</div>
         <div><input type="radio" name="buyer_flag" value="0"/> 不允许以下买家购买我的物品</div>
@@ -522,34 +749,34 @@ setTimeout(function(){
             <div><input type="checkbox" name="BuyerRequirementDetails.LinkedPayPalAccount" value="true"/>没有 PayPal 账户</div>
             <div><input type="checkbox" name="BuyerRequirementDetails.ShipToRegistrationCountry" value="true"/>主要运送地址在我的运送范围之外</div>
             <div><input type="checkbox" name="MaximumUnpaidItemStrikesInfo" onclick="checkData(this)"/>
-                曾收到<select name="BuyerRequirementDetails.MaximumUnpaidItemStrikesInfo.Count" disabled="disabled">
+                曾收到<div class="ui-select" style="width:4px;"><select  style="width:100px;" name="BuyerRequirementDetails.MaximumUnpaidItemStrikesInfo.Count" disabled="disabled">
                     <option value="2">2</option>
                     <option value="3">3</option>
                     <option value="4">4</option>
                     <option value="5">5</option>
-                </select>个弃标个案，在过去<select name="BuyerRequirementDetails.MaximumUnpaidItemStrikesInfo.Period" disabled="disabled">
+                </select></div>个弃标个案，在过去<div class="ui-select" style="width:4px;"><select  style="width:100px;" name="BuyerRequirementDetails.MaximumUnpaidItemStrikesInfo.Period" disabled="disabled">
                     <option value="Days_30">30</option>
                     <option value="Days_180">180</option>
                     <option value="Days_360">360</option>
-                </select>天
+                </select></div>天
             </div>
             <div><input type="checkbox" name="MaximumBuyerPolicyViolations"  onclick="checkData(this)"/>
-                曾收到<select name="BuyerRequirementDetails.MaximumBuyerPolicyViolations.Count" disabled="disabled">
+                曾收到<div class="ui-select" style="width:4px;"><select  style="width:100px;" name="BuyerRequirementDetails.MaximumBuyerPolicyViolations.Count" disabled="disabled">
                     <option value="4">4</option>
                     <option value="5">5</option>
                     <option value="6">6</option>
                     <option value="7">7</option>
-                </select>个违反政策检举，在过去<select name="BuyerRequirementDetails.MaximumBuyerPolicyViolations.Period" disabled="disabled">
+                </select></div>个违反政策检举，在过去<div class="ui-select" style="width:4px;"><select  style="width:100px;" name="BuyerRequirementDetails.MaximumBuyerPolicyViolations.Period" disabled="disabled">
                     <option value="Days_30">30</option>
                     <option value="Days_180">180</option>
-                </select>天
+                </select></div>天
             </div>
-            <div><input type="checkbox" name="MinimumFeedbackScore_flag" onclick="checkData(this)"/>信用指标等于或低于：<select name="BuyerRequirementDetails.MinimumFeedbackScore" disabled="disabled">
+            <div><input type="checkbox" name="MinimumFeedbackScore_flag" onclick="checkData(this)"/>信用指标等于或低于：<div class="ui-select" style="width:4px;"><select  style="width:100px;" name="BuyerRequirementDetails.MinimumFeedbackScore" disabled="disabled">
                 <option value="-1">-1</option>
                 <option value="-2">-2</option>
                 <option value="-3">-3</option>
-            </select></div>
-            <div><input type="checkbox" name="MaximumItemCount_flag" onclick="checkData(this)"/>在过去10天内曾出价或购买我的物品，已达到我所设定的限制 <select name="BuyerRequirementDetails.MaximumItemRequirements.MaximumItemCount" disabled="disabled">
+            </select></div></div>
+            <div><input type="checkbox" name="MaximumItemCount_flag" onclick="checkData(this)"/>在过去10天内曾出价或购买我的物品，已达到我所设定的限制 <div class="ui-select" style="width:4px;"><select name="BuyerRequirementDetails.MaximumItemRequirements.MaximumItemCount" style="width:100px;" disabled="disabled">
                 <option value="1">1</option>
                 <option value="2">2</option>
                 <option value="3">3</option>
@@ -564,36 +791,43 @@ setTimeout(function(){
                 <option value="50">50</option>
                 <option value="75">75</option>
                 <option value="100">100</option>
-            </select></div>
-            <div style="margin-left: 15px;"><input type="checkbox" name="FeedbackScore_falg" onclick="checkData(this)"/>这项限制只适用于买家信用指数等于或低于 <select name="BuyerRequirementDetails.MaximumItemRequirements.MinimumFeedbackScore" disabled="disabled">
+            </select></div></div>
+            <div style="margin-left: 15px;"><input type="checkbox" name="FeedbackScore_falg" onclick="checkData(this)"/>这项限制只适用于买家信用指数等于或低于 <div class="ui-select" style="width:4px;"><select name="BuyerRequirementDetails.MaximumItemRequirements.MinimumFeedbackScore" style="width:100px;" disabled="disabled">
                 <option value="5">5</option>
                 <option value="4">4</option>
                 <option value="3">3</option>
                 <option value="2">2</option>
                 <option value="1">1</option>
                 <option value="0">0</option>
-            </select></div>
+            </select></div></div>
         </div>
     </td>
 </tr>
-<tr id="SKU" style="display: none;">
-    <td>SKU</td>
-    <td><input type="text" name="SKU" class="validate[required]" value="${item.SKU}"></td>
+<tr id="SKU" style="display: none;border-bottom: 1px solid #e5e5e5;">
+    <td style="width: 20px;text-align: right;padding-right: 20px;">SKU</td>
+    <td><input type="text" name="SKU" class="validate[required] form-control" value="${item.SKU}"></td>
 </tr>
-<tr id="PrimaryCategory" style="display: none;">
-    <td>分类</td>
+<tr id="PrimaryCategory" style="display: none;height: 32px;border-bottom: 1px solid #e5e5e5;" >
+    <td style="width: 20px;text-align: right;padding-right: 20px;">分类</td>
     <td>
-        <input type="text" id="PrimaryCategory.categoryID" name="PrimaryCategory.CategoryId" value="${item.primaryCategory.categoryID}">
-        <a href="javascript:void(0)" onclick="selectType()">请选择</a>
-        <br/>
+        <div style="display: inline-block;">
+        <div class="new_left">
+            <input type="text" id="PrimaryCategory.categoryID" name="PrimaryCategory.CategoryId" class="form-control" value="${item.primaryCategory.categoryID}">
+        <%--<a href="javascript:void(0)" onclick="selectType()">请选择</a>--%>
+            <b class="new_button"><a data-toggle="modal" href="javascript:void(0)" onclick="selectType()">选择分类</a></b>
+        </div>
+        </br>
         <div id="PrimaryCategoryshow">
         </div>
+        </div>
     </td>
 </tr>
-<tr id="ConditionID" style="display: none;">
-    <td>物品状况</td>
+<tr id="ConditionID" style="display: none;border-bottom: 1px solid #e5e5e5;">
+    <td style="width: 20px;text-align: right;padding-right: 20px;">物品状况</td>
     <td>
-        <select name="ConditionID">
+
+        <div class="ui-select">
+        <select name="ConditionID" style="width:300px;">
             <option selected="selected" value="1000">New</option>
             <option value="1500">New other (see details)</option>
             <option value="2000">Manufacturer refurbished</option>
@@ -601,37 +835,41 @@ setTimeout(function(){
             <option value="3000">Used</option>
             <option value="7000">For parts or not working</option>
         </select>
+        </div>
     </td>
 </tr>
-<tr id="Location" style="display: none;">
-    <td>物品所在地</td>
+<tr id="Location" style="display: none;border-bottom: 1px solid #e5e5e5;">
+    <td style="width: 20px;text-align: right;padding-right: 20px;">物品所在地</td>
     <td>
-        <table>
+        <table width="100%">
             <tr>
-                <td>物品所在地:</td>
-                <td><input type="text" name="Location" value="${item.location}"></td>
+                <td style="text-align: right;width: 120px;">物品所在地:</td>
+                <td><input type="text" name="Location" class="form-control" value="${item.location}"></td>
             </tr>
             <tr>
-                <td>国家:</td>
+                <td style="text-align: right">国家:</td>
                 <td>
-                    <select name="Country">
+                    <div class="ui-select">
+                    <select name="Country" style="width:300px;">
                         <c:forEach items="${countryList}" var="countryList">
                             <option value="${countryList.value}">${countryList.name}</option>
                         </c:forEach>
                     </select>
+                    </div>
                 </td>
             </tr>
             <tr>
-                <td>邮编:</td>
-                <td><input type="text" name="PostalCode" value="${item.postalCode}"></td>
+                <td style="text-align: right">邮编:</td>
+                <td><input type="text" name="PostalCode" class="form-control" value="${item.postalCode}"></td>
             </tr>
         </table>
     </td>
 </tr>
-<tr id="DispatchTimeMax" style="display: none;">
-    <td>处理时间</td>
+<tr id="DispatchTimeMax" style="display: none;border-bottom: 1px solid #e5e5e5;">
+    <td style="width: 20px;text-align: right;padding-right: 20px;">处理时间</td>
     <td>
-        <select name="DispatchTimeMax">
+        <div class="ui-select">
+        <select name="DispatchTimeMax" style="width:300px;">
             <option value="0">0</option>
             <option value="1">1</option>
             <option value="2">2</option>
@@ -643,17 +881,19 @@ setTimeout(function(){
             <option value="20">20</option>
             <option value="30">30</option>
         </select>
+        </div>
         工作日<input type="checkbox" name="GetItFast" value="1">快速寄货
     </td>
 </tr>
-<tr id="PrivateListing" style="display: none;">
-    <td>私人拍买</td>
+<tr id="PrivateListing" style="display: none;border-bottom: 1px solid #e5e5e5;">
+    <td style="width: 20px;text-align: right;padding-right: 20px;">私人拍买</td>
     <td><input type="checkbox" name="PrivateListing" value="1"></td>
 </tr>
-<tr id="ListingDuration" style="display: none;">
-    <td>刊登天数</td>
+<tr id="ListingDuration" style="display: none;border-bottom: 1px solid #e5e5e5;">
+    <td style="width: 20px;text-align: right;padding-right: 20px;">刊登天数</td>
     <td>
-        <select name="ListingDuration">
+        <div class="ui-select">
+        <select name="ListingDuration" style="width:300px;">
             <option value="GTC">GTC</option>
             <option value="Days_1">1</option>
             <option value="Days_3">3</option>
@@ -661,12 +901,13 @@ setTimeout(function(){
             <option value="Days_7">7</option>
             <option value="Days_10">10</option>
         </select>
+        </div>
     </td>
 </tr>
-<tr id="ShippingDetails" style="display: none;">
-    <td>运输选项</td>
+<tr id="ShippingDetails" style="display: none;border-bottom: 1px solid #e5e5e5;">
+    <td style="width: 20px;text-align: right;padding-right: 20px;">运输选项</td>
     <td>
-        <table>
+        <table width="95%">
             <tr>
                 <td colspan="2">
                     <br/>
@@ -676,10 +917,10 @@ setTimeout(function(){
             </tr>
             <tr>
                 <td colspan="2">
-                    <table id="shippingMore">
+                    <table id="shippingMore" width="100%">
                     </table>
-                    <a href="javascript:void(0)" onclick="addShippingDetial(this)">添加</a>
-                    <a href="javascript:void(0)" id="del" style="display: none;" onclick="deleteShippingDetial(this)">删除</a>
+                    <a href="javascript:void(0)" onclick="addShippingDetial(this)" style="color: #08c;">添加</a>
+                    <a href="javascript:void(0)" id="del" style="display: none;color: #08c;" onclick="deleteShippingDetial(this)">删除</a>
                 </td>
             </tr>
             <tr>
@@ -691,20 +932,23 @@ setTimeout(function(){
             </tr>
             <tr>
                 <td colspan="2">
-                    <table id="inter">
+                    <table id="inter" width="100%">
                     </table>
-                    <a href="javascript:void(0)" onclick="addShippingDetialInter(this)">添加</a>
-                    <a href="javascript:void(0)" id="delinter" style="display: none;" onclick="deleteShippingDetialInter(this)">删除</a>
+                    <a href="javascript:void(0)" onclick="addShippingDetialInter(this)" style="color: #08c;">添加</a>
+                    <a href="javascript:void(0)" id="delinter" style="display: none;color: #08c;" onclick="deleteShippingDetialInter(this)">删除</a>
                 </td>
             </tr>
             <tr>
                 <td align="right">不运送国家</td>
                 <td>
-                    <select name="selecttype" onchange="selectLocation(this)">
+                    <div class="ui-select">
+                    <select name="selecttype" onchange="selectLocation(this)" style="width:300px;">
                         <option selected="selected" value="0">运输至所有国家</option>
                         <option value="1">使用 eBay 站点设置</option>
                         <option value="2">选择不运送地区</option>
                     </select>
+                        </div>
+
                 </td>
             </tr>
             <tr>
@@ -720,8 +964,8 @@ setTimeout(function(){
 </tr>
 </table>
 </div>
-<div class="modal-footer">
-    <button type="button" onclick="nextShows(this)" id="nextShow" class="net_put">下一步</button>
+<div class="modal-footer" style="border-top: 0px #e5e5e5;">
+    <button type="button" onclick="next(this)" id="nextShow" class="net_put">下一步</button>
     <button type="button"  onclick="previousShows(this)" id="previousShow" style="display: none;" class="net_put">上一步</button>
     <button type="button" class="net_put_1" data-dismiss="modal" onclick="closeWin()">关闭</button>
 </div>
@@ -744,7 +988,7 @@ setTimeout(function(){
     var par="";
     function createNoLocationList(){
         var api = frameElement.api, W = api.opener;
-        par = $.dialog({title: '不运送地选项',
+        par = openMyDialog({title: '不运送地选项',
             content: 'url:/xsddWeb/locationList.do',
             icon: 'succeed',
             width:800,
@@ -809,58 +1053,65 @@ setTimeout(function(){
         //用于国内运输选项
         var cont= getCount("moreTable");
         var tables = "";
-        tables +=' <table name="moreTable">';
+        tables +=' <table name="moreTable" style="90%">';
         tables +=' <tr> ';
         tables +=' <td colspan="2">第'+cont+'运输</td> ';
         tables +=' </tr> ';
         tables +=' <tr> ';
-        tables +=' <td align="right"  width="200">运输方式</td> ';
+        tables +=' <td align="right"  width="120">运输方式</td> ';
         tables +=' <td> ';
-        tables +=' <select name="ShippingService" shortName="a1"> ';
+        tables +=' <div class="ui-select" style="width: 560px;"><select style="width: 560px;" name="ShippingService" shortName="a1"> ';
         if(shippingService!=""){
             tables +=shippingService;
         }
-        tables +=' </select> ';
+        tables +=' </select> </div>';
         tables +=' </td> ';
         tables +=' </tr> ';
         tables +=' <tr> ';
         tables +=' <td align="right">运费</td> ';
         tables +=' <td> ';
-        tables +=' <input type="text" name="ShippingServiceCost.value" value="'+obj2+'" id="numberShippingServiceCost"> ';
+        tables +=' <input type="text"  onkeypress="return inputNUMAndPoint(event,this,2)" name="ShippingServiceCost.value" value="'+obj2+'" class="form-control" id="numberShippingServiceCost"> ';
         if(obj3=="true"){
-            tables +=' <input type="checkbox" name="FreeShipping" value="true" checked> 免费 ';
+            tables +=' <input type="checkbox" name="FreeShipping" value="true" checked onclick="shippingfee(this)"> 免费 ';
         }else{
-            tables +=' <input type="checkbox" name="FreeShipping" value="true"> 免费 ';
+            tables +=' <input type="checkbox" name="FreeShipping" value="true" onclick="shippingfee(this)"> 免费 ';
         }
         tables +=' </td> ';
         tables +=' </tr> ';
         tables +=' <tr> ';
         tables +=' <td align="right">额外每件加收</td> ';
         tables +=' <td> ';
-        tables +=' <input type="text" name="ShippingServiceAdditionalCost.value" value="'+obj4+'" id="numberShippingServiceAdditionalCost"> ';
+        tables +=' <input type="text" onkeypress="return inputNUMAndPoint(event,this,2)" name="ShippingServiceAdditionalCost.value"  class="form-control" value="'+obj4+'" id="numberShippingServiceAdditionalCost"> ';
         tables +=' </td> ';
         tables +=' </tr> ';
         tables +=' <tr> ';
         tables +=' <td align="right">AK,HI,PR 额外收费</td> ';
         tables +=' <td> ';
-        tables +=' <input type="text" name="ShippingSurcharge.value" value="'+obj5+'" id="numberShippingSurcharge"> ';
+        tables +=' <input type="text" onkeypress="return inputNUMAndPoint(event,this,2)" name="ShippingSurcharge.value" value="'+obj5+'"  class="form-control" id="numberShippingSurcharge"> ';
         tables +=' </td> ';
         tables +=' </tr> ';
         tables +=' </table> ';
         return tables;
     }
+    function shippingfee(obj){
+        if($(obj).prop("checked")){
+            $(obj).parent().parent().parent().find("input[type='text']").val("0");
+        }else{
+            $(obj).parent().parent().parent().find("input[type='text']").val("");
+        }
+    }
     function createInterTables(obj1,obj2,obj3){
         //用于国际运输选项
         var cont= getCount("interMoreTable");
         var intertable = "";
-        intertable +=' <table name="interMoreTable">';
+        intertable +=' <table name="interMoreTable" width="100%">';
         intertable +=' <tr> ';
         intertable +=' <td colspan="2">第'+cont+'运输</td> ';
         intertable +=' </tr> ';
         intertable +=' <tr> ';
-        intertable +=' <td align="right" width="200">运输方式</td> ';
+        intertable +=' <td align="right" style="width: 120px;">运输方式</td> ';
         intertable +=' <td> ';
-        intertable +=' <select name="ShippingService"> ';
+        intertable +=' <div class="ui-select" style="width: 560px;"><select name="ShippingService" style="width: 560px;"> ';
         intertable +=' <optgroup label="Expedited services">';
         <c:forEach var="inter1" items="${inter1}">
         if(obj1=='${inter1.value}'){
@@ -885,14 +1136,14 @@ setTimeout(function(){
         intertable +=' <tr> ';
         intertable +=' <td align="right">运费</td> ';
         intertable +=' <td> ';
-        intertable +=' <input type="text" name="ShippingServiceCost.value" value="'+obj2+'" id="numberShippingServiceCost2"> ';
+        intertable +=' <input type="text" onkeypress="return inputNUMAndPoint(event,this,2)" class="form-control" name="ShippingServiceCost.value" value="'+obj2+'" id="numberShippingServiceCost2"> ';
         //intertable +=' <input type="checkbox" name="isFee"> 免费 ';
         intertable +=' </td> ';
         intertable +=' </tr> ';
         intertable +=' <tr> ';
         intertable +=' <td align="right">额外每件加收</td> ';
         intertable +=' <td> ';
-        intertable +=' <input type="text" name="ShippingServiceAdditionalCost.value" value="'+obj3+'" id="numberShippingServiceAdditionalCost2"> ';
+        intertable +=' <input type="text" onkeypress="return inputNUMAndPoint(event,this,2)" class="form-control" name="ShippingServiceAdditionalCost.value" value="'+obj3+'" id="numberShippingServiceAdditionalCost2"> ';
         intertable +=' </td> ';
         intertable +=' </tr> ';
         intertable +=' <tr> ';

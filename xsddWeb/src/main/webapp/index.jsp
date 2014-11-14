@@ -26,65 +26,65 @@
     <section class='example'>
         <div class='gridly'>
             <div class='brick small'>
-                <a class='delete' href='#'>&times;</a>
+                <a class='delete' href='javascript:void(0)'>&times;</a>
             </div>
             <div class='brick small'>
-                <a class='delete' href='#'>&times;</a>
+                <a class='delete' href='javascript:void(0)'>&times;</a>
             </div>
             <div class='brick small'>
-                <a class='delete' href='#'>&times;</a>
+                <a class='delete' href='javascript:void(0)'>&times;</a>
             </div>
             <div class='brick small'>
-                <a class='delete' href='#'>&times;</a>
+                <a class='delete' href='javascript:void(0)'>&times;</a>
             </div>
             <div class='brick small'>
-                <a class='delete' href='#'>&times;</a>
+                <a class='delete' href='javascript:void(0)'>&times;</a>
             </div>
             <div class='brick small'>
-                <a class='delete' href='#'>&times;</a>
+                <a class='delete' href='javascript:void(0)'>&times;</a>
             </div>
             <div class='brick small'>
-                <a class='delete' href='#'>&times;</a>
+                <a class='delete' href='javascript:void(0)'>&times;</a>
             </div>
             <div class='brick small'>
-                <a class='delete' href='#'>&times;</a>
+                <a class='delete' href='javascript:void(0)'>&times;</a>
             </div>
             <div class='brick small'>
-                <a class='delete' href='#'>&times;</a>
+                <a class='delete' href='javascript:void(0)'>&times;</a>
             </div>
             <div class='brick small'>
-                <a class='delete' href='#'>&times;</a>
+                <a class='delete' href='javascript:void(0)'>&times;</a>
             </div>
             <div class='brick small'>
-                <a class='delete' href='#'>&times;</a>
+                <a class='delete' href='javascript:void(0)'>&times;</a>
             </div>
             <div class='brick small'>
-                <a class='delete' href='#'>&times;</a>
+                <a class='delete' href='javascript:void(0)'>&times;</a>
             </div>
             <div class='brick small'>
-                <a class='delete' href='#'>&times;</a>
+                <a class='delete' href='javascript:void(0)'>&times;</a>
             </div>
             <div class='brick small'>
-                <a class='delete' href='#'>&times;</a>
+                <a class='delete' href='javascript:void(0)'>&times;</a>
             </div>
             <div class='brick small'>
-                <a class='delete' href='#'>&times;</a>
+                <a class='delete' href='javascript:void(0)'>&times;</a>
             </div>
             <div class='brick small'>
-                <a class='delete' href='#'>&times;</a>
+                <a class='delete' href='javascript:void(0)'>&times;</a>
             </div>
             <div class='brick small'>
-                <a class='delete' href='#'>&times;</a>
+                <a class='delete' href='javascript:void(0)'>&times;</a>
             </div>
             <div class='brick small'>
-                <a class='delete' href='#'>&times;</a>
+                <a class='delete' href='javascript:void(0)'>&times;</a>
             </div>
             <div class='brick small'>
-                <a class='delete' href='#'>&times;</a>
+                <a class='delete' href='javascript:void(0)'>&times;</a>
             </div>
             <div class='brick small'>
                 <div>dgf</div>
-                <a class='delete' href='#'>&times;</a>
+                <a class='delete' href='javascript:void(0)'>&times;</a>
             </div>
         </div>
     </section>

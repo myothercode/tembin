@@ -96,6 +96,9 @@
                 var result = json.result;
                 $("#templateId").val(result.templateId);
                 $("#templateUrl").prop("src", result.templateUrl);
+                showTemPic();
+            }else{
+                hiddenTemPic();
             }
             $("#picDivShow").show();
             $().image_editor.init("picUrls"); //编辑器的实例id
@@ -353,6 +356,7 @@
                 </c:forEach>
             </select>
         </div>--%>
+        <em style="color:#48a5f3"><input type="checkbox" name="OutOfStockControl" value="1" checked>是否开启无货在线</em>
     </li>
     <li>
         <dt>SKU</dt>
@@ -362,10 +366,6 @@
             <b class="new_button"><a data-toggle="modal" href="javascript:void(0)"
                                      onclick="selectProduct()">选择产品</a></b>
         </div>
-    </li>
-    <li>
-        <dt>无货在线</dt>
-        <em style="color:#48a5f3"><input type="checkbox" name="OutOfStockControl" value="1" checked>是否开启无货在线</em>
     </li>
 
     <div id="titleDiv">
@@ -471,10 +471,13 @@
     <li style="height: 100%;padding-top: 10px;">
         <div  style="display: block;" id="template">
             <dt>模板</dt>
-            <div class="new_left">
-                <div id="showTemplate">
+            <div class="new_left" id="temPicImg">
+                <div id="showTemplate" style="position: relative;">
                     <input type="hidden" id="templateId" name="templateId" value="${ttit.id}">
-                    <img src="" width="200px" height="200px" id="templateUrl" onerror="this.src=''">
+                    <img src="" width="100px" height="100px" id="templateUrl" onerror="this.src=''">
+                    <div style="text-align: right;background-color: dimgrey;width: 100px;">
+                        <img src="/xsddWeb/img/newpic_ico.png" onclick="hiddenTemPic(this)">
+                    </div>
                 </div>
                 <b class="new_button"><a href="javascript:void(0)" onclick="selectTemplate(this)">选择模板</a></b>
             </div>

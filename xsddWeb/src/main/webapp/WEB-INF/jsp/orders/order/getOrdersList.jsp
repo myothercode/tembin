@@ -25,10 +25,11 @@
                     {title:"",name:"ch",width:"2%",align:"top",format:makeOption5},
                     {title:"订单号 / 源订单号",name:"orderid",width:"8%",align:"left",format:makeOption2},
                     {title:"物品 / SKU / 承运商 / 追踪号",name:"orderid",width:"13%",align:"left",format:makeOption3},
-                    {title:"站点",name:"itemSite",width:"8%",align:"left"},
+                    {title:"站点",name:"itemSite",width:"8%",align:"left",format:makeOption20},
                     {title:"售价",name:"itemUrl",width:"8%",align:"left",format:makeOption6},
                     {title:"售出日期",name:"createdtime",width:"8%",align:"left"},
                     {title:"发货日期",name:"shippedtime",width:"8%",align:"left"},
+                    {title:"EBAY账号",name:"selleruserid",width:"8%",align:"left"},
                     {title:"状态",name:"shipped",width:"3%",align:"left",format:makeOption4},
                     {title:"操作",name:"option1",width:"8%",align:"left",format:makeOption1}
                 ],
@@ -36,16 +37,17 @@
                 isrowClick:false,
                 showIndex:false
             });
-            $("#OrderGetOrdersListTable2").initTable({
+           /* $("#OrderGetOrdersListTable2").initTable({
                 url:path + "/order/ajax/loadOrdersList.do?status=Incomplete",
                 columnData:[
                     {title:"",name:"ch",width:"2%",align:"top",format:makeOption5},
                     {title:"订单号 / 源订单号",name:"orderid",width:"8%",align:"left",format:makeOption2},
                     {title:"物品 / SKU / 承运商 / 追踪号",name:"orderid",width:"13%",align:"left",format:makeOption3},
-                    {title:"站点",name:"itemSite",width:"8%",align:"left"},
+                    {title:"站点",name:"itemSite",width:"8%",align:"left",format:makeOption20},
                     {title:"售价",name:"itemUrl",width:"8%",align:"left",format:makeOption6},
                     {title:"售出日期",name:"createdtime",width:"8%",align:"left"},
                     {title:"发货日期",name:"shippedtime",width:"8%",align:"left"},
+                    {title:"EBAY账号",name:"selleruserid",width:"8%",align:"left"},
                     {title:"状态",name:"shipped",width:"3%",align:"left",format:makeOption4},
                     {title:"操作",name:"option1",width:"8%",align:"left",format:makeOption1}
                 ],
@@ -59,10 +61,11 @@
                     {title:"",name:"ch",width:"2%",align:"top",format:makeOption5},
                     {title:"订单号 / 源订单号",name:"orderid",width:"8%",align:"left",format:makeOption2},
                     {title:"物品 / SKU / 承运商 / 追踪号",name:"orderid",width:"13%",align:"left",format:makeOption3},
-                    {title:"站点",name:"itemSite",width:"8%",align:"left"},
+                    {title:"站点",name:"itemSite",width:"8%",align:"left",format:makeOption20},
                     {title:"售价",name:"itemUrl",width:"8%",align:"left",format:makeOption6},
                     {title:"售出日期",name:"createdtime",width:"8%",align:"left"},
                     {title:"发货日期",name:"shippedtime",width:"8%",align:"left"},
+                    {title:"EBAY账号",name:"selleruserid",width:"8%",align:"left"},
                     {title:"状态",name:"shipped",width:"3%",align:"left",format:makeOption4},
                     {title:"操作",name:"option1",width:"8%",align:"left",format:makeOption1}
                 ],
@@ -76,21 +79,22 @@
                     {title:"",name:"ch",width:"2%",align:"top",format:makeOption5},
                     {title:"订单号 / 源订单号",name:"orderid",width:"8%",align:"left",format:makeOption2},
                     {title:"物品 / SKU / 承运商 / 追踪号",name:"orderid",width:"13%",align:"left",format:makeOption3},
-                    {title:"站点",name:"itemSite",width:"8%",align:"left"},
+                    {title:"站点",name:"itemSite",width:"8%",align:"left",format:makeOption20},
                     {title:"售价",name:"itemUrl",width:"8%",align:"left",format:makeOption6},
                     {title:"售出日期",name:"createdtime",width:"8%",align:"left"},
                     {title:"发货日期",name:"shippedtime",width:"8%",align:"left"},
+                    {title:"EBAY账号",name:"selleruserid",width:"8%",align:"left"},
                     {title:"状态",name:"shipped",width:"3%",align:"left",format:makeOption4},
                     {title:"操作",name:"option1",width:"8%",align:"left",format:makeOption1}
                 ],
                 selectDataNow:false,
                 isrowClick:false,
                 showIndex:false
-            });
+            });*/
             refreshTable1();
-            refreshTable2();
+           /* refreshTable2();
             refreshTable3();
-            refreshTable4();
+            refreshTable4();*/
             var lllll=0;
             var con="#con_menu_";
             var menu="";
@@ -98,12 +102,11 @@
                 lllll=${status.count+4};
                 menu=${status.count+4};
                 setTab1('menu',${status.index+5},${status.count+4});
-            /*<dt id="menu${status.index+5}" name="${folders[status.index].id}" class="new_tab_2" onclick="setTab1('menu',${status.index+5},${status.count+4})">${folders[status.index].configName}</dt>*/
+            /**//*<dt id="menu${status.index+5}" name="${folders[status.index].id}" class="new_tab_2" onclick="setTab1('menu',${status.index+5},${status.count+4})">${folders[status.index].configName}</dt>*//**/
             </c:forEach>
-            $("#OrderGetOrdersListTable"+lllll).selectDataAfterSetParm({"bedDetailVO.deptId":"", "isTrue":0});
-            setTab('menu',1,4);
+          /*  setTab('menu',1,4);
             $(con+lllll).attr("style","display: none;")
-            $("#menu"+menu).attr("class","new_tab_2");
+            $("#menu"+menu).attr("class","new_tab_2");*/
         });
 
         function refreshTable1(){
@@ -127,23 +130,26 @@
             var htm1="|<a target=\"_blank\" href=\"javascript:void(0)\" onclick=\"modifyOrderStatus('"+json.transactionid+"');\">修改发货状态</a>";*/
             /*var htm="<div class=\"ui-select\" style=\"width:106px\" >" +
             "<select onchange=\"selectOperation('"+json.orderid+"','"+json.transactionid+"','"+json.selleruserid+"',this); \" name=\"ui-select\" style=\"margin-left:-3px;\">" +
-                    "<option value=\"0\"><a href=\"javascript:#\">--请选择--</a></option>" +
-                    "<option value=\"1\"><a href=\"javascript:#\">查看详情</a></option>" +
-                    "<option value=\"2\"><a href=\"javascript:#\">修改发货状态</a></option>" +
-                    "<option value=\"3\"><a href=\"javascript:#\">发送消息</a></option>" +
-                    "<option value=\"4\"><a href=\"javascript:#\">退款功能</a></option>" +
+                    "<option value=\"0\"><a href=\"javascript:void(0)\">--请选择--</a></option>" +
+                    "<option value=\"1\"><a href=\"javascript:void(0)\">查看详情</a></option>" +
+                    "<option value=\"2\"><a href=\"javascript:void(0)\">修改发货状态</a></option>" +
+                    "<option value=\"3\"><a href=\"javascript:void(0)\">发送消息</a></option>" +
+                    "<option value=\"4\"><a href=\"javascript:void(0)\">退款功能</a></option>" +
             "</select>" +
             "</div>";*/
             var hs="";
-            hs="<li style=\"height:25px;\"  onclick=selectOperation('"+json.orderid+"','"+json.transactionid+"','"+json.selleruserid+"',this); value='1' doaction=\"readed\" >查看详情</li>";
-            hs+="<li style=\"height:25px;\"  onclick=selectOperation('"+json.orderid+"','"+json.transactionid+"','"+json.selleruserid+"',this); value='2' doaction=\"look\" >修改状态</li>";
-            hs+="<li style=\"height:25px;\"  onclick=selectOperation('"+json.orderid+"','"+json.transactionid+"','"+json.selleruserid+"',this); value='3' doaction=\"look\" >发送消息</li>";
-            hs+="<li style=\"height:25px;\"  onclick=selectOperation('"+json.orderid+"','"+json.transactionid+"','"+json.selleruserid+"',this); value='4' doaction=\"look\" >退款功能</li>";
+            hs="<li style=\"height:25px;\"  onclick=selectOperation('"+json.orderid+"','"+json.transactionid+"','"+json.selleruserid+"',this,'"+json.id+"'); value='1' doaction=\"readed\" >查看详情</li>";
+            hs+="<li style=\"height:25px;\"  onclick=selectOperation('"+json.orderid+"','"+json.transactionid+"','"+json.selleruserid+"',this,'"+json.id+"'); value='2' doaction=\"look\" >上传跟踪</li>";
+            hs+="<li style=\"height:25px;\"  onclick=selectOperation('"+json.orderid+"','"+json.transactionid+"','"+json.selleruserid+"',this,'"+json.id+"'); value='3' doaction=\"look\" >发送消息</li>";
+            hs+="<li style=\"height:25px;\"  onclick=selectOperation('"+json.orderid+"','"+json.transactionid+"','"+json.selleruserid+"',this,'"+json.id+"'); value='4' doaction=\"look\" >退款功能</li>";
+            hs+="<li style=\"height:25px;\"  onclick=selectOperation('"+json.orderid+"','"+json.transactionid+"','"+json.selleruserid+"',this,'"+json.id+"'); value='5' doaction=\"look\" >添加备注</li>";
+            hs+="<li style=\"height:25px;\"  onclick=selectOperation('"+json.orderid+"','"+json.transactionid+"','"+json.selleruserid+"',this,'"+json.id+"'); value='6' doaction=\"look\" >删除</li>";
+            hs+="<li style=\"height:25px;\"  onclick=selectOperation('"+json.orderid+"','"+json.transactionid+"','"+json.selleruserid+"',this,'"+json.id+"'); value='7' doaction=\"look\" >查看日志</li>";
             var pp={"liString":hs};
             return getULSelect(pp);
            /* return htm;*/
         }
-        function selectOperation(orderid,transactionid,selleruserid,obj){
+        function selectOperation(orderid,transactionid,selleruserid,obj,id){
             var value=$(obj).val();
             if(value=="1"){
                 viewOrder(orderid,transactionid,selleruserid);
@@ -157,11 +163,45 @@
             if(value=="4"){
                 issueRefund(transactionid,selleruserid);
             }
+            if(value=="5"){
+                addComment1(id);
+            }
+            if(value=="6"){
+                deleteOrder(id,obj);
+            }
+            if(value=="7"){
+                viewSystemlog();
+            }
 
+        }
+        function viewSystemlog(){
+            var url=path+'/order/viewSystemlog.do?';
+            OrderGetOrders=openMyDialog({title: '查看日志',
+                content: 'url:'+url,
+                icon: 'succeed',
+                width:1200,
+                lock:true
+            });
+        }
+        function deleteOrder(id,obj){
+            var url = path + "/order/deleteOrder.do?id="+id;
+            $().invoke(url, null,
+                    [function (m, r) {
+                        alert(r);
+                        var div=$(obj).parent().parent().parent().parent().parent().parent().parent().parent();
+                        var table=$(div).attr("id");
+                        $("#"+table).selectDataAfterSetParm({"bedDetailVO.deptId":"", "isTrue":0});
+                        Base.token();
+                    },
+                        function (m, r) {
+                            alert(r);
+                            Base.token();
+                        }]
+            );
         }
         function sendMessage(orderid){
             var url=path+'/order/initOrdersSendMessage.do?orderid='+orderid;
-            viewsendMessage=$.dialog({title: '发送消息',
+            viewsendMessage=openMyDialog({title: '发送消息',
                 content: 'url:'+url,
                 icon: 'succeed',
                 width:800,
@@ -171,7 +211,7 @@
         }
         function issueRefund(transactionid,selleruserid){
             var url=path+'/order/initIssueRefund.do?transactionid='+transactionid+'&selleruserid='+selleruserid;
-            viewsendMessage=$.dialog({title: '退款选项',
+            viewsendMessage=openMyDialog({title: '退款选项',
                 content: 'url:'+url,
                 icon: 'succeed',
                 width:600,
@@ -235,11 +275,17 @@
             return htm;
         }
         function makeOption5(json){
-            var htm="<input type='checkbox' id='checkbox' name='checkbox' value='"+json.orderid+"' />";
+            var htm="<input type='checkbox' id='checkbox' name='checkbox' value1='"+json.id+"'  value='"+json.orderid+"' />";
             return htm;
         }
         function makeOption6(json){
-            var htm=json.transactionprice+"USD";
+            var f=parseFloat(json.transactionprice);
+            var f1= f.toFixed(2);
+            var htm=f1+"USD";
+            return htm;
+        }
+        function makeOption20(json){
+            var htm="<img src='"+json.itemSite+"'>";
             return htm;
         }
         function ebayurl(url){
@@ -252,10 +298,11 @@
                 columnData:[
                     {title:"订单号 / 源订单号",name:"pictrue",width:"8%",align:"left",format:makeOption2},
                     {title:"物品 / SKU / 承运商 / 追踪号",name:"orderid",width:"13%",align:"left"},
-                    {title:"站点",name:"itemSite",width:"8%",align:"left"},
+                    {title:"站点",name:"itemSite",width:"8%",align:"left",format:makeOption20},
                     {title:"售价",name:"itemUrl",width:"8%",align:"left",format:makeOption3},
                     {title:"售出日期",name:"buyeruserid",width:"8%",align:"left"},
                     {title:"发货日期",name:"selleruserid",width:"8%",align:"left"},
+                    {title:"EBAY账号",name:"selleruserid",width:"8%",align:"left"},
                     {title:"状态",name:"shipped",width:"3%",align:"left",format:makeOption4},
                     {title:"操作",name:"option1",width:"8%",align:"left",format:makeOption1}
                 ],
@@ -268,7 +315,7 @@
         }
         function viewOrder(id,transactionid,selleruserid){
             var url=path+'/order/viewOrderGetOrders.do?orderid='+id+'&transactionid='+transactionid+'&selleruserid='+selleruserid;
-            OrderGetOrders=$.dialog({title: '查看订单详情',
+            OrderGetOrders=openMyDialog({title: '查看订单详情',
                 content: 'url:'+url,
                 icon: 'succeed',
                 width:1200,
@@ -278,7 +325,7 @@
         }
         function modifyOrderStatus(id,selleruserid){
             var url=path+'/order/modifyOrderStatus.do?transactionid='+id+'&selleruserid='+selleruserid;
-            OrderGetOrders=$.dialog({title: '修改订单状态',
+            OrderGetOrders=openMyDialog({title: '上传跟踪号',
                 content: 'url:'+url,
                 icon: 'succeed',
                 width:700,
@@ -287,7 +334,7 @@
         }
         function getBindParm(){
             var url=path+"/order/GetOrder.do";
-            OrderGetOrders=$.dialog({title: '同步订单',
+            OrderGetOrders=openMyDialog({title: '同步订单',
                 content: 'url:'+url,
                 icon: 'succeed',
                 width:600,
@@ -295,62 +342,67 @@
             });
         }
         function query1(){
-            var daysQ=$("#daysQ").val();
-            var countryQ=$("#countryQ").val();
-            var typeQ=$("#typeQ").val();
+            var daysQ=$("#daysQ1").val();
+            var countryQ=$("#countryQ1").val();
+            var typeQ=$("#typeQ1").val();
             var itemType=$("#itemType1").val();
             var content=$("#content1").val();
             var table="#OrderGetOrdersListTable1";
             var starttime=$("#starttime1").val();
             var endtime=$("#endtime1").val();
-            refreshTable5(table,countryQ,typeQ,daysQ,itemType,content,null,starttime,endtime);
+            var statusQ=$("#statusQ1").val();
+            refreshTable5(table,countryQ,typeQ,daysQ,itemType,content,null,starttime,endtime,statusQ);
         }
         function query2(){
-            var daysQ=$("#daysQ").val();
-            var countryQ=$("#countryQ").val();
-            var typeQ=$("#typeQ").val();
+            var daysQ=$("#daysQ2").val();
+            var countryQ=$("#countryQ2").val();
+            var typeQ=$("#typeQ2").val();
             var itemType=$("#itemType2").val();
             var content=$("#content2").val();
             var table="#OrderGetOrdersListTable2";
             var status="Incomplete";
             var starttime=$("#starttime2").val();
             var endtime=$("#endtime2").val();
-            refreshTable5(table,countryQ,typeQ,daysQ,itemType,content,status,starttime,endtime);
+            var statusQ=$("#statusQ2").val();
+            refreshTable5(table,countryQ,typeQ,daysQ,itemType,content,status,starttime,endtime,statusQ);
         }
         function query3(){
-            var daysQ=$("#daysQ").val();
-            var countryQ=$("#countryQ").val();
-            var typeQ=$("#typeQ").val();
+            var daysQ=$("#daysQ3").val();
+            var countryQ=$("#countryQ3").val();
+            var typeQ=$("#typeQ3").val();
             var itemType=$("#itemType3").val();
             var content=$("#content3").val();
             var table="#OrderGetOrdersListTable3";
             var starttime=$("#starttime3").val();
             var endtime=$("#endtime3").val();
-            refreshTable5(table,countryQ,typeQ,daysQ,itemType,content,"notAllComplete",starttime,endtime);
+            var statusQ=$("#statusQ3").val();
+            refreshTable5(table,countryQ,typeQ,daysQ,itemType,content,"notAllComplete",starttime,endtime,statusQ);
         }
         function query4(){
-            var daysQ=$("#daysQ").val();
-            var countryQ=$("#countryQ").val();
-            var typeQ=$("#typeQ").val();
+            var daysQ=$("#daysQ4").val();
+            var countryQ=$("#countryQ4").val();
+            var typeQ=$("#typeQ4").val();
             var itemType=$("#itemType4").val();
             var content=$("#content4").val();
             var table="#OrderGetOrdersListTable4";
             var status="Complete";
             var starttime=$("#starttime4").val();
             var endtime=$("#endtime4").val();
-            refreshTable5(table,countryQ,typeQ,daysQ,itemType,content,status,starttime,endtime);
+            var statusQ=$("#statusQ4").val();
+            refreshTable5(table,countryQ,typeQ,daysQ,itemType,content,status,starttime,endtime,statusQ);
         }
-        function refreshTable5(table,countryQ,typeQ,daysQ,itemType,content,status,starttime,endtime){
+        function refreshTable5(table,countryQ,typeQ,daysQ,itemType,content,status,starttime,endtime,statusQ){
             $(table).initTable({
                 url:path + "/order/ajax/loadOrdersList.do?",
                 columnData:[
                     {title:"",name:"ch",width:"2%",align:"top",format:makeOption5},
                     {title:"订单号 / 源订单号",name:"orderid",width:"8%",align:"left",format:makeOption2},
                     {title:"物品 / SKU / 承运商 / 追踪号",name:"orderid",width:"13%",align:"left",format:makeOption3},
-                    {title:"站点",name:"itemSite",width:"8%",align:"left"},
+                    {title:"站点",name:"itemSite",width:"8%",align:"left",format:makeOption20},
                     {title:"售价",name:"itemUrl",width:"8%",align:"left",format:makeOption6},
                     {title:"售出日期",name:"createdtime",width:"8%",align:"left"},
                     {title:"发货日期",name:"shippedtime",width:"8%",align:"left"},
+                    {title:"EBAY账号",name:"selleruserid",width:"8%",align:"left"},
                     {title:"状态",name:"shipped",width:"3%",align:"left",format:makeOption4},
                     {title:"操作",name:"option1",width:"8%",align:"left",format:makeOption1}
                 ],
@@ -358,7 +410,7 @@
                 isrowClick:false,
                 showIndex:false
             });
-            $(table).selectDataAfterSetParm({"bedDetailVO.deptId":"", "isTrue":0,"countryQ":countryQ,"typeQ":typeQ,"daysQ":daysQ,"itemType":itemType,"content":content,"status":status,"starttime1":starttime,"endtime1":endtime});
+            $(table).selectDataAfterSetParm({"bedDetailVO.deptId":"", "isTrue":0,"countryQ":countryQ,"typeQ":typeQ,"daysQ":daysQ,"itemType":itemType,"content":content,"status":status,"starttime1":starttime,"endtime1":endtime,"statusQ":statusQ});
             alert("查询成功");
         }
         function queryTime(n,flag,day){
@@ -370,14 +422,82 @@
                /* <input type="hidden" id="countryQ"/>
                             <input type="hidden" id="typeQ"/>
                             <input type="hidden" id="daysQ"/>*/
-                    $("#daysQ").val(day);
+                    $("#daysQ"+n).val(day);
                     $("#starttime"+n).val("");
                     $("#endtime"+n).val("");
                 }else{
                     $(time[i]).attr("class","newusa_ici_1");
                 }
             }
+            if(n==1){
+                query1();
+            }
+            if(n==2){
+                query2();
+            }
+            if(n==3){
+                query3();
+            }
+            if(n==4){
+                query4();
+            }
+            if(n>4){
+                var table=$("#OrderGetOrdersListTable"+n);
+                var daysQ=$("#daysQ"+n).val();
+                var countryQ=$("#countryQ"+n).val();
+                var typeQ=$("#typeQ"+n).val();
+                var itemType=$("#itemType"+n).val();
+                var content=$("#content"+n).val();
+                var folderId=$("#menu"+n).attr("name2");
+                var starttime1=$("#starttime"+n).val();
+                var endtime1=$("#endtime"+n).val();
+                var statusQ=$("#statusQ"+n).val();
+                refreshTable6(table,countryQ,typeQ,daysQ,itemType,content,folderId,starttime1,endtime1,statusQ);
+            }
         }
+        function queryStatus(n,flag,day){
+            var scop="span[scop=queryStatus"+n+"]";
+            var time=$(scop);
+            for(var i=0;i<time.length;i++){
+                if(i==(flag-1)){
+                    $(time[i]).attr("class","newusa_ici");
+                    /* <input type="hidden" id="countryQ"/>
+                     <input type="hidden" id="typeQ"/>
+                     <input type="hidden" id="daysQ"/>*/
+                    $("#statusQ"+n).val(day);
+                    $("#starttime"+n).val("");
+                    $("#endtime"+n).val("");
+                }else{
+                    $(time[i]).attr("class","newusa_ici_1");
+                }
+            }
+            if(n==1){
+                query1();
+            }
+            if(n==2){
+                query2();
+            }
+            if(n==3){
+                query3();
+            }
+            if(n==4){
+                query4();
+            }
+            if(n>4){
+                var table=$("#OrderGetOrdersListTable"+n);
+                var daysQ=$("#daysQ"+n).val();
+                var countryQ=$("#countryQ"+n).val();
+                var typeQ=$("#typeQ"+n).val();
+                var itemType=$("#itemType"+n).val();
+                var content=$("#content"+n).val();
+                var folderId=$("#menu"+n).attr("name2");
+                var starttime1=$("#starttime"+n).val();
+                var endtime1=$("#endtime"+n).val();
+                var statusQ=$("#statusQ"+n).val();
+                refreshTable6(table,countryQ,typeQ,daysQ,itemType,content,folderId,starttime1,endtime1,statusQ);
+            }
+        }
+
         function queryAttr(n,flag,day){
             var scop="span[scop=queryAttr"+n+"]";
             var time=$(scop);
@@ -387,10 +507,35 @@
                     /* <input type="hidden" id="countryQ"/>
                      <input type="hidden" id="typeQ"/>
                      <input type="hidden" id="daysQ"/>*/
-                    $("#typeQ").val(day);
+                    $("#typeQ"+n).val(day);
                 }else{
                     $(time[i]).attr("class","newusa_ici_1");
                 }
+            }
+            if(n==1){
+                query1();
+            }
+            if(n==2){
+                query2();
+            }
+            if(n==3){
+                query3();
+            }
+            if(n==4){
+                query4();
+            }
+            if(n>4){
+                var table=$("#OrderGetOrdersListTable"+n);
+                var daysQ=$("#daysQ"+n).val();
+                var countryQ=$("#countryQ"+n).val();
+                var typeQ=$("#typeQ"+n).val();
+                var itemType=$("#itemType"+n).val();
+                var content=$("#content"+n).val();
+                var folderId=$("#menu"+n).attr("name2");
+                var starttime1=$("#starttime"+n).val();
+                var endtime1=$("#endtime"+n).val();
+                var statusQ=$("#statusQ"+n).val();
+                refreshTable6(table,countryQ,typeQ,daysQ,itemType,content,folderId,starttime1,endtime1,statusQ);
             }
         }
         function queryCountry(n,flag,day){
@@ -402,10 +547,35 @@
                     /* <input type="hidden" id="countryQ"/>
                      <input type="hidden" id="typeQ"/>
                      <input type="hidden" id="daysQ"/>*/
-                    $("#countryQ").val(day);
+                    $("#countryQ"+n).val(day);
                 }else{
                     $(time[i]).attr("class","newusa_ici_1");
                 }
+            }
+            if(n==1){
+                query1();
+            }
+            if(n==2){
+                query2();
+            }
+            if(n==3){
+                query3();
+            }
+            if(n==4){
+                query4();
+            }
+            if(n>4){
+                    var table=$("#OrderGetOrdersListTable"+n);
+                    var daysQ=$("#daysQ"+n).val();
+                    var countryQ=$("#countryQ"+n).val();
+                    var typeQ=$("#typeQ"+n).val();
+                    var itemType=$("#itemType"+n).val();
+                    var content=$("#content"+n).val();
+                    var folderId=$("#menu"+n).attr("name2");
+                    var starttime1=$("#starttime"+n).val();
+                    var endtime1=$("#endtime"+n).val();
+                    var statusQ=$("#statusQ"+n).val();
+                    refreshTable6(table,countryQ,typeQ,daysQ,itemType,content,folderId,starttime1,endtime1,statusQ);
             }
         }
         function downloadOrders(n){
@@ -421,28 +591,37 @@
         }
         function addTabRemark(){
             var url=path+"/order/selectTabRemark.do?folderType=orderFolder";
-            OrderGetOrders=$.dialog({title: '选择文件夹',
+            OrderGetOrders=openMyDialog({title: '选择文件夹',
                 content: 'url:'+url,
                 icon: 'succeed',
-                width:800,
+                width:500,
                 lock:true
             });
         }
-    function addComment(i){
-        var table="#OrderGetOrdersListTable"+i;
-        var checkboxs=$(table).find("input[name=checkbox]:checked");
-        if(checkboxs&&checkboxs.length==1){
-            var url=path+"/order/addComment.do?orderid="+checkboxs.val();
-            OrderGetOrders=$.dialog({title: '添加备注',
+        function addComment(i){
+            var table="#OrderGetOrdersListTable"+i;
+            var checkboxs=$(table).find("input[name=checkbox]:checked");
+            if(checkboxs&&checkboxs.length==1){
+                var url=path+"/order/addComment.do?id="+checkboxs.attr("value1");
+                OrderGetOrders=openMyDialog({title: '添加备注',
+                    content: 'url:'+url,
+                    icon: 'succeed',
+                    width:600,
+                    lock:true
+                });
+            }else{
+                alert("请选择一个需要添加备注的订单");
+            }
+        }
+        function addComment1(id){
+            var url=path+"/order/addComment.do?id="+id;
+            OrderGetOrders=openMyDialog({title: '添加备注',
                 content: 'url:'+url,
                 icon: 'succeed',
                 width:600,
                 lock:true
             });
-        }else{
-            alert("请选择一个需要添加备注的订单");
         }
-    }
         function selectAllCheck(i,obj){
             var table="#OrderGetOrdersListTable"+i;
             var checkboxs=$(table).find("input[name=checkbox]");
@@ -470,7 +649,7 @@
                     }
                 }
                 var url=path+"/order/moveFolder.do?"+date+"&table="+i+"&table1=${count+4}";
-                OrderGetOrders=$.dialog({title: '移动订单',
+                OrderGetOrders=openMyDialog({title: '移动订单',
                     content: 'url:'+url,
                     icon: 'succeed',
                     width:800,
@@ -487,8 +666,10 @@
             }
         }
     function selectCountrys(){
-        var url=path+"/order/selectCountrys.do?";
-        OrderGetOrders=$.dialog({title: '选择国家',
+        var dts=$("#tabRemark").find("dt");
+        var num=dts.length;
+        var url=path+"/order/selectCountrys.do?num="+num;
+        OrderGetOrders=openMyDialog({title: '选择国家',
             content: 'url:'+url,
             icon: 'succeed',
             width:1050,
@@ -518,6 +699,12 @@
                     }]
         );
     }
+    function addstartTimeAndEndTime(obj,i){
+        var span="<span style=\"float: left;color: #5F93D7;\">从</span><input class=\"form-controlsd \" style=\"float: left;color: #5F93D7;width: 90px;height: 26px;border-color: #d0dde9\" id=\"starttime"+i+"\"  type=\"text\" onfocus=\"WdatePicker({isShowWeek:true,dateFmt:'yyyy-MM-dd'})\"/>" +
+        "<span style=\"float: left;color: #5F93D7;\">到</span><input class=\"form-controlsd \" style=\"float: left;color: #5F93D7;width: 90px;height: 26px;margin-right: 20px;border-color: #d0dde9\" id=\"endtime"+i+"\"  type=\"text\" onfocus=\"WdatePicker({isShowWeek:true,dateFmt:'yyyy-MM-dd'})\"/>";
+        $(obj).before(span);
+        $(obj).remove();
+    }
     </script>
 </head>
 <body>
@@ -545,19 +732,23 @@
 <div class="a_bal"></div>
 <div class="new">
 <script type="text/javascript">
+
     //新增文件夹---------------------------------------------------------------
     function setTab1(name,cursel,n){
         for(var i=1;i<=n;i++){
             var na="#"+name+i;
             $(na).attr("onclick","setTab(\"menu\","+i+","+n+")");
-            if(i>4){
+            if(i>4&&i==cursel){
                 var Contentbox=document.getElementById("ContentboxDiv");
                /* var lastdiv=document.getElementById("con_menu_2").cloneNode();*/
                 var lastdiv=$("#con_menu_4").clone();
                 $(lastdiv).attr("id","con_menu_"+i);
+                var lis=$(lastdiv).find("li[name=selectCountrys]");
+                $(lis).attr("name1","selectCountrys"+i);
                 var Countrys=$(lastdiv).find("span[scop=queryCountry4]");
                 var attrs=$(lastdiv).find("span[scop=queryAttr4]");
                 var times=$(lastdiv).find("span[scop=queryTime4]");
+                var statuses=$(lastdiv).find("span[scop=queryStatus4]");
                 var table=$(lastdiv).find("div[id=OrderGetOrdersListTable4]");
                 var starttime=$(lastdiv).find("input[id=starttime4]");
                 var endtime=$(lastdiv).find("input[id=endtime4]");
@@ -572,10 +763,11 @@
                         {title:"",name:"ch",width:"2%",align:"top",format:makeOption5},
                         {title:"订单号 / 源订单号",name:"orderid",width:"8%",align:"left",format:makeOption2},
                         {title:"物品 / SKU / 承运商 / 追踪号",name:"orderid",width:"13%",align:"left",format:makeOption3},
-                        {title:"站点",name:"itemSite",width:"8%",align:"left"},
+                        {title:"站点",name:"itemSite",width:"8%",align:"left",format:makeOption20},
                         {title:"售价",name:"itemUrl",width:"8%",align:"left",format:makeOption6},
                         {title:"售出日期",name:"createdtime",width:"8%",align:"left"},
                         {title:"发货日期",name:"shippedtime",width:"8%",align:"left"},
+                        {title:"EBAY账号",name:"selleruserid",width:"8%",align:"left"},
                         {title:"状态",name:"shipped",width:"3%",align:"left",format:makeOption4},
                         {title:"操作",name:"option1",width:"8%",align:"left",format:makeOption1}
                     ],
@@ -583,80 +775,113 @@
                     isrowClick:false,
                     showIndex:false
                 });
-                $(table).selectDataAfterSetParm({"bedDetailVO.deptId":"", "isTrue":0});
+                /*$(table).selectDataAfterSetParm({"bedDetailVO.deptId":"", "isTrue":0});*/
                 for(var j=1;j<=Countrys.length;j++){
                     $(Countrys[j-1]).attr("scop","queryCountry"+i);
                     if(j==1){
-                        $(Countrys[j-1]).attr("onclick","queryCountry("+i+","+j+","+null+")");
+                        $(Countrys[j-1]).attr("onclick","queryCountry("+i+","+j+","+null+");");
                     }
                     if(j==2){
-                        $(Countrys[j-1]).attr("onclick","queryCountry("+i+","+j+",'US')");
+                        $(Countrys[j-1]).attr("onclick","queryCountry("+i+","+j+",'US');");
                     }
                     if(j==3){
-                        $(Countrys[j-1]).attr("onclick","queryCountry("+i+","+j+",'UK')");
+                        $(Countrys[j-1]).attr("onclick","queryCountry("+i+","+j+",'UK');");
                     }
                     if(j==4){
-                        $(Countrys[j-1]).attr("onclick","queryCountry("+i+","+j+",'DE')");
+                        $(Countrys[j-1]).attr("onclick","queryCountry("+i+","+j+",'DE');");
                     }
                     if(j==5){
-                        $(Countrys[j-1]).attr("onclick","queryCountry("+i+","+j+",'AU')");
+                        $(Countrys[j-1]).attr("onclick","queryCountry("+i+","+j+",'AU');");
                     }
                 }
                 for(var j=1;j<=attrs.length;j++){
                     $(attrs[j-1]).attr("scop","queryAttr"+i);
                     if(j==1){
-                        $(attrs[j-1]).attr("onclick","queryAttr("+i+","+j+","+null+")");
+                        $(attrs[j-1]).attr("onclick","queryAttr("+i+","+j+","+null+");");
                     }
                     if(j==2){
-                        $(attrs[j-1]).attr("onclick","queryAttr("+i+","+j+",'fixation')");
+                        $(attrs[j-1]).attr("onclick","queryAttr("+i+","+j+",'fixation');");
                     }
                     if(j==3){
-                        $(attrs[j-1]).attr("onclick","queryAttr("+i+","+j+",'auction')");
+                        $(attrs[j-1]).attr("onclick","queryAttr("+i+","+j+",'auction');");
                     }
                     if(j==4){
-                        $(attrs[j-1]).attr("onclick","queryAttr("+i+","+j+",'multiattribute')");
+                        $(attrs[j-1]).attr("onclick","queryAttr("+i+","+j+",'multiattribute');");
                     }
                 }
                 for(var j=1;j<=times.length;j++){
                     $(times[j-1]).attr("scop","queryTime"+i);
                     if(j==1){
-                        $(times[j-1]).attr("onclick","queryTime("+i+","+j+","+null+")");
+                        $(times[j-1]).attr("onclick","queryTime("+i+","+j+","+null+");");
                     }
                     if(j==2){
                         $(times[j-1]).attr("onclick","queryTime("+i+","+j+",'1')");
                     }
                     if(j==3){
-                        $(times[j-1]).attr("onclick","queryTime("+i+","+j+",'2')");
+                        $(times[j-1]).attr("onclick","queryTime("+i+","+j+",'2');");
                     }
                     if(j==4){
-                        $(times[j-1]).attr("onclick","queryTime("+i+","+j+",'7')");
+                        $(times[j-1]).attr("onclick","queryTime("+i+","+j+",'7');");
                     }
                     if(j==5){
-                        $(times[j-1]).attr("onclick","queryTime("+i+","+j+",'30')");
+                        $(times[j-1]).attr("onclick","queryTime("+i+","+j+",'30');");
                     }
                 }
+                for(var j=1;j<=statuses.length;j++){
+                    $(statuses[j-1]).attr("scop","queryStatus"+i);
+                    if(j==1){
+                        $(statuses[j-1]).attr("onclick","queryStatus("+i+","+j+","+null+");");
+                    }
+                    if(j==2){
+                        $(statuses[j-1]).attr("onclick","queryStatus("+i+","+j+",'1')");
+                    }
+                    if(j==3){
+                        $(statuses[j-1]).attr("onclick","queryStatus("+i+","+j+",'2');");
+                    }
+                    if(j==4){
+                        $(statuses[j-1]).attr("onclick","queryStatus("+i+","+j+",'3');");
+                    }
+                    if(j==5){
+                        $(statuses[j-1]).attr("onclick","queryStatus("+i+","+j+",'4');");
+                    }
+                }
+                var addstartTimeAndEndTimeID=$(lastdiv).find("a[id=addstartTimeAndEndTimeID]");
+                $(addstartTimeAndEndTimeID).removeAttr("onclick");
+                $(addstartTimeAndEndTimeID).click(function(){
+                    addstartTimeAndEndTime($(addstartTimeAndEndTimeID),(i-1));
+                    /* var span="<span style=\"float: left;color: #5F93D7;\">从</span><input class=\"form-controlsd \" style=\"float: left;color: #5F93D7;width: 90px;height: 26px;border-color: #d0dde9\" id=\"starttime"+i+"\"  type=\"text\" onfocus=\"WdatePicker({isShowWeek:true,dateFmt:'yyyy-MM-dd'})\"/>" +
+                     "<span style=\"float: left;color: #5F93D7;\">到</span><input class=\"form-controlsd \" style=\"float: left;color: #5F93D7;width: 90px;height: 26px;margin-right: 20px;border-color: #d0dde9\" id=\"endtime"+i+"\"  type=\"text\" onfocus=\"WdatePicker({isShowWeek:true,dateFmt:'yyyy-MM-dd'})\"/>";
+                     $(addstartTimeAndEndTimeID).before(span);
+                     $(addstartTimeAndEndTimeID).remove();*/
+                });
+
                 var inp=$(lastdiv).find("input[class=key_2]");
-               /* var itemType1=$("#itemType4");
-                $(itemType1).attr("id","itemType"+i);
-                var content1=$("#content4");
-                $(content1).attr("id","content"+i);*/
+                /* var itemType1=$("#itemType4");
+                 $(itemType1).attr("id","itemType"+i);
+                 var content1=$("#content4");
+                 $(content1).attr("id","content"+i);*/
                 var itemType1=$(lastdiv).find("select[id=itemType4]");
                 var content1=$(lastdiv).find("input[id=content4]");
                 $(content1).attr("id","content"+i);
                 $(itemType1).attr("id","itemType"+i);
                 $(inp).removeAttr("onclick");
                 $(inp).click(function(){
-                    var daysQ=$("#daysQ").val();
-                    var countryQ=$("#countryQ").val();
-                    var typeQ=$("#typeQ").val();
+                    /*alert("#daysQ"+i);
+                    alert(table);
+                    alert("#countryQ"+i);
+                    alert("#typeQ"+i)*/
+                    var daysQ=$("#daysQ"+(i-1)).val();
+                    var countryQ=$("#countryQ"+(i-1)).val();
+                    var typeQ=$("#typeQ"+(i-1)).val();
                     var itemType=$(itemType1).val();
                     var content=$(content1).val();
                     var folderId=id1;
-                    var starttime1=$(starttime).val();
-                    var endtime1=$(endtime).val();
-                    refreshTable6(table,countryQ,typeQ,daysQ,itemType,content,folderId,starttime1,endtime1);
+                    var starttime1=$("#starttime"+(i-1)).val();
+                    var endtime1=$("#endtime"+(i-1)).val();
+                    var statusQ=$("#statusQ"+(i-1)).val();
+                    refreshTable6(table,countryQ,typeQ,daysQ,itemType,content,folderId,starttime1,endtime1,statusQ);
                 });
-                var download=$(lastdiv).find("span[id=downloadOrder4]");
+                download=$(lastdiv).find("span[id=downloadOrder4]");
                 $(download).removeAttr("onclick");
                 $(download).click(function(){
                     var url=path+"/order/downloadOrders.do?folderId="+id1;
@@ -681,21 +906,25 @@
               /*  lastdiv.setAttribute("id","con_menu_")*/
             }
         }
-        if(n>4){
+    /*    if(cursel>4){
+            $("#OrderGetOrdersListTable"+cursel).selectDataAfterSetParm({"bedDetailVO.deptId":"", "isTrue":0});
+        }*/
+       /* if(n>4){
             setTab(name,cursel,n);
-        }
+        }*/
     }
-    function refreshTable6(table,countryQ,typeQ,daysQ,itemType,content,folderId,starttime,endtime){
+    function refreshTable6(table,countryQ,typeQ,daysQ,itemType,content,folderId,starttime,endtime,statusQ){
         $(table).initTable({
             url:path + "/order/ajax/loadOrdersList.do?",
             columnData:[
                 {title:"",name:"ch",width:"2%",align:"top",format:makeOption5},
                 {title:"订单号 / 源订单号",name:"orderid",width:"8%",align:"left",format:makeOption2},
                 {title:"物品 / SKU / 承运商 / 追踪号",name:"orderid",width:"13%",align:"left",format:makeOption3},
-                {title:"站点",name:"itemSite",width:"8%",align:"left"},
+                {title:"站点",name:"itemSite",width:"8%",align:"left",format:makeOption20},
                 {title:"售价",name:"itemUrl",width:"8%",align:"left",format:makeOption6},
                 {title:"售出日期",name:"createdtime",width:"8%",align:"left"},
                 {title:"发货日期",name:"shippedtime",width:"8%",align:"left"},
+                {title:"EBAY账号",name:"selleruserid",width:"8%",align:"left"},
                 {title:"状态",name:"shipped",width:"3%",align:"left",format:makeOption4},
                 {title:"操作",name:"option1",width:"8%",align:"left",format:makeOption1}
             ],
@@ -703,11 +932,53 @@
             isrowClick:false,
             showIndex:false
         });
-        $(table).selectDataAfterSetParm({"bedDetailVO.deptId":"", "isTrue":0,"countryQ":countryQ,"typeQ":typeQ,"daysQ":daysQ,"itemType":itemType,"content":content,"folderId":folderId,"starttime1":starttime,"endtime1":endtime});
+        $(table).selectDataAfterSetParm({"bedDetailVO.deptId":"", "isTrue":0,"countryQ":countryQ,"typeQ":typeQ,"daysQ":daysQ,"itemType":itemType,"content":content,"folderId":folderId,"starttime1":starttime,"endtime1":endtime,"statusQ":statusQ});
         alert("查询成功");
     }
     //--------------------------------------------------------------------------
     function setTab(name,cursel,n){
+            if(cursel<5&&cursel>1){
+                var url="/order/ajax/loadOrdersList.do?";
+                if(cursel==2){
+                    url+="status=Incomplete";
+                }
+                if(cursel==3){
+                    url+="status=notAllComplete";
+                }
+                if(cursel==4){
+                    url+="status=Complete";
+                }
+                $("#OrderGetOrdersListTable"+cursel).initTable({
+                    url:path + url,
+                    columnData:[
+                        {title:"",name:"ch",width:"2%",align:"top",format:makeOption5},
+                        {title:"订单号 / 源订单号",name:"orderid",width:"8%",align:"left",format:makeOption2},
+                        {title:"物品 / SKU / 承运商 / 追踪号",name:"orderid",width:"13%",align:"left",format:makeOption3},
+                        {title:"站点",name:"itemSite",width:"8%",align:"left",format:makeOption20},
+                        {title:"售价",name:"itemUrl",width:"8%",align:"left",format:makeOption6},
+                        {title:"售出日期",name:"createdtime",width:"8%",align:"left"},
+                        {title:"发货日期",name:"shippedtime",width:"8%",align:"left"},
+                        {title:"EBAY账号",name:"selleruserid",width:"8%",align:"left"},
+                        {title:"状态",name:"shipped",width:"3%",align:"left",format:makeOption4},
+                        {title:"操作",name:"option1",width:"8%",align:"left",format:makeOption1}
+                    ],
+                    selectDataNow:false,
+                    isrowClick:false,
+                    showIndex:false
+                });
+                if(cursel==2){
+                    refreshTable2();
+                }
+                if(cursel==3){
+                    refreshTable3();
+                }
+                if(cursel==4){
+                    refreshTable4();
+                }
+            }
+            if(cursel>4){
+                $("#OrderGetOrdersListTable"+cursel).selectDataAfterSetParm({"bedDetailVO.deptId":"", "isTrue":0});
+            }
         for(i=1;i<=n;i++){
             var menu=document.getElementById(name+i);
             var con=document.getElementById("con_"+name+"_"+i);
@@ -717,10 +988,10 @@
     }
 </script>
 <div id="tabRemark" class="new_tab_ls">
-    <dt id="menu1" class="new_tab_2" onclick="setTab('menu',1,4)">近期销售</dt>
-    <dt id="menu2" class="new_tab_1" onclick="setTab('menu',2,4)">未付款</dt>
-    <dt id="menu3" class="new_tab_2" onclick="setTab('menu',3,4)">未结清付款</dt>
-    <dt id="menu4" class="new_tab_2" onclick="setTab('menu',4,4)">已付款</dt>
+    <dt id="menu1" class="new_tab_1" onclick="setTab('menu',1,${count+4})">近期销售</dt>
+    <dt id="menu2" class="new_tab_2" onclick="setTab('menu',2,${count+4})">未付款</dt>
+    <dt id="menu3" class="new_tab_2" onclick="setTab('menu',3,${count+4})">未结清付款</dt>
+    <dt id="menu4" class="new_tab_2" onclick="setTab('menu',4,${count+4})">已付款</dt>
     <c:forEach items="${folders}" begin="0"  varStatus="status">
         <dt scop="tabRemark" id="menu${status.index+5}" name1="${status.index+5}" name2="${folders[status.index].id}" name="${folders[status.index].configName}" class="new_tab_2" onclick="setTab1('menu',${status.index+5},${status.count+4})">${folders[status.index].configName}</dt>
     </c:forEach>
@@ -747,27 +1018,56 @@
     //--><!]]>
 </script>
     <form id="queryForm">
-        <input type="hidden" id="countryQ"/>
-        <input type="hidden" id="typeQ"/>
-        <input type="hidden" id="daysQ"/>
+        <input type="hidden" id="countryQ1"/>
+        <input type="hidden" id="typeQ1"/>
+        <input type="hidden" id="daysQ1"/>
+        <input type="hidden" id="statusQ1"/>
+        <input type="hidden" id="countryQ2"/>
+        <input type="hidden" id="typeQ2"/>
+        <input type="hidden" id="daysQ2"/>
+        <input type="hidden" id="statusQ2"/>
+        <input type="hidden" id="countryQ3"/>
+        <input type="hidden" id="typeQ3"/>
+        <input type="hidden" id="daysQ3"/>
+        <input type="hidden" id="statusQ3"/>
+        <input type="hidden" id="countryQ4"/>
+        <input type="hidden" id="typeQ4"/>
+        <input type="hidden" id="daysQ4"/>
+        <input type="hidden" id="statusQ4"/>
+        <c:forEach items="${folders}" begin="0"  varStatus="status">
+            <input type="hidden" id="countryQ${status.index+5}"/>
+            <input type="hidden" id="typeQ${status.index+5}"/>
+            <input type="hidden" id="daysQ${status.index+5}"/>
+            <input type="hidden" id="statusQ${status.index+5}"/>
+        </c:forEach>
     </form>
 <div class="Contentbox" id="ContentboxDiv">
-<div id="con_menu_1" style="display: none;">
+<div id="con_menu_1" style="display: block;">
     <!--综合开始 -->
     <div class="new_usa" style="margin-top:20px;">
-        <li class="new_usa_list" name="selectCountrys"><span class="newusa_i">收件人国家：</span><a href="#"><span class="newusa_ici" scop="queryCountry1"  onclick="queryCountry(1,1,null);">全部&nbsp;</span></a><a href="#"><span class="newusa_ici_1" scop="queryCountry1"  onclick="queryCountry(1,2,'US');"><img src="<c:url value ="/img/usa_1.png"/> ">美国&nbsp;</span></a><a href="#"><span class="newusa_ici_1" scop="queryCountry1"  onclick="queryCountry(1,3,'GB');"><img src="<c:url value ="/img/UK.jpg"/> ">英国&nbsp;</span></a><a href="#"><span class="newusa_ici_1" scop="queryCountry1"  onclick="queryCountry(1,4,'DE');"><img src="<c:url value ="/img/DE.png"/> ">德国&nbsp;</span></a><a href="#"><span class="newusa_ici_1" scop="queryCountry1"  onclick="queryCountry(1,5,'AU');"><img src="<c:url value ="/img/AU.jpg"/>">澳大利亚</span></a><a href="javascript:void(0)" onclick="selectCountrys();"><span style="padding-left: 20px;vertical-align: middle;color: royalblue">更多...</span></a></li>
-        <li class="new_usa_list"><span class="newusa_i">刊登类型：</span><a href="#"><span class="newusa_ici" scop="queryAttr1"  onclick="queryAttr(1,1,null);">全部&nbsp;</span></a><a href="#"><span class="newusa_ici_1" scop="queryAttr1"  onclick="queryAttr(1,2,'fixation');">固价&nbsp;</span></a><a href="#"><span class="newusa_ici_1" scop="queryAttr1"  onclick="queryAttr(1,3,'auction');">拍卖&nbsp;</span></a><a href="#"><span class="newusa_ici_1" scop="queryAttr1"  onclick="queryAttr(1,4,'multiattribute');">多属性&nbsp;</span></a></li>
+        <li class="new_usa_list" name="selectCountrys" name1="selectCountrys1"><span class="newusa_i">收件人国家：</span><a href="javascript:void(0)"><span class="newusa_ici" scop="queryCountry1"  onclick="queryCountry(1,1,null);">全部&nbsp;</span></a><a href="javascript:void(0);"><span class="newusa_ici_1" scop="queryCountry1"  onclick="queryCountry(1,2,'US');"><img src="<c:url value ="/img/usa_1.png"/> ">美国&nbsp;</span></a><a href="javascript:void(0)"><span class="newusa_ici_1" scop="queryCountry1"  onclick="queryCountry(1,3,'GB');"><img src="<c:url value ="/img/UK.jpg"/> ">英国&nbsp;</span></a><a href="javascript:void(0)"><span class="newusa_ici_1" scop="queryCountry1"  onclick="queryCountry(1,4,'DE');"><img src="<c:url value ="/img/DE.png"/> ">德国&nbsp;</span></a><a href="javascript:void(0)"><span class="newusa_ici_1" scop="queryCountry1"  onclick="queryCountry(1,5,'AU');"><img src="<c:url value ="/img/AU.jpg"/>">澳大利亚</span></a><a href="javascript:void(0)" onclick="selectCountrys();"><span style="padding-left: 20px;vertical-align: middle;color: royalblue">更多...</span></a></li>
+        <li class="new_usa_list"><span class="newusa_i">刊登类型：</span><a href="javascript:void(0)"><span class="newusa_ici" scop="queryAttr1"  onclick="queryAttr(1,1,null);">全部&nbsp;</span></a><a href="javascript:void(0)"><span class="newusa_ici_1" scop="queryAttr1"  onclick="queryAttr(1,2,'fixation');">固价&nbsp;</span></a><a href="javascript:void(0)"><span class="newusa_ici_1" scop="queryAttr1"  onclick="queryAttr(1,3,'auction');">拍卖&nbsp;</span></a><a href="javascript:void(0)"><span class="newusa_ici_1" scop="queryAttr1"  onclick="queryAttr(1,4,'multiattribute');">多属性&nbsp;</span></a></li>
         <div class="newsearch">
-            <span class="newusa_i">刊登类型：</span><a href="#"><span class="newusa_ici" scop="queryTime1" onclick="queryTime(1,1,null)">全部&nbsp;</span></a><a href="#"><span class="newusa_ici_1" scop="queryTime1" onclick="queryTime(1,2,'1')">今天&nbsp;</span></a><a href="#"><span scop="queryTime1" onclick="queryTime(1,3,'2')" class="newusa_ici_1">昨天&nbsp;</span></a><a href="#"><span scop="queryTime1" onclick="queryTime(1,4,'7');" class="newusa_ici_1">7天以内&nbsp;</span></a><a href="#"><span scop="queryTime1" onclick="queryTime(1,5,'30')" class="newusa_ici_1">30天以内&nbsp;</span></a>
-            <span style="float: left;color: #5F93D7;">从</span><input class="form-controlsd " style="float: left;color: #5F93D7;width: 90px;height: 26px;border-color: #d0dde9" id="starttime1"  type="text" onfocus="WdatePicker({isShowWeek:true,dateFmt:'yyyy-MM-dd'})"/>
-            <span style="float: left;color: #5F93D7;">到</span><input class="form-controlsd " style="float: left;color: #5F93D7;width: 90px;height: 26px;margin-right: 20px;border-color: #d0dde9" id="endtime1"  type="text" onfocus="WdatePicker({isShowWeek:true,dateFmt:'yyyy-MM-dd'})"/>
-<span id="sleBG">
+            <span class="newusa_i">时间：</span><a href="javascript:void(0)"><span class="newusa_ici" scop="queryTime1" onclick="queryTime(1,1,null)">全部&nbsp;</span></a><a href="javascript:void(0)"><span class="newusa_ici_1" scop="queryTime1" onclick="queryTime(1,2,'1')">今天&nbsp;</span></a><a href="javascript:void(0)"><span scop="queryTime1" onclick="queryTime(1,3,'2')" class="newusa_ici_1">昨天&nbsp;</span></a><a href="javascript:void(0)"><span scop="queryTime1" onclick="queryTime(1,4,'7');" class="newusa_ici_1">7天以内&nbsp;</span></a><a href="javascript:void(0)"><span scop="queryTime1" onclick="queryTime(1,5,'30')" class="newusa_ici_1">30天以内&nbsp;</span></a>
+           <%-- <span style="float: left;color: #5F93D7;">从</span><input class="form-controlsd " style="float: left;color: #5F93D7;width: 90px;height: 26px;border-color: #d0dde9" id="starttime1"  type="text" onfocus="WdatePicker({isShowWeek:true,dateFmt:'yyyy-MM-dd'})"/>
+            <span style="float: left;color: #5F93D7;">到</span><input class="form-controlsd " style="float: left;color: #5F93D7;width: 90px;height: 26px;margin-right: 20px;border-color: #d0dde9" id="endtime1"  type="text" onfocus="WdatePicker({isShowWeek:true,dateFmt:'yyyy-MM-dd'})"/>--%>
+            <a href="javascript:void(0)" onclick="addstartTimeAndEndTime(this,1)"><span style="float: left;color: #5F93D7">自定义...</span></a>
+        </div>
+        <li class="new_usa_list"><span class="newusa_i">订单状态：</span><a href="javascript:void(0)"><span class="newusa_ici" scop="queryStatus1"  onclick="queryStatus(1,1,null);">全部&nbsp;</span></a><a href="javascript:void(0)"><span class="newusa_ici_1" scop="queryStatus1"  onclick="queryStatus(1,2,'1');">已付款&nbsp;</span></a><a href="javascript:void(0)"><span class="newusa_ici_1" scop="queryStatus1"  onclick="queryStatus(1,3,'2');">已发货&nbsp;</span></a><a href="javascript:void(0)"><span class="newusa_ici_1" scop="queryStatus1"  onclick="queryStatus(1,4,'3');">妥投&nbsp;</span></a><a href="javascript:void(0)"><span class="newusa_ici_1" scop="queryStatus1"  onclick="queryStatus(1,5,'4');">未妥投&nbsp;</span></a></li>
+        <div class="newsearch">
+            <span class="newusa_i">搜索内容：</span>
+            <span id="sleBG">
 <span id="sleHid">
 <select name="type" class="select" id="itemType1" onchange="cleanInput();">
     <option selected="selected" >选择类型</option>
-    <option value="orderId">订单号</option>
+    <option value="buyerId">买家账号</option>
+    <option value="itemId">物品号</option>
     <option value="sku">SKU</option>
-    <option value="title">标题</option>
+    <option value="title">物品标题</option>
+    <option value="trackNum">跟踪号</option>
+    <option value="person">联系人</option>
+    <option value="buyerEmail">买家电邮</option>
+    <option value="comment">备注</option>
 </select>
 </span>
 </span>
@@ -775,10 +1075,10 @@
                 <input id="content1" name="" type="text" class="key_1"><input name="newbut" onclick="query1();" type="button" class="key_2"></div>
         </div>
         <div class="newds">
-            <div class="newsj_left">
+            <div class="newsj_left" style="padding: 4px;">
 
                 <span class="newusa_ici_del_in"><input type="checkbox" name="checkbox" id="allCheckbox"  onclick="selectAllCheck(1,this);"></span>
-                <span class="newusa_ici_del" onclick="addComment(1);">添加备注</span><span class="newusa_ici_del" onclick="addTabRemark();">新建文件夹</span><span onclick="downloadOrders(1);" class="newusa_ici_del">下载订单</span>
+                <span class="newusa_ici_del" onclick="addComment(1);">添加备注</span><span class="newusa_ici_del" onclick="addTabRemark();">管理文件夹</span><span onclick="downloadOrders(1);" class="newusa_ici_del">下载订单</span>
                 <span onclick="moveFolder(1);" class="newusa_ici_del">移动到文件夹</span>
             </div>
             <div class="tbbay"><a data-toggle="modal" href="javascript:#" onclick="getBindParm();" >同步eBay</a></div>
@@ -791,22 +1091,32 @@
     </div>
 </div>
 
-<div style="display: block;" id="con_menu_2">
+<div style="display: none;" id="con_menu_2">
     <!--综合开始 -->
     <div class="new_usa" style="margin-top:20px;">
-        <li class="new_usa_list" name="selectCountrys"><span class="newusa_i">收件人国家：</span><a href="#"><span class="newusa_ici" scop="queryCountry2"  onclick="queryCountry(2,1,null);">全部&nbsp;</span></a><a href="#"><span class="newusa_ici_1" scop="queryCountry2"  onclick="queryCountry(2,2,'US');"><img src="<c:url value ="/img/usa_1.png"/> " >美国&nbsp;</span></a><a href="#"><span class="newusa_ici_1" scop="queryCountry2"  onclick="queryCountry(2,3,'GB');"><img src="<c:url value ="/img/UK.jpg"/> ">英国&nbsp;</span></a><a href="#"><span class="newusa_ici_1" scop="queryCountry2"  onclick="queryCountry(2,4,'DE');"><img src="<c:url value ="/img/DE.png"/> ">德国&nbsp;</span></a><a href="#"><span class="newusa_ici_1" scop="queryCountry2"  onclick="queryCountry(2,5,'AU');"><img src="<c:url value ="/img/AU.jpg"/> ">澳大利亚</span></a><a href="javascript:void(0)" onclick="selectCountrys();"><span style="padding-left: 20px;vertical-align: middle;color: royalblue">更多...</span></a></li>
-        <li class="new_usa_list"><span class="newusa_i">刊登类型：</span><a href="#"><span class="newusa_ici" scop="queryAttr2" onclick="queryAttr(2,1,null);">全部&nbsp;</span></a><a href="#"><span class="newusa_ici_1" scop="queryAttr2" onclick="queryAttr(2,2,'fixation');">固价&nbsp;</span></a><a href="#"><span class="newusa_ici_1" scop="queryAttr2" onclick="queryAttr(2,3,'auction');">拍卖&nbsp;</span></a><a href="#"><span class="newusa_ici_1" scop="queryAttr2" onclick="queryAttr(2,4,'multiattribute');">多属性&nbsp;</span></a></li>
+        <li class="new_usa_list" name="selectCountrys" name1="selectCountrys2"><span class="newusa_i">收件人国家：</span><a href="javascript:void(0)"><span class="newusa_ici" scop="queryCountry2"  onclick="queryCountry(2,1,null);">全部&nbsp;</span></a><a href="javascript:void(0)"><span class="newusa_ici_1" scop="queryCountry2"  onclick="queryCountry(2,2,'US');"><img src="<c:url value ="/img/usa_1.png"/> " >美国&nbsp;</span></a><a href="javascript:void(0)"><span class="newusa_ici_1" scop="queryCountry2"  onclick="queryCountry(2,3,'GB');"><img src="<c:url value ="/img/UK.jpg"/> ">英国&nbsp;</span></a><a href="javascript:void(0)"><span class="newusa_ici_1" scop="queryCountry2"  onclick="queryCountry(2,4,'DE');"><img src="<c:url value ="/img/DE.png"/> ">德国&nbsp;</span></a><a href="javascript:void(0)"><span class="newusa_ici_1" scop="queryCountry2"  onclick="queryCountry(2,5,'AU');"><img src="<c:url value ="/img/AU.jpg"/> ">澳大利亚</span></a><a href="javascript:void(0)" onclick="selectCountrys();"><span style="padding-left: 20px;vertical-align: middle;color: royalblue">更多...</span></a></li>
+        <li class="new_usa_list"><span class="newusa_i">刊登类型：</span><a href="javascript:void(0)"><span class="newusa_ici" scop="queryAttr2" onclick="queryAttr(2,1,null);">全部&nbsp;</span></a><a href="javascript:void(0)"><span class="newusa_ici_1" scop="queryAttr2" onclick="queryAttr(2,2,'fixation');">固价&nbsp;</span></a><a href="javascript:void(0)"><span class="newusa_ici_1" scop="queryAttr2" onclick="queryAttr(2,3,'auction');">拍卖&nbsp;</span></a><a href="javascript:void(0)"><span class="newusa_ici_1" scop="queryAttr2" onclick="queryAttr(2,4,'multiattribute');">多属性&nbsp;</span></a></li>
         <div class="newsearch">
-            <span class="newusa_i">刊登类型：</span><a href="#"><span scop="queryTime2" onclick="queryTime(2,1,null)" class="newusa_ici">全部&nbsp;</span></a><a href="#"><span scop="queryTime2" onclick="queryTime(2,2,1)" class="newusa_ici_1">今天&nbsp;</span></a><a href="#"><span scop="queryTime2" onclick="queryTime(2,3,'2')" class="newusa_ici_1">昨天&nbsp;</span></a><a href="#"><span scop="queryTime2" onclick="queryTime(2,4,'7')" class="newusa_ici_1">7天以内&nbsp;</span></a><a href="#"><span scop="queryTime2" onclick="queryTime(2,5,'30')" class="newusa_ici_1">30天以内&nbsp;</span></a>
-            <span style="float: left;color: #5F93D7;">从</span><input class="form-controlsd " style="float: left;color: #5F93D7;width: 90px;height: 26px;border-color: #d0dde9" id="starttime2"  type="text" onfocus="WdatePicker({isShowWeek:true,dateFmt:'yyyy-MM-dd'})"/>
-            <span style="float: left;color: #5F93D7;">到</span><input class="form-controlsd " style="float: left;color: #5F93D7;width: 90px;height: 26px;margin-right: 20px;border-color: #d0dde9" id="endtime2"  type="text" onfocus="WdatePicker({isShowWeek:true,dateFmt:'yyyy-MM-dd'})"/>
-<span id="sleBG">
+            <span class="newusa_i">时间：</span><a href="javascript:void(0)"><span scop="queryTime2" onclick="queryTime(2,1,null)" class="newusa_ici">全部&nbsp;</span></a><a href="javascript:void(0)"><span scop="queryTime2" onclick="queryTime(2,2,1)" class="newusa_ici_1">今天&nbsp;</span></a><a href="javascript:void(0)"><span scop="queryTime2" onclick="queryTime(2,3,'2')" class="newusa_ici_1">昨天&nbsp;</span></a><a href="javascript:void(0)"><span scop="queryTime2" onclick="queryTime(2,4,'7')" class="newusa_ici_1">7天以内&nbsp;</span></a><a href="javascript:void(0)"><span scop="queryTime2" onclick="queryTime(2,5,'30')" class="newusa_ici_1">30天以内&nbsp;</span></a>
+            <%--<span style="float: left;color: #5F93D7;">从</span><input class="form-controlsd " style="float: left;color: #5F93D7;width: 90px;height: 26px;border-color: #d0dde9" id="starttime2"  type="text" onfocus="WdatePicker({isShowWeek:true,dateFmt:'yyyy-MM-dd'})"/>
+            <span style="float: left;color: #5F93D7;">到</span><input class="form-controlsd " style="float: left;color: #5F93D7;width: 90px;height: 26px;margin-right: 20px;border-color: #d0dde9" id="endtime2"  type="text" onfocus="WdatePicker({isShowWeek:true,dateFmt:'yyyy-MM-dd'})"/>--%>
+            <a href="javascript:void(0)" onclick="addstartTimeAndEndTime(this,2)"><span style="float: left;color: #5F93D7">自定义...</span></a>
+        </div>
+        <li class="new_usa_list"><span class="newusa_i">订单状态：</span><a href="javascript:void(0)"><span class="newusa_ici" scop="queryStatus2"  onclick="queryStatus(2,1,null);">全部&nbsp;</span></a><a href="javascript:void(0)"><span class="newusa_ici_1" scop="queryStatus2"  onclick="queryStatus(2,2,'1');">已付款&nbsp;</span></a><a href="javascript:void(0)"><span class="newusa_ici_1" scop="queryStatus2"  onclick="queryStatus(2,3,'2');">已发货&nbsp;</span></a><a href="javascript:void(0)"><span class="newusa_ici_1" scop="queryStatus2"  onclick="queryStatus(2,4,'3');">妥投&nbsp;</span></a><a href="javascript:void(0)"><span class="newusa_ici_1" scop="queryStatus2"  onclick="queryStatus(2,5,'4');">未妥投&nbsp;</span></a></li>
+        <div class="newsearch">
+            <span class="newusa_i">搜索内容：</span>
+            <span id="sleBG">
 <span id="sleHid">
 <select name="type" class="select" id="itemType2" onchange="cleanInput();">
     <option selected="selected" >选择类型</option>
-    <option value="orderId">订单号</option>
+    <option value="buyerId">买家账号</option>
+    <option value="itemId">物品号</option>
     <option value="sku">SKU</option>
-    <option value="title">标题</option>
+    <option value="title">物品标题</option>
+    <option value="trackNum">跟踪号</option>
+    <option value="person">联系人</option>
+    <option value="buyerEmail">买家电邮</option>
+    <option value="comment">备注</option>
 </select>
 </span>
 </span>
@@ -817,7 +1127,7 @@
             <div class="newsj_left">
 
                 <span class="newusa_ici_del_in"><input type="checkbox" name="checkbox" id="allCheckbox" onclick="selectAllCheck(2,this);"></span>
-                <span class="newusa_ici_del" onclick="addComment(2);">添加备注</span><span class="newusa_ici_del" onclick="addTabRemark();">新建文件夹</span><span onclick="downloadOrders(2);" class="newusa_ici_del">下载订单</span>
+                <span class="newusa_ici_del" onclick="addComment(2);">添加备注</span><span class="newusa_ici_del" onclick="addTabRemark();">管理文件夹</span><span onclick="downloadOrders(2);" class="newusa_ici_del">下载订单</span>
                 <span onclick="moveFolder(2);" class="newusa_ici_del">移动到文件夹</span>
             </div>
             <div class="tbbay"><a data-toggle="modal" href="#myModal" onclick="getBindParm();" class="">同步eBay</a></div>
@@ -833,19 +1143,29 @@
 <div style="display: none;" id="con_menu_3">
     <!--综合开始 -->
     <div class="new_usa" style="margin-top:20px;">
-        <li class="new_usa_list" name="selectCountrys"><span class="newusa_i">收件人国家：</span><a href="#"><span class="newusa_ici" scop="queryCountry3"  onclick="queryCountry(3,1,null);">全部&nbsp;</span></a><a href="#"><span class="newusa_ici_1" scop="queryCountry3"  onclick="queryCountry(3,2,'US');"><img src="<c:url value ="/img/usa_1.png"/> " >美国&nbsp;</span></a><a href="#"><span class="newusa_ici_1" scop="queryCountry3"  onclick="queryCountry(3,3,'GB');"><img src="<c:url value ="/img/UK.jpg"/> ">英国&nbsp;</span></a><a href="#"><span class="newusa_ici_1" scop="queryCountry3"  onclick="queryCountry(3,4,'DE');"><img src="<c:url value ="/img/DE.png"/> ">德国&nbsp;</span></a><a href="#"><span class="newusa_ici_1" scop="queryCountry3"  onclick="queryCountry(3,5,'AU');"><img src="<c:url value ="/img/AU.jpg"/> ">澳大利亚</span></a><a href="javascript:void(0)" onclick="selectCountrys();"><span style="padding-left: 20px;vertical-align: middle;color: royalblue">更多...</span></a></li>
-        <li class="new_usa_list"><span class="newusa_i">刊登类型：</span><a href="#"><span class="newusa_ici" scop="queryAttr3" onclick="queryAttr(3,1,null);">全部&nbsp;</span></a><a href="#"><span class="newusa_ici_1" scop="queryAttr3" onclick="queryAttr(3,2,'fixation');">固价&nbsp;</span></a><a href="#"><span class="newusa_ici_1" scop="queryAttr3" onclick="queryAttr(3,3,'auction');">拍卖&nbsp;</span></a><a href="#"><span class="newusa_ici_1" scop="queryAttr3" onclick="queryAttr(3,4,'multiattribute');">多属性&nbsp;</span></a></li>
+        <li class="new_usa_list" name="selectCountrys" name1="selectCountrys3"><span class="newusa_i">收件人国家：</span><a href="javascript:void(0)"><span class="newusa_ici" scop="queryCountry3"  onclick="queryCountry(3,1,null);">全部&nbsp;</span></a><a href="javascript:void(0)"><span class="newusa_ici_1" scop="queryCountry3"  onclick="queryCountry(3,2,'US');"><img src="<c:url value ="/img/usa_1.png"/> " >美国&nbsp;</span></a><a href="javascript:void(0)"><span class="newusa_ici_1" scop="queryCountry3"  onclick="queryCountry(3,3,'GB');"><img src="<c:url value ="/img/UK.jpg"/> ">英国&nbsp;</span></a><a href="javascript:void(0)"><span class="newusa_ici_1" scop="queryCountry3"  onclick="queryCountry(3,4,'DE');"><img src="<c:url value ="/img/DE.png"/> ">德国&nbsp;</span></a><a href="javascript:void(0)"><span class="newusa_ici_1" scop="queryCountry3"  onclick="queryCountry(3,5,'AU');"><img src="<c:url value ="/img/AU.jpg"/> ">澳大利亚</span></a><a href="javascript:void(0)" onclick="selectCountrys();"><span style="padding-left: 20px;vertical-align: middle;color: royalblue">更多...</span></a></li>
+        <li class="new_usa_list"><span class="newusa_i">刊登类型：</span><a href="javascript:void(0)"><span class="newusa_ici" scop="queryAttr3" onclick="queryAttr(3,1,null);">全部&nbsp;</span></a><a href="javascript:void(0)"><span class="newusa_ici_1" scop="queryAttr3" onclick="queryAttr(3,2,'fixation');">固价&nbsp;</span></a><a href="javascript:void(0)"><span class="newusa_ici_1" scop="queryAttr3" onclick="queryAttr(3,3,'auction');">拍卖&nbsp;</span></a><a href="javascript:void(0)"><span class="newusa_ici_1" scop="queryAttr3" onclick="queryAttr(3,4,'multiattribute');">多属性&nbsp;</span></a></li>
         <div class="newsearch">
-            <span class="newusa_i">刊登类型：</span><a href="#"><span scop="queryTime3" onclick="queryTime(3,1,null)" class="newusa_ici">全部&nbsp;</span></a><a href="#"><span scop="queryTime3" onclick="queryTime(3,2,'1')" class="newusa_ici_1">今天&nbsp;</span></a><a href="#"><span scop="queryTime3" onclick="queryTime(3,3,'2')" class="newusa_ici_1">昨天&nbsp;</span></a><a href="#"><span scop="queryTime3" onclick="queryTime(3,4,'7')" class="newusa_ici_1">7天以内&nbsp;</span></a><a href="#"><span scop="queryTime3" onclick="queryTime(3,5,'30')" class="newusa_ici_1">30天以内&nbsp;</span></a>
-            <span style="float: left;color: #5F93D7;">从</span><input class="form-controlsd " style="float: left;color: #5F93D7;width: 90px;height: 26px;border-color: #d0dde9" id="starttime3"  type="text" onfocus="WdatePicker({isShowWeek:true,dateFmt:'yyyy-MM-dd'})"/>
-            <span style="float: left;color: #5F93D7;">到</span><input class="form-controlsd " style="float: left;color: #5F93D7;width: 90px;height: 26px;margin-right: 20px;border-color: #d0dde9" id="endtime3"  type="text" onfocus="WdatePicker({isShowWeek:true,dateFmt:'yyyy-MM-dd'})"/>
-<span id="sleBG">
+            <span class="newusa_i">时间：</span><a href="javascript:void(0)"><span scop="queryTime3" onclick="queryTime(3,1,null)" class="newusa_ici">全部&nbsp;</span></a><a href="javascript:void(0)"><span scop="queryTime3" onclick="queryTime(3,2,'1')" class="newusa_ici_1">今天&nbsp;</span></a><a href="javascript:void(0)"><span scop="queryTime3" onclick="queryTime(3,3,'2')" class="newusa_ici_1">昨天&nbsp;</span></a><a href="javascript:void(0)"><span scop="queryTime3" onclick="queryTime(3,4,'7')" class="newusa_ici_1">7天以内&nbsp;</span></a><a href="javascript:void(0)"><span scop="queryTime3" onclick="queryTime(3,5,'30')" class="newusa_ici_1">30天以内&nbsp;</span></a>
+            <%--<span style="float: left;color: #5F93D7;">从</span><input class="form-controlsd " style="float: left;color: #5F93D7;width: 90px;height: 26px;border-color: #d0dde9" id="starttime3"  type="text" onfocus="WdatePicker({isShowWeek:true,dateFmt:'yyyy-MM-dd'})"/>
+            <span style="float: left;color: #5F93D7;">到</span><input class="form-controlsd " style="float: left;color: #5F93D7;width: 90px;height: 26px;margin-right: 20px;border-color: #d0dde9" id="endtime3"  type="text" onfocus="WdatePicker({isShowWeek:true,dateFmt:'yyyy-MM-dd'})"/>--%>
+            <a href="javascript:void(0)" onclick="addstartTimeAndEndTime(this,3)"><span style="float: left;color: #5F93D7">自定义...</span></a>
+        </div>
+        <li class="new_usa_list"><span class="newusa_i">订单状态：</span><a href="javascript:void(0)"><span class="newusa_ici" scop="queryStatus3"  onclick="queryStatus(3,1,null);">全部&nbsp;</span></a><a href="javascript:void(0)"><span class="newusa_ici_1" scop="queryStatus3"  onclick="queryStatus(3,2,'1');">已付款&nbsp;</span></a><a href="javascript:void(0)"><span class="newusa_ici_1" scop="queryStatus3"  onclick="queryStatus(3,3,'2');">已发货&nbsp;</span></a><a href="javascript:void(0)"><span class="newusa_ici_1" scop="queryStatus3"  onclick="queryStatus(3,4,'3');">妥投&nbsp;</span></a><a href="javascript:void(0)"><span class="newusa_ici_1" scop="queryStatus3"  onclick="queryStatus(3,5,'4');">未妥投&nbsp;</span></a></li>
+        <div class="newsearch">
+            <span class="newusa_i">搜索内容：</span>
+            <span id="sleBG">
 <span id="sleHid">
 <select name="type" class="select" id="itemType3" onchange="cleanInput();">
     <option selected="selected" >选择类型</option>
-    <option value="orderId">订单号</option>
+    <option value="buyerId">买家账号</option>
+    <option value="itemId">物品号</option>
     <option value="sku">SKU</option>
-    <option value="title">标题</option>
+    <option value="title">物品标题</option>
+    <option value="trackNum">跟踪号</option>
+    <option value="person">联系人</option>
+    <option value="buyerEmail">买家电邮</option>
+    <option value="comment">备注</option>
 </select>
 </span>
 </span>
@@ -856,7 +1176,7 @@
             <div class="newsj_left">
 
                 <span class="newusa_ici_del_in"><input type="checkbox" name="checkbox" id="checkbox" id="allCheckbox" onclick="selectAllCheck(3,this);"></span>
-                <span class="newusa_ici_del" onclick="addComment(3);">添加备注</span><span class="newusa_ici_del" onclick="addTabRemark();">新建文件夹</span><span onclick="downloadOrders(3);" class="newusa_ici_del">下载订单</span>
+                <span class="newusa_ici_del" onclick="addComment(3);">添加备注</span><span class="newusa_ici_del" onclick="addTabRemark();">管理文件夹</span><span onclick="downloadOrders(3);" class="newusa_ici_del">下载订单</span>
                 <span onclick="moveFolder(3);" class="newusa_ici_del">移动到文件夹</span>
             </div>
             <div>
@@ -874,19 +1194,29 @@
 <div style="display: none;" id="con_menu_4">
     <!--综合开始 -->
     <div class="new_usa" style="margin-top:20px;">
-        <li class="new_usa_list" name="selectCountrys"><span class="newusa_i">收件人国家：</span><a href="#"><span class="newusa_ici" scop="queryCountry4"  onclick="queryCountry(4,1,null);">全部&nbsp;</span></a><a href="#"><span class="newusa_ici_1" scop="queryCountry4"  onclick="queryCountry(4,2,'US');"><img src="<c:url value ="/img/usa_1.png"/> " >美国</span></a><a href="#"><span class="newusa_ici_1" scop="queryCountry4"  onclick="queryCountry(4,3,'GB');"><img src="<c:url value ="/img/UK.jpg"/> ">英国&nbsp;</span></a><a href="#"><span class="newusa_ici_1" scop="queryCountry4"  onclick="queryCountry(4,4,'DE');"><img src="<c:url value ="/img/DE.png"/> ">德国&nbsp;</span></a><a href="#"><span class="newusa_ici_1" scop="queryCountry4"  onclick="queryCountry(4,5,'AU');"><img src="<c:url value ="/img/AU.jpg"/> ">澳大利亚</span></a><a href="javascript:void(0)" onclick="selectCountrys();"><span style="padding-left: 20px;vertical-align: middle;color: royalblue">更多...</span></a></li>
-        <li class="new_usa_list"><span class="newusa_i">刊登类型：</span><a href="#"><span class="newusa_ici" scop="queryAttr4" onclick="queryAttr(4,1,null);">全部&nbsp;</span></a><a href="#"><span class="newusa_ici_1" scop="queryAttr4" onclick="queryAttr(4,2,'fixation');">固价&nbsp;</span></a><a href="#"><span class="newusa_ici_1" scop="queryAttr4" onclick="queryAttr(4,3,'auction');">拍卖&nbsp;</span></a><a href="#"><span class="newusa_ici_1" scop="queryAttr4" onclick="queryAttr(4,4,'multiattribute');">多属性&nbsp;</span></a></li>
+        <li class="new_usa_list" name="selectCountrys" name1="selectCountrys4"><span class="newusa_i">收件人国家：</span><a href="javascript:void(0)"><span class="newusa_ici" scop="queryCountry4"  onclick="queryCountry(4,1,null);">全部&nbsp;</span></a><a href="javascript:void(0)"><span class="newusa_ici_1" scop="queryCountry4"  onclick="queryCountry(4,2,'US');"><img src="<c:url value ="/img/usa_1.png"/> " >美国</span></a><a href="javascript:void(0)"><span class="newusa_ici_1" scop="queryCountry4"  onclick="queryCountry(4,3,'GB');"><img src="<c:url value ="/img/UK.jpg"/> ">英国&nbsp;</span></a><a href="javascript:void(0)"><span class="newusa_ici_1" scop="queryCountry4"  onclick="queryCountry(4,4,'DE');"><img src="<c:url value ="/img/DE.png"/> ">德国&nbsp;</span></a><a href="javascript:void(0)"><span class="newusa_ici_1" scop="queryCountry4"  onclick="queryCountry(4,5,'AU');"><img src="<c:url value ="/img/AU.jpg"/> ">澳大利亚</span></a><a href="javascript:void(0)" onclick="selectCountrys();"><span style="padding-left: 20px;vertical-align: middle;color: royalblue">更多...</span></a></li>
+        <li class="new_usa_list"><span class="newusa_i">刊登类型：</span><a href="javascript:void(0)"><span class="newusa_ici" scop="queryAttr4" onclick="queryAttr(4,1,null);">全部&nbsp;</span></a><a href="javascript:void(0)"><span class="newusa_ici_1" scop="queryAttr4" onclick="queryAttr(4,2,'fixation');">固价&nbsp;</span></a><a href="javascript:void(0)"><span class="newusa_ici_1" scop="queryAttr4" onclick="queryAttr(4,3,'auction');">拍卖&nbsp;</span></a><a href="javascript:void(0)"><span class="newusa_ici_1" scop="queryAttr4" onclick="queryAttr(4,4,'multiattribute');">多属性&nbsp;</span></a></li>
         <div class="newsearch">
-            <span class="newusa_i">刊登类型：</span><a href="#"><span scop="queryTime4" onclick="queryTime(4,1,null)" class="newusa_ici">全部&nbsp;</span></a><a href="#"><span scop="queryTime4" onclick="queryTime(4,2,'1')" class="newusa_ici_1">今天&nbsp;</span></a><a href="#"><span scop="queryTime4" onclick="queryTime(4,3,'2')" class="newusa_ici_1">昨天&nbsp;</span></a><a href="#"><span scop="queryTime4" onclick="queryTime(4,4,'7')" class="newusa_ici_1">7天以内&nbsp;</span></a><a href="#"><span scop="queryTime4" onclick="queryTime(4,5,'30')" class="newusa_ici_1">30天以内&nbsp;</span></a>
-            <span style="float: left;color: #5F93D7;">从</span><input class="form-controlsd " style="float: left;color: #5F93D7;width: 90px;height: 26px;border-color: #d0dde9" id="starttime4"  type="text" onfocus="WdatePicker({isShowWeek:true,dateFmt:'yyyy-MM-dd'})"/>
-            <span style="float: left;color: #5F93D7;">到</span><input class="form-controlsd " style="float: left;color: #5F93D7;width: 90px;height: 26px;margin-right: 20px;border-color: #d0dde9" id="endtime4"  type="text" onfocus="WdatePicker({isShowWeek:true,dateFmt:'yyyy-MM-dd'})"/>
-<span id="sleBG">
+            <span class="newusa_i">时间：</span><a href="javascript:void(0)"><span scop="queryTime4" onclick="queryTime(4,1,null)" class="newusa_ici">全部&nbsp;</span></a><a href="javascript:void(0)"><span scop="queryTime4" onclick="queryTime(4,2,'1')" class="newusa_ici_1">今天&nbsp;</span></a><a href="javascript:void(0)"><span scop="queryTime4" onclick="queryTime(4,3,'2')" class="newusa_ici_1">昨天&nbsp;</span></a><a href="javascript:void(0)"><span scop="queryTime4" onclick="queryTime(4,4,'7')" class="newusa_ici_1">7天以内&nbsp;</span></a><a href="javascript:void(0)"><span scop="queryTime4" onclick="queryTime(4,5,'30')" class="newusa_ici_1">30天以内&nbsp;</span></a>
+            <%--<span style="float: left;color: #5F93D7;">从</span><input class="form-controlsd " style="float: left;color: #5F93D7;width: 90px;height: 26px;border-color: #d0dde9" id="starttime4"  type="text" onfocus="WdatePicker({isShowWeek:true,dateFmt:'yyyy-MM-dd'})"/>
+            <span style="float: left;color: #5F93D7;">到</span><input class="form-controlsd " style="float: left;color: #5F93D7;width: 90px;height: 26px;margin-right: 20px;border-color: #d0dde9" id="endtime4"  type="text" onfocus="WdatePicker({isShowWeek:true,dateFmt:'yyyy-MM-dd'})"/>--%>
+            <a href="javascript:void(0)" id="addstartTimeAndEndTimeID" onclick="addstartTimeAndEndTime(this,4)"><span style="float: left;color: #5F93D7">自定义...</span></a>
+        </div>
+        <li class="new_usa_list"><span class="newusa_i">订单状态：</span><a href="javascript:void(0)"><span class="newusa_ici" scop="queryStatus4"  onclick="queryStatus(4,1,null);">全部&nbsp;</span></a><a href="javascript:void(0)"><span class="newusa_ici_1" scop="queryStatus4"  onclick="queryStatus(4,2,'1');">已付款&nbsp;</span></a><a href="javascript:void(0)"><span class="newusa_ici_1" scop="queryStatus4"  onclick="queryStatus(4,3,'2');">已发货&nbsp;</span></a><a href="javascript:void(0)"><span class="newusa_ici_1" scop="queryStatus4"  onclick="queryStatus(4,4,'3');">妥投&nbsp;</span></a><a href="javascript:void(0)"><span class="newusa_ici_1" scop="queryStatus4"  onclick="queryStatus(4,5,'4');">未妥投&nbsp;</span></a></li>
+        <div class="newsearch">
+            <span class="newusa_i">搜索内容：</span>
+            <span id="sleBG">
 <span id="sleHid">
 <select name="type" class="select" id="itemType4" onchange="cleanInput();">
     <option selected="selected" >选择类型</option>
-    <option value="orderId">订单号</option>
+    <option value="buyerId">买家账号</option>
+    <option value="itemId">物品号</option>
     <option value="sku">SKU</option>
-    <option value="title">标题</option>
+    <option value="title">物品标题</option>
+    <option value="trackNum">跟踪号</option>
+    <option value="person">联系人</option>
+    <option value="buyerEmail">买家电邮</option>
+    <option value="comment">备注</option>
 </select>
 </span>
 </span>
@@ -897,7 +1227,7 @@
             <div class="newsj_left">
 
                 <span class="newusa_ici_del_in"><input type="checkbox" name="checkbox" id="allCheckbox" onclick="selectAllCheck(4,this);"></span>
-                <span id="addComment" class="newusa_ici_del" onclick="addComment(4);">添加备注</span><span id="addtabRemark" class="newusa_ici_del" onclick="addTabRemark();">新建文件夹</span><span id="downloadOrder4" onclick="downloadOrders(4);" class="newusa_ici_del">下载订单</span>
+                <span id="addComment" class="newusa_ici_del" onclick="addComment(4);">添加备注</span><span id="addtabRemark" class="newusa_ici_del" onclick="addTabRemark();">管理文件夹</span><span id="downloadOrder4" onclick="downloadOrders(4);" class="newusa_ici_del">下载订单</span>
                 <span id="moveFolder" onclick="moveFolder(4);" class="newusa_ici_del">移动到文件夹</span>
             </div>
             <div>

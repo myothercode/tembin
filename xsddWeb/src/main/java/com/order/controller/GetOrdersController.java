@@ -4,9 +4,11 @@ import com.base.aboutpaypal.domain.PaypalVO;
 import com.base.aboutpaypal.service.PayPalService;
 import com.base.database.publicd.model.PublicUserConfig;
 import com.base.database.trading.model.*;
+import com.base.database.userinfo.model.SystemLog;
 import com.base.domains.CommonParmVO;
 import com.base.domains.SessionVO;
 import com.base.domains.querypojos.OrderGetOrdersQuery;
+import com.base.domains.querypojos.SystemLogQuery;
 import com.base.domains.userinfo.UsercontrollerDevAccountExtend;
 import com.base.domains.userinfo.UsercontrollerEbayAccountExtend;
 import com.base.mybatis.page.Page;
@@ -19,6 +21,7 @@ import com.base.utils.annotations.AvoidDuplicateSubmission;
 import com.base.utils.cache.DataDictionarySupport;
 import com.base.utils.cache.SessionCacheSupport;
 import com.base.utils.common.DateUtils;
+import com.base.utils.common.SystemLogUtils;
 import com.base.utils.threadpool.AddApiTask;
 import com.base.utils.threadpool.TaskMessageVO;
 import com.base.utils.xmlutils.SamplePaseXml;
@@ -83,13 +86,19 @@ public class GetOrdersController extends BaseAction {
     private IUsercontrollerEbayAccount iUsercontrollerEbayAccount;
     @Autowired
     private ITradingGetUserCases iTradingGetUserCases;
+    @Autowired
+    private ITradingDataDictionary iTradingDataDictionary;
+
    /* @Autowired
     private ITradingOrderVariation iTradingOrderVariation;
     @Autowired
     private ITradingOrderVariationSpecifics iTradingOrderVariationSpecifics;*/
     @Value("${EBAY.API.URL}")
     private String apiUrl;
-
+   /* SystemLogUtils
+    log.setEventname();
+    log.setOperuser();
+    log.setEventdesc();*/
     @RequestMapping("/queryOrdersList.do")
     public ModelAndView queryOrdersList(HttpServletRequest request,HttpServletResponse response,ModelMap modelMap){
         String content=request.getParameter("content");
@@ -109,6 +118,11 @@ public class GetOrdersController extends BaseAction {
         modelMap.put("folders",configs);
         modelMap.put("count",configs.size());
         return forword("/orders/order/getOrdersList",modelMap);
+    }
+    //跳转日志界面
+    @RequestMapping("/viewSystemlog.do")
+    public ModelAndView viewSystemlog(HttpServletRequest request,HttpServletResponse response,ModelMap modelMap){
+        return forword("/orders/order/viewSystemlog",modelMap);
     }
     /**refleshTabRemark*/
     @RequestMapping("/refleshTabRemark.do")
@@ -137,6 +151,7 @@ public class GetOrdersController extends BaseAction {
     //选择地区
     @RequestMapping("/selectCountrys.do")
     public ModelAndView selectCountrys(HttpServletRequest request,HttpServletResponse response,ModelMap modelMap){
+        String num=request.getParameter("num");
         List<TradingDataDictionary> lidata = DataDictionarySupport.getTradingDataDictionaryByType(DataDictionarySupport.DATA_DICT_DELTA);
         List<TradingDataDictionary> li1 = new ArrayList();
         List<String> names=new ArrayList<String>();
@@ -154,6 +169,7 @@ public class GetOrdersController extends BaseAction {
         modelMap.put("names",names);
         modelMap.put("countryIds",countryIds);
         modelMap.put("root",root);
+        modelMap.put("num",num);
         return forword("/orders/order/selectCountrys",modelMap);
     }
 
@@ -183,6 +199,10 @@ public class GetOrdersController extends BaseAction {
     public void removeOrderTabremark(HttpServletRequest request,HttpServletResponse response,ModelMap modelMap) throws Exception {
         String id=request.getParameter("id");
         PublicUserConfig config=iPublicUserConfig.selectUserConfigById(Long.valueOf(id));
+        SessionVO sessionVO= SessionCacheSupport.getSessionVO();
+        SystemLog systemLog=new SystemLog();
+        systemLog.setEventname(SystemLogUtils.ORDER_OPERATE_RECORD);
+        systemLog.setOperuser(sessionVO.getUserName());
         if(config!=null){
             List<UsercontrollerEbayAccountExtend> ebays=userInfoService.getEbayAccountForCurrUser(new HashMap(),Page.newAOnePage());
             List<String> ebayNames=new ArrayList<String>();
@@ -197,9 +217,13 @@ public class GetOrdersController extends BaseAction {
                 }
             }
             iPublicUserConfig.deleteUserConfig(config);
+            systemLog.setEventdesc("删除文件夹成功");
+            SystemLogUtils.saveLog(systemLog);
             AjaxSupport.sendSuccessText("", "删除文件夹成功");
             return;
         }else{
+            systemLog.setEventdesc("删除文件夹失败");
+            SystemLogUtils.saveLog(systemLog);
             AjaxSupport.sendFailText("fail","文件夹不存在");
         }
 
@@ -215,8 +239,9 @@ public class GetOrdersController extends BaseAction {
     //添加备注
     @RequestMapping("/addComment.do")
     public ModelAndView addComment(HttpServletRequest request,HttpServletResponse response,ModelMap modelMap){
-        String orderid=request.getParameter("orderid");
-        modelMap.put("orderid",orderid);
+        String id=request.getParameter("id");
+        TradingOrderGetOrders order=iTradingOrderGetOrders.selectOrderGetOrdersById(Long.valueOf(id));
+        modelMap.put("order",order);
         return forword("/orders/order/addComment",modelMap);
     }
     //移动订单到指定文件夹初始化
@@ -248,10 +273,33 @@ public class GetOrdersController extends BaseAction {
         modelMap.put("table1",table1);
         return forword("/orders/order/moveFolder",modelMap);
     }
+    //删除订单
+    @RequestMapping("/deleteOrder.do")
+    public void deleteOrder(HttpServletRequest request,HttpServletResponse response,ModelMap modelMap) throws Exception {
+        String id=request.getParameter("id");
+        SessionVO sessionVO= SessionCacheSupport.getSessionVO();
+        SystemLog systemLog=new SystemLog();
+        systemLog.setEventname(SystemLogUtils.ORDER_OPERATE_RECORD);
+        systemLog.setOperuser(sessionVO.getUserName());
+        if(StringUtils.isNotBlank(id)){
+            iTradingOrderGetOrders.deleteOrderGetOrders(Long.valueOf(id));
+            systemLog.setEventdesc("订单删除成功");
+            SystemLogUtils.saveLog(systemLog);
+            AjaxSupport.sendSuccessText("","删除成功");
+        }else{
+            systemLog.setEventdesc("订单删除失败");
+            SystemLogUtils.saveLog(systemLog);
+            AjaxSupport.sendFailText("fail","订单不存在,请核实");
+        }
+    }
     //保存订单到指定文件夹
     @RequestMapping("/saveFolder.do")
     public void saveFolder(HttpServletRequest request,HttpServletResponse response,ModelMap modelMap) throws Exception {
         String folderId=request.getParameter("folderId");
+        SessionVO sessionVO= SessionCacheSupport.getSessionVO();
+        SystemLog systemLog=new SystemLog();
+        systemLog.setEventname(SystemLogUtils.ORDER_OPERATE_RECORD);
+        systemLog.setOperuser(sessionVO.getUserName());
         int i=0;
         while(i>=0){
             String orderid=request.getParameter("orderid["+i+"]");
@@ -269,25 +317,37 @@ public class GetOrdersController extends BaseAction {
             }
         }
         if(i==-2){
+            systemLog.setEventdesc("移动文件夹失败");
+            SystemLogUtils.saveLog(systemLog);
             AjaxSupport.sendFailText("fail","文件夹不存在");
             return;
         }
+        systemLog.setEventdesc("移动文件夹成功");
+        SystemLogUtils.saveLog(systemLog);
         AjaxSupport.sendSuccessText("","已经移动到指定的文件夹中");
 
     }
-    //保存文件夹
+    //保存备注
     @RequestMapping("/saveComment.do")
     public void saveComment(HttpServletRequest request,HttpServletResponse response,ModelMap modelMap) throws Exception {
         String orderid=request.getParameter("orderid");
         String comment=request.getParameter("comment");
+        SessionVO sessionVO= SessionCacheSupport.getSessionVO();
+        SystemLog systemLog=new SystemLog();
+        systemLog.setEventname(SystemLogUtils.ORDER_OPERATE_RECORD);
+        systemLog.setOperuser(sessionVO.getUserName());
         if(StringUtils.isNotBlank(orderid)){
             List<TradingOrderGetOrders> orders=iTradingOrderGetOrders.selectOrderGetOrdersByOrderId(orderid);
             for(TradingOrderGetOrders order:orders){
                 order.setComment(comment);
                 iTradingOrderGetOrders.saveOrderGetOrders(order);
             }
+            systemLog.setEventdesc("保存备注成功");
+            SystemLogUtils.saveLog(systemLog);
             AjaxSupport.sendSuccessText("","添加备注成功");
         }else{
+            systemLog.setEventdesc("保存备注失败");
+            SystemLogUtils.saveLog(systemLog);
             AjaxSupport.sendFailText("fail","该订单不存在");
         }
     }
@@ -296,7 +356,13 @@ public class GetOrdersController extends BaseAction {
     public void saveTabremark(HttpServletRequest request,HttpServletResponse response,ModelMap modelMap) throws Exception {
         String tabName=request.getParameter("tabName");
         String folderType=request.getParameter("folderType");
+        SessionVO sessionVO= SessionCacheSupport.getSessionVO();
+        SystemLog systemLog=new SystemLog();
+        systemLog.setEventname(SystemLogUtils.ORDER_OPERATE_RECORD);
+        systemLog.setOperuser(sessionVO.getUserName());
         if(!StringUtils.isNotBlank(tabName)){
+            systemLog.setEventdesc("保存文件夹失败");
+            SystemLogUtils.saveLog(systemLog);
             AjaxSupport.sendFailText("fail","文件夹名称不能为空");
             return;
         }
@@ -305,7 +371,24 @@ public class GetOrdersController extends BaseAction {
         config.setConfigName(tabName);
         config.setConfigValue("true");
         iPublicUserConfig.saveUserConfig(config);
+        systemLog.setEventdesc("保存文件夹成功");
+        SystemLogUtils.saveLog(systemLog);
         AjaxSupport.sendSuccessText("", config);
+    }
+    /**获取list数据的ajax方法*/
+    @RequestMapping("/ajax/loadSystemList.do")
+    @ResponseBody
+    public void loadSystemList(CommonParmVO commonParmVO,HttpServletRequest request) throws Exception {
+        PageJsonBean jsonBean=commonParmVO.getJsonBean();
+        Page page=jsonBean.toPage();
+        Map map=new HashMap();
+        SessionVO sessionVO= SessionCacheSupport.getSessionVO();
+        map.put("userName",sessionVO.getUserName());
+        map.put("eventName",SystemLogUtils.ORDER_OPERATE_RECORD);
+        List<SystemLogQuery> lists=SystemLogUtils.selectSystemLogList(map,page);
+        jsonBean.setList(lists);
+        jsonBean.setTotal((int)page.getTotalCount());
+        AjaxSupport.sendSuccessText("", jsonBean);
     }
     /**获取list数据的ajax方法*/
     @RequestMapping("/ajax/loadOrdersList.do")
@@ -314,6 +397,7 @@ public class GetOrdersController extends BaseAction {
         String countryQ=request.getParameter("countryQ");
         String typeQ=request.getParameter("typeQ");
         String daysQ=request.getParameter("daysQ");
+        String statusQ=request.getParameter("statusQ");
         String itemType=request.getParameter("itemType");
         String content=request.getParameter("content");
         String status=request.getParameter("status");
@@ -350,6 +434,14 @@ public class GetOrdersController extends BaseAction {
         if(!StringUtils.isNotBlank(typeQ)){
             typeQ=null;
         }
+        String statusQ1=null;
+        if(StringUtils.isNotBlank(statusQ)){
+            if("1".equals(statusQ)){
+                status="Complete";
+            }else{
+                statusQ1=statusQ;
+            }
+        }
         if(!StringUtils.isNotBlank(itemType)){
             itemType=null;
         }
@@ -383,6 +475,7 @@ public class GetOrdersController extends BaseAction {
             map.put("folderId",folderId);
             map.put("itemType",itemType);
             map.put("framConten",framConten);
+            map.put("statusQ1",statusQ1);
             lists= this.iTradingOrderGetOrders.selectOrderGetOrdersByGroupList(map,page);
             for(OrderGetOrdersQuery list:lists){
                 String itemid=list.getItemid();
@@ -395,6 +488,11 @@ public class GetOrdersController extends BaseAction {
                     }
                  /*   List<TradingDataDictionary> dictionaries=iTradingDataDictionary.s()*/
                     list.setItemSite(itemList.get(0).getSite());
+                    List<TradingDataDictionary> dictionarys=iTradingDataDictionary.selectDictionaryByType("site",null,null,itemList.get(0).getSite());
+                    if(dictionarys.size()>0){
+                        String root=request.getContextPath();
+                        list.setItemSite(root+dictionarys.get(0).getImgurl());
+                    }
                 }
                 String variationSKU=list.getVariationsku();
                 if(StringUtils.isNotBlank(variationSKU)){
@@ -478,6 +576,12 @@ public class GetOrdersController extends BaseAction {
            /* order.setOrderstatus("Shipped");*/
             iTradingOrderGetOrders.saveOrderGetOrders(order);
         }
+    /*    SessionVO sessionVO= SessionCacheSupport.getSessionVO();
+        SystemLog systemLog=new SystemLog();
+        systemLog.setEventname(SystemLogUtils.ORDER_OPERATE_RECORD);
+        systemLog.setOperuser(sessionVO.getUserName());
+        systemLog.setEventdesc("上传跟踪号成功");
+        SystemLogUtils.saveLog(systemLog);*/
         AjaxSupport.sendSuccessText("","操作成功!");
     }
     /**
@@ -636,6 +740,10 @@ public class GetOrdersController extends BaseAction {
         String fullRefund=request.getParameter("fullRefund");
         String partialRefund=request.getParameter("partialRefund");
         String amout=request.getParameter("amout");
+        SessionVO sessionVO= SessionCacheSupport.getSessionVO();
+        SystemLog systemLog=new SystemLog();
+        systemLog.setEventname(SystemLogUtils.ORDER_OPERATE_RECORD);
+        systemLog.setOperuser(sessionVO.getUserName());
         List<TradingGetUserCases> caseses=iTradingGetUserCases.selectGetUserCasesByTransactionId(transactionid,selleruserid);
         List<TradingOrderGetOrders> orders=iTradingOrderGetOrders.selectOrderGetOrdersByTransactionId(transactionid,selleruserid);
         if(StringUtils.isNotBlank(fullRefund)&&StringUtils.isNotBlank(partialRefund)){
@@ -685,6 +793,8 @@ public class GetOrdersController extends BaseAction {
             String r1 = resEbpMap.get("stat");
             String res = resEbpMap.get("message");
             if ("fail".equalsIgnoreCase(r1)) {
+                systemLog.setEventdesc("退款操作失败:调用API失败");
+                SystemLogUtils.saveLog(systemLog);
                 AjaxSupport.sendFailText("fail", res);
                 return;
             }
@@ -693,10 +803,14 @@ public class GetOrdersController extends BaseAction {
                 TradingGetUserCases cases=caseses.get(0);
                 cases.setHandled(1);
                 iTradingGetUserCases.saveGetUserCases(cases);
+                systemLog.setEventdesc("退款操作成功");
+                SystemLogUtils.saveLog(systemLog);
                 AjaxSupport.sendSuccessText("message", "退款成功!");
             }else{
                 String errors = SamplePaseXml.getVFromXmlString(res, "Errors");
                 logger.error("退款失败!" + errors);
+                systemLog.setEventdesc("退款操作失败:调用API失败");
+                SystemLogUtils.saveLog(systemLog);
                 AjaxSupport.sendFailText("fail", "退款失败！请稍后重试");
             }
         }else{
@@ -715,6 +829,11 @@ public class GetOrdersController extends BaseAction {
         String shippStatus=request.getParameter("shippStatus");
         String ShipmentTrackingNumber=request.getParameter("ShipmentTrackingNumber");
         String ShippingCarrierUsed=request.getParameter("ShippingCarrierUsed");
+        SessionVO sessionVO= SessionCacheSupport.getSessionVO();
+        SystemLog systemLog=new SystemLog();
+        systemLog.setEventname(SystemLogUtils.ORDER_OPERATE_RECORD);
+        systemLog.setOperuser(sessionVO.getUserName());
+
         UsercontrollerDevAccountExtend d = userInfoService.getDevInfo(null);//开发者帐号id
         d.setApiSiteid("0");
         d.setApiCallName(APINameStatic.CompleteSale);
@@ -740,6 +859,8 @@ public class GetOrdersController extends BaseAction {
         String r1 = resMap.get("stat");
         String res = resMap.get("message");
         if ("fail".equalsIgnoreCase(r1)) {
+            systemLog.setEventdesc("上传跟踪号失败:调用API失败");
+            SystemLogUtils.saveLog(systemLog);
             AjaxSupport.sendFailText("fail", res);
             return;
         }
@@ -750,8 +871,12 @@ public class GetOrdersController extends BaseAction {
             order.setShipmenttrackingnumber(ShipmentTrackingNumber);
             order.setShippingcarrierused(ShippingCarrierUsed);
             iTradingOrderGetOrders.saveOrderGetOrders(order);
+            systemLog.setEventdesc("上传跟踪号成功");
+            SystemLogUtils.saveLog(systemLog);
             AjaxSupport.sendSuccessText("success", "订单状态修改成功");
         }else{
+            systemLog.setEventdesc("上传跟踪号失败:调用API错误");
+            SystemLogUtils.saveLog(systemLog);
             AjaxSupport.sendFailText("fail", "获取必要的参数失败！请稍后重试");
         }
 
@@ -1026,7 +1151,8 @@ public class GetOrdersController extends BaseAction {
         String outputFile=outputFile1+"download\\orders.xls";
         String status=request.getParameter("status");
         String folderId=request.getParameter("folderId");
-        List<UsercontrollerEbayAccountExtend> ebays=userInfoService.getEbayAccountForCurrUser(new HashMap(),Page.newAOnePage());
+        Map map=new HashMap();
+        List<UsercontrollerEbayAccountExtend> ebays=systemUserManagerService.queryACurrAllEbay(map);
         List<String> ebayNames=new ArrayList<String>();
         for(UsercontrollerEbayAccountExtend ebay:ebays){
             String name=ebay.getEbayName();
@@ -1039,14 +1165,22 @@ public class GetOrdersController extends BaseAction {
             folderId=null;
         }
         List<TradingOrderGetOrders> orders=new ArrayList<TradingOrderGetOrders>();
-        if(status!=null){
-           orders=iTradingOrderGetOrders.selectOrderGetOrdersByPaypalStatus(status,ebayNames);
-        }
-        if(folderId!=null){
+        /*if(status==null){
+            orders=iTradingOrderGetOrders.selectOrderGetOrdersByFolder(folderId, ebayNames);
+        }*/
+        if(folderId==null){
+            orders=iTradingOrderGetOrders.selectOrderGetOrdersByPaypalStatus(status,ebayNames);
+        }else{
             orders=iTradingOrderGetOrders.selectOrderGetOrdersByFolder(folderId, ebayNames);
         }
         response.setHeader("Content-Disposition","attachment;filename=orders.xls");// 组装附件名称和格式
         ServletOutputStream outputStream = response.getOutputStream();
+        SessionVO sessionVO= SessionCacheSupport.getSessionVO();
+        SystemLog systemLog=new SystemLog();
+        systemLog.setEventname(SystemLogUtils.ORDER_OPERATE_RECORD);
+        systemLog.setOperuser(sessionVO.getUserName());
+        systemLog.setEventdesc("订单下载成功");
+        SystemLogUtils.saveLog(systemLog);
         iTradingOrderGetOrders.downloadOrders(orders, outputFile,outputStream);
     }
      /*
@@ -1062,6 +1196,10 @@ public class GetOrdersController extends BaseAction {
         String buyeruserid=request.getParameter("buyeruserid");
         String sender=request.getParameter("selleruserid");
         String transactionid=request.getParameter("transactionid");
+        SessionVO sessionVO= SessionCacheSupport.getSessionVO();
+        SystemLog systemLog=new SystemLog();
+        systemLog.setEventname(SystemLogUtils.ORDER_OPERATE_RECORD);
+        systemLog.setOperuser(sessionVO.getUserName());
         if(!StringUtils.isNotBlank(itemid)){
             itemid=request.getParameter("itemid1");
         }
@@ -1098,6 +1236,8 @@ public class GetOrdersController extends BaseAction {
         String r1 = resMap.get("stat");
         String res = resMap.get("message");
         if ("fail".equalsIgnoreCase(r1)) {
+            systemLog.setEventdesc("发送消息失败:调用API失败");
+            SystemLogUtils.saveLog(systemLog);
             AjaxSupport.sendFailText("fail", res);
             return;
         }
@@ -1113,6 +1253,8 @@ public class GetOrdersController extends BaseAction {
             message1.setTransactionid(transactionid);
             message1.setReplied("true");
             iTradingOrderAddMemberMessageAAQToPartner.saveOrderAddMemberMessageAAQToPartner(message1);
+            systemLog.setEventdesc("发送消息成功");
+            SystemLogUtils.saveLog(systemLog);
             AjaxSupport.sendSuccessText("success", "发送成功");
         }else{
             TradingOrderAddMemberMessageAAQToPartner message1=new TradingOrderAddMemberMessageAAQToPartner();
@@ -1125,6 +1267,8 @@ public class GetOrdersController extends BaseAction {
             message1.setTransactionid(transactionid);
             message1.setReplied("false");
             iTradingOrderAddMemberMessageAAQToPartner.saveOrderAddMemberMessageAAQToPartner(message1);
+            systemLog.setEventdesc("发送消息失败:调用API失败");
+            SystemLogUtils.saveLog(systemLog);
             AjaxSupport.sendFailText("fail", "获取必要的参数失败！请稍后重试");
         }
     }
@@ -1152,10 +1296,10 @@ public class GetOrdersController extends BaseAction {
         //-------
         request.getSession().setAttribute("dveId", d);
         Map map=new HashMap();
-        Date startTime2=DateUtils.subDays(new Date(),9);
-        Date endTime= DateUtils.addDays(startTime2, 9);
-      /*  Date startTime2=DateUtils.subDays(new Date(),90);
-        Date endTime= DateUtils.addDays(startTime2, 90);*/
+     /*   Date startTime2=DateUtils.subDays(new Date(),9);
+        Date endTime= DateUtils.addDays(startTime2, 9);*/
+        Date startTime2=DateUtils.subDays(new Date(),90);
+        Date endTime= DateUtils.addDays(startTime2, 90);
         Date end1= com.base.utils.common.DateUtils.turnToDateEnd(endTime);
         String start= DateUtils.DateToString(startTime2);
         String end=DateUtils.DateToString(end1);
@@ -1191,4 +1335,36 @@ public class GetOrdersController extends BaseAction {
         /*addApiTask.execDelayReturn(d, xml,"https://api.ebay.com/ws/api.dll", taskMessageVO);*/
         AjaxSupport.sendSuccessText("message", "操作成功！结果请稍后查看消息！");
     }
+    /*public Boolean queryTrack(String statusQ,OrderGetOrdersQuery query) throws Exception {
+        BufferedReader in = null;
+        String content = null;
+        String trackNum=query.getShipmenttrackingnumber();
+        String token=(URLEncoder.encode("RXYaxblwfBeNY+2zFVDbCYTz91r+VNWmyMTgXE4v16gCffJam2FcsPUpiau6F8Yk"));
+        String url="http://api.91track.com/track?culture=zh-CN&numbers="+trackNum+"&token="+token;
+        *//*String url="http://api.91track.com/track?culture=en&numbers="+"RD275816257CN"+"&token="+token;*//*
+        HttpClient client=new DefaultHttpClient();
+        HttpGet get=new HttpGet();
+        get.setURI(new URI(url));
+        HttpResponse response = client.execute(get);
+
+        in = new BufferedReader(new InputStreamReader(response.getEntity()
+                .getContent()));
+        StringBuffer sb = new StringBuffer("");
+        String line ="";
+        String NL = System.getProperty("line.separator");
+        while ((line = in.readLine()) != null) {
+            sb.append(line + NL);
+        }
+        in.close();
+        content = sb.toString();
+        String[] arr=content.split(",");
+        String content1=arr[1];
+        if((content1.contains("1")||content1.contains("2"))&&"4".equals(statusQ)){
+            return true;
+        }
+        if((content1.contains("3")||content1.contains("4"))&&"3".equals(statusQ)){
+            return true;
+        }
+         return false;
+    }*/
 }

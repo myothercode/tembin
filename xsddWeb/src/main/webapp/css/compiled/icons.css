@@ -148,7 +148,7 @@ i.table-delete {
 	border-right-style: none;
 	border-bottom-style: none;
 	border-left-style: none;
-	font-size: 14px;
+    font-size: 14px;
 	color: #888;
 	font-family: "微软雅黑", "宋体", Arial;
 }
@@ -252,4 +252,24 @@ margin-top:12px;
 	border-bottom-style: none;
 	border-left-style: none;
 	float: right;
+}
+.pipi{
+	width: auto;
+	padding: 8px;
+	border: 1px solid #EAEAEA;
+	margin-right: 12px;
+	margin-top: 12px;
+	float: left;
+	height: 32px;
+	margin-bottom: 0px;
+	margin-left: 0px;
+	cursor: pointer;
+}
+.spic{
+	width: 141px;float: left;margin-top: 12px;margin-bottom: 12px;border: 1px solid #E1E1E1;
+}
+.a1fd{
+	position: absolute;
+	margin-top: 94px;
+	margin-left:124px;
 }

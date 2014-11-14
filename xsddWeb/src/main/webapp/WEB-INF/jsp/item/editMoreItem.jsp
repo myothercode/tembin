@@ -240,7 +240,7 @@
         }
         var CategoryType;
         function selectType(){
-            CategoryType=$.dialog({title: '选择商品分类',
+            CategoryType=openMyDialog({title: '选择商品分类',
                 content: 'url:'+path+'/category/initSelectCategoryPage.do',
                 icon: 'succeed',
                 width:650,
@@ -736,7 +736,7 @@
     var par="";
     function createNoLocationList(){
         var api = frameElement.api, W = api.opener;
-        par = $.dialog({title: '不运送地选项',
+        par = openMyDialog({title: '不运送地选项',
             content: 'url:/xsddWeb/locationList.do',
             icon: 'succeed',
             width:800,

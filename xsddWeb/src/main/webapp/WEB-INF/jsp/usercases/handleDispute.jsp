@@ -32,7 +32,7 @@
         }
         function respondCase(){
             var url=path+"/userCases/responseDispute.do?transactionid=${cases.transactionid}";
-            CaseDetails=$.dialog({title: '响应纠纷',
+            CaseDetails=openMyDialog({title: '响应纠纷',
                 content: 'url:'+url,
                 icon: 'succeed',
                 width:600,

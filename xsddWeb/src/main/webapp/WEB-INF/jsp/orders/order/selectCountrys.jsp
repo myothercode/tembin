@@ -29,34 +29,39 @@
             W.OrderGetOrders.close();
         }
         function submitCommit(){
+            var num=${num};
             var inputs=$("input[type=checkbox]:checked");
-            var lis=$(W.document).find("li[name=selectCountrys]");
        /* <span class="newusa_ici_1" scop="queryCountry1" onclick="queryCountry(1,1,null);">全部&nbsp;</span>
             <span class="newusa_ici_1" scop="queryCountry2" onclick="queryCountry(2,1,null);">全部&nbsp;</span>
             <span class="newusa_ici_1" scop="queryCountry3" onclick="queryCountry(3,1,null);">全部&nbsp;</span>
             <span class="newusa_ici_1" scop="queryCountry4" onclick="queryCountry(4,1,null);">全部&nbsp;</span>
             <span class="newusa_ici_1" scop="queryCountry5" onclick="queryCountry(5,1,null)">全部&nbsp;</span>*/
-            for(var i=0;i<lis.length;i++){
-                var input="<span class=\"newusa_i\">收件人国家：</span><a href=\"#\"><span class=\"newusa_ici\" scop=\"queryCountry"+(i+1)+"\"  onclick=\"queryCountry("+(i+1)+",1,null);\">全部&nbsp;</span></a>";
+            for(var i=0;i<num;i++){
+                var input="<li class=\"new_usa_list\" name=\"selectCountrys\" name1=\"selectCountrys"+(i+1)+"\"><span class=\"newusa_i\">收件人国家：</span><a href=\"javascript:void(0)\"><span class=\"newusa_ici\" scop=\"queryCountry"+(i+1)+"\"  onclick=\"queryCountry("+(i+1)+",1,null);\">全部&nbsp;</span></a>";
                 for(var j=0;j<inputs.length;j++){
                     var value=$(inputs[j]).attr("value");
                     var value1=$(inputs[j]).attr("value1");
-                    if(value1.length==3){
-                        value1=value1+"&nbsp;";
-                    }else if(value1.length==2){
-                        value1=value1+"&nbsp;&nbsp;";
-                    }
                     var value2=$(inputs[j]).attr("value2");
-                    if(value1>=5){
-                        input+="<a href=\"#\"><span class=\"newusa_ici_2\" scop=\"queryCountry"+(i+1)+"\"  onclick=\"queryCountry("+(i+1)+","+(j+2)+",'"+value+"');\"><img src='"+value2+"'/>"+value1+"</span></a>";
+                    if(((j+1)%10==0&&j!=0)){
+                        input+="</li><li class=\"new_usa_list\" name=\"selectCountrys\" name1=\"selectCountrys"+(i+1)+"\"><span class=\"newusa_i\"></span><a href=\"javascript:void(0)\"><span class=\"newusa_ici_1\" scop=\"queryCountry"+(i+1)+"\"  onclick=\"queryCountry("+(i+1)+","+(j+2)+",'"+value+"');\"><img src='"+value2+"'/>"+value1+"</span></a>";
+                    }else if((j+1)%10==9){
+                        input+="<a href=\"javascript:void(0)\"><span class=\"newusa_ici_1\" scop=\"queryCountry"+(i+1)+"\"  onclick=\"queryCountry("+(i+1)+","+(j+2)+",'"+value+"');\"><img src='"+value2+"'/>"+value1+"</span></a>";
                     }else{
-                        input+="<a href=\"#\"><span class=\"newusa_ici_1\" scop=\"queryCountry"+(i+1)+"\"  onclick=\"queryCountry("+(i+1)+","+(j+2)+",'"+value+"');\"><img src='"+value2+"'/>"+value1+"</span></a>";
+                        input+="<a href=\"javascript:void(0)\"><span class=\"newusa_ici_1\" scop=\"queryCountry"+(i+1)+"\"  onclick=\"queryCountry("+(i+1)+","+(j+2)+",'"+value+"');\"><img src='"+value2+"'/>"+value1+"</span></a>";
                     }
 
                 }
-                input+="<a href=\"javascript:void(0)\" onclick=\"selectCountrys();\"><span style=\"padding-left: 20px;vertical-align: middle;color: royalblue\">更多...</span></a>";
-                $(lis[i]).empty();
-                $(lis[i]).append(input);
+                if((inputs.length+1)%10==0){
+                    input+="<li class=\"new_usa_list\" name=\"selectCountrys\" name1=\"selectCountrys"+(i+1)+"\"><span class=\"newusa_i\"></span><a href=\"javascript:void(0)\" onclick=\"selectCountrys();\"><span style=\"padding-left: 20px;vertical-align: middle;color: royalblue\">更多...</span></a>";
+                }else{
+                    input+="<a href=\"javascript:void(0)\" onclick=\"selectCountrys();\"><span style=\"padding-left: 20px;vertical-align: middle;color: royalblue\">更多...</span></a>";
+                }
+                var li= $(W.document).find("li[name1=selectCountrys"+(i+1)+"]");
+                /*$(li).append(input);*/
+               /* $(li).after("<li class=\"new_usa_list\" name=\"selectCountrys\" name1=\"selectCountrys1\"><span class=\"newusa_i\"></span><a href=\"javascript:void(0)\"><span class=\"newusa_ici\" scop=\"queryCountry"+(i+1)+"\"  onclick=\"queryCountry("+(i+1)+",1,null);\">全部&nbsp;</span></a></li>");
+                */
+                $(li[0]).after(input);
+                $(li).remove();
             }
             W.OrderGetOrders.close();
         }

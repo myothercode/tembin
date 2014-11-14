@@ -73,13 +73,17 @@ function initLeftMenuBar() {
     e.preventDefault();
       addArrow(this);
     var $item = $(this).parent();
+
+      //alert($("#sidebar-nav").outerHeight())
+
     $item.toggleClass("active");
     if ($item.hasClass("active")) {
-      $item.find(".submenu").slideDown("fast");
+      $item.find(".submenu").slideDown("fast",function(){setTimeout("controllRightHeight()",500)});
     } else {
-      $item.find(".submenu").slideUp("fast");
+      $item.find(".submenu").slideUp("fast",function(){setTimeout("controllRightHeight()",500)});
     }
   });
+
 
 
   // mobile side-menu slide toggler
@@ -162,3 +166,39 @@ function initLeftMenuBar() {
 
 
 };
+
+/**用于控制菜单和右边div的高度*/
+function controllRightHeight(){
+    csRightHeight=parseInt(csRightHeight);
+    var afh=$("#sidebar-nav").outerHeight();//打开后的高度
+    var cdiv=$("#contentMaindiv").outerHeight();
+   // alert(afh+":"+cdiv)
+    if(afh>cdiv &&(afh-cdiv>20) ){
+        //alert(1)
+        //alert(afh+":"+cdiv)
+        var czz=afh-cdiv;
+        $("#contentMaindiv").css("height",(cdiv+czz+50)+"px")
+    }else if(afh<cdiv){
+        //alert(2);
+        //alert(afh+":"+cdiv)
+        if(cdiv>(csRightHeight)){
+            //alert(3);
+            //alert(cdiv+":"+csRightHeight);
+            var czz=cdiv-afh;
+            if((cdiv-czz)<csRightHeight){
+                $("#contentMaindiv").css("height",(csRightHeight-55)+"px");
+            }else{
+                $("#contentMaindiv").css("height",(cdiv-czz-55)+"px")
+            }
+
+        }else{
+            //alert(4)
+           // alert(($("#sidebar-nav").outerHeight())+":"+csRightHeight)
+            $("#contentMaindiv").css("height",(csRightHeight-55)+"px");
+           // alert($("#contentMaindiv").css("height"))
+        }
+
+    }
+   //alert(cdiv+":"+csRightHeight)
+
+}

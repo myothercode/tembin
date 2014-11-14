@@ -23,7 +23,7 @@
                 url:path + "/sendMessage/ajax/loadSendMessageList.do?status=1",
                 columnData:[
                     {title:"模板名称",name:"name",width:"8%",align:"center"},
-                    {title:"<a href=\"javascript:#\" onclick=\"orderBy(this,'asc');\">消息类型</a>",name:"content",width:"8%",align:"center",format:makeOption4},
+                    {title:"<a href=\"javascript:void(0)\" onclick=\"orderBy(this,'asc');\">消息类型</a>",name:"content",width:"8%",align:"center",format:makeOption4},
                     {title:"状态",name:"status",width:"8%",align:"center",format:makeOption2},
                     {title:"操作",name:"countNum",width:"8%",align:"left",format:makeOption1}
                 ],
@@ -38,7 +38,7 @@
                 url:url,
                 columnData:[
                     {title:"模板名称",name:"name",width:"8%",align:"center"},
-                    {title:"<a href=\"javascript:#\" onclick=\"orderBy(this,'asc');\">消息类型</a>",name:"content",width:"8%",align:"center",format:makeOption4},
+                    {title:"<a href=\"javascript:void(0)\" onclick=\"orderBy(this,'asc');\">消息类型</a>",name:"content",width:"8%",align:"center",format:makeOption4},
                     {title:"状态",name:"status",width:"8%",align:"center",format:makeOption2},
                     {title:"操作",name:"countNum",width:"8%",align:"left",format:makeOption1}
                 ],
@@ -51,11 +51,11 @@
         function orderBy(obj,orderby){
             var htm="";
             if(orderby=="asc"){
-               /* htm="&nbsp;<a href=\"javascript:#\" onclick=\"orderBy(this,'desc');\"><img src=\"<c:url value ="/img/desc.png" />\"/></a>";*/
-                htm="<a href=\"javascript:#\" onclick=\"orderBy(this,'desc');\">消息类型</a>";
+               /* htm="&nbsp;<a href=\"javascript:void(0)\" onclick=\"orderBy(this,'desc');\"><img src=\"<c:url value ="/img/desc.png" />\"/></a>";*/
+                htm="<a href=\"javascript:void(0)\" onclick=\"orderBy(this,'desc');\">消息类型</a>";
             }
             if(orderby=="desc"){
-                 htm="<a href=\"javascript:#\" onclick=\"orderBy(this,'asc');\">消息类型</a>";
+                 htm="<a href=\"javascript:void(0)\" onclick=\"orderBy(this,'asc');\">消息类型</a>";
             }
             var status=0;
             var checkbox=document.getElementById("checkboxStatus");
@@ -169,21 +169,21 @@
         }
         function addMessageTemplate(){
             var url=path+'/sendMessage/addMessageTemplate.do?';
-            sendGetmymessage=$.dialog({title: '添加或编辑',
+            sendGetmymessage=openMyDialog({title: '添加或编辑',
                 content: 'url:'+url,
                 icon: 'succeed',
                 width:850,
-                height:450,
+                height:500,
                 lock:true
             });
         }
         function editMessageTemplate(id){
             var url=path+'/sendMessage/addMessageTemplate.do?id='+id;
-            sendGetmymessage=$.dialog({title: '添加或编辑',
+            sendGetmymessage=openMyDialog({title: '添加或编辑',
                 content: 'url:'+url,
                 icon: 'succeed',
                 width:850,
-                height:450,
+                height:500,
                 lock:true
             });
         }
@@ -198,7 +198,7 @@
                 url:url,
                 columnData:[
                     {title:"模板名称",name:"name",width:"8%",align:"center"},
-                    {title:"<a href=\"javascript:#\" onclick=\"orderBy(this,'asc');\">消息类型</a>",name:"content",width:"8%",align:"center",format:makeOption4},
+                    {title:"<a href=\"javascript:void(0)\" onclick=\"orderBy(this,'asc');\">消息类型</a>",name:"content",width:"8%",align:"center",format:makeOption4},
                     {title:"状态",name:"status",width:"8%",align:"center",format:makeOption2},
                     {title:"操作",name:"countNum",width:"8%",align:"left",format:makeOption1}
                 ],
@@ -271,14 +271,14 @@
                                 <span class="newusa_ici_del">检查eBay费</span>&lt;%&ndash;<div class="page_num">显示20条</div>&ndash;%&gt;
                             </div>
                         </div>
-                        <div class="tbbay"><a href="#">添加模板</a></div>
+                        <div class="tbbay"><a href="javascript:void(0)">添加模板</a></div>
                     </div>--%>
                    <%-- <div class="new_usa" style="margin-top:20px;">
-                        <li class="new_usa_list"><span class="newusa_i">按类型看：</span><a href="#"><span class="newusa_ici_1" scop="type" onclick="onclickType(0,null)">全部&nbsp;</span></a><a href="#"><span class="newusa_ici_1" scop="type" onclick="onclickType(1,'caseType')">CASE&nbsp;</span></a><a href="#"><span class="newusa_ici_1" scop="type" onclick="onclickType(2,'autoType')">自动消息&nbsp;</span></a><a href="#"><span class="newusa_ici_1" scop="type" onclick="onclickType(3,'messageType')">一般消息&nbsp;</span></a></li>
-                        &lt;%&ndash;<li class="new_usa_list"><span class="newusa_i">信息状态：</span><span class="newusa_ici_1" scop="information" onclick="onclickinformation(null,0)">全部&nbsp;</span><a href="#"><span class="newusa_ici_1" scop="information" onclick="onclickinformation('picture',1)">无图片&nbsp;</span></a><a href="#"><span class="newusa_ici_1" scop="information" onclick="onclickinformation('custom',2)">无报关信息&nbsp;</span></a><a href="#"><span class="newusa_ici_1" scop="information" onclick="onclickinformation('notAllnull',3)">信息不全&nbsp;</span></a></li>
+                        <li class="new_usa_list"><span class="newusa_i">按类型看：</span><a href="javascript:void(0)"><span class="newusa_ici_1" scop="type" onclick="onclickType(0,null)">全部&nbsp;</span></a><a href="javascript:void(0)"><span class="newusa_ici_1" scop="type" onclick="onclickType(1,'caseType')">CASE&nbsp;</span></a><a href="javascript:void(0)"><span class="newusa_ici_1" scop="type" onclick="onclickType(2,'autoType')">自动消息&nbsp;</span></a><a href="javascript:void(0)"><span class="newusa_ici_1" scop="type" onclick="onclickType(3,'messageType')">一般消息&nbsp;</span></a></li>
+                        &lt;%&ndash;<li class="new_usa_list"><span class="newusa_i">信息状态：</span><span class="newusa_ici_1" scop="information" onclick="onclickinformation(null,0)">全部&nbsp;</span><a href="javascript:void(0)"><span class="newusa_ici_1" scop="information" onclick="onclickinformation('picture',1)">无图片&nbsp;</span></a><a href="javascript:void(0)"><span class="newusa_ici_1" scop="information" onclick="onclickinformation('custom',2)">无报关信息&nbsp;</span></a><a href="javascript:void(0)"><span class="newusa_ici_1" scop="information" onclick="onclickinformation('notAllnull',3)">信息不全&nbsp;</span></a></li>
                         &ndash;%&gt;
                         <div class="newsearch">
-                            <span class="newusa_i">创建时间：</span><a href="#"><span class="newusa_ici_1" scop="days" onclick="selectDays(0,null);">全部&nbsp;</span></a><a href="#"><span class="newusa_ici_1" scop="days" onclick="selectDays(1,'1');">今天&nbsp;</span></a><a href="#"><span class="newusa_ici_1" scop="days" onclick="selectDays(2,'2');">昨天&nbsp;</span></a><a href="#"><span class="newusa_ici_1" scop="days" onclick="selectDays(3,'7');">7天以内&nbsp;</span></a><a href="#"><span class="newusa_ici_1" scop="days" onclick="selectDays(4,'30');">30天以内&nbsp;</span></a>
+                            <span class="newusa_i">创建时间：</span><a href="javascript:void(0)"><span class="newusa_ici_1" scop="days" onclick="selectDays(0,null);">全部&nbsp;</span></a><a href="javascript:void(0)"><span class="newusa_ici_1" scop="days" onclick="selectDays(1,'1');">今天&nbsp;</span></a><a href="javascript:void(0)"><span class="newusa_ici_1" scop="days" onclick="selectDays(2,'2');">昨天&nbsp;</span></a><a href="javascript:void(0)"><span class="newusa_ici_1" scop="days" onclick="selectDays(3,'7');">7天以内&nbsp;</span></a><a href="javascript:void(0)"><span class="newusa_ici_1" scop="days" onclick="selectDays(4,'30');">30天以内&nbsp;</span></a>
                          </div>
                         <div class="newsearch">
                             <span class="newusa_i">搜索内容：</span>

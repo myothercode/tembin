@@ -79,7 +79,7 @@
         var api = frameElement.api, W = api.opener;
         function sendMessage() {
             var url=path+"/message/sendMessageGetmymessage.do"
-            sentmessage = $.dialog({title: '发送消息',
+            sentmessage = openMyDialog({title: '发送消息',
                 content: 'url:'+url+'?messageid=${messages[0].messageid}',
                 icon: 'succeed',
                 width: 800,
@@ -113,7 +113,7 @@
         }
         function selectSendMessage(){
             var url=path+'/message/selectSendMessage.do?';
-            sentmessage = $.dialog({title: '选择消息模板',
+            sentmessage = openMyDialog({title: '选择消息模板',
                 content:'url:'+url,
                 icon: 'succeed',
                 width:800,
