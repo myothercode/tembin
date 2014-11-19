@@ -729,6 +729,35 @@ public class GetOrdersController extends BaseAction {
         return forword("orders/order/modifyOrderStatus",modelMap);
     }
     /*
+    *批量上传跟踪号
+    */
+    @RequestMapping("/modifyOrderNums.do")
+    @AvoidDuplicateSubmission(needSaveToken = true)
+    public ModelAndView modifyOrderNums(HttpServletRequest request,HttpServletResponse response,@ModelAttribute( "initSomeParmMap" )ModelMap modelMap) throws Exception {
+        List<String> ids=new ArrayList<String>();
+        int i=0;
+        while(i>=0){
+            String id=request.getParameter("id["+i+"]");
+            if(id!=null){
+                ids.add(id);
+                i++;
+            }else{
+                i=-1;
+            }
+        }
+        List<TradingOrderGetOrders> orders=new ArrayList<TradingOrderGetOrders>();
+        for(String id1:ids){
+            Long id=Long.valueOf(id1);
+            TradingOrderGetOrders order=iTradingOrderGetOrders.selectOrderGetOrdersById(id);
+            if(order!=null){
+                orders.add(order);
+            }
+        }
+        modelMap.put("orders",orders);
+        return forword("orders/order/modifyOrderNums",modelMap);
+    }
+
+    /*
     *退款
     */
     @RequestMapping("/sendRefund.do")
@@ -824,62 +853,85 @@ public class GetOrdersController extends BaseAction {
     @AvoidDuplicateSubmission(needRemoveToken = true)
     @ResponseBody
     public void apiModifyOrdersMessage(CommonParmVO commonParmVO,HttpServletRequest request) throws Exception {
-        String itemid= request.getParameter("itemid");
-        String transactionid=request.getParameter("transactionid");
-        String shippStatus=request.getParameter("shippStatus");
-        String ShipmentTrackingNumber=request.getParameter("ShipmentTrackingNumber");
-        String ShippingCarrierUsed=request.getParameter("ShippingCarrierUsed");
-        SessionVO sessionVO= SessionCacheSupport.getSessionVO();
-        SystemLog systemLog=new SystemLog();
+        int i=0;
+        SessionVO sessionVO = SessionCacheSupport.getSessionVO();
+        SystemLog systemLog = new SystemLog();
         systemLog.setEventname(SystemLogUtils.ORDER_OPERATE_RECORD);
         systemLog.setOperuser(sessionVO.getUserName());
-
-        UsercontrollerDevAccountExtend d = userInfoService.getDevInfo(null);//开发者帐号id
-        d.setApiSiteid("0");
-        d.setApiCallName(APINameStatic.CompleteSale);
-        Map<String,String> map=new HashMap();
-        String ebayName=request.getParameter("selleruserid");
-        List<UsercontrollerEbayAccountExtend> dList= userInfoService.getEbayAccountForCurrUser(new HashMap(),Page.newAOnePage());
-        String token=null;
-        for(UsercontrollerEbayAccountExtend list:dList){
-            if(StringUtils.isNotBlank(ebayName)&&ebayName.equals(list.getEbayName())){
-                token=list.getEbayToken();
-            }
-        }
-        map.put("token", token);
-        map.put("shippStatus",shippStatus);
-        map.put("itemid",itemid);
-        map.put("ShipmentTrackingNumber",ShipmentTrackingNumber);
-        map.put("ShippingCarrierUsed",ShippingCarrierUsed);
-        map.put("transactionid",transactionid);
-        String xml = BindAccountAPI.getModifyOrderStatus(map);
-        AddApiTask addApiTask = new AddApiTask();
+        while (i>=0) {
+            String itemid = request.getParameter("itemid"+i);
+            String transactionid = request.getParameter("transactionid"+i);
+            String shippStatus = request.getParameter("shippStatus"+i);
+            String ShipmentTrackingNumber = request.getParameter("ShipmentTrackingNumber"+i);
+            String ShippingCarrierUsed = request.getParameter("ShippingCarrierUsed"+i);
+            if(StringUtils.isNotBlank(transactionid)) {
+                UsercontrollerDevAccountExtend d = userInfoService.getDevInfo(null);//开发者帐号id
+                d.setApiSiteid("0");
+                d.setApiCallName(APINameStatic.CompleteSale);
+                Map<String, String> map = new HashMap();
+                String ebayName = request.getParameter("selleruserid" + i);
+                List<UsercontrollerEbayAccountExtend> dList = userInfoService.getEbayAccountForCurrUser(new HashMap(), Page.newAOnePage());
+                String token = null;
+                for (UsercontrollerEbayAccountExtend list : dList) {
+                    if (StringUtils.isNotBlank(ebayName) && ebayName.equals(list.getEbayName())) {
+                        token = list.getEbayToken();
+                    }
+                }
+                map.put("token", token);
+                map.put("shippStatus", shippStatus);
+                map.put("itemid", itemid);
+                map.put("ShipmentTrackingNumber", ShipmentTrackingNumber);
+                map.put("ShippingCarrierUsed", ShippingCarrierUsed);
+                map.put("transactionid", transactionid);
+                String xml = BindAccountAPI.getModifyOrderStatus(map);
+                AddApiTask addApiTask = new AddApiTask();
           /*  Map<String, String> resMap = addApiTask.exec(d, xml, "https://api.ebay.com/ws/api.dll");*/
-        Map<String, String> resMap = addApiTask.exec(d, xml, apiUrl);
-        String r1 = resMap.get("stat");
-        String res = resMap.get("message");
-        if ("fail".equalsIgnoreCase(r1)) {
-            systemLog.setEventdesc("上传跟踪号失败:调用API失败");
-            SystemLogUtils.saveLog(systemLog);
-            AjaxSupport.sendFailText("fail", res);
-            return;
+                Map<String, String> resMap = addApiTask.exec(d, xml, apiUrl);
+                String r1 = resMap.get("stat");
+                String res = resMap.get("message");
+                if ("fail".equalsIgnoreCase(r1)) {
+                 /*   systemLog.setEventdesc("批量上传跟踪号失败:调用API失败");
+                    SystemLogUtils.saveLog(systemLog);*/
+                    i = -1;
+                  /*  AjaxSupport.sendFailText("fail", res);*/
+                }
+                String ack = SamplePaseXml.getVFromXmlString(res, "Ack");
+                if ("Success".equalsIgnoreCase(ack)) {
+                    List<TradingOrderGetOrders> orderList = iTradingOrderGetOrders.selectOrderGetOrdersByTransactionId(transactionid, ebayName);
+                    TradingOrderGetOrders order = orderList.get(0);
+                    order.setShipmenttrackingnumber(ShipmentTrackingNumber);
+                    order.setShippingcarrierused(ShippingCarrierUsed);
+                    iTradingOrderGetOrders.saveOrderGetOrders(order);
+                    i++;
+               /* systemLog.setEventdesc("批量上传跟踪号成功");
+                SystemLogUtils.saveLog(systemLog);
+                AjaxSupport.sendSuccessText("success", "订单状态修改成功");*/
+                } else {
+                 /*   systemLog.setEventdesc("批量上传跟踪号失败:调用API错误");
+                    SystemLogUtils.saveLog(systemLog);*/
+                    i = -1;
+                    /*AjaxSupport.sendFailText("fail", "获取必要的参数失败！请稍后重试");*/
+                }
+            }else if(!StringUtils.isNotBlank(transactionid)&&i==0){
+                i=-3;
+            }else{
+                i=-2;
+            }
+
         }
-        String ack = SamplePaseXml.getVFromXmlString(res, "Ack");
-        if ("Success".equalsIgnoreCase(ack)) {
-            List<TradingOrderGetOrders> orderList=iTradingOrderGetOrders.selectOrderGetOrdersByTransactionId(transactionid,ebayName);
-            TradingOrderGetOrders order=orderList.get(0);
-            order.setShipmenttrackingnumber(ShipmentTrackingNumber);
-            order.setShippingcarrierused(ShippingCarrierUsed);
-            iTradingOrderGetOrders.saveOrderGetOrders(order);
-            systemLog.setEventdesc("上传跟踪号成功");
-            SystemLogUtils.saveLog(systemLog);
-            AjaxSupport.sendSuccessText("success", "订单状态修改成功");
-        }else{
-            systemLog.setEventdesc("上传跟踪号失败:调用API错误");
+        if(i==-1){
+            systemLog.setEventdesc("批量上传跟踪号失败:调用API错误");
             SystemLogUtils.saveLog(systemLog);
             AjaxSupport.sendFailText("fail", "获取必要的参数失败！请稍后重试");
         }
-
+        if(i==-2){
+            systemLog.setEventdesc("批量上传跟踪号成功");
+            SystemLogUtils.saveLog(systemLog);
+            AjaxSupport.sendSuccessText("success", "订单状态修改成功");
+        }
+        if(i==-3){
+            AjaxSupport.sendFailText("fail", "没找到数据,请核实!");
+        }
     }
 
 

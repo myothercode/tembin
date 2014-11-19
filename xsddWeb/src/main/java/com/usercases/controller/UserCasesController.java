@@ -359,6 +359,16 @@ public class UserCasesController extends BaseAction{
                 ts.add(template);
             }
         }
+        String reasonFlag="";
+        String contentFlag="";
+        if(reason!=null&&reason.contains("ItemNotReceived")||reason.contains("Item not received")){
+            reasonFlag="true";
+        }
+        if(content!=null&&content.contains("didn't match the description")){
+            contentFlag="true";
+        }
+        modelMap.put("reasonFlag",reasonFlag);
+        modelMap.put("contentFlag",contentFlag);
         modelMap.put("order",order);
         modelMap.put("cases",cases);
         modelMap.put("transactionid",transactionid);

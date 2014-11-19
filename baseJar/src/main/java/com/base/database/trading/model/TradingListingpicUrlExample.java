@@ -720,6 +720,206 @@ public class TradingListingpicUrlExample {
             addCriterion("check_flag not between", value1, value2, "checkFlag");
             return (Criteria) this;
         }
+
+        public Criteria andCheckTimerIsNull() {
+            addCriterion("check_timer is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andCheckTimerIsNotNull() {
+            addCriterion("check_timer is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andCheckTimerEqualTo(Date value) {
+            addCriterion("check_timer =", value, "checkTimer");
+            return (Criteria) this;
+        }
+
+        public Criteria andCheckTimerNotEqualTo(Date value) {
+            addCriterion("check_timer <>", value, "checkTimer");
+            return (Criteria) this;
+        }
+
+        public Criteria andCheckTimerGreaterThan(Date value) {
+            addCriterion("check_timer >", value, "checkTimer");
+            return (Criteria) this;
+        }
+
+        public Criteria andCheckTimerGreaterThanOrEqualTo(Date value) {
+            addCriterion("check_timer >=", value, "checkTimer");
+            return (Criteria) this;
+        }
+
+        public Criteria andCheckTimerLessThan(Date value) {
+            addCriterion("check_timer <", value, "checkTimer");
+            return (Criteria) this;
+        }
+
+        public Criteria andCheckTimerLessThanOrEqualTo(Date value) {
+            addCriterion("check_timer <=", value, "checkTimer");
+            return (Criteria) this;
+        }
+
+        public Criteria andCheckTimerIn(List<Date> values) {
+            addCriterion("check_timer in", values, "checkTimer");
+            return (Criteria) this;
+        }
+
+        public Criteria andCheckTimerNotIn(List<Date> values) {
+            addCriterion("check_timer not in", values, "checkTimer");
+            return (Criteria) this;
+        }
+
+        public Criteria andCheckTimerBetween(Date value1, Date value2) {
+            addCriterion("check_timer between", value1, value2, "checkTimer");
+            return (Criteria) this;
+        }
+
+        public Criteria andCheckTimerNotBetween(Date value1, Date value2) {
+            addCriterion("check_timer not between", value1, value2, "checkTimer");
+            return (Criteria) this;
+        }
+
+        public Criteria andEbayAccountIdIsNull() {
+            addCriterion("ebay_account_id is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andEbayAccountIdIsNotNull() {
+            addCriterion("ebay_account_id is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andEbayAccountIdEqualTo(String value) {
+            addCriterion("ebay_account_id =", value, "ebayAccountId");
+            return (Criteria) this;
+        }
+
+        public Criteria andEbayAccountIdNotEqualTo(String value) {
+            addCriterion("ebay_account_id <>", value, "ebayAccountId");
+            return (Criteria) this;
+        }
+
+        public Criteria andEbayAccountIdGreaterThan(String value) {
+            addCriterion("ebay_account_id >", value, "ebayAccountId");
+            return (Criteria) this;
+        }
+
+        public Criteria andEbayAccountIdGreaterThanOrEqualTo(String value) {
+            addCriterion("ebay_account_id >=", value, "ebayAccountId");
+            return (Criteria) this;
+        }
+
+        public Criteria andEbayAccountIdLessThan(String value) {
+            addCriterion("ebay_account_id <", value, "ebayAccountId");
+            return (Criteria) this;
+        }
+
+        public Criteria andEbayAccountIdLessThanOrEqualTo(String value) {
+            addCriterion("ebay_account_id <=", value, "ebayAccountId");
+            return (Criteria) this;
+        }
+
+        public Criteria andEbayAccountIdLike(String value) {
+            addCriterion("ebay_account_id like", value, "ebayAccountId");
+            return (Criteria) this;
+        }
+
+        public Criteria andEbayAccountIdNotLike(String value) {
+            addCriterion("ebay_account_id not like", value, "ebayAccountId");
+            return (Criteria) this;
+        }
+
+        public Criteria andEbayAccountIdIn(List<String> values) {
+            addCriterion("ebay_account_id in", values, "ebayAccountId");
+            return (Criteria) this;
+        }
+
+        public Criteria andEbayAccountIdNotIn(List<String> values) {
+            addCriterion("ebay_account_id not in", values, "ebayAccountId");
+            return (Criteria) this;
+        }
+
+        public Criteria andEbayAccountIdBetween(String value1, String value2) {
+            addCriterion("ebay_account_id between", value1, value2, "ebayAccountId");
+            return (Criteria) this;
+        }
+
+        public Criteria andEbayAccountIdNotBetween(String value1, String value2) {
+            addCriterion("ebay_account_id not between", value1, value2, "ebayAccountId");
+            return (Criteria) this;
+        }
+
+        public Criteria andSiteIdIsNull() {
+            addCriterion("site_id is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andSiteIdIsNotNull() {
+            addCriterion("site_id is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andSiteIdEqualTo(String value) {
+            addCriterion("site_id =", value, "siteId");
+            return (Criteria) this;
+        }
+
+        public Criteria andSiteIdNotEqualTo(String value) {
+            addCriterion("site_id <>", value, "siteId");
+            return (Criteria) this;
+        }
+
+        public Criteria andSiteIdGreaterThan(String value) {
+            addCriterion("site_id >", value, "siteId");
+            return (Criteria) this;
+        }
+
+        public Criteria andSiteIdGreaterThanOrEqualTo(String value) {
+            addCriterion("site_id >=", value, "siteId");
+            return (Criteria) this;
+        }
+
+        public Criteria andSiteIdLessThan(String value) {
+            addCriterion("site_id <", value, "siteId");
+            return (Criteria) this;
+        }
+
+        public Criteria andSiteIdLessThanOrEqualTo(String value) {
+            addCriterion("site_id <=", value, "siteId");
+            return (Criteria) this;
+        }
+
+        public Criteria andSiteIdLike(String value) {
+            addCriterion("site_id like", value, "siteId");
+            return (Criteria) this;
+        }
+
+        public Criteria andSiteIdNotLike(String value) {
+            addCriterion("site_id not like", value, "siteId");
+            return (Criteria) this;
+        }
+
+        public Criteria andSiteIdIn(List<String> values) {
+            addCriterion("site_id in", values, "siteId");
+            return (Criteria) this;
+        }
+
+        public Criteria andSiteIdNotIn(List<String> values) {
+            addCriterion("site_id not in", values, "siteId");
+            return (Criteria) this;
+        }
+
+        public Criteria andSiteIdBetween(String value1, String value2) {
+            addCriterion("site_id between", value1, value2, "siteId");
+            return (Criteria) this;
+        }
+
+        public Criteria andSiteIdNotBetween(String value1, String value2) {
+            addCriterion("site_id not between", value1, value2, "siteId");
+            return (Criteria) this;
+        }
     }
 
     /**

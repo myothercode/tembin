@@ -7,6 +7,10 @@ import com.google.common.collect.ImmutableBiMap;
 import org.apache.commons.lang.math.IntRange;
 import org.apache.commons.lang.time.DateFormatUtils;
 import org.apache.http.impl.cookie.DateParseException;
+import org.joda.time.DateTime;
+import org.joda.time.Days;
+import org.joda.time.Minutes;
+import org.joda.time.format.DateTimeFormat;
 
 import java.io.Serializable;
 import java.text.DateFormat;
@@ -653,5 +657,28 @@ public class DateUtils {
             date1=org.apache.commons.lang.time.DateUtils.addHours(date1,8);
         }
         return date1;
+    }
+
+    /**字符串转为时间，只接受形如 1985-12-26 23:23:31格式*/
+    public static Date str2Date(String dateStr){
+        DateTime dt2 = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss").parseDateTime(dateStr);
+        return dt2.toDate();
+    }
+
+    /**两个日期之间相差多少天 date2-date1*/
+    public static int daysBetween(Date date1,Date date2){
+        int i= Days.daysBetween(new DateTime(DateUtils.turnToDateStart(date1)), new DateTime(DateUtils.turnToDateStart(date2))).getDays();
+       // int i= Weeks.weeksBetween(new DateTime(date1), new DateTime(date2)).getWeeks();
+        return i;
+    }
+    /**两个日期之间相差多少分钟date2-date1*/
+    public static int minuteBetween(Date date1,Date date2){
+        int i= Minutes.minutesBetween(new DateTime(date1), new DateTime(date2)).getMinutes();
+        // int i= Weeks.weeksBetween(new DateTime(date1), new DateTime(date2)).getWeeks();
+        return i;
+    }
+
+    public static void main(String[] args) {
+        System.out.println(minuteBetween(str2Date("2014-11-18 15:3:00"), new Date()));
     }
 }

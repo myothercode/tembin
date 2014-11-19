@@ -1,10 +1,7 @@
 package com.base.utils.httpclient;
 
 import com.mysql.jdbc.ExceptionInterceptor;
-import org.apache.http.Header;
-import org.apache.http.HttpResponse;
-import org.apache.http.HttpVersion;
-import org.apache.http.NameValuePair;
+import org.apache.http.*;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
@@ -21,16 +18,19 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
 import org.apache.http.message.BasicHeader;
+import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.CoreConnectionPNames;
 import org.apache.http.params.HttpParams;
 import org.apache.http.params.HttpProtocolParams;
+import org.apache.http.util.EntityUtils;
 import org.apache.log4j.Logger;
 
 import javax.net.ssl.*;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
@@ -199,7 +199,7 @@ public class HttpClientUtil {
 			HttpPost httppost = new HttpPost(url.replaceAll("&amp;", "&")
 					.replaceAll("\\s*$", ""));
 			httppost.addHeader("User-Agent", USER_AGENT);
-
+//            httppost.addHeader("Content-Type","application/json");
             /*测试数据*/
             /*httppost.addHeader("X-EBAY-API-COMPATIBILITY-LEVEL","879");
             httppost.addHeader("X-EBAY-API-DEV-NAME","bbafa7e7-2f98-4783-9c34-f403faeb007f");
@@ -229,5 +229,23 @@ public class HttpClientUtil {
 		}
 		return ret;
 	}
+
+    /*public static String post1(HttpClient httpClient1, String url, String content) throws Exception {
+        HttpPost httppost = new HttpPost(url.replaceAll("&amp;", "&")
+                .replaceAll("\\s*$", ""));
+        StringEntity reqEntity = new StringEntity("token=887E99B5F89BB18BEA12B204B620D236&user_key=wr5qjqh4gj&start_index=1117&count=100" +
+                "");
+        reqEntity.setContentType("application/x-www-form-urlencoded");
+        httppost.setEntity(reqEntity);
+
+        DefaultHttpClient httpclient = new DefaultHttpClient();
+
+        HttpResponse httpresponse = httpclient.execute(httppost);
+        HttpEntity entity = httpresponse.getEntity();
+        String body = EntityUtils.toString(entity);
+        System.out.println(body);
+        return body;
+
+    }*/
 
 }

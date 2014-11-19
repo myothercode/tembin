@@ -1,10 +1,7 @@
 package com.base.utils.xmlutils;
 
 import com.base.database.publicd.model.PublicDataDict;
-import com.base.database.trading.model.TradingDataDictionary;
-import com.base.database.trading.model.TradingFeedBackDetail;
-import com.base.database.trading.model.TradingListingData;
-import com.base.database.trading.model.TradingReseCategory;
+import com.base.database.trading.model.*;
 import com.base.utils.common.DateUtils;
 import com.base.utils.common.DictCollectionsUtil;
 import com.base.xmlpojo.trading.addproduct.*;
@@ -667,5 +664,19 @@ public class SamplePaseXml {
             lidata.add(pdd);
         }
         return lidata;
+    }
+
+    /**上传图片的api*/
+    public static String uploadEbayImage(UsercontrollerEbayAccount ua,String url,String picName){
+        String xml="<?xml version=\"1.0\" encoding=\"utf-8\"?>\n" +
+                "<UploadSiteHostedPicturesRequest xmlns=\"urn:ebay:apis:eBLBaseComponents\">\n" +
+                "  <RequesterCredentials>\n" +
+                "    <eBayAuthToken>"+ua.getEbayToken()+"</eBayAuthToken>\n" +
+                "  </RequesterCredentials>\n" +
+                "  <WarningLevel>High</WarningLevel>\n" +
+                "  <ExternalPictureURL>"+url+"</ExternalPictureURL>\n" +
+                "  <PictureName>"+picName+"</PictureName><ErrorLanguage>zh_HK</ErrorLanguage>\n" +
+                "</UploadSiteHostedPicturesRequest>";
+        return xml;
     }
 }

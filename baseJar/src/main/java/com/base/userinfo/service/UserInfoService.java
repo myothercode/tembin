@@ -57,6 +57,9 @@ public interface UserInfoService {
     /**修改ebay账户*/
     void editEbayAccount(Map map);
 
+    /**修改ebay账户*/
+    void bindEbayPaypalAccount(Map map);
+
     /**根据id查询ebay信息*/
     UsercontrollerEbayAccountExtend queryEbayInfoById(Map map);
 

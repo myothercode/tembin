@@ -29,10 +29,18 @@ public class AppcenterClassFinder implements Serializable {
 		Scanner[] scanners = {new TypeAnnotationsScanner(), new SubTypesScanner(), new MethodAnnotationsScanner()};
 		reflections = new Reflections(defaultPackageName, scanners);
 	}
+    public AppcenterClassFinder(String packageName) {
+        Scanner[] scanners = {new TypeAnnotationsScanner(), new SubTypesScanner(), new MethodAnnotationsScanner()};
+        reflections = new Reflections(packageName, scanners);
+    }
 
 	public static AppcenterClassFinder getInstance() {
 		return Internal.appcenterClassFinder;
 	}
+    public static AppcenterClassFinder getInstance(String packageName) {
+        AppcenterClassFinder appcenterClassFinder = new AppcenterClassFinder(packageName);
+        return appcenterClassFinder;
+    }
 
 	/** 用于懒加载appcenterClassFinder */
 	private static class Internal {

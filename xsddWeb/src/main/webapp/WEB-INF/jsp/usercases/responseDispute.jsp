@@ -148,18 +148,20 @@
             }
             var url=path+"/userCases/sendRefund.do?";
             var data=$("#sendRefund").serialize();
-            var date1={isConverPage:true};
-            $().invoke(url,data,
-                    [function(m,r){
-                        alert(r);
-                        /*W.CaseDetails.close();*/
-                        Base.token();
-                    },
-                        function(m,r){
+            var con=confirm("是否退款?");
+            if(con){
+                $().invoke(url,data,
+                        [function(m,r){
                             alert(r);
+                            /*W.CaseDetails.close();*/
                             Base.token();
-                        }],{isConverPage:true}
-            );
+                        },
+                            function(m,r){
+                                alert(r);
+                                Base.token();
+                            }],{isConverPage:true}
+                );
+            }
         }
         function sendMessageForm(){
             if(!$("#sendMessageForm").validationEngine("validate")){
@@ -252,24 +254,45 @@
         var _listBox=$('.jq_new');
         var _navItem=$('.jq_new>h4');
         var _boxItem=null, _icoItem=null, _parents=null, _index=null;
-        _listBox.each(function(i){
+    /*    _listBox.each(function(i){
             $(this).find('div.box').eq(0).show();
             $(this).find('h4>span').eq(0).text('-');
-        });
+        });*/
 
         _navItem.each(function(i){
             $(this).click(function(){
                 _parents=$(this).parents('.listbox_new');
                 _navItem=_parents.find('h4');
+/*                console.debug(_navItem);
+                alert(i);*/
                 _icoItem=_parents.find('span');
                 _boxItem=_parents.find('div.box');
                 _index=_navItem.index(this);
-                if(_boxItem.eq(_index).is(':visible')){
+            /*    if(_boxItem.eq(_index).is(':visible')){
                     _boxItem.eq(_index).hide().end().not(':eq('+_index+')').first().show();
-                    _icoItem.eq(_index).text('+').end().not(':eq('+_index+')').first().text('-');
                 }else{
                     _boxItem.eq(_index).show().end().not(':eq('+_index+')').hide();
-                    _icoItem.eq(_index).text('-').end().not(':eq('+_index+')').text('+');
+                }*/
+                var span=_navItem.find("span");
+                for(var j=0;j<_navItem.length;j++){
+                    if(j==i){
+                        if(span[j].innerHTML=="-"){
+                            span[j].innerHTML="+";
+                            _boxItem.eq(_index).hide().end();
+
+                        }else{
+                            span[j].innerHTML="-";
+                            if(_boxItem.eq(_index).is(':visible')){
+                                _boxItem.eq(_index).hide().end().not(':eq('+_index+')').first().show();
+                            }else{
+                                _boxItem.eq(_index).show().end().not(':eq('+_index+')').hide();
+                            }
+                        }
+                       /* _boxItem[j].show();*/
+                    }else{
+                        span[j].innerHTML="+";
+                       /* _boxItem[j].hide();*/
+                }
                 }
             });
         });
@@ -277,7 +300,8 @@
 </script>
 <div id="demo">
 <table width="100%" border="0">
-<tbody><tr>
+<tbody>
+<tr>
     <td width="772">            <div class="modal-header">
         <h4 class="modal-title"><span>Please respond to your buyer by <fmt:formatDate value="${cases.respondbydate}" pattern="yyyy-MM-dd"/>.</span>Choose one of the following</h4>
     </div></td>
@@ -340,11 +364,14 @@
 </tr>
 <tr>
     <td width="772"><div class="listbox_new jq_new">
-        <h4><span>-</span>
-            <table width="90%" border="0"><tbody><tr>
+        <c:if test="${reasonFlag=='true'}">
+        <c:if test="${cases.handled=='0'}">
+        <h4><span>+</span>
+            <table width="90%" border="0"><tbody>
+            <tr>
                 <td><strong>Verify tracking information ( Buyer’s preference )</strong></td></tr></tbody></table>
         </h4>
-        <div class="box" style="display: block;">
+        <div class="box" style="display: none;">
             <form id="sendTrackNum">
                 <input type="hidden" name="sellerid" value="${cases.sellerid}"/>
                 <input type="hidden" name="transactionId" value="${cases.transactionid}"/>
@@ -421,7 +448,7 @@
             <table width="90%" border="0"><tbody><tr>
                 <td><strong>I shipped the item without tracking information</strong></td></tr></tbody></table>
         </h4>
-        <div class="box">
+        <div class="box" style="display: none;">
             <form id="sendWithoutNum">
                 <input type="hidden" name="sellerid" value="${cases.sellerid}"/>
              <input type="hidden" name="transactionId" value="${cases.transactionid}"/>
@@ -453,11 +480,19 @@
             </tbody></table>
             </form>
         </div>
+        </c:if>
+        <c:if test="${cases.handled=='1'}">
+            <span style="margin-left: 100px;">
+                  this case has been handled!
+            </span>
+        </c:if>
+        </c:if>
+        <c:if test="${contentFlag=='true'}">
         <h4><span>+</span>
             <table width="90%" border="0"><tbody><tr>
                 <td><strong>Issue a full refund</strong></td></tr></tbody></table>
         </h4>
-        <div class="box">
+        <div class="box" style="display: none;">
             <form id="sendRefund">
                 <input type="hidden" name="sellerid" value="${cases.sellerid}"/>
                 <input type="hidden" name="transactionId" value="${cases.transactionid}"/>
@@ -495,7 +530,8 @@
             <table width="90%" border="0"><tbody><tr>
                 <td><strong>send a message</strong></td></tr></tbody></table>
         </h4>
-        <div class="box">
+
+        <div class="box" style="display: none;">
             <form id="sendMessageForm">
                 <input type="hidden" name="sellerid" value="${cases.sellerid}"/>
                 <input type="hidden" name="transactionId" value="${cases.transactionid}"/>
@@ -521,6 +557,7 @@
             </tbody></table>
             </form>
         </div>
+        </c:if>
     </div>
 
 

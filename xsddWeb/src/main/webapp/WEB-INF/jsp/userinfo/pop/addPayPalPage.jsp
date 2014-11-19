@@ -26,7 +26,7 @@
                 <!-- Text input-->
                 <label class="control-label" for="input01">paypal帐号</label>
                 <div class="controls">
-                    <input id="paypalAccount" name="paypalAccount" type="text" placeholder="" class="input-xlarge">
+                    <input onchange="pressK(this)" id="paypalAccount" name="paypalAccount" type="text" placeholder="" class="input-xlarge">
                     <p class="help-block"></p>
                 </div>
             </div>

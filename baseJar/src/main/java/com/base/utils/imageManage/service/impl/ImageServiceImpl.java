@@ -71,4 +71,8 @@ public class ImageServiceImpl implements com.base.utils.imageManage.service.Imag
         if(sfBackUp==null){return false;}
         return sfBackUp.equalsIgnoreCase("true")?true:false;
     }
+
+    /**获取需要检查的图片队列*/
+
+
 }

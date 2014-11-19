@@ -49,7 +49,7 @@
                 </div>
             </div>
 
-            <div class="control-group">
+            <div class="control-group" style="display: none">
 
                 <!-- Appended input-->
                 <label class="control-label">绑定paypal帐号</label>

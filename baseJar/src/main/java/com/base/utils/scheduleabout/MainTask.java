@@ -3,6 +3,7 @@ package com.base.utils.scheduleabout;
 import com.base.utils.applicationcontext.ApplicationContextUtil;
 import com.base.utils.common.AppcenterClassFinder;
 import com.base.utils.common.CommAutowiredClass;
+import com.base.utils.common.DateUtils;
 import com.base.utils.common.MyClassUtil;
 import com.base.utils.scheduleother.StaticParam;
 import com.base.utils.scheduleother.domain.ImageCheckVO;
@@ -17,10 +18,7 @@ import org.springframework.core.OrderComparator;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 /**
  * Created by Administrtor on 2014/8/29.
@@ -182,15 +180,22 @@ public class MainTask {
     }
 
 
+
+    /**
+     * 记录任务上次运行的时间
+     */
+    public static Map<String, Date> taskRunTime = new HashMap<String, Date>();//每增加一组任务。该值加1
     /**内部循环任务，基本不涉及到api的*/
-   // @Scheduled(cron="0 0/1 *  * * ?")
-    public void mainMethodOther() throws InterruptedException {
+    @Scheduled(cron="0 0/1 *  * * ?")
+    public void mainMethodOther() throws Exception {
 
         if (isStartTimerTask==null) {
-            isStartTimerTask = (CommAutowiredClass) ApplicationContextUtil.getBean(CommAutowiredClass.class);
+            isStartTimerTask = ApplicationContextUtil.getBean(CommAutowiredClass.class);
         }
         List<String> doList=new ArrayList<String>();
         doList.add(StaticParam.IMG_CHECK_SC);
+        doList.add(StaticParam.IMG_CHECK_SC_TAKE);
+        doList.add(StaticParam.INVENTORY_CHECK_SC_TAKE);
 
         List<String> taskList=new ArrayList<String>();
 
@@ -206,20 +211,46 @@ public class MainTask {
         if(taskList.isEmpty()){return;}
 
         /**=========任务开始============*/
-        List<Class<? extends ScheduleOtherBase>> classList = AppcenterClassFinder.getInstance()
+        List<Class<? extends ScheduleOtherBase>> classList = AppcenterClassFinder.getInstance("com.base.utils.scheduleother.dorun")
                 .findSubClass(ScheduleOtherBase.class);
         List<? extends ScheduleOtherBase> scheduledableList = MyClassUtil.newInstance(classList);
+        for(ScheduleOtherBase s :scheduledableList){
+            if(!scheduledableList.isEmpty() && taskList.contains(s.stype()) ){
+                int i =s.cyclesTime();//取得时间间隔 分钟
+                String taskName=s.stype();//任务名称
+                if(i==0){//如果定义为0，那么就是后台伺服进程
+                    if(!TaskPool.threadIsAliveByName(taskName)){
+                        TaskPool.otherScheduledThreadPoolTaskExecutor.execute(s);
+                    }
+                    continue;
+                }
+                if(TaskPool.SCBaseQueue.size()>40){continue;}
 
-
-
-        if(!TaskPool.threadIsAliveByName(StaticParam.IMG_CHECK_SC_TAKE)){
-            Runnable runnable=new ImageCheckTaskTake(null);
-            TaskPool.otherScheduledThreadPoolTaskExecutor.execute(runnable);
+                Date lastTime=taskRunTime.get(taskName);//上一次执行的时间
+                if(lastTime!=null){
+                    int c= DateUtils.minuteBetween(lastTime,new Date());//现在时间与上次时间相差多少分钟
+                    if(c<i){
+                        continue;
+                    }
+                }
+                TaskPool.otherScheduledThreadPoolTaskExecutor.execute(s);
+                taskRunTime.put(taskName,new Date());
+            }
         }
-        ImageCheckVO imageCheckVO=new ImageCheckVO();
-        imageCheckVO.setUrl("123");
-        Runnable r=new ImageCheckTaskPut(imageCheckVO);
-        TaskPool.otherScheduledThreadPoolTaskExecutor.execute(r);
+/**此类任务不适合统一执行了*/
+        /***图片检查任务,后台进程*/
+        /*if(!taskList.isEmpty() && taskList.contains(StaticParam.IMG_CHECK_SC) ){
+            if(!TaskPool.threadIsAliveByName(StaticParam.IMG_CHECK_SC_TAKE)){
+                Runnable runnable=new ImageCheckTaskTake(null);
+                TaskPool.otherScheduledThreadPoolTaskExecutor.execute(runnable);
+            }
+         //   int i=StaticParam.taskTime.get(StaticParam.IMG_CHECK_SC);//找到该任务定义的时间间隔
+
+            Runnable r=new ImageCheckTaskPut(null);
+            TaskPool.otherScheduledThreadPoolTaskExecutor.execute(r);
+            StaticParam.taskRunTime.put(StaticParam.IMG_CHECK_SC,new Date());
+        }*/
+
     }
 
 

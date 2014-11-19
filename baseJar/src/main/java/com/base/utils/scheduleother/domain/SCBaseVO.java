@@ -5,4 +5,5 @@ package com.base.utils.scheduleother.domain;
  */
 public interface SCBaseVO {
     public String schedledType();//任务类型
+    public boolean equals(Object o);
 }

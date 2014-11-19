@@ -13,9 +13,10 @@ function queryEbayList(){
     $("#ebayManager").initTable({
         url:path + "/user/queryEbaysForCurrUser.do",
         columnData:[
-            {title:"代码",name:"ebayNameCode",width:"8%",align:"left"},
+            {title:"代码",name:"ebayNameCode",width:"3%",align:"left"},
             {title:"ebay账户",name:"ebayName",width:"8%",align:"left"},
-            {title:"密钥有效期",name:"op",width:"8%",align:"left",format:mCanUseDate},
+            {title:"绑定paypal",name:"paypalName",width:"8%",align:"left"},
+            {title:"密钥有效期",name:"op",width:"15%",align:"left",format:mCanUseDate},
             {title:"状态",name:"op",width:"8%",align:"left",format:makeStatus},
             {title:"操作",name:"op1",width:"8%",align:"left",format:makeOptionEbay}
         ],
@@ -37,19 +38,44 @@ function makeOptionEbay(json){
         select1+= "<li style='height:25px' onclick=doEbayAccount(this) value='"+json.id+"' doaction=\"start\">启用</li>" ;
     }
     select1+= "<li style='height:25px' onclick=doEbayAccount(this) value='"+json.id+"' doaction=\"edit\">编辑</li>" ;
+    select1+= "<li style='height:25px' onclick=selectPaypalWindow(this) value='"+json.id+"' doaction=\"selPayPal\">paypal</li>" ;
     var pp={"liString":select1};
     return getULSelect(pp);
-    /*var select1="<div class=\"ui-select\" style=\"width:8px\">" +
-        "<select onchange='doEbayAccount(this)'>" ;
-    select1+= "<option  value='x'>请选择</option>" ;
-    if(json.ebayStatus==1 || json.ebayStatus=='1'){
-        select1+= "<option  value='"+json.id+"' doaction=\"stop\">停用</option>" ;
-    }else if(json.ebayStatus==0 || json.ebayStatus=='0'){
-        select1+= "<option  value='"+json.id+"' doaction=\"start\">启用</option>" ;
-    }
-    select1+= "<option  value='"+json.id+"' doaction=\"edit\">编辑</option>" ;
-    select1+= "</select></div>";*/
-    //return select1;
+
+}
+/**弹出选择绑定paypal帐号提示框*/
+var selectPayPalPage;
+function selectPaypalWindow(o){
+    var url=path+"/paypal/selectPayPalPage.do";
+    var bpaypalId=$(o).attr("value");
+    if(bpaypalId==null || bpaypalId==''){alert("没有获取到id");return;}
+    selectPayPalPage=$.dialog({
+        title:'选择PayPal帐号',
+        id : "dig" + (new Date()).getTime(),
+        content:"url:"+url,
+        width : 700,
+        height : 500,
+        max:false,
+        min:false,
+        lock : true,
+        data:bpaypalId,
+        zIndex: 9999
+    });
+}
+function setPayPalVal(idd,paypalid,isDefault){
+    var url=path+"/user/doBindEbayPaypalAccount.do";
+    var data={"id":idd,"payPalId":paypalid,"strV3":isDefault};
+$().invoke(
+    url,
+    data,
+    [function(m,r){
+        alert(r);
+        refreshRoleTable({});
+    },
+    function(m,r){
+        alert(r)
+    }]
+);
 }
 /**选择操作后要执行的动作*/
 function doEbayAccount(obj){

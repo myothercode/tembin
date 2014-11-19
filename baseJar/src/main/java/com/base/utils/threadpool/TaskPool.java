@@ -58,7 +58,6 @@ public class TaskPool {
         boolean b = false;
         for (int i = 0; i < threads.length; i++) {
             Thread thread = threads[i];
-            System.out.println(thread.getName());
             if (thread.getName().equals(tname) && thread.isAlive()) {
                 b = true;
             }

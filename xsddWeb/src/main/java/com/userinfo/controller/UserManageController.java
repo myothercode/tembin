@@ -94,6 +94,17 @@ public class UserManageController extends BaseAction {
         userInfoService.startOrStopEbayAccount(map);
         AjaxSupport.sendSuccessText("","操作成功");
     }
+    /**绑定ebay paypal帐号*/
+    @RequestMapping("doBindEbayPaypalAccount.do")
+    @ResponseBody
+    public void doBindEbayPaypalAccount(CommonParmVO commonParmVO){
+        Map map =new HashMap();
+        map.put("id",commonParmVO.getId());
+        map.put("payPalId",commonParmVO.getPayPalId());
+        map.put("isDefault",commonParmVO.getStrV3());
+        userInfoService.bindEbayPaypalAccount(map);
+        AjaxSupport.sendSuccessText("","操作成功");
+    }
     /**编辑ebay帐号*/
     @RequestMapping("doEditEbayAccount.do")
     @AvoidDuplicateSubmission(needRemoveToken = true)
@@ -103,7 +114,7 @@ public class UserManageController extends BaseAction {
         map.put("id",commonParmVO.getId());
         map.put("name",commonParmVO.getStrV2());
         map.put("code",commonParmVO.getStrV3());
-        map.put("payPalId",commonParmVO.getPayPalId());
+ //       map.put("payPalId",commonParmVO.getPayPalId());
         userInfoService.editEbayAccount(map);
         AjaxSupport.sendSuccessText("","操作成功");
     }

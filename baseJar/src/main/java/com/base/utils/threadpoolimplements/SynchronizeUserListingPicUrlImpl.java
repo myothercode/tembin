@@ -52,8 +52,10 @@ public class SynchronizeUserListingPicUrlImpl implements ThreadPoolBaseInterFace
                 Element rootElt = document.getRootElement();
                 Element picelt = rootElt.element("SiteHostedPictureDetails");
                 String fullUrl = picelt.elementText("FullURL");
+                String enddate = picelt.elementText("UseByDate");
                 tlu.setEbayurl(fullUrl);
                 tlu.setCheckFlag("1");
+                tlu.setEndDate(DateUtils.returnDate(enddate));
             }else {
                 tlu.setCheckFlag("2");
             }

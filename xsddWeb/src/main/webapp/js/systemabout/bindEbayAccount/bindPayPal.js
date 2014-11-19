@@ -4,7 +4,7 @@
  */
 
 function submitTheForm(){
-    if($('#paypalAccount').val()==null){
+    if($('#paypalAccount').val()==null || $('#paypalAccount').val()==''){
         alert('paypal帐号不能为空!')
         return;
     }
@@ -24,4 +24,8 @@ function submitTheForm(){
             Base.token()
         }]
     );
+}
+
+function pressK(o){
+$("#email").val(o.value);
 }

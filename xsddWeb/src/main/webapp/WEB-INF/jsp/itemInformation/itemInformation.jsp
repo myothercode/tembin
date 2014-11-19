@@ -83,6 +83,34 @@
                 addComment(id);
             }
         }
+        function loadRemarks(){
+            var url = path + "/information/ajax/loadRemarks.do?";
+            $().invoke(url, null,
+                    [function (m, r) {
+                        var liId=$("#loadremarks");
+                        var li="<li class=\"new_usa_list\" id=\"loadremarks\"><span class=\"newusa_i\" style=\"width: 75px;\">按标签查看：</span><span class=\"newusa_ici\" scop=\"remark\" onclick=\"onclickremark(null,0)\">全部&nbsp;</span><a href=\"javascript:void(0);\"><span class=\"newusa_ici_1\" scop=\"remark\" onclick=\"onclickremark('null',1)\">无标签&nbsp;</span></a>";
+                        for(var i=0;i< r.length;i++){
+                            if((i+2)%11==0){
+                                li+="<li class=\"new_usa_list\"><span class=\"newusa_i\"></span><a href=\"javascript:void(0);\"><span class=\"newusa_ici_1\" scop=\"remark\" onclick=\"onclickremark('"+r[i].id+"','"+(i+2)+"')\">"+r[i].configName+"&nbsp;</span></a>";
+                            }
+                            if((i+2)%11==10){
+                                li+="<a href=\"javascript:void(0);\"><span class=\"newusa_ici_1\" scop=\"remark\" onclick=\"onclickremark('"+r[i].id+"','"+(i+2)+"')\">"+r[i].configName+"&nbsp;</span></a></li>";
+                            }
+                            if((i+2)%11!=0&&(i+2)%11!=10){
+                                li+="<a href=\"javascript:void(0);\"><span class=\"newusa_ici_1\" scop=\"remark\" onclick=\"onclickremark('"+r[i].id+"','"+(i+2)+"')\">"+r[i].configName+"&nbsp;</span></a>";
+                            }
+                        }
+                        li+="</li>";
+                        $(liId).before(li);
+                        $(liId).remove();
+                        Base.token();
+                    },
+                        function (m, r) {
+                            alert(r);
+                            Base.token();
+                        }]
+            );
+        }
         function editItem(id){
             var url = path + "/information/editItem.do?id="+id;
             /*itemInformation=$.dialog({title: '快速刊登',
@@ -144,7 +172,7 @@
             itemInformation=openMyDialog({title: '添加或修改商品信息',
                 content: 'url:'+url,
                 icon: 'succeed',
-                width:1050,
+                width:900,
                 height:700,
                 lock:true
             });
@@ -154,6 +182,7 @@
             $().invoke(url, null,
                     [function (m, r) {
                         alert(r);
+                        loadRemarks();
                         refreshTable();
                         Base.token();
                     },
@@ -181,6 +210,7 @@
                         [function(m,r){
                             alert(r);
                             refreshTable();
+                            loadRemarks();
                             Base.token();
                         },
                             function(m,r){
@@ -199,7 +229,7 @@
                 itemInformation=openMyDialog({title: '添加或修改商品信息',
                     content: 'url:'+url,
                     icon: 'succeed',
-                    width:1050,
+                    width:900,
                     height:700,
                     lock:true
                 });
@@ -214,7 +244,7 @@
             itemInformation=openMyDialog({title: '添加或修改商品信息',
                 content: 'url:'+url,
                 icon: 'succeed',
-                width:1050,
+                width:900,
                 height:700,
                 lock:true
             });
@@ -436,7 +466,7 @@
                     <div id="con_menu_1" style="display: block;">
                         <!--综合开始 -->
                         <div class="new_usa" style="margin-top:20px;">
-                            <li class="new_usa_list"><span class="newusa_i">按标签查看：</span><span class="newusa_ici" scop="remark" onclick="onclickremark(null,0)">全部&nbsp;</span><a href="#"><span class="newusa_ici_1" scop="remark" onclick="onclickremark('null',1)">无标签&nbsp;</span></a>
+                            <li class="new_usa_list" id="loadremarks"><span class="newusa_i" style="width: 75px;">按标签查看：</span><span class="newusa_ici" scop="remark" onclick="onclickremark(null,0)">全部&nbsp;</span><a href="#"><span class="newusa_ici_1" scop="remark" onclick="onclickremark('null',1)">无标签&nbsp;</span></a>
                             <c:forEach items="${remarks}" var="remark" begin="0"  varStatus="status">
                                 <c:if test="${(status.index+2)%11==0}">
                                     <li class="new_usa_list"><span class="newusa_i"></span><a href="#"><span class="newusa_ici_1" scop="remark" onclick="onclickremark('${remark.id}',${status.index+2})">${remark.configName}&nbsp;</span></a>
@@ -450,9 +480,9 @@
 
                             </c:forEach>
                             </li>
-                            <li class="new_usa_list"><span class="newusa_i">信息状态：</span><span  class="newusa_ici" scop="information" onclick="onclickinformation(null,0)">全部&nbsp;</span><a href="#"><span class="newusa_ici_1" scop="information" onclick="onclickinformation('picture',1)">无图片&nbsp;</span></a><a href="#"><span class="newusa_ici_1" scop="information" onclick="onclickinformation('custom',2)">无报关信息&nbsp;</span></a><a href="#"><span class="newusa_ici_1" scop="information" onclick="onclickinformation('notAllnull',3)">信息不全&nbsp;</span></a></li>
+                            <li class="new_usa_list"><span class="newusa_i" style="width: 75px;">信息状态：</span><span  class="newusa_ici" scop="information" onclick="onclickinformation(null,0)">全部&nbsp;</span><a href="#"><span class="newusa_ici_1" scop="information" onclick="onclickinformation('picture',1)">无图片&nbsp;</span></a><a href="#"><span class="newusa_ici_1" scop="information" onclick="onclickinformation('custom',2)">无报关信息&nbsp;</span></a><a href="#"><span class="newusa_ici_1" scop="information" onclick="onclickinformation('notAllnull',3)">信息不全&nbsp;</span></a></li>
                             <div class="newsearch">
-                                <span class="newusa_i">搜索内容：</span>
+                                <span class="newusa_i" style="width: 75px;">搜索内容：</span>
 
 <span id="sleBG">
 <span id="sleHid">

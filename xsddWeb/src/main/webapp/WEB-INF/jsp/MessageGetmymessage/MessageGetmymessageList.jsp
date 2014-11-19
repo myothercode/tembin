@@ -138,8 +138,8 @@
                 if(i==(count)){
                     $(days[i]).attr("class","newusa_ici");
                     $("#selectDay").val(name);
-                    $("#starttime").val("");
-                    $("#endtime").val("");
+                    $("#starttime1").val("");
+                    $("#endtime1").val("");
                 }else{
                     $(days[i]).attr("class","newusa_ici_1");
                 }
@@ -152,8 +152,8 @@
                 if(i==(count)){
                     $(days[i]).attr("class","newusa_ici");
                     $("#selectDay1").val(name);
-                    $("#starttime1").val("");
-                    $("#endtime1").val("");
+                    $("#starttime2").val("");
+                    $("#endtime2").val("");
                 }else{
                     $(days[i]).attr("class","newusa_ici_1");
                 }
@@ -166,8 +166,8 @@
                 if(i==(count)){
                     $(days[i]).attr("class","newusa_ici");
                     $("#selectDay2").val(name);
-                    $("#starttime2").val("");
-                    $("#endtime2").val("");
+                    $("#starttime3").val("");
+                    $("#endtime3").val("");
                 }else{
                     $(days[i]).attr("class","newusa_ici_1");
                 }
@@ -267,8 +267,8 @@
             var day=$("#selectDay").val();
             var type=$("#typeQuery").val();
             var content=$("#content").val();
-            var starttime=$("#starttime").val();
-            var endtime=$("#endtime").val();
+            var starttime=$("#starttime1").val();
+            var endtime=$("#endtime1").val();
             var messageFrom=$("#selectmessageFrom").val();
             $("#MessageGetmymessageListTable").initTable({
                 url:path + "/message/ajax/loadMessageGetmymessageList.do?",
@@ -285,7 +285,6 @@
                 showIndex:false
             });
             refreshTable1(amount,status,day,type,content,starttime,endtime,messageFrom);
-            alert("查询成功");
         }
         function queryMessage1(){
             var amount=$("#selectAmount1").val();
@@ -293,8 +292,8 @@
             var day=$("#selectDay1").val();
             var type=$("#typeQuery1").val();
             var content=$("#content1").val();
-            var starttime=$("#starttime1").val();
-            var endtime=$("#endtime1").val();
+            var starttime=$("#starttime2").val();
+            var endtime=$("#endtime2").val();
             var replied="true";
             $("#MessageGetmymessageListTable1").initTable({
                 url:path + "/message/ajax/loadMessageAddmymessageList.do?replied="+replied,
@@ -311,7 +310,6 @@
                 showIndex:false
             });
             refreshTable2(amount,status,day,type,content,starttime,endtime);
-            alert("查询成功");
         }
         function queryMessage2(){
             var amount=$("#selectAmount2").val();
@@ -319,8 +317,8 @@
             var day=$("#selectDay2").val();
             var type=$("#typeQuery2").val();
             var content=$("#content2").val();
-            var starttime=$("#starttime2").val();
-            var endtime=$("#endtime2").val();
+            var starttime=$("#starttime3").val();
+            var endtime=$("#endtime3").val();
             var replied="false";
             $("#MessageGetmymessageListTable2").initTable({
                 url:path + "/message/ajax/loadMessageAddmymessageList.do?replied="+replied,
@@ -337,7 +335,6 @@
                 showIndex:false
             });
             refreshTable3(amount,status,day,type,content,starttime,endtime);
-            alert("查询成功");
         }
         function inintTableOne(table,cursel){
             if(cursel==1){
@@ -420,6 +417,12 @@
                 alert("请至少选择一个未读内容!");
             }
         }
+      function addstartTimeAndEndTime(obj,i){
+            var span="<span style=\"float: left;color: #5F93D7;\">从</span><input class=\"form-controlsd \" style=\"float: left;color: #5F93D7;width: 90px;height: 26px;border-color: #d0dde9\" id=\"starttime"+i+"\"  type=\"text\" onfocus=\"WdatePicker({isShowWeek:true,dateFmt:'yyyy-MM-dd'})\"/>" +
+                    "<span style=\"float: left;color: #5F93D7;\">到</span><input class=\"form-controlsd \" style=\"float: left;color: #5F93D7;width: 90px;height: 26px;margin-right: 20px;border-color: #d0dde9\" id=\"endtime"+i+"\"  type=\"text\" onfocus=\"WdatePicker({isShowWeek:true,dateFmt:'yyyy-MM-dd'})\"/>";
+            $(obj).before(span);
+            $(obj).remove();
+        }
     </script>
 </head>
 <body>
@@ -493,13 +496,16 @@
                 <div id="con_menu_1"  style="display: block;">
                     <!--综合开始 -->
                     <div class="new_usa" style="margin-top:20px;">
-                        <li class="new_usa_list"><span class="newusa_i">属性：</span><a href="javascript:void(0)"><span class="newusa_ici" scop="amount" onclick="selectAmount1(0,null);">全部&nbsp;</span></a><a href="javascript:void(0)"><span class="newusa_ici_1" scop="amount" onclick="selectAmount1(1,null)">固价&nbsp;</span></a><a href="javascript:void(0)"><span class="newusa_ici_1" scop="amount" onclick="selectAmount1(2,null)">多属性&nbsp;</span></a><a href="javascript:void(0)"><span class="newusa_ici_1" scop="amount" onclick="selectAmount1(3,null)">多属性&nbsp;</span></a></li>
-                        <li class="new_usa_list"><span class="newusa_i">消息状态：</span><a href="javascript:void(0)"><span class="newusa_ici" scop="status" onclick="selectStatus1(0,null);">全部&nbsp;</span></a><a href="javascript:void(0)"><span class="newusa_ici_1" scop="status"  onclick="selectStatus1(1,'readed');">已读&nbsp;</span></a><a href="javascript:void(0)"><span class="newusa_ici_1" scop="status" onclick="selectStatus1(2,'noRead');">未读&nbsp;</span></a></li>
-                        <li class="new_usa_list"><span class="newusa_i">消息来源：</span><a href="javascript:void(0)"><span class="newusa_ici" scop="messageFrom" onclick="selectmessageFrom(0,null);">全部&nbsp;</span></a><a href="javascript:void(0)"><span class="newusa_ici_1" scop="messageFrom"  onclick="selectmessageFrom(1,'ebay');">来自eBay&nbsp;</span></a><a href="javascript:void(0)"><span class="newusa_ici_1" scop="messageFrom" onclick="selectmessageFrom(2,'buyer');">来自买家&nbsp;</span></a></li>
+                        <li class="new_usa_list"><span class="newusa_i" style="width: 75px;">属性：</span><a href="javascript:void(0)"><span class="newusa_ici" scop="amount" onclick="selectAmount1(0,null);">全部&nbsp;</span></a><a href="javascript:void(0)"><span class="newusa_ici_1" scop="amount" onclick="selectAmount1(1,null)">固价&nbsp;</span></a><a href="javascript:void(0)"><span class="newusa_ici_1" scop="amount" onclick="selectAmount1(2,null)">多属性&nbsp;</span></a><a href="javascript:void(0)"><span class="newusa_ici_1" scop="amount" onclick="selectAmount1(3,null)">多属性&nbsp;</span></a></li>
+                        <li class="new_usa_list"><span class="newusa_i" style="width: 75px;">消息状态：</span><a href="javascript:void(0)"><span class="newusa_ici" scop="status" onclick="selectStatus1(0,null);">全部&nbsp;</span></a><a href="javascript:void(0)"><span class="newusa_ici_1" scop="status"  onclick="selectStatus1(1,'readed');">已读&nbsp;</span></a><a href="javascript:void(0)"><span class="newusa_ici_1" scop="status" onclick="selectStatus1(2,'noRead');">未读&nbsp;</span></a></li>
+                        <li class="new_usa_list"><span class="newusa_i" style="width: 75px;">消息来源：</span><a href="javascript:void(0)"><span class="newusa_ici" scop="messageFrom" onclick="selectmessageFrom(0,null);">全部&nbsp;</span></a><a href="javascript:void(0)"><span class="newusa_ici_1" scop="messageFrom"  onclick="selectmessageFrom(1,'ebay');">来自eBay&nbsp;</span></a><a href="javascript:void(0)"><span class="newusa_ici_1" scop="messageFrom" onclick="selectmessageFrom(2,'buyer');">来自买家&nbsp;</span></a></li>
                         <div class="newsearch">
-                            <span class="newusa_i">时间：</span><a href="javascript:void(0)"><span class="newusa_ici" scop="days" onclick="selectDays(0,null);">全部&nbsp;</span></a><a href="javascript:void(0)"><span class="newusa_ici_1" scop="days" onclick="selectDays(1,'1');">今天&nbsp;</span></a><a href="javascript:void(0)"><span class="newusa_ici_1" scop="days" onclick="selectDays(2,'2');">昨天&nbsp;</span></a><a href="javascript:void(0)"><span class="newusa_ici_1" scop="days" onclick="selectDays(3,'7');">7天以内&nbsp;</span></a><a href="javascript:void(0)"><span class="newusa_ici_1" scop="days" onclick="selectDays(4,'30');">30天以内&nbsp;</span></a>
-                            <span style="float: left;color: #5F93D7;">从</span><input class="form-controlsd " style="float: left;color: #5F93D7;width: 90px;height: 26px;border-color: #d0dde9" id="starttime"  type="text" onfocus="WdatePicker({isShowWeek:true,dateFmt:'yyyy-MM-dd'})"/>
-                            <span style="float: left;color: #5F93D7;">到</span><input class="form-controlsd " style="float: left;color: #5F93D7;width: 90px;height: 26px;margin-right: 20px;border-color: #d0dde9" id="endtime"  type="text" onfocus="WdatePicker({isShowWeek:true,dateFmt:'yyyy-MM-dd'})"/>
+                            <span class="newusa_i" style="width: 75px;">时间：</span><a href="javascript:void(0)"><span class="newusa_ici" scop="days" onclick="selectDays(0,null);">全部&nbsp;</span></a><a href="javascript:void(0)"><span class="newusa_ici_1" scop="days" onclick="selectDays(1,'1');">今天&nbsp;</span></a><a href="javascript:void(0)"><span class="newusa_ici_1" scop="days" onclick="selectDays(2,'2');">昨天&nbsp;</span></a><a href="javascript:void(0)"><span class="newusa_ici_1" scop="days" onclick="selectDays(3,'7');">7天以内&nbsp;</span></a><a href="javascript:void(0)"><span class="newusa_ici_1" scop="days" onclick="selectDays(4,'30');">30天以内&nbsp;</span></a>
+                            <%--<span style="float: left;color: #5F93D7;">从</span><input class="form-controlsd " style="float: left;color: #5F93D7;width: 90px;height: 26px;border-color: #d0dde9" id="starttime"  type="text" onfocus="WdatePicker({isShowWeek:true,dateFmt:'yyyy-MM-dd'})"/>
+                            <span style="float: left;color: #5F93D7;">到</span><input class="form-controlsd " style="float: left;color: #5F93D7;width: 90px;height: 26px;margin-right: 20px;border-color: #d0dde9" id="endtime"  type="text" onfocus="WdatePicker({isShowWeek:true,dateFmt:'yyyy-MM-dd'})"/>--%>
+                            <a href="javascript:void(0)" onclick="addstartTimeAndEndTime(this,1)"><span style="float: left;color: #5F93D7">自定义...</span></a>
+                        </div><div class="newsearch">
+                             <span class="newusa_i" style="width: 75px;">搜索内容：</span>
 <span id="sleBG">
 <span id="sleHid">
 <select id="typeQuery"  name="type" class="select">
@@ -589,13 +595,16 @@
                 <div style="display: none;" id="con_menu_2">
                         <!--综合开始 -->
                         <div class="new_usa" style="margin-top:20px;">
-                            <li class="new_usa_list"><span class="newusa_i">选择账号：</span><a href="javascript:void(0)"><span class="newusa_ici" scop="amount2" onclick="selectAmount2(0,null);">全部&nbsp;</span></a><a href="javascript:void(0)"><span class="newusa_ici_1" scop="amount2" onclick="selectAmount2(1,null)">固价&nbsp;</span></a><a href="javascript:void(0)"><span class="newusa_ici_1" scop="amount2" onclick="selectAmount2(2,null)">多属性&nbsp;</span></a><a href="javascript:void(0)"><span class="newusa_ici_1" scop="amount2" onclick="selectAmount2(3,null)">多属性&nbsp;</span></a></li>
-                            <li class="new_usa_list"><span class="newusa_i">消息状态：</span><a href="javascript:void(0)"><span class="newusa_ici" scop="status2" onclick="selectStatus2(0,null);">全部&nbsp;</span></a><a href="javascript:void(0)"><span class="newusa_ici_1" scop="status2" onclick="selectStatus2(1,'true');">发送成功&nbsp;</span></a><a href="javascript:void(0)"><span class="newusa_ici_1" scop="status2" onclick="selectStatus2(2,'false');">发送失败&nbsp;</span></a></li>
+                            <li class="new_usa_list"><span class="newusa_i" style="width: 75px;">选择账号：</span><a href="javascript:void(0)"><span class="newusa_ici" scop="amount2" onclick="selectAmount2(0,null);">全部&nbsp;</span></a><a href="javascript:void(0)"><span class="newusa_ici_1" scop="amount2" onclick="selectAmount2(1,null)">固价&nbsp;</span></a><a href="javascript:void(0)"><span class="newusa_ici_1" scop="amount2" onclick="selectAmount2(2,null)">多属性&nbsp;</span></a><a href="javascript:void(0)"><span class="newusa_ici_1" scop="amount2" onclick="selectAmount2(3,null)">多属性&nbsp;</span></a></li>
+                            <li class="new_usa_list"><span class="newusa_i" style="width: 75px;">消息状态：</span><a href="javascript:void(0)"><span class="newusa_ici" scop="status2" onclick="selectStatus2(0,null);">全部&nbsp;</span></a><a href="javascript:void(0)"><span class="newusa_ici_1" scop="status2" onclick="selectStatus2(1,'true');">发送成功&nbsp;</span></a><a href="javascript:void(0)"><span class="newusa_ici_1" scop="status2" onclick="selectStatus2(2,'false');">发送失败&nbsp;</span></a></li>
                             <div class="newsearch">
-                                <span class="newusa_i">消息来源：</span><a href="javascript:void(0)"><span class="newusa_ici" scop="days1" onclick="selectDays1(0,null);">全部&nbsp;</span></a><a href="javascript:void(0)"><span class="newusa_ici_1" scop="days1" onclick="selectDays1(1,'1');">今天&nbsp;</span></a><a href="javascript:void(0)"><span class="newusa_ici_1" scop="days1" onclick="selectDays1(2,'2');">昨天&nbsp;</span></a><a href="javascript:void(0)"><span class="newusa_ici_1" scop="days1" onclick="selectDays1(3,'7');">7天以内&nbsp;</span></a><a href="javascript:void(0)"><span class="newusa_ici_1" scop="days1" onclick="selectDays1(4,'30');">30天以内&nbsp;</span></a>
-                                <span style="float: left;color: #5F93D7;">从</span><input class="form-controlsd " style="float: left;color: #5F93D7;width: 90px;height: 26px;border-color: #d0dde9" id="starttime1"  type="text" onfocus="WdatePicker({isShowWeek:true,dateFmt:'yyyy-MM-dd'})"/>
-                                <span style="float: left;color: #5F93D7;">到</span><input class="form-controlsd " style="float: left;color: #5F93D7;width: 90px;height: 26px;margin-right: 20px;border-color: #d0dde9" id="endtime1"  type="text" onfocus="WdatePicker({isShowWeek:true,dateFmt:'yyyy-MM-dd'})"/>
-<span id="sleBG">
+                                <span class="newusa_i" style="width: 75px;">消息来源：</span><a href="javascript:void(0)"><span class="newusa_ici" scop="days1" onclick="selectDays1(0,null);">全部&nbsp;</span></a><a href="javascript:void(0)"><span class="newusa_ici_1" scop="days1" onclick="selectDays1(1,'1');">今天&nbsp;</span></a><a href="javascript:void(0)"><span class="newusa_ici_1" scop="days1" onclick="selectDays1(2,'2');">昨天&nbsp;</span></a><a href="javascript:void(0)"><span class="newusa_ici_1" scop="days1" onclick="selectDays1(3,'7');">7天以内&nbsp;</span></a><a href="javascript:void(0)"><span class="newusa_ici_1" scop="days1" onclick="selectDays1(4,'30');">30天以内&nbsp;</span></a>
+                                <%--<span style="float: left;color: #5F93D7;">从</span><input class="form-controlsd " style="float: left;color: #5F93D7;width: 90px;height: 26px;border-color: #d0dde9" id="starttime1"  type="text" onfocus="WdatePicker({isShowWeek:true,dateFmt:'yyyy-MM-dd'})"/>
+                                <span style="float: left;color: #5F93D7;">到</span><input class="form-controlsd " style="float: left;color: #5F93D7;width: 90px;height: 26px;margin-right: 20px;border-color: #d0dde9" id="endtime1"  type="text" onfocus="WdatePicker({isShowWeek:true,dateFmt:'yyyy-MM-dd'})"/>--%>
+                                <a href="javascript:void(0)" onclick="addstartTimeAndEndTime(this,2)"><span style="float: left;color: #5F93D7">自定义...</span></a>
+                            </div><div class="newsearch">
+                            <span class="newusa_i" style="width: 75px;">搜索内容：</span>
+                                <span id="sleBG">
 <span id="sleHid">
 <select id="typeQuery1" name="type" class="select">
     <option value=""  selected="selected">选择类型</option>
@@ -632,13 +641,16 @@
                 <div style="display: none;" id="con_menu_3">
                         <!--综合开始 -->
                         <div class="new_usa" style="margin-top:20px;">
-                            <li class="new_usa_list"><span class="newusa_i">选择账号：</span><a href="javascript:void(0)"><span class="newusa_ici" scop="amount3" onclick="selectAmount3(0,null);">全部&nbsp;</span></a><a href="javascript:void(0)"><span class="newusa_ici_1" scop="amount3" onclick="selectAmount3(1,null)">固价&nbsp;</span></a><a href="javascript:void(0)"><span class="newusa_ici_1" scop="amount3" onclick="selectAmount3(2,null)">多属性&nbsp;</span></a><a href="javascript:void(0)"><span class="newusa_ici_1" scop="amount3" onclick="selectAmount3(3,null)">多属性&nbsp;</span></a></li>
-                            <li class="new_usa_list"><span class="newusa_i">消息状态：</span><a href="javascript:void(0)"><span class="newusa_ici" scop="status3" onclick="selectStatus3(0,null);">全部&nbsp;</span></a><a href="javascript:void(0)"><span class="newusa_ici_1" scop="status3" onclick="selectStatus3(1,'true');">发送成功&nbsp;</span></a><a href="javascript:void(0)"><span class="newusa_ici_1" scop="status3" onclick="selectStatus3(2,'false');">发送失败&nbsp;</span></a></li>
+                            <li class="new_usa_list"><span class="newusa_i" style="width: 75px;">选择账号：</span><a href="javascript:void(0)"><span class="newusa_ici" scop="amount3" onclick="selectAmount3(0,null);">全部&nbsp;</span></a><a href="javascript:void(0)"><span class="newusa_ici_1" scop="amount3" onclick="selectAmount3(1,null)">固价&nbsp;</span></a><a href="javascript:void(0)"><span class="newusa_ici_1" scop="amount3" onclick="selectAmount3(2,null)">多属性&nbsp;</span></a><a href="javascript:void(0)"><span class="newusa_ici_1" scop="amount3" onclick="selectAmount3(3,null)">多属性&nbsp;</span></a></li>
+                            <li class="new_usa_list"><span class="newusa_i" style="width: 75px;">消息状态：</span><a href="javascript:void(0)"><span class="newusa_ici" scop="status3" onclick="selectStatus3(0,null);">全部&nbsp;</span></a><a href="javascript:void(0)"><span class="newusa_ici_1" scop="status3" onclick="selectStatus3(1,'true');">发送成功&nbsp;</span></a><a href="javascript:void(0)"><span class="newusa_ici_1" scop="status3" onclick="selectStatus3(2,'false');">发送失败&nbsp;</span></a></li>
                             <div class="newsearch">
-                                <span class="newusa_i">消息来源：</span><a href="javascript:void(0)"><span class="newusa_ici" scop="days2" onclick="selectDays2(0,null);">全部&nbsp;</span></a><a href="javascript:void(0)"><span class="newusa_ici_1" scop="days2" onclick="selectDays2(1,'1');">今天&nbsp;</span></a><a href="javascript:void(0)"><span class="newusa_ici_1" scop="days2" onclick="selectDays2(2,'2');">昨天&nbsp;</span></a><a href="javascript:void(0)"><span class="newusa_ici_1" scop="days2" onclick="selectDays2(3,'7');">7天以内&nbsp;</span></a><a href="javascript:void(0)"><span class="newusa_ici_1" scop="days2" onclick="selectDays2(4,'30');">30天以内&nbsp;</span></a>
-                                <span style="float: left;color: #5F93D7;">从</span><input class="form-controlsd " style="float: left;color: #5F93D7;width: 90px;height: 26px;border-color: #d0dde9" id="starttime2"  type="text" onfocus="WdatePicker({isShowWeek:true,dateFmt:'yyyy-MM-dd'})"/>
-                                <span style="float: left;color: #5F93D7;">到</span><input class="form-controlsd " style="float: left;color: #5F93D7;width: 90px;height: 26px;margin-right: 20px;border-color: #d0dde9" id="endtime2"  type="text" onfocus="WdatePicker({isShowWeek:true,dateFmt:'yyyy-MM-dd'})"/>
-<span id="sleBG">
+                                <span class="newusa_i" style="width: 75px;">消息来源：</span><a href="javascript:void(0)"><span class="newusa_ici" scop="days2" onclick="selectDays2(0,null);">全部&nbsp;</span></a><a href="javascript:void(0)"><span class="newusa_ici_1" scop="days2" onclick="selectDays2(1,'1');">今天&nbsp;</span></a><a href="javascript:void(0)"><span class="newusa_ici_1" scop="days2" onclick="selectDays2(2,'2');">昨天&nbsp;</span></a><a href="javascript:void(0)"><span class="newusa_ici_1" scop="days2" onclick="selectDays2(3,'7');">7天以内&nbsp;</span></a><a href="javascript:void(0)"><span class="newusa_ici_1" scop="days2" onclick="selectDays2(4,'30');">30天以内&nbsp;</span></a>
+                                <%--<span style="float: left;color: #5F93D7;">从</span><input class="form-controlsd " style="float: left;color: #5F93D7;width: 90px;height: 26px;border-color: #d0dde9" id="starttime2"  type="text" onfocus="WdatePicker({isShowWeek:true,dateFmt:'yyyy-MM-dd'})"/>
+                                <span style="float: left;color: #5F93D7;">到</span><input class="form-controlsd " style="float: left;color: #5F93D7;width: 90px;height: 26px;margin-right: 20px;border-color: #d0dde9" id="endtime2"  type="text" onfocus="WdatePicker({isShowWeek:true,dateFmt:'yyyy-MM-dd'})"/>--%>
+                                <a href="javascript:void(0)" onclick="addstartTimeAndEndTime(this,3)"><span style="float: left;color: #5F93D7">自定义...</span></a>
+                            </div><div class="newsearch">
+                            <span class="newusa_i" style="width: 75px;">搜索内容：</span>
+                                <span id="sleBG">
 <span id="sleHid">
 <select id="typeQuery2" name="type" class="select">
     <option value=""  selected="selected">选择类型</option>

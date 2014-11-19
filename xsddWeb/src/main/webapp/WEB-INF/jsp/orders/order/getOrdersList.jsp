@@ -174,6 +174,7 @@
             }
 
         }
+
         function viewSystemlog(){
             var url=path+'/order/viewSystemlog.do?';
             OrderGetOrders=openMyDialog({title: '查看日志',
@@ -263,14 +264,14 @@
                     /*"<img onmousemove='showInformation();'>"*/
                 }
                 if(json.status=='Complete'){
-                    htm="<img src=\""+imgurl1+"money.png\" >";
+                    htm="<img src=\""+imgurl1+"a1.png\" >";
                 }
             }
             if(json.shipmenttrackingnumbe!=""&&json.shippingcarrierused!=""){
-                htm="<img src=\""+imgurl1+"car.png\" >"
+                htm="<img src=\""+imgurl1+"a2.png\" >"
             }
             if(json.feedbackMessage&&json.feedbackMessage!=""){
-                htm="<img src=\""+imgurl1+"box.png\" >"
+                htm="<img src=\""+imgurl1+"a4.png\" >"
             }
             return htm;
         }
@@ -281,7 +282,7 @@
         function makeOption6(json){
             var f=parseFloat(json.transactionprice);
             var f1= f.toFixed(2);
-            var htm=f1+"USD";
+            var htm=f1+" USD";
             return htm;
         }
         function makeOption20(json){
@@ -411,7 +412,6 @@
                 showIndex:false
             });
             $(table).selectDataAfterSetParm({"bedDetailVO.deptId":"", "isTrue":0,"countryQ":countryQ,"typeQ":typeQ,"daysQ":daysQ,"itemType":itemType,"content":content,"status":status,"starttime1":starttime,"endtime1":endtime,"statusQ":statusQ});
-            alert("查询成功");
         }
         function queryTime(n,flag,day){
             var scop="span[scop=queryTime"+n+"]";
@@ -638,7 +638,6 @@
         function moveFolder(i){
             var table="#OrderGetOrdersListTable"+i;
             var checkboxs=$(table).find("input[name=checkbox]:checked");
-            console.debug(checkboxs);
             if(checkboxs&&checkboxs.length>0){
                 var date="";
                 for(var j=0;j<checkboxs.length;j++){
@@ -657,6 +656,29 @@
                 });
             }else{
                 alert("请选择需要移动的订单");
+            }
+        }
+        function modifyOrderNums(i){
+            var table="#OrderGetOrdersListTable"+i;
+            var checkboxs=$(table).find("input[name=checkbox]:checked");
+            if(checkboxs&&checkboxs.length>0){
+                var date="";
+                for(var j=0;j<checkboxs.length;j++){
+                    if(j==0){
+                        date=date+"id["+j+"]="+$(checkboxs[j]).attr("value1");
+                    }else{
+                        date=date+"&id["+j+"]="+$(checkboxs[j]).attr("value1");
+                    }
+                }
+                var url=path+"/order/modifyOrderNums.do?"+date;
+                OrderGetOrders=openMyDialog({title: '移动订单',
+                    content: 'url:'+url,
+                    icon: 'succeed',
+                    width:800,
+                    lock:true
+                });
+            }else{
+                alert("请选择需要上传跟踪号的订单");
             }
         }
         function cleanInput(){
@@ -933,7 +955,6 @@
             showIndex:false
         });
         $(table).selectDataAfterSetParm({"bedDetailVO.deptId":"", "isTrue":0,"countryQ":countryQ,"typeQ":typeQ,"daysQ":daysQ,"itemType":itemType,"content":content,"folderId":folderId,"starttime1":starttime,"endtime1":endtime,"statusQ":statusQ});
-        alert("查询成功");
     }
     //--------------------------------------------------------------------------
     function setTab(name,cursel,n){
@@ -1045,17 +1066,17 @@
 <div id="con_menu_1" style="display: block;">
     <!--综合开始 -->
     <div class="new_usa" style="margin-top:20px;">
-        <li class="new_usa_list" name="selectCountrys" name1="selectCountrys1"><span class="newusa_i">收件人国家：</span><a href="javascript:void(0)"><span class="newusa_ici" scop="queryCountry1"  onclick="queryCountry(1,1,null);">全部&nbsp;</span></a><a href="javascript:void(0);"><span class="newusa_ici_1" scop="queryCountry1"  onclick="queryCountry(1,2,'US');"><img src="<c:url value ="/img/usa_1.png"/> ">美国&nbsp;</span></a><a href="javascript:void(0)"><span class="newusa_ici_1" scop="queryCountry1"  onclick="queryCountry(1,3,'GB');"><img src="<c:url value ="/img/UK.jpg"/> ">英国&nbsp;</span></a><a href="javascript:void(0)"><span class="newusa_ici_1" scop="queryCountry1"  onclick="queryCountry(1,4,'DE');"><img src="<c:url value ="/img/DE.png"/> ">德国&nbsp;</span></a><a href="javascript:void(0)"><span class="newusa_ici_1" scop="queryCountry1"  onclick="queryCountry(1,5,'AU');"><img src="<c:url value ="/img/AU.jpg"/>">澳大利亚</span></a><a href="javascript:void(0)" onclick="selectCountrys();"><span style="padding-left: 20px;vertical-align: middle;color: royalblue">更多...</span></a></li>
-        <li class="new_usa_list"><span class="newusa_i">刊登类型：</span><a href="javascript:void(0)"><span class="newusa_ici" scop="queryAttr1"  onclick="queryAttr(1,1,null);">全部&nbsp;</span></a><a href="javascript:void(0)"><span class="newusa_ici_1" scop="queryAttr1"  onclick="queryAttr(1,2,'fixation');">固价&nbsp;</span></a><a href="javascript:void(0)"><span class="newusa_ici_1" scop="queryAttr1"  onclick="queryAttr(1,3,'auction');">拍卖&nbsp;</span></a><a href="javascript:void(0)"><span class="newusa_ici_1" scop="queryAttr1"  onclick="queryAttr(1,4,'multiattribute');">多属性&nbsp;</span></a></li>
+        <li class="new_usa_list" name="selectCountrys" name1="selectCountrys1"><span class="newusa_i" style="width: 75px;">收件人国家：</span><a href="javascript:void(0)"><span class="newusa_ici" scop="queryCountry1"  onclick="queryCountry(1,1,null);">全部&nbsp;</span></a><a href="javascript:void(0);"><span class="newusa_ici_1" scop="queryCountry1"  onclick="queryCountry(1,2,'US');"><img src="<c:url value ="/img/usa_1.png"/> ">美国&nbsp;</span></a><a href="javascript:void(0)"><span class="newusa_ici_1" scop="queryCountry1"  onclick="queryCountry(1,3,'GB');"><img src="<c:url value ="/img/UK.jpg"/> ">英国&nbsp;</span></a><a href="javascript:void(0)"><span class="newusa_ici_1" scop="queryCountry1"  onclick="queryCountry(1,4,'DE');"><img src="<c:url value ="/img/DE.png"/> ">德国&nbsp;</span></a><a href="javascript:void(0)"><span class="newusa_ici_1" scop="queryCountry1"  onclick="queryCountry(1,5,'AU');"><img src="<c:url value ="/img/AU.jpg"/>">澳大利亚</span></a><a href="javascript:void(0)" onclick="selectCountrys();"><span style="padding-left: 20px;vertical-align: middle;color: royalblue">更多...</span></a></li>
+        <li class="new_usa_list"><span class="newusa_i" style="width: 75px;">刊登类型：</span><a href="javascript:void(0)"><span class="newusa_ici" scop="queryAttr1"  onclick="queryAttr(1,1,null);">全部&nbsp;</span></a><a href="javascript:void(0)"><span class="newusa_ici_1" scop="queryAttr1"  onclick="queryAttr(1,2,'fixation');">固价&nbsp;</span></a><a href="javascript:void(0)"><span class="newusa_ici_1" scop="queryAttr1"  onclick="queryAttr(1,3,'auction');">拍卖&nbsp;</span></a><a href="javascript:void(0)"><span class="newusa_ici_1" scop="queryAttr1"  onclick="queryAttr(1,4,'multiattribute');">多属性&nbsp;</span></a></li>
         <div class="newsearch">
-            <span class="newusa_i">时间：</span><a href="javascript:void(0)"><span class="newusa_ici" scop="queryTime1" onclick="queryTime(1,1,null)">全部&nbsp;</span></a><a href="javascript:void(0)"><span class="newusa_ici_1" scop="queryTime1" onclick="queryTime(1,2,'1')">今天&nbsp;</span></a><a href="javascript:void(0)"><span scop="queryTime1" onclick="queryTime(1,3,'2')" class="newusa_ici_1">昨天&nbsp;</span></a><a href="javascript:void(0)"><span scop="queryTime1" onclick="queryTime(1,4,'7');" class="newusa_ici_1">7天以内&nbsp;</span></a><a href="javascript:void(0)"><span scop="queryTime1" onclick="queryTime(1,5,'30')" class="newusa_ici_1">30天以内&nbsp;</span></a>
+            <span class="newusa_i" style="width: 75px;">时间：</span><a href="javascript:void(0)"><span class="newusa_ici" scop="queryTime1" onclick="queryTime(1,1,null)">全部&nbsp;</span></a><a href="javascript:void(0)"><span class="newusa_ici_1" scop="queryTime1" onclick="queryTime(1,2,'1')">今天&nbsp;</span></a><a href="javascript:void(0)"><span scop="queryTime1" onclick="queryTime(1,3,'2')" class="newusa_ici_1">昨天&nbsp;</span></a><a href="javascript:void(0)"><span scop="queryTime1" onclick="queryTime(1,4,'7');" class="newusa_ici_1">7天以内&nbsp;</span></a><a href="javascript:void(0)"><span scop="queryTime1" onclick="queryTime(1,5,'30')" class="newusa_ici_1">30天以内&nbsp;</span></a>
            <%-- <span style="float: left;color: #5F93D7;">从</span><input class="form-controlsd " style="float: left;color: #5F93D7;width: 90px;height: 26px;border-color: #d0dde9" id="starttime1"  type="text" onfocus="WdatePicker({isShowWeek:true,dateFmt:'yyyy-MM-dd'})"/>
             <span style="float: left;color: #5F93D7;">到</span><input class="form-controlsd " style="float: left;color: #5F93D7;width: 90px;height: 26px;margin-right: 20px;border-color: #d0dde9" id="endtime1"  type="text" onfocus="WdatePicker({isShowWeek:true,dateFmt:'yyyy-MM-dd'})"/>--%>
             <a href="javascript:void(0)" onclick="addstartTimeAndEndTime(this,1)"><span style="float: left;color: #5F93D7">自定义...</span></a>
         </div>
-        <li class="new_usa_list"><span class="newusa_i">订单状态：</span><a href="javascript:void(0)"><span class="newusa_ici" scop="queryStatus1"  onclick="queryStatus(1,1,null);">全部&nbsp;</span></a><a href="javascript:void(0)"><span class="newusa_ici_1" scop="queryStatus1"  onclick="queryStatus(1,2,'1');">已付款&nbsp;</span></a><a href="javascript:void(0)"><span class="newusa_ici_1" scop="queryStatus1"  onclick="queryStatus(1,3,'2');">已发货&nbsp;</span></a><a href="javascript:void(0)"><span class="newusa_ici_1" scop="queryStatus1"  onclick="queryStatus(1,4,'3');">妥投&nbsp;</span></a><a href="javascript:void(0)"><span class="newusa_ici_1" scop="queryStatus1"  onclick="queryStatus(1,5,'4');">未妥投&nbsp;</span></a></li>
+        <li class="new_usa_list"><span class="newusa_i" style="width: 75px;">订单状态：</span><a href="javascript:void(0)"><span class="newusa_ici" scop="queryStatus1"  onclick="queryStatus(1,1,null);">全部&nbsp;</span></a><a href="javascript:void(0)"><span class="newusa_ici_1" scop="queryStatus1"  onclick="queryStatus(1,2,'1');">已付款&nbsp;</span></a><a href="javascript:void(0)"><span class="newusa_ici_1" scop="queryStatus1"  onclick="queryStatus(1,3,'2');">已发货&nbsp;</span></a><a href="javascript:void(0)"><span class="newusa_ici_1" scop="queryStatus1"  onclick="queryStatus(1,4,'3');">妥投&nbsp;</span></a><a href="javascript:void(0)"><span class="newusa_ici_1" scop="queryStatus1"  onclick="queryStatus(1,5,'4');">未妥投&nbsp;</span></a></li>
         <div class="newsearch">
-            <span class="newusa_i">搜索内容：</span>
+            <span class="newusa_i" style="width: 75px;">搜索内容：</span>
             <span id="sleBG">
 <span id="sleHid">
 <select name="type" class="select" id="itemType1" onchange="cleanInput();">
@@ -1068,6 +1089,7 @@
     <option value="person">联系人</option>
     <option value="buyerEmail">买家电邮</option>
     <option value="comment">备注</option>
+    <option value="transaction">EBAY交易号</option>
 </select>
 </span>
 </span>
@@ -1080,6 +1102,7 @@
                 <span class="newusa_ici_del_in"><input type="checkbox" name="checkbox" id="allCheckbox"  onclick="selectAllCheck(1,this);"></span>
                 <span class="newusa_ici_del" onclick="addComment(1);">添加备注</span><span class="newusa_ici_del" onclick="addTabRemark();">管理文件夹</span><span onclick="downloadOrders(1);" class="newusa_ici_del">下载订单</span>
                 <span onclick="moveFolder(1);" class="newusa_ici_del">移动到文件夹</span>
+                <span onclick="modifyOrderNums(1);" class="newusa_ici_del">上传跟踪号</span>
             </div>
             <div class="tbbay"><a data-toggle="modal" href="javascript:#" onclick="getBindParm();" >同步eBay</a></div>
         </div>
@@ -1094,17 +1117,17 @@
 <div style="display: none;" id="con_menu_2">
     <!--综合开始 -->
     <div class="new_usa" style="margin-top:20px;">
-        <li class="new_usa_list" name="selectCountrys" name1="selectCountrys2"><span class="newusa_i">收件人国家：</span><a href="javascript:void(0)"><span class="newusa_ici" scop="queryCountry2"  onclick="queryCountry(2,1,null);">全部&nbsp;</span></a><a href="javascript:void(0)"><span class="newusa_ici_1" scop="queryCountry2"  onclick="queryCountry(2,2,'US');"><img src="<c:url value ="/img/usa_1.png"/> " >美国&nbsp;</span></a><a href="javascript:void(0)"><span class="newusa_ici_1" scop="queryCountry2"  onclick="queryCountry(2,3,'GB');"><img src="<c:url value ="/img/UK.jpg"/> ">英国&nbsp;</span></a><a href="javascript:void(0)"><span class="newusa_ici_1" scop="queryCountry2"  onclick="queryCountry(2,4,'DE');"><img src="<c:url value ="/img/DE.png"/> ">德国&nbsp;</span></a><a href="javascript:void(0)"><span class="newusa_ici_1" scop="queryCountry2"  onclick="queryCountry(2,5,'AU');"><img src="<c:url value ="/img/AU.jpg"/> ">澳大利亚</span></a><a href="javascript:void(0)" onclick="selectCountrys();"><span style="padding-left: 20px;vertical-align: middle;color: royalblue">更多...</span></a></li>
-        <li class="new_usa_list"><span class="newusa_i">刊登类型：</span><a href="javascript:void(0)"><span class="newusa_ici" scop="queryAttr2" onclick="queryAttr(2,1,null);">全部&nbsp;</span></a><a href="javascript:void(0)"><span class="newusa_ici_1" scop="queryAttr2" onclick="queryAttr(2,2,'fixation');">固价&nbsp;</span></a><a href="javascript:void(0)"><span class="newusa_ici_1" scop="queryAttr2" onclick="queryAttr(2,3,'auction');">拍卖&nbsp;</span></a><a href="javascript:void(0)"><span class="newusa_ici_1" scop="queryAttr2" onclick="queryAttr(2,4,'multiattribute');">多属性&nbsp;</span></a></li>
+        <li class="new_usa_list" name="selectCountrys" name1="selectCountrys2"><span class="newusa_i" style="width: 75px;">收件人国家：</span><a href="javascript:void(0)"><span class="newusa_ici" scop="queryCountry2"  onclick="queryCountry(2,1,null);">全部&nbsp;</span></a><a href="javascript:void(0)"><span class="newusa_ici_1" scop="queryCountry2"  onclick="queryCountry(2,2,'US');"><img src="<c:url value ="/img/usa_1.png"/> " >美国&nbsp;</span></a><a href="javascript:void(0)"><span class="newusa_ici_1" scop="queryCountry2"  onclick="queryCountry(2,3,'GB');"><img src="<c:url value ="/img/UK.jpg"/> ">英国&nbsp;</span></a><a href="javascript:void(0)"><span class="newusa_ici_1" scop="queryCountry2"  onclick="queryCountry(2,4,'DE');"><img src="<c:url value ="/img/DE.png"/> ">德国&nbsp;</span></a><a href="javascript:void(0)"><span class="newusa_ici_1" scop="queryCountry2"  onclick="queryCountry(2,5,'AU');"><img src="<c:url value ="/img/AU.jpg"/> ">澳大利亚</span></a><a href="javascript:void(0)" onclick="selectCountrys();"><span style="padding-left: 20px;vertical-align: middle;color: royalblue">更多...</span></a></li>
+        <li class="new_usa_list"><span class="newusa_i" style="width: 75px;">刊登类型：</span><a href="javascript:void(0)"><span class="newusa_ici" scop="queryAttr2" onclick="queryAttr(2,1,null);">全部&nbsp;</span></a><a href="javascript:void(0)"><span class="newusa_ici_1" scop="queryAttr2" onclick="queryAttr(2,2,'fixation');">固价&nbsp;</span></a><a href="javascript:void(0)"><span class="newusa_ici_1" scop="queryAttr2" onclick="queryAttr(2,3,'auction');">拍卖&nbsp;</span></a><a href="javascript:void(0)"><span class="newusa_ici_1" scop="queryAttr2" onclick="queryAttr(2,4,'multiattribute');">多属性&nbsp;</span></a></li>
         <div class="newsearch">
-            <span class="newusa_i">时间：</span><a href="javascript:void(0)"><span scop="queryTime2" onclick="queryTime(2,1,null)" class="newusa_ici">全部&nbsp;</span></a><a href="javascript:void(0)"><span scop="queryTime2" onclick="queryTime(2,2,1)" class="newusa_ici_1">今天&nbsp;</span></a><a href="javascript:void(0)"><span scop="queryTime2" onclick="queryTime(2,3,'2')" class="newusa_ici_1">昨天&nbsp;</span></a><a href="javascript:void(0)"><span scop="queryTime2" onclick="queryTime(2,4,'7')" class="newusa_ici_1">7天以内&nbsp;</span></a><a href="javascript:void(0)"><span scop="queryTime2" onclick="queryTime(2,5,'30')" class="newusa_ici_1">30天以内&nbsp;</span></a>
+            <span class="newusa_i" style="width: 75px;">时间：</span><a href="javascript:void(0)"><span scop="queryTime2" onclick="queryTime(2,1,null)" class="newusa_ici">全部&nbsp;</span></a><a href="javascript:void(0)"><span scop="queryTime2" onclick="queryTime(2,2,1)" class="newusa_ici_1">今天&nbsp;</span></a><a href="javascript:void(0)"><span scop="queryTime2" onclick="queryTime(2,3,'2')" class="newusa_ici_1">昨天&nbsp;</span></a><a href="javascript:void(0)"><span scop="queryTime2" onclick="queryTime(2,4,'7')" class="newusa_ici_1">7天以内&nbsp;</span></a><a href="javascript:void(0)"><span scop="queryTime2" onclick="queryTime(2,5,'30')" class="newusa_ici_1">30天以内&nbsp;</span></a>
             <%--<span style="float: left;color: #5F93D7;">从</span><input class="form-controlsd " style="float: left;color: #5F93D7;width: 90px;height: 26px;border-color: #d0dde9" id="starttime2"  type="text" onfocus="WdatePicker({isShowWeek:true,dateFmt:'yyyy-MM-dd'})"/>
             <span style="float: left;color: #5F93D7;">到</span><input class="form-controlsd " style="float: left;color: #5F93D7;width: 90px;height: 26px;margin-right: 20px;border-color: #d0dde9" id="endtime2"  type="text" onfocus="WdatePicker({isShowWeek:true,dateFmt:'yyyy-MM-dd'})"/>--%>
             <a href="javascript:void(0)" onclick="addstartTimeAndEndTime(this,2)"><span style="float: left;color: #5F93D7">自定义...</span></a>
         </div>
-        <li class="new_usa_list"><span class="newusa_i">订单状态：</span><a href="javascript:void(0)"><span class="newusa_ici" scop="queryStatus2"  onclick="queryStatus(2,1,null);">全部&nbsp;</span></a><a href="javascript:void(0)"><span class="newusa_ici_1" scop="queryStatus2"  onclick="queryStatus(2,2,'1');">已付款&nbsp;</span></a><a href="javascript:void(0)"><span class="newusa_ici_1" scop="queryStatus2"  onclick="queryStatus(2,3,'2');">已发货&nbsp;</span></a><a href="javascript:void(0)"><span class="newusa_ici_1" scop="queryStatus2"  onclick="queryStatus(2,4,'3');">妥投&nbsp;</span></a><a href="javascript:void(0)"><span class="newusa_ici_1" scop="queryStatus2"  onclick="queryStatus(2,5,'4');">未妥投&nbsp;</span></a></li>
+        <li class="new_usa_list"><span class="newusa_i" style="width: 75px;">订单状态：</span><a href="javascript:void(0)"><span class="newusa_ici" scop="queryStatus2"  onclick="queryStatus(2,1,null);">全部&nbsp;</span></a><a href="javascript:void(0)"><span class="newusa_ici_1" scop="queryStatus2"  onclick="queryStatus(2,2,'1');">已付款&nbsp;</span></a><a href="javascript:void(0)"><span class="newusa_ici_1" scop="queryStatus2"  onclick="queryStatus(2,3,'2');">已发货&nbsp;</span></a><a href="javascript:void(0)"><span class="newusa_ici_1" scop="queryStatus2"  onclick="queryStatus(2,4,'3');">妥投&nbsp;</span></a><a href="javascript:void(0)"><span class="newusa_ici_1" scop="queryStatus2"  onclick="queryStatus(2,5,'4');">未妥投&nbsp;</span></a></li>
         <div class="newsearch">
-            <span class="newusa_i">搜索内容：</span>
+            <span class="newusa_i" style="width: 75px;">搜索内容：</span>
             <span id="sleBG">
 <span id="sleHid">
 <select name="type" class="select" id="itemType2" onchange="cleanInput();">
@@ -1117,6 +1140,7 @@
     <option value="person">联系人</option>
     <option value="buyerEmail">买家电邮</option>
     <option value="comment">备注</option>
+    <option value="transaction">EBAY交易号</option>
 </select>
 </span>
 </span>
@@ -1129,6 +1153,7 @@
                 <span class="newusa_ici_del_in"><input type="checkbox" name="checkbox" id="allCheckbox" onclick="selectAllCheck(2,this);"></span>
                 <span class="newusa_ici_del" onclick="addComment(2);">添加备注</span><span class="newusa_ici_del" onclick="addTabRemark();">管理文件夹</span><span onclick="downloadOrders(2);" class="newusa_ici_del">下载订单</span>
                 <span onclick="moveFolder(2);" class="newusa_ici_del">移动到文件夹</span>
+                <span onclick="modifyOrderNums(2);" class="newusa_ici_del">上传跟踪号</span>
             </div>
             <div class="tbbay"><a data-toggle="modal" href="#myModal" onclick="getBindParm();" class="">同步eBay</a></div>
         </div>
@@ -1143,17 +1168,17 @@
 <div style="display: none;" id="con_menu_3">
     <!--综合开始 -->
     <div class="new_usa" style="margin-top:20px;">
-        <li class="new_usa_list" name="selectCountrys" name1="selectCountrys3"><span class="newusa_i">收件人国家：</span><a href="javascript:void(0)"><span class="newusa_ici" scop="queryCountry3"  onclick="queryCountry(3,1,null);">全部&nbsp;</span></a><a href="javascript:void(0)"><span class="newusa_ici_1" scop="queryCountry3"  onclick="queryCountry(3,2,'US');"><img src="<c:url value ="/img/usa_1.png"/> " >美国&nbsp;</span></a><a href="javascript:void(0)"><span class="newusa_ici_1" scop="queryCountry3"  onclick="queryCountry(3,3,'GB');"><img src="<c:url value ="/img/UK.jpg"/> ">英国&nbsp;</span></a><a href="javascript:void(0)"><span class="newusa_ici_1" scop="queryCountry3"  onclick="queryCountry(3,4,'DE');"><img src="<c:url value ="/img/DE.png"/> ">德国&nbsp;</span></a><a href="javascript:void(0)"><span class="newusa_ici_1" scop="queryCountry3"  onclick="queryCountry(3,5,'AU');"><img src="<c:url value ="/img/AU.jpg"/> ">澳大利亚</span></a><a href="javascript:void(0)" onclick="selectCountrys();"><span style="padding-left: 20px;vertical-align: middle;color: royalblue">更多...</span></a></li>
-        <li class="new_usa_list"><span class="newusa_i">刊登类型：</span><a href="javascript:void(0)"><span class="newusa_ici" scop="queryAttr3" onclick="queryAttr(3,1,null);">全部&nbsp;</span></a><a href="javascript:void(0)"><span class="newusa_ici_1" scop="queryAttr3" onclick="queryAttr(3,2,'fixation');">固价&nbsp;</span></a><a href="javascript:void(0)"><span class="newusa_ici_1" scop="queryAttr3" onclick="queryAttr(3,3,'auction');">拍卖&nbsp;</span></a><a href="javascript:void(0)"><span class="newusa_ici_1" scop="queryAttr3" onclick="queryAttr(3,4,'multiattribute');">多属性&nbsp;</span></a></li>
+        <li class="new_usa_list" name="selectCountrys" name1="selectCountrys3"><span class="newusa_i" style="width: 75px;">收件人国家：</span><a href="javascript:void(0)"><span class="newusa_ici" scop="queryCountry3"  onclick="queryCountry(3,1,null);">全部&nbsp;</span></a><a href="javascript:void(0)"><span class="newusa_ici_1" scop="queryCountry3"  onclick="queryCountry(3,2,'US');"><img src="<c:url value ="/img/usa_1.png"/> " >美国&nbsp;</span></a><a href="javascript:void(0)"><span class="newusa_ici_1" scop="queryCountry3"  onclick="queryCountry(3,3,'GB');"><img src="<c:url value ="/img/UK.jpg"/> ">英国&nbsp;</span></a><a href="javascript:void(0)"><span class="newusa_ici_1" scop="queryCountry3"  onclick="queryCountry(3,4,'DE');"><img src="<c:url value ="/img/DE.png"/> ">德国&nbsp;</span></a><a href="javascript:void(0)"><span class="newusa_ici_1" scop="queryCountry3"  onclick="queryCountry(3,5,'AU');"><img src="<c:url value ="/img/AU.jpg"/> ">澳大利亚</span></a><a href="javascript:void(0)" onclick="selectCountrys();"><span style="padding-left: 20px;vertical-align: middle;color: royalblue">更多...</span></a></li>
+        <li class="new_usa_list"><span class="newusa_i" style="width: 75px;">刊登类型：</span><a href="javascript:void(0)"><span class="newusa_ici" scop="queryAttr3" onclick="queryAttr(3,1,null);">全部&nbsp;</span></a><a href="javascript:void(0)"><span class="newusa_ici_1" scop="queryAttr3" onclick="queryAttr(3,2,'fixation');">固价&nbsp;</span></a><a href="javascript:void(0)"><span class="newusa_ici_1" scop="queryAttr3" onclick="queryAttr(3,3,'auction');">拍卖&nbsp;</span></a><a href="javascript:void(0)"><span class="newusa_ici_1" scop="queryAttr3" onclick="queryAttr(3,4,'multiattribute');">多属性&nbsp;</span></a></li>
         <div class="newsearch">
-            <span class="newusa_i">时间：</span><a href="javascript:void(0)"><span scop="queryTime3" onclick="queryTime(3,1,null)" class="newusa_ici">全部&nbsp;</span></a><a href="javascript:void(0)"><span scop="queryTime3" onclick="queryTime(3,2,'1')" class="newusa_ici_1">今天&nbsp;</span></a><a href="javascript:void(0)"><span scop="queryTime3" onclick="queryTime(3,3,'2')" class="newusa_ici_1">昨天&nbsp;</span></a><a href="javascript:void(0)"><span scop="queryTime3" onclick="queryTime(3,4,'7')" class="newusa_ici_1">7天以内&nbsp;</span></a><a href="javascript:void(0)"><span scop="queryTime3" onclick="queryTime(3,5,'30')" class="newusa_ici_1">30天以内&nbsp;</span></a>
+            <span class="newusa_i" style="width: 75px;">时间：</span><a href="javascript:void(0)"><span scop="queryTime3" onclick="queryTime(3,1,null)" class="newusa_ici">全部&nbsp;</span></a><a href="javascript:void(0)"><span scop="queryTime3" onclick="queryTime(3,2,'1')" class="newusa_ici_1">今天&nbsp;</span></a><a href="javascript:void(0)"><span scop="queryTime3" onclick="queryTime(3,3,'2')" class="newusa_ici_1">昨天&nbsp;</span></a><a href="javascript:void(0)"><span scop="queryTime3" onclick="queryTime(3,4,'7')" class="newusa_ici_1">7天以内&nbsp;</span></a><a href="javascript:void(0)"><span scop="queryTime3" onclick="queryTime(3,5,'30')" class="newusa_ici_1">30天以内&nbsp;</span></a>
             <%--<span style="float: left;color: #5F93D7;">从</span><input class="form-controlsd " style="float: left;color: #5F93D7;width: 90px;height: 26px;border-color: #d0dde9" id="starttime3"  type="text" onfocus="WdatePicker({isShowWeek:true,dateFmt:'yyyy-MM-dd'})"/>
             <span style="float: left;color: #5F93D7;">到</span><input class="form-controlsd " style="float: left;color: #5F93D7;width: 90px;height: 26px;margin-right: 20px;border-color: #d0dde9" id="endtime3"  type="text" onfocus="WdatePicker({isShowWeek:true,dateFmt:'yyyy-MM-dd'})"/>--%>
             <a href="javascript:void(0)" onclick="addstartTimeAndEndTime(this,3)"><span style="float: left;color: #5F93D7">自定义...</span></a>
         </div>
-        <li class="new_usa_list"><span class="newusa_i">订单状态：</span><a href="javascript:void(0)"><span class="newusa_ici" scop="queryStatus3"  onclick="queryStatus(3,1,null);">全部&nbsp;</span></a><a href="javascript:void(0)"><span class="newusa_ici_1" scop="queryStatus3"  onclick="queryStatus(3,2,'1');">已付款&nbsp;</span></a><a href="javascript:void(0)"><span class="newusa_ici_1" scop="queryStatus3"  onclick="queryStatus(3,3,'2');">已发货&nbsp;</span></a><a href="javascript:void(0)"><span class="newusa_ici_1" scop="queryStatus3"  onclick="queryStatus(3,4,'3');">妥投&nbsp;</span></a><a href="javascript:void(0)"><span class="newusa_ici_1" scop="queryStatus3"  onclick="queryStatus(3,5,'4');">未妥投&nbsp;</span></a></li>
+        <li class="new_usa_list"><span class="newusa_i" style="width: 75px;">订单状态：</span><a href="javascript:void(0)"><span class="newusa_ici" scop="queryStatus3"  onclick="queryStatus(3,1,null);">全部&nbsp;</span></a><a href="javascript:void(0)"><span class="newusa_ici_1" scop="queryStatus3"  onclick="queryStatus(3,2,'1');">已付款&nbsp;</span></a><a href="javascript:void(0)"><span class="newusa_ici_1" scop="queryStatus3"  onclick="queryStatus(3,3,'2');">已发货&nbsp;</span></a><a href="javascript:void(0)"><span class="newusa_ici_1" scop="queryStatus3"  onclick="queryStatus(3,4,'3');">妥投&nbsp;</span></a><a href="javascript:void(0)"><span class="newusa_ici_1" scop="queryStatus3"  onclick="queryStatus(3,5,'4');">未妥投&nbsp;</span></a></li>
         <div class="newsearch">
-            <span class="newusa_i">搜索内容：</span>
+            <span class="newusa_i" style="width: 75px;">搜索内容：</span>
             <span id="sleBG">
 <span id="sleHid">
 <select name="type" class="select" id="itemType3" onchange="cleanInput();">
@@ -1166,6 +1191,7 @@
     <option value="person">联系人</option>
     <option value="buyerEmail">买家电邮</option>
     <option value="comment">备注</option>
+    <option value="transaction">EBAY交易号</option>
 </select>
 </span>
 </span>
@@ -1178,6 +1204,7 @@
                 <span class="newusa_ici_del_in"><input type="checkbox" name="checkbox" id="checkbox" id="allCheckbox" onclick="selectAllCheck(3,this);"></span>
                 <span class="newusa_ici_del" onclick="addComment(3);">添加备注</span><span class="newusa_ici_del" onclick="addTabRemark();">管理文件夹</span><span onclick="downloadOrders(3);" class="newusa_ici_del">下载订单</span>
                 <span onclick="moveFolder(3);" class="newusa_ici_del">移动到文件夹</span>
+                <span onclick="modifyOrderNums(3);" class="newusa_ici_del">上传跟踪号</span>
             </div>
             <div>
                 <div id="newtipi">
@@ -1194,17 +1221,17 @@
 <div style="display: none;" id="con_menu_4">
     <!--综合开始 -->
     <div class="new_usa" style="margin-top:20px;">
-        <li class="new_usa_list" name="selectCountrys" name1="selectCountrys4"><span class="newusa_i">收件人国家：</span><a href="javascript:void(0)"><span class="newusa_ici" scop="queryCountry4"  onclick="queryCountry(4,1,null);">全部&nbsp;</span></a><a href="javascript:void(0)"><span class="newusa_ici_1" scop="queryCountry4"  onclick="queryCountry(4,2,'US');"><img src="<c:url value ="/img/usa_1.png"/> " >美国</span></a><a href="javascript:void(0)"><span class="newusa_ici_1" scop="queryCountry4"  onclick="queryCountry(4,3,'GB');"><img src="<c:url value ="/img/UK.jpg"/> ">英国&nbsp;</span></a><a href="javascript:void(0)"><span class="newusa_ici_1" scop="queryCountry4"  onclick="queryCountry(4,4,'DE');"><img src="<c:url value ="/img/DE.png"/> ">德国&nbsp;</span></a><a href="javascript:void(0)"><span class="newusa_ici_1" scop="queryCountry4"  onclick="queryCountry(4,5,'AU');"><img src="<c:url value ="/img/AU.jpg"/> ">澳大利亚</span></a><a href="javascript:void(0)" onclick="selectCountrys();"><span style="padding-left: 20px;vertical-align: middle;color: royalblue">更多...</span></a></li>
-        <li class="new_usa_list"><span class="newusa_i">刊登类型：</span><a href="javascript:void(0)"><span class="newusa_ici" scop="queryAttr4" onclick="queryAttr(4,1,null);">全部&nbsp;</span></a><a href="javascript:void(0)"><span class="newusa_ici_1" scop="queryAttr4" onclick="queryAttr(4,2,'fixation');">固价&nbsp;</span></a><a href="javascript:void(0)"><span class="newusa_ici_1" scop="queryAttr4" onclick="queryAttr(4,3,'auction');">拍卖&nbsp;</span></a><a href="javascript:void(0)"><span class="newusa_ici_1" scop="queryAttr4" onclick="queryAttr(4,4,'multiattribute');">多属性&nbsp;</span></a></li>
+        <li class="new_usa_list" name="selectCountrys" name1="selectCountrys4"><span class="newusa_i" style="width: 75px;">收件人国家：</span><a href="javascript:void(0)"><span class="newusa_ici" scop="queryCountry4"  onclick="queryCountry(4,1,null);">全部&nbsp;</span></a><a href="javascript:void(0)"><span class="newusa_ici_1" scop="queryCountry4"  onclick="queryCountry(4,2,'US');"><img src="<c:url value ="/img/usa_1.png"/> " >美国</span></a><a href="javascript:void(0)"><span class="newusa_ici_1" scop="queryCountry4"  onclick="queryCountry(4,3,'GB');"><img src="<c:url value ="/img/UK.jpg"/> ">英国&nbsp;</span></a><a href="javascript:void(0)"><span class="newusa_ici_1" scop="queryCountry4"  onclick="queryCountry(4,4,'DE');"><img src="<c:url value ="/img/DE.png"/> ">德国&nbsp;</span></a><a href="javascript:void(0)"><span class="newusa_ici_1" scop="queryCountry4"  onclick="queryCountry(4,5,'AU');"><img src="<c:url value ="/img/AU.jpg"/> ">澳大利亚</span></a><a href="javascript:void(0)" onclick="selectCountrys();"><span style="padding-left: 20px;vertical-align: middle;color: royalblue">更多...</span></a></li>
+        <li class="new_usa_list"><span class="newusa_i" style="width: 75px;">刊登类型：</span><a href="javascript:void(0)"><span class="newusa_ici" scop="queryAttr4" onclick="queryAttr(4,1,null);">全部&nbsp;</span></a><a href="javascript:void(0)"><span class="newusa_ici_1" scop="queryAttr4" onclick="queryAttr(4,2,'fixation');">固价&nbsp;</span></a><a href="javascript:void(0)"><span class="newusa_ici_1" scop="queryAttr4" onclick="queryAttr(4,3,'auction');">拍卖&nbsp;</span></a><a href="javascript:void(0)"><span class="newusa_ici_1" scop="queryAttr4" onclick="queryAttr(4,4,'multiattribute');">多属性&nbsp;</span></a></li>
         <div class="newsearch">
-            <span class="newusa_i">时间：</span><a href="javascript:void(0)"><span scop="queryTime4" onclick="queryTime(4,1,null)" class="newusa_ici">全部&nbsp;</span></a><a href="javascript:void(0)"><span scop="queryTime4" onclick="queryTime(4,2,'1')" class="newusa_ici_1">今天&nbsp;</span></a><a href="javascript:void(0)"><span scop="queryTime4" onclick="queryTime(4,3,'2')" class="newusa_ici_1">昨天&nbsp;</span></a><a href="javascript:void(0)"><span scop="queryTime4" onclick="queryTime(4,4,'7')" class="newusa_ici_1">7天以内&nbsp;</span></a><a href="javascript:void(0)"><span scop="queryTime4" onclick="queryTime(4,5,'30')" class="newusa_ici_1">30天以内&nbsp;</span></a>
+            <span class="newusa_i" style="width: 75px;">时间：</span><a href="javascript:void(0)"><span scop="queryTime4" onclick="queryTime(4,1,null)" class="newusa_ici">全部&nbsp;</span></a><a href="javascript:void(0)"><span scop="queryTime4" onclick="queryTime(4,2,'1')" class="newusa_ici_1">今天&nbsp;</span></a><a href="javascript:void(0)"><span scop="queryTime4" onclick="queryTime(4,3,'2')" class="newusa_ici_1">昨天&nbsp;</span></a><a href="javascript:void(0)"><span scop="queryTime4" onclick="queryTime(4,4,'7')" class="newusa_ici_1">7天以内&nbsp;</span></a><a href="javascript:void(0)"><span scop="queryTime4" onclick="queryTime(4,5,'30')" class="newusa_ici_1">30天以内&nbsp;</span></a>
             <%--<span style="float: left;color: #5F93D7;">从</span><input class="form-controlsd " style="float: left;color: #5F93D7;width: 90px;height: 26px;border-color: #d0dde9" id="starttime4"  type="text" onfocus="WdatePicker({isShowWeek:true,dateFmt:'yyyy-MM-dd'})"/>
             <span style="float: left;color: #5F93D7;">到</span><input class="form-controlsd " style="float: left;color: #5F93D7;width: 90px;height: 26px;margin-right: 20px;border-color: #d0dde9" id="endtime4"  type="text" onfocus="WdatePicker({isShowWeek:true,dateFmt:'yyyy-MM-dd'})"/>--%>
             <a href="javascript:void(0)" id="addstartTimeAndEndTimeID" onclick="addstartTimeAndEndTime(this,4)"><span style="float: left;color: #5F93D7">自定义...</span></a>
         </div>
-        <li class="new_usa_list"><span class="newusa_i">订单状态：</span><a href="javascript:void(0)"><span class="newusa_ici" scop="queryStatus4"  onclick="queryStatus(4,1,null);">全部&nbsp;</span></a><a href="javascript:void(0)"><span class="newusa_ici_1" scop="queryStatus4"  onclick="queryStatus(4,2,'1');">已付款&nbsp;</span></a><a href="javascript:void(0)"><span class="newusa_ici_1" scop="queryStatus4"  onclick="queryStatus(4,3,'2');">已发货&nbsp;</span></a><a href="javascript:void(0)"><span class="newusa_ici_1" scop="queryStatus4"  onclick="queryStatus(4,4,'3');">妥投&nbsp;</span></a><a href="javascript:void(0)"><span class="newusa_ici_1" scop="queryStatus4"  onclick="queryStatus(4,5,'4');">未妥投&nbsp;</span></a></li>
+        <li class="new_usa_list"><span class="newusa_i" style="width: 75px;">订单状态：</span><a href="javascript:void(0)"><span class="newusa_ici" scop="queryStatus4"  onclick="queryStatus(4,1,null);">全部&nbsp;</span></a><a href="javascript:void(0)"><span class="newusa_ici_1" scop="queryStatus4"  onclick="queryStatus(4,2,'1');">已付款&nbsp;</span></a><a href="javascript:void(0)"><span class="newusa_ici_1" scop="queryStatus4"  onclick="queryStatus(4,3,'2');">已发货&nbsp;</span></a><a href="javascript:void(0)"><span class="newusa_ici_1" scop="queryStatus4"  onclick="queryStatus(4,4,'3');">妥投&nbsp;</span></a><a href="javascript:void(0)"><span class="newusa_ici_1" scop="queryStatus4"  onclick="queryStatus(4,5,'4');">未妥投&nbsp;</span></a></li>
         <div class="newsearch">
-            <span class="newusa_i">搜索内容：</span>
+            <span class="newusa_i" style="width: 75px;">搜索内容：</span>
             <span id="sleBG">
 <span id="sleHid">
 <select name="type" class="select" id="itemType4" onchange="cleanInput();">
@@ -1217,6 +1244,7 @@
     <option value="person">联系人</option>
     <option value="buyerEmail">买家电邮</option>
     <option value="comment">备注</option>
+    <option value="transaction">EBAY交易号</option>
 </select>
 </span>
 </span>
@@ -1229,6 +1257,7 @@
                 <span class="newusa_ici_del_in"><input type="checkbox" name="checkbox" id="allCheckbox" onclick="selectAllCheck(4,this);"></span>
                 <span id="addComment" class="newusa_ici_del" onclick="addComment(4);">添加备注</span><span id="addtabRemark" class="newusa_ici_del" onclick="addTabRemark();">管理文件夹</span><span id="downloadOrder4" onclick="downloadOrders(4);" class="newusa_ici_del">下载订单</span>
                 <span id="moveFolder" onclick="moveFolder(4);" class="newusa_ici_del">移动到文件夹</span>
+                <span onclick="modifyOrderNums(4);" class="newusa_ici_del">上传跟踪号</span>
             </div>
             <div>
                 <div id="newtipi">

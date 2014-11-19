@@ -70,7 +70,13 @@ public class ItemInformationController extends BaseAction {
         modelMap.put("remarks",remarks);
         return forword("/itemInformation/itemInformation",modelMap);
     }
-
+    /**获取list数据的ajax方法*/
+    @RequestMapping("/ajax/loadRemarks.do")
+    @ResponseBody
+    public void loadRemarks(CommonParmVO commonParmVO,HttpServletRequest request) throws Exception {
+        List<PublicUserConfig> remarks=iPublicUserConfig.selectUserConfigByItemType("remark");
+        AjaxSupport.sendSuccessText("",remarks);
+    }
     /**获取list数据的ajax方法*/
     @RequestMapping("/ajax/loadItemInformationList.do")
     @ResponseBody
@@ -110,7 +116,19 @@ public class ItemInformationController extends BaseAction {
         jsonBean.setTotal((int)page.getTotalCount());
         AjaxSupport.sendSuccessText("", jsonBean);
     }
-
+    /*
+    *放大图片
+    */
+    @RequestMapping("/bigfont.do")
+    @AvoidDuplicateSubmission(needSaveToken = true)
+    public ModelAndView bigfont(HttpServletRequest request,HttpServletResponse response,ModelMap modelMap){
+        String pictureId=request.getParameter("pictureId");
+        if(StringUtils.isNotBlank(pictureId)){
+            PublicItemPictureaddrAndAttr pic=iPublicItemPictureaddrAndAttr.selectPictureaddrAndAttrById(Long.valueOf(pictureId));
+            modelMap.put("pic",pic);
+        }
+        return forword("/itemInformation/bigfont",modelMap);
+    }
     /*
      *初始化添加备注
      */
@@ -254,6 +272,56 @@ public class ItemInformationController extends BaseAction {
         return forword("item/addItem",modelMap);
     }
     /*
+  *异步添加标签
+  */
+    @RequestMapping("/ajax/addRemarkNames.do")
+    @AvoidDuplicateSubmission(needRemoveToken = true)
+    @ResponseBody
+    public void addRemarkNames(HttpServletRequest request) throws Exception {
+
+        /*AjaxSupport.sendSuccessText("",list);*/
+    }
+    /*
+   *异步请求图片
+   */
+    @RequestMapping("/ajax/addPictures.do")
+    @AvoidDuplicateSubmission(needRemoveToken = true)
+    @ResponseBody
+    public void addPictures(HttpServletRequest request) throws Exception {
+        String names=request.getParameter("names");
+        List<Map<String,Integer>> list=new ArrayList<Map<String, Integer>>();
+        if(StringUtils.isNotBlank(names)){
+            String[] names1=names.split(",");
+            for(int i=0;i<names1.length;i++){
+                String name=names1[i];
+                name=name.substring(0,name.length()-1);
+                if(name.contains("全部")||name.contains("无标签")) {
+                    continue;
+                }else{
+                    PublicUserConfig config= iPublicUserConfig.selectUserConfigByItemTypeName("remark",name);
+                    if(config!=null){
+                        SessionVO c= SessionCacheSupport.getSessionVO();
+                        List<PublicItemPictureaddrAndAttr> attrs=iPublicItemPictureaddrAndAttr.selectPictureaddrAndAttrByremarkId(config.getId(),"remark",c.getId());
+                        Map<String,Integer> map=new HashMap<String, Integer>();
+                        map.put(config.getConfigName(),attrs.size());
+                        list.add(map);
+                    }
+                }
+            }
+        }
+        String id1=request.getParameter("id");
+        List<PublicItemPictureaddrAndAttr> pictures=new ArrayList<PublicItemPictureaddrAndAttr>();
+        Map<String,List> m=new HashMap<String, List>();
+        if(StringUtils.isNotBlank(id1)){
+            SessionVO c= SessionCacheSupport.getSessionVO();
+            PublicItemInformation itemInformation=iPublicItemInformation.selectItemInformationByid(Long.valueOf(id1));
+            pictures=iPublicItemPictureaddrAndAttr.selectPictureaddrAndAttrByInformationId(itemInformation.getId(),"picture",c.getId());
+        }
+        m.put("pic",pictures);
+        m.put("list",list);
+        AjaxSupport.sendSuccessText("",m);
+    }
+    /*
      *初始化添加商品界面
      */
     @RequestMapping("/addItemInformation.do")
@@ -357,6 +425,17 @@ public class ItemInformationController extends BaseAction {
                }
                if(itemInformation!=null&&itemInformation.getCustomId()!=null){
                    iPublicItemCustom.deleteItemCustom(itemInformation.getCustomId());
+               }
+               SessionVO sessionVO=SessionCacheSupport.getSessionVO();
+               List<PublicItemPictureaddrAndAttr> andAttrs=iPublicItemPictureaddrAndAttr.selectPictureaddrAndAttrByInformationId(itemInformation.getId(),"remark",sessionVO.getId());
+               for(PublicItemPictureaddrAndAttr andAttr:andAttrs){
+                   List<PublicItemPictureaddrAndAttr> list1=iPublicItemPictureaddrAndAttr.selectPictureaddrAndAttrByRemarkIdAndNotInformationId(andAttr.getRemarkId(),itemInformation.getId(),"remark",sessionVO.getId());
+                   if(list1.size()==0||list1==null){
+                       PublicUserConfig config=new PublicUserConfig();
+                       config.setId(andAttr.getRemarkId());
+                       iPublicUserConfig.deleteUserConfig(config);
+                   }
+                   iPublicItemPictureaddrAndAttr.deletePublicItemPictureaddrAndAttr(andAttr);
                }
                iPublicItemInformation.deleteItemInformation(Long.valueOf(id));
                i++;
@@ -576,35 +655,36 @@ public class ItemInformationController extends BaseAction {
             return;
         }
         if(supplierid!=null){
-            PublicItemSupplier supplier=new PublicItemSupplier();
-            supplier.setSupplierid(supplierId);
-            supplier.setName(supplierName);
-            supplier.setRemark(supplierRemark);
-            supplier.setSuppersku(supperSku);
-            supplier.setCurrency(supplierCurrency);
             if(StringUtils.isNotBlank(supplierPrice)){
+                PublicItemSupplier supplier=new PublicItemSupplier();
+                supplier.setSupplierid(supplierId);
+                supplier.setName(supplierName);
+                supplier.setRemark(supplierRemark);
+                supplier.setSuppersku(supperSku);
+                supplier.setCurrency(supplierCurrency);
+
                 supplier.setPrice(Double.valueOf(supplierPrice));
+                if(StringUtils.isNotBlank(supplierid)) {
+                    supplier.setId(Long.valueOf(supplierid));
+                }
+                iPublicItemSupplier.saveItemSupplier(supplier);
+                itemInformation.setSupplierId(supplier.getId());
             }
-            if(StringUtils.isNotBlank(supplierid)){
-                supplier.setId(Long.valueOf(supplierid));
-            }
-            iPublicItemSupplier.saveItemSupplier(supplier);
-            itemInformation.setSupplierId(supplier.getId());
         }else{
+            if(StringUtils.isNotBlank(supplierPrice)){
             PublicItemSupplier supplier=new PublicItemSupplier();
             supplier.setSupplierid(supplierId);
             supplier.setName(supplierName);
             supplier.setRemark(supplierRemark);
             supplier.setSuppersku(supperSku);
             supplier.setCurrency(supplierCurrency);
-            if(StringUtils.isNotBlank(supplierPrice)){
-                supplier.setPrice(Double.valueOf(supplierPrice));
-            }
+            supplier.setPrice(Double.valueOf(supplierPrice));
             if(StringUtils.isNotBlank(supplierid)){
                 supplier.setId(Long.valueOf(supplierid));
             }
             iPublicItemSupplier.saveItemSupplier(supplier);
             itemInformation.setSupplierId(supplier.getId());
+            }
         }
         if(StringUtils.isNotBlank(customName)||StringUtils.isNotBlank(customEnglishName)||StringUtils.isNotBlank(currencyType)||StringUtils.isNotBlank(declaredValue)||StringUtils.isNotBlank(weight)||StringUtils.isNotBlank(place)){
             PublicItemCustom custom = new PublicItemCustom();

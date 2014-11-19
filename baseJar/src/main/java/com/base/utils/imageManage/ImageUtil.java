@@ -9,11 +9,13 @@ import java.net.URLConnection;
  */
 public class ImageUtil {
     /**判断图片是否存在*/
-    public boolean isPicIsAvail(String urll){
+    public static boolean isPicIsAvail(String urll){
         boolean b=true;
         try {
             URL url = new URL(urll);
             URLConnection uc = url.openConnection();
+            uc.setConnectTimeout(10000);
+            uc.setReadTimeout(20000);
             InputStream in = uc.getInputStream();
         } catch (Exception e) {
             b=false;

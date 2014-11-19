@@ -102,6 +102,10 @@
             <if test="itemType=='comment'">
                 and OrderGetOrders.comment like "%"#{content}"%"
             </if>
+            <if test="itemType=='transaction'">
+                and OrderGetOrders.transactionID like "%"#{content}"%"
+            </if>
+
         </if>
         <if test="framConten!=null">
             and (OrderGetOrders.title like "%"#{framConten}"%" or OrderGetOrders sKU "%"#{framConten}"%")

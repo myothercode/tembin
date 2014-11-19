@@ -28,9 +28,60 @@
                         }]
             );
         }
+
+        function getChuKouYiData(){
+            var url=path+"/inventory/ajax/getChuKouYiData.do";
+            var data=$("#sendMessageForm").serialize();
+            $().invoke(url,data,
+                    [function(m,r){
+                        alert(r);
+                        Base.token();
+                        W.sentmessage.close();
+                        W.refreshTable();
+                    },
+                        function(m,r){
+                            alert(r);
+                            Base.token();
+                        }]
+            );
+        }
+
+        function getDeShiFangData(){
+            var url=path+"/inventory/ajax/getDeShiFangData.do";
+            var data=$("#sendMessageForm").serialize();
+            $().invoke(url,data,
+                    [function(m,r){
+                        alert(r);
+                        W.sentmessage.close();
+                        W.refreshTable();
+                    },
+                        function(m,r){
+                            alert(r);
+                            Base.token();
+                        }]
+            );
+        }
+        function getShiHaiYouData(){
+            var url=path+"/inventory/ajax/getShiHaiYouData.do";
+            var data=$("#sendMessageForm").serialize();
+            $().invoke(url,data,
+                    [function(m,r){
+                        alert(r);
+                        W.sentmessage.close();
+                        W.refreshTable();
+                    },
+                        function(m,r){
+                            alert(r);
+                            Base.token();
+                        }]
+            );
+        }
     </script>
 </head>
 <body>
 <input type="button" value="四海邮addOrder" onclick="siHaiYouAddOrder();">
+<input type="button" value="出口易库存" onclick="getChuKouYiData();">
+<input type="button" value="递四方库存" onclick="getDeShiFangData();">
+<input type="button" value="四海邮库存" onclick="getShiHaiYouData();">
 </body>
 </html>

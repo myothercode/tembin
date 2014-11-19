@@ -16,6 +16,8 @@
             background-color: #ffffff;
         }
     </style>
+    <link rel="stylesheet" type="text/css" href="<c:url value ="/css/jqzoom/jqzoom.css" />"/>
+    <script type="text/javascript" src=<c:url value ="/js/jqzoom/jquery.jqzoom.js" /> ></script>
     <script type="text/javascript" src=<c:url value ="/js/ueditor/ueditor.config.js" /> ></script>
     <script type="text/javascript" src=<c:url value ="/js/ueditor/ueditor.all.js" /> ></script>
     <script type="text/javascript" src=<c:url value ="/js/ueditor/lang/zh-cn/zh-cn.js" /> ></script>
@@ -25,6 +27,97 @@
     <script type="text/javascript">
         var api = frameElement.api, W = api.opener;
         var add=0;
+        $(function(){
+            var li=W.document.getElementById("loadremarks");
+            var spans=$(li).find("span[scop=remark]");
+            var td=$("#addremarks");
+            var span="<table><tr><td>";
+            var date1="";
+            for(var i=0;i<spans.length;i++){
+                var remarkName=spans[i].innerText;
+               if(i==(spans.length-1)){
+                    date1+=remarkName;
+                }else{
+                    date1+=remarkName+",";
+                }
+            }
+            var date={"names":date1};
+            var id=$("#id").val();
+            var url=path+"/information/ajax/addPictures.do?id="+id;
+            $().invoke(url,date,
+                    [function(m,r){
+                        var div="";
+                        var r1= r.list;
+                        var r2= r.pic;
+                        if(r2.length>0){
+                            for(var i=0;i< r2.length;i++){
+                                div+=" <td class=\"spic\" style=\"margin-left: 20px;\">" +
+                                        "<div id=\"vspic\">" +
+                                        "<li><a href=\"javascript:void(0)\"><img src=\"<c:url value ="/img/a1xl.png" />\" width=\"18\" height=\"18\"></a>" +
+                                "<ul>" +
+                                "<li><a href=\"javascritp:void(0)\" onclick=\"removeThis(this)\">删除</a></li>" +
+                                "<li><a href=\"javascritp:void(0)\" onclick=\"connectPicture('"+r2[i].attrvalue+"')\">复制链接</a></li>" +
+                                "</ul>" +
+                                "</li>" +
+                                "</div>" +
+                                "<div class=\"a1fd\"><a href=\"javascript:void(0)\" title=\"<img src='"+r2[i].attrvalue+"'/>\" onclick=\"bigfont('"+r2[i].id+"')\"><img  src=\"<c:url value ="/img/a1fd.png" />\"></a></div>" +
+                                "<input type=\"hidden\" name=\"Picture\" value=\""+r2[i].attrvalue+"\"><div class=\"jqzoom\" id=\""+r2[i].id+"\"><img src=\""+r2[i].attrvalue+"\" alt=\"shoe\"   jqimg=\""+r2[i].attrvalue+"\" width=\"120\" height=\"110\"></div></td>";
+                            }
+                            $("#addPictureId").append(div);
+                        }
+                        if(r1.length>0){
+                            for(var i=0;i< r1.length;i++){
+                                var remark=r1[i];
+                                var name=spans[i+2].innerText;
+                                name=name.substring(0,name.length-1);
+                                if(i%5==0&&i!=0){
+                                    span+="<a href='javascript:void(0);' onclick=\"addToli('"+name+"')\"><span class=\"pipi\">+ "+name+"("+ remark[name]+")</span></a></td></tr><tr><td>";
+                                }else{
+                                    span+="<a href='javascript:void(0);' onclick=\"addToli('"+name+"')\"><span class=\"pipi\">+ "+name+"("+ remark[name]+")</span></a>";
+                                }
+                            }
+                            span+="</td></tr></table>";
+                            $(td).append(span);
+                         }
+                        Base.token();
+                    },
+                        function(m,r){
+                            alert(r);
+                            Base.token();
+                        }]
+            );
+        /*    $(".jqzoom").jqueryzoom();*/
+        });
+        function bigfont(id){
+           /* $("#"+id).jqueryzoom({
+                xzoom: 1050,		//zooming div default width(default width value is 200)
+                yzoom: 700,		//zooming div default width(default height value is 200)
+                offset: 1,		//zooming div default offset(default offset value is 10)
+                position: "right",  //zooming div position(default position value is "right")
+                preload: 10     // 1 by default
+
+            });*/
+            var url=path+"/information/bigfont.do?pictureId="+id;
+            itemInformation=openMyDialog({title: '',
+                content: 'url:'+url,
+                icon: 'succeed',
+                width:800,
+                height:600,
+                lock:true,
+                zIndex:2000
+            });
+        }
+        function addToli(name){
+            var spans=$("#addRemark").find("span");
+            for(var i=0;i<spans.length;i++){
+                var span=spans[i].innerHTML;
+                if(name==span){
+                    return;
+                }
+            }
+            var lable="<a href='javascript:void(0)' style='padding: 3px 5px 3px 5px;margin-left: 5px;margin-top:3px;border: 1px solid #aaaaaa;border-radius: 3px;position: relative;line-height: 30px;' onclick='deletes(this);' ><i class=\"icon-remove-sign\" style='margin-right: 2px;'></i><span >"+name+"</span><input type='hidden' name='label' value='"+name+"'></a>"
+            $("#kk").before(lable);
+        }
         function addAttrabute() {
             var names=$("input[name=attrName]");
             var values=$("input[name=attrValue]");
@@ -81,6 +174,7 @@
             /*window.parent.location.reload();*/
             W.itemInformation.close();
         }
+
         function submitCommit(){
             if(!$("#informationForm").validationEngine("validate")){
                 return;
@@ -111,10 +205,10 @@
             $().invoke(url,data,
                     [function(m,r){
                         alert(r);
-                        /*W.refreshTable();*/
-                        /*W.itemInformation.close();*/
-                    /*    Base.token();*/
-                        W.location.reload();
+                        W.refreshTable();
+                        W.loadRemarks();
+                        W.itemInformation.close();
+                        Base.token();
                     },
                         function(m,r){
                             alert(r);
@@ -177,29 +271,11 @@
             sss = a.id;
         }
         function addPictrueUrl(urls) {
-           /* if (sss.indexOf("apicUrls")!=-1) {//商品图片*/
-            /*
-                var str = '';
-                str += "<ul class='gbin1-list'>";
-                for (var i = 0; i < urls.length; i++) {
-                    str += '<li><div style="position:relative"><input type="hidden" name="Picture" value="' + urls[i].src.replace("@", ":") + '">' +
-                            '<img src=' + urls[i].src.replace("@", ":") + ' style="width: 50px;height: 50px;" />' +
-                            '<a href=\'javascritp:void(0)\' onclick=\'removeThis(this)\'>移除</a></span></div>';
-                    str += "</li>";
-                }
-                str += "</ul>";
-                $("#picture").append(str);
-                str = "";*/
             var str = '';
-            /*str += "<ul class='gbin1-list'>";*/
             for (var i = 0; i < urls.length; i++) {
-                /*str += '<li><div style="position:relative"><input type="hidden" name="Picture" value="' + urls[i].src.replace("@", ":") + '">' +
-                 '<img src=' + urls[i].src.replace("@", ":") + ' style="width: 50px;height: 50px;" />' +
-                 '<a href=\'javascritp:void(0)\' onclick=\'removeThis(this)\'>移除</a></span></div>';
-                 str += "</li>";*/
                 str+="<td class=\"spic\" style=\"margin-left: 20px;\">"+
                         "<div id=\"vspic\">" +
-                        "<li><a href=\"javascritp:void(0)\"><img src=\"<c:url value ="/img/a1xl.png" />\" width=\"18\" height=\"18\"></a>" +
+                        "<li><a href=\"javascritp:void(0)\"><input type=\"hidden\" name=\"Picture\" value='" + urls[i].src.replace("@", ":") + "'><img src=\"<c:url value ="/img/a1xl.png" />\" width=\"18\" height=\"18\"></a>" +
                         "<ul>" +
                         "<li><a href=\"javascritp:void(0)\" onclick=\"removeThis(this)\">删除</a></li>" +
                         "<li><a href=\"javascritp:void(0)\" onclick=\"connectPicture('"+ urls[i].src.replace("@", ":") +"')\">复制链接</a></li>" +
@@ -209,9 +285,9 @@
                         "<div class=\"a1fd\"><a href=\"javascritp:void(0)\"><img src=\"<c:url value ="/img/a1fd.png" />\"></a></div>" +
                         "<img src=\"" + urls[i].src.replace("@", ":") +"\" width=\"120\" height=\"110\"></td>";
             }
-            /* str += "</ul>";*/
             /*$("#picture").append(str);*/
-            $("#addpictureId").append(str);
+          /*  alert($("#addPictureId"));*/
+            $("#addPictureId").append(str);
             str = "";
         }
         function removeThis(a){
@@ -462,7 +538,7 @@
         </script>
 <br/><br/>
 <form id="informationForm">
-    <input type="hidden" name="id" value="${itemInformation.id}"/>
+    <input type="hidden" name="id" id="id" value="${itemInformation.id}"/>
     <input type="hidden" name="inventoryid" value="${inventory.id}"/>
     <input type="hidden" name="customid" value="${custom.id}"/>
     <input type="hidden" name="supplierid" value="${supplier.id}"/>
@@ -479,12 +555,12 @@
                         <dt id="svt2" onclick="setvTab('svt',2,4)" class="">相关信息</dt>
                         <span style="float:right; margin-top:8px; margin-right:10px;">
                             <script type=text/plain id='picUrls'></script>
-                            <a href="javascript:void(0)" id="apicUrls" onclick="addpicture(this)"><img src="<c:url value ="/img/apic_dr.png" />" width="75" height="15"></a></span>
+                            <div><a href="javascript:void(0)" id="apicUrls" onclick="addpicture(this)"><img src="<c:url value ="/img/apic_dr.png" />" width="75" height="15"></a></div></span>
                     </div></td>
                 </tr>
 
                 </tbody></table>
-            <div id="new_svt_1" class="hover" style="display: block;background-color: #ffffff;">
+            <div id="new_svt_1" class="hover" style="width:800px;display: block;background-color: #ffffff;">
                 <link href="css/compiled/layout.css" rel="stylesheet" type="text/css">
                 <table width="100%" border="0" style="margin-left:40px;">
 
@@ -565,20 +641,20 @@
                     </tr>
                     <tr>
                         <td width="14%" height="0" align="right"></td>
-                        <td height="0" width="86%">
-                            <span class="pipi">+ 电子产品（7231）</span><span class="pipi">+ 跟卖（1）</span></td>
+                        <td height="0" width="86%" id="addremarks">
+                            </td>
                     </tr>
-                    <tr>
+                 <%--   <tr>
                         <td height="28" align="right"></td>
                         <td style=" padding-top:22px;" height="28"><button type="button" class="net_put">下一步</button> <button type="button" class="net_put_1" style="font-size: 5px;">相关信息</button></td>
-                    </tr>
+                    </tr>--%>
                     </tbody></table>
             </div>
             <div style="display: none;" id="new_svt_2">
                 <link href="css/compiled/layout.css" rel="stylesheet" type="text/css">
                 <table width="100%" border="0">
                     <tbody><tr id="addPictureId">
-                    <c:forEach items="${pictures}" var="picture" begin="0" varStatus="status">
+                    <%--<c:forEach items="${pictures}" var="picture" begin="0" varStatus="status">
                         <td class="spic" style="margin-left: 20px;">
                             <div id="vspic">
                                 <li><a href="#"><img src="<c:url value ="/img/a1xl.png" />" width="18" height="18"></a>
@@ -589,38 +665,9 @@
                                 </li>
                             </div>
                             <div class="a1fd"><a href="#"><img src="<c:url value ="/img/a1fd.png" />"></a></div>
-                            <img src="${picture.attrvalue}" width="120" height="110"></td>
-                       <%-- <td><div class="spic"><img src="img/pic_d.jpg" width="120" height="110"></div></td>
-                        <td><div class="spic"><img src="img/pic_d.jpg" width="120" height="110"></div></td>--%>
-                    </c:forEach>
+                            <input type="hidden" name="Picture" value="${picture.attrvalue}"><img src="${picture.attrvalue}" width="120" height="110"></td>
+                    </c:forEach>--%>
                      </tr>
-
-                  <%--  <tr>
-                        <td></td><td>图片</td><td>
-                        <div class="panel" style="display: block">
-                            <section class='example'>
-                                <div id="picture" class="gridly">
-                                    <c:if test="${pictures!=null}">
-                                        <ul>
-                                            <c:forEach items="${pictures}" var="picture">
-                                                <li>
-                                                    <div>
-                                                        <input type="hidden" name="Picture" value="${picture.attrvalue}">
-                                                        <img src="${picture.attrvalue}" style="width: 50px;"/>
-                                                        <a href="javascritp:void(0)" onclick="removeThis(this)">移除</a>
-                                                    </div>
-                                                </li>
-                                            </c:forEach>
-                                        </ul>
-                                    </c:if>
-                                </div>
-                            </section>
-                            <script type=text/plain id='picUrls'></script>
-                            <div style="padding-left: 60px;"><a href="javascript:void(0)" id="apicUrls" onclick="addpicture(this)">选择图片</a></div>
-                        </div>
-                        <br/>
-                    </td>
-                    </tr>--%>
                     </tbody></table>
             </div>
 
@@ -629,6 +676,8 @@
 <%--//----------------------------------------------------------------------------------------------%>
 <div style="bottom: 1px;">
 <div class="modal-footer">
+  <%--  <button type="button" class="net_put" onclick="submitCommit();">下一步</button>
+    <button type="button" class="net_put_1" style="font-size: 5px;" onclick="closedialog();">相关信息</button>--%>
     <button type="button" class="net_put" onclick="submitCommit();">保存</button>
     <button type="button" class="net_put_1" data-dismiss="modal" onclick="closedialog();">关闭</button>
 </div>

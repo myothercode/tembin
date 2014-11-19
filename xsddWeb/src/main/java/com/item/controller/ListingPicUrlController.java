@@ -75,20 +75,16 @@ public class ListingPicUrlController extends BaseAction{
                 tlu.setUrl(url);
                 tlu.setCreateDate(new Date());
                 tlu.setMackId(EncryptionUtil.md5Encrypt(url));
-                tlu.setEndDate(c.getTime());
+                //tlu.setEndDate(c.getTime());
+                tlu.setEbayAccountId(DataDictionarySupport.getTradingDataDictionaryByID(Long.parseLong(siteid)).getName1());
+                tlu.setSiteId(siteid);
                 this.iTradingListingPicUrl.saveListingPicUrl(tlu);
                 lipic.add(tlu);
                 UsercontrollerEbayAccount ua = this.iUsercontrollerEbayAccount.selectById(Long.parseLong(ebayid));
                 String picName = url.substring(url.lastIndexOf("/")+1,url.lastIndexOf("."));
-                String xml="<?xml version=\"1.0\" encoding=\"utf-8\"?>\n" +
-                        "<UploadSiteHostedPicturesRequest xmlns=\"urn:ebay:apis:eBLBaseComponents\">\n" +
-                        "  <RequesterCredentials>\n" +
-                        "    <eBayAuthToken>"+ua.getEbayToken()+"</eBayAuthToken>\n" +
-                        "  </RequesterCredentials>\n" +
-                        "  <WarningLevel>High</WarningLevel>\n" +
-                        "  <ExternalPictureURL>"+url+"</ExternalPictureURL>\n" +
-                        "  <PictureName>"+picName+"</PictureName><ErrorLanguage>zh_HK</ErrorLanguage>\n" +
-                        "</UploadSiteHostedPicturesRequest>";
+
+                String xml=SamplePaseXml.uploadEbayImage(ua,url,picName);//获取xml
+
                 AddApiTask addApiTask = new AddApiTask();
                 UsercontrollerDevAccountExtend d = new UsercontrollerDevAccountExtend();
                 d.setApiSiteid(DataDictionarySupport.getTradingDataDictionaryByID(Long.parseLong(siteid)).getName1());

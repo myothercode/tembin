@@ -260,7 +260,12 @@
     <div class="new_all">
         <div class="here">当前位置：首页 &gt; 客户管理 &gt; <b>消息模板</b></div>
         <div class="a_bal"></div>
+        <div class="new_tab_ls">
+            <dt id="menu1" class="new_tab_1">消息模板</dt>
+        </div>
+        <br/><br/><br/><br/>
         <div class="new">
+
             <div class="Contentbox">
                 <div>
                     <!--综合开始 -->

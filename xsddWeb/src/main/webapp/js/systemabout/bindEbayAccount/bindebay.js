@@ -18,6 +18,7 @@ function getBindParm(){
     //if(devAccountID==null || devAccountID ==0){alert('请选择开发帐号');return;}
     var url=path+"/user/apiGetSessionID.do";
     var data={id:devAccountID};
+    var newWindow = window.open();
     $().invoke(
         url,
         data,
@@ -27,7 +28,8 @@ function getBindParm(){
             sessid=rr.sessionid;
             runName=rr.runName;
             tokenParm="?SignIn&RuName="+rr.runName+"&SessID="+rr.sessionid;
-            window.open(tokenPageUrl+tokenParm);
+            //window.open(tokenPageUrl+tokenParm);
+            reOpenPage(newWindow);
 
             $.dialog({title: '警告',
                 id: 'Alert',
@@ -79,8 +81,9 @@ function fetchToken(a){
 }
 
 /**重新打开页面*/
-function reOpenPage(){
-    window.open(tokenPageUrl+tokenParm);
+function reOpenPage(newWindow){
+    newWindow.location.href = tokenPageUrl+tokenParm;
+    //window.open(tokenPageUrl+tokenParm);
 }
 
 /**组装选择开发帐号的*/

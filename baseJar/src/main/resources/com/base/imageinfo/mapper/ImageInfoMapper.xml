@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.base.imageinfo.mapper.ImageInfoMapper" >
+    <!--and datediff(NOW(),end_date)>=0-->
+ <select id="queryCheckImage" resultType="com.base.utils.scheduleother.domain.ImageCheckVO" parameterType="map">
+    select id ,ebayurl ebayUrl,url,ebay_account_id ebayAccountId,site_id siteId,create_date createDate,end_date endDate
+    from trading_listingpic_url ir
+    where (check_timer is null
+    OR datediff(NOW(),check_timer)>=1
+    )  and ebay_account_id is not null
+    order by end_date,check_timer,id
+    LIMIT 5
+ </select>
+
+
+</mapper>

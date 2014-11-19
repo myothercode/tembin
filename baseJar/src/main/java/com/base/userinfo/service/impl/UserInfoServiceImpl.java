@@ -204,13 +204,27 @@ public class UserInfoServiceImpl implements com.base.userinfo.service.UserInfoSe
         Long ebayId= (Long) map.get("id");
         String name= (String) map.get("name");
         String code= (String) map.get("code");
-        String payPalId= (String) map.get("payPalId");
+        //String payPalId= (String) map.get("payPalId");
         UsercontrollerEbayAccount e = usercontrollerEbayAccountMapper.selectByPrimaryKey(ebayId);
         SessionVO sessionVO = SessionCacheSupport.getSessionVO();
         Asserts.assertTrue(sessionVO.getId()==e.getCreateUser().longValue(),"没有权限修改此记录！");
         e.setEbayName(name);
         e.setEbayNameCode(code);
+//        e.setPaypalAccountId(Long.valueOf(payPalId));
+        usercontrollerEbayAccountMapper.updateByPrimaryKey(e);
+    }
+    @Override
+    /**绑定ebay账户*/
+    public void bindEbayPaypalAccount(Map map){
+        Long ebayId= (Long) map.get("id");
+        String payPalId= (String) map.get("payPalId");
+        String isDefault=(String)map.get("isDefault");
+        UsercontrollerEbayAccount e = usercontrollerEbayAccountMapper.selectByPrimaryKey(ebayId);
+        Asserts.assertTrue(e!=null,"ebay帐号出错!");
+        SessionVO sessionVO = SessionCacheSupport.getSessionVO();
+        Asserts.assertTrue(sessionVO.getId()==e.getCreateUser().longValue(),"没有权限修改此记录！");
         e.setPaypalAccountId(Long.valueOf(payPalId));
+        e.setUseDefaultPaypalOnly(isDefault);
         usercontrollerEbayAccountMapper.updateByPrimaryKey(e);
     }
 

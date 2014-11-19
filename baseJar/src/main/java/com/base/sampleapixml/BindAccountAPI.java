@@ -465,8 +465,10 @@ public class BindAccountAPI {
                 "      <request>" +
                 "        <Token>887E99B5F89BB18BEA12B204B620D236</Token>"+
                 "        <UserKey>wr5qjqh4gj</UserKey>" +
-                "        <Warehouse>UK</Warehouse>" +
-                "        <SKU>SKU123</SKU>" +
+                "        <StartIndex>1</StartIndex>" +
+                "        <Count>100</Count>" +
+         /*       "        <Warehouse>UK</Warehouse>" +
+                "        <SKU>SKU123</SKU>" +*/
                 "      </request>" +
                 "    </ProductGetStorageNo>" +
                 "  </soap:Body>" +

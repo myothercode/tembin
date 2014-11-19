@@ -67,6 +67,59 @@
             and itemInformation.create_user=#{userID}
         </if>
         group by itemInformation.id
+        /*-------------------------*/
+       <!-- select itemInformation.*,
+        dic.config_name typeName,
+        attr.attrValue pictureUrl,
+        dic2.remark remark
+        from public_item_information itemInformation
+        left join public_user_config dic
+        on itemInformation.type_id=dic.id
+        left join (select attr1.itemInformation_id,
+        attr1.attrType,
+        dic1.config_name AS  remark
+        from public_item_pictureaddr_and_attr attr1
+        left join public_user_config dic1
+        ON  attr1.remark_id=dic1.id
+        WHERE attr1.attrType='remark') dic2
+        ON itemInformation.id=dic2.itemInformation_id
+        left join public_item_pictureaddr_and_attr attr
+        on itemInformation.id=attr.itemInformation_id
+        where 1=1
+        <if test="id!=null">
+            and itemInformation.id = #{id}
+        </if>
+        <if test="remark!=null">
+            <if test="remark=='null'">
+                and itemInformation.remark_id is null
+            </if>
+            <if test="remark!='null'">
+                and attr1.remark_id =#{remark}
+            </if>
+        </if>
+        <if test="information!=null">
+            <if test="information=='custom'">
+                and itemInformation.custom_id is  null
+            </if>
+            <if test="information=='notAll'">
+                and (itemInformation.inventory_id is  null or itemInformation.custom_id is  null or itemInformation.supplier_id is null)
+            </if >
+            <if test="information=='picture'">
+                and attr.attrValue is null
+            </if>
+        </if>
+        <if test="content!=null">
+            <if test="itemType==1">
+                and itemInformation.sku like "%"#{content}"%"
+            </if>
+            <if test="itemType==2">
+                and itemInformation.name like "%"#{content}"%"
+            </if>
+        </if>
+        <if test="userID!=null">
+            and itemInformation.create_user=#{userID}
+        </if>
+        group by itemInformation.id-->
     </select>
     <select id="selectItemInformationByType" resultMap="BaseResultMap" parameterType="map">
         select itemInformation.*,dic.config_name typeName,dic.id typeId,count(*) countNum
@@ -83,5 +136,6 @@
             and itemInformation.create_user=#{userID}
         </if>
         group by dic.id
+
     </select>
 </mapper>

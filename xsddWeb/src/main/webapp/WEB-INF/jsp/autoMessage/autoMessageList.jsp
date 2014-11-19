@@ -135,6 +135,9 @@
 <div class="new_all">
     <div class="here">当前位置：首页 &gt; 刊登管理 &gt; <b>自动消息</b></div>
     <div class="a_bal"></div>
+    <div class="new_tab_ls">
+        <dt id="menu1" class="new_tab_1">自动消息</dt>
+    </div><br/><br/><br/>
     <div class="new">
 
         <div class="Contentbox">
