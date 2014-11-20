@@ -151,6 +151,7 @@ public class GetOrdersController extends BaseAction {
     //选择地区
     @RequestMapping("/selectCountrys.do")
     public ModelAndView selectCountrys(HttpServletRequest request,HttpServletResponse response,ModelMap modelMap){
+        String countryNames=request.getParameter("countryNames");
         String num=request.getParameter("num");
         List<TradingDataDictionary> lidata = DataDictionarySupport.getTradingDataDictionaryByType(DataDictionarySupport.DATA_DICT_DELTA);
         List<TradingDataDictionary> li1 = new ArrayList();
@@ -170,6 +171,7 @@ public class GetOrdersController extends BaseAction {
         modelMap.put("countryIds",countryIds);
         modelMap.put("root",root);
         modelMap.put("num",num);
+        modelMap.put("countryNames",countryNames);
         return forword("/orders/order/selectCountrys",modelMap);
     }
 

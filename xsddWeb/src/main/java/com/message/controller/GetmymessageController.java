@@ -13,7 +13,6 @@ import com.base.mybatis.page.Page;
 import com.base.mybatis.page.PageJsonBean;
 import com.base.sampleapixml.APINameStatic;
 import com.base.sampleapixml.BindAccountAPI;
-import com.base.sampleapixml.GetMyMessageAPI;
 import com.base.userinfo.service.SystemUserManagerService;
 import com.base.userinfo.service.UserInfoService;
 import com.base.utils.annotations.AvoidDuplicateSubmission;
@@ -423,8 +422,8 @@ public class GetmymessageController extends BaseAction{
     public ModelAndView viewTemplateInitTable(HttpServletRequest request,HttpServletResponse response,@ModelAttribute( "initSomeParmMap" )ModelMap modelMap) throws Exception {
         String messageID=request.getParameter("messageID");
         //测试环境
-        UsercontrollerDevAccountExtend dev = userInfoService.getDevInfo(null);
-        dev.setApiSiteid("0");
+       /* UsercontrollerDevAccountExtend dev = userInfoService.getDevInfo(null);
+        dev.setApiSiteid("0");*/
         //真实环境
        /* UsercontrollerDevAccountExtend dev=new UsercontrollerDevAccountExtend();
         dev.setApiDevName("5d70d647-b1e2-4c7c-a034-b343d58ca425");
@@ -434,14 +433,14 @@ public class GetmymessageController extends BaseAction{
         dev.setApiSiteid("0");*/
 
 
-        dev.setApiCallName(APINameStatic.GetMyMessages);
-        request.getSession().setAttribute("dveId", dev);
+       /* dev.setApiCallName(APINameStatic.GetMyMessages);
+        request.getSession().setAttribute("dveId", dev);*/
         List<UsercontrollerEbayAccountExtend> ebays = userInfoService.getEbayAccountForCurrUser(new HashMap(),Page.newAOnePage());
         Map m=new HashMap();
         m.put("messageID",messageID);
         m.put("ebays",ebays);
         List<MessageGetmymessageQuery> messages=iTradingMessageGetmymessage.selectMessageGetmymessageBySender(m);
-        for(MessageGetmymessageQuery message:messages){
+       /* for(MessageGetmymessageQuery message:messages){
             if(message.getTextHtml()==null||"".equals(message.getTextHtml())){
                 Map parms=new HashMap();
                 parms.put("messageId", message.getMessageid());
@@ -450,14 +449,14 @@ public class GetmymessageController extends BaseAction{
                 //测试环境
                 parms.put("url",apiUrl);
                 //真实环境
-               /* parms.put("url","https://api.ebay.com/ws/api.dll");*/
+               *//* parms.put("url","https://api.ebay.com/ws/api.dll");*//*
                 parms.put("userInfoService",userInfoService);
                 String content=GetMyMessageAPI.getContent(parms);
                 message.setTextHtml(content);
                 message.setRead("true");
                 iTradingMessageGetmymessage.saveMessageGetmymessage(message);
             }
-        }
+        }*/
         List<TradingOrderAddMemberMessageAAQToPartner> addMessages=new ArrayList<TradingOrderAddMemberMessageAAQToPartner>();
         List<TradingMessageGetmymessage> messages1=new ArrayList<TradingMessageGetmymessage>();
         List<TradingMessageGetmymessage> messageList=iTradingMessageGetmymessage.selectMessageGetmymessageByItemIdAndSender(messages.get(0).getItemid(),messages.get(0).getSender(),messages.get(0).getRecipientuserid());
@@ -769,6 +768,7 @@ public class GetmymessageController extends BaseAction{
         Map m=new HashMap();
         m.put("accountId",commonParmVO.getId());
         m.put("ebay",ebay);
+        m.put("dev",d);
         taskMessageVO.setObjClass(m);
         SessionVO sessionVO= SessionCacheSupport.getSessionVO();
         taskMessageVO.setMessageTo(sessionVO.getId());

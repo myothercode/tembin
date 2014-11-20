@@ -41,7 +41,8 @@ public class TaskGetOrdersImpl implements com.task.service.ITaskGetOrders {
     public List<TaskGetOrders> selectTaskGetOrdersByFlagIsFalseOrderBysaveTime() {
         TaskGetOrdersExample tde = new TaskGetOrdersExample();
         TaskGetOrdersExample.Criteria c = tde.createCriteria();
-        c.andTokenflagEqualTo(0);
+       /* Date date=new Date();*/
+        c.andSavetimeEqualTo(new Date());
         return this.taskGetOrdersMapper.selectByExampleWithBLOBs(tde);
     }
 }

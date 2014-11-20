@@ -26,8 +26,8 @@ public class SynchronizeGetOrdersTaskRun extends BaseScheduledClass implements S
         ITaskGetOrders iTaskGetOrders = (ITaskGetOrders) ApplicationContextUtil.getBean(ITaskGetOrders.class);
         try{
             for(UsercontrollerEbayAccount ebay:ebays){
-                Date date1=DateUtils.subDays(date, 1);
-                Date end1= com.base.utils.common.DateUtils.turnToDateEnd(date1);
+                Date date1=DateUtils.subDays(date, 6);
+                Date end1= com.base.utils.common.DateUtils.turnToDateEnd(date);
                 Date start1=com.base.utils.common.DateUtils.turnToDateStart(date1);
                 String start= DateUtils.DateToString(start1);
                 String end=DateUtils.DateToString(end1);

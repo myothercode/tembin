@@ -298,11 +298,11 @@
         });
         function addLength(obj){
             this.value='';
-            $(obj).attr("style","width: auto;background-color: #fff;border-radius: 5px;");
+            $(obj).attr("style","margin-left:10px;width: auto;background-color: #fff;border-radius: 5px;");
         }
         function subLength(obj){
             if(obj.value==''){obj.value='';obj.style.color='#999';}
-            $(obj).attr("style","width: 40px;background-color: #fff;border-radius: 5px;");
+            $(obj).attr("style","margin-left:10px;width: 40px;background-color: #fff;border-radius: 5px;");
             $(obj).val("");
         }
        function connectPicture(url){
@@ -625,7 +625,7 @@
                                     <c:forEach items="${configs}" var="config">
                                         <a href='javascript:void(0)' style='padding: 3px 5px 3px 5px;margin-left: 5px;margin-top:3px;border: 1px solid #aaaaaa;border-radius: 3px;position: relative;line-height: 30px;' onclick='deletes(this);' ><i class="icon-remove-sign" style='margin-right: 2px;'></i><span >${config.configName}</span><input type='hidden' name='label' value='${config.configName}'></a>
                                     </c:forEach>
-                                    <input style="width:40px;background-color: #fff;border-radius: 5px;" id="kk"type="text" value="" onfocus="addLength(this)" onblur="subLength(this)" onkeyup="this.style.color='#333';" onclick="addLength(this)" /></ul>
+                                    <input style="margin-left: 10px;width:40px;background-color: #fff;border-radius: 5px;" id="kk"type="text" value="" onfocus="addLength(this)" onblur="subLength(this)" onkeyup="this.style.color='#333';" onclick="addLength(this)" /></ul>
                         </div></td>
                     </tr>
                     <tr>
@@ -717,7 +717,7 @@
                     $("#kk").before(text);
                 }
                 $("#kk").val("");
-                $("#kk").attr("style","width: auto;background-color: #fff;border-radius: 5px;");
+                $("#kk").attr("style","margin-left:10px;width: auto;background-color: #fff;border-radius: 5px;");
             }
         })
     });

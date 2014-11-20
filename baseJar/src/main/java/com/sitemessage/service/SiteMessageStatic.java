@@ -23,6 +23,10 @@ public class SiteMessageStatic {
         messageMap.put("feed_back_auto_message_task_run","定时发送获取评价后的自动消息");
         messageMap.put("synchronize_get_order_timer","定时同步订单");
         messageMap.put("synchronize_feed_back_timer","定时获取评价");
+        messageMap.put("synchronize_get_messages_timer","定时获取Message");
+        messageMap.put("synchronize_get_user_cases_timer","定时获取CASE");
+        messageMap.put("synchronize_get_user_cases_ebp_timer","定时获取CASE_EBP");
+        messageMap.put("synchronize_get_user_cases_dispute_timer","定时获取CASE_dispute");
         messageMap.put("update_listing_data_message_type","范本修改在线商品");
         messageMap.put("listing_key_move_message_type","一键搬家");
     }
@@ -92,5 +96,16 @@ public class SiteMessageStatic {
 
     /**定时获取评价*/
     public static final String SYNCHRONIZE_FEED_BACK_TIMER="synchronize_feed_back_timer";
+
+    /**定时获取Message*/
+    public static final String SYNCHRONIZE_GET_MESSAGES_TIMER="synchronize_get_messages_timer";
+    /**定时获取CASE*/
+    public static final String SYNCHRONIZE_GET_USER_CASES_TIMER="synchronize_get_user_cases_timer";
+
+    /**定时获取CASE_EBP*/
+    public static final String SYNCHRONIZE_GET_USER_CASES_EBP_TIMER="synchronize_get_user_cases_ebp_timer";
+
+    /**定时获取CASE_dispute*/
+    public static final String SYNCHRONIZE_GET_USER_CASES_DISPUTE_TIMER="synchronize_get_user_cases_dispute_timer";
 
 }

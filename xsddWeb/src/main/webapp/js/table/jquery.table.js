@@ -59,7 +59,7 @@
 		var option = this.data("option");
 		this.empty();//清空内容
 		this.loadDataByAjax();//加载数据
-		this.analysis().appendTo(this);//解析数据构造table整体
+		/*this.analysis().appendTo(this);//解析数据构造table整体
 		if(option.allData!=null && option.allData.length>0){
 			var paging = this.createPaging2();
 			if(paging != null) {
@@ -70,12 +70,12 @@
 			}
 			this.setRowClass();//设置行样式
 		}
-        /**设置当table加载完成以后需要执行的方法*/
+        *//**设置当table加载完成以后需要执行的方法*//*
         if(option.afterLoadTable!=null && $.isFunction(option.afterLoadTable)){
             option['afterLoadTable']();
         }
         this.setCurrPageNumColor();
-        try{initULSelect();}catch (e){}
+        try{initULSelect();}catch (e){}*/
         //alert($("#newtipi").css("left"))
 	};
 
@@ -92,23 +92,53 @@
 		var total = 0;
 		var tdata = null;
 
+		var _obj_=this;
+		/**添加遮罩层并放入一个空table*/
+		var nullTable="<table name=\"myTablePlug\" width=\"100%\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\" class=\"tab_ZY\">" +
+			"<tbody><tr>"+this.makeTabelHead().html()+"</tr>" ;
+
+		nullTable+="<tr><td colspan='"+option.columnData.length+"' height=\"200\" align=\"center\">" +
+			"<img src=\"/xsddWeb/img/busy.gif\" />" +
+			"</td></tr></tbody></table>";
+		_obj_.html(nullTable);
+		//_obj_.block({ message: "<h1><img src=\"/xsddWeb/img/busy.gif\" /> Just a moment...</h1>"});
 		$().invoke(url, option.sysParm, function (message, json) {
+			_obj_.empty();
+			//_obj_.unblock();//解锁遮罩层
 			tdata = json.list;
 			if(json.total != undefined) {//未分页时候的总数未定义
 				total = json.total;
 			}
-		}, {async: false});
+			option.total = total;
+			option.allData = tdata;
+//=================================
 
-		option.total = total;
-		option.allData = tdata;
+			_obj_.analysis().appendTo(_obj_);//解析数据构造table整体
+			 if(option.allData!=null && option.allData.length>0){
+			 var paging = _obj_.createPaging2();
+			 if(paging != null) {
+				 _obj_.append(paging);
+			 }
+			 if(option.allowClick) {//绑定事件
+				 _obj_.bindClick();
+			 }
+				 _obj_.setRowClass();//设置行样式
+			 }
+			 /*设置当table加载完成以后需要执行的方法*/
+			 if(option.afterLoadTable!=null && $.isFunction(option.afterLoadTable)){
+			 option['afterLoadTable']();
+			 }
+			_obj_.setCurrPageNumColor();
+			 try{initULSelect();}catch (e){}
+//============================
+		}, {async: true});
 	};
 
-	//解析数据
-	$.fn.analysis = function () {
+
+	/**构造表头th部分*/
+	$.fn.makeTabelHead=function(){
 		var option = this.data("option");
 		var tableData = option.allData;
-		var table = $("<table name = 'myTablePlug'></table>").attr("width", "100%").attr("border", "0").attr("cellspacing",
-				"0").attr("cellpadding", "0").attr("class", option.tableCss);
 		var headTr = $("<tr></tr>");
 		if(option.showIndex) {
 			var headThIndex = $("<th></th>").attr("width",
@@ -120,6 +150,18 @@
 				option.columnData[i]["width"]).css("text-align",option.columnData[i]["align"] == undefined ? "center" : option.columnData[i]["align"]).html(option.columnData[i]["title"]);
 			headThTitle.appendTo(headTr);
 		}
+		return headTr;
+	}
+
+	//解析数据
+	$.fn.analysis = function () {
+		var option = this.data("option");
+		var tableData = option.allData;
+		var table = $("<table name = 'myTablePlug'></table>").attr("width", "100%").attr("border", "0").attr("cellspacing",
+				"0").attr("cellpadding", "0").attr("class", option.tableCss);
+
+		var headTr=this.makeTabelHead();
+
 		headTr.appendTo(table);//构造列表头结束
 		if(tableData != null && tableData.length > 0) {
 			for(var i in tableData) {

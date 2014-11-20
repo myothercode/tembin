@@ -299,9 +299,9 @@
     });
 </script>
 <div id="demo">
-<table width="100%" border="0">
+<table width="100%" border="0" >
 <tbody>
-<tr>
+<tr style="height: 50px;">
     <td width="772">            <div class="modal-header">
         <h4 class="modal-title"><span>Please respond to your buyer by <fmt:formatDate value="${cases.respondbydate}" pattern="yyyy-MM-dd"/>.</span>Choose one of the following</h4>
     </div></td>
@@ -363,10 +363,10 @@
             ${information}<br></div></td>
 </tr>
 <tr>
-    <td width="772"><div class="listbox_new jq_new">
+    <td width="772" valign="top"><div class="listbox_new jq_new">
         <c:if test="${reasonFlag=='true'}">
         <c:if test="${cases.handled=='0'}">
-        <h4><span>+</span>
+        <h4 style=""><span>+</span>
             <table width="90%" border="0"><tbody>
             <tr>
                 <td><strong>Verify tracking information ( Buyer’s preference )</strong></td></tr></tbody></table>

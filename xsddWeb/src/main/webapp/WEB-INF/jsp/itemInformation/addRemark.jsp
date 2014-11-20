@@ -55,8 +55,8 @@
                     [function(m,r){
                         alert(r);
                         W.refreshTable();
+                        W.loadRemarks();
                         W.itemInformation.close();
-                        W.location.reload()
                         Base.token();
 
                     },
@@ -71,11 +71,11 @@
         });*/
         function addLength(obj){
             this.value='';
-            $(obj).attr("style","width: auto;background-color: #fff;border-radius: 5px;");
+            $(obj).attr("style","margin-left:10px;width: auto;background-color: #fff;border-radius: 5px;");
         }
         function subLength(obj){
             if(obj.value==''){obj.value='';obj.style.color='#999';}
-            $(obj).attr("style","width: 40px;background-color: #fff;border-radius: 5px;");
+            $(obj).attr("style","margin-left:10px;width: 40px;background-color: #fff;border-radius: 5px;");
             $(obj).val("");
         }
 
@@ -97,7 +97,7 @@
             <tr>
                 <td>标签:</td>
                 <%--<td><div id="addRemark" class="form-controlsd" ><input &lt;%&ndash;onblur="subLength(this);"&ndash;%&gt; onclick="addLength(this);" type="text" class="form-controlsd" style="width: 40px;height: 20px;">&lt;%&ndash;<input type="text" class="form-controlsd" style="width: 260px;height: 20px;">&ndash;%&gt;</div></td>--%>
-                <td><ul id="addRemark" style="padding: 3px 5px 3px 5px;border: 1px solid lightgray;width: 360px;background-color: #ffffff;margin-top: 3px;"><input style="width:40px;background-color: #fff;border-radius: 5px;" id="kk"type="text" value="" onfocus="addLength(this)" onblur="subLength(this)" onkeyup="this.style.color='#333';" onclick="addLength(this)" /></ul></td>
+                <td><ul id="addRemark" style="padding: 3px 5px 3px 5px;border: 1px solid lightgray;width: 360px;background-color: #ffffff;margin-top: 3px;"><input style="margin-left:10px;width:40px;background-color: #fff;border-radius: 5px;" id="kk"type="text" value="" onfocus="addLength(this)" onblur="subLength(this)" onkeyup="this.style.color='#333';" onclick="addLength(this)" /></ul></td>
             </tr>
             <tr>
                 <td></td>
@@ -157,7 +157,7 @@
                         $("#kk").before(text);
                     }
                     $("#kk").val("");
-                    $("#kk").attr("style","width: auto;background-color: #fff;border-radius: 5px;");
+                    $("#kk").attr("style","margin-left:10px;width: auto;background-color: #fff;border-radius: 5px;");
                 }
             })
         });

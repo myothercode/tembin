@@ -11,7 +11,7 @@
     <result column="fromtime" jdbcType="VARCHAR" property="fromtime" />
     <result column="totime" jdbcType="VARCHAR" property="totime" />
     <result column="tokenFlag" jdbcType="INTEGER" property="tokenflag" />
-    <result column="savetime" jdbcType="DATE" property="savetime" />
+    <result column="savetime" jdbcType="TIMESTAMP" property="savetime" />
   </resultMap>
   <resultMap extends="BaseResultMap" id="ResultMapWithBLOBs" type="com.base.database.task.model.TaskGetOrders">
     <!--
@@ -177,7 +177,7 @@
       totime, tokenFlag, savetime, 
       token)
     values (#{id,jdbcType=BIGINT}, #{userid,jdbcType=BIGINT}, #{fromtime,jdbcType=VARCHAR}, 
-      #{totime,jdbcType=VARCHAR}, #{tokenflag,jdbcType=INTEGER}, #{savetime,jdbcType=DATE}, 
+      #{totime,jdbcType=VARCHAR}, #{tokenflag,jdbcType=INTEGER}, #{savetime,jdbcType=TIMESTAMP}, 
       #{token,jdbcType=LONGVARCHAR})
   </insert>
   <insert id="insertSelective" parameterType="com.base.database.task.model.TaskGetOrders">
@@ -226,7 +226,7 @@
         #{tokenflag,jdbcType=INTEGER},
       </if>
       <if test="savetime != null">
-        #{savetime,jdbcType=DATE},
+        #{savetime,jdbcType=TIMESTAMP},
       </if>
       <if test="token != null">
         #{token,jdbcType=LONGVARCHAR},
@@ -266,7 +266,7 @@
         tokenFlag = #{record.tokenflag,jdbcType=INTEGER},
       </if>
       <if test="record.savetime != null">
-        savetime = #{record.savetime,jdbcType=DATE},
+        savetime = #{record.savetime,jdbcType=TIMESTAMP},
       </if>
       <if test="record.token != null">
         token = #{record.token,jdbcType=LONGVARCHAR},
@@ -287,7 +287,7 @@
       fromtime = #{record.fromtime,jdbcType=VARCHAR},
       totime = #{record.totime,jdbcType=VARCHAR},
       tokenFlag = #{record.tokenflag,jdbcType=INTEGER},
-      savetime = #{record.savetime,jdbcType=DATE},
+      savetime = #{record.savetime,jdbcType=TIMESTAMP},
       token = #{record.token,jdbcType=LONGVARCHAR}
     <if test="_parameter != null">
       <include refid="Update_By_Example_Where_Clause" />
@@ -304,7 +304,7 @@
       fromtime = #{record.fromtime,jdbcType=VARCHAR},
       totime = #{record.totime,jdbcType=VARCHAR},
       tokenFlag = #{record.tokenflag,jdbcType=INTEGER},
-      savetime = #{record.savetime,jdbcType=DATE}
+      savetime = #{record.savetime,jdbcType=TIMESTAMP}
     <if test="_parameter != null">
       <include refid="Update_By_Example_Where_Clause" />
     </if>
@@ -329,7 +329,7 @@
         tokenFlag = #{tokenflag,jdbcType=INTEGER},
       </if>
       <if test="savetime != null">
-        savetime = #{savetime,jdbcType=DATE},
+        savetime = #{savetime,jdbcType=TIMESTAMP},
       </if>
       <if test="token != null">
         token = #{token,jdbcType=LONGVARCHAR},
@@ -347,7 +347,7 @@
       fromtime = #{fromtime,jdbcType=VARCHAR},
       totime = #{totime,jdbcType=VARCHAR},
       tokenFlag = #{tokenflag,jdbcType=INTEGER},
-      savetime = #{savetime,jdbcType=DATE},
+      savetime = #{savetime,jdbcType=TIMESTAMP},
       token = #{token,jdbcType=LONGVARCHAR}
     where id = #{id,jdbcType=BIGINT}
   </update>
@@ -361,7 +361,7 @@
       fromtime = #{fromtime,jdbcType=VARCHAR},
       totime = #{totime,jdbcType=VARCHAR},
       tokenFlag = #{tokenflag,jdbcType=INTEGER},
-      savetime = #{savetime,jdbcType=DATE}
+      savetime = #{savetime,jdbcType=TIMESTAMP}
     where id = #{id,jdbcType=BIGINT}
   </update>
 </mapper>

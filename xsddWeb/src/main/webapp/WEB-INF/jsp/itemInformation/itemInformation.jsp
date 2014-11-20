@@ -69,8 +69,8 @@
             return getULSelect(pp);
         }
         function selectOption(id,obj){
-            var value=$(obj).val();
-            if(value=='1'){
+            var value=$(obj).attr("value");
+            if(value=='1' || value==1){
                 editItem(id);
             }
             if(value=='2'){
@@ -87,11 +87,11 @@
             var url = path + "/information/ajax/loadRemarks.do?";
             $().invoke(url, null,
                     [function (m, r) {
-                        var liId=$("#loadremarks");
+                        var liId=$("li[id=loadremarks]");
                         var li="<li class=\"new_usa_list\" id=\"loadremarks\"><span class=\"newusa_i\" style=\"width: 75px;\">按标签查看：</span><span class=\"newusa_ici\" scop=\"remark\" onclick=\"onclickremark(null,0)\">全部&nbsp;</span><a href=\"javascript:void(0);\"><span class=\"newusa_ici_1\" scop=\"remark\" onclick=\"onclickremark('null',1)\">无标签&nbsp;</span></a>";
                         for(var i=0;i< r.length;i++){
                             if((i+2)%11==0){
-                                li+="<li class=\"new_usa_list\"><span class=\"newusa_i\"></span><a href=\"javascript:void(0);\"><span class=\"newusa_ici_1\" scop=\"remark\" onclick=\"onclickremark('"+r[i].id+"','"+(i+2)+"')\">"+r[i].configName+"&nbsp;</span></a>";
+                                li+="<li class=\"new_usa_list\" id=\"loadremarks\"><span class=\"newusa_i\" style=\"width: 75px;\"></span><a href=\"javascript:void(0);\"><span class=\"newusa_ici_1\" scop=\"remark\" onclick=\"onclickremark('"+r[i].id+"','"+(i+2)+"')\">"+r[i].configName+"&nbsp;</span></a>";
                             }
                             if((i+2)%11==10){
                                 li+="<a href=\"javascript:void(0);\"><span class=\"newusa_ici_1\" scop=\"remark\" onclick=\"onclickremark('"+r[i].id+"','"+(i+2)+"')\">"+r[i].configName+"&nbsp;</span></a></li>";
@@ -101,8 +101,10 @@
                             }
                         }
                         li+="</li>";
-                        $(liId).before(li);
-                        $(liId).remove();
+                        $(liId[0]).before(li);
+                        for(var i=0;i<liId.length;i++){
+                            $(liId[i]).remove();
+                        }
                         Base.token();
                     },
                         function (m, r) {
@@ -144,7 +146,12 @@
             });
         }
         function makeOption2(json){
-            var htm="<img src="+json.pictureUrl+" style=\" width: 50px;height: 50px; \">";
+            var htm="";
+            if(json.pictureUrl){
+                htm="<img src="+json.pictureUrl+" style=\" width: 50px;height: 50px; \">";
+            }else{
+                htm="<img src='http://i.ebayimg.com/00/s/NjAwWDgwMA==/z/RnwAAOSwBvNTn~M2/$_57.JPG' style=\" width: 50px;height: 50px; \">";
+            }
             return htm;
         }
         function makeOption3(json){
@@ -308,7 +315,7 @@
             itemInformation=openMyDialog({title: '请选择导入的excel文件',
                 content: 'url:'+url,
                 icon: 'succeed',
-                width:1050,
+                width:500,
                 lock:true
             });
         }
@@ -469,7 +476,7 @@
                             <li class="new_usa_list" id="loadremarks"><span class="newusa_i" style="width: 75px;">按标签查看：</span><span class="newusa_ici" scop="remark" onclick="onclickremark(null,0)">全部&nbsp;</span><a href="#"><span class="newusa_ici_1" scop="remark" onclick="onclickremark('null',1)">无标签&nbsp;</span></a>
                             <c:forEach items="${remarks}" var="remark" begin="0"  varStatus="status">
                                 <c:if test="${(status.index+2)%11==0}">
-                                    <li class="new_usa_list"><span class="newusa_i"></span><a href="#"><span class="newusa_ici_1" scop="remark" onclick="onclickremark('${remark.id}',${status.index+2})">${remark.configName}&nbsp;</span></a>
+                                    <li class="new_usa_list" id="loadremarks"><span class="newusa_i" style="width: 75px;"></span><a href="#"><span class="newusa_ici_1" scop="remark" onclick="onclickremark('${remark.id}',${status.index+2})">${remark.configName}&nbsp;</span></a>
                                 </c:if>
                                 <c:if test="${(status.index+2)%11==10}">
                                     <a href="#"><span class="newusa_ici_1" scop="remark" onclick="onclickremark('${remark.id}',${status.index+2})">${remark.configName}&nbsp;</span></a></li>

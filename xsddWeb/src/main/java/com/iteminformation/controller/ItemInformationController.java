@@ -496,6 +496,7 @@ public class ItemInformationController extends BaseAction {
     @RequestMapping("/ajax/importInformation.do")
     @AvoidDuplicateSubmission(needSaveToken = true)
     public ModelAndView importInformation(@RequestParam(value = "file", required = false)MultipartFile file,HttpServletRequest request,ModelMap modelMap) throws Exception {
+
         String fileName ="upload.xls";
         String path=request.getSession().getServletContext().getRealPath("/")+"upload";
         File f=new File(path,fileName);

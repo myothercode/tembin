@@ -220,13 +220,20 @@
                     $(days[i]).attr("class","newusa_ici_1");
                 }
             }
-            submitCommit();
+            if(count!=5){
+                document.getElementById("time1").innerHTML="";
+                submitCommit();
+            }
+
         }
         function addstartTimeAndEndTime(obj,i){
-            var span="<span style=\"float: left;color: #5F93D7;\">从</span><input class=\"form-controlsd \" style=\"float: left;color: #5F93D7;width: 90px;height: 26px;border-color: #d0dde9\" id=\"starttime\"  type=\"text\" onfocus=\"WdatePicker({isShowWeek:true,dateFmt:'yyyy-MM-dd'})\"/>" +
-                    "<span style=\"float: left;color: #5F93D7;\">到</span><input class=\"form-controlsd \" style=\"float: left;color: #5F93D7;width: 90px;height: 26px;margin-right: 20px;border-color: #d0dde9\" id=\"endtime\"  type=\"text\" onfocus=\"WdatePicker({isShowWeek:true,dateFmt:'yyyy-MM-dd'})\"/>";
-            $(obj).before(span);
-            $(obj).remove();
+            var t=$("input[id=starttime]");
+            if(t.length==0){
+                var span="<span style=\"float: left;color: #5F93D7;\">从</span><input class=\"form-controlsd \" style=\"float: left;color: #5F93D7;width: 90px;height: 26px;border-color: #d0dde9\" id=\"starttime\"  type=\"text\" onfocus=\"WdatePicker({isShowWeek:true,dateFmt:'yyyy-MM-dd'})\"/>" +
+                        "<span style=\"float: left;color: #5F93D7;\">到</span><input class=\"form-controlsd \" style=\"float: left;color: #5F93D7;width: 90px;height: 26px;margin-right: 20px;border-color: #d0dde9\" id=\"endtime\"  type=\"text\" onfocus=\"WdatePicker({isShowWeek:true,dateFmt:'yyyy-MM-dd'})\"/>"+
+                        "<input style='border:0;background-color:#ffffff;float: left;color: #5F93D7;height: 26px;' value='确定' onclick='submitCommit();' type='button'>";
+                $("#time1").append(span);
+            }
         }
     </script>
 </head>
@@ -286,7 +293,7 @@
             <span class="newusa_i" style="width: 75px;">搜索内容：</span><a href="javascript:void(0)"><span scop="days" onclick="selectDays(null,0);" class="newusa_ici">&nbsp;全部&nbsp;&nbsp;</span></a><a href="javascript:void(0)"><span scop="days" onclick="selectDays('1',1);" class="newusa_ici_1">&nbsp;今天&nbsp;&nbsp;</span></a><a href="javascript:void(0)"><span scop="days" onclick="selectDays('2',2);" class="newusa_ici_1">&nbsp;昨天&nbsp;&nbsp;</span></a><a href="javascript:void(0)"><span scop="days" onclick="selectDays('7',3);" class="newusa_ici_1">7天以内&nbsp;</span></a><a href="javascript:void(0)"><span scop="days" onclick="selectDays('30',4);" class="newusa_ici_1">30天以内&nbsp;</span></a>
            <%-- <span style="float: left;color: #5F93D7;">从</span><input class="form-controlsd " style="float: left;color: #5F93D7;width: 90px;height: 26px;border-color: #d0dde9;" id="starttime"  type="text" onfocus="WdatePicker({isShowWeek:true,dateFmt:'yyyy-MM-dd'})"/>
             <span style="float: left;color: #5F93D7;">到</span><input class="form-controlsd " style="float: left;color: #5F93D7;width: 90px;height: 26px;margin-right: 20px;border-color: #d0dde9;" id="endtime"  type="text" onfocus="WdatePicker({isShowWeek:true,dateFmt:'yyyy-MM-dd'})"/>--%>
-            <a href="javascript:void(0)" onclick="addstartTimeAndEndTime(this,1)"><span style="float: left;color: #5F93D7">自定义...</span></a>
+            <a href="javascript:void(0)" onclick="addstartTimeAndEndTime(this,1)"><span scop="days" onclick="selectDays(5,null);" class="newusa_ici_1">自定义&nbsp;</span></a><span style="float: left" id="time1"></span>
         </div><div class="newsearch">
         <span class="newusa_i" style="width: 75px;">搜索内容：</span>
             <span id="sleBG">

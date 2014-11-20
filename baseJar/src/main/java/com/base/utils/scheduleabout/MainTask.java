@@ -6,9 +6,6 @@ import com.base.utils.common.CommAutowiredClass;
 import com.base.utils.common.DateUtils;
 import com.base.utils.common.MyClassUtil;
 import com.base.utils.scheduleother.StaticParam;
-import com.base.utils.scheduleother.domain.ImageCheckVO;
-import com.base.utils.scheduleother.dorun.ImageCheckTaskPut;
-import com.base.utils.scheduleother.dorun.ImageCheckTaskTake;
 import com.base.utils.scheduleother.dorun.ScheduleOtherBase;
 import com.base.utils.threadpool.TaskPool;
 import org.apache.commons.lang.StringUtils;
@@ -48,6 +45,7 @@ public class MainTask {
 
     public static final String LISTING_SCHEDULE="listSchedule";//定时刊登任务
     public static final String KEY_MOVE_LIST_TASK="keyMoveListTask";//一键搬家任务
+    public static final String AUTO_ASSESS="autoAssess";//自动发送评价
     public static final String LISTING_DATA="tradingListData";//在线数据同步每晚12点执行
     public static final String LISTING_REPORT="listingReport";//在线数据同步每晚12点执行
     public static final String LISTING_TIMER_TASK_DATA="tradingListtimertask";//在线数据同步每两分钟执行
@@ -60,6 +58,10 @@ public class MainTask {
     public static final String SYNCHRONIZE_GET_TIMER_ORDERS="synchronize_get_timer_orders";//定时同步订单每两分钟
     public static final String SYNCHRONIZE_FEED_BACK="synchronize_feed_back";//定时每天插入账号去获取评价
     public static final String SYNCHRONIZE_FEED_BACK_TIMER="synchronize_feed_back_timer";//定时同步订单每两分钟
+    public static final String SYNCHRONIZE_GET_MESSAGES="synchronize_get_messages";//定时每天插入账号去获取消息
+    public static final String SYNCHRONIZE_GET_MESSAGES_TIMER="synchronize_get_messages_timer";//定时同步消息每两分钟
+    public static final String SYNCHRONIZE_GET_USER_CASES="synchronize_get_user_cases";//定时每天插入账号去获取纠纷
+    public static final String SYNCHRONIZE_GET_USER_CASES_TIMER="synchronize_get_user_cases_timer";//定时同步纠纷每两分钟
 
     /**主入口,2分钟执行一次的任务*/
     @Scheduled(cron="0 0/2 *  * * ?")
@@ -72,9 +74,12 @@ public class MainTask {
         doList.add(KEY_MOVE_LIST_TASK);
         doList.add(LISTING_TIMER_TASK_DATA);
         doList.add(AUTO_MESSAGE);
+        doList.add(AUTO_ASSESS);
         doList.add(FEEDBACK_AUTOM_ESSAGE);
         doList.add(SYNCHRONIZE_GET_TIMER_ORDERS);
         doList.add(SYNCHRONIZE_FEED_BACK_TIMER);
+        doList.add(SYNCHRONIZE_GET_MESSAGES_TIMER);
+        doList.add(SYNCHRONIZE_GET_USER_CASES_TIMER);
         if (isStartTimerTask==null) {
             isStartTimerTask = ApplicationContextUtil.getBean(CommAutowiredClass.class);
         }
@@ -153,6 +158,8 @@ public class MainTask {
         doList.add(SYNCHRONIZE_GET_ORDERS);
         doList.add(SYNCHRONIZE_FEED_BACK);
         doList.add(LISTING_REPORT);
+        doList.add(SYNCHRONIZE_GET_MESSAGES);
+        doList.add(SYNCHRONIZE_GET_USER_CASES);
         List<String> taskList=new ArrayList<String>();
         if("false".equalsIgnoreCase(isStartTimerTask.isStartTimerTask)){
             return;

@@ -77,7 +77,8 @@ public class KeyMoveListTaskRun extends BaseScheduledClass implements Scheduleda
                         keyMapper.updateByPrimaryKeySelective(kml);
                         liitem.add(itemrs);
                     } else {//ＡＰＩ请求失败
-
+                        kml.setTaskFlag("2");
+                        keyMapper.updateByPrimaryKeySelective(kml);
                     }
 
                 } catch (Exception e) {

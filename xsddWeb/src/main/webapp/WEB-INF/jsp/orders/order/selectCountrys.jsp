@@ -31,19 +31,29 @@
         function submitCommit(){
             var num=${num};
             var inputs=$("input[type=checkbox]:checked");
+            var name1="";
+            for(var i=0;i<inputs.length;i++){
+                if(i==(inputs.length-1)){
+                    name1+=$(inputs[i]).attr("value");
+                }else{
+                    name1+=$(inputs[i]).attr("value")+",";
+                }
+            }
+            var countryNames=W.document.getElementById("countryNames");
+            $(countryNames).val(name1);
        /* <span class="newusa_ici_1" scop="queryCountry1" onclick="queryCountry(1,1,null);">全部&nbsp;</span>
             <span class="newusa_ici_1" scop="queryCountry2" onclick="queryCountry(2,1,null);">全部&nbsp;</span>
             <span class="newusa_ici_1" scop="queryCountry3" onclick="queryCountry(3,1,null);">全部&nbsp;</span>
             <span class="newusa_ici_1" scop="queryCountry4" onclick="queryCountry(4,1,null);">全部&nbsp;</span>
             <span class="newusa_ici_1" scop="queryCountry5" onclick="queryCountry(5,1,null)">全部&nbsp;</span>*/
             for(var i=0;i<num;i++){
-                var input="<li class=\"new_usa_list\" name=\"selectCountrys\" name1=\"selectCountrys"+(i+1)+"\"><span class=\"newusa_i\">收件人国家：</span><a href=\"javascript:void(0)\"><span class=\"newusa_ici\" scop=\"queryCountry"+(i+1)+"\"  onclick=\"queryCountry("+(i+1)+",1,null);\">全部&nbsp;</span></a>";
+                var input="<li class=\"new_usa_list\" name=\"selectCountrys\" name1=\"selectCountrys"+(i+1)+"\"><span class=\"newusa_i\" style=\"width: 75px;\">收件人国家：</span><a href=\"javascript:void(0)\"><span class=\"newusa_ici\" scop=\"queryCountry"+(i+1)+"\"  onclick=\"queryCountry("+(i+1)+",1,null);\">全部&nbsp;</span></a>";
                 for(var j=0;j<inputs.length;j++){
                     var value=$(inputs[j]).attr("value");
                     var value1=$(inputs[j]).attr("value1");
                     var value2=$(inputs[j]).attr("value2");
                     if(((j+1)%10==0&&j!=0)){
-                        input+="</li><li class=\"new_usa_list\" name=\"selectCountrys\" name1=\"selectCountrys"+(i+1)+"\"><span class=\"newusa_i\"></span><a href=\"javascript:void(0)\"><span class=\"newusa_ici_1\" scop=\"queryCountry"+(i+1)+"\"  onclick=\"queryCountry("+(i+1)+","+(j+2)+",'"+value+"');\"><img src='"+value2+"'/>"+value1+"</span></a>";
+                        input+="</li><li class=\"new_usa_list\" name=\"selectCountrys\" name1=\"selectCountrys"+(i+1)+"\"><span class=\"newusa_i\" style=\"width: 75px;\"></span><a href=\"javascript:void(0)\"><span class=\"newusa_ici_1\" scop=\"queryCountry"+(i+1)+"\"  onclick=\"queryCountry("+(i+1)+","+(j+2)+",'"+value+"');\"><img src='"+value2+"'/>"+value1+"</span></a>";
                     }else if((j+1)%10==9){
                         input+="<a href=\"javascript:void(0)\"><span class=\"newusa_ici_1\" scop=\"queryCountry"+(i+1)+"\"  onclick=\"queryCountry("+(i+1)+","+(j+2)+",'"+value+"');\"><img src='"+value2+"'/>"+value1+"</span></a>";
                     }else{
@@ -71,10 +81,17 @@
                     [function(m,r){
                         var table="&nbsp;<table>";
                         var checkbox="";
+                        var countryNames="${countryNames}";
+                        var names=countryNames.split(",");
                         for(var i=0;i< r.length;i++){
                             var td="<td width='8%'><input type='checkbox' value='"+r[i].value+"' value1='"+r[i].name+"'value2='${root}"+r[i].imgurl+"'><span><img src='${root}"+r[i].imgurl+"'>"+r[i].name+"</span></td>";
-                            if(r[i].value=='US'||r[i].value=='GB'||r[i].value=='DE'||r[i].value=='AU'){
+                            /*if(r[i].value=='US'||r[i].value=='GB'||r[i].value=='DE'||r[i].value=='AU'){
                                 td="<td width='8%'><input type='checkbox' checked value='"+r[i].value+"' value1='"+r[i].name+"'value2='${root}"+r[i].imgurl+"'><span><img src='${root}"+r[i].imgurl+"'>"+r[i].name+"</span></td>";
+                            }*/
+                            for(var j=0;j<names.length;j++){
+                                if(names[j]==r[i].value){
+                                    td="<td width='8%'><input type='checkbox' checked value='"+r[i].value+"' value1='"+r[i].name+"'value2='${root}"+r[i].imgurl+"'><span><img src='${root}"+r[i].imgurl+"'>"+r[i].name+"</span></td>";
+                                }
                             }
                             if(i%8==0){
                                 checkbox+="<tr>"

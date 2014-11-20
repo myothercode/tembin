@@ -166,18 +166,57 @@ function getULSelect(par){
     lvalue=(lvalue==null)?"":("value="+lvalue);
     ldo=(ldo==null)?"":("doaction="+ldo);
 
-    var hs="<ul style='margin-left: "+ulMarginLeft+"' "+ulid_+">" +
+
+    var sdiv="<div name=\"sdddropdown\" class=\"wrapper-dropdown-5\" tabindex=\"1\">" +
+        "<span "+lfunction+" "+lvalue+" "+ldo+" >"+showname_+"</span>";
+    sdiv+="<ul class=\"dropdown\">";
+    sdiv+=lis.replace(firstLi,"")
+        .replace(/<li style='height:25px'/ig,"<li><a href=javascript:void(0) ")
+        .replace(/<li style="height:25px;"/ig,"<li><a href=javascript:void(0) ")
+        .replace(/<li style='left:1px;'/ig,"<li><a href=javascript:void(0) ")
+        .replace(/<\/li>/ig,"</a></li>");
+    sdiv+="</ul></div>";
+
+    /*var hs="<ul style='margin-left: "+ulMarginLeft+"' "+ulid_+">" +
         "<li style='width: 70px;height: 25px;' class=\"select_box\">" +
         "<span style='color: blue;text-align: center' "+lfunction+" "+lvalue+" "+ldo+">"+showname_+"</span><ul class=\"son_ul\">";
     hs+="<input type='hidden' "+inputid_+" value="+inputval_+"  />";
     hs+=lis.replace(/style='height:25px'/ig,"style='height:25px;text-align: center'");
-    hs+="</ul></li></ul>";
+    hs+="</ul></li></ul>";*/
     ldom.remove();
-    return hs;
+    return sdiv;
 }
 
 function initULSelect(){
-    $('.son_ul').hide(); //初始ul隐藏
+    function DropDown(el) {
+        this.dd = el;
+        this.initEvents();
+    }
+    DropDown.prototype = {
+        initEvents : function() {
+            var obj = this;
+
+            obj.dd.on('mouseover', function(event){
+                $(this).addClass('active');
+                event.stopPropagation();
+            }).on("mouseleave",function(event){
+                $(this).removeClass('active');
+                event.stopPropagation();
+            });
+        }
+    }
+
+    $("div[name='sdddropdown']").each(function(i,d){
+        new DropDown($(d));
+    });
+
+    //var dd = new DropDown( $('#dd') );
+    /*$(document).click(function() {
+        // all dropdowns
+        $('.wrapper-dropdown-5').removeClass('active');
+    });*/
+
+    /*$('.son_ul').hide(); //初始ul隐藏
     $('.select_box span').hover(function(){ //鼠标移动函数
             $(this).parent().find('ul.son_ul').slideDown();  //找到ul.son_ul显示
             $(this).parent().find('li').hover(function(){$(this).addClass('hover')},function(){$(this).removeClass('hover')}); //li的hover效果
@@ -191,7 +230,7 @@ function initULSelect(){
     $('ul.son_ul li').click(function(){
        // $(this).parents('li').find('span').html($(this).html());
         $(this).parents('li').find('ul').slideUp();
-    });
+    });*/
 }
 
 
