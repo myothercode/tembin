@@ -144,4 +144,9 @@ public class TimeListingItemTaskRunAble extends BaseScheduledClass implements Sc
     public String getScheduledType() {
         return MainTask.LISTING_SCHEDULE;
     }
+
+    @Override
+    public Integer crTimeMinu() {
+        return null;
+    }
 }

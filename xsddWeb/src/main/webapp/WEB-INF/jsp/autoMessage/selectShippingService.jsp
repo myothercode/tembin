@@ -119,12 +119,13 @@
         <td align="center"><div id="serviceTable1" style="padding: 10px;"></div></td>
     </tr>
 </table>
-<div class="modal-footer" style="text-align: right;width: 700px;">
+<div class="suspension">
+    <div style="margin-right: 5px;">
     <button type="button" class="net_put" onclick="submitCommit();">保存</button>
     <button type="button" class="net_put_1" data-dismiss="modal" onclick="closedialog();">关闭</button>
 <%--    <button type="button" class="btn btn-primary" onclick="submitCommit();">保存</button>
     <button type="button" class="btn btn-default" data-dismiss="modal" onclick="closedialog();">关闭</button>--%>
-</div>
+</div></div>
 
 <div class="label_box">
     <ul class="label"></ul>

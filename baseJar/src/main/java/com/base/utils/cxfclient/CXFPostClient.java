@@ -35,4 +35,13 @@ public class CXFPostClient {
         String result =client.postApi(cxfClientRequestVO);
         return result;
     }
+
+    /*public static void main(String[] args) {
+        CXFClientRequestVO cxfClientRequestVO=new CXFClientRequestVO();
+        JaxWsProxyFactoryBean factory = new JaxWsProxyFactoryBean();
+        factory.setServiceClass(PostApiService.class);
+        factory.setAddress("http://192.168.0.241:8080/postApi/ws/postApiService");
+        PostApiService client= (PostApiService) factory.create();
+        String result =client.postApi(null);
+    }*/
 }

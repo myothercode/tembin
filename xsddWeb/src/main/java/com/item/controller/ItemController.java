@@ -985,7 +985,7 @@ public class ItemController extends BaseAction{
 
                     AddApiTask addApiTask = new AddApiTask();
 
-                    if("1".equals(request.getParameter("ListingMessage"))){//如果是延迟通知
+                    if("1".equals(request.getParameter("ListingMessage"))){//如果是延迟通知//后台刊登
                         TaskMessageVO taskMessageVO=new TaskMessageVO();
                         taskMessageVO.setMessageContext("刊登");
                         taskMessageVO.setMessageTitle("刊登操作");
@@ -2474,6 +2474,7 @@ public class ItemController extends BaseAction{
         String id = request.getParameter("id");
         String [] ids = id.split(",");
         String remark = request.getParameter("remark");
+        remark = new String(remark.getBytes("ISO-8859-1"),"UTF-8");
         List<TradingItem> litld = new ArrayList<TradingItem>();
         for(int i=0;i<ids.length;i++) {
             TradingItemWithBLOBs tradingItem = this.iTradingItem.selectByIdBL(Long.parseLong(ids[i]));

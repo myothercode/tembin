@@ -37,9 +37,6 @@ public class SynchronizeGetTimerOrdersTaskRun extends BaseScheduledClass impleme
 
         ITaskGetOrders iTaskGetOrders = (ITaskGetOrders) ApplicationContextUtil.getBean(ITaskGetOrders.class);
         List<TaskGetOrders> list=iTaskGetOrders.selectTaskGetOrdersByFlagIsFalseOrderBysaveTime();
-        if(list.size()>2){
-            list=filterLimitList(list);
-        }
         synchronizeOrders(list);
         TempStoreDataSupport.removeData("task_"+getScheduledType());
     }
@@ -47,7 +44,7 @@ public class SynchronizeGetTimerOrdersTaskRun extends BaseScheduledClass impleme
     /**只从集合记录取多少条*/
     private List<TaskGetOrders> filterLimitList(List<TaskGetOrders> tlist){
 
-        return filterLimitListFinal(tlist,2);
+        return filterLimitListFinal(tlist,50);
 
         /*List<TaskGetOrders> x=new ArrayList<TaskGetOrders>();
         for (int i = 0;i<2;i++){
@@ -63,5 +60,16 @@ public class SynchronizeGetTimerOrdersTaskRun extends BaseScheduledClass impleme
     @Override
     public String getScheduledType() {
         return MainTask.SYNCHRONIZE_GET_TIMER_ORDERS;
+    }
+
+    @Override
+    public Integer crTimeMinu() {
+        ITaskGetOrders iTaskGetOrders = (ITaskGetOrders) ApplicationContextUtil.getBean(ITaskGetOrders.class);
+        List<TaskGetOrders> list=iTaskGetOrders.selectTaskGetOrdersByFlagIsFalseOrderBysaveTime();
+        if(list.size()<=50&&list.size()>0){
+            return 10;
+        }else{
+            return 2;
+        }
     }
 }

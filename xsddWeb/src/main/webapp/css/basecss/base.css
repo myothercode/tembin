@@ -106,7 +106,7 @@
     font-size: 12px;
     text-align: center;
 
-    padding: 2px 5px;
+    padding: 5px 5px;
 
     /* Styles */
     background: #fff;
@@ -210,3 +210,15 @@
     border-bottom: 1px solid rgba(0,0,0,0.2);
     max-height: 400px;
 }
+
+.suspension{
+    height: 35px;
+    width: 100%;
+    bottom: 0px;
+    position: fixed;
+    background-color: lightblue;
+    text-align: right;
+    left: 0px;
+    padding-top: 1px;
+}
+

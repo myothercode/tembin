@@ -248,7 +248,7 @@
 </head>
 <body>
 <div class="modal-body">
-<script src="../../js/jquery.min.js"></script>
+<%--<script src="../../js/jquery.min.js"></script>--%>
 <script>
     $(function(){
         var _listBox=$('.jq_new');
@@ -575,9 +575,9 @@
 </div>
 
 
-<script src="../../js/jquery-latest.js"></script>
+<%--<script src="../../js/jquery-latest.js"></script>
 <script src="../../js/bootstrap.min.js"></script>
-<script src="../../js/theme.js"></script>
+<script src="../../js/theme.js"></script>--%>
 
 </div>
 <%--<form id="responseForm">

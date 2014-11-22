@@ -33,7 +33,7 @@
                     {title:"标签",name:"remark",width:"8%",align:"left",click:sellectCheckBox},
                     {title:"分类",name:"typeName",width:"8%",align:"left",click:sellectCheckBox},
                     {title:"状态",name:"pictureUrl",width:"8%",align:"left",format:makeOption3,click:sellectCheckBox},
-                    {title:"操作",name:"option1",width:"8%",align:"left",format:makeOption1}
+                    {title:"操作",name:"option1",width:"8%",align:"center",format:makeOption1}
                 ],
                 selectDataNow:false,
                 isrowClick:false,
@@ -150,7 +150,7 @@
             if(json.pictureUrl){
                 htm="<img src="+json.pictureUrl+" style=\" width: 50px;height: 50px; \">";
             }else{
-                htm="<img src='http://i.ebayimg.com/00/s/NjAwWDgwMA==/z/RnwAAOSwBvNTn~M2/$_57.JPG' style=\" width: 50px;height: 50px; \">";
+                htm="<img src='http://i.ebayimg.sandbox.ebay.com/00/s/NjAwWDgwMA==/$(KGrHqRHJEkFJ2m+ipUVBUSMpPJdmw~~60_1.JPG' style=\" width: 50px;height: 50px; \">";
             }
             return htm;
         }

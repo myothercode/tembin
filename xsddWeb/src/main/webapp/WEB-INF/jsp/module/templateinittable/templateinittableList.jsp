@@ -60,7 +60,10 @@
         function makeOption1(json){
             var hs="";
             hs+="<li style='height:25px' onclick=viewTemplateInitTable('"+json.id+"') value='"+json.id+"' doaction=\"look\" >查看</li>";
-            hs+="<li style='height:25px' onclick=editTemplateInitTable('"+json.id+"') value='"+json.id+"' doaction=\"look\" >编辑</li>";
+            if(json.tLevel==1){
+                hs+="<li style='height:25px' onclick=editTemplateInitTable('"+json.id+"') value='"+json.id+"' doaction=\"look\" >编辑</li>";
+            }
+
             var pp={"liString":hs,"marginLeft":"-50px"};
             return getULSelect(pp);
         }

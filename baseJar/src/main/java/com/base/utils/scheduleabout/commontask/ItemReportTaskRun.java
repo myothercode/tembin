@@ -150,4 +150,9 @@ public class ItemReportTaskRun extends BaseScheduledClass implements Scheduledab
     public String getScheduledType() {
         return MainTask.LISTING_REPORT;
     }
+
+    @Override
+    public Integer crTimeMinu() {
+        return null;
+    }
 }

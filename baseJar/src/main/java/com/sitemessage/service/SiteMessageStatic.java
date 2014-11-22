@@ -29,8 +29,11 @@ public class SiteMessageStatic {
         messageMap.put("synchronize_get_user_cases_dispute_timer","定时获取CASE_dispute");
         messageMap.put("update_listing_data_message_type","范本修改在线商品");
         messageMap.put("listing_key_move_message_type","一键搬家");
+        messageMap.put("auto_assess_type","自动发送评价");
     }
 
+    /**自动发送评价消息类型*/
+    public static final String AUTO_ASSESS_TYPE="auto_assess_type";
     /**刊登的消息类型*/
     public static final String LISTING_MESSAGE_TYPE="listing_message";
     /**通过范本修改在线商品的消息类型*/

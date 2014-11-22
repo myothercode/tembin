@@ -152,7 +152,7 @@ function getULSelect(par){
     var inputid_=par["inputid"]==null?"":("id="+par["inputid"]);
     var inputval_=par["inputval"]==null?"":(par["inputval"]);
 
-    var ulMarginLeft = par["marginLeft"]==null?"-10px":(par["marginLeft"]);
+    var setDivStyle = par["setDivStyle"]==null?"":(par["setDivStyle"]);
 
     var firstLi=lis.substring(lis.indexOf("<li"),lis.indexOf("</li>")+5);
     var ldom=$(firstLi);
@@ -167,7 +167,7 @@ function getULSelect(par){
     ldo=(ldo==null)?"":("doaction="+ldo);
 
 
-    var sdiv="<div name=\"sdddropdown\" class=\"wrapper-dropdown-5\" tabindex=\"1\">" +
+    var sdiv="<div name=\"sdddropdown\" style='height: 25px;"+setDivStyle+"' class=\"wrapper-dropdown-5\" tabindex=\"1\">" +
         "<span "+lfunction+" "+lvalue+" "+ldo+" >"+showname_+"</span>";
     sdiv+="<ul class=\"dropdown\">";
     sdiv+=lis.replace(firstLi,"")
@@ -195,7 +195,6 @@ function initULSelect(){
     DropDown.prototype = {
         initEvents : function() {
             var obj = this;
-
             obj.dd.on('mouseover', function(event){
                 $(this).addClass('active');
                 event.stopPropagation();

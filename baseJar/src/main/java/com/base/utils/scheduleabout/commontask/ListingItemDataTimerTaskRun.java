@@ -180,4 +180,9 @@ public class ListingItemDataTimerTaskRun extends BaseScheduledClass implements S
     public String getScheduledType() {
         return MainTask.LISTING_TIMER_TASK_DATA;
     }
+
+    @Override
+    public Integer crTimeMinu() {
+        return null;
+    }
 }

@@ -24,6 +24,7 @@ import com.base.utils.cache.SessionCacheSupport;
 import com.base.utils.common.DateUtils;
 import com.base.utils.common.EncryptionUtil;
 import com.base.utils.common.ObjectUtils;
+import com.base.utils.common.SystemLogUtils;
 import com.base.utils.exception.Asserts;
 import com.base.utils.threadpool.AddApiTask;
 import com.base.utils.threadpool.TaskMessageVO;
@@ -59,6 +60,7 @@ import org.springframework.web.servlet.ModelAndView;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
+import java.net.URLDecoder;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -638,6 +640,7 @@ public class ListingItemController extends BaseAction {
         String id = request.getParameter("id");
         String [] ids = id.split(",");
         String remark = request.getParameter("remark");
+        remark = new String(remark.getBytes("ISO-8859-1"),"UTF-8");
         List<TradingListingData> litld = new ArrayList<TradingListingData>();
         for(int i=0;i<ids.length;i++) {
             TradingListingData tld = this.iTradingListingData.selectById(Long.parseLong(ids[i]));
@@ -1532,6 +1535,7 @@ public class ListingItemController extends BaseAction {
     }
 
     public void saveAmend(List<TradingListingAmendWithBLOBs> litlam,String isflag) throws Exception {
+
         for(TradingListingAmendWithBLOBs tla : litlam){
             ObjectUtils.toInitPojoForInsert(tla);
             tla.setIsFlag(isflag);

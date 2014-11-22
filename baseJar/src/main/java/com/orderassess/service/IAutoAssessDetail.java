@@ -10,5 +10,5 @@ import java.util.List;
 public interface IAutoAssessDetail {
     void saveAutoAssessDetail(AutoAssessDetailWithBLOBs autoAssessDetail);
 
-    List<AutoAssessDetailWithBLOBs> selectByList(Long sourceId, String dataType);
+    List<AutoAssessDetailWithBLOBs> selectByList(Long sourceId, String dataType,String isFlag);
 }

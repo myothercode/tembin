@@ -54,4 +54,9 @@ public class SerDevZeroTaskRun extends BaseScheduledClass implements Scheduledab
     public String getScheduledType() {
         return MainTask.SET_DEV_ZERO;
     }
+
+    @Override
+    public Integer crTimeMinu() {
+        return null;
+    }
 }

@@ -106,7 +106,7 @@ public class GetOrdersController extends BaseAction {
         return forword("/orders/order/queryOrdersList",modelMap);
     }
     @RequestMapping("/getOrdersList.do")
-    public ModelAndView OrdersList(HttpServletRequest request,HttpServletResponse response,ModelMap modelMap){
+    public ModelAndView OrdersList(HttpServletRequest request,HttpServletResponse response,@ModelAttribute( "initSomeParmMap" )ModelMap modelMap){
         List<PublicUserConfig> configs=new ArrayList<PublicUserConfig>();
         List<PublicUserConfig> list=iPublicUserConfig.selectUserConfigByItemType("orderFolder");
         for(PublicUserConfig config:list){
@@ -407,6 +407,7 @@ public class GetOrdersController extends BaseAction {
         String framConten=request.getParameter("framConten");
         String starttime1=request.getParameter("starttime1");
         String endtime1=request.getParameter("endtime1");
+        String orderby=request.getParameter("orderby");
         /**分页组装*/
         PageJsonBean jsonBean=commonParmVO.getJsonBean();
         Page page=jsonBean.toPage();
@@ -426,6 +427,9 @@ public class GetOrdersController extends BaseAction {
                 Date endTime= DateUtils.addDays(starttime,day-1);
                 endtime= com.base.utils.common.DateUtils.turnToDateEnd(endTime);
             }
+        }
+        if(!StringUtils.isNotBlank(orderby)){
+            orderby=null;
         }
         if(!StringUtils.isNotBlank(status)||"All".equals(status)){
             status=null;
@@ -478,6 +482,7 @@ public class GetOrdersController extends BaseAction {
             map.put("itemType",itemType);
             map.put("framConten",framConten);
             map.put("statusQ1",statusQ1);
+            map.put("orderby",orderby);
             lists= this.iTradingOrderGetOrders.selectOrderGetOrdersByGroupList(map,page);
             for(OrderGetOrdersQuery list:lists){
                 String itemid=list.getItemid();
@@ -494,6 +499,7 @@ public class GetOrdersController extends BaseAction {
                     if(dictionarys.size()>0){
                         String root=request.getContextPath();
                         list.setItemSite(root+dictionarys.get(0).getImgurl());
+                        list.setSiteName(dictionarys.get(0).getValue());
                     }
                 }
                 String variationSKU=list.getVariationsku();

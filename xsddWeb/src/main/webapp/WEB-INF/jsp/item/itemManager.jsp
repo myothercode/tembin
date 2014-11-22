@@ -376,7 +376,7 @@
                 hs+="<li style='height:25px' onclick=delTradingTimer('"+json.id+"') value='"+json.id+"' doaction=\"look\" >取消定时</li>";
             }
             hs+="<li style='height:25px' onclick=addRemark('"+json.id+"','"+json.remark+"') value='"+json.id+"' doaction=\"look\" >备注</li>";
-            var pp={"liString":hs};
+            var pp={"liString":hs,"setDivStyle":"padding-top:2px;"};
             return getULSelect(pp);
         }
 

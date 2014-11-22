@@ -64,4 +64,9 @@ public class SynchronizeGetMessagesTaskRun extends BaseScheduledClass implements
     public String getScheduledType() {
         return MainTask.SYNCHRONIZE_GET_MESSAGES;
     }
+
+    @Override
+    public Integer crTimeMinu() {
+        return null;
+    }
 }

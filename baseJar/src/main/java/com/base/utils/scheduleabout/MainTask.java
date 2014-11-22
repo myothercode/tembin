@@ -50,9 +50,7 @@ public class MainTask {
     public static final String LISTING_REPORT="listingReport";//在线数据同步每晚12点执行
     public static final String LISTING_TIMER_TASK_DATA="tradingListtimertask";//在线数据同步每两分钟执行
     public static final String SET_DEV_ZERO="setDevZero";//将开发帐号的调用次数清零
-    public static final String
-
-            AUTO_MESSAGE="autoMessage";//定时发送自动消息
+    public static final String AUTO_MESSAGE="autoMessage";//定时发送自动消息
     public static final String FEEDBACK_AUTOM_ESSAGE="FeedBackAutoMessageTaskRun";//定时发送评价自动消息
     public static final String SYNCHRONIZE_GET_ORDERS="synchronize_get_orders";//定时每天插入账号去获取订单
     public static final String SYNCHRONIZE_GET_TIMER_ORDERS="synchronize_get_timer_orders";//定时同步订单每两分钟
@@ -62,6 +60,11 @@ public class MainTask {
     public static final String SYNCHRONIZE_GET_MESSAGES_TIMER="synchronize_get_messages_timer";//定时同步消息每两分钟
     public static final String SYNCHRONIZE_GET_USER_CASES="synchronize_get_user_cases";//定时每天插入账号去获取纠纷
     public static final String SYNCHRONIZE_GET_USER_CASES_TIMER="synchronize_get_user_cases_timer";//定时同步纠纷每两分钟
+
+    /**
+     * 记录任务上次运行的时间
+     */
+    public static Map<String, Date> taskRunTime = new HashMap<String, Date>();//每增加一组任务。该值加1
 
     /**主入口,2分钟执行一次的任务*/
     @Scheduled(cron="0 0/2 *  * * ?")
@@ -101,23 +104,35 @@ public class MainTask {
         if(taskList.isEmpty()){return;}
 
         int i=TaskPool.scheduledThreadPoolTaskExecutor.getActiveCount();
-        if(i>30){//如果队列大于30，那么不放入任何任务
+        if(i>40){//如果队列大于30，那么不放入任何任务
             logger.info("队列中还有任务太多，等待下一次执行...........");
             return;
         }
         List<Class<? extends Scheduledable>> classList = AppcenterClassFinder.getInstance()
                 .findSubClass(Scheduledable.class);
         List<? extends Scheduledable> scheduledableList = MyClassUtil.newInstance(classList);
-        if(i>0){//如果任务大于0，小于30，那么就只放入定时刊登任务
+        if(i>20){//如果任务大于20，小于30，那么就只放入定时刊登任务
             for (Scheduledable s : scheduledableList){
                 if(taskList !=null && LISTING_SCHEDULE.equalsIgnoreCase(s.getScheduledType())){
                     TaskPool.scheduledThreadPoolTaskExecutor.execute(s);
+                    taskRunTime.put(s.getScheduledType(),new Date());
                 }
             }
         }else {
             for (Scheduledable s : scheduledableList){
                 if(taskList !=null && taskList.contains(s.getScheduledType())){
+                    Integer ii=s.crTimeMinu();
+                    if(ii!=null && ii !=-1){
+                        Date lastTime=taskRunTime.get(s.getScheduledType());//上一次执行的时间
+                        if(lastTime!=null){
+                            int c= DateUtils.minuteBetween(lastTime,new Date());//现在时间与上次时间相差多少分钟
+                            if(c<ii){
+                                continue;
+                            }
+                        }
+                    }
                     TaskPool.scheduledThreadPoolTaskExecutor.execute(s);
+                    taskRunTime.put(s.getScheduledType(),new Date());
                 }
             }
         }
@@ -188,10 +203,7 @@ public class MainTask {
 
 
 
-    /**
-     * 记录任务上次运行的时间
-     */
-    public static Map<String, Date> taskRunTime = new HashMap<String, Date>();//每增加一组任务。该值加1
+
     /**内部循环任务，基本不涉及到api的*/
     @Scheduled(cron="0 0/1 *  * * ?")
     public void mainMethodOther() throws Exception {

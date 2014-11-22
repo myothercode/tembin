@@ -541,9 +541,9 @@
                 }else{
                     remark = json.remark;
                 }
-                html+="<span class='newdf' title='"+json.remark+"'>备注："+remark+"</span>";
+                html+="</br><span class='newdf' title='"+json.remark+"'>备注："+remark+"</span>";
             }else{
-                html+="<span class='newdf' title='' style='display: none'></span>";
+                html+="</br><span class='newdf' title='' style='display: none'></span>";
             }
             return html;
         }
@@ -584,7 +584,7 @@
                     {title:"价格",name:"price",width:"6%",align:"center",format:getPriceHtml},
                     {title:"数量/<span onclick='orderList(this)' style='cursor: pointer;' colu='QuantitySold' val='0'>已售</span>",name:"Option1",width:"6%",align:"center",format:tjCount},
                     {title:"<span onclick='orderList(this)' style='cursor: pointer;' colu='ListingDuration' val='0'>刊登天数</span>",name:"listingduration",width:"4%",align:"center",format:getDuration},
-                    {title:"<span onclick='orderList(this)' style='cursor: pointer;' colu='EndTime' val='0'>结束时间</span>",name:"endtime",width:"3%",align:"left",format:getendTime},
+                    {title:"<span onclick='orderList(this)' style='cursor: pointer;' colu='EndTime' val='0'>结束时间</span>",name:"endtime",width:"4%",align:"left",format:getendTime},
                     {title:"&nbsp;&nbsp;操作",name:"Option1",width:"4%",align:"left",format:makeOption1}
                 ],
                 selectDataNow:false,
@@ -646,6 +646,11 @@
         }
         //修改界面
         function updateItemPrice(obj){
+            if(!$.isNumeric($(obj).val())){
+                alert("输入的数字无效！")
+                $(obj).val($(obj).attr("oldval"));
+                return;
+            }
             $(obj).parent().find("span").text($(obj).val());
             $(obj).parent().find("span").show();
             $(obj).prop("type","hidden");
@@ -654,29 +659,33 @@
             var textname = $(obj).attr("name");
             var ids = $(obj).attr("ids");
             var type=textname;
-            if(price!=$(obj).attr("oldval")){
+
+            if(parseFloat(price.trim())!=parseFloat($(obj).attr("oldval").trim())){
+                $(obj).parent().find("span").block({ message: "",overlayCSS: {backgroundColor:'#ffffff' }});
                 $(obj).parent().find("img").prop("src",path+"/img/loading.gif");
                 var url = path + "/ajax/updateListingData.do?itemId=" + itemId+"&price="+price+"&type="+type+"&ids="+ids;
                 $().invoke(url, {},
                         [function (m, r) {
                             Base.token();
                             if(type=="price") {
-                                $(obj).attr("oldval", r.price);
+                                $(obj).attr("oldval", r.price.toFixed(2));
                             }else{
                                 $(obj).attr("oldval", r.quantity);
                             }
                             $(obj).parent().find("img").prop("src","");
+                            $(obj).parent().find("span").unblock();
                         },
                             function (m, r) {
                                 Base.token();
                                 if(type=="price"){
-                                    $(obj).parent().find("span").text(r.price);
-                                    $(obj).val(r.price)
+                                    $(obj).parent().find("span").text(r.price.toFixed(2));
+                                    $(obj).val(r.price.toFixed(2))
                                 }else{
                                     $(obj).parent().find("span").text(r.quantity);
                                     $(obj).val(r.quantity)
                                 }
                                 $(obj).parent().find("img").prop("src",path+"/img/tips.png");
+                                $(obj).parent().find("span").unblock();
                             }]
                 );
             }

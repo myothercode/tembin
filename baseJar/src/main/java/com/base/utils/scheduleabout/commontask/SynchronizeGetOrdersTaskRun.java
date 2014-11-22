@@ -63,4 +63,9 @@ public class SynchronizeGetOrdersTaskRun extends BaseScheduledClass implements S
     public String getScheduledType() {
         return MainTask.SYNCHRONIZE_GET_ORDERS;
     }
+
+    @Override
+    public Integer crTimeMinu() {
+        return null;
+    }
 }

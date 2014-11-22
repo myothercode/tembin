@@ -27,6 +27,6 @@ import javax.xml.bind.annotation.XmlType;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "basicHeader")
 public class BasicHeader {
-
+public BasicHeader(){}
 
 }

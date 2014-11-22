@@ -610,9 +610,10 @@
             </td>
         </tr>
     </table>
-    <div style="padding-left: 70px;">
+    <div class="suspension" style="height: 25px;">
+        <div style="margin-right: 5px;">
         <input type="button" value="确定" onclick="saveData(this)">
-    </div>
+    </div></div>
 </form>
 </body>
 </html>

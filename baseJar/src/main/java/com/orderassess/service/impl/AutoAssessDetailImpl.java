@@ -29,9 +29,9 @@ public class AutoAssessDetailImpl implements com.orderassess.service.IAutoAssess
     }
 
     @Override
-    public List<AutoAssessDetailWithBLOBs> selectByList(Long sourceId,String dataType){
+    public List<AutoAssessDetailWithBLOBs> selectByList(Long sourceId,String dataType,String isFlag){
         AutoAssessDetailExample aade = new AutoAssessDetailExample();
-        aade.createCriteria().andDataTypeEqualTo(dataType).andSourceIdEqualTo(sourceId);
+        aade.createCriteria().andDataTypeEqualTo(dataType).andSourceIdEqualTo(sourceId).andIsFlagEqualTo(isFlag);
         return this.autoAssessDetailMapper.selectByExampleWithBLOBs(aade);
     }
 }

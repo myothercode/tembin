@@ -7,4 +7,7 @@ package com.base.utils.scheduleabout;
 public interface Scheduledable extends Runnable {
     /**获取任务类型*/
     public String getScheduledType();
+
+    /**执行任务的时间间隔 单位是分钟*/
+    public Integer crTimeMinu();
 }

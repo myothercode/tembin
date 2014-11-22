@@ -57,8 +57,8 @@
          <%--level:<input type="text" name="level" value="${TemplateInitTable.TLevel}"/>--%>
         <c:if test="${TemplateInitTable.id==null}">
             <select name="level">
-                <option value="0">预设</option>
                 <option value="1">用户自定义</option>
+                <option value="0">预设</option>
              </select>
         </c:if>
         <c:if test="${TemplateInitTable.id!=null}">

@@ -81,7 +81,7 @@
             return getULSelect(pp);
         }
         function selectOperation(transactionid,id,sellerid,obj){
-            var value=$(obj).val();
+            var value=$(obj).attr("value");
             if(value=="1"){
                 synDetails(id);
             }
@@ -382,7 +382,7 @@
 <div class="modal-content">
 
 <div class="modal-body">
-<script src="../../js/jquery.min.js"></script>
+<%--<script src="../../js/jquery.min.js"></script>--%>
 <script>
     $(function(){
         var _listBox=$('.jq_new');
@@ -412,7 +412,7 @@
     });
 </script>
 <div id="demo">
-<table width="100%" border="0">
+<%--<table width="100%" border="0">
 <tbody><tr>
     <td width="772">            <div class="modal-header">
         <h4 class="modal-title"><span>Please respond to your buyer by sep 07,2014.</span>Choose one of the following</h4>
@@ -634,7 +634,7 @@
         <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
     </div> </td>
 </tr>
-</tbody></table>
+</tbody></table>--%>
 
 </div>
 

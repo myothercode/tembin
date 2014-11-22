@@ -40,9 +40,6 @@ public class SynchronizeGetUserCasesTimerTaskRun extends BaseScheduledClass impl
 
         ITaskGetUserCases iTaskGetUserCases = (ITaskGetUserCases) ApplicationContextUtil.getBean(ITaskGetUserCases.class);
         List<TaskGetUserCases> list=iTaskGetUserCases.selectTaskGetUserCasesByFlagIsFalseOrderBysaveTime();
-        if(list.size()>2){
-            list=filterLimitList(list);
-        }
         synchronizeOrders(list);
         TempStoreDataSupport.removeData("task_"+getScheduledType());
     }
@@ -66,5 +63,15 @@ public class SynchronizeGetUserCasesTimerTaskRun extends BaseScheduledClass impl
     @Override
     public String getScheduledType() {
         return MainTask.SYNCHRONIZE_GET_USER_CASES_TIMER;
+    }
+
+    @Override
+    public Integer crTimeMinu() {
+        ITaskGetUserCases iTaskGetUserCases = (ITaskGetUserCases) ApplicationContextUtil.getBean(ITaskGetUserCases.class);
+        List<TaskGetUserCases> list=iTaskGetUserCases.selectTaskGetUserCasesByFlagIsFalseOrderBysaveTime();
+        if(list.size()>0&&list.size()<=50){
+            return 60;
+        }
+        return 2;
     }
 }

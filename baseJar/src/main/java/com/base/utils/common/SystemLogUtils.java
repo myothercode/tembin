@@ -25,6 +25,7 @@ public class SystemLogUtils {
     public static final String FIND_PASSWORD="findPassword";//找回密码事件
     public static final String NO_API_Message="noApiMessage";//不系统通知的时候记录失败日志
     public static final String ORDER_OPERATE_RECORD="orderOperateRecord";//订单操作记录
+    public static final String AUTO_ASSESS="autoAssess";//自动发送评价
 
     /**祝需要传入三个值
      * log.setEventname();

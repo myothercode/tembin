@@ -298,6 +298,7 @@
     </script>
 </head>
 <body>
+<br/>
 <form id="form">
     <input type="hidden" name="ItemID" value="${itemidstr}">
     <input type="hidden" name="idsStr" value="${idsStr}">

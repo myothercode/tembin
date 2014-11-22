@@ -319,4 +319,9 @@ public class FeedBackAutoMessageTaskRun extends BaseScheduledClass implements Sc
     public String getScheduledType() {
         return MainTask.FEEDBACK_AUTOM_ESSAGE;
     }
+
+    @Override
+    public Integer crTimeMinu() {
+        return null;
+    }
 }

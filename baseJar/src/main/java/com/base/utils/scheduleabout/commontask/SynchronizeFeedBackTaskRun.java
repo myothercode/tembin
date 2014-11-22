@@ -58,4 +58,9 @@ public class SynchronizeFeedBackTaskRun extends BaseScheduledClass implements Sc
     public String getScheduledType() {
         return MainTask.SYNCHRONIZE_FEED_BACK;
     }
+
+    @Override
+    public Integer crTimeMinu() {
+        return null;
+    }
 }

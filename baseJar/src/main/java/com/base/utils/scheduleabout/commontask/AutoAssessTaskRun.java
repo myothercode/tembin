@@ -10,23 +10,30 @@ import com.base.database.trading.mapper.TradingFeedBackDetailMapper;
 import com.base.database.trading.mapper.TradingOrderGetOrdersMapper;
 import com.base.database.trading.mapper.UsercontrollerEbayAccountMapper;
 import com.base.database.trading.model.*;
+import com.base.database.userinfo.model.SystemLog;
+import com.base.domains.SessionVO;
 import com.base.domains.userinfo.UsercontrollerDevAccountExtend;
 import com.base.sampleapixml.APINameStatic;
 import com.base.sampleapixml.BindAccountAPI;
 import com.base.userinfo.service.UserInfoService;
 import com.base.utils.applicationcontext.ApplicationContextUtil;
 import com.base.utils.cache.DataDictionarySupport;
+import com.base.utils.cache.SessionCacheSupport;
 import com.base.utils.cache.TempStoreDataSupport;
 import com.base.utils.common.CommAutowiredClass;
 import com.base.utils.common.DateUtils;
+import com.base.utils.common.SystemLogUtils;
 import com.base.utils.scheduleabout.BaseScheduledClass;
 import com.base.utils.scheduleabout.MainTask;
 import com.base.utils.scheduleabout.Scheduledable;
 import com.base.utils.threadpool.AddApiTask;
+import com.base.utils.threadpool.TaskMessageVO;
 import com.base.utils.xmlutils.SamplePaseXml;
 import com.base.xmlpojo.trading.addproduct.Item;
 import com.orderassess.service.IAutoAssessDetail;
 import com.orderassess.service.IOrderAutoAssess;
+import com.sitemessage.service.SiteMessageService;
+import com.sitemessage.service.SiteMessageStatic;
 import com.trading.service.ITradingItem;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -73,6 +80,7 @@ public class AutoAssessTaskRun extends BaseScheduledClass implements Scheduledab
                     List<TradingOrderGetOrders> lito = tradingOrderGetOrdersMapper.selectByExample(tde);
                     this.sendAssessByOrder(lito, "order", ue.getEbayToken(), ue.getUserId(), iAutoAssessDetail, addApiTask, d, content, commPars.apiUrl);
                 }else if("4".equals(configValue)){//买家购买物品时
+                    tc.andShippedtimeIsNull();
                     List<TradingOrderGetOrders> lito = tradingOrderGetOrdersMapper.selectByExample(tde);
                     this.sendAssessByOrder(lito, "order", ue.getEbayToken(), ue.getUserId(), iAutoAssessDetail, addApiTask, d, content, commPars.apiUrl);
                 }
@@ -107,10 +115,29 @@ public class AutoAssessTaskRun extends BaseScheduledClass implements Scheduledab
                 }
             }
             List<AutoAssessDetailWithBLOBs> liaadb = null;
+            List<AutoAssessDetailWithBLOBs> liisflag = null;
             if(sourceType.equals("order")){
-                liaadb = iAutoAssessDetail.selectByList(torder.getId(),sourceType);
+                liaadb = iAutoAssessDetail.selectByList(torder.getId(),sourceType,"0");
+                liisflag = iAutoAssessDetail.selectByList(torder.getId(),sourceType,"1");
             }else{
-                liaadb = iAutoAssessDetail.selectByList(lifeed.get(0).getId(),sourceType);
+                liaadb = iAutoAssessDetail.selectByList(lifeed.get(0).getId(),sourceType,"0");
+                liisflag = iAutoAssessDetail.selectByList(lifeed.get(0).getId(),sourceType,"1");
+            }
+            //如查自动发送评价５次都失败，那么给用户通知。其它次数失败不管
+            if(liisflag!=null&&liisflag.size()==5){
+                SiteMessageService siteMessageService= (SiteMessageService) ApplicationContextUtil.getBean(SiteMessageService.class);
+                TaskMessageVO taskMessageVO=new TaskMessageVO();
+                taskMessageVO.setMessageContext("自动发送评价失败，已经失败５次，请用户自已处理评价!定单号："+torder.getOrderid()+"；交易号："+torder.getTransactionid());
+                taskMessageVO.setMessageTitle("自动发送评价失败");
+                taskMessageVO.setMessageType(SiteMessageStatic.AUTO_ASSESS_TYPE);
+                taskMessageVO.setMessageFrom("system");
+                SessionVO sessionVO= SessionCacheSupport.getSessionVO();
+                taskMessageVO.setMessageTo(userId);
+                taskMessageVO.setObjClass(null);
+                siteMessageService.addSiteMessage(taskMessageVO);
+            }
+            if(liisflag!=null&&liisflag.size()>5){//如果失败次数大于５那么不在发送自动评价
+                continue;
             }
             if(liaadb==null||liaadb.size()==0){
                 Map m = new HashMap();
@@ -144,7 +171,22 @@ public class AutoAssessTaskRun extends BaseScheduledClass implements Scheduledab
                 if ("Success".equalsIgnoreCase(ack)) {
                     aad.setIsFlag("0");
                 }else{
+
                     aad.setIsFlag("1");
+                    SystemLog sl = new SystemLog();
+                    sl.setCreatedate(new Date());
+                    try {
+                        sl.setEventdesc(torder.getSelleruserid()+"发送给："+torder.getBuyeruserid()+"评价；发送失败，原因如下："+SamplePaseXml.getSpecifyElementTextAllInOne(res,"Errors","LongMessage"));
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    sl.setEventname(SystemLogUtils.AUTO_ASSESS);
+                    sl.setOperuser(userId+"");
+                    try {
+                        SystemLogUtils.saveLog(sl);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
                 }
                 iAutoAssessDetail.saveAutoAssessDetail(aad);
             }
@@ -167,5 +209,10 @@ public class AutoAssessTaskRun extends BaseScheduledClass implements Scheduledab
     @Override
     public String getScheduledType() {
         return MainTask.AUTO_ASSESS;
+    }
+
+    @Override
+    public Integer crTimeMinu() {
+        return null;
     }
 }

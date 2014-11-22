@@ -63,4 +63,9 @@ public class SynchronizeGetUserCasesTaskRun extends BaseScheduledClass implement
     public String getScheduledType() {
         return MainTask.SYNCHRONIZE_GET_USER_CASES;
     }
+
+    @Override
+    public Integer crTimeMinu() {
+        return null;
+    }
 }

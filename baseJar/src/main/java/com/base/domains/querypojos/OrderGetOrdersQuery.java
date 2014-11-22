@@ -58,6 +58,16 @@ public class OrderGetOrdersQuery extends TradingOrderGetOrders{
 
     private String itemSite;
 
+    private String siteName;
+
+    public String getSiteName() {
+        return siteName;
+    }
+
+    public void setSiteName(String siteName) {
+        this.siteName = siteName;
+    }
+
     public String getItemSite() {
         return itemSite;
     }

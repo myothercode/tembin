@@ -231,4 +231,9 @@ public class SynchronizeFeedBackTimerTaskRun extends BaseScheduledClass implemen
     public String getScheduledType() {
         return MainTask.SYNCHRONIZE_FEED_BACK_TIMER;
     }
+
+    @Override
+    public Integer crTimeMinu() {
+        return null;
+    }
 }

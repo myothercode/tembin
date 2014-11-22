@@ -379,4 +379,9 @@ public class AutoMessageTaskRun extends BaseScheduledClass implements Scheduleda
     public String getScheduledType() {
         return MainTask.AUTO_MESSAGE;
     }
+
+    @Override
+    public Integer crTimeMinu() {
+        return null;
+    }
 }

@@ -419,7 +419,7 @@ function saveData(objs,name) {
                 alert(r)
                 $(objs).attr("disabled",false);
                 //document.location = path+"/itemManager.do";
-            }]
+            }],{isConverPage:true}
     )
 }
 

@@ -98,7 +98,7 @@
 			"<tbody><tr>"+this.makeTabelHead().html()+"</tr>" ;
 
 		nullTable+="<tr><td colspan='"+option.columnData.length+"' height=\"200\" align=\"center\">" +
-			"<img src=\"/xsddWeb/img/busy.gif\" />" +
+			"<img  src=\"/xsddWeb/img/longLoading.gif\" />" +
 			"</td></tr></tbody></table>";
 		_obj_.html(nullTable);
 		//_obj_.block({ message: "<h1><img src=\"/xsddWeb/img/busy.gif\" /> Just a moment...</h1>"});
@@ -124,6 +124,7 @@
 			 }
 				 _obj_.setRowClass();//设置行样式
 			 }
+			showPageNumList2(_obj_.attr("id"));//设置分每页显示多少条的事件
 			 /*设置当table加载完成以后需要执行的方法*/
 			 if(option.afterLoadTable!=null && $.isFunction(option.afterLoadTable)){
 			 option['afterLoadTable']();
@@ -274,12 +275,15 @@
         var Next = this.Next();
         var GetLastPageNum = this.getLastPageNum();
         if(!option.onlyFirstPage && option.allData != null && option.allData.length > 0) {
-            var htmlPage="<div class=\"page_newlist\"><div><div id=\"newtipi\"><li>";
-                htmlPage+="<a onmouseout=showPageNumList2('"+id+"') onmouseover=showPageNumList2('"+id+"') id='showCount' href=\"javascript:void(0)\">显示"+option.sysParm["jsonBean.pageCount"]+"条</a>";
-                htmlPage+="<ul onmouseout=showPageNumList2('"+id+"') onmouseover=showPageNumList2('"+id+"') id='pageListUL"+id+"' style=\"visibility:hidden ;z-index: 9999;left: auto;position:relative;\">";
+            var htmlPage="<div class=\"page_newlist\"><div id='showPageCount_"+id+"'><div id=\"newtipi\"><li>";
+                htmlPage+="<a id='showCount' href=\"javascript:void(0)\">显示"+option.sysParm["jsonBean.pageCount"]+"条</a>";
+                htmlPage+="<div style='height: 5px'></div><ul id='pageListUL"+id+"' style=\"visibility:hidden ;z-index: 9999;left: auto;position:relative;\">";
             var pageNumArr=option.pageCountArray;
             for(var i in pageNumArr){
-                htmlPage+="<li style='position: absolute;left: 0px;top: "+(i*30)+"px' ><a onclick=changeMyTablePageCount(\""+id+"\","+pageNumArr[i]+") href=\"javascript:void(0)\">显示"+pageNumArr[i]+"条</a></li>";
+				htmlPage+="<li style='background-image:url();height:5px;margin-top:0px;position: absolute;left: 0px;top: "+((i*30)+25)+"px' >&nbsp;</li>";
+                htmlPage+="<li style='margin-top:0px;position: absolute;left: 0px;top: "+(i*30)+"px' >" +
+				"<a onclick=changeMyTablePageCount(\""+id+"\","+pageNumArr[i]+") href=\"javascript:void(0)\">" +
+				"显示"+pageNumArr[i]+"条</a></li>";
             }
             htmlPage+="</ul></li></div></div>";
             htmlPage+="共 <span style=\"color:#F00\">"+option.total+"</span> 条记录 <span style=\"color:#F00\">"+GetLastPageNum+"</span> 页";
@@ -618,8 +622,18 @@
 
 
 function showPageNumList2(parentId){
+	$("#showPageCount_"+parentId)
+		.on("mouseover",function(event){
+			$("#pageListUL"+parentId).css("visibility","visible");
+			event.stopPropagation();
+		}).on("mouseleave",function(event){
+			hidePageNumList2(parentId);
+			event.stopPropagation();
+		});
 
-    $("#pageListUL"+parentId).css("visibility","visible");
+
+
+    /*$("#pageListUL"+parentId).css("visibility","visible");
     //alert($("#pageListUL").css("visibility"))
     $("body").one("mouseover",function(){
         var e = event || window.event;
@@ -629,7 +643,7 @@ function showPageNumList2(parentId){
         }else{
             hidePageNumList2(parentId);
         }
-    });
+    });*/
 }
 function hidePageNumList2(parentId){
     $("#pageListUL"+parentId).css("visibility","hidden");
@@ -641,20 +655,6 @@ function changeMyTablePageCount (id,pageNum) {
     option.sysParm["jsonBean.pageCount"] = pageNum;
     option.sysParm["jsonBean.pageNum"] = 1;
 
-    //var th1_T= $("#"+id).find("table[name='myTablePlug']").eq(0).css("height");
-
     $("#"+id).refresh();
-
-   /* var th2_= $("#"+id).find("table[name='myTablePlug']").eq(0).css("height").replace("px","");
-    var th1_=th1_T.replace("px","");
-
-    var vv= parseInt(th2_)-parseInt(th1_);
-
-    if(vv<0){
-        zjh_(vv);
-    }else{
-        zjh_();
-    }*/
-
 
 };

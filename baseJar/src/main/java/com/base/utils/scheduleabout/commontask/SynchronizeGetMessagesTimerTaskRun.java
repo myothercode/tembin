@@ -176,4 +176,9 @@ public class SynchronizeGetMessagesTimerTaskRun extends BaseScheduledClass imple
     public String getScheduledType() {
         return MainTask.SYNCHRONIZE_GET_MESSAGES_TIMER;
     }
+
+    @Override
+    public Integer crTimeMinu() {
+        return -1;
+    }
 }

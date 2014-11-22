@@ -14,6 +14,9 @@ $(document).ready(function(){
         changeImg();
         $(".admin_user_reg ul").css({"background-size":"100% 100%","height":"350px"})
     }
+    $(document).on("keydown",function(e){
+        if(e.keyCode==13){subLoginForm()}
+    });
 readUserInfoCookies();
 });
 

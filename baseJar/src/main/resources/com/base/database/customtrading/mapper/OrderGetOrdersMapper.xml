@@ -68,9 +68,9 @@
       <result column="countNum" property="countNum" jdbcType="BIGINT" />
   </resultMap>
     <select id="selectOrderGetOrdersByGroupList" resultMap="BaseResultMap" parameterType="map">
-        select OrderGetOrders.*,count(*) countNum from trading_order_get_orders OrderGetOrders
+        select OrderGetOrders.*,count(*) countNum,item.site from trading_order_get_orders OrderGetOrders
+        left join trading_order_get_item item on OrderGetOrders.itemID=item.itemID
         <if test="typeQ!=null">
-            left join trading_order_get_item item on OrderGetOrders.itemID=item.itemID
             left join trading_order_variation variation on item.id=variation.orderItem_id
         </if>
         where 1=1
@@ -169,6 +169,43 @@
             </foreach>
         </if>
         group by OrderGetOrders.orderID
-        order by OrderGetOrders.createdTime desc
+        <if test="orderby==null">
+            order by OrderGetOrders.createdTime desc
+        </if>
+        <if test="orderby!=null">
+            <if test="orderby=='asc'">
+                order by OrderGetOrders.transactionPrice asc
+            </if>
+            <if test="orderby=='desc'">
+                order by OrderGetOrders.transactionPrice desc
+            </if>
+
+            <if test="orderby=='asc1'">
+                order by OrderGetOrders.createdTime asc
+            </if>
+            <if test="orderby=='desc1'">
+                order by OrderGetOrders.createdTime desc
+            </if>
+
+            <if test="orderby=='asc2'">
+                order by OrderGetOrders.quantityPurchased asc
+            </if>
+            <if test="orderby=='desc2'">
+                order by OrderGetOrders.quantityPurchased desc
+            </if>
+
+            <if test="orderby=='asc3'">
+                order by item.site asc
+            </if>
+            <if test="orderby=='desc3'">
+                order by item.site desc
+            </if>
+            <if test="orderby=='asc4'">
+                order by OrderGetOrders.sellerUserID asc
+            </if>
+            <if test="orderby=='desc4'">
+                order by OrderGetOrders.sellerUserID desc
+            </if>
+        </if>
     </select>
 </mapper>

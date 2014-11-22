@@ -525,7 +525,7 @@
 </form>--%>
 <%---------------------------------------------------------------------------------------------------------------%>
 
-    <div class="modal-body">
+    <div class="modal-body" style="background-color: #ffffff;">
         <script type="text/javascript">
             function setvTab(name,cursel,n){
                 for(i=1;i<=n;i++){
@@ -561,7 +561,7 @@
 
                 </tbody></table>
             <div id="new_svt_1" class="hover" style="width:800px;display: block;background-color: #ffffff;">
-                <link href="css/compiled/layout.css" rel="stylesheet" type="text/css">
+                <link href="<c:url value ="/css/compiled/layout.css" />" rel="stylesheet" type="text/css">
                 <table width="100%" border="0" style="margin-left:40px;">
 
                     <tbody><tr>
@@ -651,7 +651,7 @@
                     </tbody></table>
             </div>
             <div style="display: none;" id="new_svt_2">
-                <link href="css/compiled/layout.css" rel="stylesheet" type="text/css">
+                <link href="<c:url value ="/css/compiled/layout.css" />" rel="stylesheet" type="text/css">
                 <table width="100%" border="0">
                     <tbody><tr id="addPictureId">
                     <%--<c:forEach items="${pictures}" var="picture" begin="0" varStatus="status">

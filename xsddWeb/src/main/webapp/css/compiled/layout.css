@@ -1318,6 +1318,13 @@ cursor: pointer;
 	text-align: center;
 	cursor: pointer;
 }
+.newusa_ici_del:hover{
+  border:#35a5e5 1px solid;
+  box-shadow: 0 0 5px rgba(81, 203, 238, 1);
+  -webkit-box-shadow: 0 0 5px rgba(81, 203, 238, 1);
+  -moz-box-shadow: 0 0 5px rgba(81, 203, 238, 1);
+  border-radius: 5px;
+}
 .newusa_ici_newbut{
 	background-image: url(../../img/newusa_ici_newbut.png);
 	background-repeat: no-repeat;

@@ -109,4 +109,9 @@ public class KeyMoveListTaskRun extends BaseScheduledClass implements Scheduleda
     public String getScheduledType() {
         return MainTask.KEY_MOVE_LIST_TASK;
     }
+
+    @Override
+    public Integer crTimeMinu() {
+        return null;
+    }
 }

@@ -42,7 +42,9 @@
     <input type="hidden" name="feedbackTitle" id="feedbackTitle" value="${empty DescriptionDetails.feedbackTitle?"Feedback":DescriptionDetails.feedbackTitle}"/>
     名称：<input type="text" name="name" value="${DescriptionDetails.name}"/>
 </form>
-            <div class="easyui-tabs" style="width:1000px">
+
+
+       <div class="easyui-tabs" style="width:1000px">
                 <div title="${empty DescriptionDetails.payTitle?"Payment":DescriptionDetails.payTitle}" style="padding:10px" id="PaymentTab" data-options="tools:'#Payment-tools'">
                     <script id="myEditor" type="text/plain" style="width:975px;height:400px;">${DescriptionDetails.payInfo}</script>
                 </div>
@@ -119,11 +121,12 @@
 //关闭字数统计
         wordCount:false,
         //关闭elementPath
-        elementPathEnabled:false
+        elementPathEnabled:false,
         //默认的编辑区域高度
         //initialFrameHeight:500 ,
         //initialFrameWidth:'98%'
     };
+
     var um =UE.getEditor('myEditor',ueditorToolBar);
     var um1 = UE.getEditor('myEditor1',ueditorToolBar);
     var um2 = UE.getEditor('myEditor2',ueditorToolBar);
@@ -147,6 +150,7 @@
         });*/
         $("textarea").attr("disabled",true);
     }
+
 
 </script>
 <script type="text/javascript">

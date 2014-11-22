@@ -84,4 +84,9 @@ public class ListingItemDataTaskRun extends BaseScheduledClass implements Schedu
     public String getScheduledType() {
         return MainTask.LISTING_DATA;
     }
+
+    @Override
+    public Integer crTimeMinu() {
+        return null;
+    }
 }

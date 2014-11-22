@@ -486,7 +486,9 @@ public class ScheduleGetTimerOrdersImpl implements IScheduleGetTimerOrders {
                     siteMessageService.addSiteMessage(taskMessageVO);
                     logger.error("Order获取apisessionid失败!" + errors);
                 }
-                taskGetOrder.setTokenflag(1);
+                Integer flag=taskGetOrder.getTokenflag();
+                flag=flag+1;
+                taskGetOrder.setTokenflag(flag);
                 taskGetOrder.setSavetime(null);
                 iTaskGetOrders.saveListTaskGetOrders(taskGetOrder);
             }

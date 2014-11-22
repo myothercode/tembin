@@ -198,8 +198,8 @@
 <body>
 <span id="sleBG">
 <span id="sleHid">
-    <input  type="text" id="selectItemHiddeng">
-    <input  type="text" id="selectItemIdHiddeng">
+    <input  type="hidden" id="selectItemHiddeng">
+    <input  type="hidden" id="selectItemIdHiddeng">
 <select id="typeQuery" name="type" class="select">
     <option value="" selected="selected">SKU</option>
 </select>
@@ -208,11 +208,17 @@
 <div class="vsearch">
     <input id="content" name="" type="text" class="key_1"><input onclick="queryItem();" name="newbut" type="button" class="key_2"></div><br/><br/>
 <div id="orderItemTable"></div><br/><br/><br/>
-<div class="modal-footer" style="text-align: right;width: 700px;">
+<%--<div class="modal-footer" style="text-align: right;width: 700px;">
     <button type="button" class="net_put" onclick="submitCommit();">保存</button>
     <button type="button" class="net_put_1" data-dismiss="modal" onclick="closedialog();">关闭</button>
-  <%--  <button type="button" class="btn btn-primary" onclick="submitCommit();">保存</button>
-    <button type="button" class="btn btn-default" data-dismiss="modal" onclick="closedialog();">关闭</button>--%>
+  &lt;%&ndash;  <button type="button" class="btn btn-primary" onclick="submitCommit();">保存</button>
+    <button type="button" class="btn btn-default" data-dismiss="modal" onclick="closedialog();">关闭</button>&ndash;%&gt;
+</div>--%>
+<div class="suspension">
+    <div style="margin-right: 5px;">
+        <button type="button" class="net_put" onclick="submitCommit();">保存</button>
+        <button type="button" class="net_put_1" data-dismiss="modal" onclick="closedialog();">关闭</button></div>
+       <%-- <input type="checkbox" id="xxxx" value="1">始终作为默认&nbsp;&nbsp;&nbsp;<button onclick="sureP()" style="height: 23px">确定选择</button> --%>
 </div>
 </body>
 </html>
