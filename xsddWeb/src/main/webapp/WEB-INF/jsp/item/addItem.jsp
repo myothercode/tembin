@@ -32,7 +32,6 @@
 <script type="text/javascript" src=
 <c:url value="/js/table/jquery.tablednd.js"/>></script>
 
-<!-- bootstrap -->
 <link href=
       <c:url value="/css/bootstrap/bootstrap.css"/> rel="stylesheet">
 <link href=
@@ -59,6 +58,22 @@
 <link rel="stylesheet" href=
 <c:url value="/css/compiled/gallery.css"/> type="text/css" media="screen"/>
 
+
+<!-- bootstrap -->
+<link href=
+      <c:url value="/js/selectBoxIt/stylesheets/jquery.selectBoxIt.css"/> rel="stylesheet">
+
+<%--<link rel="stylesheet" href="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-combined.min.css" />--%>
+<%--<link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.2/themes/base/jquery-ui.css" />--%>
+<%--<link type="text/css" rel="stylesheet" href="http://code.jquery.com/mobile/1.2.0/jquery.mobile-1.2.0.min.css" />--%>
+<%--<link rel="stylesheet" href="http://gregfranko.com/jquery.selectBoxIt.js/css/jquery.selectBoxIt.css" />--%>
+
+
+<script type="text/javascript" src=
+        <c:url value="/js/selectBoxIt/javascripts/jquery-ui.min.js"/>></script>
+<%--<script src="http://gregfranko.com/jquery.selectBoxIt.js/js/jquery.selectBoxIt.min.js"></script>--%>
+<script type="text/javascript" src=
+        <c:url value="/js/selectBoxIt/javascripts/jquery.selectBoxIt.min.js"/>></script>
 <script>
 
     var myDescription = null;
@@ -72,6 +87,7 @@
     var imageUrlPrefix = '${imageUrlPrefix}';
     var url = window.location.href;
     $(document).ready(function () {
+        var categoryId = '${item.categoryid}';
         $("#oneAttr").show();
         $("#twoAttr").hide();
         $("#Auction").hide();
@@ -119,7 +135,12 @@
 
 
         var site = '${item.site}';
-        $("select[name='site']").find("option[value='" + site + "']").attr("selected", true);
+        if(site!=null&&site!=""){
+            $("select[name='site']").find("option[value='" + site + "']").attr("selected", true);
+        }else{
+            $("select[name='site']").find("option[value='311']").attr("selected", true);
+        }
+
         var ebayaccount = '${item.ebayAccount}';
         $("select[name='ebayAccount']").find("option[value='" + ebayaccount + "']").attr("selected", true);
         var ConditionID = '${item.conditionid}';
@@ -133,31 +154,53 @@
         $("#incount").text(title.length);
         changeRadio(listingType);
 
+        $("select").selectBoxIt({
 
+        });
+        if(site!=""&&categoryId!="") {
+            if (localStorage.getItem("category_att_ID" + site + "" + categoryId) != null) {
+                var json = eval("(" + localStorage.getItem("category_att_ID" + site + "" + categoryId) + ")");
+                var jdata = json.result;
+                returnSelectStr(jdata);
+            } else {
+                getRequestJson(site, categoryId);
+            }
+        }
         //多属性
         <c:forEach items="${liv}" var="liv" varStatus="status">
         var str = "";
-        str += "<tr style='height: 32px;'><td class='dragHandle' width='5px;'></td>";
-        str += "<td><span style='color: dodgerblue;' onclick='showMoreAttrsText(this)'>${liv.sku}</span><input type='hidden' name='SKU' onblur='clearThisText(this);' onkeyup='getJoinValue(this)' class='validate[required] form-control' value='${liv.sku}'></td>";
-        str += "<td><span style='color: dodgerblue;' onclick='showMoreAttrsText(this)'>${liv.quantity}</span><input type='hidden' name='Quantity' onblur='clearThisText(this);' onkeyup='getJoinValue(this)' size='8' class='validate[required] form-control' value='${liv.quantity}'></td>";
-        str += "<td><span style='color: dodgerblue;' onclick='showMoreAttrsText(this)'>${liv.startprice}</span><input type='hidden' name='StartPrice.value' onblur='clearThisText(this);' onkeyup='getJoinValue(this)'  size='8' class='validate[required] form-control' value=${liv.startprice}></td>";
+        str += "<tr style='height: 32px;'><td class='dragHandle' width='15px;'></td>";
+        str += "<td width='100px'><span style='color: dodgerblue;' onclick='showMoreAttrsText(this)'>${liv.sku}</span><input type='hidden' name='SKU' onblur='clearThisText(this);' onkeyup='getJoinValue(this)' class='validate[required] form-control' value='${liv.sku}'></td>";
+        str += "<td width='100px'><span style='color: dodgerblue;' onclick='showMoreAttrsText(this)'>${liv.quantity}</span><input type='hidden' name='Quantity' onblur='clearThisText(this);' onkeyup='getJoinValue(this)' size='8' class='validate[required] form-control' value='${liv.quantity}'></td>";
+        str += "<td width='100px'><span style='color: dodgerblue;' onclick='showMoreAttrsText(this)'>${liv.startprice}</span><input type='hidden' name='StartPrice.value' onblur='clearThisText(this);' onkeyup='getJoinValue(this)'  size='8' class='validate[required] form-control' value=${liv.startprice}></td>";
         <c:forEach items="${liv.tradingPublicLevelAttr}" var="ta">
-        str += "<td><span style='color: dodgerblue;' onclick='showMoreAttrsText(this)'>${ta.value}</span><input type='hidden' name='attr_Value' onkeyup='getJoinValue(this)'  class='validate[required] form-control' onblur='addb(this)' size='10' value='${ta.value}'></td>";
+        str += "<td width='100px'><span style='color: dodgerblue;' onclick='showMoreAttrsText(this)'>${ta.value}</span><input type='hidden' name='attr_Value' onkeyup='getJoinValue(this)'  class='validate[required] form-control' onblur='addb(this)' size='10' value='${ta.value}'>";
+        str +="&nbsp;<div style='display:inline; height: 18px; overflow:hidden;background-image:url("+path+"/img/arrow.gif);width: 10px;'><select size='1' style='width: 18px;position: relative;' name='selAttValue_sel' onchange='selectAttrMorValue(this)'></select></div>";
+        str+="</td>";
         </c:forEach>
         str += "<td name='del'><img src='"+path+"/img/del.png' onclick='removeCloums(this)'></td>";
         str += "</tr>";
         $("#moreAttrs").append(str);
         </c:forEach>
         <c:forEach items="${clso}" var="lis" varStatus="status">
-        $("#moreAttrs tr:eq(0)").find("td").each(function (i, d) {
+        $("#moreAttrs tr:eq(0)").find("th").each(function (i, d) {
             if ($(d).attr("name") == "del") {
-                $(d).before("<td width='10%'><span style='color: dodgerblue;' onclick='showMoreAttrsText(this)'>${lis.value}</span><input type='hidden' onkeyup='getJoinValue(this)' size='8' value='${lis.value}' name='attr_Name' onblur='addc(this)'>&nbsp;&nbsp;<img src='"+path+"/img/del.png' onclick='removeCols(this)'></td>");
+                $(d).before("<th width='100px'><span style='color: dodgerblue;' onclick='showMoreAttrsText(this)'>${lis.value}</span><input type='hidden' onkeyup='getJoinValue(this)'"+
+                "size='8' value='${lis.value}' name='attr_Name' onblur='addc(this)'>&nbsp;" +
+                "<div class='DivSelect'>"+attrValueName+"</div>&nbsp;<img src='"+path+"/img/del.png' onclick='removeCols(this)'></td>");
             }
         });
         </c:forEach>
         $("#moreAttrs").tableDnD({dragHandle: ".dragHandle"});
-        changeBackcolour();
 
+        if(attrValueName!=null){
+            $("#moreAttrs tr:eq(0) th").find("select").each(function(i,d){
+                $(d).find("option[value='"+$(d).parent().parent().find("[name='attr_Name']").val()+"']").attr("selected","selected");
+            });
+        }
+        changeBackcolour();
+        //加载选择值的选项
+        loadSelectValue();
         var attrValue = new Map();
         $("#moreAttrs tr td:nth-child(5)").each(function (i, d) {
             if ($(d).find("input[name='attr_Value']").val() != undefined && $(d).find("input[name='attr_Value']").val() != "") {
@@ -179,7 +222,7 @@
              for(var j = 0;j< m.keys.length;j++){
              $('#'+attrValue.get(attrValue.keys[i])).before("<input type='hidden' name='"+attrValue.get(attrValue.keys[i])+"' value='"+ m.get(j)+"'><img src='"+m.get(j)+"' height='50' width='50' />");
              }*/
-            $("#picMore").append(addPic($("#moreAttrs tr:eq(0) td:eq(4)").find("input").val(), attrValue.get(attrValue.keys[i])));
+            $("#picMore").append(addPic($("#moreAttrs tr:eq(0) th:eq(4)").find("input").val(), attrValue.get(attrValue.keys[i])));
             $().image_editor.init($("#moreAttrs tr:eq(0) td:eq(4)").find("input").val() + "." + attrValue.get(attrValue.keys[i])); //编辑器的实例id
             $().image_editor.show(attrValue.get(attrValue.keys[i])); //上传图片的按钮id
         }
@@ -190,9 +233,9 @@
         showStr += " <script type=text/plain id='picUrls_" + ebayAccount + "'/>";
 
         showStr += "<div style='height: 110px;'></div> <div style='padding-left: 60px;'>&nbsp;&nbsp;&nbsp;&nbsp;" +
-                "<b class='new_button'><a href='javascript:void(0)' id='apicUrls_" + ebayAccount + "' onclick='selectPic(this)' style=''>选择图片</a></b>" +
-                "<b class='new_button'><a href='javascript:void(0)' id='apicUrlsSKU_" + ebayAccount + "' onclick='selectPic(this)' style=''>选择SKU图片</a></b>" +
-                "<b class='new_button'><a href='javascript:void(0)' id='apicUrlsOther_" + ebayAccount + "' onclick='selectPic(this)' style=''>选择外部图片</a></b>" +
+                "<b class='new_button'><a href='javascript:void(0)' bsid='upload' id='apicUrls_" + ebayAccount + "' onclick='selectPic(this)' style=''>选择图片</a></b>" +
+                "<b class='new_button'><a href='javascript:void(0)' bsid='online' id='apicUrlsSKU_" + ebayAccount + "' onclick='selectPic(this)' style=''>选择SKU图片</a></b>" +
+                "<b class='new_button'><a href='javascript:void(0)' bsid='remote' id='apicUrlsOther_" + ebayAccount + "' onclick='selectPic(this)' style=''>选择外部图片</a></b>" +
                 "<b class='new_button'><a href='javascript:void(0)' id='apicUrlsclear_" + ebayAccount + "' onclick='clearAllPic(this)' style=''>清空所选图片</a></b>" +
                 "</div> </div> ";
         $("#showPics").append(showStr);
@@ -251,15 +294,13 @@
         if(item_id!=null&&item_id!=""){
             addTypeAttr();
         }
-        var categoryId = '${item.categoryid}';
+
         if(site!=""&&categoryId!=""){
             getCategoryName(categoryId,site);
             $("#PrimaryCategoryshow").show();
         }else{
             $("#PrimaryCategoryshow").hide();
         }
-
-
 
 
     });
@@ -298,6 +339,64 @@
     }
     body .dt{
         font-size: 12px;
+
+    }
+    .ui-select{
+        height: 35px;
+    }
+
+    .selectboxit-options li {
+        line-height: 30px;
+        height: 30px;
+    }
+    .new h1{
+        font-size: 12px;
+        font-weight: bold;
+    }
+    .new{
+        font-size: 12px;
+    }
+    .selectboxit-options {
+        width: 270px;
+    }
+    #moreAttrs .form-control{
+        height: 20px;
+        width: 50px;
+        margin-left: 0px;
+        padding: 0px;
+    }
+
+    .DivSelect
+    {
+        position: relative;
+        background-color: transparent;
+        width:  18px;
+        height: 17px;
+        vertical-align: bottom;
+        display: inline-block;
+    }
+    .new li dt{
+        color:#000000;
+    }
+    .form-control{
+        height:26px;
+    }
+    .selectboxit-container span, .selectboxit-container .selectboxit-options a{
+        height: 26px;
+        line-height: 26px;
+    }
+    .selectboxit-options li {
+        line-height: 26px;
+        height: 26px;
+    }
+    .new_button{
+        margin-top: 0px;
+    }
+    .new_view{
+        background-color: #E2E1E1;
+    }
+    #moreAttrs tr{
+        height: 32px;
     }
 </style>
 </head>
@@ -306,9 +405,6 @@
 <div class="new_all">
 <form id="form" class="new_user_form">
 <div class="here">当前位置：首页 > 刊登管理 > <b>刊登</b></div>
-<div class="a_bal"></div>
-<h3>刊登</h3>
-
 <div class="a_bal"></div>
 <div class="new">
     <h1>一般信息</h1>
@@ -323,24 +419,20 @@
     </li>
     <li>
         <dt>刊登类型</dt>
-        <div class="ui-select dt5">
-            <select name="listingType" style="width: 300px;" onchange="changeRadio(this)">
+            <select name="listingType" onchange="changeRadio(this)" style="width: 100px;">
                 <option value="Chinese">拍买</option>
                 <option value="FixedPriceItem">固价</option>
                 <option value="2">多属性</option>
             </select>
-        </div>
     </li>
 
     <li>
         <dt>站点</dt>
-        <div class="ui-select dt5">
-            <select name="site" style="width: 300px;">
+            <select name="site" data-size="8">
                 <c:forEach items="${siteList}" var="sites">
                     <option value="${sites.id}">${sites.name}</option>
                 </c:forEach>
             </select>
-        </div>
     </li>
     <li>
         <dt>ebay账户</dt>
@@ -422,18 +514,18 @@
         <li style="height: 100%;">
             <dt>属性</dt>
             <div>
-                <table width="80%" id="moreAttrs" class="tablednd">
+                <table width="80%" id="moreAttrs" class="mytable-striped">
                     <tr style="height: 32px;" class="nodrop nodrag">
-                        <td style="width: 15px">&nbsp;</td>
-                        <td width="20%">Sub SKU</td>
-                        <td width="10%">数量</td>
-                        <td width="10%">价格</td>
-                        <td name="del" width="30%">操作</td>
+                        <th style="width: 15px">&nbsp;</td>
+                        <th style="width: 100px;">Sub SKU</td>
+                        <th style="width: 100px;">数量</td>
+                        <th style="width: 100px;">价格</td>
+                        <th name="del" width="50px;"><a href="javascript:void(0);" style="color: #110BF5;text-decoration: underline;" onclick="addMoreAttr(this);">添加属性</a></td>
                     </tr>
                 </table>
                 <div style="padding-left: 120px;height: 40px;padding-top: 16px;">
                     <b class="new_button_1"><a data-toggle="modal" href="javascript:void(0);" onclick="addInputSKU(this)">添加SKU项</a></b>
-                    <b class="new_button_1"><a data-toggle="modal" href="javascript:void(0);" onclick="addMoreAttr(this);">添加属性</a></b>
+                    <%--<b class="new_button_1"><a data-toggle="modal" href="javascript:void(0);" onclick="addMoreAttr(this);">添加属性</a></b>--%>
                 </div>
             </div>
             <div id="picMore" style="padding-left: 60px;width: 150px;">
@@ -445,7 +537,7 @@
     <li style="height: 100%;">
         <dt>属性</dt>
         <div>
-            <table id="attTable" width="600px;">
+            <table id="attTable" width="600px;" class="mytable-striped">
                 <tr>
                     <td align="center" width="30%">名称</td>
                     <td align="center" width="30%">值</td>
@@ -479,7 +571,7 @@
                         <img src="/xsddWeb/img/newpic_ico.png" onclick="hiddenTemPic(this)">
                     </div>
                 </div>
-                <b class="new_button"><a href="javascript:void(0)" onclick="selectTemplate(this)">选择模板</a></b>
+                <b class="new_button" style="margin-top: 8px;"><a href="javascript:void(0)" onclick="selectTemplate(this)">选择模板</a></b>
             </div>
         </div>
         <div style="display: none;" id="templatepic">
@@ -521,10 +613,9 @@
 <div class="Contentbox">
 <div name="showModel" id="priceMessage"  style="width: 980px;height: 500px" class="price_div">
     <br/>
-    <li style="padding-top: 9px;">
+    <li style="padding-top: 9px;margin-bottom: 8px;">
         <dt>物品状况</dt>
-        <div class="ui-select dt5">
-            <select name="ConditionID"  style="width: 300px;">
+            <select name="ConditionID"  style="width: 300px;height:35px;">
                 <option selected="selected" value="1000">New</option>
                 <option value="1500">New other (see details)</option>
                 <option value="2000">Manufacturer refurbished</option>
@@ -532,12 +623,11 @@
                 <option value="3000">Used</option>
                 <option value="7000">For parts or not working</option>
             </select>
-        </div>
     </li>
+    </br>
     <li>
         <dt>刊登天数</dt>
-        <div class="ui-select dt5" >
-            <select name="ListingDuration"  style="width: 300px;">
+            <select name="ListingDuration"  style="width: 300px;height:35px;">
                 <option value="Days_1">1 days</option>
                 <option value="Days_3">3 days</option>
                 <option value="Days_5">5 days</option>
@@ -545,7 +635,6 @@
                 <option value="Days_10">10 days</option>
                 <option value="GTC" selected>GTC</option>
             </select>
-        </div>
     </li>
     <div id="Auction" style="display: none;">
         <h1 style="padding-left: 50px;">拍买</h1>
@@ -575,12 +664,10 @@
         </li>
         <li>
             <dt>是否单物品</dt>
-            <div class="ui-select dt5">
                 <select name="ListingFlag">
                     <option value="0">单独物品</option>
                     <option value="1">批量物品</option>
                 </select>
-            </div>
         </li>
     </div>
     <div id="oneAttr" style="display: none;">

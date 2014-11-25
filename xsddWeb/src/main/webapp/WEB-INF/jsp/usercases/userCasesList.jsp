@@ -31,13 +31,13 @@
             $("#UserCasesListTable").initTable({
                 url:path + "/userCases/ajax/loadUserCasesList.do?",
                 columnData:[
-                    {title:"Item",name:"casetype",width:"15%",align:"left",format:makeOption2,click:rowClickMethod},
-                    {title:"Problem",name:"itemid",width:"12%",align:"left",format:makeOption3,click:rowClickMethod},
-                    {title:"Amount",name:"caseamount",width:"8%",align:"left",click:rowClickMethod},
-                    {title:"Opended on",name:"lastmodifieddate",width:"12%",align:"left",click:rowClickMethod},
-                    {title:"Trading Partner",name:"buyerid",width:"8%",align:"left",click:rowClickMethod},
-                    {title:"Status",name:"status",width:"8%",align:"left",click:rowClickMethod},
-                    {title:"Open requests/cases",name:"option1",width:"8%",align:"left",format:makeOption1}
+                    {title:"标题/物品号",name:"casetype",width:"15%",align:"left",format:makeOption2,click:rowClickMethod},
+                    {title:"纠纷类型",name:"itemid",width:"12%",align:"left",format:makeOption3,click:rowClickMethod},
+                    {title:"售价",name:"caseamount",width:"8%",align:"left",click:rowClickMethod},
+                    {title:"纠纷时间",name:"lastmodifieddate",width:"12%",align:"left",click:rowClickMethod},
+                    {title:"买家ID",name:"buyerid",width:"8%",align:"left",click:rowClickMethod},
+                    {title:"状态",name:"status",width:"8%",align:"left",click:rowClickMethod},
+                    {title:"操作",name:"option1",width:"8%",align:"left",format:makeOption1}
                 ],
                 selectDataNow:false,
                 isrowClick:false,
@@ -157,13 +157,13 @@
             $("#UserCasesListTable").initTable({
                 url:path + "/userCases/ajax/loadUserCasesList.do?type="+type,
                 columnData:[
-                    {title:"Item",name:"casetype",width:"15%",align:"left",format:makeOption2,click:rowClickMethod},
-                    {title:"Problem",name:"itemid",width:"12%",align:"left",format:makeOption3,click:rowClickMethod},
-                    {title:"Amount",name:"caseamount",width:"8%",align:"left",click:rowClickMethod},
-                    {title:"Opended on",name:"lastmodifieddate",width:"12%",align:"left",click:rowClickMethod},
-                    {title:"Trading Partner",name:"buyerid",width:"8%",align:"left",click:rowClickMethod},
-                    {title:"Status",name:"status",width:"8%",align:"left",click:rowClickMethod},
-                    {title:"Open requests/cases",name:"option1",width:"8%",align:"left",format:makeOption1}
+                    {title:"标题/物品号",name:"casetype",width:"15%",align:"left",format:makeOption2,click:rowClickMethod},
+                    {title:"纠纷类型",name:"itemid",width:"12%",align:"left",format:makeOption3,click:rowClickMethod},
+                    {title:"售价",name:"caseamount",width:"8%",align:"left",click:rowClickMethod},
+                    {title:"纠纷时间",name:"lastmodifieddate",width:"12%",align:"left",click:rowClickMethod},
+                    {title:"买家ID",name:"buyerid",width:"8%",align:"left",click:rowClickMethod},
+                    {title:"状态",name:"status",width:"8%",align:"left",click:rowClickMethod},
+                    {title:"操作",name:"option1",width:"8%",align:"left",format:makeOption1}
                 ],
                 selectDataNow:false,
                 isrowClick:true,

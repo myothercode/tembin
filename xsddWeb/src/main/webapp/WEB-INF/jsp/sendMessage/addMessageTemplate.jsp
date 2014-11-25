@@ -60,9 +60,33 @@
         $(document).ready(function(){
             $("#messageForm").validationEngine();
         });
-        function addcontent(obj){
-            var textarea=document.getElementById("textarea");
-            textarea.innerHTML+=obj.value;
+        function addcontent(obj,content){
+            insertAtCaret(content,obj.value);
+        }
+        function setCaret(textObj) {
+            if (textObj.createTextRange) {
+                textObj.caretPos = document.selection.createRange().duplicate();
+            }
+        }
+        function insertAtCaret(textObj, textFeildValue) {
+            if (document.all) {
+                if (textObj.createTextRange && textObj.caretPos) {
+                    var caretPos = textObj.caretPos;
+                    caretPos.text = caretPos.text.charAt(caretPos.text.length - 1) == ' ' ? textFeildValue + ' ' : textFeildValue;
+                } else {
+                    textObj.value = textFeildValue;
+                }
+            } else {
+                if (textObj.setSelectionRange) {
+                    var rangeStart = textObj.selectionStart;
+                    var rangeEnd = textObj.selectionEnd;
+                    var tempStr1 = textObj.value.substring(0, rangeStart);
+                    var tempStr2 = textObj.value.substring(rangeEnd);
+                    textObj.value = tempStr1 + textFeildValue + tempStr2;
+                } else {
+                    alert("This version of Mozilla based browser does not support setSelectionRange");
+                }
+            }
         }
     </script>
 </head>
@@ -106,7 +130,7 @@
             <label  class="newdt control-label" style="margin-top:9px;">标签</label>
             <div class="col-lg-10">
                 <div class="newselect" style="margin-top:9px;width: 750px;">
-                    <select onchange="addcontent(this);" class="form-controlsd" style="width: 200px;height: 35px;">
+                    <select onchange="addcontent(this,this.form.content);" class="form-controlsd" style="width: 200px;height: 35px;">
                         <option value="">--选择--</option>
                         <option value="{Buyer_eBay_ID}">Buyer_eBay_ID</option>
                         <option value="{Carrier}">Carrier</option>
@@ -129,7 +153,7 @@
             <label  class="newdt control-label" style="margin-top:9px;">模板内容</label>
             <div class="col-lg-10">
                 <div class="newselect" style="margin-top:9px;width: 750px;">
-                <textarea name="content" id="textarea" class="form-control validate[required]" cols="" rows="4" style="width:600px;height: 200px;">${template.content}</textarea>
+                <textarea name="content"  onselect="setCaret(this);" onclick="setCaret(this);" onkeyup="setCaret(this);" id="textarea" class="form-control validate[required]" cols="" rows="4" style="width:600px;height: 200px;">${template.content}</textarea>
                 </div>
             </div>
         </div>

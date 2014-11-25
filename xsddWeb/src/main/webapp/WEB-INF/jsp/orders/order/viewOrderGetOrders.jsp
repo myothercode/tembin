@@ -464,6 +464,7 @@
         <tbody><tr>
             <td width="772"></td>
             <td width="9" rowspan="5" valign="top">&nbsp;</td>
+           <%-- <c:if test="${flag=='true'}">--%>
             <td rowspan="5" valign="top" style="margin-left:20px; padding-left:15px; padding-top:20px; padding-right:20px; line-height:25px;background:#F4F4F4"><strong>订单号</strong><br>
                 ${order.orderid}(已配货)<br>
                 <strong>物流跟踪号</strong><br>
@@ -501,6 +502,7 @@
                     </tr>
                     </tbody></table>--%>
             </td>
+           <%-- </c:if>--%>
         </tr>
         <tr>
             <%--<td width="772" align="center" bgcolor="#F6F6F6" style="color:#2395F3">查看更多历史信息...</td>--%>
@@ -605,13 +607,15 @@
                     <input type="hidden" name="buyeruserid1" value="${addMessage1[0].recipientid}">
                     <input type="hidden" name="selleruserid1" value="${addMessage1[0].sender}">
                     <input type="hidden" name="subject" value="${addMessage1[0].subject}">
-                <textarea name="body"  id="textarea" style="width:772px;" rows="5"  class="newco_one validate[required]"></textarea><div class="modal-footer" style="margin-top:20px; float:left; width:100%;">
+                <textarea name="body"  id="textarea" style="width:772px;" rows="5"  class="newco_one validate[required]"></textarea>
                 </form>
+                <div class="modal-footer" style="margin-top:20px; float:left; width:100%;">
                 <%--<button type="button" class="btn btn-primary">保存</button>--%>
                 <button type="button" class="btn btn-primary" onclick="selectSendMessage();">选择模板</button>
                 <button type="button" class="btn btn-newco" onclick="submitCommit1();">回复</button>
                 <button type="button" class="btn btn-default" onclick="dialogClose();" data-dismiss="modal">关闭</button>
-            </div></td>
+                </div>
+            </td>
         </tr>
         <tr>
             <td width="772"> </td>

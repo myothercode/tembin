@@ -47,6 +47,7 @@ public class SendMessageController extends BaseAction{
     public void loadSendMessageList(CommonParmVO commonParmVO,HttpServletRequest request) throws Exception {
         String status=request.getParameter("status");
         String orderby=request.getParameter("orderby");
+        String type=request.getParameter("type");
         Map m = new HashMap();
         /**分页组装*/
         PageJsonBean jsonBean=commonParmVO.getJsonBean();
@@ -57,11 +58,15 @@ public class SendMessageController extends BaseAction{
         if(!StringUtils.isNotBlank(status)){
             status=null;
         }
+        if(!StringUtils.isNotBlank(type)){
+            type=null;
+        }
         SessionVO sessionVO= SessionCacheSupport.getSessionVO();
         List<MessageTemplateQuery> lists=new ArrayList<MessageTemplateQuery>();
         m.put("status",status);
         m.put("userId",sessionVO.getId());
         m.put("orderby",orderby);
+        m.put("type",type);
         lists= iTradingMessageTemplate.selectMessageTemplateList(m, page);
         jsonBean.setList(lists);
         jsonBean.setTotal((int)page.getTotalCount());

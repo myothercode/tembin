@@ -220,8 +220,9 @@ public class UtilController extends BaseAction{
         sb.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
         sb.append("<findItemsByKeywordsRequest xmlns=\"http://www.ebay.com/marketplace/search/v1/services\">");
         sb.append("<keywords>" + title + "</keywords>");
+        sb.append("<OutputSelectorType>CategoryHistogram</OutputSelectorType>");
         sb.append("<paginationInput>");
-        sb.append("<entriesPerPage>10</entriesPerPage>");
+        sb.append("<entriesPerPage>100</entriesPerPage>");
         sb.append("</paginationInput>");
         sb.append("</findItemsByKeywordsRequest>");
         List<TradingReseCategory> litr = new ArrayList<TradingReseCategory>();

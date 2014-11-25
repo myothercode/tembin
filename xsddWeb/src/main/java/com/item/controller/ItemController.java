@@ -50,6 +50,7 @@ import org.dom4j.Element;
 import org.jsoup.select.Elements;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.ModelMap;
@@ -69,6 +70,7 @@ import java.util.concurrent.TimeUnit;
  * Created by Administrtor on 2014/8/2.
  */
 @Controller
+@Scope(value = "prototype")
 public class ItemController extends BaseAction{
 
     @Autowired
@@ -131,6 +133,8 @@ public class ItemController extends BaseAction{
 
     @Autowired
     private ITradingListingData iTradingListingData;
+
+    private int selectNumber=0;
     /**
      * 范本管理
      * @param request
@@ -1997,6 +2001,7 @@ public class ItemController extends BaseAction{
     public void getCategoryName(HttpServletRequest request,HttpServletResponse response,@ModelAttribute( "initSomeParmMap" )ModelMap modelMap) throws Exception {
         String categoryId = request.getParameter("categoryId");
         String siteId = request.getParameter("siteId");
+        selectNumber=0;
         String categoryName = this.selectBycriId(categoryId,siteId);
         AjaxSupport.sendSuccessText("",categoryName);
     }
@@ -2006,12 +2011,18 @@ public class ItemController extends BaseAction{
         PublicDataDictExample pdde = new PublicDataDictExample();
         pdde.createCriteria().andItemIdEqualTo(categoryId).andSiteIdEqualTo(siteId).andItemTypeEqualTo("category");
         List<PublicDataDict> lipdd = this.publicDataDictMapper.selectByExample(pdde);
+
         if(lipdd==null||lipdd.size()==0){
             Asserts.assertTrue(false,"输入的分类错误！");
         }
+
         PublicDataDict pdd = lipdd.get(0);
         String categoryName = "";
-        if(!"0".equals(pdd.getItemParentId())){
+        if(selectNumber>=5){
+            return pdd.getItemEnName();
+        }
+        selectNumber++;
+        if(!"0".equals(pdd.getItemParentId())&&!(pdd.getItemId().equals(pdd.getItemParentId()))){
             categoryName = this.selectBycriId(pdd.getItemParentId(),siteId)+" -> "+pdd.getItemEnName();
         }else{
             categoryName = pdd.getItemEnName();

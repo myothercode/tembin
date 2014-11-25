@@ -97,7 +97,7 @@
         function addcountry(){
             var country=$("input[type=checkbox][name=country]");
             if(country[0].checked){
-                var htm="<div id='selectCountry'>订单目的地:<a id='selectCountrys' href='javascript:void(0);' onclick='selectCountrys();'>指定国家</a><br/></div>"
+                var htm="<div id='selectCountry'>订单目的地:<a id='selectCountrys' href='javascript:void(0);' onclick='selectCountrys();'><font style=\"color: #0000ff\">指定国家</font></a><br/></div>"
                 $("#addMarket").append($(htm));
             }else{
                 $("#selectCountry").remove();
@@ -107,7 +107,7 @@
         function addExceptCountry(){
             var country=$("input[type=checkbox][name=exceptCountry]");
             if(country[0].checked){
-                var htm="<div id='selectExceptCountry'>订单目的地:<a id='selectExceptCountrys' href='javascript:void(0)' onclick='selectExceptCountrys();'>指定国家之外</a><br/></div>"
+                var htm="<div id='selectExceptCountry'>订单目的地:<a id='selectExceptCountrys' href='javascript:void(0)' onclick='selectExceptCountrys();'><font style=\"color: #0000ff\">指定国家之外</font></a><br/></div>"
                 $("#addMarket").append($(htm));
             }else{
                 $("#selectExceptCountry").remove();
@@ -117,7 +117,7 @@
         function addAllOrder(){
             var country=$("input[type=checkbox][name=allOrder]");
             if(country[0].checked){
-                var htm="<div id='selectAllOrder'>所有订单:所有的订单<br/></div>"
+                var htm="<div id='selectAllOrder'>所有订单:<font style=\"color: #0000ff\">所有的订单</font><br/></div>"
                 $("#addMarket").append($(htm));
             }else{
                 $("#selectAllOrder").remove();
@@ -127,7 +127,7 @@
         function addItem(){
             var item=$("input[type=checkbox][name=item]");
             if(item[0].checked){
-                var htm="<div id='selectItem'>订单商品:<a id='selectItems' href='javascript:void(0)' onclick='selectItems();'>指定商品</a><br/></div>"
+                var htm="<div id='selectItem'>订单商品:<a id='selectItems' href='javascript:void(0)' onclick='selectItems();'><font style=\"color: #0000ff\">指定商品</font></a><br/></div>"
                 $("#addMarket").append($(htm));
             }else{
                 $("#selectItem").remove();
@@ -137,7 +137,7 @@
         function addAmount(){
             var amount=$("input[type=checkbox][name=amount]");
             if(amount[0].checked){
-                var htm="<div id='selectAmount'>订单来源:<a id='selectAmounts' href='javascript:void(0)' onclick='selectAmounts();'>指定账号</a><br/></div>"
+                var htm="<div id='selectAmount'>订单来源:<a id='selectAmounts' href='javascript:void(0)' onclick='selectAmounts();'><font style=\"color: #0000ff\">指定账号</font></a><br/></div>"
                 $("#addMarket").append($(htm));
             }else{
                 $("#selectAmount").remove();
@@ -147,7 +147,7 @@
         function addShippingService(){
             var amount=$("input[type=checkbox][name=shippingService]");
             if(amount[0].checked){
-                var htm="<div id='selectShippingService'>买家选择的物流:<a id='selectShippingServices' href='javascript:void(0)' onclick='selectShippingServices();'>指定物流方式</a><br/></div>"
+                var htm="<div id='selectShippingService'>买家选择的物流:<a id='selectShippingServices' href='javascript:void(0)' onclick='selectShippingServices();'><font style=\"color: #0000ff\">指定物流方式</font></a><br/></div>"
                 $("#addMarket").append($(htm));
             }else{
                 $("#selectShippingService").remove();
@@ -204,64 +204,66 @@
                 <label class="control-label" style="width: 100px;" >消息模块&nbsp;</label>
                 <div class="controls">
                     <input type="hidden" id="messageId" name="messageId"/>
-                    <input type="text" placeholder="" onclick="selectMessageTemplate();" class="input-xlarge validate[required]" value="${autoMessage.subject}" name="subject" id="subject">&nbsp;<a href="#" onclick="selectMessageTemplate();">选择</a>
+                    <input type="text" placeholder="" onclick="selectMessageTemplate();" style="width: 250px;" class="form-controlsd validate[required]" value="${autoMessage.subject}" name="subject" id="subject">&nbsp;<a href="#" style="line-height: 35px;" onclick="selectMessageTemplate();">选择</a>
                     <p class="help-block"></p>
                 </div>
-                <label class="control-label" style="width: 100px;" >在&nbsp;</label>
-                <div class="controls">
-                    <select class="input-xlarge" name="type">
-                        <option value="null">--请选择--</option>
-                        <c:if test="${autoMessage.type=='收到买家付款'}">
-                            <option selected>收到买家付款</option>
-                        </c:if>
-                        <c:if test="${autoMessage.type!='收到买家付款'}">
-                            <option>收到买家付款</option>
-                        </c:if>
-                        <c:if test="${autoMessage.type=='标记已发货'}">
-                            <option selected>标记已发货</option>
-                        </c:if>
-                        <c:if test="${autoMessage.type!='标记已发货'}">
-                            <option>标记已发货</option>
-                        </c:if>
-                        <c:if test="${autoMessage.type=='收到买家的正评'}">
-                           <option selected>收到买家的正评</option>
-                        </c:if>
-                        <c:if test="${autoMessage.type!='收到买家的正评'}">
-                            <option>收到买家的正评</option>
-                        </c:if>
-                         <c:if test="${autoMessage.type=='收到买家的中评'}">
-                           <option selected>收到买家的中评</option>
-                         </c:if>
-                        <c:if test="${autoMessage.type!='收到买家的中评'}">
-                            <option>收到买家的中评</option>
-                        </c:if>
-                        <c:if test="${autoMessage.type=='收到买家的负评'}">
-                            <option selected>收到买家的负评</option>
-                        </c:if>
-                        <c:if test="${autoMessage.type!='收到买家的负评'}">
-                            <option>收到买家的负评</option>
-                        </c:if>
-                    </select>&nbsp;后
-                    <select name="day">
-                        <c:forEach var="i"  begin="0" end="30" step="1">
-                            <c:if test="${autoMessage.day==i}">
-                                <option selected>${i}</option>
-                            </c:if>
-                            <c:if test="${autoMessage.day!=i}">
-                                <option>${i}</option>
-                            </c:if>
-                        </c:forEach>
-                    </select>&nbsp;天
-                    <select name="hour">
-                        <c:forEach var="i"  begin="0" end="23" step="1">
-                            <c:if test="${autoMessage.hour==i}">
-                                <option selected>${i}</option>
-                            </c:if>
-                            <c:if test="${autoMessage.hour!=i}">
-                                <option>${i}</option>
-                            </c:if>
-                        </c:forEach>
-                    </select>小时发送
+                    <div>
+                        <label class="control-label" style="width: 100px;" >在&nbsp;</label>
+                        <div class="controls">
+                            <select class="input-xlarge" name="type" style="float: left">
+                                <option value="null">--请选择--</option>
+                                <c:if test="${autoMessage.type=='收到买家付款'}">
+                                    <option selected>收到买家付款</option>
+                                </c:if>
+                                <c:if test="${autoMessage.type!='收到买家付款'}">
+                                    <option>收到买家付款</option>
+                                </c:if>
+                                <c:if test="${autoMessage.type=='标记已发货'}">
+                                    <option selected>标记已发货</option>
+                                </c:if>
+                                <c:if test="${autoMessage.type!='标记已发货'}">
+                                    <option>标记已发货</option>
+                                </c:if>
+                                <c:if test="${autoMessage.type=='收到买家的正评'}">
+                                   <option selected>收到买家的正评</option>
+                                </c:if>
+                                <c:if test="${autoMessage.type!='收到买家的正评'}">
+                                    <option>收到买家的正评</option>
+                                </c:if>
+                                 <c:if test="${autoMessage.type=='收到买家的中评'}">
+                                   <option selected>收到买家的中评</option>
+                                 </c:if>
+                                <c:if test="${autoMessage.type!='收到买家的中评'}">
+                                    <option>收到买家的中评</option>
+                                </c:if>
+                                <c:if test="${autoMessage.type=='收到买家的负评'}">
+                                    <option selected>收到买家的负评</option>
+                                </c:if>
+                                <c:if test="${autoMessage.type!='收到买家的负评'}">
+                                    <option>收到买家的负评</option>
+                                </c:if>
+                            </select>&nbsp;后
+                            <select name="day">
+                                <c:forEach var="i"  begin="0" end="30" step="1">
+                                    <c:if test="${autoMessage.day==i}">
+                                        <option selected>${i}</option>
+                                    </c:if>
+                                    <c:if test="${autoMessage.day!=i}">
+                                        <option>${i}</option>
+                                    </c:if>
+                                </c:forEach>
+                            </select>&nbsp;天
+                            <select name="hour">
+                                <c:forEach var="i"  begin="0" end="23" step="1">
+                                    <c:if test="${autoMessage.hour==i}">
+                                        <option selected>${i}</option>
+                                    </c:if>
+                                    <c:if test="${autoMessage.hour!=i}">
+                                        <option>${i}</option>
+                                    </c:if>
+                                </c:forEach>
+                            </select>小时发送
+                    </div>
                 </div>
               <%--  <label class="control-label" style="width: 100px;" >发送方式&nbsp;</label>--%>
                 <!-- Multiple Checkboxes -->
@@ -320,10 +322,10 @@
                         <div id='selectItem'>订单商品:<a id='selectItems' href='javascript:void(0)' onclick='selectItems();'>
                             <c:forEach items="${items}" var="item" varStatus="status">
                                 <c:if test="${status.index==(status.count-1)}">
-                                    ${item.value}
+                                <font style="color: #0000ff">${item.value}</font>
                                 </c:if>
                                 <c:if test="${status.index!=(status.count-1)}">
-                                    ${item.value},
+                                <font style="color: #0000ff">${item.value},</font>
                                 </c:if>
                             </c:forEach>
                         </a><br/></div>
@@ -332,10 +334,10 @@
                         <div id='selectCountry'>订单目的地:<a id='selectCountrys' href='javascript:void(0)' onclick='selectCountrys();'>
                             <c:forEach items="${countrys}" var="item" varStatus="status">
                                 <c:if test="${status.index==(status.count-1)}">
-                                    ${item.value}
+                                <font style="color: #0000ff">${item.value}</font>
                                 </c:if>
                                 <c:if test="${status.index!=(status.count-1)}">
-                                    ${item.value},
+                                <font style="color: #0000ff">${item.value},</font>
                                 </c:if>
                             </c:forEach>
                         </a><br/></div>
@@ -344,10 +346,10 @@
                         <div id='selectAmount'>订单来源:<a id='selectAmounts' href='javascript:void(0)' onclick='selectAmounts();'>
                             <c:forEach items="${amounts}" var="item" varStatus="status">
                                 <c:if test="${status.index==(status.count-1)}">
-                                    ${item.value}
+                                <font style="color: #0000ff">${item.value}</font>
                                 </c:if>
                                 <c:if test="${status.index!=(status.count-1)}">
-                                    ${item.value},
+                                <font style="color: #0000ff">${item.value},</font>
                                 </c:if>
                             </c:forEach>
                         </a><br/></div>
@@ -357,34 +359,34 @@
                             国内运输方式:
                             <c:forEach items="${services}" var="item" varStatus="status">
                                 <c:if test="${status.index==(status.count-1)}">
-                                    ${item.value}
+                            <font style="color: #0000ff">${item.value}</font>
                                 </c:if>
                                 <c:if test="${status.index!=(status.count-1)}">
-                                    ${item.value},
+                            <font style="color: #0000ff">${item.value},</font>
                                 </c:if>
                             </c:forEach>
                             ;国际运输方式:
                             <c:forEach items="${internationalServices}" var="item" varStatus="status">
                                 <c:if test="${status.index==(status.count-1)}">
-                                    ${item.value}
+                            <font style="color: #0000ff">${item.value}</font>
                                 </c:if>
                                 <c:if test="${status.index!=(status.count-1)}">
-                                    ${item.value},
+                            <font style="color: #0000ff">${item.value},</font>
                                 </c:if>
                             </c:forEach>
                         </a><br/></div>
                     </c:if>
                     <c:if test="${order!=null}">
-                        <div id='selectAllOrder'>所有订单:所有的订单<br/></div>
+                        <div id='selectAllOrder'>所有订单:<font style="color: #0000ff">所有的订单</font><br/></div>
                     </c:if>
                     <c:if test="${exceptCountrys[0]!=null}">
                         <div id='selectExceptCountry'>订单目的地:<a id='selectExceptCountrys' href='javascript:void(0)' onclick='selectExceptCountrys();'>
                             <c:forEach items="${exceptCountrys}" var="item" varStatus="status">
                                 <c:if test="${status.index==(status.count-1)}">
-                                    ${item.value}之外
+                                    <font style="color: #0000ff">${item.value}之外</font>
                                 </c:if>
                                 <c:if test="${status.index!=(status.count-1)}">
-                                    ${item.value},
+                                <font style="color: #0000ff">${item.value},</font>
                                 </c:if>
                             </c:forEach>
                         </a><br/></div>

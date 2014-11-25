@@ -52,6 +52,17 @@
             </if>
 
         </if>-->
+        <if test="type!=null">
+            <if test="type=='caseType'">
+                and template.caseType=1
+            </if>
+            <if test="type=='autoType'">
+                and template.autoType=1
+            </if>
+            <if test="type=='messageType'">
+                and template.messageType=1
+            </if>
+        </if>
         <if test="userId!=null">
             and template.create_user =#{userId}
         </if>

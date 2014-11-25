@@ -81,7 +81,9 @@ public class TradingMessageGetmymessageImpl implements com.trading.service.ITrad
             ebayNames.add(d.getEbayName());
         }
         cr.andReadEqualTo(read);
-        cr.andRecipientuseridIn(ebayNames);
+        if(ebayNames.size()>0){
+            cr.andRecipientuseridIn(ebayNames);
+        }
         List<TradingMessageGetmymessage> list=TradingMessageGetmymessageMapper.selectByExample(example);
         return list;
     }

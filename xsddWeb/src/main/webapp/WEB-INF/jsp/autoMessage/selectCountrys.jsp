@@ -116,7 +116,7 @@
                                     coutryid+=r[i]+",";
                                 }
                             }
-                            countrys.innerHTML=aountryText;
+                            countrys.innerHTML="<font style=\"color: #0000ff\">"+aountryText+"</font>";
                             $(countryIds1).val(coutryid);
                             W.selectCountry1.close();
                             Base.token();

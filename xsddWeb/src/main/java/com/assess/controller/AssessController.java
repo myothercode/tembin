@@ -65,6 +65,7 @@ public class AssessController extends BaseAction{
     public void addAssessContent(HttpServletRequest request,HttpServletResponse response,ModelMap modelMap) throws Exception {
         SessionVO c= SessionCacheSupport.getSessionVO();
         String content = request.getParameter("content");
+        content = new String(content.getBytes("ISO-8859-1"),"UTF-8");
         String id = request.getParameter("id");
         String dataType = request.getParameter("datatype")==null?"1":request.getParameter("datatype");
         OrderAutoAssess oaa = new OrderAutoAssess();

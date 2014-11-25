@@ -28,7 +28,9 @@
                     {title:"From > to",name:"sender",width:"8%",align:"center",format:makeOption3,click:makeOption1},
                     {title:"SKU",name:"sku",width:"8%",align:"center",format:makeOption6,click:makeOption1},
                     {title:"修改时间",name:"receivedate",width:"8%",align:"center",format:makeOption7,click:makeOption1},
-                    {title:"总数",name:"countNum",width:"8%",align:"left",click:makeOption1}
+                    {title:"操作",name:"",width:"8%",align:"center",format:makeOption8}
+                    /*,
+                    {title:"总数",name:"countNum",width:"8%",align:"left",click:makeOption1}*/
                 ],
                 selectDataNow:false,
                 isrowClick:false,
@@ -54,16 +56,45 @@
         }
         /**查看消息*/
         var OrderGetOrders;
-        function makeOption1(json){
+        function makeOption1(json,messageid){
             var url=path+"/message/viewMessageGetmymessage.do";
+            if(json!=null){
+                url='url:'+url+'?messageID='+json.messageid;
+            }else{
+                url='url:'+url+'?messageID='+messageid;
+            }
             OrderGetOrders=openMyDialog({title: '查看消息',
-                content: 'url:'+url+'?messageID='+json.messageid,
+
+                content: url,
                 icon: 'succeed',
                 width:1200,
                 height:850,
                 lock:true
             });
 
+        }
+        function makeOption8(json){
+            var hs="";
+            hs+="<li style=\"height:25px;\" onclick=selectOption("+json.messageid+","+json.id+",this); value='1' doaction=\"readed\" >处理消息</li>";
+            if(json.read=="true"){
+                hs+="<li style=\"height:25px;\" onclick=selectOption("+json.messageid+","+json.id+",this); value='2' doaction=\"look\" >标记未读</li>";
+            }else{
+                hs+="<li style=\"height:25px;\" onclick=selectOption("+json.messageid+","+json.id+",this); value='3' doaction=\"look\" >标记已读</li>";
+            }
+            var pp={"liString":hs};
+            return getULSelect(pp);
+        }
+        function selectOption(messageid,id,obj){
+            var value=$(obj).attr("value");
+            if(value=='1'){
+                makeOption1(null,messageid);
+            }
+            if(value=='2'){
+                markReaded(null,"false",id);
+            }
+            if(value=='3'){
+                markReaded(null,"true",id);
+            }
         }
         function makeOption2(json){
             var detail=json.subject;
@@ -73,28 +104,28 @@
             if(json.read=="true"){
                 return "<span style=\"color:#999999;\">"+detail+"</span>";
             }else{
-                return "<span>"+detail+"</span>";
+                return "<span style=\"color: #0000ff;\">"+detail+"</span>";
             }
         }
         function makeOption3(json){
             if(json.read=="true"){
                 return "<span style=\"color:#999999\">"+json.sender+">"+json.recipientuserid+"</span>";
             }else{
-                return "<span>"+json.sender+">"+json.recipientuserid+"</span>";
+                return "<span style=\"color: #0000ff;\">"+json.sender+">"+json.recipientid+"</span>";
             }
         }
         function makeOption6(json){
             if(json.read=="true"){
                 return "<span style=\"color:#999999\">"+json.sku+"</span>";
             }else{
-                return "<span>"+json.sku+"</span>";
+                return "<span style=\"color: #0000ff;\">"+json.sku+"</span>";
             }
         }
         function makeOption7(json){
             if(json.read=="true"){
                 return "<span style=\"color:#999999\">"+json.receivedate+"</span>";
             }else{
-                return "<span>"+json.receivedate+"</span>";
+                return "<span style=\"color: #0000ff;\">"+json.receivedate+"</span>";
             }
         }
         function makeOption4(json){
@@ -104,7 +135,7 @@
         function makeOption5(json){
             var url=path+"/message/viewMessageAddmymessage.do";
             OrderGetOrders=openMyDialog({title: '查看消息',
-                content: 'url:'+url+'?itemid='+json.itemid+'&recipientid='+json.recipientid+'&sender='+json.sender,
+                content: 'url:'+url+'?transactionid='+json.transactionid+'&itemid='+json.itemid+'&recipientid='+json.recipientid+'&sender='+json.sender,
                 icon: 'succeed',
                 width:1200,
                 height:850,
@@ -266,6 +297,7 @@
                     $(days[i]).attr("class","newusa_ici_1");
                 }
             }
+            queryMessage2();
         }
         function queryMessage(){
        /* <input type="hidden" id="selectAmount"/>
@@ -287,7 +319,8 @@
                     {title:"From > to",name:"sender",width:"8%",align:"center",format:makeOption3,click:makeOption1},
                     {title:"SKU",name:"sku",width:"8%",align:"center",format:makeOption6,click:makeOption1},
                     {title:"修改时间",name:"receivedate",width:"8%",align:"center",format:makeOption7,click:makeOption1},
-                    {title:"总数",name:"countNum",width:"8%",align:"left",click:makeOption1}
+                    {title:"操作",name:"",width:"8%",align:"center",format:makeOption8}/*,
+                    {title:"总数",name:"countNum",width:"8%",align:"left",click:makeOption1}*/
                 ],
                 selectDataNow:false,
                 isrowClick:false,
@@ -311,8 +344,8 @@
                     {title:"主题",name:"read",width:"8%",align:"center",format:makeOption2,click:makeOption5},
                     {title:"From > to",name:"sender",width:"8%",align:"center",format:makeOption3,click:makeOption5},
                     {title:"SKU",name:"sku",width:"8%",align:"center",click:makeOption5},
-                    {title:"修改时间",name:"createTime",width:"8%",align:"center",click:makeOption5},
-                    {title:"总数",name:"countNum",width:"8%",align:"left",click:makeOption5}
+                    {title:"修改时间",name:"createTime",width:"8%",align:"center",click:makeOption5}/*,
+                    {title:"总数",name:"countNum",width:"8%",align:"left",click:makeOption5}*/
                 ],
                 selectDataNow:false,
                 isrowClick:false,
@@ -336,8 +369,8 @@
                     {title:"主题",name:"read",width:"8%",align:"center",format:makeOption2,click:makeOption5},
                     {title:"From > to",name:"sender",width:"8%",align:"center",format:makeOption3,click:makeOption5},
                     {title:"SKU",name:"sku",width:"8%",align:"center",click:makeOption5},
-                    {title:"修改时间",name:"createTime",width:"8%",align:"center",click:makeOption5},
-                    {title:"总数",name:"countNum",width:"8%",align:"left",click:makeOption5}
+                    {title:"修改时间",name:"createTime",width:"8%",align:"center",click:makeOption5}/*,
+                    {title:"总数",name:"countNum",width:"8%",align:"left",click:makeOption5}*/
                 ],
                 selectDataNow:false,
                 isrowClick:false,
@@ -350,12 +383,13 @@
                 $(table).initTable({
                     url:path + "/message/ajax/loadMessageGetmymessageList.do?",
                     columnData:[
-                       /* {title:"",name:"pictureUrl",width:"2%",align:"left",format:makeOption4},*/
-                        {title:"主题",name:"subject",width:"8%",align:"center",format:makeOption2,click:makeOption1},
+                        {title:"",name:"pictureUrl",width:"2%",align:"left",format:makeOption4},
+                        {title:"主题",name:"read",width:"8%",align:"center",format:makeOption2,click:makeOption1},
                         {title:"From > to",name:"sender",width:"8%",align:"center",format:makeOption3,click:makeOption1},
-                        {title:"SKU",name:"sku",width:"8%",align:"center",click:makeOption1},
-                        {title:"修改时间",name:"receivedate",width:"8%",align:"center",click:makeOption1},
-                        {title:"总数",name:"countNum",width:"8%",align:"left",click:makeOption1}
+                        {title:"SKU",name:"sku",width:"8%",align:"center",format:makeOption6,click:makeOption1},
+                        {title:"修改时间",name:"receivedate",width:"8%",align:"center",format:makeOption7,click:makeOption1},
+                        {title:"操作",name:"",width:"8%",align:"center",format:makeOption8}/*,
+                        {title:"总数",name:"countNum",width:"8%",align:"left",click:makeOption1}*/
                     ],
                     selectDataNow:false,
                     isrowClick:false,
@@ -375,8 +409,8 @@
                         {title:"主题",name:"read",width:"8%",align:"center",format:makeOption2,click:makeOption5},
                         {title:"From > to",name:"sender",width:"8%",align:"center",format:makeOption3,click:makeOption5},
                         {title:"SKU",name:"sku",width:"8%",align:"center",click:makeOption5},
-                        {title:"修改时间",name:"createTime",width:"8%",align:"center",click:makeOption5},
-                        {title:"总数",name:"countNum",width:"8%",align:"left",click:makeOption5}
+                        {title:"修改时间",name:"createTime",width:"8%",align:"center",click:makeOption5}/*,
+                        {title:"总数",name:"countNum",width:"8%",align:"left",click:makeOption5}*/
                     ],
                     selectDataNow:false,
                     isrowClick:false,
@@ -398,33 +432,39 @@
                 $(obj).val(value+"以内");
             }
         }
-        function markReaded(){
+        function markReaded(value1,value2,id){
             /*"<input type=\"checkbox\"  name=\"templateId\" value=" + json.id + ">";*/
-            var inputs= $("input[type=checkbox][name=templateId][name1=false]:checked");
-            if(inputs.length>0){
-                var value="";
-                for(var i=0;i<inputs.length;i++){
-                    if(i==inputs.length) {
-                        value+=$(inputs[i]).val();
-                    }else{
-                        value+=$(inputs[i]).val()+",";
+            var inputs= $("input[type=checkbox][name=templateId]:checked");
+            var url="";
+            if(value1!=null){
+                if(inputs.length>0){
+                    var value="";
+                    for(var i=0;i<inputs.length;i++){
+                        if(i==inputs.length) {
+                            value+=$(inputs[i]).val();
+                        }else{
+                            value+=$(inputs[i]).val()+",";
+                        }
                     }
+                    url = path + "/message/ajax/markReaded.do?value1="+value1+"&value="+value;
+                }else{
+                    alert("请至少选择一个未读内容!");
+                    return;
                 }
-                var url = path + "/message/ajax/markReaded.do?value="+value;
-                $().invoke(url, null,
-                        [function (m, r) {
-                            alert(r);
-                            refreshTable();
-                            Base.token();
-                        },
-                            function (m, r) {
-                                alert(r);
-                                Base.token();
-                            }]
-                );
             }else{
-                alert("请至少选择一个未读内容!");
+                url = path + "/message/ajax/markReaded.do?value1="+value2+"&value="+id;
             }
+            $().invoke(url, null,
+                    [function (m, r) {
+                        alert(r);
+                        refreshTable();
+                        Base.token();
+                    },
+                        function (m, r) {
+                            alert(r);
+                            Base.token();
+                        }]
+            );
         }
       function addstartTimeAndEndTime(obj,i){
           var time=$("#time"+i);
@@ -444,6 +484,14 @@
               $(time).append(span);
           }
         }
+    function queryBySelect(obj){
+        if(obj.value=='1'){
+            markReaded("true");
+        }
+        if(obj.value=='2'){
+            markReaded("false");
+        }
+    }
     </script>
 </head>
 <body>
@@ -517,7 +565,7 @@
                 <div id="con_menu_1"  style="display: block;">
                     <!--综合开始 -->
                     <div class="new_usa" style="margin-top:20px;">
-                        <li class="new_usa_list"><span class="newusa_i" style="width: 75px;">属性：</span><a href="javascript:void(0)"><span class="newusa_ici" scop="amount" onclick="selectAmount1(0,null);">全部&nbsp;</span></a><a href="javascript:void(0)"><span class="newusa_ici_1" scop="amount" onclick="selectAmount1(1,null)">固价&nbsp;</span></a><a href="javascript:void(0)"><span class="newusa_ici_1" scop="amount" onclick="selectAmount1(2,null)">多属性&nbsp;</span></a><a href="javascript:void(0)"><span class="newusa_ici_1" scop="amount" onclick="selectAmount1(3,null)">多属性&nbsp;</span></a></li>
+                        <li class="new_usa_list"><span class="newusa_i" style="width: 75px;">销售状态：</span><a href="javascript:void(0)"><span class="newusa_ici" scop="amount" onclick="selectAmount1(0,null);">全部&nbsp;</span></a><a href="javascript:void(0)"><span class="newusa_ici_1" scop="amount" onclick="selectAmount1(1,'no')">售前&nbsp;</span></a><a href="javascript:void(0)"><span class="newusa_ici_1" scop="amount" onclick="selectAmount1(2,'yes')">售后&nbsp;</span></a></li>
                         <li class="new_usa_list"><span class="newusa_i" style="width: 75px;">消息状态：</span><a href="javascript:void(0)"><span class="newusa_ici" scop="status" onclick="selectStatus1(0,null);">全部&nbsp;</span></a><a href="javascript:void(0)"><span class="newusa_ici_1" scop="status"  onclick="selectStatus1(1,'readed');">已读&nbsp;</span></a><a href="javascript:void(0)"><span class="newusa_ici_1" scop="status" onclick="selectStatus1(2,'noRead');">未读&nbsp;</span></a></li>
                         <li class="new_usa_list"><span class="newusa_i" style="width: 75px;">消息来源：</span><a href="javascript:void(0)"><span class="newusa_ici" scop="messageFrom" onclick="selectmessageFrom(0,null);">全部&nbsp;</span></a><a href="javascript:void(0)"><span class="newusa_ici_1" scop="messageFrom"  onclick="selectmessageFrom(1,'ebay');">来自eBay&nbsp;</span></a><a href="javascript:void(0)"><span class="newusa_ici_1" scop="messageFrom" onclick="selectmessageFrom(2,'buyer');">来自买家&nbsp;</span></a></li>
                         <div class="newsearch">
@@ -533,7 +581,7 @@
     <option value="" selected="selected">选择类型</option>
     <option value="1">发件人</option>
     <option value="2">主题</option>
-    <option value="4">messageId</option>
+    <option value="3">SKU</option>
 
 </select>
 </span>
@@ -550,7 +598,16 @@
                                         <option value="AK">动作</option>
                                     </select>
                                 </div>--%>
-                                 <span onclick="markReaded()" class="newusa_ici_del">标记为已读</span>
+                                <div class="numlist">
+                                    <div class="ui-select" style="margin-top:1px; width:125px;">
+                                        <select onchange="queryBySelect(this)">
+                                            <option value="all">全部</option>
+                                            <option value="1">标记为已读</option>
+                                            <option value="2">标记为未读</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                 <%--<span onclick="markReaded()" class="newusa_ici_del">标记为已读</span>--%>
                             </div>
                             <div>
                                 <div id="newtipi">
@@ -616,10 +673,10 @@
                 <div style="display: none;" id="con_menu_2">
                         <!--综合开始 -->
                         <div class="new_usa" style="margin-top:20px;">
-                            <li class="new_usa_list"><span class="newusa_i" style="width: 75px;">选择账号：</span><a href="javascript:void(0)"><span class="newusa_ici" scop="amount2" onclick="selectAmount2(0,null);">全部&nbsp;</span></a><a href="javascript:void(0)"><span class="newusa_ici_1" scop="amount2" onclick="selectAmount2(1,null)">固价&nbsp;</span></a><a href="javascript:void(0)"><span class="newusa_ici_1" scop="amount2" onclick="selectAmount2(2,null)">多属性&nbsp;</span></a><a href="javascript:void(0)"><span class="newusa_ici_1" scop="amount2" onclick="selectAmount2(3,null)">多属性&nbsp;</span></a></li>
+                            <li class="new_usa_list"><span class="newusa_i" style="width: 75px;">销售状态：</span><a href="javascript:void(0)"><span class="newusa_ici" scop="amount2" onclick="selectAmount2(0,null);">全部&nbsp;</span></a><a href="javascript:void(0)"><span class="newusa_ici_1" scop="amount2" onclick="selectAmount2(1,'no')">售前&nbsp;</span></a><a href="javascript:void(0)"><span class="newusa_ici_1" scop="amount2" onclick="selectAmount2(2,'yes')">售后&nbsp;</span></a></li>
                             <li class="new_usa_list"><span class="newusa_i" style="width: 75px;">消息状态：</span><a href="javascript:void(0)"><span class="newusa_ici" scop="status2" onclick="selectStatus2(0,null);">全部&nbsp;</span></a><a href="javascript:void(0)"><span class="newusa_ici_1" scop="status2" onclick="selectStatus2(1,'true');">发送成功&nbsp;</span></a><a href="javascript:void(0)"><span class="newusa_ici_1" scop="status2" onclick="selectStatus2(2,'false');">发送失败&nbsp;</span></a></li>
                             <div class="newsearch">
-                                <span class="newusa_i" style="width: 75px;">消息来源：</span><a href="javascript:void(0)"><span class="newusa_ici" scop="days1" onclick="selectDays1(0,null);">全部&nbsp;</span></a><a href="javascript:void(0)"><span class="newusa_ici_1" scop="days1" onclick="selectDays1(1,'1');">今天&nbsp;</span></a><a href="javascript:void(0)"><span class="newusa_ici_1" scop="days1" onclick="selectDays1(2,'2');">昨天&nbsp;</span></a><a href="javascript:void(0)"><span class="newusa_ici_1" scop="days1" onclick="selectDays1(3,'7');">7天以内&nbsp;</span></a><a href="javascript:void(0)"><span class="newusa_ici_1" scop="days1" onclick="selectDays1(4,'30');">30天以内&nbsp;</span></a>
+                                <span class="newusa_i" style="width: 75px;">时间：</span><a href="javascript:void(0)"><span class="newusa_ici" scop="days1" onclick="selectDays1(0,null);">全部&nbsp;</span></a><a href="javascript:void(0)"><span class="newusa_ici_1" scop="days1" onclick="selectDays1(1,'1');">今天&nbsp;</span></a><a href="javascript:void(0)"><span class="newusa_ici_1" scop="days1" onclick="selectDays1(2,'2');">昨天&nbsp;</span></a><a href="javascript:void(0)"><span class="newusa_ici_1" scop="days1" onclick="selectDays1(3,'7');">7天以内&nbsp;</span></a><a href="javascript:void(0)"><span class="newusa_ici_1" scop="days1" onclick="selectDays1(4,'30');">30天以内&nbsp;</span></a>
                                 <%--<span style="float: left;color: #5F93D7;">从</span><input class="form-controlsd " style="float: left;color: #5F93D7;width: 90px;height: 26px;border-color: #d0dde9" id="starttime1"  type="text" onfocus="WdatePicker({isShowWeek:true,dateFmt:'yyyy-MM-dd'})"/>
                                 <span style="float: left;color: #5F93D7;">到</span><input class="form-controlsd " style="float: left;color: #5F93D7;width: 90px;height: 26px;margin-right: 20px;border-color: #d0dde9" id="endtime1"  type="text" onfocus="WdatePicker({isShowWeek:true,dateFmt:'yyyy-MM-dd'})"/>--%>
                                 <a href="javascript:void(0)" onclick="addstartTimeAndEndTime(this,2)"><span scop="days1" onclick="selectDays1(5,null);" style="float: left;color: #5F93D7">自定义&nbsp;</span></a><span style="float: left" id="time2"></span>
@@ -629,8 +686,9 @@
 <span id="sleHid">
 <select id="typeQuery1" name="type" class="select">
     <option value=""  selected="selected">选择类型</option>
-    <option value="1">收件人</option>
-    <option value="2">内容</option>
+    <option value="1">发件人</option>
+    <option value="2">主题</option>
+    <option value="3">SKU</option>
 </select>
 </span>
 </span>
@@ -662,10 +720,10 @@
                 <div style="display: none;" id="con_menu_3">
                         <!--综合开始 -->
                         <div class="new_usa" style="margin-top:20px;">
-                            <li class="new_usa_list"><span class="newusa_i" style="width: 75px;">选择账号：</span><a href="javascript:void(0)"><span class="newusa_ici" scop="amount3" onclick="selectAmount3(0,null);">全部&nbsp;</span></a><a href="javascript:void(0)"><span class="newusa_ici_1" scop="amount3" onclick="selectAmount3(1,null)">固价&nbsp;</span></a><a href="javascript:void(0)"><span class="newusa_ici_1" scop="amount3" onclick="selectAmount3(2,null)">多属性&nbsp;</span></a><a href="javascript:void(0)"><span class="newusa_ici_1" scop="amount3" onclick="selectAmount3(3,null)">多属性&nbsp;</span></a></li>
+                            <li class="new_usa_list"><span class="newusa_i" style="width: 75px;">销售状态：</span><a href="javascript:void(0)"><span class="newusa_ici" scop="amount3" onclick="selectAmount3(0,null);">全部&nbsp;</span></a><a href="javascript:void(0)"><span class="newusa_ici_1" scop="amount3" onclick="selectAmount3(1,'no')">售前&nbsp;</span></a><a href="javascript:void(0)"><span class="newusa_ici_1" scop="amount3" onclick="selectAmount3(2,'yes')">售后&nbsp;</span></a></li>
                             <li class="new_usa_list"><span class="newusa_i" style="width: 75px;">消息状态：</span><a href="javascript:void(0)"><span class="newusa_ici" scop="status3" onclick="selectStatus3(0,null);">全部&nbsp;</span></a><a href="javascript:void(0)"><span class="newusa_ici_1" scop="status3" onclick="selectStatus3(1,'true');">发送成功&nbsp;</span></a><a href="javascript:void(0)"><span class="newusa_ici_1" scop="status3" onclick="selectStatus3(2,'false');">发送失败&nbsp;</span></a></li>
                             <div class="newsearch">
-                                <span class="newusa_i" style="width: 75px;">消息来源：</span><a href="javascript:void(0)"><span class="newusa_ici" scop="days2" onclick="selectDays2(0,null);">全部&nbsp;</span></a><a href="javascript:void(0)"><span class="newusa_ici_1" scop="days2" onclick="selectDays2(1,'1');">今天&nbsp;</span></a><a href="javascript:void(0)"><span class="newusa_ici_1" scop="days2" onclick="selectDays2(2,'2');">昨天&nbsp;</span></a><a href="javascript:void(0)"><span class="newusa_ici_1" scop="days2" onclick="selectDays2(3,'7');">7天以内&nbsp;</span></a><a href="javascript:void(0)"><span class="newusa_ici_1" scop="days2" onclick="selectDays2(4,'30');">30天以内&nbsp;</span></a>
+                                <span class="newusa_i" style="width: 75px;">时间：</span><a href="javascript:void(0)"><span class="newusa_ici" scop="days2" onclick="selectDays2(0,null);">全部&nbsp;</span></a><a href="javascript:void(0)"><span class="newusa_ici_1" scop="days2" onclick="selectDays2(1,'1');">今天&nbsp;</span></a><a href="javascript:void(0)"><span class="newusa_ici_1" scop="days2" onclick="selectDays2(2,'2');">昨天&nbsp;</span></a><a href="javascript:void(0)"><span class="newusa_ici_1" scop="days2" onclick="selectDays2(3,'7');">7天以内&nbsp;</span></a><a href="javascript:void(0)"><span class="newusa_ici_1" scop="days2" onclick="selectDays2(4,'30');">30天以内&nbsp;</span></a>
                                 <%--<span style="float: left;color: #5F93D7;">从</span><input class="form-controlsd " style="float: left;color: #5F93D7;width: 90px;height: 26px;border-color: #d0dde9" id="starttime2"  type="text" onfocus="WdatePicker({isShowWeek:true,dateFmt:'yyyy-MM-dd'})"/>
                                 <span style="float: left;color: #5F93D7;">到</span><input class="form-controlsd " style="float: left;color: #5F93D7;width: 90px;height: 26px;margin-right: 20px;border-color: #d0dde9" id="endtime2"  type="text" onfocus="WdatePicker({isShowWeek:true,dateFmt:'yyyy-MM-dd'})"/>--%>
                                 <a href="javascript:void(0)" onclick="addstartTimeAndEndTime(this,3)"><span scop="days2" onclick="selectDays2(5,null);" style="float: left;color: #5F93D7">自定义&nbsp;</span></a><span style="float: left" id="time3"></span>
@@ -675,8 +733,9 @@
 <span id="sleHid">
 <select id="typeQuery2" name="type" class="select">
     <option value=""  selected="selected">选择类型</option>
-    <option value="1">收件人</option>
-    <option value="2">内容</option>
+    <option value="1">发件人</option>
+    <option value="2">主题</option>
+    <option value="3">SKU</option>
 </select>
 </span>
 </span>

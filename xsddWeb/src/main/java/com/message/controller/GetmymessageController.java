@@ -189,16 +189,22 @@ public class GetmymessageController extends BaseAction{
     @ResponseBody
     public void markReaded(HttpServletRequest request) throws Exception {
         String ids1=request.getParameter("value");
+        String value=request.getParameter("value1");
         String[] ids=ids1.split(",");
         for(int i=0;i<ids.length;i++){
             Long id= Long.valueOf(ids[i]);
             TradingMessageGetmymessage message=iTradingMessageGetmymessage.selectMessageGetmymessageById(id);
             if(message!=null){
-                message.setRead("true");
+                message.setRead(value);
                 iTradingMessageGetmymessage.saveMessageGetmymessage(message);
             }
         }
-        AjaxSupport.sendSuccessText("", "已标记为已读");
+        if("true".equals(value)){
+            AjaxSupport.sendSuccessText("", "已标记为已读");
+        }else{
+            AjaxSupport.sendSuccessText("", "已标记为未读");
+        }
+
     }
     /**获取list数据的ajax方法*/
     @RequestMapping("/ajax/loadMessageGetmymessageList.do")
@@ -284,6 +290,10 @@ public class GetmymessageController extends BaseAction{
         String itemid=request.getParameter("itemid");
         String recipientid=request.getParameter("recipientid");
         String sender=request.getParameter("sender");
+        String transactionid=request.getParameter("transactionid");
+        if(!StringUtils.isNotBlank(transactionid)){
+            transactionid=null;
+        }
         List<TradingOrderAddMemberMessageAAQToPartner> addMessages=new ArrayList<TradingOrderAddMemberMessageAAQToPartner>();
         List<TradingMessageGetmymessage> messages1=new ArrayList<TradingMessageGetmymessage>();
         List<TradingMessageGetmymessage> messageList=iTradingMessageGetmymessage.selectMessageGetmymessageByItemIdAndSender(itemid,recipientid,sender);
@@ -322,8 +332,8 @@ public class GetmymessageController extends BaseAction{
             modelMap.put("message",messageList.get(0));
             modelMap.put("sender",messageList.get(0).getSender());
             modelMap.put("recipient",messageList.get(0).getRecipientuserid());
-            lists=iTradingOrderGetOrders.selectOrderGetOrdersByBuyerAndItemid(messageList.get(0).getItemid(),messageList.get(0).getSender());
         }
+        lists=iTradingOrderGetOrders.selectOrderGetOrdersByBuyerAndItemid(itemid,recipientid);
         if(lists!=null&&lists.size()>0){
             lists1=iTradingOrderGetOrders.selectOrderGetOrdersByTransactionId(lists.get(0).getTransactionid(),lists.get(0).getSelleruserid());
         }

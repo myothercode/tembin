@@ -40,7 +40,34 @@
     </select>
     <select id="selectMessageGetmymessageByGroupList" resultMap="BaseResultMap" parameterType="map">
         select MessageGetmymessage.*,item.sku sku,count(*) countNum from trading_message_getmymessage MessageGetmymessage
-        left join trading_order_get_item item on MessageGetmymessage.itemID=item.itemID where 1=1
+        left join trading_order_get_item item on MessageGetmymessage.itemID=item.itemID
+        <if test="amount!=null">
+         <!--   <if test="amount=='yes'">
+                left join (select trading_order_get_orders.itemID itemid1,trading_order_get_orders.buyerUserID buyer1,trading_order_get_orders.sellerUserID seller1
+                from trading_order_get_orders) order1 on MessageGetmymessage.itemID=order1.itemid1
+            </if>-->
+        <!--    <if test="amount=='no'">
+                left join (select trading_order_get_orders.itemID itemid1,trading_order_get_orders.buyerUserID buyer1,trading_order_get_orders.sellerUserID seller1
+                from trading_order_get_orders) order1 on MessageGetmymessage.itemID!=order1.itemid1
+            </if>-->
+        </if>
+        where 1=1
+        <if test="amount!=null">
+            <if test="amount=='yes'">
+               /* and MessageGetmymessage.sender=order1.buyer1 and MessageGetmymessage.recipientUserID=order1.seller1 and MessageGetmymessage.itemID=order1.itemid1*/
+                /*and MessageGetmymessage.itemID  in (select trading_order_get_orders.itemID from trading_order_get_orders)*/
+                and MessageGetmymessage.itemID in (select message.itemID from trading_message_getmymessage message
+                left join trading_order_get_item item1 on message.itemID=item1.itemID
+                left join trading_order_get_orders order3 on message.itemID=order3.itemID where message.sender=order3.buyerUserID
+                and message.recipientUserID=order3.sellerUserID and  message.itemID=order3.itemID)
+            </if>
+            <if test="amount=='no'">
+                and (MessageGetmymessage.itemID not in (select message.itemID from trading_message_getmymessage message
+                left join trading_order_get_item item1 on message.itemID=item1.itemID
+                left join trading_order_get_orders order3 on message.itemID=order3.itemID where message.sender=order3.buyerUserID
+                and message.recipientUserID=order3.sellerUserID and  message.itemID=order3.itemID) or MessageGetmymessage.itemID is null)
+            </if>
+        </if>
         <if test="id!=null">
             and MessageGetmymessage.id = #{id}
         </if>
@@ -69,7 +96,7 @@
                 and MessageGetmymessage.subject like "%"#{content}"%"
             </if>
             <if test="type==3">
-                and MessageGetmymessage.messageID like "%"#{content}"%"
+                and item.sku like "%"#{content}"%"
             </if>
         </if>
         <if test="ebays!=null">

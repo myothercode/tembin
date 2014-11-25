@@ -25,26 +25,35 @@ function getCategorySpecificsData(id,indiv,funName,attTable){
     if(localStorage.getItem("category_att_ID"+siteID+""+id)!=null){
         var json= eval("(" + localStorage.getItem("category_att_ID"+siteID+""+id) + ")");
         var jdata=json.result;
-        getAttMainMenu(jdata,indiv,funName,attTable);
+        if(jdata==null||jdata==""){
+            getSpec(id,indiv,funName,attTable);
+        }else{
+            getAttMainMenu(jdata,indiv,funName,attTable);
+        }
     }else{
-        var url=path+"/ajax/getCategorySpecifics.do";
-        var data={"parentCategoryID":id,"siteID":siteID};
-        $().invoke(
-            url,
-            data,
-            [
-                function(m,r){
-                    if(r==null || r==''){return;}
-                    localStorage.setItem("category_att_ID"+siteID+""+data.parentCategoryID,r);
-                    var json= eval("(" + localStorage.getItem("category_att_ID"+siteID+""+data.parentCategoryID) + ")");
-                    var jdata=json.result;
-                    getAttMainMenu(jdata,indiv,funName,attTable);
-                    //alert(localStorage.getItem("aaa").length);
-                },
-                function(m,r){alert(r)}
-            ]
-        );
+        getSpec(id,indiv,funName,attTable);
     }
+}
+
+function getSpec(id,indiv,funName,attTable){
+    var siteID=$(document.getElementsByName("site")).eq(0).val();
+    var url=path+"/ajax/getCategorySpecifics.do";
+    var data={"parentCategoryID":id,"siteID":siteID};
+    $().invoke(
+        url,
+        data,
+        [
+            function(m,r){
+                if(r==null || r==''){return;}
+                localStorage.setItem("category_att_ID"+siteID+""+data.parentCategoryID,r);
+                var json= eval("(" + localStorage.getItem("category_att_ID"+siteID+""+data.parentCategoryID) + ")");
+                var jdata=json.result;
+                getAttMainMenu(jdata,indiv,funName,attTable);
+                //alert(localStorage.getItem("aaa").length);
+            },
+            function(m,r){alert(r)}
+        ]
+    );
 }
 /**获取属性的种类列表*/
 function getAttMainMenu(json,indiv,funName,attTable){
@@ -99,17 +108,21 @@ function afterClickAttr(obj, parentid,attTable) {
     $('#'+attTable).append(tr);
     $(obj).hide();
     //try{
+
         $.parser.parse();
-    $('#'+attTable).find("span[class='combo']").hide();
-    $('#'+attTable).find("span[name='values']").show();
+        $('#'+attTable).find("span[class='combo']").hide();
+        $('#'+attTable).find("span[name='values']").show();
 
-    $('#'+attTable).find("input").each(function(i,d){
-        if($(d).hasClass("combo-text")){
-           $(d).removeAttr("onblur");
-            $(d).attr("onblur","onblurMulAttrInput(this)")
-        }
+        $('#'+attTable).find("input").each(function(i,d){
+            if($(d).hasClass("combo-text")){
+                $(d).removeAttr("onblur");
+                $(d).attr("onblur","onblurMulAttrInput(this)")
+            }
 
-    });
+        });
+
+
+
     //}catch (e){}
 }
 /**combox失去焦点的时候执行*/
@@ -595,9 +608,9 @@ function isShowPicLink(){
         showStr +=" <section class='example' ><ul class='gbin1-list' style='padding-left: 20px;' id='picture_"+$(d).val()+"'></ul></section> ";
         showStr +=" <script type=text/plain id='picUrls_"+$(d).val()+"'></script> ";
         showStr +=" <div style='padding-left: 120px;'>" +
-            "<b class='new_button'><a href='javascript:void(0)' id='apicUrls_"+$(d).val()+"' onclick='selectPic(this)'>选择图片</a></b>" +
-            "<b class='new_button'><a href='javascript:void(0)' id='apicUrlsSKU_" + $(d).val() + "' onclick='selectPic(this)' style=''>选择SKU图片</a></b>" +
-            "<b class='new_button'><a href='javascript:void(0)' id='apicUrlsOther_" + $(d).val() + "' onclick='selectPic(this)' style=''>选择外部图片</a></b>" +
+            "<b class='new_button'><a href='javascript:void(0)' bsid='upload' id='apicUrls_"+$(d).val()+"' onclick='selectPic(this)'>选择图片</a></b>" +
+            "<b class='new_button'><a href='javascript:void(0)' bsid='online' id='apicUrlsSKU_" + $(d).val() + "' onclick='selectPic(this)' style=''>选择SKU图片</a></b>" +
+            "<b class='new_button'><a href='javascript:void(0)' bsid='remote' id='apicUrlsOther_" + $(d).val() + "' onclick='selectPic(this)' style=''>选择外部图片</a></b>" +
             "<b class='new_button'><a href='javascript:void(0)' id='apicUrlsclear_" + $(d).val() + "' onclick='clearAllPic(this)' style=''>清空所选图片</a></b>" +
             "</div> </div> ";
         $("#showPics").append(showStr);

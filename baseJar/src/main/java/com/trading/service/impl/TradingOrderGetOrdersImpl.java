@@ -11,6 +11,7 @@ import com.base.userinfo.service.SystemUserManagerService;
 import com.base.utils.common.ObjectUtils;
 import com.base.utils.exception.Asserts;
 import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 import org.apache.poi.hssf.usermodel.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -20,6 +21,7 @@ import javax.servlet.ServletOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.*;
 
 /**
@@ -29,7 +31,7 @@ import java.util.*;
 @Service
 @Transactional(rollbackFor = Exception.class)
 public class TradingOrderGetOrdersImpl implements com.trading.service.ITradingOrderGetOrders {
-
+    static Logger logger1 = Logger.getLogger(TradingOrderGetOrdersImpl.class);
     @Autowired
     private TradingOrderGetOrdersMapper tradingOrderGetOrdersMapper;
 
@@ -109,7 +111,7 @@ public class TradingOrderGetOrdersImpl implements com.trading.service.ITradingOr
     }
 
     @Override
-    public void downloadOrders(List<TradingOrderGetOrders> list, String outputFile, ServletOutputStream outputStream) throws Exception {
+    public void downloadOrders(List<TradingOrderGetOrders> list, String outputFile, ServletOutputStream outputStream) throws IOException {
         // 创建新的Excel 工作簿
         HSSFWorkbook workbook = new HSSFWorkbook();
         // 在Excel 工作簿中建一工作表
@@ -204,12 +206,18 @@ public class TradingOrderGetOrdersImpl implements com.trading.service.ITradingOr
             path.delete();
         }
         // 新建一输出文件流
-        FileOutputStream fOut = new FileOutputStream(outputFile);
-        // 把相应的Excel 工作簿存盘
-        workbook.write(outputStream);
-        // 操作结束，关闭文件
-        outputStream.flush();
-        outputStream.close();
+        try {
+            FileOutputStream fOut = new FileOutputStream(outputFile);
+            // 把相应的Excel 工作簿存盘
+            workbook.write(outputStream);
+        } catch (Exception e) {
+           logger1.error("文件操作错误",e);
+        }finally {
+            // 操作结束，关闭文件
+            outputStream.flush();
+            outputStream.close();
+        }
+
     }
 
     @Override

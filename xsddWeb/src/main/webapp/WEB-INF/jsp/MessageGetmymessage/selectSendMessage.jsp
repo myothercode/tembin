@@ -24,7 +24,7 @@
                 columnData:[
                     {title:"",name:"pictureUrl",width:"2%",align:"left",format:makeOption3},
                     {title:"模板名称",name:"name",width:"8%",align:"left"},
-                    {title:"内容",name:"content",width:"8%",align:"left"},
+                    {title:"内容",name:"content",width:"8%",align:"left",format:makeOption4},
                     {title:"状态",name:"status",width:"8%",align:"left",format:makeOption2}
                 ],
                 selectDataNow:false,
@@ -47,6 +47,14 @@
             }else{
                 var htm = "<img src='"+path+"/img/new_no.png' />";
                 return htm;
+            }
+        }
+        function makeOption4(json){
+            if(json.content.length>42){
+                var content1=json.content.substring(0,42)+"..."
+                return content1;
+            }else{
+                return json.content;
             }
         }
         function closedialog(){

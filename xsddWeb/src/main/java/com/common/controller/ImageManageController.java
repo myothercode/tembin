@@ -103,5 +103,11 @@ public void getImageStream(@RequestParam("path") String path,HttpServletResponse
         }
     }
 
+    @RequestMapping("uploadBase64Img")
+    @ResponseBody
+    /**上传base64格式的图片*/
+    public void uploadBase64Img(String templateID,String imgStringbase64){
+
+    }
 
 }

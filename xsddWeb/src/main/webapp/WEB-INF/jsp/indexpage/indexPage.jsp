@@ -53,6 +53,8 @@
             background-color: #ffffff;
         }
     </style>
+
+
     <script type="text/javascript">
         function selectTime(index,date){
             var as1=$("span[name=time]");
@@ -101,48 +103,74 @@
 <div class="a_bal"></div>
 <div class=Contentbox>
 <div class="new_index" style="padding-left: 5px">
-    <a href="<c:url value ="/userCases/userCasesList.do"/>"><li style="background:#EE6E69;margin-right:2%;">
+    <a href="<c:url value ="/userCases/userCasesList.do"/>">
+        <li onmouseover="$(this).css('background','#EE6')" onmouseout="$(this).css('background','#EE6E69')"
+            style="background:#EE6E69;margin-right:2%;">
         <span>CASE<%--订单代办事项--%></span>
         未处理的( ${caseMessages} )<%--分配失败 ( 3 )--%>
     </li></a>
     <a href="<c:url value ="/message/MessageGetmymessageList.do"/>">
-    <li style="background:#48BCFF;margin-right:2%;">
+    <li onmouseover="$(this).css('background','#EE6')" onmouseout="$(this).css('background','#48BCFF')"
+        style="background:#48BCFF;margin-right:2%;">
         <span>EBAY消息<%--订单代办事项--%></span>
         未处理的( ${ebayMessages} )<%--分配失败 ( 3 )--%>
     </li></a>
-    <li style="background:#6ABF0E">
+    <li onmouseover="$(this).css('background','#EE6')" onmouseout="$(this).css('background','#6ABF0E')"
+        style="background:#6ABF0E">
         <span>订单代办事项</span>
         分配失败 ( 3 )
     </li>
 </div>
 <div class="a_bal"></div>
 <div class="new_index_2">
-    <ul <%--class="pbd"--%> style="margin-right:2%">
-        <h1><img src="img/ebay_index.png" width="40" height="17"> 账户</h1>
-        <div style="width: 100%" id="ebay_indexdiv"></div>
-    </ul>
+    <table style="width: 100%">
+        <tr>
+            <td width="49%" style="vertical-align: top;">
+                <ul <%--class="pbd"--%> style="width: 100%">
+                <h1><img src="img/ebay_index.png" width="40" height="17"> 账户</h1>
+                <div style="width: 100%" id="ebay_indexdiv"></div>
+                </ul>
+            </td>
+            <td width="2%"></td>
+            <td width="49%" style="vertical-align: top;">
+                <ul style="width: 100%">
+                    <h1>Paypal </h1>
+                    <div id="indexPayPal"></div>
+                </ul>
+            </td>
+        </tr>
+        <tr>
+            <td style="vertical-align: top;">
+                <ul style="width: 100%">
+                    <h1>刊登</h1>
+                    <div id="itemReportTable"></div>
+
+                </ul>
+            </td>
+            <td></td>
+            <td style="vertical-align: top;">
+                <ul style="width: 100%">
+                <h1>信用评价</h1>
+                <div id="feedBackReportTable"></div>
+            </ul>
+            </td>
+        </tr>
+    </table>
 
 
-<ul>
-    <h1>Paypal <%--<div class="ui-select" style="width:110px; margin-top:-5px; line-height:14px;">
-        &lt;%&ndash;<select>
-            <option value="AK">所有帐户</option>
-            <option value="AK">所有帐户</option>
-        </select>&ndash;%&gt;
-    </div>--%></h1>
-    <div id="indexPayPal"></div>
 
-</ul>
 
-<ul <%--class="pbd"--%> style="margin-right:2%">
+
+
+<%--<ul &lt;%&ndash;class="pbd"&ndash;%&gt; style="margin-right:2%">
     <h1>刊登</h1>
     <div id="itemReportTable"></div>
 
-</ul>
-    <ul >
+</ul>--%>
+    <%--<ul >
         <h1>信用评价</h1>
         <div id="feedBackReportTable"></div>
-    </ul>
+    </ul>--%>
 <h1>单量走势</h1>
 <div class="a_bal"></div>
     <input type="hidden" id="time"/>

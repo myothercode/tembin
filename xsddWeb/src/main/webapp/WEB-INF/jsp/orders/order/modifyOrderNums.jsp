@@ -44,37 +44,36 @@
     <form id="modifyOrderStatus" class="form-horizontal" role="form">
         <table width="100%" border="0" style="margin-left:20px;">
             <tbody><tr>
-                <td width="16%" height="28" align="center">Transactionid</td>
-                <td width="16%" height="28" align="center">Itemid</td>
-                <td width="16%" height="28" align="center">
-                    追踪号
-                <%--<div class="newselect" style="margin-top:9px;">
-                    <input name="transactionid" value="${order.transactionid}" class="form-controlsd" type="text">--%>
-                </div></td>
-                <td width="16%" height="28" align="center">货运商</td>
+                <td width="16%" height="28" align="center"><strong>买家账号</strong></td>
+                <td width="16%" height="28" align="center"><strong>交易号</strong></td>
+                <td width="16%" height="28" align="center"><strong>货运商</strong></td>
+                <td width="16%" height="28" align="center"><strong>追踪号</strong></td>
             </tr>
             <c:forEach items="${orders}" var="order" begin="0" varStatus="status">
                 <tr>
-                    <td height="28" align="left">
+                    <td height="28" align="center">
+                        <div class="newselect" style="margin-top:9px;width: auto;">
+                                ${order.buyeruserid}
+                        </div>
+                    </td>
+                    <td height="28" align="center">
+
                         <div class="newselect" style="margin-top:9px;width: auto;">
                             <input type="hidden" name="selleruserid${status.index}" value="${order.selleruserid}"/>
                             <input type="hidden" name="shippStatus${status.index}" value="true">
-                        <input style="width: auto" name="transactionid${status.index}" value="${order.transactionid}" class="form-controlsd" type="text">
+                            <input style="width: auto" name="itemid${status.index}" value="${order.itemid}" class="form-controlsd" type="hidden">
+                            <input style="width: auto"  name="transactionid${status.index}" value="${order.transactionid}" class="form-controlsd" type="hidden">
+                                ${order.transactionid}
                         </div>
                     </td>
-                    <td height="28" align="left">
-                        <div class="newselect" style="margin-top:9px;width: auto;">
-                            <input style="width: auto" name="itemid${status.index}" value="${order.itemid}" class="form-controlsd" type="text">
-                        </div>
-                    </td>
-                    <td height="28" align="left">
-                        <div class="newselect" style="margin-top:9px;width: auto;">
-                            <input style="width: auto" name="ShipmentTrackingNumber${status.index}" id="ShipmentTrackingNumber${status.index}" class="form-controlsd" type="text">
-                        </div>
-                    </td>
-                    <td height="28" align="left">
+                    <td height="28" align="center">
                         <div class="newselect" style="margin-top:9px;width: auto;">
                             <input style="width: auto" name="ShippingCarrierUsed${status.index}" id="ShippingCarrierUsed${status.index}" class="form-controlsd" type="text">
+                        </div>
+                    </td>
+                    <td height="28" align="center">
+                        <div class="newselect" style="margin-top:9px;width: auto;">
+                            <input style="width: auto" name="ShipmentTrackingNumber${status.index}" id="ShipmentTrackingNumber${status.index}" class="form-controlsd" type="text">
                         </div>
                     </td>
                 </tr>

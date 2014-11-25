@@ -53,7 +53,7 @@
                                     coutryid+=r[i]+",";
                                 }
                             }
-                            selectAmounts.innerHTML=ebayName;
+                            selectAmounts.innerHTML="<font style=\"color: #0000ff\">"+ebayName+"</font>";
                             $(amounts).val(coutryid);
                             W.selectCountry1.close();
                             Base.token();

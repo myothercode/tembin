@@ -29,11 +29,18 @@
         }
 
         var img = editor.selection.getRange().getClosedNode();
-        if (img && img.tagName && img.tagName.toLowerCase() == 'img') {
-            setTabFocus('remote');
-        } else {
-            setTabFocus('upload');
+
+        if(parent!=null && typeof parent.bsid_temp !='undefined' && parent.bsid_temp != null){
+            setTabFocus(parent.bsid_temp);
+        }else{
+            if (img && img.tagName && img.tagName.toLowerCase() == 'img') {
+                setTabFocus('remote');
+            } else {
+                setTabFocus('upload');
+            }
         }
+
+
     }
 
     /* 初始化tabbody */

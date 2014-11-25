@@ -334,6 +334,12 @@ function clearThisText(obj) {
             $(obj).validationEngine();
             return;
         }else{
+            /*if($(obj).prop("name")=="StartPrice.value"){
+                var vl = $(obj).val();
+                alert(":::::::::::"+vl);
+                $(obj).val(vl.toFixed(2));
+                $(obj).parent().find("span").text(vl.toFixed(2));
+            }*/
             $(obj).prop("type", "hidden");
             $(obj).parent().find("span").show();
         }
@@ -431,10 +437,32 @@ function changeRadio(th) {
 }
 //点击添回SKU输入项
 function addInputSKU(obj) {
-    var len = $(obj).parent().parent().parent().find("table").find("tr").find("td").length / $(obj).parent().parent().parent().find("table").find("tr").length - 5;
-    $(obj).parent().parent().parent().parent().find("table").append(addTr(len));
+    /*var len = $(obj).parent().parent().parent().find("table").find("tr").find("td").length / $(obj).parent().parent().parent().find("table").find("tr").length - 5;
+    $(obj).parent().parent().parent().parent().find("table").append(addTr(len));*/
+    var len =$("#moreAttrs tr:eq(0) th").length - 5;
+    $("#moreAttrs").append(addTr(len));
     $("#moreAttrs").tableDnD({dragHandle: ".dragHandle"});
     changeBackcolour();
+    loadSelectValue();
+}
+
+function loadSelectValue(){
+    $("#moreAttrs tr:eq(0) th").find("select").each(function(i,d){
+        var val=$(d).parent().parent().find("[name='attr_Name']").val();
+        if(val!=""){
+            $("#moreAttrs").find("select[name='selAttValue_sel']").each(function(ii,dd){
+                if($(d.parentNode.parentNode)[0].cellIndex==$(dd.parentNode.parentNode)[0].cellIndex){
+                    $(dd).html("");
+                    var optionData = queryData(val, $("#PrimaryCategory").val());
+                    var optionstr= "";
+                    for (var j in optionData) {
+                        optionstr += "<option value=\"" + optionData[j]['itemEnName'] + "\">" + optionData[j]['itemEnName'] + "</option>";
+                    }
+                    $(dd).html(optionstr);
+                }
+            });
+        }
+    });
 }
 function changeBackcolour(){
     $("#moreAttrs tr").hover(function() {
@@ -442,6 +470,14 @@ function changeBackcolour(){
     }, function() {
         $(this.cells[0]).removeClass('showDragHandle');
     });
+}
+function selectAttrMorValue(obj){
+    $(obj).parent().parent().find("span").text($(obj).val());
+    $(obj).parent().parent().find("span").show();
+    $(obj).parent().parent().find("[type='hidden']").val($(obj).val());
+    $(obj).parent().parent().find("[type='text']").val($(obj).val());
+    $(obj).parent().parent().find("[type='text']").attr("type","hidden");
+    addb(obj);
 }
 //添加一行数据，用于填写
 function addTr(len) {
@@ -452,36 +488,133 @@ function addTr(len) {
     str += "<td><span style='display:none;color: dodgerblue;' onclick='showMoreAttrsText(this)'></span><input type='text' name='Quantity'  onblur='clearThisText(this);' onkeyup='getJoinValue(this)' size='8' class='validate[required,custom[integer]] form-control'></td>";
     str += "<td><span style='display:none;color: dodgerblue;' onclick='showMoreAttrsText(this)'></span><input type='text' name='StartPrice.value'  onblur='clearThisText(this);' onkeyup='getJoinValue(this)'  size='8' class='validate[required,custom[number]] form-control'></td>";
     for (var i = 0; i < len; i++) {
-        str += "<td><span style='display:none;color: dodgerblue;' onclick='showMoreAttrsText(this)'></span><input type='text' name='attr_Value' onkeyup='getJoinValue(this)' class='validate[required] form-control' onblur='addb(this)' size='10' ></td>";
+        str += "<td><span style='display:none;color: dodgerblue;' onclick='showMoreAttrsText(this)'></span>" +
+            "<input type='text' name='attr_Value' onkeyup='getJoinValue(this)' class='validate[required] form-control' onblur='addb(this)' size='10' >" +
+            "&nbsp;<div style='display:inline; height: 18px; overflow:hidden;background-image:url("+path+"/img/arrow.gif);width: 10px;'><select size='1' style='width: 18px;position: relative;' name='selAttValue_sel' onchange='selectAttrMorValue(this)'></select></div>"+
+            "</td>";
     }
     str += "<td name='del'><img src='"+path+"/img/del.png' onclick='removeCloums(this)'></td>";
     str += "</tr>";
     return str;
 }
+
+var attrValueName="";
+function getSelfAttr(id){
+    var siteID=$(document.getElementsByName("site")).eq(0).val();
+    if(localStorage.getItem("category_att_ID"+siteID+""+id)!=null){
+        var json= eval("(" + localStorage.getItem("category_att_ID"+siteID+""+id) + ")");
+        var jdata=json.result;
+        returnSelectStr(jdata);
+    }else{
+        getRequestJson(siteID,id);
+    }
+    $("#moreAttrs tr:eq(0) th").each(function(i,d){
+        if($(d).find("div").html()!=undefined){
+            $(d).find("div").find("select").remove();
+            $(d).find("div").html(attrValueName);
+            if(attrValueName==""){
+                $("#moreAttrs").find("select[name='selAttValue_sel']").each(function(i,d){
+                    $(d).html("");
+                    $(d).hide();
+                });
+            }else{
+                $("#moreAttrs").find("select[name='selAttValue_sel']").each(function(i,d){
+                    $(d).show();
+                });
+            }
+        }
+    });
+}
+
+function returnSelectStr(jdata){
+    if((jdata==null || jdata.length==0)||jdata[0]['itemEnName']=='noval'){
+        attrValueName="";
+        return;
+    }
+    var m=new Array();
+    for(var i in jdata){
+        var m1=jdata[i]['itemId'];
+        m.push(m1);
+    }
+    var finalm=arrDistinct(m);
+    attrValueName="<select size='1' style='width: 18px;position: relative;' onchange='selectAttrValue(this)'>";
+    attrValueName+="<option value=''>--选择--</option>";
+        for(var i=0;i<finalm.length;i++){
+            attrValueName+="<option value='"+finalm[i]+"'>"+finalm[i]+"</option>";
+        }
+    attrValueName+="</select>";
+}
+function getRequestJson(siteID,id){
+    var url=path+"/ajax/getCategorySpecifics.do";
+    var data={"parentCategoryID":id,"siteID":siteID};
+    $().invoke(
+        url,
+        data,
+        [
+            function(m,r){
+                if(r==null || r==''){return;}
+                localStorage.setItem("category_att_ID"+siteID+""+data.parentCategoryID,r);
+                var json= eval("(" + localStorage.getItem("category_att_ID"+siteID+""+data.parentCategoryID) + ")");
+                var jdata=json.result;
+                returnSelectStr(jdata);
+                //alert(localStorage.getItem("aaa").length);
+            },
+            function(m,r){alert(r)}
+        ]
+    );
+}
+function selectAttrValue(obj){
+    $(obj).parent().parent().find("[name='attr_Name']").val($(obj).val());
+    $(obj).parent().parent().find("[name='attr_Name']").attr("type","hidden");
+    $(obj).parent().parent().find("span").text($(obj).val());
+    $(obj).parent().parent().find("span").show();
+    if($(obj).val()!=null||$(obj).val()!=""){//当用户选属性时，给下面选择付值
+        $("select[name='selAttValue_sel']").each(function(i,d){
+            if($(obj.parentNode.parentNode)[0].cellIndex==$(d.parentNode.parentNode)[0].cellIndex){
+                $(d).html("");
+                var optionData = queryData($(obj).val(), $("#PrimaryCategory").val());
+                var optionstr= "";
+                for (var i in optionData) {
+                    optionstr += "<option value=\"" + optionData[i]['itemEnName'] + "\">" + optionData[i]['itemEnName'] + "</option>";
+                }
+                $(d).html(optionstr);
+            }
+        });
+    }
+}
 //添加属性列
 function addMoreAttr(obj) {
-    $(obj).parent().parent().parent().find("table").find("tr").each(function (i, d) {
-        $(d).find("td").each(function (ii, dd) {
+    $("#moreAttrs").find("tr").each(function (i, d) {
+        /*$(obj).parent().parent().parent().find("table").find("tr").each(function (i, d) {*/
+        $(d).find("th,td").each(function (ii, dd) {
             if ($(dd).attr("name") == "del") {
                 if (i == 0) {
-                    $(dd).before("<td width='10%'><span style='display:none;color: dodgerblue;' onclick='showMoreAttrsText(this)'></span>" +
+                    $(dd).before("<th width='100px'><span style='display:none;color: dodgerblue;' onclick='showMoreAttrsText(this)'></span>" +
                         "<input type='text' size='8' onkeyup='getJoinValue(this)' class='validate[required] form-control'" +
-                        " name='attr_Name' onblur='addc(this)'>&nbsp;&nbsp;<img src='"+path+"/img/del.png' onclick='removeCols(this)'></td>");
+                        " name='attr_Name' onblur='addc(this)'>&nbsp;<div style='display:inline-block;vertical-align: middle;background-image:url("+path+"/img/arrow.gif);width: 20px;'>"
+                        +attrValueName+"</div><img src='"+path+"/img/del.png' onclick='removeCols(this)'></td>");
                 } else {
-                    $(dd).before("<td width='10%'><span style='display:none;color: dodgerblue;' onclick='showMoreAttrsText(this)'></span>" +
+                    $(dd).before("<td width='100px'><span style='display:none;color: dodgerblue;' onclick='showMoreAttrsText(this)'></span>" +
                         "<input type='text' size='10' name='attr_Value' onblur='addb(this)' " +
-                        " onkeyup='getJoinValue(this)' class='validate[required] form-control'></td>");
+                        " onkeyup='getJoinValue(this)' class='validate[required] form-control'>" +
+                        "&nbsp;<div style='display:inline; height: 18px; overflow:hidden;background-image:url("+path+"/img/arrow.gif);width: 10px;'><select size='1' style='width: 18px;position: relative;' name='selAttValue_sel' onchange='selectAttrMorValue(this)'></select></div>"+
+                        "</td>");
                 }
             }
         });
     });
     // $("#moreAttrs").tableDnD({dragHandle: ".dragHandle"});
 }
+function showAttrDiv(obj){
+    var x = obj.x
+    var y = obj.y;
+    $(obj).parent().find("div").show();
+}
 //删除多属性中的SKU输入项
 function removeCloums(obj) {
     $(obj).parent().parent().remove();
     var attrValue = new Map();
-    $("#moreAttrs tr td:nth-child(5)").each(function (i, d) {
+    $("#moreAttrs tr th:nth-child(5)").each(function (i, d) {
         if ($(d).find("input[name='attr_Value']").val() != undefined && $(d).find("input[name='attr_Value']").val() != "") {
             attrValue.put($(d).find("input[name='attr_Value']").val(), $(d).find("input[name='attr_Value']").val());
         }
@@ -508,8 +641,14 @@ function removeCloums(obj) {
 }
 //移除属性值
 function removeCols(obj) {
-    $("#moreAttrs tr th:eq(" + ($(obj.parentNode)[0].cellIndex + 1) + ")").remove();
+   /* alert($("#moreAttrs tr th:eq(" + ($(obj.parentNode)[0].cellIndex) + ")").html());
+    $("#moreAttrs tr th:eq(" + ($(obj.parentNode)[0].cellIndex) + ")").remove();
+    alert($("#moreAttrs tr td:nth-child(" + ($(obj.parentNode)[0].cellIndex + 1) + ")"));*/
     $("#moreAttrs tr td:nth-child(" + ($(obj.parentNode)[0].cellIndex + 1) + ")").remove();
+    $("#moreAttrs tr th:eq(" + ($(obj.parentNode)[0].cellIndex) + ")").remove();
+
+
+
 
     var attrValue = new Map();
     $("#moreAttrs tr td:nth-child(5)").each(function (i, d) {
@@ -561,11 +700,12 @@ function addc(obj) {
 }
 //当输入属性值时调用的方法
 function addb(obj) {
-    if(attrName==""||attrName==null){
+    /*if(attrName==""||attrName==null||attrName.size()==0){
         attrName = $("#moreAttrs  tr:eq(0) td:eq(4)").find("[type='hidden'][name='attr_Name']").val();
-    }
+    }*/
+    attrName = $("#moreAttrs  tr:eq(0) th:eq(4)").find("[type='hidden'][name='attr_Name']").val();
     var attrValue = new Map();
-    if ($(obj.parentNode)[0].cellIndex == 4) {
+    if ($(obj.parentNode)[0].cellIndex == 4||(obj.tagName=="SELECT"&&$(obj.parentNode.parentNode)[0].cellIndex)) {
         $("#moreAttrs tr td:nth-child(5)").each(function (i, d) {
             if ($(d).find("input[name='attr_Value']").val() != undefined && $(d).find("input[name='attr_Value']").val() != "") {
                 attrValue.put($(d).find("input[name='attr_Value']").val(), $(d).find("input[name='attr_Value']").val());
@@ -586,7 +726,8 @@ function addb(obj) {
             $("#picMore").append(addPic(attrName, attrValue.get(attrValue.keys[i])));
             var m = dicMap.get(attrValue.get(attrValue.keys[i]));
             for (var j = 0; j < m.keys.length; j++) {
-                $('#' + attrValue.get(attrValue.keys[i])).before("<input type='hidden' name='" + attrValue.get(attrValue.keys[i]) + "' value='" + m.get(j) + "'><img src='" + m.get(j) + "' height='50' width='50' />");
+                $('#picturemore_' + attrValue.get(attrValue.keys[i])).append("<li><div style='position:relative'><input type='hidden' name='pic_mackid_more'/><input type='hidden' name='" + attrValue.get(attrValue.keys[i]) + "' value='" + m.get(j) + "'><img src='" + m.get(j) + "' height='80' width='78' /><div style='text-align: right;background-color: dimgrey;'><img src='"+path+"/img/newpic_ico.png' onclick='removeThis(this)'></div></div></li>");
+                //$('#' + attrValue.get(attrValue.keys[i])).before("<input type='hidden' name='" + attrValue.get(attrValue.keys[i]) + "' value='" + m.get(j) + "'><img src='" + m.get(j) + "' height='50' width='50' />");
             }
             $().image_editor.init(attrName+"."+attrValue.get(attrValue.keys[i])); //编辑器的实例id
             $().image_editor.show(attrValue.get(attrValue.keys[i])); //上传图片的按钮id
@@ -605,8 +746,10 @@ function addPic(attrName, attrValue) {
 
 var afterUploadCallback = null;
 var sss;
+var bsid_temp=null;
 //当选择图片后生成图片地址
 function selectPic(a) {
+    bsid_temp=null;
     //$().image_editor.show("apicUrls_" + ebayAccount); //上传图片的按钮id
     if(($("#showPics").find("img").length+$("#picMore").find("img").length/2)>8){
         setTimeout(function(){closeSelectPicWindow()},200) ;
@@ -614,6 +757,7 @@ function selectPic(a) {
         return;
     }
     sss = a.id;
+    bsid_temp = $(a).attr("bsid");
     afterUploadCallback = {"imgURLS": addPictrueUrl};
 }
 /**关闭打开的图片选择框*/
@@ -755,6 +899,7 @@ function addTypeAttr() {
         return;
     }
     var values = $("#PrimaryCategory").val();
+    getSelfAttr(values);
     getCategorySpecificsData(values, "typeAttrs", "afterClickAttr", "attTable");
     var site = $("select[name='site']").find("option:selected").val();
     getCategoryName(values,site);

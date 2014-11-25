@@ -1,6 +1,7 @@
 package com.base.utils.common;
 
 import com.google.common.collect.Lists;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.log4j.Logger;
@@ -20,6 +21,7 @@ import java.util.Set;
  *
  * @author flym
  */
+@SuppressFBWarnings({"SE_BAD_FIELD"})
 public class AppcenterClassFinder implements Serializable {
     static Logger logger = Logger.getLogger(AppcenterClassFinder.class);
 	private static final String defaultPackageName = "com.base.utils.scheduleabout";

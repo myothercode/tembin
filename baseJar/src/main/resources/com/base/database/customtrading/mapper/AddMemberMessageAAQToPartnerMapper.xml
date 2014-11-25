@@ -29,7 +29,22 @@
         <if test="id!=null">
             and AddMemberMessageAAQToPartner.id = #{id}
         </if>
-
+        <if test="amount!=null">
+            <if test="amount=='yes'">
+                /* and MessageGetmymessage.sender=order1.buyer1 and MessageGetmymessage.recipientUserID=order1.seller1 and MessageGetmymessage.itemID=order1.itemid1*/
+                /*and MessageGetmymessage.itemID  in (select trading_order_get_orders.itemID from trading_order_get_orders)*/
+                and AddMemberMessageAAQToPartner.itemid in (select Partner.itemid from trading_order_addmembermessageaaqtopartner Partner
+                left join trading_order_get_item item1 on Partner.itemid=item1.itemID
+                left join trading_order_get_orders order3 on Partner.itemid=order3.itemID where Partner.recipientID=order3.buyerUserID
+                and Partner.sender=order3.sellerUserID and  Partner.itemid=order3.itemID)
+            </if>
+            <if test="amount=='no'">
+                and (AddMemberMessageAAQToPartner.itemid not in (select Partner.itemid from trading_order_addmembermessageaaqtopartner Partner
+                left join trading_order_get_item item1 on Partner.itemid=item1.itemID
+                left join trading_order_get_orders order3 on Partner.itemid=order3.itemID where Partner.recipientID=order3.buyerUserID
+                and Partner.sender=order3.sellerUserID and  Partner.itemid=order3.itemID) or AddMemberMessageAAQToPartner.itemid is null)
+            </if>
+        </if>
         <if test="starttime!=null">
             and AddMemberMessageAAQToPartner.create_time >= #{starttime}
         </if>
@@ -44,10 +59,13 @@
         </if>
         <if test="type!=null">
             <if test="type==1">
-                and AddMemberMessageAAQToPartner.recipientID like "%"#{content}"%"
+                and AddMemberMessageAAQToPartner.sender like "%"#{content}"%"
             </if>
             <if test="type==2">
-                and AddMemberMessageAAQToPartner.body like "%"#{content}"%"
+                and AddMemberMessageAAQToPartner.subject like "%"#{content}"%"
+            </if>
+            <if test="type==3">
+                and item.sku like "%"#{content}"%"
             </if>
         </if>
         <if test="ebays!=null">

@@ -87,7 +87,7 @@
                                 coutryid+=r[i]+",";
                             }
                         }
-                        selectShippingServices.innerHTML="国内运输方式:"+name+";国际运输方式:"+name1;
+                        selectShippingServices.innerHTML="<font style=\"color: #0000ff\">国内运输方式:"+name+";国际运输方式:"+name1+"</font>";
                         $(service12).val(coutryid);
                         W.selectCountry1.close();
                         Base.token();
