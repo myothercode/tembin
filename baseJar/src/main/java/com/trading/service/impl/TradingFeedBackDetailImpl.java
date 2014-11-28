@@ -4,7 +4,9 @@ import com.base.database.customtrading.mapper.FeedBackReportMapper;
 import com.base.database.trading.mapper.TradingFeedBackDetailMapper;
 import com.base.database.trading.model.TradingFeedBackDetail;
 import com.base.database.trading.model.TradingFeedBackDetailExample;
+import com.base.domains.SessionVO;
 import com.base.domains.querypojos.FeedBackReportQuery;
+import com.base.utils.cache.SessionCacheSupport;
 import com.base.utils.common.DateUtils;
 import com.base.utils.common.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -87,6 +89,7 @@ public class TradingFeedBackDetailImpl implements com.trading.service.ITradingFe
 
     @Override
     public List<FeedBackReportQuery> selectFeedBackReportList(String type){
+        SessionVO c= SessionCacheSupport.getSessionVO();
         SimpleDateFormat sdfmonth = new SimpleDateFormat("yyyy-MM");
         Map m = new HashMap();
         m.put("datetype",type);
@@ -111,6 +114,7 @@ public class TradingFeedBackDetailImpl implements com.trading.service.ITradingFe
             date.set(Calendar.MONTH, date.get(Calendar.MONTH) - 1);
             m.put("datestr", sdfmonth.format(date.getTime()));
         }
+        m.put("userid",c.getId());
         return this.feedBackReportMapper.selectFeedBackReportList(m);
     }
 }

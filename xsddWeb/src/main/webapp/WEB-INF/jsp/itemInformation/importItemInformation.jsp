@@ -11,7 +11,11 @@
 <html>
 <head>
     <title></title>
-
+    <style type="text/css">
+        body {
+            background-color: #ffffff;
+        }
+    </style>
     <script type="text/javascript">
         var api = frameElement.api, W = api.opener;
         function upload(obj)
@@ -29,8 +33,7 @@
         $(document).ready(function(){
             var flag=document.getElementById("flag");
             if("true"==$(flag).val()){
-                alert("上传成功");
-                W.refreshTable();
+                alert("上传成功,请刷新界面");
                 W.itemInformation.close();
             }
         });
@@ -52,18 +55,16 @@
         <table width="100%" border="0" style="margin-left:40px;">
             <tbody>
             <tr>
-                <td width="15%"  align="right"></td>
-                <td width="60%" ><a href="<c:url value ="/upload/upload.xls"/> "><font color="blue">请先下载excel模板</font></a>
+                <td  ><strong>请下载提供的商品导入模板,填写好后上传&nbsp;&nbsp;</strong><a href="<c:url value ="/upload/upload1.xls"/> "><font color="blue">商品导入格式-普通商品.xls 下载</font></a>
                     </td>
-                <td width="25%" ></td>
             </tr>
             <tr>
-                <td width="15%"  align="right"></td>
-                <td width="60%" >
+
+                <td align="right">
                     <input id="a1" type="file" name="file" style="display:none"/>
                     <input type=button value="导入excel" class="net_put_2" onclick=a1.click()>
                     <input type="submit" class="net_put" value="导入" onclick="upload(this.form)"></td>
-                <td width="25%" ></td>
+
             </tr>
            <%-- <tr>
                 <td height="28" align="right">&nbsp;</td>

@@ -9,4 +9,6 @@ public interface ITradingTimerListing {
     void saveTradingTimer(TradingTimerListingWithBLOBs tradingTimerListing) throws Exception;
 
     void delTradingTimer(String itemid);
+
+    TradingTimerListingWithBLOBs selectByItem(String itemId);
 }

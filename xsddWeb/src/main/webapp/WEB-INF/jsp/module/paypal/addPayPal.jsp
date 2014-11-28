@@ -45,6 +45,7 @@
                 $("textarea").attr("disabled",true);
                 $("button").hide();
             }
+            $("select").selectBoxIt({});
         });
         function winClose(){
             W.payPal.close();
@@ -55,6 +56,8 @@
             background-color: #ffffff;
         }
     </style>
+    <link href=
+          <c:url value="/css/basecss/conter.css"/> type="text/css" rel="stylesheet"/>
 </head>
 <c:set value="${paypal}" var="paypal" />
 <body>
@@ -67,8 +70,8 @@
             <tr>
                 <td width="20%" height="28" align="right">名称：</td>
                 <td width="41%" height="28">
-                    <div class="newselect" style="margin-top:9px;">
-                        <input type="text" name="name" id="name" value="${paypal.payName}"  placeholder="" class="form-controlsd validate[required]">
+                    <div class="newselect">
+                        <input type="text" name="name" id="name" value="${paypal.payName}"  placeholder="" class="form-control validate[required]">
                         <input type="hidden" name="id" id="id" value="${paypal.id}">
                     </div>
                 </td>
@@ -76,48 +79,40 @@
             </tr>
             <tr>
                 <td height="28" align="right">站点：</td>
-                <td height="28" style=" padding-left:4px;">
-                    <div class="col-lg-10">
-                        <div class="ui-select" style="margin-top:9px;">
-                            <select name="site" width="300px;">
-                                <c:forEach items="${siteList}" var="sites">
-                                    <c:if test="${paypal.site==sites.id}">
-                                        <option value="${sites.id}" selected="selected">${sites.name}</option>
-                                    </c:if>
-                                    <c:if test="${paypal.site!=sites.id}">
-                                        <option value="${sites.id}">${sites.name}</option>
-                                    </c:if>
-                                </c:forEach>
-                            </select>
-                        </div>
-                    </div>
+                <td height="28">
+                    <select name="site" width="300px;">
+                        <c:forEach items="${siteList}" var="sites">
+                            <c:if test="${paypal.site==sites.id}">
+                                <option value="${sites.id}" selected="selected">${sites.name}</option>
+                            </c:if>
+                            <c:if test="${paypal.site!=sites.id}">
+                                <option value="${sites.id}">${sites.name}</option>
+                            </c:if>
+                        </c:forEach>
+                    </select>
                 </td>
                 <td height="28">&nbsp;</td>
             </tr>
             <tr>
                 <td height="28" align="right">帐号：</td>
-                <td height="28" style=" padding-left:4px;">
-                    <div class="col-lg-10">
-                        <div class="ui-select" style="margin-top:9px;">
-                            <select name="paypal" width="300px;">
-                                <c:forEach items="${paypalList}" var="pay">
-                                    <c:if test="${paypal.paypal==pay.id}">
-                                        <option value="${pay.id}" selected="selected">${pay.paypalAccount}</option>
-                                    </c:if>
-                                    <c:if test="${paypal.paypal!=pay.id}">
-                                        <option value="${pay.id}">${pay.paypalAccount}</option>
-                                    </c:if>
-                                </c:forEach>
-                            </select>
-                        </div>
-                    </div>
+                <td height="28">
+                    <select name="paypal" width="300px;">
+                        <c:forEach items="${paypalList}" var="pay">
+                            <c:if test="${paypal.paypal==pay.id}">
+                                <option value="${pay.id}" selected="selected">${pay.paypalAccount}</option>
+                            </c:if>
+                            <c:if test="${paypal.paypal!=pay.id}">
+                                <option value="${pay.id}">${pay.paypalAccount}</option>
+                            </c:if>
+                        </c:forEach>
+                    </select>
                 </td>
                 <td height="28">&nbsp;</td>
             </tr>
             <tr>
                 <td width="16%" height="28" align="right">说明：</td>
                 <td width="41%" height="28">
-                    <div class="col-lg-10" style="margin-top:9px;">
+                    <div class="col-lg-10">
                         <textarea name="paypal_desc"  class="form-control" cols="" rows="2" style="width:560px;">${paypal.paymentinstructions}</textarea>
                     </div>
                 </td>

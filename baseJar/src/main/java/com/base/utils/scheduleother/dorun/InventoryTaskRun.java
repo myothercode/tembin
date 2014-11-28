@@ -11,7 +11,7 @@ import org.apache.log4j.Logger;
 
 /**
  * Created by Administrtor on 2014/8/29.
- * 定时刊登任务
+ * 获取库存数据
  */
 public class InventoryTaskRun implements ScheduleOtherBase {
     static Logger logger = Logger.getLogger(InventoryTaskRun.class);

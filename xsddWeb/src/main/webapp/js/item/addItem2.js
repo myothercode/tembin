@@ -6,10 +6,10 @@
 
 /**如果是编辑页面初始化几个模块选项*/
 function initModel(){
+    loadPayOption();
     loadDataBuyer();
     loadDiscountPriceInfo();
     loadItemLocation();
-    loadPayOption();
     loadReturnpolicy();
     loadShippingDeails();
     loaddescriptiondetails();
@@ -177,6 +177,7 @@ function loadPayOption(){
     });
     refreshTablepaypal();
     loadPayOptionV=true;
+
 }
 
 //退货选项
@@ -334,12 +335,11 @@ function clearThisText(obj) {
             $(obj).validationEngine();
             return;
         }else{
-            /*if($(obj).prop("name")=="StartPrice.value"){
+            if($(obj).prop("name")=="StartPrice.value"){
                 var vl = $(obj).val();
-                alert(":::::::::::"+vl);
-                $(obj).val(vl.toFixed(2));
-                $(obj).parent().find("span").text(vl.toFixed(2));
-            }*/
+                $(obj).val(parseFloat(vl).toFixed(2));
+                $(obj).parent().find("span").text(parseFloat(vl).toFixed(2));
+            }
             $(obj).prop("type", "hidden");
             $(obj).parent().find("span").show();
         }
@@ -481,21 +481,28 @@ function selectAttrMorValue(obj){
 }
 //添加一行数据，用于填写
 function addTr(len) {
+    var curName=$("select[name='site']").find("option:selected").attr("curid");
+    $("abbr[name='curName']").text(curName);
     var str = "";
     str += "<tr>";
     str += "<td class='dragHandle'  width='5px;'></td>";
     str += "<td><span style='display:none;color: dodgerblue;' onclick='showMoreAttrsText(this)'></span><input type='text' name='SKU'  onblur='clearThisText(this);' onkeyup='getJoinValue(this)'  class='validate[required] form-control'></td>";
     str += "<td><span style='display:none;color: dodgerblue;' onclick='showMoreAttrsText(this)'></span><input type='text' name='Quantity'  onblur='clearThisText(this);' onkeyup='getJoinValue(this)' size='8' class='validate[required,custom[integer]] form-control'></td>";
-    str += "<td><span style='display:none;color: dodgerblue;' onclick='showMoreAttrsText(this)'></span><input type='text' name='StartPrice.value'  onblur='clearThisText(this);' onkeyup='getJoinValue(this)'  size='8' class='validate[required,custom[number]] form-control'></td>";
+    str += "<td><span style='display:none;color: dodgerblue;' onclick='showMoreAttrsText(this)'></span><input type='text' name='StartPrice.value'  onblur='clearThisText(this);' onkeyup='getJoinValue(this)'  size='8' class='validate[required,custom[number]] form-control'>&nbsp;<abbr name='curName'>"+curName+"</abbr></td>";
     for (var i = 0; i < len; i++) {
         str += "<td><span style='display:none;color: dodgerblue;' onclick='showMoreAttrsText(this)'></span>" +
             "<input type='text' name='attr_Value' onkeyup='getJoinValue(this)' class='validate[required] form-control' onblur='addb(this)' size='10' >" +
-            "&nbsp;<div style='display:inline; height: 18px; overflow:hidden;background-image:url("+path+"/img/arrow.gif);width: 10px;'><select size='1' style='width: 18px;position: relative;' name='selAttValue_sel' onchange='selectAttrMorValue(this)'></select></div>"+
+            "&nbsp;<div class='ui-select' style='background-image:url("+path+"/img/arrow.gif);height:26px;margin-top: -5px; width:15px;min-width:0px;border: 0px;'><select size='1' style='width: 18px;position: relative;' name='selAttValue_sel' onchange='selectAttrMorValue(this)'></select></div>"+
             "</td>";
     }
     str += "<td name='del'><img src='"+path+"/img/del.png' onclick='removeCloums(this)'></td>";
     str += "</tr>";
     return str;
+}
+function selectSiteAfter(){
+    var curName=$("select[name='site']").find("option:selected").attr("curid");
+    $("abbr[name='curName']").text(curName);
+    $("label[name='curName']").text(curName);
 }
 
 var attrValueName="";
@@ -513,13 +520,17 @@ function getSelfAttr(id){
             $(d).find("div").find("select").remove();
             $(d).find("div").html(attrValueName);
             if(attrValueName==""){
+                $(d).find("div").hide();
                 $("#moreAttrs").find("select[name='selAttValue_sel']").each(function(i,d){
                     $(d).html("");
+                    $(d).parent().hide();
                     $(d).hide();
                 });
             }else{
+                $(d).find("div").show();
                 $("#moreAttrs").find("select[name='selAttValue_sel']").each(function(i,d){
                     $(d).show();
+                    $(d).parent().show();
                 });
             }
         }
@@ -591,13 +602,13 @@ function addMoreAttr(obj) {
                 if (i == 0) {
                     $(dd).before("<th width='100px'><span style='display:none;color: dodgerblue;' onclick='showMoreAttrsText(this)'></span>" +
                         "<input type='text' size='8' onkeyup='getJoinValue(this)' class='validate[required] form-control'" +
-                        " name='attr_Name' onblur='addc(this)'>&nbsp;<div style='display:inline-block;vertical-align: middle;background-image:url("+path+"/img/arrow.gif);width: 20px;'>"
+                        " name='attr_Name' onblur='addc(this)'>&nbsp;<div class='ui-select' style='background-image:url("+path+"/img/arrow.gif);height:26px;margin-top: -5px; width:15px;min-width:0px;border: 0px;'>"
                         +attrValueName+"</div><img src='"+path+"/img/del.png' onclick='removeCols(this)'></td>");
                 } else {
                     $(dd).before("<td width='100px'><span style='display:none;color: dodgerblue;' onclick='showMoreAttrsText(this)'></span>" +
                         "<input type='text' size='10' name='attr_Value' onblur='addb(this)' " +
                         " onkeyup='getJoinValue(this)' class='validate[required] form-control'>" +
-                        "&nbsp;<div style='display:inline; height: 18px; overflow:hidden;background-image:url("+path+"/img/arrow.gif);width: 10px;'><select size='1' style='width: 18px;position: relative;' name='selAttValue_sel' onchange='selectAttrMorValue(this)'></select></div>"+
+                        "&nbsp;<div class='ui-select' style='background-image:url("+path+"/img/arrow.gif);height:26px;margin-top: -5px; width:15px;min-width:0px;border: 0px;'><select size='1' style='width: 18px;position: relative;' name='selAttValue_sel' onchange='selectAttrMorValue(this)'></select></div>"+
                         "</td>");
                 }
             }
@@ -737,9 +748,9 @@ function addb(obj) {
 }
 function addPic(attrName, attrValue) {
     var str = "";
-    str += "<div><div style='padding-top: 20px;'>" + attrName + ":" + attrValue + "</div> <section class='example' style='width: 1200px;'><ul class='gbin1-list' style='padding-left: 20px;' id='picturemore_"+attrValue+"'></ul></section> <script type=text/plain id='" + attrName + "." + attrValue + "' />";
+    str += "<div><div style='padding-top: 20px;'>" + attrName + ":" + attrValue + "</div> <section class='example' style='width: 1200px;'><ul class='gbin1-list' style='padding-left: 20px;' id='picturemore_"+attrValue.replace(" ","_")+"'></ul><div class='a_bal' style='margin-top: 20px;'></div></section> <script type=text/plain id='" + attrName.replace(" ","_") + "." + attrValue.replace(" ","_") + "' />";
     str += "<div style='padding-left: 50px; '>" +
-        "<b style='height: 32px;margin-top: 20px;' class='new_button'><a href='javascript:void(0)' id=" + attrValue + " onClick='selectPic(this)'>选择图片</a></b>";
+        "<b style='height: 32px;margin-top: 20px;' class='new_button'><a href='javascript:void(0)' id=" + attrValue.replace(" ","_") + " onClick='selectPic(this)'>选择图片</a></b>";
     str += "</div></div>";
     return str;
 }
@@ -791,7 +802,6 @@ function addPictrueUrl(urls) {
         for (var i = 0; i < urls.length; i++) {
             var imgsrc = urls[i].src.replace("@", ":");
             var idDuff=generateMixedRandom(5);
-
             str += '<li><div style="position:relative"><input type="hidden" name="pic_mackid"/> <input type="hidden" name="PictureDetails'+sss.substr(sss.indexOf("_"),sss.length)+'.PictureURL" value="' + urls[i].src + '">' +
                 '<img id=imgtemp'+idDuff+' src=' + imgsrc + ' height=\"80px\" width=\"78px\" />' +
                 '<div style="text-align: right;background-color: dimgrey;"><img src="'+path+'/img/newpic_ico.png" onclick="removeThis(this)"></div></div>';
@@ -931,12 +941,16 @@ function queryType() {
         lock: true
     });
 }
-
+function targetSelect(obj,event){
+    console.log("aaaaaaaaaaaaaaa");
+    $(obj).find("select").trigger("click");
+    $(event).stopPropagation();
+}
 function incount(obj) {
     $(obj).parent().find("span").text($(obj).val().length);
 }
 
-function setTab(obj) {
+function setTabs(obj) {
     $("div[name='showModel']").each(function (i, d) {
         $(d).hide();
     });

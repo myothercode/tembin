@@ -3,6 +3,7 @@ package com.trading.service.impl;
 import com.base.aboutpaypal.service.PayPalService;
 import com.base.database.customtrading.mapper.ItemMapper;
 import com.base.database.keymove.model.KeyMoveList;
+import com.base.database.publicd.mapper.PublicItemPictureaddrAndAttrMapper;
 import com.base.database.publicd.mapper.PublicUserConfigMapper;
 import com.base.database.publicd.model.*;
 import com.base.database.trading.mapper.*;
@@ -36,6 +37,7 @@ import org.dom4j.DocumentException;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -130,6 +132,11 @@ public class TradingItemImpl implements com.trading.service.ITradingItem {
     private ITradingListingReport iTradingListingReport;
     @Autowired
     private ITradingListingSuccess iTradingListingSuccess;
+    @Value("${IMAGE_URL_PREFIX}")
+    private String image_url_prefix;
+    @Autowired
+    public PublicItemPictureaddrAndAttrMapper publicItemPictureaddrAndAttrMapper;
+
 
     @Override
     public void saveTradingItem(TradingItemWithBLOBs pojo) throws Exception {
@@ -173,7 +180,9 @@ public class TradingItemImpl implements com.trading.service.ITradingItem {
         if(item.getVariations()!=null){
             Pictures pt = new Pictures();
             pt.setVariationSpecificName(item.getVariations().getVariationSpecificsSet().getNameValueList().get(0).getName());
-            pt.setVariationSpecificPictureSet(item.getVariations().getPictures().getVariationSpecificPictureSet());
+            if(item.getVariations().getPictures()!=null) {
+                pt.setVariationSpecificPictureSet(item.getVariations().getPictures().getVariationSpecificPictureSet());
+            }
             item.getVariations().setPictures(pt);
         }
         tradingItem1.setConditionid(item.getConditionID().longValue());
@@ -349,39 +358,41 @@ public class TradingItemImpl implements com.trading.service.ITradingItem {
                     String [] morePicUrl = request.getParameterValues("pic_mackid_more");
                     //保存多属必图片信息
                     Pictures pictrue = item.getVariations().getPictures();
-                    if(pictrue!=null){
+                    if(pictrue!=null) {
                         TradingPictures tp = this.iTradingPictures.toDAOPojo(pictrue);
                         tp.setParentId(tv.getId());
                         tp.setParentUuid(tv.getUuid());
                         this.iTradingPictures.savePictures(tp);
 
                         List<VariationSpecificPictureSet> vspsli = pictrue.getVariationSpecificPictureSet();
-                        this.iTradingPublicLevelAttr.deleteByParentID("VariationSpecificPictureSet",tp.getId());
-                        for(VariationSpecificPictureSet vsps:vspsli){
-                            TradingPublicLevelAttr tplas = this.iTradingPublicLevelAttr.toDAOPojo("VariationSpecificPictureSet",null);
-                            tplas.setParentId(tp.getId());
-                            tplas.setParentUuid(tp.getUuid());
-                            this.iTradingPublicLevelAttr.savePublicLevelAttr(tplas);
+                        this.iTradingPublicLevelAttr.deleteByParentID("VariationSpecificPictureSet", tp.getId());
+                        if (vspsli != null) {
+                            for (VariationSpecificPictureSet vsps : vspsli) {
+                                TradingPublicLevelAttr tplas = this.iTradingPublicLevelAttr.toDAOPojo("VariationSpecificPictureSet", null);
+                                tplas.setParentId(tp.getId());
+                                tplas.setParentUuid(tp.getUuid());
+                                this.iTradingPublicLevelAttr.savePublicLevelAttr(tplas);
 
-                            this.iTradingPublicLevelAttr.deleteByParentID("VariationSpecificValue",tplas.getId());
+                                this.iTradingPublicLevelAttr.deleteByParentID("VariationSpecificValue", tplas.getId());
 
-                            TradingPublicLevelAttr tpname = this.iTradingPublicLevelAttr.toDAOPojo("VariationSpecificValue",vsps.getVariationSpecificValue());
-                            tpname.setParentId(tplas.getId());
-                            tpname.setParentUuid(tplas.getUuid());
-                            this.iTradingPublicLevelAttr.savePublicLevelAttr(tpname);
+                                TradingPublicLevelAttr tpname = this.iTradingPublicLevelAttr.toDAOPojo("VariationSpecificValue", vsps.getVariationSpecificValue());
+                                tpname.setParentId(tplas.getId());
+                                tpname.setParentUuid(tplas.getUuid());
+                                this.iTradingPublicLevelAttr.savePublicLevelAttr(tpname);
 
-                            this.iTradingAttrMores.deleteByParentId("MuAttrPictureURL",tplas.getId());
-                            if(vsps.getPictureURL()!=null) {
-                                List<String> listr = vsps.getPictureURL();
-                                listr = MyCollectionsUtil.listUnique(listr);
-                                for (int i = 0;i<listr.size();i++) {
-                                    String str = listr.get(i);
-                                    if (str != null && !"".equals(str)) {
-                                        TradingAttrMores tams = this.iTradingAttrMores.toDAOPojo("MuAttrPictureURL", str);
-                                        tams.setParentId(tplas.getId());
-                                        tams.setParentUuid(tplas.getUuid());
-                                        tams.setAttr1(morePicUrl[i]);
-                                        this.iTradingAttrMores.saveAttrMores(tams);
+                                this.iTradingAttrMores.deleteByParentId("MuAttrPictureURL", tplas.getId());
+                                if (vsps.getPictureURL() != null) {
+                                    List<String> listr = vsps.getPictureURL();
+                                    listr = MyCollectionsUtil.listUnique(listr);
+                                    for (int i = 0; i < listr.size(); i++) {
+                                        String str = listr.get(i);
+                                        if (str != null && !"".equals(str)) {
+                                            TradingAttrMores tams = this.iTradingAttrMores.toDAOPojo("MuAttrPictureURL", str);
+                                            tams.setParentId(tplas.getId());
+                                            tams.setParentUuid(tplas.getUuid());
+                                            tams.setAttr1(morePicUrl[i]);
+                                            this.iTradingAttrMores.saveAttrMores(tams);
+                                        }
                                     }
                                 }
                             }
@@ -884,7 +895,7 @@ public class TradingItemImpl implements com.trading.service.ITradingItem {
         this.tradingItemMapper.updateByPrimaryKeySelective(tradingItem);
     }
     @Override
-    public void saveListingItem(Item item, KeyMoveList kml) throws Exception {
+    public void saveListingItem(Item item, KeyMoveList kml,String categoryName) throws Exception {
         //for(int is = 0;is < liitem.size();is++){
             //Item item = liitem.get(is);
             TradingItemExample tie = new TradingItemExample();
@@ -927,7 +938,7 @@ public class TradingItemImpl implements com.trading.service.ITradingItem {
                 PublicItemInformation itemInformation=new PublicItemInformation();
                 List<PublicUserConfig> liconf = DataDictionarySupport.getPublicUserConfigByType("itemType",kml.getUserId());
                 //商品分类
-                String typeid = "";
+                /*String typeid = "";
                 for(PublicUserConfig puc : liconf){
                     if("一键搬家分类".equals(puc.getConfigName())){
                         typeid = puc.getId()+"";
@@ -943,7 +954,9 @@ public class TradingItemImpl implements com.trading.service.ITradingItem {
                     itemInformation.setTypeId(puc.getId());
                 }else{
                     itemInformation.setTypeId(Long.parseLong(typeid));
-                }
+                }*/
+                itemInformation.setTypeId(item.getPrimaryCategory().getCategoryID()==null?null:Long.parseLong(item.getPrimaryCategory().getCategoryID()));
+                itemInformation.setTypename(categoryName);
                 itemInformation.setSku(tradingItem.getSku());
                 itemInformation.setName(tradingItem.getItemName());
                 //库存
@@ -1166,11 +1179,13 @@ public class TradingItemImpl implements com.trading.service.ITradingItem {
                     List<String> picurl = picd.getPictureURL();
                     for (int i = 0; i < picurl.size(); i++) {
                         try {
-                            TradingAttrMores tam = this.iTradingAttrMores.toDAOPojo("PictureURL", picurl.get(i));
-                            tam.setParentId(tpicd.getId());
-                            tam.setParentUuid(tpicd.getUuid());
-                            this.iTradingAttrMores.saveAttrMores(tam);
                             //new一个URL对象
+                            String potourl = "";
+                            if(picurl.get(i).indexOf("?")==-1){
+                                potourl = picurl.get(i);
+                            }else{
+                                potourl = picurl.get(i).substring(0,picurl.get(i).indexOf("?"));
+                            }
                             URL url = new URL(picurl.get(i));
                             //打开链接
                             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
@@ -1181,8 +1196,30 @@ public class TradingItemImpl implements com.trading.service.ITradingItem {
                             //通过输入流获取图片数据
                             InputStream inStream = conn.getInputStream();
                             String stuff = MyStringUtil.getExtension(picurl.get(i), "");
-                            FtpUploadFile.ftpUploadFile(inStream, uu.getUserName() + "/" + item.getSKU(), stuff);
+                            String fileName = FtpUploadFile.ftpUploadFile(inStream, uu.getUserName() + "/" + item.getSKU(), stuff);
                             inStream.close();
+                            String picUrls = "";
+                            if(fileName==null){
+                                picUrls = potourl;
+                            }else{
+                                picUrls = image_url_prefix + uu.getUserName() + "/" + item.getSKU() + "/" + fileName;
+                            }
+                            TradingAttrMores tam = this.iTradingAttrMores.toDAOPojo("PictureURL", picUrls);
+                            tam.setParentId(tpicd.getId());
+                            tam.setParentUuid(tpicd.getUuid());
+                            this.iTradingAttrMores.saveAttrMores(tam);
+
+                            tpicd.setGalleryurl(picUrls);
+                            this.iTradingPictureDetails.savePictureDetails(tpicd);
+                            //更新商品表中的图片，更新成ＦＴＰ服务器上的地址
+                            PublicItemPictureaddrAndAttrExample pipa = new PublicItemPictureaddrAndAttrExample();
+                            pipa.createCriteria().andIteminformationIdEqualTo(itemInformation.getId()).andAttrvalueEqualTo(picurl.get(i)).andAttrtypeEqualTo("picture").andAttrnameEqualTo("picture");
+                            List<PublicItemPictureaddrAndAttr> lipp = this.publicItemPictureaddrAndAttrMapper.selectByExample(pipa);
+                            if(lipp!=null&&lipp.size()>0){
+                                PublicItemPictureaddrAndAttr pi = lipp.get(0);
+                                pi.setAttrvalue(picUrls);
+                                this.publicItemPictureaddrAndAttrMapper.updateByPrimaryKeySelective(pi);
+                            }
                         }catch(FileNotFoundException e){
                             continue;
                         }catch(UnknownHostException e){

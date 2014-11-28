@@ -119,7 +119,7 @@ public class DataDictionarySupport extends CacheBaseSupport{
         List<TradingDataDictionary> tradingDataDictionaries = dictionary.selectDictionaryByType(type);
         return tradingDataDictionaries;
     }
-    /**TradingDataDictionary字典表查询,用map作为条件*/
+    /**TradingDataDictionary字典表查询,用map作为条件 todo*/
     public static List<TradingDataDictionary> getTradingDataDictionaryByMap(Map<String,String> map){
         ITradingDataDictionary dictionary = (ITradingDataDictionary) ApplicationContextUtil.getBean(ITradingDataDictionary.class);
         List<TradingDataDictionary> tradingDataDictionaries = dictionary.selectDictionaryByMap(map);
@@ -145,6 +145,14 @@ public class DataDictionarySupport extends CacheBaseSupport{
     public static TradingDataDictionary getTradingDataDictionaryByID(Long id){
         ITradingDataDictionary dictionary = (ITradingDataDictionary) ApplicationContextUtil.getBean(ITradingDataDictionary.class);
         TradingDataDictionary tradingDataDictionaries = dictionary.selectDictionaryByID(id);
+        return tradingDataDictionaries;
+    }
+
+
+    /**PublicDataDict字典表查询,用map作为条件 todo*/
+    public static List<PublicDataDict> getPublicDataDictionaryByMap(Map<String,String> map){
+        ITradingDataDictionary dictionary = (ITradingDataDictionary) ApplicationContextUtil.getBean(ITradingDataDictionary.class);
+        List<PublicDataDict> tradingDataDictionaries = dictionary.selectPublicDictionaryByMap(map);
         return tradingDataDictionaries;
     }
     /**PublicDataDict字典表查询,用类型作为条件*/

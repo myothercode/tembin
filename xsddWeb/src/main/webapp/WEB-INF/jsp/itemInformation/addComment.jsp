@@ -30,7 +30,20 @@
             $().invoke(url,data,
                     [function(m,r){
                         alert(r);
-                        W.refreshTable();
+                        var table=W.document.getElementById("ItemInformationListTable");
+                        var inputs=$(table).find("input[scop1=selected]");
+                        for(var i=0;i<inputs.length;i++){
+                            var tr=$(inputs[i]).parent().parent();
+                            var tds=$(tr).find("td");
+                            var td1=$("#addPictureId").find("td");
+                            var img1=$(td1[0]).find("img[scop=img]")
+                            for(var j=0;j<tds.length;j++){
+                                if(j==2){
+                                    var value=$("#comment").val();
+                                    tds[j].innerHTML=value;
+                                }
+                            }
+                        }
                         W.itemInformation.close();
                         Base.token();
                     },
@@ -48,11 +61,11 @@
 <body>
 <form id="remarkForm">
 <br/><br/>
-    <input type="hidden" name="id" value="${information.id}">
+    <input type="hidden" name="id" id="id" value="${information.id}">
     <table align="center">
         <tr>
             <td>备注:</td>
-            <td><input type="text" class="form-controlsd validate[required]" name="comment" value="${information.comment}"/></td>
+            <td><input type="text" class="form-controlsd validate[required]" id="comment" name="comment" value="${information.comment}"/></td>
         </tr>
     </table>
 <%--&nbsp;&nbsp;&nbsp;备注:<input type="text" class="form-controlsd validate[required]" name="comment" value="${information.comment}"/>--%>

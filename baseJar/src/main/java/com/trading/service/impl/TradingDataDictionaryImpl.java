@@ -117,6 +117,15 @@ public class TradingDataDictionaryImpl implements com.trading.service.ITradingDa
         TradingDataDictionary n= DictCollectionsUtil.dataCollectionFilterByID(ts, id);
         return n;
     }
+
+    @Override
+    /**根据map查询publicDataDictionary*/
+    public List<PublicDataDict> selectPublicDictionaryByMap(Map<String,String> map){
+        List<PublicDataDict> ts=queryPublicDictAll();
+        List<PublicDataDict> n= DictCollectionsUtil.publicDataDictCollectionFilterByMap(ts, map);
+        return n;
+    }
+
     @Override
     /**根据ID查询publicDataDictionary*/
     public List<PublicDataDict> selectPublicDictionaryByID(Long id){

@@ -1,10 +1,8 @@
 package com.base.utils.scheduleabout.commontask;
 
+import com.base.database.trading.mapper.TradingItemMapper;
 import com.base.database.trading.mapper.TradingTimerListingMapper;
-import com.base.database.trading.model.TradingItemWithBLOBs;
-import com.base.database.trading.model.TradingTimerListingExample;
-import com.base.database.trading.model.TradingTimerListingWithBLOBs;
-import com.base.database.trading.model.UsercontrollerEbayAccount;
+import com.base.database.trading.model.*;
 import com.base.database.userinfo.mapper.UsercontrollerUserMapper;
 import com.base.database.userinfo.model.UsercontrollerUser;
 import com.base.domains.userinfo.UsercontrollerDevAccountExtend;
@@ -62,6 +60,7 @@ public class TimeListingItemTaskRunAble extends BaseScheduledClass implements Sc
 
         UserInfoService userInfoService= (UserInfoService) ApplicationContextUtil.getBean(UserInfoService.class);
         UsercontrollerUserMapper user = (UsercontrollerUserMapper) ApplicationContextUtil.getBean(UsercontrollerUserMapper.class);
+        TradingItemMapper tradingItemMappers = (TradingItemMapper) ApplicationContextUtil.getBean(TradingItemMapper.class);
         CommAutowiredClass commV = (CommAutowiredClass) ApplicationContextUtil.getBean(CommAutowiredClass.class);
 
         ITradingItem iTradingItem = (ITradingItem) ApplicationContextUtil.getBean(ITradingItem.class);
@@ -73,9 +72,16 @@ public class TimeListingItemTaskRunAble extends BaseScheduledClass implements Sc
         for (TradingTimerListingWithBLOBs withBLOBs : listingWithBLOBses){
             TradingTimerListingWithBLOBs t=new TradingTimerListingWithBLOBs();
             TradingTimerListingWithBLOBs t1=new TradingTimerListingWithBLOBs();
+            TradingItemWithBLOBs tradingItems = tradingItemMappers.selectByPrimaryKey(withBLOBs.getItem());
+            if(tradingItems.getItemId()!=null){
+                withBLOBs.setTimerFlag("1");
+                timeMapper.updateByPrimaryKeySelective(withBLOBs);
+                continue;
+            }
             t1.setRunStartTime(new Date());
             t1.setTimerFlag("0");
             t1.setId(withBLOBs.getId());
+
             timeMapper.updateByPrimaryKeySelective(t1);//设置一个开始时间
             //首先根据ebay帐号id获取到token
             if(StringUtils.isEmpty(withBLOBs.getEbayId())){continue;}

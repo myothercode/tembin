@@ -168,14 +168,16 @@
         }
         //多属性
         <c:forEach items="${liv}" var="liv" varStatus="status">
+        var price='${liv.startprice}';
         var str = "";
         str += "<tr style='height: 32px;'><td class='dragHandle' width='15px;'></td>";
         str += "<td width='100px'><span style='color: dodgerblue;' onclick='showMoreAttrsText(this)'>${liv.sku}</span><input type='hidden' name='SKU' onblur='clearThisText(this);' onkeyup='getJoinValue(this)' class='validate[required] form-control' value='${liv.sku}'></td>";
         str += "<td width='100px'><span style='color: dodgerblue;' onclick='showMoreAttrsText(this)'>${liv.quantity}</span><input type='hidden' name='Quantity' onblur='clearThisText(this);' onkeyup='getJoinValue(this)' size='8' class='validate[required] form-control' value='${liv.quantity}'></td>";
-        str += "<td width='100px'><span style='color: dodgerblue;' onclick='showMoreAttrsText(this)'>${liv.startprice}</span><input type='hidden' name='StartPrice.value' onblur='clearThisText(this);' onkeyup='getJoinValue(this)'  size='8' class='validate[required] form-control' value=${liv.startprice}></td>";
+        str += "<td width='100px'><span style='color: dodgerblue;' onclick='showMoreAttrsText(this)'>"+parseFloat(price).toFixed(2)+"</span><input type='hidden' name='StartPrice.value' onblur='clearThisText(this);' onkeyup='getJoinValue(this)'  size='8' class='validate[required] form-control' value='"+parseFloat(price).toFixed(2)+"'>&nbsp;<abbr name='curName'></abbr></td>";
         <c:forEach items="${liv.tradingPublicLevelAttr}" var="ta">
         str += "<td width='100px'><span style='color: dodgerblue;' onclick='showMoreAttrsText(this)'>${ta.value}</span><input type='hidden' name='attr_Value' onkeyup='getJoinValue(this)'  class='validate[required] form-control' onblur='addb(this)' size='10' value='${ta.value}'>";
-        str +="&nbsp;<div style='display:inline; height: 18px; overflow:hidden;background-image:url("+path+"/img/arrow.gif);width: 10px;'><select size='1' style='width: 18px;position: relative;' name='selAttValue_sel' onchange='selectAttrMorValue(this)'></select></div>";
+        //str +="&nbsp;<div class='numlist' style='padding-left: 8px;'><div class='ui-select' style='background-image:url("+path+"/img/arrow.gif);height:26px;margin-top:1px; width:80px;min-width:0px;'><select style='width: 80px;padding: 0px;' name='selAttValue_sel' onchange='selectAttrMorValue(this)'></select></div><div>";
+        str +="&nbsp;<div class='ui-select' style='background-image:url("+path+"/img/arrow.gif);height:26px;margin-top: -5px; width:15px;min-width:0px;border: 0px;'><select style='width: 80px;padding: 9px;' name='selAttValue_sel' onchange='selectAttrMorValue(this)'></select></div>";
         str+="</td>";
         </c:forEach>
         str += "<td name='del'><img src='"+path+"/img/del.png' onclick='removeCloums(this)'></td>";
@@ -187,7 +189,8 @@
             if ($(d).attr("name") == "del") {
                 $(d).before("<th width='100px'><span style='color: dodgerblue;' onclick='showMoreAttrsText(this)'>${lis.value}</span><input type='hidden' onkeyup='getJoinValue(this)'"+
                 "size='8' value='${lis.value}' name='attr_Name' onblur='addc(this)'>&nbsp;" +
-                "<div class='DivSelect'>"+attrValueName+"</div>&nbsp;<img src='"+path+"/img/del.png' onclick='removeCols(this)'></td>");
+                "<div class='ui-select' style='background-image:url("+path+"/img/arrow.gif);height:26px;margin-top: -5px; width:15px;min-width:0px;border: 0px;'>"+attrValueName+"</div>" +
+                        "&nbsp;<img src='"+path+"/img/del.png' onclick='removeCols(this)'></td>");
             }
         });
         </c:forEach>
@@ -201,7 +204,12 @@
         changeBackcolour();
         //加载选择值的选项
         loadSelectValue();
+        //加载货币符号
+        var curName=$("select[name='site']").find("option:selected").attr("curid");
+        $("abbr[name='curName']").text(curName);
+        $("label[name='curName']").text(curName);
         var attrValue = new Map();
+
         $("#moreAttrs tr td:nth-child(5)").each(function (i, d) {
             if ($(d).find("input[name='attr_Value']").val() != undefined && $(d).find("input[name='attr_Value']").val() != "") {
                 attrValue.put($(d).find("input[name='attr_Value']").val(), $(d).find("input[name='attr_Value']").val());
@@ -223,8 +231,9 @@
              $('#'+attrValue.get(attrValue.keys[i])).before("<input type='hidden' name='"+attrValue.get(attrValue.keys[i])+"' value='"+ m.get(j)+"'><img src='"+m.get(j)+"' height='50' width='50' />");
              }*/
             $("#picMore").append(addPic($("#moreAttrs tr:eq(0) th:eq(4)").find("input").val(), attrValue.get(attrValue.keys[i])));
-            $().image_editor.init($("#moreAttrs tr:eq(0) td:eq(4)").find("input").val() + "." + attrValue.get(attrValue.keys[i])); //编辑器的实例id
-            $().image_editor.show(attrValue.get(attrValue.keys[i])); //上传图片的按钮id
+            $().image_editor.init($("#moreAttrs tr:eq(0) th:eq(4)").find("input").val().replace(" ","_") + "." + attrValue.get(attrValue.keys[i]).replace(" ","_")); //编辑器的实例id
+
+            $().image_editor.show(attrValue.get(attrValue.keys[i]).replace(" ","_")); //上传图片的按钮id
         }
         var picstr = '';
         <c:if test="${lipic!=null}">
@@ -289,7 +298,10 @@
         $("input[name='SecondFlag'][value='" + secondflag + "']").prop("checked", true);
         initDraug();//初始化拖动图片
         changeBackcolour();
-        initModel();
+        setTimeout(function(){
+            initModel();
+        },100);
+
         var item_id = '${item.id}';
         if(item_id!=null&&item_id!=""){
             addTypeAttr();
@@ -301,7 +313,13 @@
         }else{
             $("#PrimaryCategoryshow").hide();
         }
-
+        $("div[name='cliSelect']").bind("click",function(event){
+            //console.log(this.tagName);
+            //console.log($(this).find("select").get(0).html())
+            console.log($(this).find("select").html());
+            //$(this).find("select").trigger("click");
+            //event.stopPropagation();
+        });
 
     });
 </script>
@@ -428,9 +446,9 @@
 
     <li>
         <dt>站点</dt>
-            <select name="site" data-size="8">
+            <select name="site" data-size="8" onchange="selectSiteAfter()">
                 <c:forEach items="${siteList}" var="sites">
-                    <option value="${sites.id}">${sites.name}</option>
+                    <option value="${sites.id}" curid="${sites.value1}">${sites.name}</option>
                 </c:forEach>
             </select>
     </li>
@@ -512,7 +530,7 @@
     <div id="twoAttr" style="display: none;">
         <h1>多属性</h1>
         <li style="height: 100%;">
-            <dt>属性</dt>
+            <dt>&nbsp;</dt>
             <div>
                 <table width="80%" id="moreAttrs" class="mytable-striped">
                     <tr style="height: 32px;" class="nodrop nodrag">
@@ -535,13 +553,13 @@
     </div>
     <h1>自定义物品属性</h1>
     <li style="height: 100%;">
-        <dt>属性</dt>
+        <dt>&nbsp;</dt>
         <div>
             <table id="attTable" width="600px;" class="mytable-striped">
-                <tr>
-                    <td align="center" width="30%">名称</td>
-                    <td align="center" width="30%">值</td>
-                    <td align="center" width="30%">操作</td>
+                <tr style="height: 32px;">
+                    <th style="text-align: center;" width="30%">名称</td>
+                    <th style="text-align: center;" width="30%">值</td>
+                    <th style="text-align: center;" width="30%">操作</td>
                 </tr>
                 <%--<tr>
                     <td colspan="3" id="trValue"></td>
@@ -601,14 +619,14 @@
 <div class="new_tab" style="width: 100%">
     <div class="new_tab_left"></div>
     <div class="new_tab_right" style="width: 10px;"></div>
-    <dt class=new_ic_1 name=priceMessage onmouseover="setTab(this)" style="font-size: 12px;">价格管理</dt>
-    <dt name=pay onmouseover="setTab(this)">付款方式</dt>
-    <dt name=shippingDeails onmouseover="setTab(this)">运输选项</dt>
-    <dt name=itemLocation onmouseover="setTab(this)">物品所在地</dt>
-    <dt name=buyer onmouseover="setTab(this)">买家要求</dt>
-    <dt name=returnpolicy onmouseover="setTab(this)">退货政策</dt>
-    <dt name=discountpriceinfo onmouseover="setTab(this)">折扣信息</dt>
-    <dt name=descriptiondetails onmouseover="setTab(this)">卖家描述</dt>
+    <dt class=new_ic_1 name=priceMessage onmouseover="setTabs(this)" style="font-size: 12px;">价格管理</dt>
+    <dt name=pay onmouseover="setTabs(this)">付款方式</dt>
+    <dt name=shippingDeails onmouseover="setTabs(this)">运输选项</dt>
+    <dt name=itemLocation onmouseover="setTabs(this)">物品所在地</dt>
+    <dt name=buyer onmouseover="setTabs(this)">买家要求</dt>
+    <dt name=returnpolicy onmouseover="setTabs(this)">退货政策</dt>
+    <dt name=discountpriceinfo onmouseover="setTabs(this)">折扣信息</dt>
+    <dt name=descriptiondetails onmouseover="setTabs(this)">卖家描述</dt>
 </div>
 <div class="Contentbox">
 <div name="showModel" id="priceMessage"  style="width: 980px;height: 500px" class="price_div">
@@ -637,7 +655,7 @@
             </select>
     </li>
     <div id="Auction" style="display: none;">
-        <h1 style="padding-left: 50px;">拍买</h1>
+<%--        <h1 style="padding-left: 50px;">拍买</h1>--%>
         <li>
             <dt>私人拍买</dt>
             <em style="color:#48a5f3"><input type="checkbox" name="PrivateListing" value="on">不向公众显示买家的名称</em>
@@ -647,12 +665,16 @@
             <dt>保留价</dt>
             <div class="new_left">
                 <input type="text" name="ReservePrice" style="width:300px;" id="ReservePrice" class="form-control">
+                <label name="curName" style="border: 1px solid #cccccc;background-color: #eee;line-height: 26px;height: 26px;
+                position: absolute;text-align: center;width: 110px;left: 340px;-webkit-border-top-right-radius: 5px;-webkit-border-bottom-right-radius: 5px;"></label>
             </div>
         </li>
         <li>
             <dt>一口价</dt>
             <div class="new_left">
                 <input type="text" name="BuyItNowPrice" style="width:300px;" id="BuyItNowPrice" class="form-control">
+                <label name="curName" style="border: 1px solid #cccccc;background-color: #eee;line-height: 26px;height: 26px;
+                position: absolute;text-align: center;width: 110px;left: 340px;-webkit-border-top-right-radius: 5px;-webkit-border-bottom-right-radius: 5px;"></label>
             </div>
         </li>
         <li>
@@ -677,6 +699,8 @@
                 <input type="text" name="StartPrice.value_${item.ebayAccount}" style="width:300px;"
                        class="validate[required] form-control"
                        value="${item.startprice==null?'0':item.startprice}"/>
+                <label name="curName" style="border: 1px solid #cccccc;background-color: #eee;line-height: 26px;height: 26px;
+                position: absolute;text-align: center;width: 110px;left: 340px;-webkit-border-top-right-radius: 5px;-webkit-border-bottom-right-radius: 5px;"></label>
             </div>
         </li>
         <li>
@@ -685,6 +709,8 @@
                 <input type="text" style="width:300px;" class="validate[required] form-control"
                        name="Quantity_${item.ebayAccount}"
                        value="${item.quantity}"/>
+                <label style="border: 1px solid #cccccc;background-color: #eee;line-height: 26px;height: 26px;
+                position: absolute;text-align: center;width: 110px;left: 340px;-webkit-border-top-right-radius: 5px;-webkit-border-bottom-right-radius: 5px;">PCS</label>
             </div>
         </li>
     </div>

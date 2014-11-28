@@ -24,7 +24,7 @@ public class ExceptionInterceptor  extends HandlerInterceptorAdapter {
         if(ex!=null){
             String m="";
             if(DataAccessException.class.isAssignableFrom(ex.getClass())){//如果是数据库访问的出错
-                m="出错了！请联系客服。";
+                m="数据库查询出错了！请联系客服。";
             }else {
                 m=ex.getMessage();
             }

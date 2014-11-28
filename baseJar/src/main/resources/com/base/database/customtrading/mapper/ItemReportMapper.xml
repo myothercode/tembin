@@ -21,6 +21,7 @@
         select rep.* from trading_listing_report rep  where 1=1
         and DATE_FORMAT(rep.create_date, '%Y-%m-%d') = (select DATE_FORMAT(max(ret.create_date), '%Y-%m-%d')
         from trading_listing_report ret)
+        and rep.user_id=#{userid}
         order by rep.datatype asc
     </select>
 </mapper>

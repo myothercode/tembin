@@ -6,7 +6,10 @@
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <title>登录</title>
     <script type="text/javascript">
-
+        <%
+            String rootPath = request.getContextPath();
+        %>
+        //var path ='<%=rootPath%>';
         var errMessage="<%=request.getSession().getAttribute("errMessage_")%>";
         var showCapImage="<%=request.getSession().getAttribute("showCapImage")%>";
         <%

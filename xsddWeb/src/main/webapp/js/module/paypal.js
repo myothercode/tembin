@@ -43,17 +43,20 @@ function loadpaypal(){
     $("#paypallisttable").initTable({
         url:path + "/ajax/loadPayPalList.do",
         columnData:[
-            {title:"名称",name:"payName",width:"8%",align:"left"},
+            {title:"&nbsp;&nbsp;名称",name:"payName",width:"8%",align:"left",format:getName},
             {title:"站点",name:"siteName",width:"8%",align:"left",format:getSiteImg},
             {title:"paypal账号",name:"payPalName",width:"8%",align:"left"},
-            {title:"状态",name:"option1",width:"8%",align:"left",format:makeOption2s},
-            {title:"动作",name:"option1",width:"8%",align:"left",format:makeOption1paypal}
+            {title:"状态",name:"option1",width:"8%",align:"center",format:makeOption2s},
+            {title:"&nbsp;&nbsp;&nbsp;&nbsp;操作",name:"option1",width:"8%",align:"left",format:makeOption1paypal}
         ],
         selectDataNow:false,
         isrowClick:false,
         showIndex:false
     });
     refreshTablepaypal();
+}
+function getName(json){
+    return "&nbsp;&nbsp;"+json.payName;
 }
 function  refreshTablepaypal(){
     $("#paypallisttable").selectDataAfterSetParm({"bedDetailVO.deptId":"", "isTrue":0});

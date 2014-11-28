@@ -377,10 +377,10 @@ function saveData(objs,name) {
         }
     });
     for(var i=0;i<pciValue.keys.length;i++){
-        $("input[type='hidden'][name='"+pciValue.keys[i]+"']").each(function(ii,dd){
+        $("input[type='hidden'][name='"+pciValue.keys[i].replace(" ","_")+"']").each(function(ii,dd){
             $(dd).prop("name","Variations.Pictures.VariationSpecificPictureSet["+i+"].PictureURL["+ii+"]");
         });
-        $("input[type='hidden'][name='VariationSpecificValue_"+pciValue.keys[i]+"']").prop("name","Variations.Pictures.VariationSpecificPictureSet["+i+"].VariationSpecificValue");
+        $("input[type='hidden'][name='VariationSpecificValue_"+pciValue.keys[i].replace(" ","_")+"']").prop("name","Variations.Pictures.VariationSpecificPictureSet["+i+"].VariationSpecificValue");
     }
 
     var nameList = $("input[type='hidden'][name='name']").each(function(i,d){
@@ -398,7 +398,7 @@ function saveData(objs,name) {
         var t="Variations.VariationSpecificsSet.NameValueList["+i+"].Name";
         $(d).prop("name",t);
     });
-    var len = $("#moreAttrs").find("tr").find("td").length/$("#moreAttrs").find("tr").length-5;
+    var len = $("#moreAttrs tr:eq(0) th").length - 5;
     for(var j=0;j<len ;j++){
         $("#moreAttrs tr:gt(0) td:nth-child("+(j+5)+")").each(function (i,d) {
             $(d).find("input[name='attr_Value']").each(function(ii,dd){

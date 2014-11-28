@@ -11,7 +11,7 @@
   </resultMap>
 
     <select id="selectFeedBackReportList" resultMap="BaseResultMap" parameterType="map">
-        select feed.CommentType returnType,count(*) tjNumber from trading_feedbackdetail feed where 1=1
+        select feed.CommentType returnType,count(*) tjNumber from trading_feedbackdetail feed  where 1=1
         <if test="datetype==1||datetype==2">
             and DATE_FORMAT(feed.CommentTime, '%Y-%m-%d') = #{datestr}
         </if>
@@ -20,6 +20,9 @@
         </if>
         <if test="datetype==5||datetype==6">
             and DATE_FORMAT(feed.CommentTime, '%Y-%m') = #{datestr}
+        </if>
+        <if test="userid!=null">
+            and feed.user_id=#{userid}
         </if>
          group by feed.CommentType order by feed.CommentType desc
     </select>

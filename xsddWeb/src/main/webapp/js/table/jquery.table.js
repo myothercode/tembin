@@ -162,7 +162,6 @@
 				"0").attr("cellpadding", "0").attr("class", option.tableCss);
 
 		var headTr=this.makeTabelHead();
-
 		headTr.appendTo(table);//构造列表头结束
 		if(tableData != null && tableData.length > 0) {
 			for(var i in tableData) {

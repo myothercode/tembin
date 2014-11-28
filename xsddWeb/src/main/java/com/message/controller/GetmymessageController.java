@@ -415,7 +415,6 @@ public class GetmymessageController extends BaseAction{
         modelMap.put("paypals",palpays);
         modelMap.put("grossdetailamounts",grossdetailamounts);
         modelMap.put("pictures",pictures);
-
         modelMap.put("accs",accs);
         return forword("orders/order/viewOrderGetOrders",modelMap);
     }
@@ -467,116 +466,125 @@ public class GetmymessageController extends BaseAction{
                 iTradingMessageGetmymessage.saveMessageGetmymessage(message);
             }
         }*/
-        List<TradingOrderAddMemberMessageAAQToPartner> addMessages=new ArrayList<TradingOrderAddMemberMessageAAQToPartner>();
-        List<TradingMessageGetmymessage> messages1=new ArrayList<TradingMessageGetmymessage>();
-        List<TradingMessageGetmymessage> messageList=iTradingMessageGetmymessage.selectMessageGetmymessageByItemIdAndSender(messages.get(0).getItemid(),messages.get(0).getSender(),messages.get(0).getRecipientuserid());
-        List<TradingOrderAddMemberMessageAAQToPartner> addmessageList=iTradingOrderAddMemberMessageAAQToPartner.selectTradingOrderAddMemberMessageAAQToPartnerByItemIdAndSender(messages.get(0).getItemid(),4,messages.get(0).getRecipientuserid(),messages.get(0).getSender());
-        messages1.addAll(messageList);
-        addMessages.addAll(addmessageList);
-        for(TradingMessageGetmymessage message:messages1){
-            TradingOrderAddMemberMessageAAQToPartner partner=new TradingOrderAddMemberMessageAAQToPartner();
-            partner.setSender(message.getSender());
-            partner.setSubject(message.getSubject());
-            partner.setRecipientid(message.getRecipientuserid());
-            partner.setCreateTime(message.getReceivedate());
-            String text=message.getTextHtml();
-            if(StringUtils.isNotBlank(text)){
-                String[] text1=text.split("</strong><br><br>");
-                String[] text2=text1[1].split("<br/><br>");
-                partner.setBody(text2[0]);
+            List<TradingOrderAddMemberMessageAAQToPartner> addMessages=new ArrayList<TradingOrderAddMemberMessageAAQToPartner>();
+            List<TradingMessageGetmymessage> messages1=new ArrayList<TradingMessageGetmymessage>();
+            List<TradingMessageGetmymessage> messageList=new ArrayList<TradingMessageGetmymessage>();
+            List<TradingOrderAddMemberMessageAAQToPartner> addmessageList=new ArrayList<TradingOrderAddMemberMessageAAQToPartner>();
+            if(!"eBay".equals(messages.get(0).getSender())){
+                 messageList=iTradingMessageGetmymessage.selectMessageGetmymessageByItemIdAndSender(messages.get(0).getItemid(),messages.get(0).getSender(),messages.get(0).getRecipientuserid());
+                 addmessageList=iTradingOrderAddMemberMessageAAQToPartner.selectTradingOrderAddMemberMessageAAQToPartnerByItemIdAndSender(messages.get(0).getItemid(),4,messages.get(0).getRecipientuserid(),messages.get(0).getSender());
             }
-            addMessages.add(partner);
-        }
-        Object[] addMessages1=addMessages.toArray();
-        for(int i=0;i<addMessages1.length;i++){
-            for(int j=i+1;j<addMessages1.length;j++){
-                TradingOrderAddMemberMessageAAQToPartner l1= (TradingOrderAddMemberMessageAAQToPartner) addMessages1[i];
-                TradingOrderAddMemberMessageAAQToPartner l2= (TradingOrderAddMemberMessageAAQToPartner) addMessages1[j];
-                if(l1.getCreateTime().after(l2.getCreateTime())){
-                    addMessages1[i]=l2;
-                    addMessages1[j]=l1;
+            messages1.addAll(messageList);
+            addMessages.addAll(addmessageList);
+            if(messages1.size()==0&&messages.size()>0){
+                messages1.add(messages.get(0));
+            }
+            for(TradingMessageGetmymessage message:messages1){
+                TradingOrderAddMemberMessageAAQToPartner partner=new TradingOrderAddMemberMessageAAQToPartner();
+                partner.setSender(message.getSender());
+                partner.setSubject(message.getSubject());
+                partner.setRecipientid(message.getRecipientuserid());
+                partner.setCreateTime(message.getReceivedate());
+                String text=message.getTextHtml();
+                if(StringUtils.isNotBlank(text)){
+                    String[] text1=text.split("</strong><br><br>");
+                    String[] text2=text1[1].split("<br/><br>");
+                    partner.setBody(text2[0]);
+                }
+                addMessages.add(partner);
+            }
+            Object[] addMessages1=addMessages.toArray();
+            for(int i=0;i<addMessages1.length;i++){
+                for(int j=i+1;j<addMessages1.length;j++){
+                    TradingOrderAddMemberMessageAAQToPartner l1= (TradingOrderAddMemberMessageAAQToPartner) addMessages1[i];
+                    TradingOrderAddMemberMessageAAQToPartner l2= (TradingOrderAddMemberMessageAAQToPartner) addMessages1[j];
+                    if(l1.getCreateTime().after(l2.getCreateTime())){
+                        addMessages1[i]=l2;
+                        addMessages1[j]=l1;
+                    }
                 }
             }
-        }
 
-        List<TradingOrderGetOrders> lists=new ArrayList<TradingOrderGetOrders>();
-        List<TradingOrderGetOrders> lists1=new ArrayList<TradingOrderGetOrders>();
-        if(messages!=null&&messages.size()>0){
-            modelMap.put("message",messages.get(0));
-            modelMap.put("sender",messages.get(0).getSender());
-            modelMap.put("recipient",messages.get(0).getRecipientuserid());
-            lists=iTradingOrderGetOrders.selectOrderGetOrdersByBuyerAndItemid(messages.get(0).getItemid(),messages.get(0).getSender());
-        }
-        if(lists!=null&&lists.size()>0){
-            lists1=iTradingOrderGetOrders.selectOrderGetOrdersByTransactionId(lists.get(0).getTransactionid(),lists.get(0).getSelleruserid());
-        }
-        List<String> palpays=new ArrayList<String>();
-        List<String> grossdetailamounts=new ArrayList<String>();
-        List<String> pictures=new ArrayList<String>();
-        List<PaypalVO> accs=new ArrayList<PaypalVO>();
-        for(TradingOrderGetOrders order:lists){
-            List<TradingOrderGetSellerTransactions> sellerTransactions=iTradingOrderGetSellerTransactions.selectTradingOrderGetSellerTransactionsByTransactionId(order.getTransactionid());
-            if(sellerTransactions!=null&&sellerTransactions.size()>0){
-                palpays.add(sellerTransactions.get(0).getExternaltransactionid());
+            List<TradingOrderGetOrders> lists=new ArrayList<TradingOrderGetOrders>();
+            List<TradingOrderGetOrders> lists1=new ArrayList<TradingOrderGetOrders>();
+            if(messages!=null&&messages.size()>0){
+                modelMap.put("message",messages.get(0));
+                modelMap.put("sender",messages.get(0).getSender());
+                modelMap.put("recipient",messages.get(0).getRecipientuserid());
+                if(!"eBay".equals(messages.get(0).getSender())){
+                    lists=iTradingOrderGetOrders.selectOrderGetOrdersByBuyerAndItemid(messages.get(0).getItemid(),messages.get(0).getSender());
+                }
+            }
+            if(lists!=null&&lists.size()>0){
+                lists1=iTradingOrderGetOrders.selectOrderGetOrdersByTransactionId(lists.get(0).getTransactionid(),lists.get(0).getSelleruserid());
+            }
+            List<String> palpays=new ArrayList<String>();
+            List<String> grossdetailamounts=new ArrayList<String>();
+            List<String> pictures=new ArrayList<String>();
+            List<PaypalVO> accs=new ArrayList<PaypalVO>();
+            for(TradingOrderGetOrders order:lists){
+                List<TradingOrderGetSellerTransactions> sellerTransactions=iTradingOrderGetSellerTransactions.selectTradingOrderGetSellerTransactionsByTransactionId(order.getTransactionid());
+                if(sellerTransactions!=null&&sellerTransactions.size()>0){
+                    palpays.add(sellerTransactions.get(0).getExternaltransactionid());
                 /*UsercontrollerEbayAccount u= iUsercontrollerEbayAccount.selectByEbayAccount(order.getSelleruserid());
                 Map map =new HashMap();
                 map.put("paypalId",u.getId());
                 map.put("transactionID",sellerTransactions.get(0).getExternaltransactionid());
                 PaypalVO acc = payPalService.getTransactionDetails(map);*/
-                Map map =new HashMap();
-                map.put("paypalId",1l);
-                map.put("transactionID","4RJ37607494399203");
-                PaypalVO acc = payPalService.getTransactionDetails(map);
-                accs.add(acc);
-            }else{
-                palpays.add("");
-            }
-            List<TradingOrderGetAccount> accountlist=iTradingOrderGetAccount.selectTradingOrderGetAccountByTransactionId(order.getTransactionid());
-            if(accountlist!=null&&accountlist.size()>0){
-                for(TradingOrderGetAccount account:accountlist){
-                    if("成交費".equals(account.getDescription())){
-                        grossdetailamounts.add(account.getGrossdetailamount());
-                    }else{
-                        grossdetailamounts.add("");
+                    Map map =new HashMap();
+                    map.put("paypalId",1l);
+                    map.put("transactionID","4RJ37607494399203");
+                    PaypalVO acc = payPalService.getTransactionDetails(map);
+                    accs.add(acc);
+                }else{
+                    palpays.add("");
+                }
+                List<TradingOrderGetAccount> accountlist=iTradingOrderGetAccount.selectTradingOrderGetAccountByTransactionId(order.getTransactionid());
+                if(accountlist!=null&&accountlist.size()>0){
+                    for(TradingOrderGetAccount account:accountlist){
+                        if("成交費".equals(account.getDescription())){
+                            grossdetailamounts.add(account.getGrossdetailamount());
+                        }else{
+                            grossdetailamounts.add("");
+                        }
                     }
                 }
+                String ItemId=order.getItemid();
+                List<TradingOrderGetItem> itemList= iTradingOrderGetItem.selectOrderGetItemByItemId(ItemId);
+                if(itemList!=null&&itemList.size()>0){
+                    Long pictureid=itemList.get(0).getPicturedetailsId();
+                    List<TradingOrderPictureDetails> pictureDetailses=iTradingOrderPictureDetails.selectOrderGetItemById(pictureid);
+                    if(pictureDetailses!=null&&pictureDetailses.size()>0){
+                        pictures.add(pictureDetailses.get(0).getPictureurl());
+                    }else{
+                        pictures.add("");
+                    }
+                }
+
             }
-            String ItemId=order.getItemid();
-            List<TradingOrderGetItem> itemList= iTradingOrderGetItem.selectOrderGetItemByItemId(ItemId);
-            if(itemList!=null&&itemList.size()>0){
-                Long pictureid=itemList.get(0).getPicturedetailsId();
-                List<TradingOrderPictureDetails> pictureDetailses=iTradingOrderPictureDetails.selectOrderGetItemById(pictureid);
-                if(pictureDetailses!=null&&pictureDetailses.size()>0){
-                    pictures.add(pictureDetailses.get(0).getPictureurl());
-                }else{
-                    pictures.add("");
+            List<TradingOrderSenderAddress> senderAddresses=new ArrayList<TradingOrderSenderAddress>();
+            if(lists1!=null&&lists1.size()>0){
+                senderAddresses=iTradingOrderSenderAddress.selectOrderSenderAddressByOrderId(lists1.get(0).getOrderid());
+                modelMap.put("orderId",lists1.get(0).getOrderid());
+                modelMap.put("order",lists1.get(0));
+                modelMap.put("sender",lists1.get(0).getBuyeruserid());
+                modelMap.put("recipient",lists1.get(0).getSelleruserid());
+            }
+            TradingOrderSenderAddress type1=new TradingOrderSenderAddress();
+            TradingOrderSenderAddress type2=new TradingOrderSenderAddress();
+            for(TradingOrderSenderAddress senderAddresse:senderAddresses){
+                if("1".equals(senderAddresse.getType())){
+                    type1=senderAddresse;
+                }
+                if("2".equals(senderAddresse.getType())){
+                    type2=senderAddresse;
                 }
             }
-
-        }
-        List<TradingOrderSenderAddress> senderAddresses=new ArrayList<TradingOrderSenderAddress>();
-        if(lists1!=null&&lists1.size()>0){
-            senderAddresses=iTradingOrderSenderAddress.selectOrderSenderAddressByOrderId(lists1.get(0).getOrderid());
-            modelMap.put("orderId",lists1.get(0).getOrderid());
-            modelMap.put("order",lists1.get(0));
-            modelMap.put("sender",lists1.get(0).getBuyeruserid());
-            modelMap.put("recipient",lists1.get(0).getSelleruserid());
-        }
-        TradingOrderSenderAddress type1=new TradingOrderSenderAddress();
-        TradingOrderSenderAddress type2=new TradingOrderSenderAddress();
-        for(TradingOrderSenderAddress senderAddresse:senderAddresses){
-            if("1".equals(senderAddresse.getType())){
-                type1=senderAddresse;
+            if(lists!=null&&lists.size()>0){
+                modelMap.put("flag","true");
+            }else{
+                modelMap.put("flag","false");
             }
-            if("2".equals(senderAddresse.getType())){
-                type2=senderAddresse;
-            }
-        }
-        if(lists!=null&&lists.size()>0){
-            modelMap.put("flag","true");
-        }else{
-            modelMap.put("flag","false");
-        }
        /* modelMap.put("messages",messages);
         modelMap.put("messageID",messages.get(0).getMessageid());*/
         modelMap.put("addMessage1",addMessages1);

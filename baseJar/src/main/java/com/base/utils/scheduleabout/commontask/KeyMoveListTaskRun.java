@@ -20,6 +20,9 @@ import com.base.xmlpojo.trading.addproduct.Item;
 import com.trading.service.ITradingItem;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
+import org.dom4j.Document;
+import org.dom4j.DocumentHelper;
+import org.dom4j.Element;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -68,10 +71,17 @@ public class KeyMoveListTaskRun extends BaseScheduledClass implements Scheduleda
                     String res = resMap.get("message");
                     String ack = SamplePaseXml.getVFromXmlString(res, "Ack");
                     if ("Success".equals(ack)) {//ＡＰＩ成功请求，保存数据
+                        //获取分类名称
+                        Item item = new Item();
+                        Document document= DocumentHelper.parseText(res);
+                        Element rootElt = document.getRootElement();
+                        Element element = rootElt.element("Item");
+                        String categoryName = element.element("PrimaryCategory").elementText("CategoryName");
+                        categoryName = categoryName.replace(":","->");
                         Item itemrs = SamplePaseXml.getItem(res);
                         itemrs.setUUID(kml.getUserId() + "");
                         itemrs.setSite(kml.getSiteId());
-                        iTradingItem.saveListingItem(itemrs, kml);
+                        iTradingItem.saveListingItem(itemrs, kml,categoryName);
                         //保存成功更新任务表
                         kml.setTaskFlag("1");
                         keyMapper.updateByPrimaryKeySelective(kml);

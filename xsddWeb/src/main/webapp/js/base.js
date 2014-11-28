@@ -20,6 +20,8 @@ var Base={
         return typeof object == "undefined";
     },
     token: function (async) {
+        var refUrl=location.href;
+        if(refUrl.indexOf("mainFrame.do")>-1){return;}
         async = async === undefined ? true : async;
         $().invoke(path+"/ajax/getToken.do", {}, function (message, re) {
             _token=re;
@@ -104,7 +106,7 @@ if(url.indexOf("?")==-1){
 
                         if(re["bool"] === false) {
                             if(re["message"]=='sessionStatusFalse'){//如果是session过期错误
-                                alert("登陆已超时!");
+                                try{oldAlert("登陆已超时!");}catch (e){alert("登陆已超时!")}
                                 top.location=path+'/login.jsp';
                                 return;
                             }
@@ -116,7 +118,7 @@ if(url.indexOf("?")==-1){
                         return;
 
                     }else{
-                        alert("数据格式不对!"+responseText)
+                        oldAlert("数据格式不对!"+responseText)
                     }
 
 

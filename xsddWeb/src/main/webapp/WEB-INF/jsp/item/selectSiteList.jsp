@@ -29,6 +29,11 @@
             W.siteListPage.close();
         }
     </script>
+    <style>
+        body{
+            background-color: #ffffff;
+        }
+    </style>
 </head>
 <body>
     <div style="height: 30px;"></div>

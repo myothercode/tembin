@@ -16,6 +16,12 @@
         body {
             background-color: #ffffff;
         }
+        .selectboxit-container .selectboxit{
+            width: 300px;
+        }
+        .selectboxit-options {
+            width: 270px;
+        }
     </style>
     <script>
         var api = frameElement.api, W = api.opener;
@@ -50,11 +56,14 @@
                 $("textarea").attr("disabled", true);
                 $("button").hide();
             }
+            $("select").selectBoxIt({});
         });
         function winColse(){
             W.itemAddressList.close();
         }
     </script>
+    <link href=
+          <c:url value="/css/basecss/conter.css"/> type="text/css" rel="stylesheet"/>
 </head>
 <c:set value="${itemAddress}" var="item"/>
 <body>
@@ -65,55 +74,51 @@
 <div class="modal-body">
     <form class="form-horizontal" role="form" id="itemAddressForm">
         <table width="90%" border="0" style="margin-left:40px;">
-            <tr>
+            <tr style="height: 34px;">
                 <td width="13%" height="28" align="right">名称：</td>
                 <td width="87%" height="28">
-                    <div class="newselect" style="margin-top:9px;">
-                        <input type="text" name="name" id="name" value="${item.name}" placeholder=""
-                               class="form-controlsd validate[required]">
+                    <div class="newselect" style="margin-top:0px;">
+                        <input type="text" name="name" id="name" style="width: 300px;" value="${item.name}" placeholder=""
+                               class="form-control validate[required]">
                         <input value="${item.id}" name="id" id="id" type="hidden">
                     </div>
                 </td>
             </tr>
-            <tr>
+            <tr style="height: 34px;">
                 <td width="20%" height="28" align="right">物品所在地：</td>
                 <td width="87%" height="28">
-                    <div class="newselect" style="margin-top:9px;">
+                    <div class="newselect" style="margin-top:0px;">
                         <input type="text" placeholder="" name="address" id="address"
-                               value="${item.address}" class="form-controlsd validate[required]">
+                               value="${item.address}" style="width: 300px;" class="form-control validate[required]">
                     </div>
                 </td>
             </tr>
-            <tr>
+            <tr style="height: 34px;">
                 <td height="28" align="right">国家：</td>
-                <td height="28" style=" padding-left:4px;">
-                    <div class="col-lg-10">
-                        <div class="ui-select" style="margin-top:9px;">
-                            <select name="countryList" style="width: 300px;">
-                                <c:forEach items="${countryList}" var="countryList">
-                                    <c:if test="${item.countryId==countryList.id}">
-                                        <option value="${countryList.id}"
-                                                selected="selected">${countryList.name}</option>
-                                    </c:if>
-                                    <c:if test="${item.countryId!=countryList.id}">
-                                        <option value="${countryList.id}">${countryList.name}</option>
-                                    </c:if>
-                                </c:forEach>
-                            </select>
-                        </div>
-                    </div>
+                <td height="28">
+                    <select name="countryList">
+                        <c:forEach items="${countryList}" var="countryList">
+                            <c:if test="${item.countryId==countryList.id}">
+                                <option value="${countryList.id}"
+                                        selected="selected">${countryList.name}</option>
+                            </c:if>
+                            <c:if test="${item.countryId!=countryList.id}">
+                                <option value="${countryList.id}">${countryList.name}</option>
+                            </c:if>
+                        </c:forEach>
+                    </select>
                 </td>
             </tr>
-            <tr>
+            <tr style="height: 34px;">
                 <td width="13%" height="28" align="right">邮编：</td>
                 <td width="87%" height="28">
-                    <div class="newselect" style="margin-top:9px;">
-                        <input type="text" name="postalCode" id="postalCode" value="${item.postalcode}"
-                               placeholder="" class="form-controlsd validate[required]">
+                    <div class="newselect" style="margin-top:0px;">
+                        <input type="text" name="postalCode" style="width: 300px;" id="postalCode" value="${item.postalcode}"
+                               placeholder="" class="form-control validate[required]">
                     </div>
                 </td>
             </tr>
-            <tr>
+            <tr style="height: 34px;">
                 <td height="28" align="right"></td>
                 <td height="28" style=" padding-top:22px;">
                     <button type="button" class="net_put" onclick="submitCommit();">确定</button>

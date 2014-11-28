@@ -13,6 +13,8 @@
 <c:set value="${dis}" var="dis" />
 <head>
     <title></title>
+    <link href=
+          <c:url value="/css/basecss/conter.css"/> type="text/css" rel="stylesheet"/>
     <script>
         $(document).ready(function() {
             $("#selectflag").bind("click",function(){
@@ -66,6 +68,7 @@
                 $("textarea").attr("disabled",true);
                 $("button").hide();
             }
+            $("select").selectBoxIt({});
         });
         var api = frameElement.api, W = api.opener;
         function submitCommit(){
@@ -104,39 +107,37 @@
         <table width="90%" border="0" style="margin-left:40px;">
             <tr>
                 <td width="13%" height="28" align="right">名称：</td>
-                <td width="87%" height="28"><div class="newselect" style="margin-top:9px;">
-                    <input type="text" name="name" id="name" value="${dis.name}"   placeholder="" class="form-controlsd validate[required]">
+                <td width="87%" height="28"><div class="newselect">
+                    <input type="text" name="name" id="name" value="${dis.name}"   placeholder="" class="form-control validate[required]">
                     <input type="hidden" name="id" id="id" value="${dis.id}">
                 </div></td>
             </tr>
 
             <tr>
                 <td height="28" align="right">帐户：</td>
-                <td height="28" style=" padding-left:4px;"><div class="col-lg-10">
-                    <div class="ui-select" style="margin-top:9px;">
-                        <select name="ebayAccount"  class="validate[required]" style="width: 300px;">
-                            <c:forEach var="li" items="${userli}">
-                                <c:if test="${li.id==dis.ebayAccount}">
-                                    <option value="${li.id}" selected="selected">${li.ebayName}</option>
-                                </c:if>
-                                <c:if test="${li.id!=dis.ebayAccount}">
-                                    <option value="${li.id}">${li.ebayName}</option>
-                                </c:if>
-                            </c:forEach>
-                        </select>
-                    </div>
-                </div></td>
+                <td height="28">
+                    <select name="ebayAccount"  class="validate[required]" style="width: 300px;">
+                        <c:forEach var="li" items="${userli}">
+                            <c:if test="${li.id==dis.ebayAccount}">
+                                <option value="${li.id}" selected="selected">${li.ebayName}</option>
+                            </c:if>
+                            <c:if test="${li.id!=dis.ebayAccount}">
+                                <option value="${li.id}">${li.ebayName}</option>
+                            </c:if>
+                        </c:forEach>
+                    </select>
+                </td>
             </tr>
             <tr>
                 <td width="13%" height="28" align="right">开始时间：</td>
-                <td width="87%" height="28"><div class="newselect" style="margin-top:9px;">
-                    <input name="disStarttime"  class="form-controlsd validate[required]" id="disStarttime" value="<fmt:formatDate value="${dis.disStarttime}" pattern="yyyy-MM-dd HH:mm"/>" type="text" onfocus="WdatePicker({isShowWeek:true,dateFmt:'yyyy-MM-dd HH:mm'})"/>
+                <td width="87%" height="28"><div class="newselect">
+                    <input name="disStarttime"  class="form-control validate[required]" id="disStarttime" value="<fmt:formatDate value="${dis.disStarttime}" pattern="yyyy-MM-dd HH:mm"/>" type="text" onfocus="WdatePicker({isShowWeek:true,dateFmt:'yyyy-MM-dd HH:mm'})"/>
                 </div></td>
             </tr>
             <tr>
                 <td width="13%" height="28" align="right">结束时间：</td>
-                <td width="87%" height="28"><div class="newselect" style="margin-top:9px;">
-                    <input name="disEndtime"  class="form-controlsd validate[required]" id="disEndtime" value="<fmt:formatDate value="${dis.disEndtime}" pattern="yyyy-MM-dd HH:mm"/>" type="text" onfocus="WdatePicker({isShowWeek:true,dateFmt:'yyyy-MM-dd HH:mm'})"/>
+                <td width="87%" height="28"><div class="newselect">
+                    <input name="disEndtime"  class="form-control validate[required]" id="disEndtime" value="<fmt:formatDate value="${dis.disEndtime}" pattern="yyyy-MM-dd HH:mm"/>" type="text" onfocus="WdatePicker({isShowWeek:true,dateFmt:'yyyy-MM-dd HH:mm'})"/>
                 </div></td>
             </tr>
             <tr>

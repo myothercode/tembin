@@ -1,5 +1,6 @@
 package com.trading.service.impl;
 
+import com.base.database.trading.mapper.TradingItemMapper;
 import com.base.database.trading.mapper.TradingTimerListingMapper;
 import com.base.database.trading.model.TradingTimerListing;
 import com.base.database.trading.model.TradingTimerListingExample;
@@ -23,23 +24,41 @@ public class TradingTimerListingImpl implements com.trading.service.ITradingTime
     @Override
     public void saveTradingTimer(TradingTimerListingWithBLOBs tradingTimerListing) throws Exception {
         ObjectUtils.toInitPojoForInsert(tradingTimerListing);
-        this.tradingTimerListingMapper.insertSelective(tradingTimerListing);
+        TradingTimerListingWithBLOBs ttlw = this.selectByItem(tradingTimerListing.getItem()+"");
+        if(ttlw==null){
+            this.tradingTimerListingMapper.insertSelective(tradingTimerListing);
+        }else{
+            tradingTimerListing.setId(ttlw.getId());
+            tradingTimerListing.setCheckFlag("0");
+            this.tradingTimerListingMapper.updateByPrimaryKeyWithBLOBs(tradingTimerListing);
+        }
     }
 
     @Override
     public void delTradingTimer(String itemid){
         TradingTimerListingExample ttle = new TradingTimerListingExample();
         ttle.createCriteria().andItemEqualTo(Long.parseLong(itemid)).andCheckFlagEqualTo("0").andTimerFlagEqualTo("0");
-        List<TradingTimerListing> littl = this.tradingTimerListingMapper.selectByExample(ttle);
+        List<TradingTimerListingWithBLOBs> littl = this.tradingTimerListingMapper.selectByExampleWithBLOBs(ttle);
         if(littl==null||littl.size()==0){
             //未找到数据
         }else{
-            for(TradingTimerListing ttl :littl){
+            for(TradingTimerListingWithBLOBs ttl :littl){
                 ttl.setCheckFlag("1");
-                this.tradingTimerListingMapper.updateByPrimaryKeySelective((TradingTimerListingWithBLOBs) ttl);
+                this.tradingTimerListingMapper.updateByPrimaryKeySelective(ttl);
             }
         }
+    }
 
+    @Override
+    public TradingTimerListingWithBLOBs selectByItem(String itemId){
+        TradingTimerListingExample ttle =new TradingTimerListingExample();
+        ttle.createCriteria().andItemEqualTo(Long.parseLong(itemId));
+        List<TradingTimerListingWithBLOBs> libl = this.tradingTimerListingMapper.selectByExampleWithBLOBs(ttle);
+        if(libl!=null&&libl.size()>0){
+            return libl.get(0);
+        }else{
+            return null;
+        }
     }
 
 

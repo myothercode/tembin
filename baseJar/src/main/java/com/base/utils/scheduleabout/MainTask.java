@@ -60,6 +60,7 @@ public class MainTask {
     public static final String SYNCHRONIZE_GET_MESSAGES_TIMER="synchronize_get_messages_timer";//定时同步消息每两分钟
     public static final String SYNCHRONIZE_GET_USER_CASES="synchronize_get_user_cases";//定时每天插入账号去获取纠纷
     public static final String SYNCHRONIZE_GET_USER_CASES_TIMER="synchronize_get_user_cases_timer";//定时同步纠纷每两分钟
+    public static final String ITEM_INFORMATION_TYPE="item_information_type";//定时每两分钟去调用商品分类名称和ID
 
     /**
      * 记录任务上次运行的时间
@@ -83,6 +84,7 @@ public class MainTask {
         doList.add(SYNCHRONIZE_FEED_BACK_TIMER);
         doList.add(SYNCHRONIZE_GET_MESSAGES_TIMER);
         doList.add(SYNCHRONIZE_GET_USER_CASES_TIMER);
+        doList.add(ITEM_INFORMATION_TYPE);
         if (isStartTimerTask==null) {
             isStartTimerTask = ApplicationContextUtil.getBean(CommAutowiredClass.class);
         }

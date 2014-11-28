@@ -68,6 +68,7 @@ public class SamplePaseXml {
         item.setConditionID(Integer.parseInt(element.elementText("CategoryID")==null?"1000":element.elementText("CategoryID")));
         PrimaryCategory pc = new PrimaryCategory();
         pc.setCategoryID(element.element("PrimaryCategory").elementText("CategoryID"));
+
         item.setPrimaryCategory(pc);
         String listType = "";
         if("FixedPriceItem".equals(element.elementText("ListingType"))){
@@ -601,6 +602,52 @@ public class SamplePaseXml {
      */
     public static List<TradingReseCategory> selectCategoryByKey(String xml,String key) throws DocumentException {
         List<TradingReseCategory> litrc = new ArrayList();
+        //之前是做商品所属分类查询
+        /*Document document= DocumentHelper.parseText(xml);
+        Element rootElt = document.getRootElement();
+        Element recommend = rootElt.element("searchResult");
+        Iterator<Element> iter = recommend.elementIterator("item");
+        while (iter.hasNext()){
+            Element ele=iter.next();
+            Element elecate = ele.element("primaryCategory");
+            TradingReseCategory trc = new TradingReseCategory();
+            trc.setId(Long.parseLong(elecate.elementText("categoryId")));
+            trc.setCategoryId(elecate.elementText("categoryId"));
+            trc.setCategoryName(StringEscapeUtils.escapeHtml(elecate.elementText("categoryName")));
+            trc.setCategoryKey(key);
+            litrc.add(trc);
+        }*/
+        //商品分类目录查询
+        Document document= DocumentHelper.parseText(xml);
+        Element rootElt = document.getRootElement();
+        Element recommend = rootElt.element("categoryHistogramContainer");
+        Iterator<Element> ite = recommend.elementIterator("categoryHistogram");
+        while (ite.hasNext()){
+            Element ele = ite.next();
+            Iterator<Element> child = ele.elementIterator("childCategoryHistogram");
+            while (child.hasNext()){
+                Element chiel = child.next();
+                TradingReseCategory trc = new TradingReseCategory();
+                trc.setId(Long.parseLong(chiel.elementText("categoryId")));
+                trc.setCategoryId(chiel.elementText("categoryId"));
+                trc.setCategoryName(StringEscapeUtils.escapeHtml(ele.elementText("categoryName"))+" : "+StringEscapeUtils.escapeHtml(chiel.elementText("categoryName")));
+                trc.setCategoryKey(key);
+                litrc.add(trc);
+            }
+            break;
+        }
+        return litrc;
+    }
+    /**
+     * 通过Title 商品所属分类查询
+     * @param xml
+     * @param key
+     * @return
+     * @throws DocumentException
+     */
+    public static List<TradingReseCategory> selectCategoryBytitle(String xml,String key) throws DocumentException {
+        List<TradingReseCategory> litrc = new ArrayList();
+        //之前是做商品所属分类查询
         Document document= DocumentHelper.parseText(xml);
         Element rootElt = document.getRootElement();
         Element recommend = rootElt.element("searchResult");
@@ -615,6 +662,7 @@ public class SamplePaseXml {
             trc.setCategoryKey(key);
             litrc.add(trc);
         }
+
         return litrc;
     }
 

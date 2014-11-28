@@ -19,6 +19,7 @@
 
     <title></title>
     <script type="text/javascript">
+        var diagTempPar_=0;
         var csRightHeight;
         $(document).ready(function(){
             getMenu();

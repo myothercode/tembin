@@ -11,6 +11,8 @@
 <html>
 <head>
     <title></title>
+    <link href=
+          <c:url value="/css/basecss/conter.css"/> type="text/css" rel="stylesheet"/>
     <script>
         function checkData(obj){
             if($(obj).parent().find("select").attr("disabled")=="disabled"){
@@ -117,6 +119,7 @@
                 });
                 $("button").hide();
             }
+            $("select[name='site']").selectBoxIt({});
         });
         function showFlag(obj){
             if(obj=="1"){
@@ -136,6 +139,7 @@
     </style>
 </head>
 <body>
+<br>
 <%--<div class="newtitle_1" style="margin: 15px;">买家要求</div>--%>
 <div style="padding-left: 80px;">
     <form id="buyerRequireForm">
@@ -144,23 +148,19 @@
             <tr>
                 <td align="right">名称:</td>
                 <td>
-                    <div class="newselect" style="margin-top:9px;">
-                        <input type="text" class="form-controlsd" name="buyName" id="buyName" value="${buyerRequires.name}">
+                    <div class="newselect">
+                        <input type="text" class="form-control" name="buyName" id="buyName" value="${buyerRequires.name}">
                     </div>
                 </td>
             </tr>
             <tr>
                 <td align="right">站点:</td>
-                <td style=" padding-left:4px;">
-                    <div class="col-lg-10">
-                        <div class="ui-select" style="margin-top:9px;">
-                            <select name="site" style="width: 300px;">
-                                <c:forEach items="${siteList}" var="sites">
-                                    <option value="${sites.id}">${sites.name}</option>
-                                </c:forEach>
-                            </select>
-                        </div>
-                    </div>
+                <td>
+                    <select name="site" style="width: 300px;">
+                        <c:forEach items="${siteList}" var="sites">
+                            <option value="${sites.id}">${sites.name}</option>
+                        </c:forEach>
+                    </select>
                 </td>
             </tr>
             <tr>

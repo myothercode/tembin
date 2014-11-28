@@ -45,6 +45,7 @@ public class TradingOrderGetItemImpl implements com.trading.service.ITradingOrde
         TradingOrderGetItemExample itemExample=new TradingOrderGetItemExample();
         TradingOrderGetItemExample.Criteria cr=itemExample.createCriteria();
         cr.andItemidEqualTo(ItemId);
+        /*cr.andItemidLike(ItemId);*/
         List<TradingOrderGetItem> lists=tradingOrderGetItemMapper.selectByExample(itemExample);
         return lists;
     }

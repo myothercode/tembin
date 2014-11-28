@@ -21,7 +21,7 @@
     <table>
         <tr>
             <td align="right">标题：</td>
-            <td align="left"><input type="text" value="${title}" id="title"class="key_1"><input name="newbut" onclick="getRese()" type="button" class="key_2"></td>
+            <td align="left"><input type="text" style="border-left-width: 1px;" value="${title}" id="title"class="key_1"><input name="newbut" onclick="getRese()" type="button" class="key_2"></td>
         </tr>
     </table>
 </div>

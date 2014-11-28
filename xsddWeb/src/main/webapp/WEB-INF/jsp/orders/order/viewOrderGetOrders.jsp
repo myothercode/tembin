@@ -464,7 +464,7 @@
         <tbody><tr>
             <td width="772"></td>
             <td width="9" rowspan="5" valign="top">&nbsp;</td>
-           <%-- <c:if test="${flag=='true'}">--%>
+            <c:if test="${flag=='true'}">
             <td rowspan="5" valign="top" style="margin-left:20px; padding-left:15px; padding-top:20px; padding-right:20px; line-height:25px;background:#F4F4F4"><strong>订单号</strong><br>
                 ${order.orderid}(已配货)<br>
                 <strong>物流跟踪号</strong><br>
@@ -502,7 +502,7 @@
                     </tr>
                     </tbody></table>--%>
             </td>
-           <%-- </c:if>--%>
+            </c:if>
         </tr>
         <tr>
             <%--<td width="772" align="center" bgcolor="#F6F6F6" style="color:#2395F3">查看更多历史信息...</td>--%>
@@ -607,7 +607,13 @@
                     <input type="hidden" name="buyeruserid1" value="${addMessage1[0].recipientid}">
                     <input type="hidden" name="selleruserid1" value="${addMessage1[0].sender}">
                     <input type="hidden" name="subject" value="${addMessage1[0].subject}">
-                <textarea name="body"  id="textarea" style="width:772px;" rows="5"  class="newco_one validate[required]"></textarea>
+                    <c:if test="${flag=='true'}">
+                        <textarea name="body"  id="textarea" style="width:772px;" rows="5"  class="newco_one validate[required]"></textarea>
+                    </c:if>
+                    <c:if test="${flag=='false'}">
+                        <textarea name="body"  id="textarea" style="width:1125px;" rows="5"  class="newco_one1 validate[required]"></textarea>
+                    </c:if>
+
                 </form>
                 <div class="modal-footer" style="margin-top:20px; float:left; width:100%;">
                 <%--<button type="button" class="btn btn-primary">保存</button>--%>

@@ -84,10 +84,12 @@
     </script>
 </head>
 <body>
-<div>
+<br>
+<br>
+<div style="padding-left: 5px;">
 选取一个或多个选项，您可以不运送到某个国家或者整个地区
 </div>
-<div>
+<div style="padding-left: 5px;">
     <div>Domestic</div>
     <div>
         <c:forEach var="data" items="${li1}"  varStatus="da">
@@ -101,7 +103,7 @@
     </div>
 </div>
 <br>
-<div>
+<div style="padding-left: 5px;">
     <div>International</div>
     <div>
         <c:forEach var="data" items="${li2}" varStatus="da">
@@ -112,6 +114,9 @@
                 <span style="text-align:left;display:-moz-inline-box; display:inline-block; width:250px;">
                     <input type="checkbox" name="location" value="${data.id}" value1="${data.name}">${data.name}
                     <span>
+                        <select name="${data.name}" id="${data.id}">
+
+                        </select>
                     [<a href="javascript:void(0)" onclick="selectCountry('${data.id}',this)">
                     显示所有国家
                     </a>]
@@ -123,7 +128,7 @@
     </div>
 </div>
 <br>
-<div>
+<div style="padding-left: 5px;">
     <div>Additional Locations</div>
     <div>
         <br>
@@ -134,7 +139,7 @@
         </c:forEach>
     </div>
 </div>
-<div style="background-color: #F1F1F1;height: 60px;" id="showLocalTionName">
+<div style="background-color: #F1F1F1;height: 60px;padding-left: 5px;" id="showLocalTionName">
     您尚未选择国家或地区
 </div>
 <input type="hidden" name="localTionValue" id="localTionValue">
@@ -146,8 +151,8 @@
 <input type="hidden" name="localTionValueAll" id="localTionValueAll">
 <input type="hidden" name="localTionNameAll" id="localTionNameAll">
 
-<div>
-    <input name="quert" value="确定" onclick="selectNotLocaltion()" type="button">
+<div class="tbbay">
+    <a href="javascript:void(0)" onclick="selectNotLocaltion()">确定</a>
 </div>
 </body>
 </html>

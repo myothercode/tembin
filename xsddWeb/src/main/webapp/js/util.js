@@ -497,6 +497,82 @@ function generateMixedRandom(n) {
     return res;
 }
 
+/**一个查看页面的遮罩层*/
+function converDiv_(){
+	var div="<div id=\"pop1\" style=\"left: 0px; top: 0px; width: 100%; height: 100%; overflow: hidden; opacity:0.1;filter:  alpha(opacity=0); position: fixed; z-index: 999; zoom: 1; background-image: none; background-attachment: scroll; background-repeat: repeat; background-position-x: 0%; background-position-y: 0%; background-color: #fff\" ></div>";
+	$('body').append(div);
+}
+
+
+/**获取最顶层window*/
+function getTopWin_(){
+	var obj=window.self;
+	while(true)
+	{
+		if(obj.document.getElementById("contentMaindiv"))
+		{
+			return obj;
+		}
+		obj=obj.window.parent;
+	}
+}
+
+/**一个替代alert的弹出提示框*/
+function myAlert(cont){
+	var topWin=getTopWin_();
+	//oldAlert($.type(top.windowCache.winDlg) )
+	//if(top.windowCache.winDlg){top.windowCache.winDlg.close();}
+	var isFirstOpen=topWin.diagTempPar_;
+	$("body").queue(function(){
+		try{openMyAlert(cont)}catch (e){oldAlert(cont);console.log(e)}
+	});
+	if(isFirstOpen==0 || isFirstOpen==null){
+		$("body").dequeue();
+	}
+	//oldAlert(top.windowCache.winDlg.config.id)
+
+}
+function openMyAlert(cont){
+	var topWin=getTopWin_();
+	//try{top.windowCache.winDlg.close()}catch (e){}
+	//var api = frameElement.api, W = api.opener;
+	topWin.diagTempPar_=topWin.$.dialog({title: '',
+		//id: 'myAlert2',
+		content: '<table style="width: 500px;height: 100px;font-weight: bold;text-align: center;font-size: 14px;letter-spacing: 4px">' +
+		'<tr><td>'+cont+'</td></tr>' +
+		'</table>',
+		max: false,
+		min: false,
+		//parent:W,
+		//time:5,
+		cancel: true,
+		cancelVal: '关闭',
+		width:500,
+		height:100,
+		init: function () {
+			var that = this, i = 5;
+			var fn = function () {
+				that.title(i + '秒后关闭');
+				!i && that.close();
+				i --;
+			};
+			topWin.timer = topWin.setInterval(fn, 1000);
+			fn();
+		},
+		close: function () {
+			topWin.clearInterval(topWin.timer);
+			//oldAlert($("body").queue().length)
+			if($("body").queue().length==1){
+				topWin.diagTempPar_=0;
+			}else{
+				$("body").dequeue();
+			}
+
+		},
+		lock:true
+	});
+}
+
 
 
 

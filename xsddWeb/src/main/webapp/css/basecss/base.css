@@ -3,7 +3,13 @@
 .tab_ZY th { height: 40px;border-top:0px solid #b7c0c7; border-bottom:1px solid #b7c0c7;text-align:left; padding:7px 0 7px 2px; background:#F7F7F7;font-weight: bold}
 .tab_ZY td { padding:7px 2px; border-bottom:1px solid #dddddd; color:#111111;background:#ffffff}
 .tab_ZY tr.alt td{background:#ffffff}
-.tab_ZY tr.over td{background:#e8f1ff; border-bottom:1px solid #bfd9ff; border-top:1px solid #bfd9ff;}
+.tab_ZY tr.over td{
+    -webkit-transition: all .5s;
+    -moz-transition: all .5s;
+    -ms-transition: all .5s;
+    -o-transition: all .5s;
+    transition: all .5s;
+    background:#e8f1ff; border-bottom:1px solid #bfd9ff; border-top:1px solid #bfd9ff;}
 .tab_ZY tr.clickCss td{background:#bdd8ff; border-bottom:1px solid #79aeff; border-top:1px solid #79aeff;}
 .tab_ZY td a { color:#1a93c2; text-decoration:none; cursor:pointer;}
 .tab_ZY td a:hover { color:#1a93c2; text-decoration:none; cursor:pointer;}
@@ -88,7 +94,7 @@
 }
 
 
-/**用ul和li模拟的下拉框的样式*/
+/**表格中操作列用ul和li模拟的下拉框的样式*/
 /*
 .select_box {list-style: none;width:60px; border:0px solid #ccc; padding-right:20px; padding-left:10px; background:url(../../img/107.gif) no-repeat 50px center; position:relative;}
 .select_box span {cursor:pointer; display:block; line-height:25px; width:100%; height:25px; overflow:hidden;}
@@ -96,8 +102,6 @@
 .son_ul {z-index: 999;margin:0;padding:0;width:70px; position:absolute; left:0; top:25px; border:1px dashed #ccc; background:#fff;}
 .son_ul li {margin:0;padding:0;display:block; line-height:25px; padding-left:10px; width:65px;list-style: none; }
 .hover {background:#ccc;}*/
-
-
 .wrapper-dropdown-5 {
     /* Size & position */
     position: relative;
@@ -223,20 +227,31 @@
 }
 
 
-/**普通table样式*/
+/**一种页面的普通table样式*/
 .mytable-striped{border-collapse:collapse;border-spacing:0;}
 .mytable-striped tbody tr:nth-child(odd) {background: #F6F6F6;}
 .mytable-striped tbody tr:nth-child(even) {background: #ffffff;}
-.mytable-striped tbody tr:hover{background: #F0F0F0;}
+.mytable-striped tbody tr:hover{
+    background: #F0F0F0;
+    -webkit-transition: all .5s;
+    -moz-transition: all .5s;
+    -ms-transition: all .5s;
+    -o-transition: all .5s;
+    transition: all .5s;}
 .mytable-striped tbody tr td{border-bottom:1px solid #bfd9ff;}
 
 .mytable-striped tbody th{border-bottom:1px solid #bfd9ff;}
-.mytable-striped tbody th{background-color: #ffffff;border-top:1px solid #bfd9ff;}
+.mytable-striped tbody th{background-color: #f1f1f1;border-top:1px solid #bfd9ff;}
 .mytable-striped tbody th:nth-child(1){border-left: 1px solid #bfd9ff;}
 .mytable-striped tbody th:nth-last-child(1){border-right: 1px solid #bfd9ff;}
 
 .mytable-striped tbody tr td:nth-child(1){border-left: 1px solid #bfd9ff;}
 .mytable-striped tbody tr td:nth-last-child(1){border-right: 1px solid #bfd9ff;}
+
+
+/**弹出框下面的按钮层样式*/
+.diagle-button-div{font-size: 12px;height: 30px;width: 100%;bottom: 0px;position: fixed;background-color: #E2E1E1;text-align: right;left: 0px;padding-top: 1px;}
+.diagle-button-div .myjqueryuibutton{font-size: 12px}
 
 
 

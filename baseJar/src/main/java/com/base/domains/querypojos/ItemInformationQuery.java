@@ -6,17 +6,18 @@ import com.base.database.publicd.model.PublicItemInformation;
  * Created by Administrtor on 2014/9/4.
  */
 public class ItemInformationQuery extends PublicItemInformation {
-    private String typeName;
+    private String typeName1;
     private String pictureUrl;
     private String remark;
     private Integer countNum;
     private Long typeId;
-    public String getTypeName() {
-        return typeName;
+
+    public String getTypeName1() {
+        return typeName1;
     }
 
-    public void setTypeName(String typeName) {
-        this.typeName = typeName;
+    public void setTypeName1(String typeName1) {
+        this.typeName1 = typeName1;
     }
 
     public String getPictureUrl() {

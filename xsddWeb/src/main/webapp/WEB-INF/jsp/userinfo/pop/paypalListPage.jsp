@@ -87,10 +87,10 @@
     <div id="paypalList">
 
     </div>
-<div style="height: 25px;width: 100%;bottom: 0px;position: fixed;background-color: lightblue;text-align: right;left: 0px;padding-top: 1px;">
-
+<div class="diagle-button-div">
     <div style="margin-right: 5px;">
-        <input type="checkbox" id="xxxx" value="1" />始终作为默认&nbsp;&nbsp;&nbsp;<button onclick="sureP()" style="height: 23px">确定选择</button> </div>
+        <input type="checkbox" id="xxxx" value="1" />始终作为默认&nbsp;&nbsp;&nbsp;<button class="myjqueryuibutton" onclick="sureP()" >确定选择</button>
+    </div>
 </div>
 </body>
 </html>

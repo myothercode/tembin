@@ -23,9 +23,9 @@ function loadDesciption(){
     $("#descriptionDetailsListTable").initTable({
         url:path + "/ajax/loadDescriptionDetailsList.do",
         columnData:[
-            {title:"名称",name:"name",width:"8%",align:"left"},
-            {title:"数据状态",name:"option1",width:"8%",align:"left",format:makeOption2s},
-            {title:"操作",name:"option1",width:"8%",align:"left",format:makeOption1descript}
+            {title:"&nbsp;&nbsp;名称",name:"name",width:"8%",align:"left",format:function(json){return "&nbsp;&nbsp;"+json.name;}},
+            {title:"数据状态",name:"option1",width:"8%",align:"center",format:makeOption2s},
+            {title:"&nbsp;&nbsp;&nbsp;&nbsp;操作",name:"option1",width:"8%",align:"left",format:makeOption1descript}
         ],
         selectDataNow:false,
         isrowClick:true,

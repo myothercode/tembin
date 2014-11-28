@@ -13,9 +13,9 @@ public interface ITradingListingSuccess {
 
     List<TradingListingSuccess> selectByItemid(String itemId);
 
-    List<ListingItemReportQuery> selectListingItemReport(String type,String flag,String soldflag);
+    List<ListingItemReportQuery> selectListingItemReport(long userid,String type,String flag,String soldflag);
 
-    List<ListingItemReportQuery> selectListingItemReportFee(String type, String flag, String soldflag);
+    List<ListingItemReportQuery> selectListingItemReportFee(long userid,String type, String flag, String soldflag);
 
     List<ListingItemReportQuery> selectListingItemSales(String type, String flag, String soldflag);
 }

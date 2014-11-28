@@ -220,9 +220,9 @@ public class UtilController extends BaseAction{
         sb.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
         sb.append("<findItemsByKeywordsRequest xmlns=\"http://www.ebay.com/marketplace/search/v1/services\">");
         sb.append("<keywords>" + title + "</keywords>");
-        sb.append("<OutputSelectorType>CategoryHistogram</OutputSelectorType>");
+        sb.append("<outputSelector>CategoryHistogram</outputSelector>");
         sb.append("<paginationInput>");
-        sb.append("<entriesPerPage>100</entriesPerPage>");
+        sb.append("<pageNumber>1</pageNumber><entriesPerPage>1</entriesPerPage>");
         sb.append("</paginationInput>");
         sb.append("</findItemsByKeywordsRequest>");
         List<TradingReseCategory> litr = new ArrayList<TradingReseCategory>();
@@ -249,7 +249,7 @@ public class UtilController extends BaseAction{
             }
         }
         PageJsonBean jsonBean=commonParmVO.getJsonBean();
-        jsonBean.setPageCount(10);
+        jsonBean.setPageCount(20);
         jsonBean.setPageNum(1);
         jsonBean.setTotal(litr.size());
         jsonBean.setList(litr);

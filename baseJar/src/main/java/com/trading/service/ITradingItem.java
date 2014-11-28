@@ -35,7 +35,7 @@ public interface ITradingItem {
 
     void updateTradingItem(Item item, TradingItemWithBLOBs tradingItem) throws Exception;
 
-    void saveListingItem(Item item, KeyMoveList kml) throws Exception;
+    void saveListingItem(Item item, KeyMoveList kml,String categoryName) throws Exception;
 
     // }
     void delItem(String[] ids);

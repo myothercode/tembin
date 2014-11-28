@@ -3,6 +3,7 @@ package com.feedback.controller;
 import com.base.database.customtrading.mapper.ItemReportMapper;
 import com.base.database.trading.model.TradingFeedBackDetail;
 import com.base.database.trading.model.TradingListingReport;
+import com.base.domains.SessionVO;
 import com.base.domains.querypojos.CommonParmVO;
 import com.base.domains.querypojos.FeedBackReportQuery;
 import com.base.domains.querypojos.ListingItemReportQuery;
@@ -13,6 +14,7 @@ import com.base.mybatis.page.PageJsonBean;
 import com.base.sampleapixml.APINameStatic;
 import com.base.userinfo.service.UserInfoService;
 import com.base.utils.cache.DataDictionarySupport;
+import com.base.utils.cache.SessionCacheSupport;
 import com.base.utils.common.DateUtils;
 import com.base.utils.threadpool.AddApiTask;
 import com.base.utils.xmlutils.SamplePaseXml;
@@ -216,45 +218,47 @@ public class FeedBackController extends BaseAction {
     @RequestMapping("/ajax/getItemReportList.do")
     @ResponseBody
     public void getItemReportList(ModelMap modelMap,CommonParmVO commonParmVO) throws Exception {
+        SessionVO c= SessionCacheSupport.getSessionVO();
         Map m = new HashMap();
         m.put("datestr", DateUtils.formatDate(new Date()));
+        m.put("userid",c.getId());
         List<TradingListingReport> lim = this.itemReportMapper.selectItemReportList(m);
         //当天刊登
-        List<ListingItemReportQuery> dayListing = this.iTradingListingSuccess.selectListingItemReport("1","1",null);
+        List<ListingItemReportQuery> dayListing = this.iTradingListingSuccess.selectListingItemReport(c.getId(),"1","1",null);
         //本周刊登
-        List<ListingItemReportQuery> weekListing = this.iTradingListingSuccess.selectListingItemReport("3","1",null);
+        List<ListingItemReportQuery> weekListing = this.iTradingListingSuccess.selectListingItemReport(c.getId(),"3","1",null);
         //本月刊登
-        List<ListingItemReportQuery> monthListing = this.iTradingListingSuccess.selectListingItemReport("5","1",null);
+        List<ListingItemReportQuery> monthListing = this.iTradingListingSuccess.selectListingItemReport(c.getId(),"5","1",null);
         //当天结束刊登
-        List<ListingItemReportQuery> dayendListing = this.iTradingListingSuccess.selectListingItemReport("1","2",null);
+        List<ListingItemReportQuery> dayendListing = this.iTradingListingSuccess.selectListingItemReport(c.getId(),"1","2",null);
         //本周结束刊登
-        List<ListingItemReportQuery> weekendListing = this.iTradingListingSuccess.selectListingItemReport("3","2",null);
+        List<ListingItemReportQuery> weekendListing = this.iTradingListingSuccess.selectListingItemReport(c.getId(),"3","2",null);
         //本月结束刊登
-        List<ListingItemReportQuery> monthendListing = this.iTradingListingSuccess.selectListingItemReport("5","2",null);
+        List<ListingItemReportQuery> monthendListing = this.iTradingListingSuccess.selectListingItemReport(c.getId(),"5","2",null);
 
         //当天结束刊登买出去有
-        List<ListingItemReportQuery> dayendListingSold = this.iTradingListingSuccess.selectListingItemReport("1","2","1");
+        List<ListingItemReportQuery> dayendListingSold = this.iTradingListingSuccess.selectListingItemReport(c.getId(),"1","2","1");
         //本周结束刊登买出去有
-        List<ListingItemReportQuery> weekendListingSold = this.iTradingListingSuccess.selectListingItemReport("3","2","1");
+        List<ListingItemReportQuery> weekendListingSold = this.iTradingListingSuccess.selectListingItemReport(c.getId(),"3","2","1");
         //本月结束刊登买出去有
-        List<ListingItemReportQuery> monthendListingSold = this.iTradingListingSuccess.selectListingItemReport("5","2","1");
+        List<ListingItemReportQuery> monthendListingSold = this.iTradingListingSuccess.selectListingItemReport(c.getId(),"5","2","1");
 
 
         //计算刊登费用
         //当天刊登费
-        List<ListingItemReportQuery> dayListingFee = this.iTradingListingSuccess.selectListingItemReportFee("1","1",null);
+        List<ListingItemReportQuery> dayListingFee = this.iTradingListingSuccess.selectListingItemReportFee(c.getId(),"1","1",null);
         //本周刊登费
-        List<ListingItemReportQuery> weekListingFee = this.iTradingListingSuccess.selectListingItemReportFee("3","1",null);
+        List<ListingItemReportQuery> weekListingFee = this.iTradingListingSuccess.selectListingItemReportFee(c.getId(),"3","1",null);
         //本月刊登费
-        List<ListingItemReportQuery> monthListingFee = this.iTradingListingSuccess.selectListingItemReportFee("5","1",null);
+        List<ListingItemReportQuery> monthListingFee = this.iTradingListingSuccess.selectListingItemReportFee(c.getId(),"5","1",null);
 
 
         //当天结束刊登费
-        List<ListingItemReportQuery> dayListingEndFee = this.iTradingListingSuccess.selectListingItemReportFee("1","2",null);
+        List<ListingItemReportQuery> dayListingEndFee = this.iTradingListingSuccess.selectListingItemReportFee(c.getId(),"1","2",null);
         //本周结束刊登费
-        List<ListingItemReportQuery> weekListingEndFee = this.iTradingListingSuccess.selectListingItemReportFee("3","2",null);
+        List<ListingItemReportQuery> weekListingEndFee = this.iTradingListingSuccess.selectListingItemReportFee(c.getId(),"3","2",null);
         //本月结束刊登费
-        List<ListingItemReportQuery> monthListingEndFee = this.iTradingListingSuccess.selectListingItemReportFee("5","2",null);
+        List<ListingItemReportQuery> monthListingEndFee = this.iTradingListingSuccess.selectListingItemReportFee(c.getId(),"5","2",null);
 
 
         //当天销售比
@@ -262,13 +266,13 @@ public class FeedBackController extends BaseAction {
         //昨天销售比
         List<ListingItemReportQuery> yesterdayListingSales = this.iTradingListingSuccess.selectListingItemSales("2","1",null);
         //本周销售比
-        List<ListingItemReportQuery> weekListingSales = this.iTradingListingSuccess.selectListingItemReportFee("3","1",null);
+        List<ListingItemReportQuery> weekListingSales = this.iTradingListingSuccess.selectListingItemReportFee(c.getId(),"3","1",null);
         //上周销售比
-        List<ListingItemReportQuery> thatweekListingSales = this.iTradingListingSuccess.selectListingItemReportFee("4","1",null);
+        List<ListingItemReportQuery> thatweekListingSales = this.iTradingListingSuccess.selectListingItemReportFee(c.getId(),"4","1",null);
         //本月销售比
-        List<ListingItemReportQuery> monthListingSales = this.iTradingListingSuccess.selectListingItemReportFee("5","1",null);
+        List<ListingItemReportQuery> monthListingSales = this.iTradingListingSuccess.selectListingItemReportFee(c.getId(),"5","1",null);
         //上月销售比
-        List<ListingItemReportQuery> thatmonthListingSales = this.iTradingListingSuccess.selectListingItemReportFee("6","1",null);
+        List<ListingItemReportQuery> thatmonthListingSales = this.iTradingListingSuccess.selectListingItemReportFee(c.getId(),"6","1",null);
 
 
         for(TradingListingReport tlr : lim){

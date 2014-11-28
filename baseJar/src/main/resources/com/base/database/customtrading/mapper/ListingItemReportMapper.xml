@@ -34,6 +34,9 @@
         <if test="soldflag!=null">
             and lid.QuantitySold>0
         </if>
+        <if test="userid!=null">
+            and lid.create_user=#{userid}
+        </if>
     </select>
 
 
@@ -57,9 +60,11 @@
         <if test="(datetype==5 or datetype==6) and flag==2">
             and DATE_FORMAT(su.end_date, '%Y-%m') = #{datestr}
         </if>
-
         <if test="soldflag!=null">
             and lid.QuantitySold>0
+        </if>
+        <if test="userid!=null">
+            and lid.create_user=#{userid}
         </if>
     </select>
 
@@ -84,9 +89,11 @@
         <if test="(datetype==5 or datetype==6) and flag==2">
             and DATE_FORMAT(su.end_date, '%Y-%m') = #{datestr}
         </if>
-
         <if test="soldflag!=null">
             and lid.QuantitySold>0
+        </if>
+        <if test="userid!=null">
+            and lid.create_user=#{userid}
         </if>
     </select>
 </mapper>

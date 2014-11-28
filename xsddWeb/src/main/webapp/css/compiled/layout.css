@@ -1716,7 +1716,7 @@ cursor: pointer;
 	color: #2495F4;FONT-SIZE: 16px; FLOAT: right; MARGIN-RIGHT: 10px
 }
 .listbox div {
-	BORDER-RIGHT: #6ce26c 2px solid; PADDING-RIGHT: 0.5em; BORDER-TOP: ##A1C7F5 0px solid; DISPLAY: none; PADDING-LEFT: 0.5em; BACKGROUND: #fff; PADDING-BOTTOM: 0.5em; BORDER-LEFT: #6ce26c 2px solid; TEXT-INDENT: 10px; LINE-HEIGHT: 22px; PADDING-TOP: 0.5em; BORDER-BOTTOM: #6ce26c 0px solid;margin-bottom:20px;
+	BORDER-RIGHT: #6ce26c 2px solid; PADDING-RIGHT: 0.5em; BORDER-TOP: #A1C7F5 0px solid; DISPLAY: none; PADDING-LEFT: 0.5em; BACKGROUND: #fff; PADDING-BOTTOM: 0.5em; BORDER-LEFT: #6ce26c 2px solid; TEXT-INDENT: 10px; LINE-HEIGHT: 22px; PADDING-TOP: 0.5em; BORDER-BOTTOM: #6ce26c 0px solid;margin-bottom:20px;
 }
 .jq div {
 	font-family: "微软雅黑", "宋体", Arial;
@@ -2194,7 +2194,7 @@ left: auto;
 	background-repeat: no-repeat;
 	background-position: 0px 0px;
 	padding: 10px;
-	height: 236px;
+	height: 177px;
 	color: #C6C6C6;
 	border-top-style: none;
 	border-right-style: none;
@@ -2208,12 +2208,26 @@ left: auto;
 	background-repeat: no-repeat;
 	background-position: 0px 0px;
 	padding: 10px;
-	height: 227px;
+	height: 170px;
 	color: #C6C6C6;
 	border-top-style: none;
 	border-right-style: none;
 	border-bottom-style: none;
 	border-left-style: none;
+}
+.newco_one1{
+    width: 1125px;
+    float: left;
+    background-image: url(../../img/newco_one1.png);
+    /*background-repeat: no-repeat;
+    background-position: 0px 0px;*/
+    padding: 10px;
+    height: 170px;
+    color: #C6C6C6;
+    border-top-style: none;
+    border-right-style: none;
+    border-bottom-style: none;
+    border-left-style: none;
 }
 .voknet{
 	width: 100%;

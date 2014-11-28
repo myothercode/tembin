@@ -1,0 +1,24 @@
+.new li dt{
+    color:#000000;
+}
+.form-control{
+    height:26px;
+    width: 300px;
+}
+.selectboxit-container span, .selectboxit-container .selectboxit-options a{
+    height: 26px;
+    line-height: 26px;
+}
+.selectboxit-options li {
+    line-height: 26px;
+    height: 26px;
+}
+.selectboxit-container .selectboxit{
+    width: 300px;
+}
+.selectboxit-options {
+    width: 270px;
+}
+table tr{
+    height: 34px;
+}

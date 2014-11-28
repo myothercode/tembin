@@ -30,4 +30,6 @@ public interface IPublicItemInformation {
 
     void importItemInformation(File file) throws Exception;
 
+    List<PublicItemInformation> selectItemInformationByTypeIsNull();
+
 }

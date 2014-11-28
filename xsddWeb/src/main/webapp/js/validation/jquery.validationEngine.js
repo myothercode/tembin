@@ -26,6 +26,8 @@
 				options = methods._saveOptions(form, options);
 				// bind all formError elements to close on click
 				$(document).on("click", ".formError", function() {
+					$(this).siblings(".formInputErr").removeClass("formInputErr");
+					$(this).remove();
 					$(this).fadeOut(150, function() {
 						// remove prompt once invisible
 						$(this).closest('.formErrorOuter').remove();
@@ -206,6 +208,8 @@
 				 closingtag = methods._getClassName($(this).attr("id")) +"formError";
 			 }
 			 $('.'+closingtag).fadeTo(fadeDuration, 0.3, function() {
+				 $(this).siblings(".formInputErr").removeClass("formInputErr");
+				 $(this).remove();
 				 $(this).closest('.formErrorOuter').remove();
 			 });
 			 return this;
@@ -214,11 +218,12 @@
 		 * Closes all error prompts on the page
 		 */
 		 hideAll: function() {
-
 			 var form = this;
 			 var options = form.data('jqv');
 			 var duration = options ? options.fadeDuration:300;
 			 $('.formError').fadeTo(duration, 300, function() {
+				 $(this).siblings(".formInputErr").removeClass("formInputErr");
+				 $(this).remove();
 				 $(this).closest('.formErrorOuter').remove();
 			 });
 			 return this;
@@ -1573,7 +1578,8 @@
 		* @param {Map} options user options
 		*/
 		_buildPrompt: function(field, promptText, type, ajaxed, options) {
-
+			//alert(field.attr("class"))
+            $(field).addClass("formInputErr");
 			// create the prompt
 			var prompt = $('<div>');
 			prompt.addClass(methods._getClassName(field.attr("id")) + "formError");
@@ -1599,7 +1605,9 @@
 			var promptContent = $('<div>').addClass("formErrorContent").html(promptText).appendTo(prompt);
 
 			// determine position type
-			var positionType=field.data("promptPosition") || options.promptPosition;
+			//alert(field.data("promptPosition")+"::"+options.promptPosition)
+			//var positionType=field.data("promptPosition") || options.promptPosition;
+			var positionType="centerRight";
 
 			// create the css arrow pointing at the field
 			// note that there is no triangle on max-checkbox and radio
@@ -1675,6 +1683,8 @@
 					prompt.animate({
 						"opacity": 0
 					},function(){
+						prompt.siblings(".formInputErr").removeClass("formInputErr");
+						prompt.remove();
 						prompt.closest('.formErrorOuter').remove();
 					});
 				}, options.autoHideDelay);
@@ -1733,6 +1743,8 @@
 			 var prompt = methods._getPrompt(field);
 			 if (prompt)
 				 prompt.fadeTo("fast", 0, function() {
+					 $(this).siblings(".formInputErr").removeClass("formInputErr");
+					 $(this).remove();
 					 prompt.closest('.formErrorOuter').remove();
 				 });
 		 },
@@ -1890,8 +1902,8 @@
 			promptTopPosition  += shiftY;
 
 			return {
-				"callerTopPosition": promptTopPosition + "px",
-				"callerleftPosition": promptleftPosition + "px",
+				"callerTopPosition": promptTopPosition+29 + "px",
+				"callerleftPosition": promptleftPosition+60 + "px",
 				"marginTopSize": marginTopSize + "px"
 			};
 		},

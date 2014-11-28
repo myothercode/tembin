@@ -180,7 +180,7 @@
             var url=path+"/order/selectTabRemark.do?folderType=modelFolder";
             OrderGetOrders=openMyDialog({title: '选择文件夹',
                 content: 'url:'+url,
-                icon: 'succeed',
+                icon: 'tips.gif',
                 width:800
             });
         }
@@ -276,21 +276,40 @@
             $("#itemTable").find("span[colu='"+desc+"']").attr("val",descStatic);
 
         }
-
+        function getDefaultTimer(json){
+            return defaultTimer.replace(" ","<br>");
+        }
         function onloadTable(urls){
-            $("#itemTable").initTable({
-                url:urls,
-                columnData:[
+            var clod=null;
+            if(urls.indexOf("flag=3")!=-1){
+                clod = [
                     {title:"选择",name:"selectName",width:"3%",align:"left",format:makeOption0},
-                    {title:"图片",name:"pucURLS",width:"6%",align:"left",format:picUrl},
+                    {title:"图片",name:"pucURLS",width:"6%",align:"center",format:picUrl},
+                    {title:"<span onclick='orderList(this)' style='cursor: pointer;' colu='item_name' val='0'>名称/SKU</span>",name:"itemName",width:"26%",align:"left",format:itemName},
+                    {title:"<span onclick='orderList(this)' style='cursor: pointer;' colu='Site' val='0'>站点</span>",name:"siteName",width:"5%",align:"center",format:getSiteImg},
+                    {title:"<span onclick='orderList(this)' style='cursor: pointer;' colu='ListingType' val='0'>刊登类型</span>",name:"listingtype",width:"6%",align:"center",format:listingType},
+                    {title:"<span onclick='orderList(this)' style='cursor: pointer;' colu='ebay_account' val='0'>eBay账户</span>",name:"ebayaccountname",width:"12%",align:"left"},
+                    {title:"<span onclick='orderList(this)' style='cursor: pointer;' colu='ListingDuration' val='0'>刊登天数</span>",name:"listingduration",width:"8%",align:"center",format:getDuration},
+                    {title:"预设时间",name:"defaultTimer",width:"8%",align:"center"},
+                    {title:"<span onclick='orderList(this)' style='cursor: pointer;' colu='is_flag' val='0'>在线</span>",name:"isFlag",width:"5%",align:"center",format:itemstatus},
+                    {title:"&nbsp;&nbsp;&nbsp;&nbsp;操作",name:"option1",width:"4%",align:"left",format:makeOption1}
+                ];
+            }else{
+                clod = [
+                    {title:"选择",name:"selectName",width:"3%",align:"left",format:makeOption0},
+                    {title:"图片",name:"pucURLS",width:"6%",align:"center",format:picUrl},
                     {title:"<span onclick='orderList(this)' style='cursor: pointer;' colu='item_name' val='0'>名称/SKU</span>",name:"itemName",width:"26%",align:"left",format:itemName},
                     {title:"<span onclick='orderList(this)' style='cursor: pointer;' colu='Site' val='0'>站点</span>",name:"siteName",width:"5%",align:"center",format:getSiteImg},
                     {title:"<span onclick='orderList(this)' style='cursor: pointer;' colu='ListingType' val='0'>刊登类型</span>",name:"listingtype",width:"6%",align:"center",format:listingType},
                     {title:"<span onclick='orderList(this)' style='cursor: pointer;' colu='ebay_account' val='0'>eBay账户</span>",name:"ebayaccountname",width:"12%",align:"left"},
                     {title:"<span onclick='orderList(this)' style='cursor: pointer;' colu='ListingDuration' val='0'>刊登天数</span>",name:"listingduration",width:"8%",align:"center",format:getDuration},
                     {title:"<span onclick='orderList(this)' style='cursor: pointer;' colu='is_flag' val='0'>在线</span>",name:"isFlag",width:"5%",align:"center",format:itemstatus},
-                    {title:"&nbsp;&nbsp;操作",name:"option1",width:"4%",align:"left",format:makeOption1}
-                ],
+                    {title:"&nbsp;&nbsp;&nbsp;&nbsp;操作",name:"option1",width:"4%",align:"left",format:makeOption1}
+                ];
+            }
+            $("#itemTable").initTable({
+                url:urls,
+                columnData:clod,
                 selectDataNow:false,
                 isrowClick:false,
                 showIndex:false,
@@ -311,12 +330,15 @@
         }
         function itemstatus(json){
             var htm = "";
-            if(json.isFlag=="Success"){
-                htm="<img src='"+path+"/img/new_yes.png'>";
+            if(json.listingWay=="1"&&(json.itemId==null||json.itemId=="")){
+                htm="<img title='定时刊登' name='statusimg' src='"+path+"/img/timer.ico'>";
             }else{
-                htm="<img src='"+path+"/img/new_no.png'>";
+                if(json.isFlag=="Success"){
+                    htm="<img name='statusimg' src='"+path+"/img/new_yes.png'>";
+                }else{
+                    htm="<img name='statusimg' src='"+path+"/img/new_no.png'>";
+                }
             }
-
             return htm;
         }
         function listingType(json){
@@ -460,7 +482,7 @@
                         htmlstr += "</div>";
                         var editPage = openMyDialog({title: '选择移动到的文件夹',
                             content: htmlstr,
-                            icon: 'succeed',
+                            icon: 'tips.gif',
                             width: 400,
                             button: [
                                 {
@@ -562,7 +584,7 @@
                             tent+="</div>";
                             var editPage = openMyDialog({title: '刊登明细',
                                 content: tent,
-                                icon: 'succeed',
+                                icon: 'tips.gif',
                                 width: 400
                             });
                             onloadTable(loadurl);
@@ -592,7 +614,7 @@
                         tent+="</div>";
                         var editPage = openMyDialog({title: '刊登明细',
                             content: tent,
-                            icon: 'succeed',
+                            icon: 'tips.gif',
                             width: 400
                         });
                         onloadTable(loadurl);
@@ -628,7 +650,7 @@
             }
         }
         if(idStr==""){
-            alert("请选择立即刊登的商品！");
+            alert("请选择商品！");
             $(obj).val("");
             return ;
         }
@@ -640,7 +662,7 @@
             renameItem(idStr)
         }else if($(obj).val()=="editMoreItem"){
             editMoreItem(idStr);
-        }else if($(obj).val()=="timeProduct"){
+        }else if($(obj).val()=="delTimer"){
             delTradingTimer(idStr);
         }else if($(obj).val()=="remark"){
             addRemark(idStr);
@@ -654,7 +676,7 @@
         var urls = path+'/editMoreItem.do?ids='+idStr;
         editMorepage = openMyDialog({title: '批量修改范本',
             content: 'url:'+urls,
-            icon: 'succeed',
+            icon: 'tips.gif',
             width:1000,
             height:600,
             lock:true
@@ -737,10 +759,10 @@
     }
     //重命名
     function renameItem(idStr){
-        var htmlstr = "<div>请输入名称：<input type='text' name='fileName' id='fileName'/></div>";
+        var htmlstr = "<div>请输入名称：<input type='text' name='fileName' id='fileName' style='border: 1px solid #cccccc;border-radius: 4px;'/></div>";
         openMyDialog({title: '请输入名称',
             content: htmlstr,
-            icon: 'succeed',
+            icon: 'tips.gif',
             width: 400,
             button: [
                 {
@@ -754,9 +776,18 @@
                         var url = path + "/ajax/rename.do?ids=" + idStr+"&fileName="+fileName;
                         $().invoke(url, {},
                                 [function (m, r) {
-                                    alert(r);
-                                    Base.token();
-                                    onloadTable(loadurl);
+                                    var id = null;
+                                    if(idStr.indexOf(",")!=-1){
+                                        id = idStr.substr(0,idStr.length-1).split(",");
+                                    }else{
+                                        id = idStr.substr(0,idStr.length).split(",");
+                                    }
+                                    for(var i=0;i<id.length;i++){
+                                        $("input[type='checkbox'][name='modelid'][val='"+id[i]+"']").parent().parent().prop("id",id[i]);
+                                        $("#"+id[i]+" td:eq(2) span:eq(0)").html('<a style="line-height: 19px;" onclick="editItem('+id[i]+')" href="javascript:void(0)">'+fileName+'</a>')
+                                    }
+                                    /*Base.token();
+                                    onloadTable(loadurl);*/
                                 },
                                     function (m, r) {
                                         alert(r);
@@ -780,7 +811,7 @@
         var urls = path+'/selectSiteList.do?siteidStr='+siteid;
         siteListPage = openMyDialog({title: '选择站点',
             content: 'url:'+urls,
-            icon: 'succeed',
+            icon: 'tips.gif',
             width:500,
             lock:true
         });
@@ -791,8 +822,8 @@
         $().invoke(url, {},
                 [function (m, r) {
                     alert(r);
-                    /*Base.token();
-                    onloadTable(loadurl);*/
+                    Base.token();
+                    onloadTable(loadurl);
                 },
                     function (m, r) {
                         alert(r);
@@ -807,7 +838,7 @@
             var urls = path+'/selectTimer.do';
             timerPage = openMyDialog({title: '选择定时时间',
                 content: 'url:'+urls,
-                icon: 'succeed',
+                icon: 'tips.gif',
                 width:500,
                 lock:true
             });
@@ -819,6 +850,18 @@
             $().invoke(url, {},
                     [function (m, r) {
                         alert(r);
+                        var id=null;
+                        if($("#idStr").val().indexOf(",")==-1){
+                            id = $("#idStr").val().split(",");
+                        }else{
+                            id = $("#idStr").val().substr(0,$("#idStr").val().length-1).split(",");
+                        }
+                        if(a=="timeSave"){
+                            for(var i=0;i<id.length;i++){
+                                $("input[type='checkbox'][name='modelid'][val='"+id[i]+"']").parent().parent().prop("id",id[i]);
+                                $("#"+id[i]).find("img[name='statusimg']").attr("src",path+"/img/timer.ico");
+                            }
+                        }
                     },
                         function (m, r) {
                             alert(r);
@@ -850,7 +893,7 @@
                     <a href="javascript:void(0)" onclick="selectCounty(this)" value="310"><span class="newusa_ici_1"><img src="<c:url value ='/img/UK.jpg'/> ">英国</span></a>
                     <a href="javascript:void(0)" onclick="selectCounty(this)" value="298"><span class="newusa_ici_1"><img src="<c:url value ='/img/DE.png'/> ">德国</span></a>
                     <a href="javascript:void(0)" onclick="selectCounty(this)" value="291"><span class="newusa_ici_1"><img src="<c:url value ='/img/AU.jpg'/> ">澳大利亚</span></a>
-                    <a href="javascript:void(0)" onclick="selectSiteList(this)"><span style="padding-left: 20px;vertical-align: middle;color: royalblue">更多...</span></a>
+                    <a href="javascript:void(0)" onclick="selectSiteList(this)"><span style="padding-left: 20px;vertical-align: middle;color: #5F93D7">更多...</span></a>
                 </li>
                 <li class="new_usa_list">
                     <span class="newusa_i">选择账号：</span>
@@ -904,7 +947,7 @@
                                 </select>
                             </div>
                         </div>
-                        <span class="newusa_ici_del" onclick="shiftToFolder(this)">移动</span>
+                        <span class="newusa_ici_del" onclick="shiftToFolder(this)">移动到</span>
                         <span class="newusa_ici_del" onclick="listing(this)" id="listing">立即刊登</span>
                         <span class="newusa_ici_del"  onclick="addTabRemark();">管理文件夹</span></div>
                     <div class="tbbay"><a data-toggle="modal" href="#myModal" class=""  onclick="addItem()">新增范本</a></div>

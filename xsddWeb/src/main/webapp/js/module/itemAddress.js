@@ -21,12 +21,12 @@ function loadAddress(){
     $("#ItemAddressListTable").initTable({
         url:path + "/ajax/loadItemAddressList.do",
         columnData:[
-            {title:"名称",name:"name",width:"8%",align:"left"},
+            {title:"&nbsp;&nbsp;名称",name:"name1",width:"8%",align:"left",format:function(json){return "&nbsp;&nbsp;"+json.name}},
             {title:"地址",name:"address",width:"8%",align:"left"},
             {title:"国家",name:"countryName",width:"8%",align:"left"},
             {title:"邮编",name:"postalcode",width:"8%",align:"left"},
-            {title:"状态",name:"option1",width:"8%",align:"left",format:makeOption2s},
-            {title:"操作",name:"option1",width:"8%",align:"left",format:makeOption1address}
+            {title:"状态",name:"option1",width:"8%",align:"center",format:makeOption2s},
+            {title:"&nbsp;&nbsp;&nbsp;&nbsp;操作",name:"option1",width:"8%",align:"left",format:makeOption1address}
         ],
         selectDataNow:false,
         isrowClick:false,

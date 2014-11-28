@@ -2,7 +2,6 @@ package com.base.database.trading.model;
 
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
 
 public class TradingFeedBackDetailExample {
@@ -167,10 +166,6 @@ public class TradingFeedBackDetailExample {
             return criteria.size() > 0;
         }
 
-        public List<Criterion> getAllCriteria() {
-            return criteria;
-        }
-
         public List<Criterion> getCriteria() {
             return criteria;
         }
@@ -194,32 +189,6 @@ public class TradingFeedBackDetailExample {
                 throw new RuntimeException("Between values for " + property + " cannot be null");
             }
             criteria.add(new Criterion(condition, value1, value2));
-        }
-
-        protected void addCriterionForJDBCTime(String condition, Date value, String property) {
-            if (value == null) {
-                throw new RuntimeException("Value for " + property + " cannot be null");
-            }
-            addCriterion(condition, new java.sql.Time(value.getTime()), property);
-        }
-
-        protected void addCriterionForJDBCTime(String condition, List<Date> values, String property) {
-            if (values == null || values.size() == 0) {
-                throw new RuntimeException("Value list for " + property + " cannot be null or empty");
-            }
-            List<java.sql.Time> timeList = new ArrayList<java.sql.Time>();
-            Iterator<Date> iter = values.iterator();
-            while (iter.hasNext()) {
-                timeList.add(new java.sql.Time(iter.next().getTime()));
-            }
-            addCriterion(condition, timeList, property);
-        }
-
-        protected void addCriterionForJDBCTime(String condition, Date value1, Date value2, String property) {
-            if (value1 == null || value2 == null) {
-                throw new RuntimeException("Between values for " + property + " cannot be null");
-            }
-            addCriterion(condition, new java.sql.Time(value1.getTime()), new java.sql.Time(value2.getTime()), property);
         }
 
         public Criteria andIdIsNull() {
@@ -423,52 +392,52 @@ public class TradingFeedBackDetailExample {
         }
 
         public Criteria andCommenttimeEqualTo(Date value) {
-            addCriterionForJDBCTime("CommentTime =", value, "commenttime");
+            addCriterion("CommentTime =", value, "commenttime");
             return (Criteria) this;
         }
 
         public Criteria andCommenttimeNotEqualTo(Date value) {
-            addCriterionForJDBCTime("CommentTime <>", value, "commenttime");
+            addCriterion("CommentTime <>", value, "commenttime");
             return (Criteria) this;
         }
 
         public Criteria andCommenttimeGreaterThan(Date value) {
-            addCriterionForJDBCTime("CommentTime >", value, "commenttime");
+            addCriterion("CommentTime >", value, "commenttime");
             return (Criteria) this;
         }
 
         public Criteria andCommenttimeGreaterThanOrEqualTo(Date value) {
-            addCriterionForJDBCTime("CommentTime >=", value, "commenttime");
+            addCriterion("CommentTime >=", value, "commenttime");
             return (Criteria) this;
         }
 
         public Criteria andCommenttimeLessThan(Date value) {
-            addCriterionForJDBCTime("CommentTime <", value, "commenttime");
+            addCriterion("CommentTime <", value, "commenttime");
             return (Criteria) this;
         }
 
         public Criteria andCommenttimeLessThanOrEqualTo(Date value) {
-            addCriterionForJDBCTime("CommentTime <=", value, "commenttime");
+            addCriterion("CommentTime <=", value, "commenttime");
             return (Criteria) this;
         }
 
         public Criteria andCommenttimeIn(List<Date> values) {
-            addCriterionForJDBCTime("CommentTime in", values, "commenttime");
+            addCriterion("CommentTime in", values, "commenttime");
             return (Criteria) this;
         }
 
         public Criteria andCommenttimeNotIn(List<Date> values) {
-            addCriterionForJDBCTime("CommentTime not in", values, "commenttime");
+            addCriterion("CommentTime not in", values, "commenttime");
             return (Criteria) this;
         }
 
         public Criteria andCommenttimeBetween(Date value1, Date value2) {
-            addCriterionForJDBCTime("CommentTime between", value1, value2, "commenttime");
+            addCriterion("CommentTime between", value1, value2, "commenttime");
             return (Criteria) this;
         }
 
         public Criteria andCommenttimeNotBetween(Date value1, Date value2) {
-            addCriterionForJDBCTime("CommentTime not between", value1, value2, "commenttime");
+            addCriterion("CommentTime not between", value1, value2, "commenttime");
             return (Criteria) this;
         }
 
@@ -1223,52 +1192,52 @@ public class TradingFeedBackDetailExample {
         }
 
         public Criteria andCreateTimeEqualTo(Date value) {
-            addCriterionForJDBCTime("create_time =", value, "createTime");
+            addCriterion("create_time =", value, "createTime");
             return (Criteria) this;
         }
 
         public Criteria andCreateTimeNotEqualTo(Date value) {
-            addCriterionForJDBCTime("create_time <>", value, "createTime");
+            addCriterion("create_time <>", value, "createTime");
             return (Criteria) this;
         }
 
         public Criteria andCreateTimeGreaterThan(Date value) {
-            addCriterionForJDBCTime("create_time >", value, "createTime");
+            addCriterion("create_time >", value, "createTime");
             return (Criteria) this;
         }
 
         public Criteria andCreateTimeGreaterThanOrEqualTo(Date value) {
-            addCriterionForJDBCTime("create_time >=", value, "createTime");
+            addCriterion("create_time >=", value, "createTime");
             return (Criteria) this;
         }
 
         public Criteria andCreateTimeLessThan(Date value) {
-            addCriterionForJDBCTime("create_time <", value, "createTime");
+            addCriterion("create_time <", value, "createTime");
             return (Criteria) this;
         }
 
         public Criteria andCreateTimeLessThanOrEqualTo(Date value) {
-            addCriterionForJDBCTime("create_time <=", value, "createTime");
+            addCriterion("create_time <=", value, "createTime");
             return (Criteria) this;
         }
 
         public Criteria andCreateTimeIn(List<Date> values) {
-            addCriterionForJDBCTime("create_time in", values, "createTime");
+            addCriterion("create_time in", values, "createTime");
             return (Criteria) this;
         }
 
         public Criteria andCreateTimeNotIn(List<Date> values) {
-            addCriterionForJDBCTime("create_time not in", values, "createTime");
+            addCriterion("create_time not in", values, "createTime");
             return (Criteria) this;
         }
 
         public Criteria andCreateTimeBetween(Date value1, Date value2) {
-            addCriterionForJDBCTime("create_time between", value1, value2, "createTime");
+            addCriterion("create_time between", value1, value2, "createTime");
             return (Criteria) this;
         }
 
         public Criteria andCreateTimeNotBetween(Date value1, Date value2) {
-            addCriterionForJDBCTime("create_time not between", value1, value2, "createTime");
+            addCriterion("create_time not between", value1, value2, "createTime");
             return (Criteria) this;
         }
 
@@ -1341,6 +1310,146 @@ public class TradingFeedBackDetailExample {
             addCriterion("uuid not between", value1, value2, "uuid");
             return (Criteria) this;
         }
+
+        public Criteria andUserIdIsNull() {
+            addCriterion("user_id is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andUserIdIsNotNull() {
+            addCriterion("user_id is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andUserIdEqualTo(String value) {
+            addCriterion("user_id =", value, "userId");
+            return (Criteria) this;
+        }
+
+        public Criteria andUserIdNotEqualTo(String value) {
+            addCriterion("user_id <>", value, "userId");
+            return (Criteria) this;
+        }
+
+        public Criteria andUserIdGreaterThan(String value) {
+            addCriterion("user_id >", value, "userId");
+            return (Criteria) this;
+        }
+
+        public Criteria andUserIdGreaterThanOrEqualTo(String value) {
+            addCriterion("user_id >=", value, "userId");
+            return (Criteria) this;
+        }
+
+        public Criteria andUserIdLessThan(String value) {
+            addCriterion("user_id <", value, "userId");
+            return (Criteria) this;
+        }
+
+        public Criteria andUserIdLessThanOrEqualTo(String value) {
+            addCriterion("user_id <=", value, "userId");
+            return (Criteria) this;
+        }
+
+        public Criteria andUserIdLike(String value) {
+            addCriterion("user_id like", value, "userId");
+            return (Criteria) this;
+        }
+
+        public Criteria andUserIdNotLike(String value) {
+            addCriterion("user_id not like", value, "userId");
+            return (Criteria) this;
+        }
+
+        public Criteria andUserIdIn(List<String> values) {
+            addCriterion("user_id in", values, "userId");
+            return (Criteria) this;
+        }
+
+        public Criteria andUserIdNotIn(List<String> values) {
+            addCriterion("user_id not in", values, "userId");
+            return (Criteria) this;
+        }
+
+        public Criteria andUserIdBetween(String value1, String value2) {
+            addCriterion("user_id between", value1, value2, "userId");
+            return (Criteria) this;
+        }
+
+        public Criteria andUserIdNotBetween(String value1, String value2) {
+            addCriterion("user_id not between", value1, value2, "userId");
+            return (Criteria) this;
+        }
+
+        public Criteria andEbayAccountIsNull() {
+            addCriterion("ebay_account is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andEbayAccountIsNotNull() {
+            addCriterion("ebay_account is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andEbayAccountEqualTo(String value) {
+            addCriterion("ebay_account =", value, "ebayAccount");
+            return (Criteria) this;
+        }
+
+        public Criteria andEbayAccountNotEqualTo(String value) {
+            addCriterion("ebay_account <>", value, "ebayAccount");
+            return (Criteria) this;
+        }
+
+        public Criteria andEbayAccountGreaterThan(String value) {
+            addCriterion("ebay_account >", value, "ebayAccount");
+            return (Criteria) this;
+        }
+
+        public Criteria andEbayAccountGreaterThanOrEqualTo(String value) {
+            addCriterion("ebay_account >=", value, "ebayAccount");
+            return (Criteria) this;
+        }
+
+        public Criteria andEbayAccountLessThan(String value) {
+            addCriterion("ebay_account <", value, "ebayAccount");
+            return (Criteria) this;
+        }
+
+        public Criteria andEbayAccountLessThanOrEqualTo(String value) {
+            addCriterion("ebay_account <=", value, "ebayAccount");
+            return (Criteria) this;
+        }
+
+        public Criteria andEbayAccountLike(String value) {
+            addCriterion("ebay_account like", value, "ebayAccount");
+            return (Criteria) this;
+        }
+
+        public Criteria andEbayAccountNotLike(String value) {
+            addCriterion("ebay_account not like", value, "ebayAccount");
+            return (Criteria) this;
+        }
+
+        public Criteria andEbayAccountIn(List<String> values) {
+            addCriterion("ebay_account in", values, "ebayAccount");
+            return (Criteria) this;
+        }
+
+        public Criteria andEbayAccountNotIn(List<String> values) {
+            addCriterion("ebay_account not in", values, "ebayAccount");
+            return (Criteria) this;
+        }
+
+        public Criteria andEbayAccountBetween(String value1, String value2) {
+            addCriterion("ebay_account between", value1, value2, "ebayAccount");
+            return (Criteria) this;
+        }
+
+        public Criteria andEbayAccountNotBetween(String value1, String value2) {
+            addCriterion("ebay_account not between", value1, value2, "ebayAccount");
+            return (Criteria) this;
+        }
     }
 
     /**
@@ -1377,8 +1486,6 @@ public class TradingFeedBackDetailExample {
 
         private boolean listValue;
 
-        private String typeHandler;
-
         public String getCondition() {
             return condition;
         }
@@ -1407,22 +1514,16 @@ public class TradingFeedBackDetailExample {
             return listValue;
         }
 
-        public String getTypeHandler() {
-            return typeHandler;
-        }
-
         protected Criterion(String condition) {
             super();
             this.condition = condition;
-            this.typeHandler = null;
             this.noValue = true;
         }
 
-        protected Criterion(String condition, Object value, String typeHandler) {
+        protected Criterion(String condition, Object value) {
             super();
             this.condition = condition;
             this.value = value;
-            this.typeHandler = typeHandler;
             if (value instanceof List<?>) {
                 this.listValue = true;
             } else {
@@ -1430,21 +1531,12 @@ public class TradingFeedBackDetailExample {
             }
         }
 
-        protected Criterion(String condition, Object value) {
-            this(condition, value, null);
-        }
-
-        protected Criterion(String condition, Object value, Object secondValue, String typeHandler) {
+        protected Criterion(String condition, Object value, Object secondValue) {
             super();
             this.condition = condition;
             this.value = value;
             this.secondValue = secondValue;
-            this.typeHandler = typeHandler;
             this.betweenValue = true;
-        }
-
-        protected Criterion(String condition, Object value, Object secondValue) {
-            this(condition, value, secondValue, null);
         }
     }
 }

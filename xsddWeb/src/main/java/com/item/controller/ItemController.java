@@ -1867,7 +1867,7 @@ public class ItemController extends BaseAction{
                 tradingItem.setItemId(itemId);
                 this.iTradingItem.saveTradingItem(tradingItem);
                 this.iTradingItem.saveListingSuccess(res,itemId);
-                successmessage.add("商品SKU为："+tradingItem.getSku()+"，名称为："+tradingItem.getItemName()+"，刊登成功！");
+                successmessage.add("商品SKU为："+tradingItem.getSku()+"，名称为：<a target=_blank style='color:blue' href='http://www.sandbox.ebay.com/itm/"+itemId+"'>"+tradingItem.getItemName()+"<a>，刊登成功！");
             }else{
                 Document document= DocumentHelper.parseText(res);
                 Element rootElt = document.getRootElement();
@@ -1924,7 +1924,6 @@ public class ItemController extends BaseAction{
      * @throws Exception
      */
     @RequestMapping("/ajax/rename.do")
-    @AvoidDuplicateSubmission(needRemoveToken = true)
     @ResponseBody
     public void rename(HttpServletRequest request,HttpServletResponse response,@ModelAttribute( "initSomeParmMap" )ModelMap modelMap) throws Exception {
         String id = request.getParameter("ids");
@@ -1968,7 +1967,6 @@ public class ItemController extends BaseAction{
      * @throws Exception
      */
     @RequestMapping("/ajax/copyItem.do")
-    @AvoidDuplicateSubmission(needRemoveToken = true)
     @ResponseBody
     public void copyItem(HttpServletRequest request,HttpServletResponse response,@ModelAttribute( "initSomeParmMap" )ModelMap modelMap) throws Exception {
         String id = request.getParameter("ids");
@@ -2467,6 +2465,9 @@ public class ItemController extends BaseAction{
         String [] itemid = itemids.split(",");
         for(String id:itemid){
             this.iTradingTimerListing.delTradingTimer(id);
+            TradingItemWithBLOBs tradingItemWithBLOBs = this.iTradingItem.selectByIdBL(Long.parseLong(id));
+            tradingItemWithBLOBs.setListingWay("0");
+            this.iTradingItem.saveTradingItem(tradingItemWithBLOBs);
         }
         AjaxSupport.sendSuccessText("message", "操作成功！");
     }

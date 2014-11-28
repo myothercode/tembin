@@ -461,7 +461,7 @@ public class ListingItemController extends BaseAction {
         String folderType = request.getParameter("folderType");
         List<PublicUserConfig> lipuc = DataDictionarySupport.getPublicUserConfigByType(folderType,c.getId());
         List<PublicUserConfig> li = new ArrayList<PublicUserConfig>();
-        if(lipuc!=null&&lipuc.size()>1) {
+        if(lipuc!=null&&lipuc.size()>0) {
             for (PublicUserConfig puc : lipuc) {
                 if ("true".equals(puc.getConfigValue())) {
                     li.add(puc);

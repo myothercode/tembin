@@ -4,7 +4,9 @@ import com.base.database.customtrading.mapper.ListingItemReportMapper;
 import com.base.database.trading.mapper.TradingListingSuccessMapper;
 import com.base.database.trading.model.TradingListingSuccess;
 import com.base.database.trading.model.TradingListingSuccessExample;
+import com.base.domains.SessionVO;
 import com.base.domains.querypojos.ListingItemReportQuery;
+import com.base.utils.cache.SessionCacheSupport;
 import com.base.utils.common.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -41,7 +43,8 @@ public class TradingListingSuccessImpl implements com.trading.service.ITradingLi
     }
 
     @Override
-    public List<ListingItemReportQuery> selectListingItemReport(String type,String flag,String soldflag){
+    public List<ListingItemReportQuery> selectListingItemReport(long userid,String type,String flag,String soldflag){
+        SessionVO c= SessionCacheSupport.getSessionVO();
         SimpleDateFormat sdfmonth = new SimpleDateFormat("yyyy-MM");
         Map m = new HashMap();
         m.put("datetype",type);
@@ -72,12 +75,13 @@ public class TradingListingSuccessImpl implements com.trading.service.ITradingLi
         if(soldflag!=null){
             m.put("soldflag",soldflag);
         }
+        m.put("userid",userid);
         return this.listingItemReportMapper.selectListingItemReportList(m);
     }
 
 
     @Override
-    public List<ListingItemReportQuery> selectListingItemReportFee(String type,String flag,String soldflag){
+    public List<ListingItemReportQuery> selectListingItemReportFee(long userid,String type,String flag,String soldflag){
         SimpleDateFormat sdfmonth = new SimpleDateFormat("yyyy-MM");
         Map m = new HashMap();
         m.put("datetype",type);
@@ -108,11 +112,13 @@ public class TradingListingSuccessImpl implements com.trading.service.ITradingLi
         if(soldflag!=null){
             m.put("soldflag",soldflag);
         }
+        m.put("userid",userid);
         return this.listingItemReportMapper.selectListingItemReportFee(m);
     }
 
     @Override
     public List<ListingItemReportQuery> selectListingItemSales(String type,String flag,String soldflag){
+        SessionVO c= SessionCacheSupport.getSessionVO();
         SimpleDateFormat sdfmonth = new SimpleDateFormat("yyyy-MM");
         Map m = new HashMap();
         m.put("datetype",type);
@@ -143,6 +149,7 @@ public class TradingListingSuccessImpl implements com.trading.service.ITradingLi
         if(soldflag!=null){
             m.put("soldflag",soldflag);
         }
+        m.put("userid",c.getId());
         return this.listingItemReportMapper.selectListingItemSales(m);
     }
 }

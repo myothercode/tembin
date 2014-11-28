@@ -1,4 +1,4 @@
-﻿/*!
+﻿﻿/*!
  * lhgcore Dialog Plugin v4.2.0
  * Date: 2012-04-19 10:55:11 
  * http://code.google.com/p/lhgdialog/
@@ -724,14 +724,13 @@ lhgdialog.fn = lhgdialog.prototype =
 		    DOM.title[0].innerHTML = '';
 			DOM.icon[0].innerHTML = '';
 		    DOM.buttons[0].innerHTML = '';
-
             try{
                 var tem_ = DOM.content.html();
-                if(tem_!=null && tem_ != '' && tem_.indexOf("style") > -1 ){
-                    doitAfterCloseLhgDiolag();
+                if(tem_!=null && tem_ != '' && tem_.indexOf("style") > -1 ){//oldAlert(3)
+                    doitAfterCloseLhgDiolag(that.opener);
                 }
                 tem_=null;
-            }catch (e){}
+            }catch (e){console.log(e)}
 
             DOM.content.html('');
 			

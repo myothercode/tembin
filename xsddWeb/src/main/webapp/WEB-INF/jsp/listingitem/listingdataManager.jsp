@@ -575,7 +575,7 @@
                 url:urls,
                 columnData:[
                     {title:"选择",name:"itemName",width:"2%",align:"left",format:makeOption0},
-                    {title:"图片",name:"Option1",width:"3%",align:"left",format:picUrl},
+                    {title:"图片",name:"Option1",width:"3%",align:"center",format:picUrl},
                     {title:"<span onclick='orderList(this)' style='cursor: pointer;' colu='title' val='0'>物品标题</span>",name:"title",width:"16%",align:"left",format:getTitle},
                     {title:"<span onclick='orderList(this)' style='cursor: pointer;' colu='sku' val='0'>&nbsp;&nbsp;范本</span>/SKU",name:"sku",width:"8%",align:"left",format:getSku},
                     {title:"<span onclick='orderList(this)' style='cursor: pointer;' colu='ebay_account' val='0'>ebay账户</span>",name:"ebayAccount",width:"4%",align:"left"},
@@ -585,7 +585,7 @@
                     {title:"数量/<span onclick='orderList(this)' style='cursor: pointer;' colu='QuantitySold' val='0'>已售</span>",name:"Option1",width:"6%",align:"center",format:tjCount},
                     {title:"<span onclick='orderList(this)' style='cursor: pointer;' colu='ListingDuration' val='0'>刊登天数</span>",name:"listingduration",width:"4%",align:"center",format:getDuration},
                     {title:"<span onclick='orderList(this)' style='cursor: pointer;' colu='EndTime' val='0'>结束时间</span>",name:"endtime",width:"4%",align:"left",format:getendTime},
-                    {title:"&nbsp;&nbsp;操作",name:"Option1",width:"4%",align:"left",format:makeOption1}
+                    {title:"&nbsp;&nbsp;&nbsp;&nbsp;操作",name:"Option1",width:"4%",align:"left",format:makeOption1}
                 ],
                 selectDataNow:false,
                 isrowClick:false,
@@ -948,7 +948,8 @@
                 content: 'url:'+urls,
                 icon: 'succeed',
                 width:500,
-                lock:true
+                lock:true,
+                background:'#ffffff'
             });
         }
     </script>
@@ -975,7 +976,7 @@
                     <a href="javascript:void(0)" onclick="selectCounty(this)" value="310"><span class="newusa_ici_1"><img src="<c:url value ='/img/UK.jpg'/> ">英国</span></a>
                     <a href="javascript:void(0)" onclick="selectCounty(this)" value="298"><span class="newusa_ici_1"><img src="<c:url value ='/img/DE.png'/> ">德国</span></a>
                     <a href="javascript:void(0)" onclick="selectCounty(this)" value="291"><span class="newusa_ici_1"><img src="<c:url value ='/img/AU.jpg'/> ">澳大利亚</span></a>
-                    <a href="javascript:void(0)" onclick="selectSiteList(this)"><span style="padding-left: 20px;vertical-align: middle;color: royalblue">更多...</span></a>
+                    <a href="javascript:void(0)" onclick="selectSiteList(this)"><span style="padding-left: 20px;vertical-align: middle;color: #5F93D7">更多...</span></a>
                 </li>
                 <li class="new_usa_list">
                     <span class="newusa_i">选择账号：</span>
@@ -1046,7 +1047,7 @@
                                 </select>
                             </div>--%>
                         </div>
-                        <span class="newusa_ici_del" onclick="shiftToFolder(this)">移动</span>
+                        <span class="newusa_ici_del" onclick="shiftToFolder(this)">移动到</span>
                         <span class="newusa_ici_del" name="attrshow" onclick="endItem(this)">提前结束</span>
                         <span class="newusa_ici_del" name="attrshow" onclick="tablePrice(this)">表格调价</span><span
                             class="newusa_ici_del"  onclick="addTabRemark();">管理文件夹</span></div>

@@ -296,9 +296,8 @@
                     $(d).attr("disabled",true);
                 });
                 $("textarea").attr("disabled",true);
-                $("a").each(function(i,d){
-                    $(d).hide();
-                });
+                $(".diagle-button-div").hide();
+                converDiv_();
             }
         });
         //添加国内运输选项
@@ -411,6 +410,8 @@
             }
         }
     </script>
+    <link href=
+          <c:url value="/css/basecss/conter.css"/> type="text/css" rel="stylesheet"/>
 </head>
 <body>
 <br/>
@@ -610,10 +611,15 @@
             </td>
         </tr>
     </table>
-    <div class="suspension" style="height: 25px;">
-        <div style="margin-right: 5px;">
-        <input type="button" value="确定" onclick="saveData(this)">
-    </div></div>
+    <div class="diagle-button-div">
+ <%--       <div style="margin-right: 5px;">
+            <input type="button" value="确定" onclick="saveData(this)">
+        </div>--%>
+        <div >
+            <a class="myjqueryuibutton" href="javascript:void(0)" onclick="saveData(this)">确定</a>
+        </div>
+    </div>
+
 </form>
 </body>
 </html>

@@ -32,17 +32,40 @@
 <link rel="stylesheet" type="text/css" href="<c:url value ="/css/bootstrap2/bootstrap-responsive.min.css" />"/>
 <script type="text/javascript" src=<c:url value ="/css/bootstrap2/bootstrap.min.js" /> ></script>
 
+<link rel="stylesheet" type="text/css" href="<c:url value ="/js/jquery-ui/smoothness/jquery-ui.min.css" />"/>
+<script type="text/javascript" src=<c:url value="/js/jquery-ui/jquery-ui-1.11.2/jquery-ui.min.js"/>></script>
+
 <%
     String rootPath = request.getContextPath();
     String _token = (String) request.getSession().getAttribute("_token")==null?"":(String) request.getSession().getAttribute("_token");
 %>
 <script type="text/javascript">
+    var oldAlert = window.alert;
+    window.alert = function(msg){
+        try{
+            myAlert(msg)
+        }catch (e){
+            oldAlert(msg);
+            console.log(e)
+        }
+    }
+
     var path = window["path"] = '<%=rootPath%>';
     var nowDateTime="<fmt:formatDate value="${nowDateTime}" pattern="yyyy-MM-dd HH:mm:ss"/>";
     var _token="<%=_token%>";
 
     var _sku=null;
     var _jscacheVersion="${jscacheVersion}";
+
+    $(document).ready(function(){
+        initButtonStyle();
+    });
+    /**初始化jqueryui的按钮*/
+    function initButtonStyle(){
+        $( ".myjqueryuibutton" ).button().click(function( event ) {
+            event.preventDefault();
+        });
+    }
 
     function cleanLocalStorageFunction() {
         try {

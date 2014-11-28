@@ -114,6 +114,39 @@ public class DictCollectionsUtil {
         TradingDataDictionary[] tt = x.toArray(new TradingDataDictionary[]{});
        return Arrays.asList(tt);
     }
+
+    /**根据map中的条件来筛选publicDataDictionary对象集合*/
+    public static List<PublicDataDict> publicDataDictCollectionFilterByMap(List<PublicDataDict> ts,final Map<String , String> map){
+        Collection<PublicDataDict> x= Collections2.filter(ts, new Predicate<PublicDataDict>() {
+            @Override
+            public boolean apply(PublicDataDict tradingDataDictionary) {
+                boolean b=true;
+                for (Map.Entry<String,String> entry : map.entrySet()){
+                    String key=entry.getKey();
+                    String value = entry.getValue();
+                    try {
+                        String v1 = BeanUtils.getSimpleProperty(tradingDataDictionary,key);
+                        if(StringUtils.isEmpty(v1) || !value.equalsIgnoreCase(v1)){
+                            b=false;
+                            break;
+                        }
+                    }catch (NoSuchMethodException e1){
+                        b=false;
+                        break;
+                    }catch (Exception e) {
+                        logger.error("获取属性出错",e);
+                        b=false;
+                        break;
+                    }
+                }
+                return b;
+            }
+        });
+        PublicDataDict[] tt = x.toArray(new PublicDataDict[]{});
+        return Arrays.asList(tt);
+    }
+
+
     /**根据map中的条件来筛选TradingDataDictionary对象集合*/
     public static List<TradingDataDictionary> dataTradingCollectionFilterByMap(List<TradingDataDictionary> ts,final Map<String , String> map){
         Collection<TradingDataDictionary> x= Collections2.filter(ts, new Predicate<TradingDataDictionary>() {

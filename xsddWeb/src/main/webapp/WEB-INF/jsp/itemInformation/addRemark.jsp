@@ -49,8 +49,9 @@
                     }
                 }
             }
-            var url=path+"/information/ajax/saveremark.do?id="+id+"&remark="+remark;
-            var data=$("#remarkForm").serialize();
+            $("#remark123").val(remark);
+            var url=path+"/information/ajax/saveremark.do?id="+id;
+            var data=$("#addRemark2").serialize();
             $().invoke(url,data,
                     [function(m,r){
                         alert(r);
@@ -78,9 +79,22 @@
             $(obj).attr("style","margin-left:10px;width: 40px;background-color: #fff;border-radius: 5px;");
             $(obj).val("");
         }
-
+        function addToli(name){
+            var spans=$("#addRemark1").find("span");
+            for(var i=0;i<spans.length;i++){
+                var span=spans[i].innerHTML;
+                if(name==span){
+                    return;
+                }
+            }
+            var lable="<a href='javascript:void(0)' style='padding: 3px 5px 3px 5px;margin-left: 5px;margin-top:3px;border: 1px solid #aaaaaa;border-radius: 3px;position: relative;line-height: 30px;' onclick='deletes(this);' ><i class=\"icon-remove-sign\" style='margin-right: 2px;'></i><span >"+name+"</span><input type='hidden' name='label' value='"+name+"'></a>"
+            $("#kk").before(lable);
+        }
     </script>
 </head>
+<form id="addRemark2">
+    <input type="hidden" name="remark" id="remark123">
+</form>
 <body>
     <%--<form id="remarkForm">--%>
         <br/><br/>
@@ -97,7 +111,7 @@
             <tr>
                 <td>标签:</td>
                 <%--<td><div id="addRemark" class="form-controlsd" ><input &lt;%&ndash;onblur="subLength(this);"&ndash;%&gt; onclick="addLength(this);" type="text" class="form-controlsd" style="width: 40px;height: 20px;">&lt;%&ndash;<input type="text" class="form-controlsd" style="width: 260px;height: 20px;">&ndash;%&gt;</div></td>--%>
-                <td><ul id="addRemark" style="padding: 3px 5px 3px 5px;border: 1px solid lightgray;width: 360px;background-color: #ffffff;margin-top: 3px;"><input style="margin-left:10px;width:40px;background-color: #fff;border-radius: 5px;" id="kk"type="text" value="" onfocus="addLength(this)" onblur="subLength(this)" onkeyup="this.style.color='#333';" onclick="addLength(this)" /></ul></td>
+                <td><ul id="addRemark" style="padding: 3px 5px 3px 5px;border: 1px solid lightgray;width: 300px;border-radius: 4px;margin-left: 4px;background-color: #ffffff;margin-top: 3px;float: left"><input style="margin-left:10px;width:40px;background-color: #fff;border-radius: 5px;" id="kk"type="text" value="" onfocus="addLength(this)" onblur="subLength(this)" onkeyup="this.style.color='#333';" onclick="addLength(this)" /></ul></td>
             </tr>
             <tr>
                 <td></td>
@@ -106,8 +120,11 @@
             <tr></tr>
             <tr>
                 <td></td>
-              <%--  <td>您可能需要的标签:<br/>--%>
-
+                <td id="addRemark1">您可能需要的标签:<br/>
+                    <a href='javascript:void(0);' onclick="addToli('电子产品')"><span class="pipi">+电子产品</span></a>
+                    <a href='javascript:void(0);' onclick="addToli('服装')"><span class="pipi">+服装</span></a>
+                    <a href='javascript:void(0);' onclick="addToli('户外用品')"><span class="pipi">+户外用品</span></a>
+                    <a href='javascript:void(0);' onclick="addToli('清仓')"><span class="pipi">+清仓</span></a>
                 </td>
             </tr>
         </table>

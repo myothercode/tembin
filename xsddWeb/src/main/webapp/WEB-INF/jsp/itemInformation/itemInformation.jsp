@@ -27,11 +27,12 @@
                 url:path + "/information/ajax/loadItemInformationList.do?",
                 columnData:[
                     {title:"",name:"pictureUrl",width:"2%",align:"left",format:makeOption4,click:sellectCheckBox},
-                    {title:"图片",name:"pictureUrl",width:"8%",align:"left",format:makeOption2,click:sellectCheckBox},
+                    {title:"图片",name:"pictureUrl",width:"4%",align:"left",format:makeOption2,click:sellectCheckBox},
+                    {title:"备注",name:"comment",width:"4%",align:"left",click:sellectCheckBox},
                     {title:"商品/SKU",name:"sku",width:"8%",align:"left",click:sellectCheckBox},
                     {title:"产品名称",name:"name",width:"8%",align:"left",click:sellectCheckBox},
-                    {title:"标签",name:"remark",width:"8%",align:"left",click:sellectCheckBox},
-                    {title:"分类",name:"typeName",width:"8%",align:"left",click:sellectCheckBox},
+                    {title:"标签",name:"remark",width:"8%",align:"left",format:makeOption6,click:sellectCheckBox},
+                    /*{title:"分类",name:"typeName",width:"8%",align:"left",click:sellectCheckBox},*/
                     {title:"状态",name:"pictureUrl",width:"8%",align:"left",format:makeOption3,click:sellectCheckBox},
                     {title:"操作",name:"option1",width:"8%",align:"center",format:makeOption1}
                 ],
@@ -51,6 +52,12 @@
         }
         function refreshTable(){
             $("#ItemInformationListTable").selectDataAfterSetParm({"bedDetailVO.deptId":"", "isTrue":0});
+        }
+        function makeOption6(json){
+            if(json.remark&&json.remark!=""){
+                return json.remark.substring(0,json.remark.length-1);
+            }
+            return json.remark;
         }
         function makeOption1(json){
             /*var htm="<div class=\"ui-select\"  style=\"margin-top:1px; width:120px\">" +
@@ -74,13 +81,13 @@
                 editItem(id);
             }
             if(value=='2'){
-                updateItemInformation1(id);
+                updateItemInformation1(id,obj);
             }
             if(value=='3'){
-                removeItemInformation1(id);
+                removeItemInformation1(id,obj);
             }
             if(value=='4'){
-                addComment(id);
+                addComment(id,obj);
             }
         }
         function loadRemarks(){
@@ -88,16 +95,43 @@
             $().invoke(url, null,
                     [function (m, r) {
                         var liId=$("li[id=loadremarks]");
-                        var li="<li class=\"new_usa_list\" id=\"loadremarks\"><span class=\"newusa_i\" style=\"width: 75px;\">按标签查看：</span><span class=\"newusa_ici\" scop=\"remark\" onclick=\"onclickremark(null,0)\">全部&nbsp;</span><a href=\"javascript:void(0);\"><span class=\"newusa_ici_1\" scop=\"remark\" onclick=\"onclickremark('null',1)\">无标签&nbsp;</span></a>";
+                        var value="";
+                        for(var i=0;i<liId.length;i++){
+                            var yuspan=$(liId[i]).find("span[class=newusa_ici]");
+                            if(yuspan.length>0){
+                                value=yuspan[0].innerHTML;
+                            }
+                        }
+                        var li="";
+                        if(value=='全部&nbsp;'){
+                             li="<li class=\"new_usa_list\" id=\"loadremarks\"><span class=\"newusa_i\" style=\"width: 75px;\">按标签查看：</span><span id=\"loadremarks1\" class=\"newusa_ici\" scop=\"remark\" onclick=\"onclickremark(null,0)\">全部&nbsp;</span><a href=\"javascript:void(0);\"><span class=\"newusa_ici_1\" scop=\"remark\" onclick=\"onclickremark('null',1)\">无标签&nbsp;</span></a>";
+                        }else if(value=='无标签&nbsp;'){
+                            li="<li class=\"new_usa_list\" id=\"loadremarks\"><span class=\"newusa_i\" style=\"width: 75px;\">按标签查看：</span><span id=\"loadremarks1\" class=\"newusa_ici_1\" scop=\"remark\" onclick=\"onclickremark(null,0)\">全部&nbsp;</span><a href=\"javascript:void(0);\"><span class=\"newusa_ici\" scop=\"remark\" onclick=\"onclickremark('null',1)\">无标签&nbsp;</span></a>";
+                        }else{
+                             li="<li class=\"new_usa_list\" id=\"loadremarks\"><span class=\"newusa_i\" style=\"width: 75px;\">按标签查看：</span><span id=\"loadremarks1\" class=\"newusa_ici_1\" scop=\"remark\" onclick=\"onclickremark(null,0)\">全部&nbsp;</span><a href=\"javascript:void(0);\"><span class=\"newusa_ici_1\" scop=\"remark\" onclick=\"onclickremark('null',1)\">无标签&nbsp;</span></a>";
+                        }
                         for(var i=0;i< r.length;i++){
+                            var livalue=r[i].configName;
                             if((i+2)%11==0){
-                                li+="<li class=\"new_usa_list\" id=\"loadremarks\"><span class=\"newusa_i\" style=\"width: 75px;\"></span><a href=\"javascript:void(0);\"><span class=\"newusa_ici_1\" scop=\"remark\" onclick=\"onclickremark('"+r[i].id+"','"+(i+2)+"')\">"+r[i].configName+"&nbsp;</span></a>";
+                                if(value.indexOf(livalue)>=0){
+                                    li+="<li class=\"new_usa_list\" id=\"loadremarks\"><span class=\"newusa_i\" style=\"width: 75px;\"></span><a href=\"javascript:void(0);\"><span class=\"newusa_ici\" scop=\"remark\" onclick=\"onclickremark('"+r[i].id+"','"+(i+2)+"')\">"+r[i].configName+"&nbsp;</span></a>";
+                                }else{
+                                    li+="<li class=\"new_usa_list\" id=\"loadremarks\"><span class=\"newusa_i\" style=\"width: 75px;\"></span><a href=\"javascript:void(0);\"><span class=\"newusa_ici_1\" scop=\"remark\" onclick=\"onclickremark('"+r[i].id+"','"+(i+2)+"')\">"+r[i].configName+"&nbsp;</span></a>";
+                                }
                             }
                             if((i+2)%11==10){
-                                li+="<a href=\"javascript:void(0);\"><span class=\"newusa_ici_1\" scop=\"remark\" onclick=\"onclickremark('"+r[i].id+"','"+(i+2)+"')\">"+r[i].configName+"&nbsp;</span></a></li>";
+                                if(value.indexOf(livalue)>=0){
+                                    li+="<a href=\"javascript:void(0);\"><span class=\"newusa_ici\" scop=\"remark\" onclick=\"onclickremark('"+r[i].id+"','"+(i+2)+"')\">"+r[i].configName+"&nbsp;</span></a></li>";
+                                }else{
+                                    li+="<a href=\"javascript:void(0);\"><span class=\"newusa_ici_1\" scop=\"remark\" onclick=\"onclickremark('"+r[i].id+"','"+(i+2)+"')\">"+r[i].configName+"&nbsp;</span></a></li>";
+                                }
                             }
                             if((i+2)%11!=0&&(i+2)%11!=10){
-                                li+="<a href=\"javascript:void(0);\"><span class=\"newusa_ici_1\" scop=\"remark\" onclick=\"onclickremark('"+r[i].id+"','"+(i+2)+"')\">"+r[i].configName+"&nbsp;</span></a>";
+                                if(value.indexOf(livalue)>=0){
+                                    li+="<a href=\"javascript:void(0);\"><span class=\"newusa_ici\" scop=\"remark\" onclick=\"onclickremark('"+r[i].id+"','"+(i+2)+"')\">"+r[i].configName+"&nbsp;</span></a>";
+                                }else{
+                                    li+="<a href=\"javascript:void(0);\"><span class=\"newusa_ici_1\" scop=\"remark\" onclick=\"onclickremark('"+r[i].id+"','"+(i+2)+"')\">"+r[i].configName+"&nbsp;</span></a>";
+                                }
                             }
                         }
                         li+="</li>";
@@ -130,7 +164,14 @@
                 lock:true
             });
         }
-        function addComment(id){
+        function addComment(id,obj){
+            var table=$(obj).parent().parent().parent().parent().parent().parent().parent();
+            var inputs=$(table).find("input[scop1=selected]");
+            for(var i=0;i<inputs.length;i++){
+                $(inputs[i]).removeAttr("scop1");
+            }
+            var input=$(obj).parent().parent().parent().parent().parent().find("input");
+            $(input).attr("scop1","selected");
             var url = path + "/information/addComment.do?id="+id;
            /* itemInformation=$.dialog({title: '备注',
                 content: 'url:'+url,
@@ -179,18 +220,30 @@
             itemInformation=openMyDialog({title: '添加或修改商品信息',
                 content: 'url:'+url,
                 icon: 'succeed',
-                width:900,
-                height:700,
+                width:740,
+                height:720,
                 lock:true
             });
         }
-        function removeItemInformation1(id) {
+        function removeItemInformation1(id,obj) {
             var url = path + "/information/ajax/removeItemInformation.do?id[0]="+id;
             $().invoke(url, null,
                     [function (m, r) {
                         alert(r);
+                        var tr=$(obj).parent().parent().parent().parent().parent();
+                        var table=$(obj).parent().parent().parent().parent().parent().parent().parent();
+                        var tableparent=$(table).parent();
+                        $(tr).remove();
+                        var div1=$(tableparent).find("div[id=showPageCount_ItemInformationListTable]");
+                        var div=$(div1).parent();
+                        var spans=$(div[0]).find("span");
+                        console.debug(div);
+                        console.debug(spans);
+                        var totol=spans[0].innerHTML;
+                        totol=parseInt(totol)-1;
+                        spans[0].innerHTML=totol;
                         loadRemarks();
-                        refreshTable();
+                        /*onclickremark(null,0);*/
                         Base.token();
                     },
                         function (m, r) {
@@ -216,7 +269,20 @@
                 $().invoke(url,data,
                         [function(m,r){
                             alert(r);
-                            refreshTable();
+                            for(var i=0;i<id.length;i++){
+                                var tr=$(id[i]).parent().parent();
+                                var table=$(tr).parent().parent();
+                                var tableparent=$(table).parent();
+                                var div1=$(tableparent).find("div[id=showPageCount_ItemInformationListTable]");
+                                var div=$(div1).parent();
+                                var spans=$(div[0]).find("span");
+                                console.debug(div);
+                                console.debug(spans);
+                                var totol=spans[0].innerHTML;
+                                totol=parseInt(totol)-1;
+                                spans[0].innerHTML=totol;
+                                $(tr).remove();
+                            }
                             loadRemarks();
                             Base.token();
                         },
@@ -236,7 +302,7 @@
                 itemInformation=openMyDialog({title: '添加或修改商品信息',
                     content: 'url:'+url,
                     icon: 'succeed',
-                    width:900,
+                    width:725,
                     height:700,
                     lock:true
                 });
@@ -246,12 +312,19 @@
                 alert("请选择需要修改的数据");
             }
         }
-        function updateItemInformation1(id){
+        function updateItemInformation1(id,obj){
+            var table=$(obj).parent().parent().parent().parent().parent().parent().parent();
+            var inputs=$(table).find("input[scop1=selected]");
+            for(var i=0;i<inputs.length;i++){
+                $(inputs[i]).removeAttr("scop1");
+            }
+            var input=$(obj).parent().parent().parent().parent().parent().find("input");
+            $(input).attr("scop1","selected");
             var url=path+"/information/addItemInformation.do?id="+id;
             itemInformation=openMyDialog({title: '添加或修改商品信息',
                 content: 'url:'+url,
                 icon: 'succeed',
-                width:900,
+                width:725,
                 height:700,
                 lock:true
             });
@@ -315,11 +388,11 @@
             itemInformation=openMyDialog({title: '请选择导入的excel文件',
                 content: 'url:'+url,
                 icon: 'succeed',
-                width:500,
+                width:600,
                 lock:true
             });
         }
-        function submitCommit1(remark,information,itemType,content){
+        function submitCommit1(remark,information,itemType,content,conmmentForm){
             /*var remark=$("#remarkid").val();
             var information=$("#information").val();
             var itemType=$("#itemTypeid").val();
@@ -328,11 +401,12 @@
                 url:path + "/information/ajax/loadItemInformationList.do?",
                 columnData:[
                     {title:"",name:"pictureUrl",width:"2%",align:"left",format:makeOption4,click:sellectCheckBox},
-                    {title:"图片",name:"pictureUrl",width:"8%",align:"left",format:makeOption2,click:sellectCheckBox},
+                    {title:"图片",name:"pictureUrl",width:"4%",align:"left",format:makeOption2,click:sellectCheckBox},
+                    {title:"备注",name:"comment",width:"4%",align:"left",click:sellectCheckBox},
                     {title:"商品/SKU",name:"sku",width:"8%",align:"left",click:sellectCheckBox},
                     {title:"产品名称",name:"name",width:"8%",align:"left",click:sellectCheckBox},
-                    {title:"标签",name:"remark",width:"8%",align:"left",click:sellectCheckBox},
-                    {title:"分类",name:"typeName",width:"8%",align:"left",click:sellectCheckBox},
+                    {title:"标签",name:"remark",width:"8%",align:"left",format:makeOption6,click:sellectCheckBox},
+                    /*{title:"分类",name:"typeName",width:"8%",align:"left",click:sellectCheckBox},*/
                     {title:"状态",name:"pictureUrl",width:"8%",align:"left",format:makeOption3,click:sellectCheckBox},
                     {title:"操作",name:"option1",width:"8%",align:"left",format:makeOption1}
                 ],
@@ -341,7 +415,7 @@
                 showIndex:false
             });
             $("#ItemInformationListTable").selectDataAfterSetParm();
-            refreshTable2(remark,information,itemType,content);
+            refreshTable2(remark,information,itemType,content,conmmentForm);
         }
         function onclickremark(remark,n){
             var arr=$("span[scop=remark]");
@@ -367,16 +441,29 @@
             }
             submitCommit();
         }
+        function onclickconmment(conmment,n){
+            var arr=$("span[scop=conmment]");
+            for(var i=0;i<arr.length;i++){
+                if(i==n){
+                    $(arr[i]).attr("class","newusa_ici");
+                    $("#conmmentForm").val(conmment);
+                }else{
+                    $(arr[i]).attr("class","newusa_ici_1");
+                }
+            }
+            submitCommit();
+        }
         function submitCommit(){
 
             var itemType=$("#itemTypeid").val();
             var content=$("#content").val();
             var remark=$("#remarkForm").val();
             var information=$("#informationForm").val();
-            submitCommit1(remark,information,itemType,content);
+            var conmmentForm=$("#conmmentForm").val();
+            submitCommit1(remark,information,itemType,content,conmmentForm);
         }
-        function refreshTable2(remark,information,itemType,content){
-            $("#ItemInformationListTable").selectDataAfterSetParm({"bedDetailVO.deptId":"", "isTrue":0,"remark":remark,"information":information,"itemType":itemType,"content":content});
+        function refreshTable2(remark,information,itemType,content,conmmentForm){
+            $("#ItemInformationListTable").selectDataAfterSetParm({"bedDetailVO.deptId":"", "isTrue":0,"remark":remark,"information":information,"itemType":itemType,"content":content,"comment":conmmentForm});
         }
     </script>
     <%--产品信息分类--%>
@@ -473,7 +560,7 @@
                     <div id="con_menu_1" style="display: block;">
                         <!--综合开始 -->
                         <div class="new_usa" style="margin-top:20px;">
-                            <li class="new_usa_list" id="loadremarks"><span class="newusa_i" style="width: 75px;">按标签查看：</span><span class="newusa_ici" scop="remark" onclick="onclickremark(null,0)">全部&nbsp;</span><a href="#"><span class="newusa_ici_1" scop="remark" onclick="onclickremark('null',1)">无标签&nbsp;</span></a>
+                            <li class="new_usa_list" id="loadremarks"><span class="newusa_i" style="width: 75px;">按标签查看：</span><span id="loadremarks1" class="newusa_ici" scop="remark" onclick="onclickremark(null,0)">全部&nbsp;</span><a href="#"><span class="newusa_ici_1" scop="remark" onclick="onclickremark('null',1)">无标签&nbsp;</span></a>
                             <c:forEach items="${remarks}" var="remark" begin="0"  varStatus="status">
                                 <c:if test="${(status.index+2)%11==0}">
                                     <li class="new_usa_list" id="loadremarks"><span class="newusa_i" style="width: 75px;"></span><a href="#"><span class="newusa_ici_1" scop="remark" onclick="onclickremark('${remark.id}',${status.index+2})">${remark.configName}&nbsp;</span></a>
@@ -487,7 +574,8 @@
 
                             </c:forEach>
                             </li>
-                            <li class="new_usa_list"><span class="newusa_i" style="width: 75px;">信息状态：</span><span  class="newusa_ici" scop="information" onclick="onclickinformation(null,0)">全部&nbsp;</span><a href="#"><span class="newusa_ici_1" scop="information" onclick="onclickinformation('picture',1)">无图片&nbsp;</span></a><a href="#"><span class="newusa_ici_1" scop="information" onclick="onclickinformation('custom',2)">无报关信息&nbsp;</span></a><a href="#"><span class="newusa_ici_1" scop="information" onclick="onclickinformation('notAllnull',3)">信息不全&nbsp;</span></a></li>
+                            <li class="new_usa_list"><span class="newusa_i" style="width: 75px;">备注状态：</span><span  class="newusa_ici" scop="conmment" onclick="onclickconmment(null,0)">全部&nbsp;</span><a href="#"><span class="newusa_ici_1" scop="conmment" onclick="onclickconmment('yes',1)">有备注&nbsp;</span></a><a href="#"><span class="newusa_ici_1" scop="conmment" onclick="onclickconmment('no',2)">无备注&nbsp;</span></a></li>
+                            <li class="new_usa_list"><span class="newusa_i" style="width: 75px;">信息状态：</span><span  class="newusa_ici" scop="information" onclick="onclickinformation(null,0)">全部&nbsp;</span><a href="#"><span class="newusa_ici_1" scop="information" onclick="onclickinformation('picture',1)">无图片&nbsp;</span></a><a href="#"><span class="newusa_ici_1" scop="information" onclick="onclickinformation('notAllnull',2)">信息不全&nbsp;</span></a></li>
                             <div class="newsearch">
                                 <span class="newusa_i" style="width: 75px;">搜索内容：</span>
 
@@ -504,6 +592,7 @@
                                     <input id="content" name="content" type="text" class="key_1"><input name="newbut" type="button" class="key_2" onclick="submitCommit();"></div>
                                     <input type="hidden" id="remarkForm"/>
                                     <input type="hidden" id="informationForm"/>
+                                    <input type="hidden" id="conmmentForm">
                             </div>
                             <div class="newds">
                                 <div class="newsj_left" style="margin-left: 9px;">

@@ -1,3 +1,13 @@
+var oldAlert = window.alert;
+window.alert = function(msg){
+    try{
+        myAlert(msg)
+    }catch (e){
+        oldAlert(msg);
+        console.log(e)
+    }
+}
+
 /**
  * Created by Administrator on 2014/11/5.
  */
@@ -376,5 +386,44 @@ function hideBanner_(){
         bbc_=false;
         bbs_=true;
     }
+}
 
+
+function selectTime(index,date){
+    var as1=$("span[name=time]");
+    for(var i=0;i<as1.length;i++){
+        if(i==index){
+            $(as1[i]).attr("class","newusa_ici");
+            $("#time").val(date);
+        }else{
+            $(as1[i]).attr("class","newusa_ici_1");
+        }
+    }
+    var amount=$("#amount").val();
+    getCharData(doKnobs,_getOrderCountData,{"time":date,"amount":amount});//单量走势
+}
+function selectday(index,date){
+    var as1=$("span[name=day]");
+    for(var i=0;i<as1.length;i++){
+        if(i==index){
+            $(as1[i]).attr("class","newusa_ici");
+        }else{
+            $(as1[i]).attr("class","newusa_ici_1");
+        }
+    }
+    getCharData(doContainer,_getTrenchData,{"day":date});//渠道分布
+}
+function selectAmount(index,date){
+    var as1=$("span[name=amount]");
+    for(var i=0;i<as1.length;i++){
+        if(i==index){
+            $(as1[i]).attr("class","newusa_ici");
+            $("#amount").val(date);
+        }else{
+            $(as1[i]).attr("class","newusa_ici_1");
+
+        }
+    }
+    var time=$("#time").val();
+    getCharData(doKnobs,_getOrderCountData,{"time":time,"amount":date});//单量走势
 }

@@ -30,8 +30,6 @@
         $(function(){
             var li=W.document.getElementById("loadremarks");
             var spans=$(li).find("span[scop=remark]");
-            var td=$("#addremarks");
-            var span="<table><tr><td>";
             var date1="";
             for(var i=0;i<spans.length;i++){
                 var remarkName=spans[i].innerText;
@@ -60,25 +58,11 @@
                                 "</ul>" +
                                 "</li>" +
                                 "</div>" +
-                                "<div class=\"a1fd\"><a href=\"javascript:void(0)\" title=\"<img src='"+r2[i].attrvalue+"'/>\" onclick=\"bigfont('"+r2[i].id+"')\"><img  src=\"<c:url value ="/img/a1fd.png" />\"></a></div>" +
-                                "<input type=\"hidden\" name=\"Picture\" value=\""+r2[i].attrvalue+"\"><div class=\"jqzoom\" id=\""+r2[i].id+"\"><img src=\""+r2[i].attrvalue+"\" alt=\"shoe\"   jqimg=\""+r2[i].attrvalue+"\" width=\"120\" height=\"110\"></div></td>";
+                                "<div class=\"a1fd\"><a href=\"javascript:void(0)\" title=\"<img  src='"+r2[i].attrvalue+"'/>\" onclick=\"bigfont('"+r2[i].id+"')\"><img  src=\"<c:url value ="/img/a1fd.png" />\"></a></div>" +
+                                "<input type=\"hidden\" name=\"Picture\" value=\""+r2[i].attrvalue+"\"><div class=\"jqzoom\" id=\""+r2[i].id+"\"><img scop='img' src=\""+r2[i].attrvalue+"\" alt=\"shoe\"   jqimg=\""+r2[i].attrvalue+"\" width=\"120\" height=\"110\"></div></td>";
                             }
                             $("#addPictureId").append(div);
                         }
-                        if(r1.length>0){
-                            for(var i=0;i< r1.length;i++){
-                                var remark=r1[i];
-                                var name=spans[i+2].innerText;
-                                name=name.substring(0,name.length-1);
-                                if(i%5==0&&i!=0){
-                                    span+="<a href='javascript:void(0);' onclick=\"addToli('"+name+"')\"><span class=\"pipi\">+ "+name+"("+ remark[name]+")</span></a></td></tr><tr><td>";
-                                }else{
-                                    span+="<a href='javascript:void(0);' onclick=\"addToli('"+name+"')\"><span class=\"pipi\">+ "+name+"("+ remark[name]+")</span></a>";
-                                }
-                            }
-                            span+="</td></tr></table>";
-                            $(td).append(span);
-                         }
                         Base.token();
                     },
                         function(m,r){
@@ -200,12 +184,61 @@
                     }
                 }
             }
-            var url=path+"/information/ajax/saveItemInformation.do?remark="+remark;
+            $("#remark123").val(remark);
+            $("#discription").val(ue.getContent());
+            var url=path+"/information/ajax/saveItemInformation.do?";
             var data=$("#informationForm").serialize();
             $().invoke(url,data,
                     [function(m,r){
                         alert(r);
-                        W.refreshTable();
+                        var idvalue=$("#id").val();
+                        if(idvalue&&idvalue!=""){
+                            var table=W.document.getElementById("ItemInformationListTable");
+                            var inputs=$(table).find("input[scop1=selected]");
+                            for(var i=0;i<inputs.length;i++){
+                                var tr=$(inputs[i]).parent().parent();
+                                var tds=$(tr).find("td");
+                                var td1=$("#addPictureId").find("td");
+                                var img1=$(td1[0]).find("img[scop=img]")
+                                for(var j=0;j<tds.length;j++){
+                                    if(j==1){
+                                        var img=$(tds[j]).find("img");
+                                        if(img1.length>0){
+                                            $(img).attr("src",$(img1).attr("src"));
+                                        }else{
+                                            $(img).attr("src","http://i.ebayimg.sandbox.ebay.com/00/s/NjAwWDgwMA==/$(KGrHqRHJEkFJ2m+ipUVBUSMpPJdmw~~60_1.JPG");
+                                        }
+                                    }else if(j==6){
+                                        var img=$(tds[j]).find("img");
+                                        if(img1.length>0){
+                                            $(img).attr("src",path+"/img/new_yes.png");
+                                        }else{
+                                            $(img).attr("src",path+"/img/new_no.png");
+                                            $(img).attr("title","该商品没有图片");
+                                        }
+                                    }else if(j==3){
+                                        var value=$("#sku").val();
+                                        tds[j].innerHTML=value;
+                                    }
+                                    else if(j==4){
+                                        var value=$("#informationName").val();
+                                        tds[j].innerHTML=value;
+                                    }
+                                    else if(j==5){
+                                        var as=$("#addRemark").find("a");
+                                        var value="";
+                                        for(var x=0;x<as.length;x++){
+                                            var span=$(as[x]).find("span");
+                                            value+=span[0].innerHTML+",";
+                                        }
+                                        tds[j].innerHTML=value.substring(0,value.length-1);
+                                    }
+                                }
+                            }
+                        }else{
+                            W.refreshTable();
+                        }
+
                         W.loadRemarks();
                         W.itemInformation.close();
                         Base.token();
@@ -262,6 +295,10 @@
             $().image_editor.init("picUrls"); //编辑器的实例id
             $().image_editor.show("apicUrls"); //上传图片的按钮id
         })
+        function addpictureName(obj){
+            var a=document.getElementById("apicUrls");
+            $(a).click();
+        }
         var afterUploadCallback = null;
         var sss;
         function addpicture(a){
@@ -283,15 +320,26 @@
                         "</li>" +
                         "</div>" +
                         "<div class=\"a1fd\"><a href=\"javascritp:void(0)\"><img src=\"<c:url value ="/img/a1fd.png" />\"></a></div>" +
-                        "<img src=\"" + urls[i].src.replace("@", ":") +"\" width=\"120\" height=\"110\"></td>";
+                        "<img scop='img' src=\"" + urls[i].src.replace("@", ":") +"\" width=\"120\" height=\"110\"></td>";
             }
             /*$("#picture").append(str);*/
           /*  alert($("#addPictureId"));*/
             $("#addPictureId").append(str);
             str = "";
+            var addPictureId=document.getElementById("addPictureId");
+            var div=$(addPictureId).find("div[id=vspic]");
+            console.debug(div);
+            if(div.length>0) {
+                $("#lianjie").remove();
+            }
         }
         function removeThis(a){
             $(a).parent().parent().parent().parent().parent().remove();
+            var addPictureId=document.getElementById("addPictureId");
+            var div=$(addPictureId).find("div[id=vspic]");
+            if(div.length==0) {
+                $(addPictureId).append("<td align='center' id='lianjie'><br/><a href='javascript:void(0);' onclick='addpictureName(this)'>您还没有上传图片，马上上传</a></td>");
+            }
         }
         $(document).ready(function(){
             $("#informationForm").validationEngine();
@@ -308,6 +356,35 @@
        function connectPicture(url){
             window.open(url);
         }
+        function importItemInformation(){
+            var url=path+"/information/importItemInformation.do";
+            itemInformation=openMyDialog({title: '请选择导入的excel文件',
+                content: 'url:'+url,
+                icon: 'succeed',
+                width:600,
+                lock:true,
+                zIndex:2000
+            });
+        }
+    function changeName(obj){
+       var value=$(obj).val();
+       var changeName=$("#changeName");
+       if(value==""){
+           return;
+       }else{
+           if(changeName.length==0){
+               var tr=$(obj).parent().parent().parent();
+               var tr1="<tr id='changeName'><td height=\"46\" align=\"right\"></td><td height=\"46\" width=\"95%\"><div class=\"newselect\"><span style=\"margin-left: 5px;\">系统正在为你匹配到最佳EBAY分类...</span></div></td></tr>";
+               $(tr).after(tr1);
+           }else{
+                $(changeName).remove();
+               var tr=$(obj).parent().parent().parent();
+               var tr1="<tr id='changeName'><td height=\"46\" align=\"right\"></td><td height=\"46\" width=\"95%\"><div class=\"newselect\"><span style=\"margin-left: 5px;\">系统正在为你匹配到最佳EBAY分类...</span></div></td></tr>";
+               $(tr).after(tr1);
+           }
+
+       }
+    }
     </script>
 </head>
 <body>
@@ -528,12 +605,20 @@
     <div class="modal-body" style="background-color: #ffffff;">
         <script type="text/javascript">
             function setvTab(name,cursel,n){
+                if(cursel==2){
+                    var addPictureId=document.getElementById("addPictureId");
+                    if(addPictureId.innerHTML==""){
+                        $(addPictureId).append("<td align='center' id='lianjie'><br/><a href='javascript:void(0);' onclick='addpictureName(this)'>您还没有上传图片，马上上传</a></td>");
+                    }
+                }
                 for(i=1;i<=n;i++){
                     var svt=document.getElementById(name+i);
                     var con=document.getElementById("new_"+name+"_"+i);
                     svt.className=i==cursel?"new_ic_1":"";
                     con.style.display=i==cursel?"block":"none";
                 }
+
+
             }
         </script>
 <br/><br/>
@@ -542,17 +627,20 @@
     <input type="hidden" name="inventoryid" value="${inventory.id}"/>
     <input type="hidden" name="customid" value="${custom.id}"/>
     <input type="hidden" name="supplierid" value="${supplier.id}"/>
+    <input type="hidden" name="remark" id="remark123">
+    <input type="hidden" name="discription" id="discription">
             <table width="100%" border="0" style="margin-top:-20px;">
                 <tbody><tr>
                     <td style="line-height:16px;"><%--<p><span style="color: #2395F3; font-size: 16px; font-family: '微软雅黑', '宋体', Arial">编辑商品</span><span style="float:right; "><button type="button" class="net_put_clo" data-dismiss="modal"></button></span></p>--%>
-                        <p>你也可以选择导入商品，<a href="#" style=" color:#2395F3; font-size:12px; font-family: '微软雅黑', '宋体', Arial">+去导入</a></p></td>
+                        <p>你也可以选择导入商品，<a href="javascript:void(0);" onclick="importItemInformation();" style=" color:#2395F3; font-size:12px; font-family: '微软雅黑', '宋体', Arial">+去导入</a></p></td>
                 </tr>
                 <tr>
                     <td><div class="new_tab">
                         <div class="new_tab_left"></div>
                         <div class="new_tab_right"></div>
-                        <dt id="svt1" class="new_ic_1" onclick="setvTab('svt',1,4)">基本信息</dt>
-                        <dt id="svt2" onclick="setvTab('svt',2,4)" class="">相关信息</dt>
+                        <dt id="svt1" style="width: 60px;border-top-left-radius: 5px;border-top-right-radius: 5px;" class="new_ic_1" onclick="setvTab('svt',1,4)">基本信息</dt>
+                        <dt id="svt3" style="width: 60px;border-top-left-radius: 5px;border-top-right-radius: 5px;" onclick="setvTab('svt',3,4)" class="">产品描述</dt>
+                        <dt id="svt2" style="width: 60px;border-top-left-radius: 5px;border-top-right-radius: 5px;" onclick="setvTab('svt',2,4)" class="">产品图片</dt>
                         <span style="float:right; margin-top:8px; margin-right:10px;">
                             <script type=text/plain id='picUrls'></script>
                             <div><a href="javascript:void(0)" id="apicUrls" onclick="addpicture(this)"><img src="<c:url value ="/img/apic_dr.png" />" width="75" height="15"></a></div></span>
@@ -560,51 +648,69 @@
                 </tr>
 
                 </tbody></table>
-            <div id="new_svt_1" class="hover" style="width:800px;display: block;background-color: #ffffff;">
+            <div id="new_svt_1" class="hover" style="width:650px;display: block;background-color: #ffffff;">
                 <link href="<c:url value ="/css/compiled/layout.css" />" rel="stylesheet" type="text/css">
                 <table width="100%" border="0" style="margin-left:40px;">
 
                     <tbody><tr>
                         <td height="46" align="right">商品名称：</td>
-                        <td height="46" width="86%"><div class="newselect">
-                                <input  class="form-controlsd validate[required]" type="text" id="informationName" name="name" value="${itemInformation.name}">
+                        <td height="46" width="95%"><div class="newselect">
+                                <input onchange="changeName(this);" class="form-controlsd validate[required]" type="text" id="informationName" name="name" value="${itemInformation.name}">
                         </div></td>
                     </tr>
-
+                    <c:if test="${itemInformation.typeId!=null}">
+                        <tr id='changeName'>
+                            <td height="46" align="right"></td>
+                            <td height="46" width="95%"><div class="newselect"><span style="margin-left: 5px;">系统已为你匹配到最佳EBAY分类:${itemInformation.typename}</span></div></td>
+                        </tr>
+                    </c:if>
+                    <c:if test="${itemInformation.id!=null&&itemInformation.typeId==null&&itemInformation.typeflag==null}">
+                        <tr id='changeName'>
+                        <td height="46" align="right"></td>
+                        <td height="46" width="95%"><div class="newselect"><span style="margin-left: 5px;">系统仍在为你匹配到最佳EBAY分类...</span></div></td>
+                        </tr>
+                    </c:if>
+                    <c:if test="${itemInformation.typeId==null&&itemInformation.typeflag==1}">
+                        <tr id='changeName'>
+                            <td height="46" align="right"></td>
+                            <td height="46" width="95%"><div class="newselect"><span style="margin-left: 5px;">系统没有为你匹配到最佳EBAY分类...</span></div></td>
+                        </tr>
+                    </c:if>
                     <tr>
                         <td width="14%" height="46" align="right">商品SKU：</td>
-                        <td height="46" width="86%"><div class="newselect">
+                        <td height="46" width="95%"><div class="newselect">
                             <input  class="form-controlsd validate[required]" type="text" id="sku" name="sku" value="${itemInformation.sku}">
                         </div></td>
                     </tr>
                     <tr>
                         <td width="14%" height="46" align="right">长：</td>
-                        <td height="46" width="86%"><div class="newselect">
-                            <input name="length" value="${inventory.length}" class="form-controlsd" type="text">
-                        </div></td>
+                        <td height="46" width="95%"><div class="newselect" style="width: 400px;">
+                            <input name="length" style="width: 225px;margin-right: 0px;border-top-right-radius: 0px;border-bottom-right-radius: 0px;" value="${inventory.length}" class="form-controlsd" type="text"><input name="length" class="form-controlsd" value="cm" disabled  style="color:#000000;background-color:gainsboro; width: 75px;margin-left: 0px;border-top-left-radius: 0px;border-bottom-left-radius: 0px;" type="button">
+                        </div>
+                        </td>
                     </tr>
                     <tr>
                         <td width="14%" height="46" align="right">宽：</td>
-                        <td height="46" width="86%"><div class="newselect">
-                            <input name="width" value="${inventory.width}" class="form-controlsd" type="text">
+                        <td height="46" width="95%"><div class="newselect" style="width: 400px;">
+                            <input name="width" style="width: 225px;margin-right: 0px;border-top-right-radius: 0px;border-bottom-right-radius: 0px;" value="${inventory.width}" class="form-controlsd" type="text"><input name="length" class="form-controlsd" value="cm" disabled  style="color:#000000;background-color:gainsboro; width: 75px;margin-left: 0px;border-top-left-radius: 0px;border-bottom-left-radius: 0px;" type="button">
                         </div></td>
                     </tr>
                     <tr>
                         <td width="14%" height="46" align="right">高：</td>
-                        <td height="46" width="86%"><div class="newselect">
-                            <input name="height" value="${inventory.height}" class="form-controlsd" type="text">
+                        <td height="46" width="95%"><div class="newselect" style="width: 400px;">
+                            <input name="height" style="width: 225px;margin-right: 0px;border-top-right-radius: 0px;border-bottom-right-radius: 0px;" value="${inventory.height}" class="form-controlsd" type="text"><input name="length" class="form-controlsd" value="cm" disabled  style="color:#000000;background-color:gainsboro; width: 75px;margin-left: 0px;border-top-left-radius: 0px;border-bottom-left-radius: 0px;" type="button">
                         </div></td>
                     </tr>
                     <tr>
                         <td width="14%" height="46" align="right">重量：</td>
-                        <td height="46" width="86%"><div class="newselect">
-                            <input name="weight" value="${custom.weight}" class="form-controlsd" type="text">
+                        <td height="46" width="95%"><div class="newselect" style="width: 400px;">
+                            <input name="weight" style="width: 225px;margin-right: 0px;border-top-right-radius: 0px;border-bottom-right-radius: 0px;" value="${custom.weight}" class="form-controlsd" type="text"><input name="length" class="form-controlsd" value="g" disabled  style="color:#000000;background-color:gainsboro; width: 75px;margin-left: 0px;border-top-left-radius: 0px;border-bottom-left-radius: 0px;" type="button">
                         </div></td>
                     </tr>
                     <tr>
-                        <td width="14%" height="46" align="right">采购价：</td>
-                        <td height="46" width="86%"><div class="newselect">
-                            <input name="supplierPrice" value="${supplier.price}" class="form-controlsd" type="text">
+                        <td width="14%" height="46" align="right">销售价：</td>
+                        <td height="46" width="95%"><div class="newselect" style="width: 400px;">
+                            <input style="width: 225px;margin-right: 0px;border-top-right-radius: 0px;border-bottom-right-radius: 0px;" name="supplierPrice" value="${supplier.price}" class="form-controlsd" type="text"><input name="length" class="form-controlsd" value="USD" disabled  style="color:#000000;background-color:gainsboro; width: 75px;margin-left: 0px;border-top-left-radius: 0px;border-bottom-left-radius: 0px;" type="button">
                         </div></td>
                     </tr>
               <%--      <tr>
@@ -642,47 +748,56 @@
                     <tr>
                         <td width="14%" height="0" align="right"></td>
                         <td height="0" width="86%" id="addremarks">
-                            </td>
+                            <a href='javascript:void(0);' onclick="addToli('电子产品')"><span class="pipi">+电子产品</span></a>
+                            <a href='javascript:void(0);' onclick="addToli('服装')"><span class="pipi">+服装</span></a>
+                            <a href='javascript:void(0);' onclick="addToli('户外用品')"><span class="pipi">+户外用品</span></a>
+                            <a href='javascript:void(0);' onclick="addToli('清仓')"><span class="pipi">+清仓</span></a>
+                        </td>
                     </tr>
                  <%--   <tr>
                         <td height="28" align="right"></td>
                         <td style=" padding-top:22px;" height="28"><button type="button" class="net_put">下一步</button> <button type="button" class="net_put_1" style="font-size: 5px;">相关信息</button></td>
                     </tr>--%>
                     </tbody></table>
+                <div style="bottom: 1px;">
+                    <div class="modal-footer">
+                        <button type="button" class="net_put" onclick="submitCommit();">保存</button>
+                        <button type="button" class="net_put_1" data-dismiss="modal" onclick="closedialog();">关闭</button>
+                        <button type="button" class="net_put" style="margin-left: 20px;" onclick="setvTab('svt',3,4)">下一步</button>
+                    </div>
+                </div>
             </div>
             <div style="display: none;" id="new_svt_2">
                 <link href="<c:url value ="/css/compiled/layout.css" />" rel="stylesheet" type="text/css">
                 <table width="100%" border="0">
-                    <tbody><tr id="addPictureId">
-                    <%--<c:forEach items="${pictures}" var="picture" begin="0" varStatus="status">
-                        <td class="spic" style="margin-left: 20px;">
-                            <div id="vspic">
-                                <li><a href="#"><img src="<c:url value ="/img/a1xl.png" />" width="18" height="18"></a>
-                                    <ul>
-                                        <li><a href="javascritp:void(0)" onclick="removeThis(this)">删除</a></li>
-                                        <li><a href="javascritp:void(0)" onclick="connectPicture('${picture.attrvalue}')">复制链接</a></li>
-                                    </ul>
-                                </li>
-                            </div>
-                            <div class="a1fd"><a href="#"><img src="<c:url value ="/img/a1fd.png" />"></a></div>
-                            <input type="hidden" name="Picture" value="${picture.attrvalue}"><img src="${picture.attrvalue}" width="120" height="110"></td>
-                    </c:forEach>--%>
-                     </tr>
+                    <tbody><tr id="addPictureId"></tr>
                     </tbody></table>
+                <div style="bottom: 1px;">
+                    <div class="modal-footer">
+                        <button type="button" class="net_put" onclick="submitCommit();">保存</button>
+                        <button type="button" class="net_put_1" data-dismiss="modal" onclick="closedialog();">关闭</button>
+
+                    </div>
+                </div>
+            </div>
+            <div style="display: none;" id="new_svt_3">
+                <script id="myEditor" type="text/plain" style="width:650px;height:400px;">${itemInformation.description}</script>
+                <div style="bottom: 1px;">
+                    <div class="modal-footer">
+                        <button type="button" class="net_put" onclick="submitCommit();">保存</button>
+                        <button type="button" class="net_put_1" data-dismiss="modal" onclick="closedialog();">关闭</button>
+                        <button type="button" class="net_put" style="margin-left: 20px;" onclick="setvTab('svt',2,4)">下一步</button>
+                    </div>
+                </div>
             </div>
 
 </form>
 
 <%--//----------------------------------------------------------------------------------------------%>
-<div style="bottom: 1px;">
-<div class="modal-footer">
-  <%--  <button type="button" class="net_put" onclick="submitCommit();">下一步</button>
-    <button type="button" class="net_put_1" style="font-size: 5px;" onclick="closedialog();">相关信息</button>--%>
-    <button type="button" class="net_put" onclick="submitCommit();">保存</button>
-    <button type="button" class="net_put_1" data-dismiss="modal" onclick="closedialog();">关闭</button>
-</div>
-</div>
+
 <script type="text/javascript">
+    var api = frameElement.api, W = api.opener;
+    var ue = UE.getEditor('myEditor');
     var lablId = -1;
 
     $(function() {
@@ -918,4 +1033,5 @@
 </div>--%>
 
 </body>
+
 </html>

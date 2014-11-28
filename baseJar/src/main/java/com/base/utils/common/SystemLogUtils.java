@@ -3,6 +3,7 @@ package com.base.utils.common;
 import com.base.database.customtrading.mapper.SystemLogQueryMapper;
 import com.base.database.userinfo.mapper.SystemLogMapper;
 import com.base.database.userinfo.model.SystemLog;
+import com.base.database.userinfo.model.SystemLogExample;
 import com.base.domains.SessionVO;
 import com.base.domains.querypojos.SystemLogQuery;
 import com.base.mybatis.page.Page;
@@ -26,6 +27,7 @@ public class SystemLogUtils {
     public static final String NO_API_Message="noApiMessage";//不系统通知的时候记录失败日志
     public static final String ORDER_OPERATE_RECORD="orderOperateRecord";//订单操作记录
     public static final String AUTO_ASSESS="autoAssess";//自动发送评价
+    public static final String ITEM_INFORMATION_TYPE="itemInformationType";//保存本地数据库没有的商品分类
 
     /**祝需要传入三个值
      * log.setEventname();
@@ -82,6 +84,15 @@ public class SystemLogUtils {
     public static List<SystemLogQuery> selectSystemLogList(Map map,Page page){
         SystemLogQueryMapper systemLogQueryMapper = (SystemLogQueryMapper) ApplicationContextUtil.getBean(SystemLogQueryMapper.class);
         List<SystemLogQuery> list=systemLogQueryMapper.selectSystemLogList(map,page);
+        return list;
+    }
+    public static List<SystemLog> selectSystemLogByEventnameAndEventdesc(String eventName,String eventDesc){
+        SystemLogMapper systemLogMapper = (SystemLogMapper) ApplicationContextUtil.getBean(SystemLogMapper.class);
+        SystemLogExample example=new SystemLogExample();
+        SystemLogExample.Criteria cr=example.createCriteria();
+        cr.andEventnameEqualTo(eventName);
+        cr.andEventdescEqualTo(eventDesc);
+        List<SystemLog> list=systemLogMapper.selectByExample(example);
         return list;
     }
 

@@ -9,6 +9,7 @@ import com.base.utils.cache.SessionCacheSupport;
 import com.base.utils.common.ObjectUtils;
 import com.base.utils.exception.Asserts;
 import com.publicd.service.*;
+import org.apache.commons.lang.StringUtils;
 import org.apache.poi.hssf.usermodel.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -59,7 +60,7 @@ public class PublicItemInformationImpl implements com.publicd.service.IPublicIte
         }else{
             PublicItemInformation t=PublicItemInformationMapper.selectByPrimaryKey(ItemInformation.getId());
             Asserts.assertTrue(t != null && t.getCreateUser() != null, "没有找到记录或者记录创建者为空");
-            ObjectUtils.valiUpdate(t.getCreateUser(),PublicItemInformationMapper.class,ItemInformation.getId());
+            ObjectUtils.valiUpdate(t.getCreateUser(),PublicItemInformationMapper.class,ItemInformation.getId(),"Synchronize");
             PublicItemInformationMapper.updateByPrimaryKeySelective(ItemInformation);
         }
     }
@@ -129,72 +130,44 @@ public class PublicItemInformationImpl implements com.publicd.service.IPublicIte
         cell8.setCellType(HSSFCell.CELL_TYPE_STRING);
         // 在单元格中输入头数据
         cell1.setCellValue("商品名称");
-        cell2.setCellValue("SKU");
-        cell3.setCellValue("商品类型");
-        cell4.setCellValue("标签");
-        cell5.setCellValue("描述");
-        cell6.setCellValue("供应商");
-        cell7.setCellValue("库存量");
-        cell8.setCellValue("申报名");
+        cell2.setCellValue("商品SKU");
+        cell3.setCellValue("长");
+        cell4.setCellValue("宽");
+        cell5.setCellValue("高");
+        cell6.setCellValue("重量");
+        cell7.setCellValue("销售价");
+        cell8.setCellValue("描述");
         for(int i=0;i<list.size();i++){
             row = sheet.createRow(i+1);
             String[] cells=new String[8];
             cells[0]=list.get(i).getName();
             cells[1]=list.get(i).getSku();
-            Long typeid=list.get(i).getTypeId();
-            if(typeid!=null){
-                PublicUserConfig config=new PublicUserConfig();
-                config=iPublicUserConfig.selectUserConfigById(typeid);
-                cells[2]=config.getConfigName();
+            if(list.get(i).getInventoryId()!=null){
+                PublicItemInventory inventory=iPublicItemInventory.selectItemInventoryByid(list.get(i).getInventoryId());
+                cells[2]=inventory.getLength()+"";
+                cells[3]=inventory.getWidth()+"";
+                cells[4]=inventory.getHeight()+"";
+            }else{
+                cells[2]="";
+                cells[3]="";
+                cells[4]="";
             }
-            List<PublicItemPictureaddrAndAttr> attrs=iPublicItemPictureaddrAndAttr.selectPictureaddrAndAttrByInformationId(list.get(i).getId(),"remark",list.get(i).getCreateUser());
-            String remarkName="";
-            for(PublicItemPictureaddrAndAttr attr:attrs){
-                PublicUserConfig config=new PublicUserConfig();
-                Long remarkId=attr.getRemarkId();
-                config=iPublicUserConfig.selectUserConfigById(remarkId);
-                remarkName+=config.getConfigName()+",";
+            if(list.get(i).getCustomId()!=null){
+                PublicItemCustom custom=iPublicItemCustom.selectItemCustomByid(list.get(i).getCustomId());
+                cells[5]=custom.getWeight()+"";
+            }else{
+                cells[5]="";
             }
-            if(attrs.size()>0){
-                remarkName=remarkName.substring(0,remarkName.length()-1);
+            if(list.get(i).getSupplierId()!=null){
+                PublicItemSupplier supplier=iPublicItemSupplier.selectItemSupplierByid(list.get(i).getSupplierId());
+                cells[6]=supplier.getPrice()+"";
+            }else{
+                cells[6]="";
             }
-            cells[3]=remarkName;
-            /*Long remarkid=list.get(i).getRemarkId();
-            if(remarkid!=null){
-                PublicUserConfig config=new PublicUserConfig();
-                config=iPublicUserConfig.selectUserConfigById(typeid);
-                cells[3]=config.getConfigName();
-            }*/
-            cells[4]=list.get(i).getDescription();
-            Long supid=list.get(i).getSupplierId();
-            if(supid!=null){
-                PublicItemSupplier supplier=new PublicItemSupplier();
-                supplier=iPublicItemSupplier.selectItemSupplierByid(supid);
-                if(supplier!=null){
-                    cells[5]=supplier.getName();
-                }else{
-                    cells[5]="";
-                }
-            }
-            Long total=list.get(i).getInventoryId();
-            if(total!=null){
-                PublicItemInventory inventory=new PublicItemInventory();
-                inventory=iPublicItemInventory.selectItemInventoryByid(total);
-                if(inventory!=null){
-                    cells[6]=inventory.getTotal()+"";
-                }else{
-                    cells[6]="";
-                }
-            }
-            Long customid=list.get(i).getCustomId();
-            if(customid!=null){
-                PublicItemCustom custom=new PublicItemCustom();
-                custom=iPublicItemCustom.selectItemCustomByid(customid);
-                if(custom!=null){
-                    cells[7]=custom.getName();
-                }else{
-                    cells[7]="";
-                }
+            if(StringUtils.isNotBlank(list.get(i).getDescription())){
+                cells[7]=list.get(i).getDescription();
+            }else{
+                cells[7]="";
             }
             for(int j=0;j<cells.length;j++){
                 HSSFCell cell = row.createCell(j);// 第一列
@@ -203,7 +176,6 @@ public class PublicItemInformationImpl implements com.publicd.service.IPublicIte
                 cell.setCellType(HSSFCell.CELL_TYPE_STRING);
                 cell.setCellValue(cells[j]);
             }
-
         }
        /* File path=new File(outputFile);
         File paren=path.getParentFile();
@@ -234,10 +206,12 @@ public class PublicItemInformationImpl implements com.publicd.service.IPublicIte
                 HSSFRow row=sheet.getRow(j);
                 String name="";
                 String sku="";
-                String type="";
-                String remark="";
-                String description="";
-                String supplier="";
+                String length="";
+                String width="";
+                String height="";
+                String weight="";
+                String price="";
+                String discription="";
                 if(row.getCell(0)!=null){
                    name=row.getCell(0).toString();
                 }
@@ -245,73 +219,81 @@ public class PublicItemInformationImpl implements com.publicd.service.IPublicIte
                    sku=row.getCell(1).toString();
                 }
                 if(row.getCell(2)!=null){
-                   type=row.getCell(2).toString();
+                    length=row.getCell(2).toString();
                 }
                 if(row.getCell(3)!=null){
-                   remark=row.getCell(3).toString();
+                    width=row.getCell(3).toString();
                 }
                 if(row.getCell(4)!=null){
-                   description=row.getCell(4).toString();
+                    height=row.getCell(4).toString();
                 }
                 if(row.getCell(5)!=null){
-                   supplier=row.getCell(5).toString();
+                    weight=row.getCell(5).toString();
+                }
+                if(row.getCell(6)!=null){
+                    price=row.getCell(6).toString();
+                }
+                if(row.getCell(7)!=null){
+                    discription=row.getCell(7).toString();
                 }
                 /*String inventory=row.getCell(6).toString();
                 String custom=row.getCell(7).toString();*/
                 PublicItemInformation itemInformation1=selectItemInformationBySKU(sku);
                 if(itemInformation1!=null){
-                    itemInformation.setId(itemInformation1.getId());
-                }
-                if(name!=null){
-                    itemInformation.setName(name);
-                }
-                if(sku!=null){
-                    itemInformation.setSku(sku);
-                }
-                PublicUserConfig type1=iPublicUserConfig.selectUserConfigByItemTypeName("itemType",type);
-                if(type1!=null){
-                    itemInformation.setTypeId(type1.getId());
-                }
-                if(description!=null){
-                    itemInformation.setDescription(description);
-                }
-                PublicItemSupplier supplier1=iPublicItemSupplier.selectItemSupplierByName(supplier);
-                if(supplier1!=null){
-                    itemInformation.setSupplierId(supplier1.getId());
-                }
-                saveItemInformation(itemInformation);
-                String[] remarks=remark.split(",");
-                if(remarks.length>0){
-                    List<PublicItemPictureaddrAndAttr> attrs=iPublicItemPictureaddrAndAttr.selectPictureaddrAndAttrByInformationId(itemInformation.getId(),"remark", SessionCacheSupport.getSessionVO().getId());
-                    if(attrs.size()>0){
-                        for(PublicItemPictureaddrAndAttr attr:attrs){
-                            iPublicItemPictureaddrAndAttr.deletePublicItemPictureaddrAndAttr(attr);
+                    continue;
+                }else{
+                    if(StringUtils.isNotBlank(name)){
+                        itemInformation.setName(name);
+                    }
+                    if(StringUtils.isNotBlank(sku)){
+                        itemInformation.setSku(sku);
+                    }
+                    if(StringUtils.isNotBlank(length)||StringUtils.isNotBlank(width)||StringUtils.isNotBlank(height)){
+                        PublicItemInventory inventory=new PublicItemInventory();
+                        if(StringUtils.isNotBlank(length)){
+                            inventory.setLength(Double.valueOf(length));
                         }
+                        if(StringUtils.isNotBlank(width)){
+                            inventory.setLength(Double.valueOf(width));
+                        }
+                        if(StringUtils.isNotBlank(height)){
+                            inventory.setLength(Double.valueOf(height));
+                        }
+                        iPublicItemInventory.saveItemInventory(inventory);
+                        itemInformation.setInventoryId(inventory.getId());
                     }
-                }
-                for(String remark1:remarks){
-                    PublicUserConfig remark2=iPublicUserConfig.selectUserConfigByItemTypeName("remark",remark1);
-                    if(remark2==null){
-                        remark2=new PublicUserConfig();
-                        remark2.setConfigName(remark1);
-                        remark2.setConfigType("remark");
-                        remark2.setUserId(itemInformation.getCreateUser());
-                        iPublicUserConfig.saveUserConfig(remark2);
+                    if(StringUtils.isNotBlank(weight)){
+                        PublicItemCustom custom=new PublicItemCustom();
+                        custom.setWeight(Double.valueOf(weight));
+                        iPublicItemCustom.saveItemCustom(custom);
+                        itemInformation.setCustomId(custom.getId());
                     }
-                    PublicItemPictureaddrAndAttr attr=new PublicItemPictureaddrAndAttr();
-                    attr.setRemarkId(remark2.getId());
-                    attr.setIteminformationId(itemInformation.getId());
-                    attr.setAttrtype("remark");
-                    iPublicItemPictureaddrAndAttr.saveItemPictureaddrAndAttr(attr);
-                }
-                if(remarks.length>0){
-                    itemInformation.setRemarkId(1L);
+                    if(StringUtils.isNotBlank(price)){
+                        PublicItemSupplier supplier=new PublicItemSupplier();
+                        supplier.setPrice(Double.valueOf(price));
+                        iPublicItemSupplier.saveItemSupplier(supplier);
+                        itemInformation.setSupplierId(supplier.getId());
+                    }
+                    if(StringUtils.isNotBlank(discription)){
+                      /*  discription.replaceAll("  ","<br/>");*/
+                        itemInformation.setDescription(discription);
+                    }
                     saveItemInformation(itemInformation);
                 }
+
                /* for(int x=0;x<8;x++){
 
                 }*/
             }
         }
+    }
+
+    @Override
+    public List<PublicItemInformation> selectItemInformationByTypeIsNull() {
+        PublicItemInformationExample example=new PublicItemInformationExample();
+        PublicItemInformationExample.Criteria cr=example.createCriteria();
+        cr.andTypeflagEqualTo(0);
+        List<PublicItemInformation> list=PublicItemInformationMapper.selectByExample(example);
+        return list;
     }
 }

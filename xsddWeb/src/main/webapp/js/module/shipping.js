@@ -1,21 +1,54 @@
 var returnShipping;
 function addshippingDetails(){
-    returnShipping=$.dialog({title: '新增运送选项',
+    var pp={title: '新增运送选项',
         content: 'url:/xsddWeb/addshippingDetails.do',
         icon: 'succeed',
         width:1000,
         height:700,
         lock:true
-    });
+    };
+    returnShipping=openMyDialog(pp);
+       /* $.dialog({title: '新增运送选项',
+        content: 'url:/xsddWeb/addshippingDetails.do',
+        icon: 'succeed',
+        width:1000,
+        height:700,
+        lock:true
+    });*/
 }
 function editshippingDetails(id){
-    returnShipping=$.dialog({title: '编辑运送选项',
+    var pp={title: '编辑运送选项',
         content: 'url:/xsddWeb/editshippingDetails.do?id='+id,
         icon: 'succeed',
         width:1000,
         height:700,
         lock:true
-    });
+    };
+    returnShipping=openMyDialog(pp);
+        /*$.dialog({title: '编辑运送选项',
+        content: 'url:/xsddWeb/editshippingDetails.do?id='+id,
+        icon: 'succeed',
+        width:1000,
+        height:700,
+        lock:true
+    });*/
+}
+function editshippingDetailsselect(id){
+    var pp={title: '查看运送选项',
+        content: 'url:/xsddWeb/editshippingDetails.do?id='+id+'&type=01',
+        icon: 'succeed',
+        width:1000,
+        height:700,
+        lock:true
+    };
+    returnShipping=openMyDialog(pp);
+       /* $.dialog({title: '查看运送选项',
+        content: 'url:/xsddWeb/editshippingDetails.do?id='+id+'&type=01',
+        icon: 'succeed',
+        width:1000,
+        height:700,
+        lock:true
+    });*/
 }
 
 function getSiteImg(json){
@@ -27,17 +60,20 @@ function loadShipping(){
     $("#shippingDetailsList").initTable({
         url:path + "/ajax/loadShippingDetailsList.do",
         columnData:[
-            {title:"名称",name:"shippingName",width:"8%",align:"left"},
+            {title:"&nbsp;&nbsp;名称",name:"shippingName",width:"8%",align:"left",format:getShippingName},
             {title:"站点",name:"siteName",width:"8%",align:"left",format:getSiteImg},
             {title:"ebay账号",name:"option1",width:"8%",align:"left",format:showData},
-            {title:"数据状态",name:"option1",width:"8%",align:"left",format:makeOption2s},
-            {title:"操作",name:"option1",width:"8%",align:"left",format:shippingmakeOption1}
+            {title:"数据状态",name:"option1",width:"8%",align:"center",format:makeOption2s},
+            {title:"&nbsp;&nbsp;&nbsp;&nbsp;操作",name:"option1",width:"8%",align:"left",format:shippingmakeOption1}
         ],
         selectDataNow:false,
         isrowClick:false,
         showIndex:false
     });
     refreshTableShipping();
+}
+function getShippingName(json){
+    return "&nbsp;&nbsp;"+json.shippingName;
 }
 function refreshTableShipping(){
     $("#shippingDetailsList").selectDataAfterSetParm({"bedDetailVO.deptId":"", "isTrue":0});
@@ -65,19 +101,13 @@ function delshippingDetails(id){
             refreshTableShipping();
         },
             function(m,r){
-                alert(r);
                 Base.token();
+                alert(r);
+
             }]
     );
 }
-function editshippingDetailsselect(id){
-    returnShipping=$.dialog({title: '编辑运送选项',
-        content: 'url:/xsddWeb/editshippingDetails.do?id='+id+'&type=01',
-        icon: 'succeed',
-        width:1000,
-        lock:true
-    });
-}
+
 function showData(json){
     var html='';
     html+='<div style="color: #3B9EF3;">'+json.ebayName+'</div>';

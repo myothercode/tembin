@@ -5,7 +5,6 @@ import com.base.domains.SessionVO;
 import com.base.domains.querypojos.OrderItemQuery;
 import com.base.domains.userinfo.UsercontrollerEbayAccountExtend;
 import com.base.mybatis.page.Page;
-import com.base.mybatis.page.PageJsonBean;
 import com.base.userinfo.service.UserInfoService;
 import com.base.utils.annotations.AvoidDuplicateSubmission;
 import com.base.utils.cache.SessionCacheSupport;
@@ -57,18 +56,17 @@ public class GetOrderItemController extends BaseAction {
         }
         Map m = new HashMap();
         /**分页组装*/
-        PageJsonBean jsonBean=commonParmVO.getJsonBean();
-        Page page=jsonBean.toPage();
         List<UsercontrollerEbayAccountExtend> ebays=userInfoService.getEbayAccountForCurrUser(new HashMap(),Page.newAOnePage());
         SessionVO sessionVO= SessionCacheSupport.getSessionVO();
         Map map=new HashMap();
         map.put("ebays",ebays);
         map.put("content",content);
         m.put("userId",sessionVO.getId());
+        Page page=new Page();
+        page.setCurrentPage(1);
+        page.setPageSize(10);
         List<OrderItemQuery> lists= this.iTradingOrderGetItem.selectOrderItemList(map,page);
-        jsonBean.setList(lists);
-        jsonBean.setTotal((int)page.getTotalCount());
-        AjaxSupport.sendSuccessText("", jsonBean);
+        AjaxSupport.sendSuccessText("", lists);
     }
 
    /**

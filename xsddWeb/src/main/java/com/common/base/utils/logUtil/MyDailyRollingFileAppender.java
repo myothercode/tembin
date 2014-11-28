@@ -28,6 +28,7 @@ public class MyDailyRollingFileAppender extends DailyRollingFileAppender {
 
     @Override
     public void activateOptions() {
+        //fileName=d:/log/rootpom.log
         String osName = System.getProperty("os.name");
         if(StringUtils.hasText(fileName)) {
             if(StringUtils.hasText(osName)) {

@@ -38,7 +38,7 @@
     <script type="text/javascript" src=<c:url value ="/js/base.js" /> ></script>
     <script type="text/javascript" src=<c:url value ="/js/util.js" /> ></script>
     <script type="text/javascript" src=<c:url value ="/js/jquery-blockui/jquery.blockUI.min.js" /> ></script>
-    <script src="<c:url value ="/js/indexpagejs/jquery-ui-1.10.2.custom.min.js"/>"></script>
+    <script src="<c:url value ="/js/jquery-ui-1.10.2.custom.min.js"/>"></script>
     <%--<script src="<c:url value ="/js/indexpagejs/jquery.knob.js"/>"></script>
     <script src="<c:url value ="/js/indexpagejs/jquery.flot.js"/>"></script>
     <script src="<c:url value ="/js/indexpagejs/jquery.flot.stack.js"/>"></script>
@@ -54,47 +54,6 @@
         }
     </style>
 
-
-    <script type="text/javascript">
-        function selectTime(index,date){
-            var as1=$("span[name=time]");
-            for(var i=0;i<as1.length;i++){
-                if(i==index){
-                    $(as1[i]).attr("class","newusa_ici");
-                    $("#time").val(date);
-                }else{
-                    $(as1[i]).attr("class","newusa_ici_1");
-                }
-            }
-            var amount=$("#amount").val();
-            getCharData(doKnobs,_getOrderCountData,{"time":date,"amount":amount});//单量走势
-        }
-        function selectday(index,date){
-            var as1=$("span[name=day]");
-            for(var i=0;i<as1.length;i++){
-                if(i==index){
-                    $(as1[i]).attr("class","newusa_ici");
-                }else{
-                    $(as1[i]).attr("class","newusa_ici_1");
-                }
-            }
-            getCharData(doContainer,_getTrenchData,{"day":date});//渠道分布
-        }
-        function selectAmount(index,date){
-            var as1=$("span[name=amount]");
-            for(var i=0;i<as1.length;i++){
-                if(i==index){
-                    $(as1[i]).attr("class","newusa_ici");
-                    $("#amount").val(date);
-                }else{
-                    $(as1[i]).attr("class","newusa_ici_1");
-
-                }
-            }
-            var time=$("#time").val();
-            getCharData(doKnobs,_getOrderCountData,{"time":time,"amount":date});//单量走势
-        }
-    </script>
 </head>
 <body>
 <div>
@@ -104,18 +63,18 @@
 <div class=Contentbox>
 <div class="new_index" style="padding-left: 5px">
     <a href="<c:url value ="/userCases/userCasesList.do"/>">
-        <li onmouseover="$(this).css('background','#EE6')" onmouseout="$(this).css('background','#EE6E69')"
+        <li onmouseover="$(this).css('background','#cccccc')" onmouseout="$(this).css('background','#EE6E69')"
             style="background:#EE6E69;margin-right:2%;">
         <span>CASE<%--订单代办事项--%></span>
         未处理的( ${caseMessages} )<%--分配失败 ( 3 )--%>
     </li></a>
     <a href="<c:url value ="/message/MessageGetmymessageList.do"/>">
-    <li onmouseover="$(this).css('background','#EE6')" onmouseout="$(this).css('background','#48BCFF')"
+    <li onmouseover="$(this).css('background','#cccccc')" onmouseout="$(this).css('background','#48BCFF')"
         style="background:#48BCFF;margin-right:2%;">
         <span>EBAY消息<%--订单代办事项--%></span>
         未处理的( ${ebayMessages} )<%--分配失败 ( 3 )--%>
     </li></a>
-    <li onmouseover="$(this).css('background','#EE6')" onmouseout="$(this).css('background','#6ABF0E')"
+    <li onmouseover="$(this).css('background','#cccccc')" onmouseout="$(this).css('background','#6ABF0E')"
         style="background:#6ABF0E">
         <span>订单代办事项</span>
         分配失败 ( 3 )

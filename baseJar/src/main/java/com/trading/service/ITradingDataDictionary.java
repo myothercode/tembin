@@ -33,6 +33,9 @@ public interface ITradingDataDictionary {
     /**根据ID查询TradingDataDictionary*/
     TradingDataDictionary selectDictionaryByID(Long id);
 
+    /**根据map查询publicDataDictionary*/
+    List<PublicDataDict> selectPublicDictionaryByMap(Map<String, String> map);
+
     /**根据ID查询publicDataDictionary*/
     List<PublicDataDict> selectPublicDictionaryByID(Long id);
 

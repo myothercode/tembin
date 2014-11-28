@@ -16,7 +16,7 @@ function getRese(){
         columnData:[
             {title: "选项", name: "option1", width: "8%", align: "left", format: showRadio},
             {title:"ID",name:"categoryId",width:"8%",align:"left"},
-            {title:"名称",name:"categoryName",width:"8%",align:"left"}
+            {title:"名称",name:"categoryName",width:"80%",align:"left"}
         ],
         selectDataNow:true,
         isrowClick:false,

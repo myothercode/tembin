@@ -23,7 +23,7 @@
         }
         var selectCountry1;
         function selectCountrys(){
-            var url=path+'/autoMessage/selectCountrys.do?';
+            var url=path+'/autoMessage/selectCountrys.do?id='+$("#id").val();
             selectCountry1 = openMyDialog({title: '有效国家',
                 content:'url:'+url,
                 icon: 'succeed',
@@ -35,7 +35,7 @@
             });
         }
         function selectExceptCountrys(){
-            var url=path+'/autoMessage/selectExceptCountrys.do?';
+            var url=path+'/autoMessage/selectExceptCountrys.do?id='+$("#id").val();
             selectCountry1 = openMyDialog({title: '指定国家之外',
                 content:'url:'+url,
                 icon: 'succeed',
@@ -47,12 +47,12 @@
             });
         }
         function selectItems(){
-            var url=path+'/autoMessage/selectItems.do?';
+            var url=path+'/autoMessage/selectItems.do?id='+$("#id").val();
             selectCountry1 = openMyDialog({title: '指定商品',
                 content:'url:'+url,
                 icon: 'succeed',
                 width:800,
-                height:500,
+                height:250,
                 parent:api,
                 lock:true,
                 zIndex:2000
@@ -83,6 +83,7 @@
             });
         }
         function selectMessageTemplate(){
+
             var url=path+'/autoMessage/selectMessageTemplate.do?';
             selectCountry1 = openMyDialog({title: '选择模块',
                 content:'url:'+url,

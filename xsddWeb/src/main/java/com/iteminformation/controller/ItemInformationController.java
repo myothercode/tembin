@@ -86,8 +86,12 @@ public class ItemInformationController extends BaseAction {
         String information=request.getParameter("information");
         String itemType=request.getParameter("itemType");
         String content=request.getParameter("content");
+        String comment=request.getParameter("comment");
         if("all".equals(remark)||!StringUtils.isNotBlank(remark)){
             remark=null;
+        }
+        if("all".equals(comment)||!StringUtils.isNotBlank(comment)){
+            comment=null;
         }
         if("all".equals(information)||!StringUtils.isNotBlank(information)){
             information=null;
@@ -104,6 +108,7 @@ public class ItemInformationController extends BaseAction {
         m.put("information",information);
         m.put("itemType",itemType);
         m.put("content",content);
+        m.put("comment",comment);
         if(sessionVO!=null){
             m.put("userID",sessionVO.getId());
         }else{
@@ -112,6 +117,17 @@ public class ItemInformationController extends BaseAction {
         PageJsonBean jsonBean=commonParmVO.getJsonBean();
         Page page=jsonBean.toPage();
         List<ItemInformationQuery> lists=iPublicItemInformation.selectItemInformation(m,page);
+        for(ItemInformationQuery query:lists){
+            if(query.getRemark()!=null){
+                List<PublicItemPictureaddrAndAttr> remarks=iPublicItemPictureaddrAndAttr.selectPictureaddrAndAttrByInformationId(query.getId(),"remark",sessionVO.getId());
+                String remark1="";
+                for(PublicItemPictureaddrAndAttr attr:remarks){
+                    PublicUserConfig config=iPublicUserConfig.selectUserConfigById(attr.getRemarkId());
+                    remark1+=config.getConfigName()+",";
+                }
+                query.setRemark(remark1);
+            }
+        }
         jsonBean.setList(lists);
         jsonBean.setTotal((int)page.getTotalCount());
         AjaxSupport.sendSuccessText("", jsonBean);
@@ -141,6 +157,23 @@ public class ItemInformationController extends BaseAction {
         return forword("/itemInformation/addComment",modelMap);
     }
 
+     /*
+     *保存备注
+     */
+    @RequestMapping("/ajax/changeName.do")
+    @AvoidDuplicateSubmission(needRemoveToken = true)
+    @ResponseBody
+    public void changeName(HttpServletRequest request) throws Exception {
+        String informationName=request.getParameter("informationName");
+        String id=request.getParameter("id");
+        String type="";
+        if(StringUtils.isNotBlank(informationName)){
+            if(StringUtils.isNotBlank(id)){
+                PublicItemInformation itemInformation=iPublicItemInformation.selectItemInformationByid(Long.valueOf(id));
+            }
+        }
+        AjaxSupport.sendSuccessText("",type);
+    }
     /*
      *保存备注
      */
@@ -290,7 +323,7 @@ public class ItemInformationController extends BaseAction {
     public void addPictures(HttpServletRequest request) throws Exception {
         String names=request.getParameter("names");
         List<Map<String,Integer>> list=new ArrayList<Map<String, Integer>>();
-        if(StringUtils.isNotBlank(names)){
+        /*if(StringUtils.isNotBlank(names)){
             String[] names1=names.split(",");
             for(int i=0;i<names1.length;i++){
                 String name=names1[i];
@@ -308,7 +341,7 @@ public class ItemInformationController extends BaseAction {
                     }
                 }
             }
-        }
+        }*/
         String id1=request.getParameter("id");
         List<PublicItemPictureaddrAndAttr> pictures=new ArrayList<PublicItemPictureaddrAndAttr>();
         Map<String,List> m=new HashMap<String, List>();
@@ -318,7 +351,7 @@ public class ItemInformationController extends BaseAction {
             pictures=iPublicItemPictureaddrAndAttr.selectPictureaddrAndAttrByInformationId(itemInformation.getId(),"picture",c.getId());
         }
         m.put("pic",pictures);
-        m.put("list",list);
+      /*  m.put("list",list);*/
         AjaxSupport.sendSuccessText("",m);
     }
     /*
@@ -625,7 +658,6 @@ public class ItemInformationController extends BaseAction {
         List<String> attrNames=new ArrayList<String>();
         int i=0;
         while(i>=0){
-
             String picture=request.getParameter("Picture[" + i + "]");
             if(StringUtils.isNotBlank(picture)){
                 pictures.add(picture);
@@ -728,12 +760,20 @@ public class ItemInformationController extends BaseAction {
         itemInformation.setName(name);
         itemInformation.setSku(sku);
        /* itemInformation.setTypeId(Long.valueOf(itemType));*/
+        PublicItemInformation itemInformation1=new PublicItemInformation();
         if(StringUtils.isNotBlank(id)){
-            itemInformation.setId(Long.valueOf(id));
+            itemInformation1=iPublicItemInformation.selectItemInformationByid(Long.valueOf(id));
+            if(itemInformation1!=null){
+                itemInformation.setId(Long.valueOf(id));
+                if(!name.equals(itemInformation1.getName())){
+                    itemInformation.setTypeflag(0);
+                }
+            }
         }
         if(StringUtils.isNotBlank(discription)){
             itemInformation.setDescription(discription);
         }
+
         iPublicItemInformation.saveItemInformation(itemInformation);
         SessionVO c= SessionCacheSupport.getSessionVO();
         List<PublicItemPictureaddrAndAttr> pictureaddrAnds=iPublicItemPictureaddrAndAttr.selectPictureaddrAndAttrByInformationId(itemInformation.getId(),"picture",c.getId()) ;

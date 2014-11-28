@@ -27,7 +27,7 @@
 <body>
 <div style="width: 400px;margin-left: 100px;margin-top: 40px;">
     选择时间：<input name="timerStr" id="timerStr" style="height: 24px;width: 150px" type="text" size="20"
-                onfocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss',minDate:'%y-%M-{%d}'})">
+                onfocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss',minDate:'%y-%M-{%d}'})" class="form-control">
     <input type="button" value="确定" onclick="submitCommit()"/>
 </div>
 </body>

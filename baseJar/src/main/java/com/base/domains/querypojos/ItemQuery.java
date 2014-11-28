@@ -18,6 +18,16 @@ public class ItemQuery extends TradingItem{
 
     private String remark;
 
+    private Date defaultTimer;
+
+    public Date getDefaultTimer() {
+        return defaultTimer;
+    }
+
+    public void setDefaultTimer(Date defaultTimer) {
+        this.defaultTimer = defaultTimer;
+    }
+
     public String getRemark() {
         return remark;
     }

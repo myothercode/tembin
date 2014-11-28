@@ -176,45 +176,35 @@ public class AutoMessageController extends BaseAction {
     /**选择有效国家初始化*/
     @RequestMapping("/selectCountrys.do")
     public ModelAndView selectCountrys(HttpServletRequest request,HttpServletResponse response,ModelMap modelMap){
-        List<TradingDataDictionary> lidata = DataDictionarySupport.getTradingDataDictionaryByType(DataDictionarySupport.DATA_DICT_DELTA);
-        List<TradingDataDictionary> li1 = new ArrayList();
-        List<String> names=new ArrayList<String>();
-        List<String> countryIds=new ArrayList<String>();
-        for(TradingDataDictionary tdd : lidata){
-           if(tdd.getName1().equals("International")){
-                li1.add(tdd);
-               names.add(tdd.getName());
-               countryIds.add(String.valueOf(tdd.getId()));
-            }
+        String id=request.getParameter("id");
+        List<TradingAutoMessageAttr> attrs=new ArrayList<TradingAutoMessageAttr>();
+        if(StringUtils.isNotBlank(id)){
+            attrs=iTradingAutoMessageAttr.selectAutoMessageListByMessageId(Long.valueOf(id));
         }
-        modelMap.put("countrys",li1);
-        modelMap.put("names",names);
-        modelMap.put("countryIds",countryIds);
+        modelMap.put("items",attrs);
         return forword("autoMessage/selectCountrys",modelMap);
     }
 
     /**选择有效国家之外初始化*/
     @RequestMapping("/selectExceptCountrys.do")
     public ModelAndView selectExceptCountrys(HttpServletRequest request,HttpServletResponse response,ModelMap modelMap){
-        List<TradingDataDictionary> lidata = DataDictionarySupport.getTradingDataDictionaryByType(DataDictionarySupport.DATA_DICT_DELTA);
-        List<TradingDataDictionary> li1 = new ArrayList();
-        List<String> names=new ArrayList<String>();
-        List<String> countryIds=new ArrayList<String>();
-        for(TradingDataDictionary tdd : lidata){
-            if(tdd.getName1().equals("International")){
-                li1.add(tdd);
-                names.add(tdd.getName());
-                countryIds.add(String.valueOf(tdd.getId()));
-            }
+        String id=request.getParameter("id");
+        List<TradingAutoMessageAttr> attrs=new ArrayList<TradingAutoMessageAttr>();
+        if(StringUtils.isNotBlank(id)){
+            attrs=iTradingAutoMessageAttr.selectAutoMessageListByMessageId(Long.valueOf(id));
         }
-        modelMap.put("countrys",li1);
-        modelMap.put("names",names);
-        modelMap.put("countryIds",countryIds);
+        modelMap.put("items",attrs);
         return forword("autoMessage/selectExceptCountrys",modelMap);
     }
     /**选择指定商品初始化*/
     @RequestMapping("/selectItems.do")
     public ModelAndView selectItems(HttpServletRequest request,HttpServletResponse response,ModelMap modelMap){
+        String id=request.getParameter("id");
+        List<TradingAutoMessageAttr> attrs=new ArrayList<TradingAutoMessageAttr>();
+        if(StringUtils.isNotBlank(id)){
+            attrs=iTradingAutoMessageAttr.selectAutoMessageListByMessageId(Long.valueOf(id));
+        }
+        modelMap.put("items",attrs);
         return forword("autoMessage/selectItems",modelMap);
     }
 
@@ -238,9 +228,24 @@ public class AutoMessageController extends BaseAction {
     @RequestMapping("/ajax/selectCountry.do")
     @ResponseBody
     public void selectCountry(CommonParmVO commonParmVO,HttpServletRequest request) throws Exception {
-        String countryId=request.getParameter("countryId");
-        List<TradingDataDictionary> lidata = DataDictionarySupport.getTradingDataDictionaryByType(DataDictionarySupport.DATA_DICT_COUNTRY,Long.parseLong(countryId));
-        AjaxSupport.sendSuccessText("", lidata);
+       /* String countryId=request.getParameter("countryId");
+        List<TradingDataDictionary> lidata = DataDictionarySupport.getTradingDataDictionaryByType(DataDictionarySupport.DATA_DICT_COUNTRY, Long.parseLong(countryId));*/
+        List<TradingDataDictionary> lidata = DataDictionarySupport.getTradingDataDictionaryByType(DataDictionarySupport.DATA_DICT_DELTA);
+        Map<String,List<TradingDataDictionary>> map=new HashMap<String, List<TradingDataDictionary>>();
+        List<TradingDataDictionary> li1 = new ArrayList();
+        List<String> names=new ArrayList<String>();
+        List<String> countryIds=new ArrayList<String>();
+        for(TradingDataDictionary tdd : lidata){
+            if(tdd.getName1().equals("International")){
+                li1.add(tdd);
+                names.add(tdd.getName());
+                countryIds.add(String.valueOf(tdd.getId()));
+            }
+            List<TradingDataDictionary> list=DataDictionarySupport.getTradingDataDictionaryByType(DataDictionarySupport.DATA_DICT_COUNTRY,tdd.getId());
+            map.put(tdd.getValue(),list);
+        }
+        map.put("place",lidata);
+        AjaxSupport.sendSuccessText("", map);
     }
 
     /**ajax运输方式*/

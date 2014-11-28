@@ -15,7 +15,7 @@
             background-color: #ffffff;
         }
     </style>
-    <title></title>
+    <title id="tt">模块管理</title>
     <script>
         function setTab(obj){
             var name=$(obj).attr("name");

@@ -29,8 +29,8 @@
 
 <link rel="stylesheet" type="text/css" href="<c:url value ="/css/basecss/base.css" />"/>
 <link rel="stylesheet" type="text/css" href="<c:url value ="/js/validation/validationEngine.jquery.css" />"/>
+<link rel="stylesheet" type="text/css" href="<c:url value ="/js/jquery-ui/smoothness/jquery-ui.min.css" />"/>
 <link rel="stylesheet" type="text/css" href="<c:url value ="/js/jquery-easyui/themes/default/easyui.css" />"/>
-<link rel="stylesheet" type="text/css" href="<c:url value ="/js/jquery-easyui/themes/icon.css" />"/>
 
 <script type="text/javascript" src=<c:url value ="/js/jquery/jquery-1.9.0.min.js" /> ></script>
 <script type="text/javascript" src=<c:url value ="/js/jquery/jquery-migrate-1.2.1.min.js" /> ></script>
@@ -44,15 +44,31 @@
 <script type="text/javascript" src=<c:url value ="/js/table/jquery.table.js" /> ></script>
 <script type="text/javascript" src=<c:url value ="/js/validation/jquery.validationEngine.js" /> ></script>
 <script type="text/javascript" src=<c:url value ="/js/validation/jquery.validationEngine-zh_CN.js" /> ></script>
-<script type="text/javascript" src=<c:url value ="/js/jquery-easyui/jquery.easyui.min.js" /> ></script>
 <script src="<c:url value ="/js/bootstrap.min.js"/>"></script>
 <script src="<c:url value ="/js/theme.js"/>"></script>
+
+<%--jqueryUI--%>
+<script type="text/javascript" src=<c:url value="/js/jquery-ui/jquery-ui-1.11.2/jquery-ui.min.js"/>></script>
+<!-- selectBoxIt -->
+<link href=<c:url value="/js/selectBoxIt/stylesheets/jquery.selectBoxIt.css"/> rel="stylesheet">
+<%--<script type="text/javascript" src=<c:url value="/js/selectBoxIt/javascripts/jquery-ui.min.js"/>></script>--%>
+<script type="text/javascript" src=<c:url value="/js/selectBoxIt/javascripts/jquery.selectBoxIt.min.js"/>></script>
 
 <%
     String rootPath = request.getContextPath();
     String _token = (String) request.getSession().getAttribute("_token")==null?"":(String) request.getSession().getAttribute("_token");
 %>
 <script type="text/javascript">
+    var oldAlert = window.alert;
+    window.alert = function(msg){
+        try{
+            myAlert(msg)
+        }catch (e){
+            oldAlert(msg);
+            console.log(e)
+        }
+    }
+
     var path = window["path"] = '<%=rootPath%>';
     var nowDateTime="<fmt:formatDate value="${nowDateTime}" pattern="yyyy-MM-dd HH:mm:ss"/>";
     var _token="<%=_token%>";
@@ -66,6 +82,7 @@
     /**页面加载完成后执行的方法*/
     $(document).ready(function(){
         showBanner_(false);
+        initButtonStyle();
         /**滚动条滚动到顶部和底部的时候触发事件显示和隐藏banner栏*/
         $(window).scroll(function() {
             if($(document).scrollTop()>0){//如果不是在顶端，隐藏顶部栏
@@ -111,34 +128,22 @@ if(bbs_){
         }
 
     }
-    /*function zjh_(pheight){
-        if(parent.document==document){return;}
-        var wi=getCurrPageWH();
-        if(pheight==null){
-            $("#contentMaindiv",parent.document.body).css("height",(parseInt(wi.eHeight)+65)+"px");
-            $(parent.document.body).css("height",(parseInt(wi.eHeight)+65)+"px");
-        }else{
-            var th_= parseInt(wi.eHeight);
-            $("#contentMaindiv",parent.document.body).css("height",(th_+pheight+100)+"px");
-            var eHeight1=(parent.document.documentElement.scrollHeight > parent.document.documentElement.clientHeight) ? parent.document.documentElement.scrollHeight : parent.document.documentElement.clientHeight;
-            $(parent.document.body).css("height",(eHeight1+pheight+10)+"px");
-        }
 
-    }
-    function jsh_(){
-        if(parent.document==document){return}
-        var wi=getCurrPageWH();
-        $("#contentMaindiv",parent.document.body).css("height",(parseInt(wi.eHeight)-65)+"px");
-        $(parent.document.body).css("height",(parseInt(wi.eHeight)-65)+"px");
-    }*/
 
-    /**关闭弹窗的时候会统一执行的方法*/
-    function doitAfterCloseLhgDiolag(){
-        Base.token();
+    /**关闭弹窗的时候会统一执行的方法,参数是打开窗口的window对象*/
+    function doitAfterCloseLhgDiolag(win){
+        //oldAlert(win.document.getElementById("tt").innerHTML)
+        win.Base.token();
     }
     /**将弹出窗口统一到一处*/
     function openMyDialog(parm){
         return $.dialog(parm);
+    }
+    /**初始化jqueryui的按钮*/
+    function initButtonStyle(){
+        $( ".myjqueryuibutton" ).button().click(function( event ) {
+                    event.preventDefault();
+                });
     }
 
     /**清除本地缓存*/

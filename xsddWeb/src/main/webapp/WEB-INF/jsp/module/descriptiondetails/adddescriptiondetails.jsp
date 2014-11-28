@@ -17,6 +17,8 @@
     <script type="text/javascript" src=<c:url value ="/js/ueditor/ueditor.all.js" /> ></script>
     <script type="text/javascript" src=<c:url value ="/js/ueditor/lang/zh-cn/zh-cn.js" /> ></script>
     <script type="text/javascript" src=<c:url value ="/js/jquery-easyui/jquery.easyui.min.js" /> ></script>
+    <link href=
+          <c:url value="/css/basecss/conter.css"/> type="text/css" rel="stylesheet"/>
     <style type="text/css">
         div{
             width:100%;
@@ -40,10 +42,10 @@
     <input type="hidden" name="contactTitle" id="contactTitle" value="${empty DescriptionDetails.contactTitle?"Contact us":DescriptionDetails.contactTitle}" />
     <input type="hidden" name="guaranteeTitle" id="guaranteeTitle" value="${empty DescriptionDetails.guaranteeTitle?"Guarantee":DescriptionDetails.guaranteeTitle}" />
     <input type="hidden" name="feedbackTitle" id="feedbackTitle" value="${empty DescriptionDetails.feedbackTitle?"Feedback":DescriptionDetails.feedbackTitle}"/>
-    名称：<input type="text" name="name" value="${DescriptionDetails.name}"/>
+    名称：<input type="text" name="name" value="${DescriptionDetails.name}" style="border: 1px solid #cccccc;border-radius: 4px;"/>
 </form>
 
-
+<br>
        <div class="easyui-tabs" style="width:1000px">
                 <div title="${empty DescriptionDetails.payTitle?"Payment":DescriptionDetails.payTitle}" style="padding:10px" id="PaymentTab" data-options="tools:'#Payment-tools'">
                     <script id="myEditor" type="text/plain" style="width:975px;height:400px;">${DescriptionDetails.payInfo}</script>
@@ -121,7 +123,7 @@
 //关闭字数统计
         wordCount:false,
         //关闭elementPath
-        elementPathEnabled:false,
+        elementPathEnabled:false
         //默认的编辑区域高度
         //initialFrameHeight:500 ,
         //initialFrameWidth:'98%'
