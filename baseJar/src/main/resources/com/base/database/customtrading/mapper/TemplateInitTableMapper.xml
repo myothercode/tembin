@@ -22,7 +22,7 @@
             and TemplateInitTable.id = #{id}
         </if>
         <if test="userid!=null">
-            and TemplateInitTable.create_user = #{userid}
+            and (TemplateInitTable.create_user = #{userid} or TemplateInitTable.t_level='0')
         </if>
     </select>
 </mapper>

@@ -6,10 +6,7 @@ import com.base.database.sitemessage.model.PublicSitemessage;
 import com.base.database.task.model.TaskGetOrders;
 import com.base.database.trading.model.*;
 import com.base.domains.userinfo.UsercontrollerDevAccountExtend;
-import com.base.sampleapixml.APINameStatic;
-import com.base.sampleapixml.BindAccountAPI;
-import com.base.sampleapixml.GetOrderItemAPI;
-import com.base.sampleapixml.GetOrdersAPI;
+import com.base.sampleapixml.*;
 import com.base.utils.threadpool.AddApiTask;
 import com.base.utils.threadpool.TaskMessageVO;
 import com.base.utils.xmlutils.SamplePaseXml;
@@ -100,7 +97,12 @@ public class ScheduleGetTimerOrdersImpl implements IScheduleGetTimerOrders {
     public void synchronizeOrders(List<TaskGetOrders> taskGetOrders) {
         /*CommAutowiredClass commPars = (CommAutowiredClass) ApplicationContextUtil.getBean(CommAutowiredClass.class);*/
         try{
+
             for(TaskGetOrders taskGetOrder:taskGetOrders){
+                Integer flag1=taskGetOrder.getTokenflag();
+                flag1=flag1+1;
+                taskGetOrder.setTokenflag(flag1);
+                iTaskGetOrders.saveListTaskGetOrders(taskGetOrder);
                 UsercontrollerDevAccountExtend d = new UsercontrollerDevAccountExtend();//开发者帐号id
                 d.setApiSiteid("0");
                 d.setApiCallName(APINameStatic.GetOrders);
@@ -147,10 +149,36 @@ public class ScheduleGetTimerOrdersImpl implements IScheduleGetTimerOrders {
                             r1 = resMap.get("stat");
                             res = resMap.get("message");
                             if ("fail".equalsIgnoreCase(r1)) {
+                                List<PublicSitemessage> list1=siteMessageService.selectPublicSitemessageByMessage("synchronize_get_order_timer_FAIL","订单定时任务:"+taskGetOrder.getId());
+                                if(list1!=null&&list1.size()>0){
+                                    return;
+                                }
+                                TaskMessageVO taskMessageVO = new TaskMessageVO();
+                                taskMessageVO.setMessageType(SiteMessageStatic.SYNCHRONIZE_GET_ORDER_TIMER + "_FAIL");
+                                taskMessageVO.setMessageTitle("定时同步订单失败!");
+                                taskMessageVO.setMessageContext("订单调用API失败:" + res);
+                                taskMessageVO.setMessageTo(taskGetOrder.getUserid());
+                                taskMessageVO.setMessageFrom("system");
+                                taskMessageVO.setOrderAndSeller("订单定时任务:"+taskGetOrder.getId());
+                                siteMessageService.addSiteMessage(taskMessageVO);
                                 return;
                             }
                             ack = SamplePaseXml.getVFromXmlString(res, "Ack");
                             if (!"Success".equalsIgnoreCase(ack)) {
+                                List<PublicSitemessage> list1=siteMessageService.selectPublicSitemessageByMessage("synchronize_get_order_timer_FAIL","订单获取必要的参数失败:"+taskGetOrder.getId());
+                                if(list1!=null&&list1.size()>0){
+                                    return;
+                                }
+                                String errors = SamplePaseXml.getVFromXmlString(res, "Errors");
+                                TaskMessageVO taskMessageVO = new TaskMessageVO();
+                                taskMessageVO.setMessageType(SiteMessageStatic.SYNCHRONIZE_GET_ORDER_TIMER + "_FAIL");
+                                taskMessageVO.setMessageTitle("定时同步订单失败!");
+                                taskMessageVO.setMessageContext("订单调用用API失败:获取必要的参数失败,！请稍后重试," + errors);
+                                taskMessageVO.setMessageTo(taskGetOrder.getUserid());
+                                taskMessageVO.setMessageFrom("system");
+                                taskMessageVO.setOrderAndSeller("订单获取必要的参数失败:"+taskGetOrder.getId());
+                                siteMessageService.addSiteMessage(taskMessageVO);
+                                logger.error("Order获取apisessionid失败!" + errors);
                                 return;
                             }
                             mapOrder = GetOrdersAPI.parseXMLAndSave(res);
@@ -182,16 +210,16 @@ public class ScheduleGetTimerOrdersImpl implements IScheduleGetTimerOrders {
                             //--------------自动发送消息-------------------------
                             List<TradingOrderAddMemberMessageAAQToPartner> addmessages=iTradingOrderAddMemberMessageAAQToPartner.selectTradingOrderAddMemberMessageAAQToPartnerByTransactionId(order.getTransactionid(),2,order.getSelleruserid());
                             if(addmessages!=null&&addmessages.size()>0){
-                                List<TradingAutoMessage> partners=iTradingAutoMessage.selectAutoMessageByType("标记已发货");
-                                TradingAutoMessage autoMessage=new TradingAutoMessage();
                                 UsercontrollerEbayAccount ebay=iUsercontrollerEbayAccount.selectByEbayAccount(order.getSelleruserid());
+                                List<TradingAutoMessage> partners=iTradingAutoMessage.selectAutoMessageByType("标记已发货",ebay.getUserId());
+                                TradingAutoMessage autoMessage=new TradingAutoMessage();
                                 for(TradingAutoMessage partner:partners){
-                                    if(partner.getCreateUser()==ebay.getUserId()){
-                                        int day=partner.getDay();
-                                        int hour=partner.getHour();
-                                        Date date=order.getLastmodifiedtime();
-                                        Date date1=org.apache.commons.lang.time.DateUtils.addDays(date,day);
-                                        Date date2=org.apache.commons.lang.time.DateUtils.addHours(date1,hour);
+                                    if(partner.getStartuse()==1) {
+                                        int day = partner.getDay();
+                                        int hour = partner.getHour();
+                                        Date date = order.getLastmodifiedtime();
+                                        Date date1 = org.apache.commons.lang.time.DateUtils.addDays(date, day);
+                                        Date date2 = org.apache.commons.lang.time.DateUtils.addHours(date1, hour);
                                         order.setSendmessagetime(date2);
                                     }
                                 }
@@ -213,16 +241,16 @@ public class ScheduleGetTimerOrdersImpl implements IScheduleGetTimerOrders {
                                 String trackingnumber=order.getShipmenttrackingnumber();
                                 if("Complete".equals(order.getStatus())&&!StringUtils.isNotBlank(trackingnumber)&&"Completed".equals(order.getOrderstatus())){
                                     //付款后发送消息
-                                    List<TradingAutoMessage> partners=iTradingAutoMessage.selectAutoMessageByType("收到买家付款");
-                                    TradingAutoMessage autoMessage=new TradingAutoMessage();
                                     UsercontrollerEbayAccount ebay=iUsercontrollerEbayAccount.selectByEbayAccount(order.getSelleruserid());
+                                    List<TradingAutoMessage> partners=iTradingAutoMessage.selectAutoMessageByType("收到买家付款",ebay.getUserId());
+                                    TradingAutoMessage autoMessage=new TradingAutoMessage();
                                     for(TradingAutoMessage partner:partners){
-                                        if(partner.getCreateUser()==ebay.getUserId()){
-                                            int day=partner.getDay();
-                                            int hour=partner.getHour();
-                                            Date date=order.getLastmodifiedtime();
-                                            Date date1=org.apache.commons.lang.time.DateUtils.addDays(date,day);
-                                            Date date2=org.apache.commons.lang.time.DateUtils.addHours(date1,hour);
+                                        if(partner.getStartuse()==1) {
+                                            int day = partner.getDay();
+                                            int hour = partner.getHour();
+                                            Date date = order.getLastmodifiedtime();
+                                            Date date1 = org.apache.commons.lang.time.DateUtils.addDays(date, day);
+                                            Date date2 = org.apache.commons.lang.time.DateUtils.addHours(date1, hour);
                                             order.setSendmessagetime(date2);
                                         }
                                     }
@@ -230,16 +258,16 @@ public class ScheduleGetTimerOrdersImpl implements IScheduleGetTimerOrders {
                                     order.setShippedflag(null);
                                 }
                                 if(StringUtils.isNotBlank(trackingnumber)){
-                                    List<TradingAutoMessage> partners=iTradingAutoMessage.selectAutoMessageByType("标记已发货");
-                                    TradingAutoMessage autoMessage=new TradingAutoMessage();
                                     UsercontrollerEbayAccount ebay=iUsercontrollerEbayAccount.selectByEbayAccount(order.getSelleruserid());
+                                    List<TradingAutoMessage> partners=iTradingAutoMessage.selectAutoMessageByType("标记已发货",ebay.getUserId());
+                                    TradingAutoMessage autoMessage=new TradingAutoMessage();
                                     for(TradingAutoMessage partner:partners){
-                                        if(partner.getCreateUser()==ebay.getUserId()){
-                                            int day=partner.getDay();
-                                            int hour=partner.getHour();
-                                            Date date=order.getLastmodifiedtime();
-                                            Date date1=org.apache.commons.lang.time.DateUtils.addDays(date,day);
-                                            Date date2=org.apache.commons.lang.time.DateUtils.addHours(date1,hour);
+                                        if(partner.getStartuse()==1) {
+                                            int day = partner.getDay();
+                                            int hour = partner.getHour();
+                                            Date date = order.getLastmodifiedtime();
+                                            Date date1 = org.apache.commons.lang.time.DateUtils.addDays(date, day);
+                                            Date date2 = org.apache.commons.lang.time.DateUtils.addHours(date1, hour);
                                             order.setSendmessagetime(date2);
                                         }
                                     }
@@ -256,6 +284,18 @@ public class ScheduleGetTimerOrdersImpl implements IScheduleGetTimerOrders {
                             String itemr1 = itemresmap.get("stat");
                             String itemres = itemresmap.get("message");
                             if ("fail".equalsIgnoreCase(itemr1)) {
+                                List<PublicSitemessage> list1=siteMessageService.selectPublicSitemessageByMessage("synchronize_get_order_timer_FAIL","订单商品定时任务:"+taskGetOrder.getId());
+                                if(list1!=null&&list1.size()>0){
+                                    return;
+                                }
+                                TaskMessageVO taskMessageVO = new TaskMessageVO();
+                                taskMessageVO.setMessageType(SiteMessageStatic.SYNCHRONIZE_GET_ORDER_TIMER + "_FAIL");
+                                taskMessageVO.setMessageTitle("定时同步订单商品失败!");
+                                taskMessageVO.setMessageContext("订单商品调用API失败:" + res);
+                                taskMessageVO.setMessageTo(taskGetOrder.getUserid());
+                                taskMessageVO.setMessageFrom("system");
+                                taskMessageVO.setOrderAndSeller("订单商品定时任务:"+taskGetOrder.getId());
+                                siteMessageService.addSiteMessage(taskMessageVO);
                                 return;
                             }
                             String itemack = SamplePaseXml.getVFromXmlString(itemres, "Ack");
@@ -389,10 +429,24 @@ public class ScheduleGetTimerOrdersImpl implements IScheduleGetTimerOrders {
                                     iTradingOrderPictures.saveOrderPictures(specifics);
                                 }
                             }else {
+                                List<PublicSitemessage> list1=siteMessageService.selectPublicSitemessageByMessage("synchronize_get_order_timer_FAIL","订单商品获取必要的参数失败:"+taskGetOrder.getId());
+                                if(list1!=null&&list1.size()>0){
+                                    return;
+                                }
+                                String errors = SamplePaseXml.getVFromXmlString(res, "Errors");
+                                TaskMessageVO taskMessageVO = new TaskMessageVO();
+                                taskMessageVO.setMessageType(SiteMessageStatic.SYNCHRONIZE_GET_ORDER_TIMER + "_FAIL");
+                                taskMessageVO.setMessageTitle("定时同步订单商品失败!");
+                                taskMessageVO.setMessageContext("订单商品调用用API失败:获取必要的参数失败,！请稍后重试," + errors);
+                                taskMessageVO.setMessageTo(taskGetOrder.getUserid());
+                                taskMessageVO.setMessageFrom("system");
+                                taskMessageVO.setOrderAndSeller("订单商品获取必要的参数失败:"+taskGetOrder.getId());
+                                siteMessageService.addSiteMessage(taskMessageVO);
+                                logger.error("Order获取apisessionid失败!" + errors);
                                 return;
                             }
                             //同步account-----
-                            /*UsercontrollerDevAccountExtend ds=new UsercontrollerDevAccountExtend();
+                            UsercontrollerDevAccountExtend ds=new UsercontrollerDevAccountExtend();
                             //----加了就是真实环境
                             //ds.setApiDevName("5d70d647-b1e2-4c7c-a034-b343d58ca425");
                             //ds.setApiAppName("sandpoin-23af-4f47-a304-242ffed6ff5b");
@@ -415,10 +469,22 @@ public class ScheduleGetTimerOrdersImpl implements IScheduleGetTimerOrders {
                             //真实环境
                             //Map<String, String> accountresmap = addApiTask.exec2(ds, accountxml, "https://api.ebay.com/ws/api.dll");
                             //测试环境
-                            Map<String, String> accountresmap = addApiTask.exec2(d, accountxml,apiUrl);
+                            Map<String, String> accountresmap = addApiTask.exec2(ds, accountxml,apiUrl);
                             String accountr1 = accountresmap.get("stat");
                             String accountres = accountresmap.get("message");
                             if ("fail".equalsIgnoreCase(accountr1)) {
+                                List<PublicSitemessage> list1=siteMessageService.selectPublicSitemessageByMessage("synchronize_get_order_timer_FAIL","订单account定时任务:"+taskGetOrder.getId());
+                                if(list1!=null&&list1.size()>0){
+                                    return;
+                                }
+                                TaskMessageVO taskMessageVO = new TaskMessageVO();
+                                taskMessageVO.setMessageType(SiteMessageStatic.SYNCHRONIZE_GET_ORDER_TIMER + "_FAIL");
+                                taskMessageVO.setMessageTitle("定时同步订单account失败!");
+                                taskMessageVO.setMessageContext("订单account调用API失败:" + res);
+                                taskMessageVO.setMessageTo(taskGetOrder.getUserid());
+                                taskMessageVO.setMessageFrom("system");
+                                taskMessageVO.setOrderAndSeller("订单account定时任务:"+taskGetOrder.getId());
+                                siteMessageService.addSiteMessage(taskMessageVO);
                                 return;
                             }
                             String accountack = SamplePaseXml.getVFromXmlString(accountres, "Ack");
@@ -437,17 +503,43 @@ public class ScheduleGetTimerOrdersImpl implements IScheduleGetTimerOrders {
                                     iTradingOrderGetAccount.saveOrderGetAccount(acc);
                                 }
                             }else{
+                                List<PublicSitemessage> list1=siteMessageService.selectPublicSitemessageByMessage("synchronize_get_order_timer_FAIL","订单account获取必要的参数失败:"+taskGetOrder.getId());
+                                if(list1!=null&&list1.size()>0){
+                                    return;
+                                }
+                                String errors = SamplePaseXml.getVFromXmlString(res, "Errors");
+                                TaskMessageVO taskMessageVO = new TaskMessageVO();
+                                taskMessageVO.setMessageType(SiteMessageStatic.SYNCHRONIZE_GET_ORDER_TIMER + "_FAIL");
+                                taskMessageVO.setMessageTitle("定时同步订单account失败!");
+                                taskMessageVO.setMessageContext("订单account调用用API失败:获取必要的参数失败,！请稍后重试," + errors);
+                                taskMessageVO.setMessageTo(taskGetOrder.getUserid());
+                                taskMessageVO.setMessageFrom("system");
+                                taskMessageVO.setOrderAndSeller("订单account获取必要的参数失败:"+taskGetOrder.getId());
+                                siteMessageService.addSiteMessage(taskMessageVO);
+                                logger.error("Order获取apisessionid失败!" + errors);
                                 return;
-                            }*/
+                            }
                             //----------------
                             //同步外部交易
-                            /*d.setApiCallName("GetSellerTransactions");
+                            d.setApiCallName("GetSellerTransactions");
                             String sellerxml = BindAccountAPI.GetSellerTransactions(taskGetOrder.getToken());//获取接受消息
                             Map<String, String> resSellerMap = addApiTask.exec2(d, sellerxml,apiUrl);
                             //------------------------
                             String sellerR1 = resSellerMap.get("stat");
                             String sellerRes = resSellerMap.get("message");
                             if ("fail".equalsIgnoreCase(sellerR1)) {
+                                List<PublicSitemessage> list1=siteMessageService.selectPublicSitemessageByMessage("synchronize_get_order_timer_FAIL","订单外部交易定时任务:"+taskGetOrder.getId());
+                                if(list1!=null&&list1.size()>0){
+                                    return;
+                                }
+                                TaskMessageVO taskMessageVO = new TaskMessageVO();
+                                taskMessageVO.setMessageType(SiteMessageStatic.SYNCHRONIZE_GET_ORDER_TIMER + "_FAIL");
+                                taskMessageVO.setMessageTitle("定时同步订单外部交易失败!");
+                                taskMessageVO.setMessageContext("订单外部交易调用API失败:" + res);
+                                taskMessageVO.setMessageTo(taskGetOrder.getUserid());
+                                taskMessageVO.setMessageFrom("system");
+                                taskMessageVO.setOrderAndSeller("订单外部交易定时任务:"+taskGetOrder.getId());
+                                siteMessageService.addSiteMessage(taskMessageVO);
                                 return;
                             }
                             String sellerAck = SamplePaseXml.getVFromXmlString(res, "Ack");
@@ -462,8 +554,22 @@ public class ScheduleGetTimerOrdersImpl implements IScheduleGetTimerOrders {
                                     iTradingOrderGetSellerTransactions.saveOrderGetSellerTransactions(list);
                                 }
                             } else {
+                                List<PublicSitemessage> list1=siteMessageService.selectPublicSitemessageByMessage("synchronize_get_order_timer_FAIL","订单外部交易获取必要的参数失败:"+taskGetOrder.getId());
+                                if(list1!=null&&list1.size()>0){
+                                    return;
+                                }
+                                String errors = SamplePaseXml.getVFromXmlString(res, "Errors");
+                                TaskMessageVO taskMessageVO = new TaskMessageVO();
+                                taskMessageVO.setMessageType(SiteMessageStatic.SYNCHRONIZE_GET_ORDER_TIMER + "_FAIL");
+                                taskMessageVO.setMessageTitle("定时同步订单外部交易失败!");
+                                taskMessageVO.setMessageContext("订单外部交易调用用API失败:获取必要的参数失败,！请稍后重试," + errors);
+                                taskMessageVO.setMessageTo(taskGetOrder.getUserid());
+                                taskMessageVO.setMessageFrom("system");
+                                taskMessageVO.setOrderAndSeller("订单外部交易获取必要的参数失败:"+taskGetOrder.getId());
+                                siteMessageService.addSiteMessage(taskMessageVO);
+                                logger.error("Order获取apisessionid失败!" + errors);
                                 return;
-                            }*/
+                            }
                             //---------------------------------------
                             order.setCreateUser(taskGetOrder.getUserid());
                             iTradingOrderGetOrders.saveOrderGetOrders(order);
@@ -471,7 +577,7 @@ public class ScheduleGetTimerOrdersImpl implements IScheduleGetTimerOrders {
                     }
 
                 }else {
-                    List<PublicSitemessage> list1=siteMessageService.selectPublicSitemessageByMessage("synchronize_get_order_timer_FAIL","订单获取必要的参数失败:"+taskGetOrder.getId());
+                    List<PublicSitemessage> list1=siteMessageService.selectPublicSitemessageByMessage("synchronize_get_order_timer_FAIL", "订单获取必要的参数失败:" + taskGetOrder.getId());
                     if(list1!=null&&list1.size()>0){
                         return;
                     }
@@ -485,12 +591,9 @@ public class ScheduleGetTimerOrdersImpl implements IScheduleGetTimerOrders {
                     taskMessageVO.setOrderAndSeller("订单获取必要的参数失败:"+taskGetOrder.getId());
                     siteMessageService.addSiteMessage(taskMessageVO);
                     logger.error("Order获取apisessionid失败!" + errors);
+                    return;
                 }
-                Integer flag=taskGetOrder.getTokenflag();
-                flag=flag+1;
-                taskGetOrder.setTokenflag(flag);
-                taskGetOrder.setSavetime(null);
-                iTaskGetOrders.saveListTaskGetOrders(taskGetOrder);
+
             }
         }catch(Exception e){
             e.printStackTrace();

@@ -124,6 +124,11 @@ public class DictCollectionsUtil {
                 for (Map.Entry<String,String> entry : map.entrySet()){
                     String key=entry.getKey();
                     String value = entry.getValue();
+                    if(StringUtils.isEmpty(key) || StringUtils.isEmpty(value)){
+                        logger.error("publicDataDictionary出错！key:"+key+",value:"+value);
+                        b=false;
+                        break;
+                    }
                     try {
                         String v1 = BeanUtils.getSimpleProperty(tradingDataDictionary,key);
                         if(StringUtils.isEmpty(v1) || !value.equalsIgnoreCase(v1)){
@@ -156,6 +161,11 @@ public class DictCollectionsUtil {
                 for (Map.Entry<String,String> entry : map.entrySet()){
                     String key=entry.getKey();
                     String value = entry.getValue();
+                    if(StringUtils.isEmpty(key) || StringUtils.isEmpty(value)){
+                        logger.error("dataTradingCollectionFilterByMap出错！key:"+key+",value:"+value);
+                        b=false;
+                        break;
+                    }
                     try {
                         String v1 = BeanUtils.getSimpleProperty(tradingDataDictionary,key);
                         if(StringUtils.isEmpty(v1) || !value.equalsIgnoreCase(v1)){

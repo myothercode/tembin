@@ -90,8 +90,7 @@ public class ListingItemController extends BaseAction {
     private SystemUserManagerService systemUserManagerService;
     @Autowired
     private IListingDataTask iListingDataTask;
-    @Autowired
-    private ListingDataTaskQueryMapper listingDataTaskQueryMapper;
+
     @Autowired
     private ITradingListingPicUrl iTradingListingPicUrl;
 
@@ -494,7 +493,7 @@ public class ListingItemController extends BaseAction {
             Map m = new HashMap();
             m.put("ebayAccount",uea.getEbayAccount());
             m.put("ebayName",uea.getEbayAccount());
-            ListingDataTask ldt = this.listingDataTaskQueryMapper.selectByMaxCreateDate(mpar);
+            ListingDataTask ldt = this.iTradingListingSuccess.selectByMaxCreateDate(mpar);
             if(ldt==null){
                 m.put("maxDate","暂时未同步！");
             }else{

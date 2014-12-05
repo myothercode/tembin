@@ -8,11 +8,11 @@ function getOrderList1(){
         columnData:[
             {title:"",name:"ch",width:"2%",align:"top",format:makeOption5},
             {title:"图片/交易号",name:"orderid",width:"10%",align:"left",format:makeOption2},
-            {title:"买家/SKU/承运商/追踪号",name:"orderid",width:"13%",align:"left",format:makeOption3},
-            {title:"<a href=\"javascript:void(0)\" onclick=\"orderByTransactionPrice(this,'asc3');\">站点</a>",name:"itemSite",width:"8%",align:"left",format:makeOption20},
-            {title:"<a href=\"javascript:void(0)\" onclick=\"orderByTransactionPrice(this,'asc');\">售价</a>",name:"itemUrl",width:"8%",align:"left",format:makeOption6},
-            {title:"<a href=\"javascript:void(0)\" onclick=\"orderByTransactionPrice(this,'asc1');\">售出日期</a>",name:"createdtime",width:"8%",align:"left"},
-            {title:"<a href=\"javascript:void(0)\" onclick=\"orderByTransactionPrice(this,'asc2');\">数量</a>",name:"quantitypurchased",width:"8%",align:"center"},
+            {title:"买家/SKU/承运商/追踪号",name:"orderid",width:"20%",align:"left",format:makeOption3},
+            {title:"<a href=\"javascript:void(0)\" onclick=\"orderByTransactionPrice(this,'asc3');\">站点</a>",name:"itemSite",width:"3%",align:"left",format:makeOption20},
+            {title:"<a href=\"javascript:void(0)\" onclick=\"orderByTransactionPrice(this,'asc');\">售价</a>",name:"itemUrl",width:"6%",align:"left",format:makeOption6},
+            {title:"<a href=\"javascript:void(0)\" onclick=\"orderByTransactionPrice(this,'asc1');\">售出日期</a>",name:"createdtime",width:"5%",align:"left"},
+            {title:"<a href=\"javascript:void(0)\" onclick=\"orderByTransactionPrice(this,'asc2');\">数量</a>",name:"quantitypurchased",width:"3%",align:"center"},
             {title:"<a href=\"javascript:void(0)\" onclick=\"orderByTransactionPrice(this,'asc4');\">EBAY账号</a>",name:"selleruserid",width:"8%",align:"left"},
             {title:"状态",name:"shipped",width:"3%",align:"left",format:makeOption4},
             {title:"操作&nbsp;&nbsp;",name:"option1",width:"8%",align:"center",format:makeOption1}
@@ -240,7 +240,7 @@ function issueRefund(transactionid,selleruserid){
 function makeOption2(json){
     var htm1="";
     if(json.pictrue&&json.pictrue!=""){
-        htm1="<img onerror='nofind();' src='"+itemListIconUrl_+json.itemid+"' style='width: 50px;height:50px;' /><br>";
+        htm1="<img onerror='nofind();' src='"+itemListIconUrl_+json.itemid+".jpg' style='width: 50px;height:50px;' /><br>";
     }else{
         htm1="<img src='http://i.ebayimg.sandbox.ebay.com/00/s/NjAwWDgwMA==/$(KGrHqRHJEkFJ2m+ipUVBUSMpPJdmw~~60_1.JPG' style='width: 50px;height:50px;' /><br>";
     }
@@ -262,7 +262,7 @@ function makeOption3(json){
         imgurl1=imgurl1+"add.png";
     }
     /*var htm="<a target=\"_blank\" href=\"javascript:void(0)\" onclick=\"ebayurl('"+json.itemUrl+"');\">"+json.title+"</a>";*/
-    var htm="<span style=\"width:100%; float:left\"><font color=\"#5F93D7\">"+json.buyeruserid+"  </font> <font style='color: #808080'>( "+json.buyeremail+" )</font></span>";
+    var htm="<span style=\"width:100%; float:left\"><font color=\"#5F93D7\">"+json.buyeruserid+"  </font> <font style='color: #808080'>( "+json.buyeremail+")</font></span>";
      htm+="<span style=\"width:100%; float:left\"><font color=\"#5F93D7\"><a href='"+json.itemUrl+"' target=\"1\">"+json.title+"</a></font><br><font style='float: left;color: #808080'>("+json.itemid+")</font>";
     if(json.shippingcarrierused&&json.shippingcarrierused!=""){
         htm+="<span class=\"newbgspan_3\" style='margin-top:2px;margin-left:8px;border-radius: 3px;height: 12px;line-height:12px;'>"+json.shippingcarrierused+"</span>&nbsp;<span class=\"newbgspan_3\" style='margin-top:2px;border-radius: 3px;height: 12px;line-height:12px;'>"+json.shipmenttrackingnumber+"</span>";
@@ -328,11 +328,11 @@ function submitCommit(){
         columnData:[
             {title:"",name:"ch",width:"2%",align:"top",format:makeOption5},
             {title:"图片/交易号",name:"orderid",width:"10%",align:"left",format:makeOption2},
-            {title:"买家/SKU/承运商/追踪号",name:"orderid",width:"13%",align:"left",format:makeOption3},
-            {title:"<a href=\"javascript:void(0)\" onclick=\"orderByTransactionPrice(this,'asc3');\">站点</a>",name:"itemSite",width:"8%",align:"left",format:makeOption20},
-            {title:"<a href=\"javascript:void(0)\" onclick=\"orderByTransactionPrice(this,'asc');\">售价</a>",name:"itemUrl",width:"8%",align:"left",format:makeOption6},
-            {title:"<a href=\"javascript:void(0)\" onclick=\"orderByTransactionPrice(this,'asc1');\">售出日期</a>",name:"createdtime",width:"8%",align:"left"},
-            {title:"<a href=\"javascript:void(0)\" onclick=\"orderByTransactionPrice(this,'asc2');\">数量</a>",name:"quantitypurchased",width:"8%",align:"center"},
+            {title:"买家/SKU/承运商/追踪号",name:"orderid",width:"20%",align:"left",format:makeOption3},
+            {title:"<a href=\"javascript:void(0)\" onclick=\"orderByTransactionPrice(this,'asc3');\">站点</a>",name:"itemSite",width:"3%",align:"left",format:makeOption20},
+            {title:"<a href=\"javascript:void(0)\" onclick=\"orderByTransactionPrice(this,'asc');\">售价</a>",name:"itemUrl",width:"6%",align:"left",format:makeOption6},
+            {title:"<a href=\"javascript:void(0)\" onclick=\"orderByTransactionPrice(this,'asc1');\">售出日期</a>",name:"createdtime",width:"5%",align:"left"},
+            {title:"<a href=\"javascript:void(0)\" onclick=\"orderByTransactionPrice(this,'asc2');\">数量</a>",name:"quantitypurchased",width:"3%",align:"center"},
             {title:"<a href=\"javascript:void(0)\" onclick=\"orderByTransactionPrice(this,'asc4');\">EBAY账号</a>",name:"selleruserid",width:"8%",align:"left"},
             {title:"状态",name:"shipped",width:"3%",align:"left",format:makeOption4},
             {title:"操作&nbsp;&nbsp;",name:"option1",width:"8%",align:"center",format:makeOption1}
@@ -427,11 +427,11 @@ function refreshTable5(table,countryQ,typeQ,daysQ,itemType,content,status,startt
         columnData:[
             {title:"",name:"ch",width:"2%",align:"top",format:makeOption5},
             {title:"图片/交易号",name:"orderid",width:"10%",align:"left",format:makeOption2},
-            {title:"买家/SKU/承运商/追踪号",name:"orderid",width:"13%",align:"left",format:makeOption3},
-            {title:"<a href=\"javascript:void(0)\" onclick=\"orderByTransactionPrice(this,'asc3');\">站点</a>",name:"itemSite",width:"8%",align:"left",format:makeOption20},
-            {title:"<a href=\"javascript:void(0)\" onclick=\"orderByTransactionPrice(this,'asc');\">售价</a>",name:"itemUrl",width:"8%",align:"left",format:makeOption6},
-            {title:"<a href=\"javascript:void(0)\" onclick=\"orderByTransactionPrice(this,'asc1');\">售出日期</a>",name:"createdtime",width:"8%",align:"left"},
-            {title:"<a href=\"javascript:void(0)\" onclick=\"orderByTransactionPrice(this,'asc2');\">数量</a>",name:"quantitypurchased",width:"8%",align:"center"},
+            {title:"买家/SKU/承运商/追踪号",name:"orderid",width:"20%",align:"left",format:makeOption3},
+            {title:"<a href=\"javascript:void(0)\" onclick=\"orderByTransactionPrice(this,'asc3');\">站点</a>",name:"itemSite",width:"3%",align:"left",format:makeOption20},
+            {title:"<a href=\"javascript:void(0)\" onclick=\"orderByTransactionPrice(this,'asc');\">售价</a>",name:"itemUrl",width:"6%",align:"left",format:makeOption6},
+            {title:"<a href=\"javascript:void(0)\" onclick=\"orderByTransactionPrice(this,'asc1');\">售出日期</a>",name:"createdtime",width:"5%",align:"left"},
+            {title:"<a href=\"javascript:void(0)\" onclick=\"orderByTransactionPrice(this,'asc2');\">数量</a>",name:"quantitypurchased",width:"3%",align:"center"},
             {title:"<a href=\"javascript:void(0)\" onclick=\"orderByTransactionPrice(this,'asc4');\">EBAY账号</a>",name:"selleruserid",width:"8%",align:"left"},
             {title:"状态",name:"shipped",width:"3%",align:"left",format:makeOption4},
             {title:"操作&nbsp;&nbsp;",name:"option1",width:"8%",align:"center",format:makeOption1}
@@ -817,11 +817,11 @@ function setTab1(name,cursel,n){
                 columnData:[
                     {title:"",name:"ch",width:"2%",align:"top",format:makeOption5},
                     {title:"图片/交易号",name:"orderid",width:"10%",align:"left",format:makeOption2},
-                    {title:"买家/SKU/承运商/追踪号",name:"orderid",width:"13%",align:"left",format:makeOption3},
-                    {title:"<a href=\"javascript:void(0)\" onclick=\"orderByTransactionPrice(this,'asc3');\">站点</a>",name:"itemSite",width:"8%",align:"left",format:makeOption20},
-                    {title:"<a href=\"javascript:void(0)\" onclick=\"orderByTransactionPrice(this,'asc');\">售价</a>",name:"itemUrl",width:"8%",align:"left",format:makeOption6},
-                    {title:"<a href=\"javascript:void(0)\" onclick=\"orderByTransactionPrice(this,'asc1');\">售出日期</a>",name:"createdtime",width:"8%",align:"left"},
-                    {title:"<a href=\"javascript:void(0)\" onclick=\"orderByTransactionPrice(this,'asc2');\">数量</a>",name:"quantitypurchased",width:"8%",align:"center"},
+                    {title:"买家/SKU/承运商/追踪号",name:"orderid",width:"20%",align:"left",format:makeOption3},
+                    {title:"<a href=\"javascript:void(0)\" onclick=\"orderByTransactionPrice(this,'asc3');\">站点</a>",name:"itemSite",width:"3%",align:"left",format:makeOption20},
+                    {title:"<a href=\"javascript:void(0)\" onclick=\"orderByTransactionPrice(this,'asc');\">售价</a>",name:"itemUrl",width:"6%",align:"left",format:makeOption6},
+                    {title:"<a href=\"javascript:void(0)\" onclick=\"orderByTransactionPrice(this,'asc1');\">售出日期</a>",name:"createdtime",width:"5%",align:"left"},
+                    {title:"<a href=\"javascript:void(0)\" onclick=\"orderByTransactionPrice(this,'asc2');\">数量</a>",name:"quantitypurchased",width:"3%",align:"center"},
                     {title:"<a href=\"javascript:void(0)\" onclick=\"orderByTransactionPrice(this,'asc4');\">EBAY账号</a>",name:"selleruserid",width:"8%",align:"left"},
                     {title:"状态",name:"shipped",width:"3%",align:"left",format:makeOption4},
                     {title:"操作&nbsp;&nbsp;",name:"option1",width:"8%",align:"center",format:makeOption1}
@@ -979,11 +979,11 @@ function refreshTable6(table,countryQ,typeQ,daysQ,itemType,content,folderId,star
         columnData:[
             {title:"",name:"ch",width:"2%",align:"top",format:makeOption5},
             {title:"图片/交易号",name:"orderid",width:"10%",align:"left",format:makeOption2},
-            {title:"买家/SKU/承运商/追踪号",name:"orderid",width:"13%",align:"left",format:makeOption3},
-            {title:"<a href=\"javascript:void(0)\" onclick=\"orderByTransactionPrice(this,'asc3');\">站点</a>",name:"itemSite",width:"8%",align:"left",format:makeOption20},
-            {title:"<a href=\"javascript:void(0)\" onclick=\"orderByTransactionPrice(this,'asc');\">售价</a>",name:"itemUrl",width:"8%",align:"left",format:makeOption6},
-            {title:"<a href=\"javascript:void(0)\" onclick=\"orderByTransactionPrice(this,'asc1');\">售出日期</a>",name:"createdtime",width:"8%",align:"left"},
-            {title:"<a href=\"javascript:void(0)\" onclick=\"orderByTransactionPrice(this,'asc2');\">数量</a>",name:"quantitypurchased",width:"8%",align:"center"},
+            {title:"买家/SKU/承运商/追踪号",name:"orderid",width:"20%",align:"left",format:makeOption3},
+            {title:"<a href=\"javascript:void(0)\" onclick=\"orderByTransactionPrice(this,'asc3');\">站点</a>",name:"itemSite",width:"3%",align:"left",format:makeOption20},
+            {title:"<a href=\"javascript:void(0)\" onclick=\"orderByTransactionPrice(this,'asc');\">售价</a>",name:"itemUrl",width:"6%",align:"left",format:makeOption6},
+            {title:"<a href=\"javascript:void(0)\" onclick=\"orderByTransactionPrice(this,'asc1');\">售出日期</a>",name:"createdtime",width:"5%",align:"left"},
+            {title:"<a href=\"javascript:void(0)\" onclick=\"orderByTransactionPrice(this,'asc2');\">数量</a>",name:"quantitypurchased",width:"3%",align:"center"},
             {title:"<a href=\"javascript:void(0)\" onclick=\"orderByTransactionPrice(this,'asc4');\">EBAY账号</a>",name:"selleruserid",width:"8%",align:"left"},
             {title:"状态",name:"shipped",width:"3%",align:"left",format:makeOption4},
             {title:"操作&nbsp;&nbsp;",name:"option1",width:"8%",align:"center",format:makeOption1}
@@ -1012,11 +1012,11 @@ function setTab(name,cursel,n){
             columnData:[
                 {title:"",name:"ch",width:"2%",align:"top",format:makeOption5},
                 {title:"图片/交易号",name:"orderid",width:"10%",align:"left",format:makeOption2},
-                {title:"买家/SKU/承运商/追踪号",name:"orderid",width:"13%",align:"left",format:makeOption3},
-                {title:"<a href=\"javascript:void(0)\" onclick=\"orderByTransactionPrice(this,'asc3');\">站点</a>",name:"itemSite",width:"8%",align:"left",format:makeOption20},
-                {title:"<a href=\"javascript:void(0)\" onclick=\"orderByTransactionPrice(this,'asc');\">售价</a>",name:"itemUrl",width:"8%",align:"left",format:makeOption6},
-                {title:"<a href=\"javascript:void(0)\" onclick=\"orderByTransactionPrice(this,'asc1');\">售出日期</a>",name:"createdtime",width:"8%",align:"left"},
-                {title:"<a href=\"javascript:void(0)\" onclick=\"orderByTransactionPrice(this,'asc2');\">数量</a>",name:"quantitypurchased",width:"8%",align:"center"},
+                {title:"买家/SKU/承运商/追踪号",name:"orderid",width:"20%",align:"left",format:makeOption3},
+                {title:"<a href=\"javascript:void(0)\" onclick=\"orderByTransactionPrice(this,'asc3');\">站点</a>",name:"itemSite",width:"3%",align:"left",format:makeOption20},
+                {title:"<a href=\"javascript:void(0)\" onclick=\"orderByTransactionPrice(this,'asc');\">售价</a>",name:"itemUrl",width:"6%",align:"left",format:makeOption6},
+                {title:"<a href=\"javascript:void(0)\" onclick=\"orderByTransactionPrice(this,'asc1');\">售出日期</a>",name:"createdtime",width:"5%",align:"left"},
+                {title:"<a href=\"javascript:void(0)\" onclick=\"orderByTransactionPrice(this,'asc2');\">数量</a>",name:"quantitypurchased",width:"3%",align:"center"},
                 {title:"<a href=\"javascript:void(0)\" onclick=\"orderByTransactionPrice(this,'asc4');\">EBAY账号</a>",name:"selleruserid",width:"8%",align:"left"},
                 {title:"状态",name:"shipped",width:"3%",align:"left",format:makeOption4},
                 {title:"操作&nbsp;&nbsp;",name:"option1",width:"8%",align:"center",format:makeOption1}

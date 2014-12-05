@@ -177,6 +177,7 @@ public class SystemUserManagerServiceImpl implements SystemUserManagerService {
         user.setStatus("1");
         user.setDefaultDevAccount(1L);
         user.setUserOrgId(((Long)sessionVO.getOrgId()).intValue());
+        user.setUserLoginId(user.getUserEmail());
         userMapper.insertSelective(user);//插入user表
         insertRoleAndEbay(addSubUserVO,user);
     }

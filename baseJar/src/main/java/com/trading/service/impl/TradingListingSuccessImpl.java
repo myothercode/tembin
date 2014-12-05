@@ -1,7 +1,11 @@
 package com.trading.service.impl;
 
+import com.base.database.customtrading.mapper.ItemReportMapper;
+import com.base.database.customtrading.mapper.ListingDataTaskQueryMapper;
 import com.base.database.customtrading.mapper.ListingItemReportMapper;
+import com.base.database.task.model.ListingDataTask;
 import com.base.database.trading.mapper.TradingListingSuccessMapper;
+import com.base.database.trading.model.TradingListingReport;
 import com.base.database.trading.model.TradingListingSuccess;
 import com.base.database.trading.model.TradingListingSuccessExample;
 import com.base.domains.SessionVO;
@@ -26,6 +30,10 @@ public class TradingListingSuccessImpl implements com.trading.service.ITradingLi
     @Autowired
     private ListingItemReportMapper listingItemReportMapper;
 
+    @Autowired
+    private ItemReportMapper itemReportMapper;
+    @Autowired
+    private ListingDataTaskQueryMapper listingDataTaskQueryMapper;
     @Override
     public void save(TradingListingSuccess tradingListingSuccess){
         if(tradingListingSuccess.getId()!=null){
@@ -151,6 +159,16 @@ public class TradingListingSuccessImpl implements com.trading.service.ITradingLi
         }
         m.put("userid",c.getId());
         return this.listingItemReportMapper.selectListingItemSales(m);
+    }
+
+    @Override
+    public List<TradingListingReport> selectItemReportList(Map m){
+        return this.itemReportMapper.selectItemReportList(m);
+    }
+
+    @Override
+    public ListingDataTask selectByMaxCreateDate(Map m){
+        return this.listingDataTaskQueryMapper.selectByMaxCreateDate(m);
     }
 }
 

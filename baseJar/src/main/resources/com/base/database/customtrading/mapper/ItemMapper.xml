@@ -54,7 +54,7 @@
     <result column="VIN" jdbcType="VARCHAR" property="vin" />
     <result column="VRM" jdbcType="VARCHAR" property="vrm" />
     <result column="create_user" jdbcType="BIGINT" property="createUser" />
-    <result column="create_time" jdbcType="DATE" property="createTime" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
     <result column="local_uuid" jdbcType="VARCHAR" property="localUuid" />
     <result column="item_location_id" jdbcType="BIGINT" property="itemLocationId" />
     <result column="buyer_id" jdbcType="BIGINT" property="buyerId" />
@@ -78,13 +78,16 @@
     <result column="defaultTimer" jdbcType="TIMESTAMP" property="defaultTimer" />
   </resultMap>
     <select id="selectByItemList" resultMap="BaseResultMap" parameterType="map">
-        select item.*,dic.`name` site_name,dic.imgurl site_img,pic.GalleryURL galleryURL,ebayaccount.ebay_name ebayaccountname,dic.value1 currencyId,litime.timer defaultTimer from trading_item item left join trading_data_dictionary dic on item.Site=dic.id
-        left join trading_picturedetails pic on item.id=pic.parent_id inner join (select acc.* from usercontroller_ebay_account acc,usercontroller_user_ebay dev where acc.id=dev.ebay_id and dev.user_id=#{userid}
-        ) ebayaccount on item.ebay_account=ebayaccount.id left join trading_timer_listing litime on litime.item=item.id
+        select items.*,ebayaccount.ebay_name ebayaccountname from (
+        select item.*,dic.`name` site_name,dic.imgurl site_img,pic.GalleryURL galleryURL,dic.value1 currencyId,litime.timer defaultTimer,act.ebay_account ebay_name from trading_item item
+        left join trading_data_dictionary dic on item.Site=dic.id
+        left join trading_picturedetails pic on item.id=pic.parent_id
+        left join usercontroller_ebay_account act on item.ebay_account=act.id
+        left join trading_timer_listing litime on litime.item=item.id
         where 1=1 and item.check_flag='0'
-<!--        <if test="folderid==null">
-            and item.folder_id is null
-        </if>-->
+        <!--        <if test="folderid==null">
+                    and item.folder_id is null
+                </if>-->
         <if test="folderid!=null">
             and item.folder_id = #{folderid}
         </if>
@@ -101,7 +104,8 @@
             and item.is_flag is null
         </if>
         <if test="flag==3">
-            and item.listing_way = '1' and litime.check_flag='0' and item.item_id is null and (litime.timer_flag='2' or litime.timer_flag is null or litime.timer_flag='0')
+            and item.listing_way = '1' and litime.check_flag='0' and item.item_id is null and (litime.timer_flag='2' or
+            litime.timer_flag is null or litime.timer_flag='0')
         </if>
         <if test="county!=null">
             and item.site = #{county}
@@ -115,6 +119,9 @@
         <if test="selectType!=null">
             and item.${selectType} like CONCAT(CONCAT('%', #{selectValue, jdbcType=VARCHAR}),'%')
         </if>
+        ) items, (select acc.* from usercontroller_ebay_account acc,
+        usercontroller_user_ebay dev where acc.id=dev.ebay_id and dev.user_id=#{userid}
+        ) ebayaccount where items.ebay_name=ebayaccount.ebay_account
         order by ${descStr} ${desStr}
     </select>
 </mapper>

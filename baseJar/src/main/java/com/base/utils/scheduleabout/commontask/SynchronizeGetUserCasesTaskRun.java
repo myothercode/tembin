@@ -26,8 +26,9 @@ public class SynchronizeGetUserCasesTaskRun extends BaseScheduledClass implement
         ITaskGetUserCases iTaskGetUserCases = (ITaskGetUserCases) ApplicationContextUtil.getBean(ITaskGetUserCases.class);
         try{
             for(UsercontrollerEbayAccount ebay:ebays){
-                Date date1=DateUtils.subDays(date, 1);
-                Date end1= DateUtils.turnToDateEnd(date1);
+                Date date2=DateUtils.addDays(date,1);
+                Date date1=DateUtils.subDays(date2, 7);
+                Date end1= DateUtils.turnToDateEnd(date2);
                 Date start1= DateUtils.turnToDateStart(date1);
                 String start= DateUtils.DateToString(start1);
                 String end=DateUtils.DateToString(end1);

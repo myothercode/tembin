@@ -83,6 +83,8 @@ public class TradingMessageGetmymessageImpl implements com.trading.service.ITrad
         cr.andReadEqualTo(read);
         if(ebayNames.size()>0){
             cr.andRecipientuseridIn(ebayNames);
+        }else{
+            return new ArrayList<TradingMessageGetmymessage>();
         }
         List<TradingMessageGetmymessage> list=TradingMessageGetmymessageMapper.selectByExample(example);
         return list;

@@ -114,7 +114,7 @@ public class ActionEnter {
                    break;
                 }
                 conf.put("rootPath",p1);//在本地存放的目录
-                conf.put("dir","/"+userLoginID+"/"+skuPath);//图片相对路径
+                conf.put("dir",userLoginID+"/"+skuPath);//图片相对路径
                 conf.put("action","listImage");
                 int starti = this.getStartIndex();
                 state = new FileManager( conf ).listFile( starti );

@@ -51,7 +51,7 @@ public class TaskGetUserCasesImpl implements com.task.service.ITaskGetUserCases 
         Date date2= org.apache.commons.lang.time.DateUtils.addDays(date1,-1);
         if(date.before(date1)){
             c.andSavetimeBetween(date2,date1);
-        }else if(date.after(date1)){
+        }else if(date.after(date1)||date.equals(date1)){
             Date date4= org.apache.commons.lang.time.DateUtils.addDays(date1,1);
             c.andSavetimeBetween(date1,date4);
         }

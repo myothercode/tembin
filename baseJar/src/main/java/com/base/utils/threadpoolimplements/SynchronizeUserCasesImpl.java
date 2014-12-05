@@ -60,8 +60,8 @@ public class SynchronizeUserCasesImpl implements ThreadPoolBaseInterFace {
                         Map map=new HashMap();
                      /*   Date startTime2= DateUtils.subDays(new Date(), 60);
                         Date endTime= DateUtils.addDays(startTime2, 60);*/
-                        Date startTime2= DateUtils.subDays(new Date(), 9);
-                        Date endTime= DateUtils.addDays(startTime2,9);
+                        Date startTime2= DateUtils.subDays(new Date(), 6);
+                        Date endTime= DateUtils.addDays(startTime2,6);
                         Date end1= com.base.utils.common.DateUtils.turnToDateEnd(endTime);
                         String start= DateUtils.DateToString(startTime2);
                         String end=DateUtils.DateToString(end1);
@@ -76,7 +76,7 @@ public class SynchronizeUserCasesImpl implements ThreadPoolBaseInterFace {
                         String r1 = resMap.get("stat");
                         res = resMap.get("message");
                         if ("fail".equalsIgnoreCase(r1)) {
-                            logger.error("纠纷同步失败!");
+                            logger.error("纠纷同步失败!"+res);
                             return;
                         }
                         if (!"Success".equalsIgnoreCase(ack)) {
@@ -113,7 +113,7 @@ public class SynchronizeUserCasesImpl implements ThreadPoolBaseInterFace {
                             String ebpRes = resEbpMap.get("message");
 
                             if ("fail".equalsIgnoreCase(ebpR1)) {
-                                logger.error("调用EBP API出错");
+                                logger.error("调用EBP API出错"+ebpRes);
                                 return;
                             }
                             String ebpAck = SamplePaseXml.getVFromXmlString(ebpRes, "ack");
@@ -161,13 +161,13 @@ public class SynchronizeUserCasesImpl implements ThreadPoolBaseInterFace {
                             d.setApiCallName(APINameStatic.GetDispute);
                             String xml = BindAccountAPI.getGetDispute(token, caseId);
                             //真实环境
-                            Map<String, String> resMap = addApiTask.exec(d, xml, "https://api.ebay.com/ws/api.dll");
+                            /*Map<String, String> resMap = addApiTask.exec(d, xml, "https://api.ebay.com/ws/api.dll");*/
                             //测试环境
-                           /* Map<String, String> resMap = addApiTask.exec(d, xml, apiUrl);*/
+                            Map<String, String> resMap = addApiTask.exec(d, xml, apiUrl);
                             String r1 = resMap.get("stat");
                             res = resMap.get("message");
                             if ("fail".equalsIgnoreCase(r1)) {
-                                logger.error("调用一般纠纷API失败!");
+                                logger.error("调用一般纠纷API失败!"+res);
                                 return;
                             }
                             String Ack = SamplePaseXml.getVFromXmlString(res, "Ack");
@@ -203,7 +203,7 @@ public class SynchronizeUserCasesImpl implements ThreadPoolBaseInterFace {
             }else {return;}
         } catch (Exception e) {
             e.printStackTrace();
-            logger.error("解析xml出错,请稍后到ebay网站确认结果");
+            logger.error("解析纠纷xml出错,请稍后到ebay网站确认结果"+res);
             return;
         }
     }

@@ -106,7 +106,7 @@ if(url.indexOf("?")==-1){
 
                         if(re["bool"] === false) {
                             if(re["message"]=='sessionStatusFalse'){//如果是session过期错误
-                                try{oldAlert("登陆已超时!");}catch (e){alert("登陆已超时!")}
+                                try{oldAlert("登陆已超时或者帐号已在别处登陆!");}catch (e){alert("登陆已超时或者帐号已在别处登陆!")}
                                 top.location=path+'/login.jsp';
                                 return;
                             }

@@ -27,14 +27,13 @@
                 url:path + "/information/ajax/loadItemInformationList.do?",
                 columnData:[
                     {title:"",name:"pictureUrl",width:"2%",align:"left",format:makeOption4,click:sellectCheckBox},
-                    {title:"图片",name:"pictureUrl",width:"4%",align:"left",format:makeOption2,click:sellectCheckBox},
-                    {title:"备注",name:"comment",width:"4%",align:"left",click:sellectCheckBox},
-                    {title:"商品/SKU",name:"sku",width:"8%",align:"left",click:sellectCheckBox},
-                    {title:"产品名称",name:"name",width:"8%",align:"left",click:sellectCheckBox},
+                    {title:"图片",name:"pictureUrl",width:"3%",align:"left",format:makeOption2,click:sellectCheckBox},
+                    {title:"商品/SKU",name:"sku",width:"4%",align:"left",format:makeOption7,click:sellectCheckBox},
+                    {title:"产品名称",name:"name",width:"36%",align:"left",format:makeOption8,click:sellectCheckBox},
                     {title:"标签",name:"remark",width:"8%",align:"left",format:makeOption6,click:sellectCheckBox},
                     /*{title:"分类",name:"typeName",width:"8%",align:"left",click:sellectCheckBox},*/
-                    {title:"状态",name:"pictureUrl",width:"8%",align:"left",format:makeOption3,click:sellectCheckBox},
-                    {title:"操作",name:"option1",width:"8%",align:"center",format:makeOption1}
+                    {title:"状态",name:"pictureUrl",width:"2%",align:"left",format:makeOption3,click:sellectCheckBox},
+                    {title:"操作",name:"option1",width:"2%",align:"center",format:makeOption1}
                 ],
                 selectDataNow:false,
                 isrowClick:false,
@@ -161,7 +160,8 @@
                 icon: 'succeed',
                 width:1050,
                 height:700,
-                lock:true
+                lock:true,
+                zIndex:1000
             });
         }
         function addComment(id,obj){
@@ -185,6 +185,17 @@
                 width:600,
                 lock:true
             });
+        }
+        function makeOption8(json){
+           return "<span  style='color: #1a93c2'>"+json.name+"</span>";
+        }
+        function makeOption7(json){
+            var htm="";
+            htm+="<span style='color: #8BB51B;'>"+json.sku+"</span>";
+            if(json.comment||!json.comment==""){
+                htm+="<br/><span class=\"newdf\" style='border-radius: 3px;' title=\""+json.comment+"\">备注："+json.comment+"</span>"
+            }
+            return htm;
         }
         function makeOption2(json){
             var htm="";
@@ -401,14 +412,13 @@
                 url:path + "/information/ajax/loadItemInformationList.do?",
                 columnData:[
                     {title:"",name:"pictureUrl",width:"2%",align:"left",format:makeOption4,click:sellectCheckBox},
-                    {title:"图片",name:"pictureUrl",width:"4%",align:"left",format:makeOption2,click:sellectCheckBox},
-                    {title:"备注",name:"comment",width:"4%",align:"left",click:sellectCheckBox},
-                    {title:"商品/SKU",name:"sku",width:"8%",align:"left",click:sellectCheckBox},
-                    {title:"产品名称",name:"name",width:"8%",align:"left",click:sellectCheckBox},
+                    {title:"图片",name:"pictureUrl",width:"3%",align:"left",format:makeOption2,click:sellectCheckBox},
+                    {title:"商品/SKU",name:"sku",width:"4%",align:"left",format:makeOption7,click:sellectCheckBox},
+                    {title:"产品名称",name:"name",width:"36%",align:"left",format:makeOption8,click:sellectCheckBox},
                     {title:"标签",name:"remark",width:"8%",align:"left",format:makeOption6,click:sellectCheckBox},
                     /*{title:"分类",name:"typeName",width:"8%",align:"left",click:sellectCheckBox},*/
-                    {title:"状态",name:"pictureUrl",width:"8%",align:"left",format:makeOption3,click:sellectCheckBox},
-                    {title:"操作",name:"option1",width:"8%",align:"left",format:makeOption1}
+                    {title:"状态",name:"pictureUrl",width:"2%",align:"left",format:makeOption3,click:sellectCheckBox},
+                    {title:"操作",name:"option1",width:"2%",align:"center",format:makeOption1}
                 ],
                 selectDataNow:false,
                 isrowClick:false,

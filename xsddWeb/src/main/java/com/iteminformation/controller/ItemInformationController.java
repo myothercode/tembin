@@ -1,13 +1,11 @@
 package com.iteminformation.controller;
 
 import com.base.database.publicd.model.*;
-import com.base.database.trading.model.TradingAttrMores;
-import com.base.database.trading.model.TradingDataDictionary;
-import com.base.database.trading.model.TradingItemWithBLOBs;
-import com.base.database.trading.model.TradingPublicLevelAttr;
+import com.base.database.trading.model.*;
 import com.base.domains.CommonParmVO;
 import com.base.domains.SessionVO;
 import com.base.domains.querypojos.ItemInformationQuery;
+import com.base.domains.userinfo.UsercontrollerEbayAccountExtend;
 import com.base.mybatis.page.Page;
 import com.base.mybatis.page.PageJsonBean;
 import com.base.userinfo.service.SystemUserManagerService;
@@ -18,6 +16,9 @@ import com.base.utils.imageManage.service.ImageService;
 import com.common.base.utils.ajax.AjaxSupport;
 import com.common.base.web.BaseAction;
 import com.publicd.service.*;
+import com.trading.service.ITradingAttrMores;
+import com.trading.service.ITradingTemplateInitTable;
+import com.trading.service.IUsercontrollerEbayAccount;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -34,10 +35,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by Administrtor on 2014/9/4.
@@ -61,12 +59,19 @@ public class ItemInformationController extends BaseAction {
     private SystemUserManagerService systemUserManagerService;
     @Autowired
     private ImageService imageService;
+    @Autowired
+    private IUsercontrollerEbayAccount iUsercontrollerEbayAccount;
+    @Autowired
+    private ITradingTemplateInitTable iTradingTemplateInitTable;
+    @Autowired
+    private ITradingAttrMores iTradingAttrMores;
     /*
    *纠纷列表
    */
     @RequestMapping("/itemInformationList.do")
     public ModelAndView itemInformationList(HttpServletRequest request,HttpServletResponse response,ModelMap modelMap){
-        List<PublicUserConfig> remarks=iPublicUserConfig.selectUserConfigByItemType("remark");
+        SessionVO sessionVO= SessionCacheSupport.getSessionVO();
+        List<PublicUserConfig> remarks=iPublicUserConfig.selectUserConfigByItemType("remark",sessionVO.getId());
         modelMap.put("remarks",remarks);
         return forword("/itemInformation/itemInformation",modelMap);
     }
@@ -74,7 +79,8 @@ public class ItemInformationController extends BaseAction {
     @RequestMapping("/ajax/loadRemarks.do")
     @ResponseBody
     public void loadRemarks(CommonParmVO commonParmVO,HttpServletRequest request) throws Exception {
-        List<PublicUserConfig> remarks=iPublicUserConfig.selectUserConfigByItemType("remark");
+        SessionVO sessionVO= SessionCacheSupport.getSessionVO();
+        List<PublicUserConfig> remarks=iPublicUserConfig.selectUserConfigByItemType("remark",sessionVO.getId());
         AjaxSupport.sendSuccessText("",remarks);
     }
     /**获取list数据的ajax方法*/
@@ -138,10 +144,9 @@ public class ItemInformationController extends BaseAction {
     @RequestMapping("/bigfont.do")
     @AvoidDuplicateSubmission(needSaveToken = true)
     public ModelAndView bigfont(HttpServletRequest request,HttpServletResponse response,ModelMap modelMap){
-        String pictureId=request.getParameter("pictureId");
-        if(StringUtils.isNotBlank(pictureId)){
-            PublicItemPictureaddrAndAttr pic=iPublicItemPictureaddrAndAttr.selectPictureaddrAndAttrById(Long.valueOf(pictureId));
-            modelMap.put("pic",pic);
+        String pictureUrl=request.getParameter("pictureUrl");
+        if(StringUtils.isNotBlank(pictureUrl)){
+            modelMap.put("pictureUrl",pictureUrl);
         }
         return forword("/itemInformation/bigfont",modelMap);
     }
@@ -198,8 +203,15 @@ public class ItemInformationController extends BaseAction {
 
         TradingItemWithBLOBs ti = new TradingItemWithBLOBs();
         if(information!=null){
-            ti.setItemName(information.getName());
+            ti.setTitle(information.getName());
             ti.setSku(information.getSku());
+            if(information.getTypeId()==null){
+                ti.setCategoryid("");
+            }else{
+                ti.setCategoryid(information.getTypeId()+"");
+            }
+
+            ti.setSite("311");
             ti.setDescription(information.getDescription());
         }
         modelMap.put("item",ti);
@@ -207,12 +219,16 @@ public class ItemInformationController extends BaseAction {
 
 
 
-     /*   SessionVO c= SessionCacheSupport.getSessionVO();
+        SessionVO c= SessionCacheSupport.getSessionVO();
         //List<PublicUserConfig> ebayList = DataDictionarySupport.getPublicUserConfigByType(DataDictionarySupport.PUBLIC_DATA_DICT_PAYPAL, c.getId());
-        UsercontrollerEbayAccount ebay = this.iUsercontrollerEbayAccount.selectById(Long.parseLong(ti.getEbayAccount().toString()));
+        /*UsercontrollerEbayAccount ebay = this.iUsercontrollerEbayAccount.selectById(Long.parseLong(ti.getEbayAccount().toString()));*/
+        Map ebayMap=new HashMap();
+        List<UsercontrollerEbayAccountExtend> ebays=systemUserManagerService.queryCurrAllEbay(ebayMap);
         List<UsercontrollerEbayAccount> ebayList = new ArrayList();
-        ebayList.add(ebay);
-        modelMap.put("ebayList",ebayList);*/
+        for(UsercontrollerEbayAccount ebay:ebays){
+            ebayList.add(ebay);
+        }
+        modelMap.put("ebayList",ebayList);
 
         /*List<TradingPicturedetails> litp = this.iTradingPictureDetails.selectByParentId(Long.parseLong(id));
         for(TradingPicturedetails tp : litp){
@@ -221,7 +237,6 @@ public class ItemInformationController extends BaseAction {
                 modelMap.put("lipic",lipic);
             }
         }*/
-        SessionVO c= SessionCacheSupport.getSessionVO();
         List<TradingAttrMores> lipic=new ArrayList<TradingAttrMores>();
         List<PublicItemPictureaddrAndAttr> pictures=iPublicItemPictureaddrAndAttr.selectPictureaddrAndAttrByInformationId(information.getId(),"picture",c.getId());
         for(PublicItemPictureaddrAndAttr picture:pictures){
@@ -242,7 +257,10 @@ public class ItemInformationController extends BaseAction {
             lipa.add(levelAttr);
         }
         modelMap.put("lipa",lipa);
-
+        List<TradingTemplateInitTable> ttit = this.iTradingTemplateInitTable.selectByType(Long.parseLong("523"));//彩用经典模板
+        Random r=new Random();
+        TradingTemplateInitTable ttit1=ttit.get(r.nextInt(ttit.size()));
+        modelMap.put("ttit",ttit1);
         /*TradingVariations tvs = this.iTradingVariations.selectByParentId(ti.getId());
         if(tvs!=null){
             Map m = new HashMap();
@@ -345,11 +363,15 @@ public class ItemInformationController extends BaseAction {
         String id1=request.getParameter("id");
         List<PublicItemPictureaddrAndAttr> pictures=new ArrayList<PublicItemPictureaddrAndAttr>();
         Map<String,List> m=new HashMap<String, List>();
+        List<PublicItemInformation> informations=new ArrayList<PublicItemInformation>();
         if(StringUtils.isNotBlank(id1)){
             SessionVO c= SessionCacheSupport.getSessionVO();
+
             PublicItemInformation itemInformation=iPublicItemInformation.selectItemInformationByid(Long.valueOf(id1));
+            informations.add(itemInformation);
             pictures=iPublicItemPictureaddrAndAttr.selectPictureaddrAndAttrByInformationId(itemInformation.getId(),"picture",c.getId());
         }
+        m.put("infs",informations);
         m.put("pic",pictures);
       /*  m.put("list",list);*/
         AjaxSupport.sendSuccessText("",m);
@@ -395,7 +417,8 @@ public class ItemInformationController extends BaseAction {
                 }
             }
         }
-        List<PublicUserConfig> types=iPublicUserConfig.selectUserConfigByItemType("itemType");
+
+        List<PublicUserConfig> types=iPublicUserConfig.selectUserConfigByItemType("itemType",sessionVO.getId());
         String root=request.getContextPath();
         modelMap.put("types",types);
         modelMap.put("itemInformation",itemInformation);

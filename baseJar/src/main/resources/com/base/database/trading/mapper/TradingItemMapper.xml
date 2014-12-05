@@ -54,7 +54,7 @@
     <result column="VIN" jdbcType="VARCHAR" property="vin" />
     <result column="VRM" jdbcType="VARCHAR" property="vrm" />
     <result column="create_user" jdbcType="BIGINT" property="createUser" />
-    <result column="create_time" jdbcType="DATE" property="createTime" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
     <result column="local_uuid" jdbcType="VARCHAR" property="localUuid" />
     <result column="item_location_id" jdbcType="BIGINT" property="itemLocationId" />
     <result column="buyer_id" jdbcType="BIGINT" property="buyerId" />
@@ -71,6 +71,8 @@
     <result column="listing_way" jdbcType="VARCHAR" property="listingWay" />
     <result column="folder_id" jdbcType="VARCHAR" property="folderId" />
     <result column="check_flag" jdbcType="VARCHAR" property="checkFlag" />
+    <result column="assess_range" jdbcType="VARCHAR" property="assessRange" />
+    <result column="assess_setview" jdbcType="VARCHAR" property="assessSetview" />
   </resultMap>
   <resultMap extends="BaseResultMap" id="ResultMapWithBLOBs" type="com.base.database.trading.model.TradingItemWithBLOBs">
     <!--
@@ -161,7 +163,8 @@
     StartPrice, SubTitle, TaxCategory, Title, UseRecommendedProduct, UseTaxTable, UUID, 
     VIN, VRM, create_user, create_time, local_uuid, item_location_id, buyer_id, pay_id, 
     returnpolicy_id, DiscountPriceInfo_id, Seller_item_info_id, shipping_deails_id, ebay_account, 
-    item_name, is_flag, item_id, template_id, listing_way, folder_id, check_flag
+    item_name, is_flag, item_id, template_id, listing_way, folder_id, check_flag, assess_range, 
+    assess_setview
   </sql>
   <sql id="Blob_Column_List">
     <!--
@@ -266,8 +269,8 @@
       Seller_item_info_id, shipping_deails_id, ebay_account, 
       item_name, is_flag, item_id, 
       template_id, listing_way, folder_id, 
-      check_flag, Description, remark
-      )
+      check_flag, assess_range, assess_setview, 
+      Description, remark)
     values (#{id,jdbcType=BIGINT}, #{applicationdata,jdbcType=VARCHAR}, #{attributesetarray,jdbcType=VARCHAR}, 
       #{autopay,jdbcType=VARCHAR}, #{bestofferenabled,jdbcType=VARCHAR}, #{categorybasedattributesprefill,jdbcType=VARCHAR}, 
       #{categorymappingallowed,jdbcType=VARCHAR}, #{conditiondescription,jdbcType=VARCHAR}, 
@@ -285,14 +288,14 @@
       #{skypeid,jdbcType=VARCHAR}, #{startprice,jdbcType=DOUBLE}, #{subtitle,jdbcType=VARCHAR}, 
       #{taxcategory,jdbcType=VARCHAR}, #{title,jdbcType=VARCHAR}, #{userecommendedproduct,jdbcType=VARCHAR}, 
       #{usetaxtable,jdbcType=VARCHAR}, #{uuid,jdbcType=VARCHAR}, #{vin,jdbcType=VARCHAR}, 
-      #{vrm,jdbcType=VARCHAR}, #{createUser,jdbcType=BIGINT}, #{createTime,jdbcType=DATE}, 
+      #{vrm,jdbcType=VARCHAR}, #{createUser,jdbcType=BIGINT}, #{createTime,jdbcType=TIMESTAMP}, 
       #{localUuid,jdbcType=VARCHAR}, #{itemLocationId,jdbcType=BIGINT}, #{buyerId,jdbcType=BIGINT}, 
       #{payId,jdbcType=BIGINT}, #{returnpolicyId,jdbcType=BIGINT}, #{discountpriceinfoId,jdbcType=BIGINT}, 
       #{sellerItemInfoId,jdbcType=BIGINT}, #{shippingDeailsId,jdbcType=BIGINT}, #{ebayAccount,jdbcType=VARCHAR}, 
       #{itemName,jdbcType=VARCHAR}, #{isFlag,jdbcType=VARCHAR}, #{itemId,jdbcType=VARCHAR}, 
       #{templateId,jdbcType=BIGINT}, #{listingWay,jdbcType=VARCHAR}, #{folderId,jdbcType=VARCHAR}, 
-      #{checkFlag,jdbcType=VARCHAR}, #{description,jdbcType=LONGVARCHAR}, #{remark,jdbcType=LONGVARCHAR}
-      )
+      #{checkFlag,jdbcType=VARCHAR}, #{assessRange,jdbcType=VARCHAR}, #{assessSetview,jdbcType=VARCHAR}, 
+      #{description,jdbcType=LONGVARCHAR}, #{remark,jdbcType=LONGVARCHAR})
       <selectKey resultType="long" keyProperty="id" order="AFTER">
           SELECT LAST_INSERT_ID()
       </selectKey>
@@ -499,6 +502,12 @@
       <if test="checkFlag != null">
         check_flag,
       </if>
+      <if test="assessRange != null">
+        assess_range,
+      </if>
+      <if test="assessSetview != null">
+        assess_setview,
+      </if>
       <if test="description != null">
         Description,
       </if>
@@ -652,7 +661,7 @@
         #{createUser,jdbcType=BIGINT},
       </if>
       <if test="createTime != null">
-        #{createTime,jdbcType=DATE},
+        #{createTime,jdbcType=TIMESTAMP},
       </if>
       <if test="localUuid != null">
         #{localUuid,jdbcType=VARCHAR},
@@ -701,6 +710,12 @@
       </if>
       <if test="checkFlag != null">
         #{checkFlag,jdbcType=VARCHAR},
+      </if>
+      <if test="assessRange != null">
+        #{assessRange,jdbcType=VARCHAR},
+      </if>
+      <if test="assessSetview != null">
+        #{assessSetview,jdbcType=VARCHAR},
       </if>
       <if test="description != null">
         #{description,jdbcType=LONGVARCHAR},
@@ -875,7 +890,7 @@
         create_user = #{record.createUser,jdbcType=BIGINT},
       </if>
       <if test="record.createTime != null">
-        create_time = #{record.createTime,jdbcType=DATE},
+        create_time = #{record.createTime,jdbcType=TIMESTAMP},
       </if>
       <if test="record.localUuid != null">
         local_uuid = #{record.localUuid,jdbcType=VARCHAR},
@@ -924,6 +939,12 @@
       </if>
       <if test="record.checkFlag != null">
         check_flag = #{record.checkFlag,jdbcType=VARCHAR},
+      </if>
+      <if test="record.assessRange != null">
+        assess_range = #{record.assessRange,jdbcType=VARCHAR},
+      </if>
+      <if test="record.assessSetview != null">
+        assess_setview = #{record.assessSetview,jdbcType=VARCHAR},
       </if>
       <if test="record.description != null">
         Description = #{record.description,jdbcType=LONGVARCHAR},
@@ -990,7 +1011,7 @@
       VIN = #{record.vin,jdbcType=VARCHAR},
       VRM = #{record.vrm,jdbcType=VARCHAR},
       create_user = #{record.createUser,jdbcType=BIGINT},
-      create_time = #{record.createTime,jdbcType=DATE},
+      create_time = #{record.createTime,jdbcType=TIMESTAMP},
       local_uuid = #{record.localUuid,jdbcType=VARCHAR},
       item_location_id = #{record.itemLocationId,jdbcType=BIGINT},
       buyer_id = #{record.buyerId,jdbcType=BIGINT},
@@ -1007,6 +1028,8 @@
       listing_way = #{record.listingWay,jdbcType=VARCHAR},
       folder_id = #{record.folderId,jdbcType=VARCHAR},
       check_flag = #{record.checkFlag,jdbcType=VARCHAR},
+      assess_range = #{record.assessRange,jdbcType=VARCHAR},
+      assess_setview = #{record.assessSetview,jdbcType=VARCHAR},
       Description = #{record.description,jdbcType=LONGVARCHAR},
       remark = #{record.remark,jdbcType=LONGVARCHAR}
     <if test="_parameter != null">
@@ -1067,7 +1090,7 @@
       VIN = #{record.vin,jdbcType=VARCHAR},
       VRM = #{record.vrm,jdbcType=VARCHAR},
       create_user = #{record.createUser,jdbcType=BIGINT},
-      create_time = #{record.createTime,jdbcType=DATE},
+      create_time = #{record.createTime,jdbcType=TIMESTAMP},
       local_uuid = #{record.localUuid,jdbcType=VARCHAR},
       item_location_id = #{record.itemLocationId,jdbcType=BIGINT},
       buyer_id = #{record.buyerId,jdbcType=BIGINT},
@@ -1083,7 +1106,9 @@
       template_id = #{record.templateId,jdbcType=BIGINT},
       listing_way = #{record.listingWay,jdbcType=VARCHAR},
       folder_id = #{record.folderId,jdbcType=VARCHAR},
-      check_flag = #{record.checkFlag,jdbcType=VARCHAR}
+      check_flag = #{record.checkFlag,jdbcType=VARCHAR},
+      assess_range = #{record.assessRange,jdbcType=VARCHAR},
+      assess_setview = #{record.assessSetview,jdbcType=VARCHAR}
     <if test="_parameter != null">
       <include refid="Update_By_Example_Where_Clause" />
     </if>
@@ -1237,7 +1262,7 @@
         create_user = #{createUser,jdbcType=BIGINT},
       </if>
       <if test="createTime != null">
-        create_time = #{createTime,jdbcType=DATE},
+        create_time = #{createTime,jdbcType=TIMESTAMP},
       </if>
       <if test="localUuid != null">
         local_uuid = #{localUuid,jdbcType=VARCHAR},
@@ -1286,6 +1311,12 @@
       </if>
       <if test="checkFlag != null">
         check_flag = #{checkFlag,jdbcType=VARCHAR},
+      </if>
+      <if test="assessRange != null">
+        assess_range = #{assessRange,jdbcType=VARCHAR},
+      </if>
+      <if test="assessSetview != null">
+        assess_setview = #{assessSetview,jdbcType=VARCHAR},
       </if>
       <if test="description != null">
         Description = #{description,jdbcType=LONGVARCHAR},
@@ -1349,7 +1380,7 @@
       VIN = #{vin,jdbcType=VARCHAR},
       VRM = #{vrm,jdbcType=VARCHAR},
       create_user = #{createUser,jdbcType=BIGINT},
-      create_time = #{createTime,jdbcType=DATE},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
       local_uuid = #{localUuid,jdbcType=VARCHAR},
       item_location_id = #{itemLocationId,jdbcType=BIGINT},
       buyer_id = #{buyerId,jdbcType=BIGINT},
@@ -1366,6 +1397,8 @@
       listing_way = #{listingWay,jdbcType=VARCHAR},
       folder_id = #{folderId,jdbcType=VARCHAR},
       check_flag = #{checkFlag,jdbcType=VARCHAR},
+      assess_range = #{assessRange,jdbcType=VARCHAR},
+      assess_setview = #{assessSetview,jdbcType=VARCHAR},
       Description = #{description,jdbcType=LONGVARCHAR},
       remark = #{remark,jdbcType=LONGVARCHAR}
     where id = #{id,jdbcType=BIGINT}
@@ -1423,7 +1456,7 @@
       VIN = #{vin,jdbcType=VARCHAR},
       VRM = #{vrm,jdbcType=VARCHAR},
       create_user = #{createUser,jdbcType=BIGINT},
-      create_time = #{createTime,jdbcType=DATE},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
       local_uuid = #{localUuid,jdbcType=VARCHAR},
       item_location_id = #{itemLocationId,jdbcType=BIGINT},
       buyer_id = #{buyerId,jdbcType=BIGINT},
@@ -1439,7 +1472,9 @@
       template_id = #{templateId,jdbcType=BIGINT},
       listing_way = #{listingWay,jdbcType=VARCHAR},
       folder_id = #{folderId,jdbcType=VARCHAR},
-      check_flag = #{checkFlag,jdbcType=VARCHAR}
+      check_flag = #{checkFlag,jdbcType=VARCHAR},
+      assess_range = #{assessRange,jdbcType=VARCHAR},
+      assess_setview = #{assessSetview,jdbcType=VARCHAR}
     where id = #{id,jdbcType=BIGINT}
   </update>
 </mapper>

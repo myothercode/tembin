@@ -194,8 +194,8 @@
         <form class="form-horizontal" id="countryForm">
             <%--<input type="hidden" name="countryIds" id="countryID">
             <textarea name="aountryText" class="validate[required]"  id="aountryText" style="width: 600px;background:#e0e6ef"></textarea>--%>
-            <input  type="text" id="selectItemHiddeng" name="aountryText">
-            <input  type="text" id="selectItemIdHiddeng" name="countryIds">
+            <input  type="hidden" id="selectItemHiddeng" name="aountryText">
+            <input  type="hidden" id="selectItemIdHiddeng" name="countryIds">
         </form>
         <div id="add">
         </div>

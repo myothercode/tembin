@@ -51,11 +51,9 @@ public class TaskGetOrdersImpl implements com.task.service.ITaskGetOrders {
         Date date1=DateUtils.buildDateTime(year,month,day,16,0,0);
         Date date2= org.apache.commons.lang.time.DateUtils.addDays(date1,-1);
         if(date.before(date1)){
-            date2= org.apache.commons.lang.time.DateUtils.addSeconds(date2,-1);
             c.andSavetimeBetween(date2,date1);
-        }else if(date.after(date1)){
+        }else if(date.after(date1)||date.equals(date1)){
             Date date4= org.apache.commons.lang.time.DateUtils.addDays(date1,1);
-            date4= org.apache.commons.lang.time.DateUtils.addSeconds(date4,-1);
             c.andSavetimeBetween(date1,date4);
         }
         return this.taskGetOrdersMapper.selectByExampleWithBLOBs(tde);

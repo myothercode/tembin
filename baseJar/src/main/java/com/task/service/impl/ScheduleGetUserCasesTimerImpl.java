@@ -61,8 +61,15 @@ public class ScheduleGetUserCasesTimerImpl implements IScheduleGetUserCasesTimer
     @Override
     public void synchronizeUserCases(List<TaskGetUserCases> taskGetUserCaseses) {
         /*CommAutowiredClass commPars = (CommAutowiredClass) ApplicationContextUtil.getBean(CommAutowiredClass.class);*/
+
+
+
         try{
             for(TaskGetUserCases taskGetUserCases:taskGetUserCaseses){
+                Integer flag=taskGetUserCases.getTokenflag();
+                flag=flag+1;
+                taskGetUserCases.setTokenflag(flag);
+                iTaskGetUserCases.saveListTaskGetUserCases(taskGetUserCases);
                 UsercontrollerDevAccountExtend d=new UsercontrollerDevAccountExtend();
                 d.setSoaOperationName("getUserCases");
                 String token=taskGetUserCases.getToken();
@@ -231,19 +238,19 @@ public class ScheduleGetUserCasesTimerImpl implements IScheduleGetUserCasesTimer
                             }else{
                                 d=new UsercontrollerDevAccountExtend();
                                 //真实环境
-                                d.setApiDevName("5d70d647-b1e2-4c7c-a034-b343d58ca425");
+                               /* d.setApiDevName("5d70d647-b1e2-4c7c-a034-b343d58ca425");
                                 d.setApiAppName("sandpoin-23af-4f47-a304-242ffed6ff5b");
                                 d.setApiCertName("165cae7e-4264-4244-adff-e11c3aea204e");
-                                d.setApiCompatibilityLevel("883");
+                                d.setApiCompatibilityLevel("883");*/
                                 //------------------------------------------
                                 d.setApiSiteid("0");
                                 d.setHeaderType("");
                                 d.setApiCallName(APINameStatic.GetDispute);
                                 xml = BindAccountAPI.getGetDispute(token, caseId);
                                 //真实环境
-                                resMap = addApiTask.exec2(d, xml, "https://api.ebay.com/ws/api.dll");
+                               /* resMap = addApiTask.exec2(d, xml, "https://api.ebay.com/ws/api.dll");*/
                                 //测试环境
-                           /* Map<String, String> resMap = addApiTask.exec(d, xml, apiUrl);*/
+                                resMap = addApiTask.exec2(d, xml, apiUrl);
                                 r1 = resMap.get("stat");
                                 res = resMap.get("message");
                                 if ("fail".equalsIgnoreCase(r1)) {
@@ -301,8 +308,6 @@ public class ScheduleGetUserCasesTimerImpl implements IScheduleGetUserCasesTimer
                             }
                         }
                     }
-
-
                 }else{
                     List<PublicSitemessage> list1=siteMessageService.selectPublicSitemessageByMessage("synchronize_get_user_cases_timer_FAIL","CASE定时任务:"+taskGetUserCases.getId());
                     if(list1!=null&&list1.size()>0){
@@ -316,10 +321,9 @@ public class ScheduleGetUserCasesTimerImpl implements IScheduleGetUserCasesTimer
                     taskMessageVO.setMessageFrom("system");
                     taskMessageVO.setOrderAndSeller("CASE定时任务:"+taskGetUserCases.getId());
                     siteMessageService.addSiteMessage(taskMessageVO);
+                    return;
                 }
-                taskGetUserCases.setSavetime(null);
-                taskGetUserCases.setTokenflag(1);
-                iTaskGetUserCases.saveListTaskGetUserCases(taskGetUserCases);
+
             }
         }catch(Exception e){
             e.printStackTrace();

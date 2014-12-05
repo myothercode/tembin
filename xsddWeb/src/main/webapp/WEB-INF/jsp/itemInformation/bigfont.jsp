@@ -18,6 +18,6 @@
     </style>
 </head>
 <body>
-    <img src="${pic.attrvalue}" style="width: 780px;height: 580px;">
+    <img src="${pictureUrl}" style="width: 780px;height: 580px;">
 </body>
 </html>

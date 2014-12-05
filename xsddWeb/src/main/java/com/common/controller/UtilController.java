@@ -138,7 +138,6 @@ public class UtilController extends BaseAction{
             publicDataDictList=new ArrayList<PublicDataDictCategorySpecifics>();
         }
         AjaxSupport.sendSuccessText("",publicDataDictList);
-        return;
         /*TradingDataDictionary td = DataDictionarySupport.getTradingDataDictionaryByID(Long.parseLong(siteID));
         String sitecode = td.getName1();
 
@@ -484,7 +483,8 @@ i++;
             UsercontrollerEbayAccount uea = this.usercontrollerEbayAccountMapper.selectByPrimaryKey(Long.parseLong(id));
             colStr = this.getMoveCosXml(uea.getEbayToken(),"1",startFrom,startTo,uea.getEbayAccount());
             System.out.println(colStr);
-            UsercontrollerDevAccountExtend d = userInfoService.getDevInfo(uea.getUserId());
+            UsercontrollerDevAccountExtend d = userInfoService.getDevByOrder(new HashMap());
+
             d.setApiSiteid(sitedata.getName1());
             d.setApiCallName(APINameStatic.ListingItemList);
             AddApiTask addApiTask = new AddApiTask();

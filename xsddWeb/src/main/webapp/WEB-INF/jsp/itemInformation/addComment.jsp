@@ -40,7 +40,7 @@
                             for(var j=0;j<tds.length;j++){
                                 if(j==2){
                                     var value=$("#comment").val();
-                                    tds[j].innerHTML=value;
+                                    tds[j].innerHTML="<span style='color: #8BB51B;'>"+$("sku").val()+"</span><br/><span class=\"newdf\" style='border-radius: 3px;' title=\""+value+"\">备注："+value+"</span>";
                                 }
                             }
                         }

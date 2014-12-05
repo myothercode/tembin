@@ -17,7 +17,7 @@
     <script type="text/javascript" src=<c:url value ="/js/toolTip/js/jQuery.toolTip.js" /> ></script>--%>
 
 
-    <title></title>
+    <title>天秤</title>
     <script type="text/javascript">
         var diagTempPar_=0;
         var csRightHeight;

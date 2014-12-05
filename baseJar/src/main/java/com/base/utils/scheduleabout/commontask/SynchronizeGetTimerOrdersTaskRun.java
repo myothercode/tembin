@@ -16,7 +16,7 @@ import java.util.List;
 
 /**
  * Created by Administrtor on 2014/8/29.
- * 在线商品每晚执行，定时任务
+ * 在线商品每晚执行，定时任务 //两分钟
  */
 public class SynchronizeGetTimerOrdersTaskRun extends BaseScheduledClass implements Scheduledable {
     static Logger logger = Logger.getLogger(SynchronizeGetTimerOrdersTaskRun.class);
@@ -31,12 +31,12 @@ public class SynchronizeGetTimerOrdersTaskRun extends BaseScheduledClass impleme
         if(i>30){
             return;
         }
+        List<TaskGetOrders> list= null;
         String isRunging = TempStoreDataSupport.pullData("task_"+getScheduledType());
         if(StringUtils.isNotEmpty(isRunging)){return;}
         TempStoreDataSupport.pushData("task_" + getScheduledType(), "x");
-
         ITaskGetOrders iTaskGetOrders = (ITaskGetOrders) ApplicationContextUtil.getBean(ITaskGetOrders.class);
-        List<TaskGetOrders> list=iTaskGetOrders.selectTaskGetOrdersByFlagIsFalseOrderBysaveTime();
+        list = iTaskGetOrders.selectTaskGetOrdersByFlagIsFalseOrderBysaveTime();
         synchronizeOrders(list);
         TempStoreDataSupport.removeData("task_"+getScheduledType());
     }
@@ -66,8 +66,8 @@ public class SynchronizeGetTimerOrdersTaskRun extends BaseScheduledClass impleme
     public Integer crTimeMinu() {
         ITaskGetOrders iTaskGetOrders = (ITaskGetOrders) ApplicationContextUtil.getBean(ITaskGetOrders.class);
         List<TaskGetOrders> list=iTaskGetOrders.selectTaskGetOrdersByFlagIsFalseOrderBysaveTime();
-        if(list.size()<=50&&list.size()>0){
-            return 10;
+        if(list.size()>0&&list.size()<=50){
+            return 60;
         }else{
             return 2;
         }

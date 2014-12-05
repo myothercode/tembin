@@ -11,68 +11,152 @@
 <html>
 <head>
     <title></title>
+    <link type="text/css" rel="stylesheet" href="<c:url value="/js/jquery-ui/multiselect/jquery.multiselect.css"/>">
+    <link type="text/css" rel="stylesheet"  href="<c:url value="/js/jquery-ui/multiselect/assets/style.css"/>">
+    <script type="text/javascript" src=<c:url value="/js/jquery-ui/multiselect/assets/prettify.js"/>></script>
+    <script type="text/javascript" src=<c:url value="/js/jquery-ui/multiselect/jquery.multiselect.js"/>></script>
+
     <script>
         $(document).ready(function() {
+            $("select").each(function(i,d){
+                var id = $(d).attr("id");
+                var urll = path+'/ajax/countryList.do?parentid='+id;
+                $().invoke(
+                        urll,
+                        {},
+                        [function (m, r) {
+                            var htm = "";
+                            for(var i = 0;i< r.length;i++){
+                                var data = r[i];
+                                htm+="<option value='"+data.value+"'>"+data.name+"</option>";
+                            }
+                            $(d).append(htm);
+                        },
+                            function (m, r) {
+                            }]
+                );
+            });
+           setTimeout(function(){
+               $("select").multiselect({
+                   selectList:6,
+                   click: function(event, ui){
+                       //oldAlert(ui.value + ' ' + (ui.checked ? 'checked' : 'unchecked') );
+                       if(!ui.checked){
+                           $(this).parent().find("input[type='checkbox'][name='county']").attr("checked",false);
+                       }
+                   },
+                   close: function(){
+                       tjSelect();
+                   },
+                   position: {
+                       my: 'left bottom',
+                       at: 'left top'
+                   }
+               });
+                },100);
+            //初始化选择的点击事件
             initfun();
+            setTimeout(function(){
+                loadSelectValue();
+            },200);
+
         });
-        function initfun(){
-            $("input[name='location']").bind("click",function(){
-                var loca = $("input[name='location']");
-                var locastr= "",locaname="";
-                for(var i = 0;i<loca.length;i++){
-                    if($(loca[i]).prop("checked")){
-                        $(loca[i]).parent().find("span").hide();
-                        $(loca[i]).parent().find(".abcd").hide();
-                        $(loca[i]).parent().find(".abcd").find("input[name='location']").attr("checked",false);
-                        $(loca[i]).parent().find("a").text("显示所有国家");
-                        locastr+=$(loca[i]).val()+",";
-                        locaname+=$(loca[i]).attr("value1")+",";
-                    }else{
-                        $(loca[i]).parent().find("span").show();
-                    }
+        function loadSelectValue(){
+            var strAbc="";
+            <c:forEach items="${litam}" var="litam">
+            strAbc+="${litam.value},";
+            </c:forEach>
+            if(strAbc!=""){
+                strAbc=strAbc.substr(0,strAbc.length-1);
+            }
+            $("#localTionValueAll").val(strAbc);
+            var strs=strAbc.split(",");
+            $("select").each(function(i,d){
+                for(var j=0;j<strs.length;j++){
+                    $(d).find("option[value='"+strs[j]+"']").attr("selected",true);
                 }
-                if(locastr!=""){
-                    $("#showLocalTionName").text(locaname.substr(0,locaname.length-1));
-                    $("#localTionNameAll").val(locaname.substr(0,locaname.length-1));
-                    $("#localTionValueAll").val(locastr.substr(0,locastr.length-1));
-                }
+                $(d).multiselect('refresh');
             });
 
+            for(var i = 0;i<strs.length;i++){
+                $("input[type='checkbox'][name='location'][value='"+strs[i]+"']").prop("checked",true);
+                $("input[type='checkbox'][name='county'][value='"+strs[i]+"']").prop("checked",true);
+            }
+            tjSelect();
         }
-        var chi =""
-         function selectCountry(id,obj){
-             if($(obj).parent().parent().find(".abcd").html()==""||$(obj).parent().parent().find(".abcd").html()==null){
-                 $(obj).parent().parent().find(".abcd").show();
-                 var urll = path+'/ajax/countryList.do?parentid='+id;
-                 $().invoke(
-                         urll,
-                         {},
-                         [function (m, r) {
-                             for(var i = 0;i< r.length;i++){
-                                 var data = r[i];
-                                 var str = "<div style='padding-left: 10px;'><input type='checkbox' name='location' value1="+data.name+" value ='"+data.value+"'>"+data.name+"</div>";
-                                 <c:forEach items="${litam}" var="tam">
-                                        if(data.value=='${tam.value}'){
-                                            str = "<div style='padding-left: 10px;'><input type='checkbox' name='location' value1="+data.name+" value ='"+data.value+"' checked>"+data.name+"</div>";
-                                        }
-                                 </c:forEach>
-                                 $(obj).parent().parent().find(".abcd").append(str);
-                             }
-                             $(obj).text("隐藏所有国家");
-                             initfun();
-                         },
-                             function (m, r) {
-                             }]
-                 );
-             }else {
-                 if ($(obj).text() == "显示所有国家") {
-                    $(obj).parent().parent().find(".abcd").show();
-                     $(obj).text("隐藏所有国家");
-                 }else{
-                     $(obj).parent().parent().find(".abcd").hide();
-                     $(obj).text("显示所有国家");
-                 }
-             }
+        /*计算统计选择了那些国家地区*/
+        function tjSelect(){
+            var strValue="",strName="";
+            $("input[name='location']").each(function(i,d){
+                if($(d).attr("checked")=="checked"){
+                    strValue+=$(d).val()+",";
+                    strName+=$(d).attr("value1")+"，";
+                }
+            });
+            var selectName = "",selectValue="";
+            $("select").each(function(i,d){
+                if($(d).parent().find("input[type='checkbox'][name='county']").attr("checked")=="checked"){
+                    selectName+=$(d).parent().find("input[type='checkbox'][name='county']").attr("value1")+"，";
+                    selectValue+=$(d).parent().find("input[type='checkbox'][name='county']").val()+",";
+                }
+                $(d).find("option:selected").each(function(ii,dd){
+                    if($(d).parent().find("input[type='checkbox'][name='county']").attr("checked")!="checked"){
+                        selectName+=$(dd).text()+"，";
+                    }
+                    selectValue+=$(dd).val()+",";
+                });
+
+            });
+
+            if(strValue!=""){
+                strValue=strValue.substr(0,strValue.length-1);
+                if(selectValue!=""){
+                    selectValue = selectValue.substr(0,selectValue.length-1);
+                    $("#localTionValueAll").val(strValue+","+selectValue);
+                }else{
+                    $("#localTionValueAll").val(strValue);
+                }
+            }else{
+                if(selectValue!=""){
+                    selectValue = selectValue.substr(0,selectValue.length-1);
+                }
+                $("#localTionValueAll").val(selectValue);
+            }
+            if(strName!=""){
+                strName = strName.substr(0,strName.length-1);
+                if(selectName!=""){
+                    selectName = selectName.substr(0,selectName.length-1);
+                    $("#localTionNameAll").val(strName+","+selectName);
+                    $("#showLocalTionName").text(strName+","+selectName);
+                }else{
+                    $("#localTionNameAll").val(strName);
+                    $("#showLocalTionName").text(strName);
+                }
+            }else{
+                if(selectName!=""){
+                    selectName = selectName.substr(0,selectName.length-1);
+                }
+                $("#localTionNameAll").val(selectName);
+                $("#showLocalTionName").text(selectName);
+            }
+        }
+        function initfun(){
+            //选择单个国家
+            $("input[name='location']").bind("click",function(){
+                tjSelect();
+            });
+            //选择洲
+            $("input[name='county']").bind("click",function(){
+                if($(this).attr("checked")=="checked"){
+                    $(this).parent().find("select").find("option").attr("selected",true);
+                    $(this).parent().find("select").multiselect('refresh');
+                    tjSelect();
+                }else{
+                    $(this).parent().find("select").find("option").attr("selected",false);
+                    $(this).parent().find("select").multiselect('refresh');
+                    tjSelect();
+                }
+            });
         }
 
         function selectNotLocaltion(){
@@ -82,6 +166,17 @@
             W.par.close();
         }
     </script>
+    <style>
+        .ui-state-default, .ui-widget-content .ui-state-default, .ui-widget-header .ui-state-default{
+            height: 26px;
+        }
+
+        label {
+            width: 100%;
+            text-align: left;
+            padding-left: 8px;
+        }
+    </style>
 </head>
 <body>
 <br>
@@ -97,7 +192,7 @@
                 <c:if test="${da.index%3==0}">
                     </br>
                 </c:if>
-                <span style="display:-moz-inline-box; display:inline-block; width:250px;"><input type="checkbox" name="location" value="${data.id}" value1="${data.name}">${data.name}</span>
+                <span style="display:-moz-inline-box; display:inline-block; width:250px;"><input type="checkbox" name="location" value="${data.value}" value1="${data.name}">${data.name}</span>
             </c:if>
         </c:forEach>
     </div>
@@ -105,23 +200,16 @@
 <br>
 <div style="padding-left: 5px;">
     <div>International</div>
-    <div>
+    <div style="width: 100%;">
         <c:forEach var="data" items="${li2}" varStatus="da">
             <c:if test="${data.name1=='International'}">
                 <c:if test="${da.index%3==0}">
                     </br>
                 </c:if>
-                <span style="text-align:left;display:-moz-inline-box; display:inline-block; width:250px;">
-                    <input type="checkbox" name="location" value="${data.id}" value1="${data.name}">${data.name}
-                    <span>
-                        <select name="${data.name}" id="${data.id}">
-
-                        </select>
-                    [<a href="javascript:void(0)" onclick="selectCountry('${data.id}',this)">
-                    显示所有国家
-                    </a>]
-                    </span>
-                    <div class="abcd"></div>
+                <span style="text-align:left;display:-moz-inline-box; display:inline-block; width:300px;margin: 10px;">
+                    <input type="checkbox" name="county" value="${data.value}" value1="${data.name}">${data.name}
+                    <select id="${data.id}" name="${data.id}" multiple="multiple">
+                    </select>
                 </span>
             </c:if>
         </c:forEach>
@@ -139,8 +227,7 @@
         </c:forEach>
     </div>
 </div>
-<div style="background-color: #F1F1F1;height: 60px;padding-left: 5px;" id="showLocalTionName">
-    您尚未选择国家或地区
+<div style="background-color: #F1F1F1;height:auto;padding-left: 5px;margin: 20px;" id="showLocalTionName">
 </div>
 <input type="hidden" name="localTionValue" id="localTionValue">
 <input type="hidden" name="localTionName" id="localTionName">

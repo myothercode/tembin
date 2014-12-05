@@ -765,6 +765,66 @@ public class TradingAutoMessageExample {
             return (Criteria) this;
         }
 
+        public Criteria andStartuseIsNull() {
+            addCriterion("startUse is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andStartuseIsNotNull() {
+            addCriterion("startUse is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andStartuseEqualTo(Integer value) {
+            addCriterion("startUse =", value, "startuse");
+            return (Criteria) this;
+        }
+
+        public Criteria andStartuseNotEqualTo(Integer value) {
+            addCriterion("startUse <>", value, "startuse");
+            return (Criteria) this;
+        }
+
+        public Criteria andStartuseGreaterThan(Integer value) {
+            addCriterion("startUse >", value, "startuse");
+            return (Criteria) this;
+        }
+
+        public Criteria andStartuseGreaterThanOrEqualTo(Integer value) {
+            addCriterion("startUse >=", value, "startuse");
+            return (Criteria) this;
+        }
+
+        public Criteria andStartuseLessThan(Integer value) {
+            addCriterion("startUse <", value, "startuse");
+            return (Criteria) this;
+        }
+
+        public Criteria andStartuseLessThanOrEqualTo(Integer value) {
+            addCriterion("startUse <=", value, "startuse");
+            return (Criteria) this;
+        }
+
+        public Criteria andStartuseIn(List<Integer> values) {
+            addCriterion("startUse in", values, "startuse");
+            return (Criteria) this;
+        }
+
+        public Criteria andStartuseNotIn(List<Integer> values) {
+            addCriterion("startUse not in", values, "startuse");
+            return (Criteria) this;
+        }
+
+        public Criteria andStartuseBetween(Integer value1, Integer value2) {
+            addCriterion("startUse between", value1, value2, "startuse");
+            return (Criteria) this;
+        }
+
+        public Criteria andStartuseNotBetween(Integer value1, Integer value2) {
+            addCriterion("startUse not between", value1, value2, "startuse");
+            return (Criteria) this;
+        }
+
         public Criteria andCreateUserIsNull() {
             addCriterion("create_user is null");
             return (Criteria) this;

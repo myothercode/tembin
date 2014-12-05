@@ -70,6 +70,8 @@ public class GetmymessageController extends BaseAction{
     @Autowired
     private ITradingOrderPictureDetails iTradingOrderPictureDetails;
     @Autowired
+    private IUsercontrollerEbayAccount iUsercontrollerEbayAccount;
+    @Autowired
     private ITradingOrderSenderAddress iTradingOrderSenderAddress;
     @Value("${EBAY.API.URL}")
     private String apiUrl;
@@ -306,13 +308,28 @@ public class GetmymessageController extends BaseAction{
             partner.setSubject(message.getSubject());
             partner.setRecipientid(message.getRecipientuserid());
             partner.setCreateTime(message.getReceivedate());
+            partner.setItemid(message.getItemid());
             String text=message.getTextHtml();
-            if(StringUtils.isNotBlank(text)){
-                String[] text1=text.split("</strong><br><br>");
-                String[] text2=text1[1].split("<br/><br>");
-                partner.setBody(text2[0]);
+            if(!"eBay".equals(message.getSender())){
+                if(StringUtils.isNotBlank(text)){
+                    String text4="";
+                    String[] text1=text.split("<table border=\"0\" cellpadding=\"2\" cellspacing=\"3\" width=\"100%\"><tr><td>");
+                    for(int i=1;i<text1.length;i++){
+                        String[] text2=text1[i].split("<div style=\"font-weight:bold; font-size:10pt; font-family:arial, sans-serif; color:#000\">- "+message.getSender());
+                        if(text2[0].contains(message.getRecipientuserid())){
+                            String text3=text2[0];
+                            if(!text3.contains("- "+message.getRecipientuserid())){
+                                text4+=text3+"<br/>";
+                                partner.setBody(text4);
+
+                            }
+                        }
+                    }
+                    if(partner.getBody()!=null||!"".equals(partner.getBody())){
+                        addMessages.add(partner);
+                    }
+                }
             }
-            addMessages.add(partner);
         }
         Object[] addMessages1=addMessages.toArray();
         for(int i=0;i<addMessages1.length;i++){
@@ -332,8 +349,15 @@ public class GetmymessageController extends BaseAction{
             modelMap.put("message",messageList.get(0));
             modelMap.put("sender",messageList.get(0).getSender());
             modelMap.put("recipient",messageList.get(0).getRecipientuserid());
+            modelMap.put("messageID",messageList.get(0).getMessageid());
+            modelMap.put("parentMessageID",messageList.get(0).getExternalmessageid());
         }
-        lists=iTradingOrderGetOrders.selectOrderGetOrdersByBuyerAndItemid(itemid,recipientid);
+        if(StringUtils.isNotBlank(transactionid)){
+            lists=iTradingOrderGetOrders.selectOrderGetOrdersByTransactionId(transactionid,sender);
+        }else{
+            lists=iTradingOrderGetOrders.selectOrderGetOrdersByBuyerAndItemid(itemid,recipientid);
+        }
+
         if(lists!=null&&lists.size()>0){
             lists1=iTradingOrderGetOrders.selectOrderGetOrdersByTransactionId(lists.get(0).getTransactionid(),lists.get(0).getSelleruserid());
         }
@@ -345,15 +369,15 @@ public class GetmymessageController extends BaseAction{
             List<TradingOrderGetSellerTransactions> sellerTransactions=iTradingOrderGetSellerTransactions.selectTradingOrderGetSellerTransactionsByTransactionId(order.getTransactionid());
             if(sellerTransactions!=null&&sellerTransactions.size()>0){
                 palpays.add(sellerTransactions.get(0).getExternaltransactionid());
-                /*UsercontrollerEbayAccount u= iUsercontrollerEbayAccount.selectByEbayAccount(order.getSelleruserid());
+                UsercontrollerEbayAccount u= iUsercontrollerEbayAccount.selectByEbayAccount(order.getSelleruserid());
                 Map map =new HashMap();
                 map.put("paypalId",u.getId());
                 map.put("transactionID",sellerTransactions.get(0).getExternaltransactionid());
-                PaypalVO acc = payPalService.getTransactionDetails(map);*/
-                Map map =new HashMap();
+                PaypalVO acc = payPalService.getTransactionDetails(map);
+                /*Map map =new HashMap();
                 map.put("paypalId",1l);
                 map.put("transactionID","4RJ37607494399203");
-                PaypalVO acc = payPalService.getTransactionDetails(map);
+                PaypalVO acc = payPalService.getTransactionDetails(map);*/
                 accs.add(acc);
             }else{
                 palpays.add("");
@@ -368,6 +392,7 @@ public class GetmymessageController extends BaseAction{
                     }
                 }
             }
+
             String ItemId=order.getItemid();
             List<TradingOrderGetItem> itemList= iTradingOrderGetItem.selectOrderGetItemByItemId(ItemId);
             if(itemList!=null&&itemList.size()>0){
@@ -430,42 +455,11 @@ public class GetmymessageController extends BaseAction{
     @AvoidDuplicateSubmission(needSaveToken = true)
     public ModelAndView viewTemplateInitTable(HttpServletRequest request,HttpServletResponse response,@ModelAttribute( "initSomeParmMap" )ModelMap modelMap) throws Exception {
         String messageID=request.getParameter("messageID");
-        //测试环境
-       /* UsercontrollerDevAccountExtend dev = userInfoService.getDevInfo(null);
-        dev.setApiSiteid("0");*/
-        //真实环境
-       /* UsercontrollerDevAccountExtend dev=new UsercontrollerDevAccountExtend();
-        dev.setApiDevName("5d70d647-b1e2-4c7c-a034-b343d58ca425");
-        dev.setApiAppName("sandpoin-23af-4f47-a304-242ffed6ff5b");
-        dev.setApiCertName("165cae7e-4264-4244-adff-e11c3aea204e");
-        dev.setApiCompatibilityLevel("881");
-        dev.setApiSiteid("0");*/
-
-
-       /* dev.setApiCallName(APINameStatic.GetMyMessages);
-        request.getSession().setAttribute("dveId", dev);*/
         List<UsercontrollerEbayAccountExtend> ebays = userInfoService.getEbayAccountForCurrUser(new HashMap(),Page.newAOnePage());
         Map m=new HashMap();
         m.put("messageID",messageID);
         m.put("ebays",ebays);
         List<MessageGetmymessageQuery> messages=iTradingMessageGetmymessage.selectMessageGetmymessageBySender(m);
-       /* for(MessageGetmymessageQuery message:messages){
-            if(message.getTextHtml()==null||"".equals(message.getTextHtml())){
-                Map parms=new HashMap();
-                parms.put("messageId", message.getMessageid());
-                parms.put("ebayId",message.getEbayAccountId());
-                parms.put("devAccount",dev);
-                //测试环境
-                parms.put("url",apiUrl);
-                //真实环境
-               *//* parms.put("url","https://api.ebay.com/ws/api.dll");*//*
-                parms.put("userInfoService",userInfoService);
-                String content=GetMyMessageAPI.getContent(parms);
-                message.setTextHtml(content);
-                message.setRead("true");
-                iTradingMessageGetmymessage.saveMessageGetmymessage(message);
-            }
-        }*/
             List<TradingOrderAddMemberMessageAAQToPartner> addMessages=new ArrayList<TradingOrderAddMemberMessageAAQToPartner>();
             List<TradingMessageGetmymessage> messages1=new ArrayList<TradingMessageGetmymessage>();
             List<TradingMessageGetmymessage> messageList=new ArrayList<TradingMessageGetmymessage>();
@@ -485,13 +479,30 @@ public class GetmymessageController extends BaseAction{
                 partner.setSubject(message.getSubject());
                 partner.setRecipientid(message.getRecipientuserid());
                 partner.setCreateTime(message.getReceivedate());
+                partner.setItemid(message.getItemid());
                 String text=message.getTextHtml();
-                if(StringUtils.isNotBlank(text)){
-                    String[] text1=text.split("</strong><br><br>");
-                    String[] text2=text1[1].split("<br/><br>");
-                    partner.setBody(text2[0]);
+                if(!"eBay".equals(message.getSender())){
+                    if(StringUtils.isNotBlank(text)){
+                        String text4="";
+                        String[] text1=text.split("<table border=\"0\" cellpadding=\"2\" cellspacing=\"3\" width=\"100%\"><tr><td>");
+                        for(int i=1;i<text1.length;i++){
+                            String[] text2=text1[i].split("<div style=\"font-weight:bold; font-size:10pt; font-family:arial, sans-serif; color:#000\">- "+message.getSender());
+                            if(text2[0].contains(message.getRecipientuserid())){
+                                String text3=text2[0];
+
+                                if(!text3.contains("- "+message.getRecipientuserid())){
+                                    text4+=text3+"<br/>";
+                                    partner.setBody(text4);
+
+                                }
+                            }
+                        }
+                        if(partner.getBody()!=null||!"".equals(partner.getBody())){
+                            addMessages.add(partner);
+                        }
+                    }
                 }
-                addMessages.add(partner);
+
             }
             Object[] addMessages1=addMessages.toArray();
             for(int i=0;i<addMessages1.length;i++){
@@ -526,15 +537,15 @@ public class GetmymessageController extends BaseAction{
                 List<TradingOrderGetSellerTransactions> sellerTransactions=iTradingOrderGetSellerTransactions.selectTradingOrderGetSellerTransactionsByTransactionId(order.getTransactionid());
                 if(sellerTransactions!=null&&sellerTransactions.size()>0){
                     palpays.add(sellerTransactions.get(0).getExternaltransactionid());
-                /*UsercontrollerEbayAccount u= iUsercontrollerEbayAccount.selectByEbayAccount(order.getSelleruserid());
-                Map map =new HashMap();
-                map.put("paypalId",u.getId());
-                map.put("transactionID",sellerTransactions.get(0).getExternaltransactionid());
-                PaypalVO acc = payPalService.getTransactionDetails(map);*/
+                    UsercontrollerEbayAccount u= iUsercontrollerEbayAccount.selectByEbayAccount(order.getSelleruserid());
                     Map map =new HashMap();
+                    map.put("paypalId",u.getId());
+                    map.put("transactionID",sellerTransactions.get(0).getExternaltransactionid());
+                    PaypalVO acc = payPalService.getTransactionDetails(map);
+                  /*  Map map =new HashMap();
                     map.put("paypalId",1l);
                     map.put("transactionID","4RJ37607494399203");
-                    PaypalVO acc = payPalService.getTransactionDetails(map);
+                    PaypalVO acc = payPalService.getTransactionDetails(map);*/
                     accs.add(acc);
                 }else{
                     palpays.add("");
@@ -585,8 +596,6 @@ public class GetmymessageController extends BaseAction{
             }else{
                 modelMap.put("flag","false");
             }
-       /* modelMap.put("messages",messages);
-        modelMap.put("messageID",messages.get(0).getMessageid());*/
         modelMap.put("addMessage1",addMessages1);
         modelMap.put("orders",lists);
         String rootpath=request.getContextPath();
@@ -596,10 +605,12 @@ public class GetmymessageController extends BaseAction{
         modelMap.put("paypals",palpays);
         modelMap.put("grossdetailamounts",grossdetailamounts);
         modelMap.put("pictures",pictures);
+        modelMap.put("messageID",messageID);
+        modelMap.put("parentMessageID",messages.get(0).getExternalmessageid());
+
 
         modelMap.put("accs",accs);
         return forword("orders/order/viewOrderGetOrders",modelMap);
-      /*  return forword("MessageGetmymessage/viewMessageGetmymessage",modelMap);*/
     }
 
     @RequestMapping("/sendMessageGetmymessage.do")
@@ -693,58 +704,11 @@ public class GetmymessageController extends BaseAction{
     public void apiGetMyMessagesRequest(CommonParmVO commonParmVO,HttpServletRequest request) throws Exception {
         String ebayId=request.getParameter("ebayId");
         Long ebay=Long.valueOf(ebayId);
-      /*  UsercontrollerDevAccountExtend d=new UsercontrollerDevAccountExtend();
-        d.setApiDevName("5d70d647-b1e2-4c7c-a034-b343d58ca425");
-        d.setApiAppName("sandpoin-23af-4f47-a304-242ffed6ff5b");
-        d.setApiCertName("165cae7e-4264-4244-adff-e11c3aea204e");
-        d.setApiCompatibilityLevel("881");*/
-        //----修改前---
-        /*Map map=new HashMap();
-        Date startTime2= com.base.utils.common.DateUtils.subDays(new Date(),8);
-        Date endTime= DateUtils.addDays(startTime2,9);
-        Date end1= com.base.utils.common.DateUtils.turnToDateEnd(endTime);
-        String start=DateUtils.DateToString(startTime2);
-        String end= DateUtils.DateToString(end1);
-        String token=userInfoService.getTokenByEbayID(ebay);
-        map.put("token", token);
-        map.put("detail", "ReturnHeaders");
-        map.put("startTime", start);
-        map.put("endTime", end);
-        String xml = BindAccountAPI.getGetMyMessages(map);//获取接受消息
-        AddApiTask addApiTask = new AddApiTask();
-        UsercontrollerDevAccountExtend d = userInfoService.getDevInfo(null);//开发者帐号id
-        d.setApiSiteid("0");
-        d.setApiCallName(APINameStatic.GetMyMessages);
-        request.getSession().setAttribute("dveId", d);
-         *//* Map<String, String> resMap = addApiTask.exec(d, xml, "https://api.ebay.com/ws/api.dll");*//*
-        Map<String, String> resMap = addApiTask.exec(d, xml, apiUrl);
-        String r1 = resMap.get("stat");
-        String res = resMap.get("message");
-        if ("fail".equalsIgnoreCase(r1)) {
-            AjaxSupport.sendFailText("fail", res);
-            return;
-        }
-        String ack = SamplePaseXml.getVFromXmlString(res, "Ack");
-        if ("Success".equalsIgnoreCase(ack)) {
-            List<Element> messages =GetMyMessageAPI.getMessages(res);
-            for(Element message:messages){
-                TradingMessageGetmymessage ms= GetMyMessageAPI.addDatabase(message, commonParmVO.getId(), ebay);//保存到数据库
-                if("false".equals(ms.getRead())){
-                    iTradingMessageGetmymessage.saveMessageGetmymessage(ms);
-                }
-            }
-            AjaxSupport.sendSuccessText("success", "同步成功！");
-        } else {
-            String errors = SamplePaseXml.getVFromXmlString(res, "Errors");
-            logger.error("执行失败!" + errors);
-            AjaxSupport.sendFailText("fail", "获取必要的参数失败！请稍后重试");
-        }*/
-        //--修改后---
         //测试环境
         UsercontrollerDevAccountExtend d = new UsercontrollerDevAccountExtend();
         d.setApiSiteid("0");
         //真实环境
-        /*UsercontrollerDevAccountExtend d=new UsercontrollerDevAccountExtend();
+      /*  UsercontrollerDevAccountExtend d=new UsercontrollerDevAccountExtend();
         d.setApiDevName("5d70d647-b1e2-4c7c-a034-b343d58ca425");
         d.setApiAppName("sandpoin-23af-4f47-a304-242ffed6ff5b");
         d.setApiCertName("165cae7e-4264-4244-adff-e11c3aea204e");
@@ -753,11 +717,10 @@ public class GetmymessageController extends BaseAction{
         Map map=new HashMap();
         d.setApiCallName(APINameStatic.GetMyMessages);
         request.getSession().setAttribute("dveId", d);
-
-   /*    Date startTime2= com.base.utils.common.DateUtils.subDays(new Date(),6);
-        Date endTime= DateUtils.addDays(startTime2, 6);*/
-        Date startTime2= com.base.utils.common.DateUtils.subDays(new Date(),90);
-        Date endTime= DateUtils.addDays(startTime2, 90);
+       Date startTime2= com.base.utils.common.DateUtils.subDays(new Date(),6);
+        Date endTime= DateUtils.addDays(startTime2, 6);
+    /*    Date startTime2= com.base.utils.common.DateUtils.subDays(new Date(),120);
+        Date endTime= DateUtils.addDays(startTime2, 120);*/
         /*MutualWithdrawalAgreementLate*/
 
 
@@ -793,7 +756,7 @@ public class GetmymessageController extends BaseAction{
         //测试环境
         addApiTask.execDelayReturn(d, xml, apiUrl, taskMessageVO);
         //真实环境
-        /*addApiTask.execDelayReturn(d, xml, "https://api.ebay.com/ws/api.dll", taskMessageVO);*/
+       /* addApiTask.execDelayReturn(d, xml, "https://api.ebay.com/ws/api.dll", taskMessageVO);*/
         AjaxSupport.sendSuccessText("message", "操作成功！结果请稍后查看消息！");
     }
 }

@@ -548,6 +548,7 @@ function openMyAlert(cont){
 		cancel: true,
 		cancelVal: '关闭',
 		width:500,
+		zIndex:999999,
 		height:100,
 		init: function () {
 			var that = this, i = 5;

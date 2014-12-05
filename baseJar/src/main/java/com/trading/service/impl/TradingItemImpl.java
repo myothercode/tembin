@@ -9,6 +9,7 @@ import com.base.database.publicd.model.*;
 import com.base.database.trading.mapper.*;
 import com.base.database.trading.model.*;
 import com.base.database.userinfo.mapper.UsercontrollerUserMapper;
+import com.base.database.userinfo.model.SystemLog;
 import com.base.database.userinfo.model.UsercontrollerUser;
 import com.base.domains.SessionVO;
 import com.base.domains.querypojos.ItemQuery;
@@ -19,7 +20,6 @@ import com.base.utils.cache.SessionCacheSupport;
 import com.base.utils.common.*;
 import com.base.utils.exception.Asserts;
 import com.base.utils.ftpabout.FtpUploadFile;
-import com.base.utils.imageManage.service.ImageService;
 import com.base.xmlpojo.trading.addproduct.*;
 import com.base.xmlpojo.trading.addproduct.attrclass.MadeForOutletComparisonPrice;
 import com.base.xmlpojo.trading.addproduct.attrclass.MinimumAdvertisedPrice;
@@ -29,9 +29,10 @@ import com.google.common.base.Predicate;
 import com.google.common.collect.Collections2;
 import com.publicd.service.*;
 import com.trading.service.*;
-import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.impl.cookie.DateParseException;
+import org.apache.log4j.Logger;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.DocumentHelper;
@@ -57,7 +58,7 @@ import java.util.*;
 @Service
 @Transactional(rollbackFor = Exception.class)
 public class TradingItemImpl implements com.trading.service.ITradingItem {
-
+    static Logger logger = Logger.getLogger(TradingItemImpl.class);
     @Autowired
     private TradingItemMapper tradingItemMapper;
     @Autowired
@@ -134,8 +135,17 @@ public class TradingItemImpl implements com.trading.service.ITradingItem {
     private ITradingListingSuccess iTradingListingSuccess;
     @Value("${IMAGE_URL_PREFIX}")
     private String image_url_prefix;
+
+    @Value("${ITEM_LIST_ICON_URL}")
+    private String item_list_icon_url;
     @Autowired
     public PublicItemPictureaddrAndAttrMapper publicItemPictureaddrAndAttrMapper;
+    @Autowired
+    public ITradingAssessViewSet iTradingAssessViewSet;
+    @Autowired
+    private ITradingDataDictionary iTradingDataDictionary;
+    @Autowired
+    private TradingTempTypeKeyMapper tradingTempTypeKeyMapper;
 
 
     @Override
@@ -224,20 +234,27 @@ public class TradingItemImpl implements com.trading.service.ITradingItem {
             }
             tradingItem.setSku(item.getSKU());
             tradingItem.setListingduration(item.getListingDuration() == null ? "GTC" : item.getListingDuration());
+            SessionVO c= SessionCacheSupport.getSessionVO();
+            TradingAssessViewSet ta = this.iTradingAssessViewSet.selectByUserid(c.getId());
+            if(ta!=null) {
+                tradingItem.setAssessRange(request.getParameter("setView")==null?"":request.getParameter("setView"));
+                tradingItem.setAssessSetview(ta.getSetview());
+            }
             this.saveTradingItem(tradingItem);
             //处理模板中上传的图片
-            if(tradingItem.getTemplateId()!=null){//用户选择了模板，才会处理模板图片信息
+           /* if(tradingItem.getTemplateId()!=null){*///用户选择了模板，才会处理模板图片信息
                 String [] tempicUrls = request.getParameterValues("blankimg");//界面中添加的模板图片
                 TradingTemplateInitTable ttit = this.iTradingTemplateInitTable.selectById(tradingItem.getTemplateId());
                 if(tempicUrls!=null&&tempicUrls.length>0){//如果界面中模板图片不为空，那么替换模板中ＵＲＬ地址
+                    this.iTradingAttrMores.deleteByParentId("TemplatePicUrl",tradingItem.getId());
                     for(String url:tempicUrls){
                         TradingAttrMores tam = this.iTradingAttrMores.toDAOPojo("TemplatePicUrl",url);
-                        tam.setParentId(tradingItem.getTemplateId());
+                        tam.setParentId(tradingItem.getId());
                         tam.setParentUuid(tradingItem.getUuid());
                         this.iTradingAttrMores.saveAttrMores(tam);
                     }
                 }
-            }
+            /*}*/
             itemMap.put(paypals[is],tradingItem.getId());
             if(item.getListingType().equals("Chinese")){//拍买商品保存数据
                 TradingAddItem tai = this.iTradingAddItem.selectParentId(tradingItem.getId());
@@ -918,6 +935,7 @@ public class TradingItemImpl implements com.trading.service.ITradingItem {
                 tradingItem.setListingduration(item.getListingDuration());
                 tradingItem.setQuantity(item.getQuantity().longValue());
                 tradingItem.setCurrency(item.getCurrency());
+                tradingItem.setCreateTime(new Date());
                 if(item.getOutOfStockControl()!=null) {
                     tradingItem.setOutofstockcontrol(item.getOutOfStockControl() ? "1" : "0");
                 }else{
@@ -933,11 +951,103 @@ public class TradingItemImpl implements com.trading.service.ITradingItem {
                     tradingItem.setListingtype(item.getListingType());
                 }
                 this.saveTradingItem(tradingItem);
+                //处理商品模板信息
+                PublicDataDict pdd = this.iTradingDataDictionary.selectByParentDicExample(tradingItem.getCategoryid(), tradingItem.getSite());
+                Random r = new Random();
+                if(pdd==null){//当在分类ＩＤ在本地数据查询不到数据时，默认一个经典的模板
+                    List<TradingTemplateInitTable> litt = this.iTradingTemplateInitTable.selectByType(Long.parseLong("523"));//彩用经典模板
+                    tradingItem.setTemplateId(litt.get(r.nextInt(litt.size())).getId());
+                }else{//本地数据库查询到分类，通过分类名称去匹配，相似度高的就选用分类模板
+                    String typeName = StringEscapeUtils.escapeHtml(pdd.getItemEnName());
+                    TradingTempTypeKeyExample tte = new TradingTempTypeKeyExample();
+                    tte.createCriteria();
+                    List<TradingTempTypeKey> littk = this.tradingTempTypeKeyMapper.selectByExample(tte);
+                    for(TradingTempTypeKey ttk : littk){
+                        String [] keys = ttk.getKeyName().split("&|/|,");
+                        for(String ke:keys){
+                            if(typeName.indexOf(ke)>0){
+                                List<TradingTemplateInitTable> litt = this.iTradingTemplateInitTable.selectByType(ttk.getTempTypeId());//彩用经典模板
+                                tradingItem.setTemplateId(litt.get(r.nextInt(litt.size())).getId());
+                                break;
+                            }
+                        }
+                    }
+                }
+                if(tradingItem.getTemplateId()==null){
+                    List<TradingTemplateInitTable> litt = this.iTradingTemplateInitTable.selectByType(Long.parseLong("523"));//彩用经典模板
+                    tradingItem.setTemplateId(litt.get(r.nextInt(litt.size())).getId());
+                }
+                this.tradingItemMapper.updateByPrimaryKeySelective(tradingItem);
+                //处理商品描述信息
+                String des = tradingItem.getDescription();
+                org.jsoup.nodes.Document doc = org.jsoup.Jsoup.parse(des);
+                org.jsoup.select.Elements content = doc.getElementsByAttributeValue("class", "Pa_Box");
+                if(content!=null&&content.size()>0) {
+                    for (int i = 0; i < content.size(); i++) {
+                        org.jsoup.select.Elements el = content.get(i).getElementsByAttributeValue("class", "Pa_headc");
+                        if (el != null && el.size() > 0) {
+                            if ("Description".equals(el.get(0).html().toString())) {
+                                UsercontrollerUser uu = this.usercontrollerUserMapper.selectByPrimaryKey(Integer.parseInt(tradingItem.getCreateUser() + ""));
+                                org.jsoup.select.Elements imgel = content.get(i).getElementsByTag("img");
+                                if (imgel != null && imgel.size() > 0) {
+                                    for (int j = 0; j < imgel.size(); j++) {
+                                        String picUrl = imgel.get(j).attr("src");
+                                        if (picUrl.indexOf("?") == -1) {
+                                            picUrl = picUrl;
+                                        } else {
+                                            picUrl = picUrl.substring(0, picUrl.indexOf("?"));
+                                        }
+                                        URL url = new URL(picUrl);
+                                        //打开链接
+                                        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                                        //设置请求方式为"GET"
+                                        conn.setRequestMethod("GET");
+                                        //超时响应时间为5秒
+                                        conn.setConnectTimeout(5 * 1000);
+                                        //通过输入流获取图片数据
+                                        InputStream inStream = conn.getInputStream();
+                                        String stuff = MyStringUtil.getExtension(picUrl, "");
+                                        String fileName = FtpUploadFile.ftpUploadFile(inStream, uu.getUserLoginId() + "/" + tradingItem.getSku(), stuff);
+                                        inStream.close();
+                                        String picUrls = "";
+                                        if (fileName == null) {
+                                            picUrls = picUrl;
+                                        } else {
+                                            picUrls = image_url_prefix + uu.getUserLoginId() + "/" + tradingItem.getSku() + "/" + fileName;
+                                        }
+                                        TradingAttrMores tam = new TradingAttrMores();
+                                        tam.setParentId(tradingItem.getId());
+                                        tam.setParentUuid(tradingItem.getUuid());
+                                        tam.setAttrValue("TemplatePicUrl");
+                                        tam.setValue(picUrls);
+                                        tam.setCreateTime(new Date());
+                                        tam.setUuid(UUIDUtil.getUUID());
+                                        tam.setAttr1(EncryptionUtil.md5Encrypt(picUrls));
+                                        this.iTradingAttrMores.saveAttrMores(tam);
+                                    }
+                                }
+                                if (imgel != null && imgel.size() > 0) {
+                                    for (int j = 0; j < imgel.size(); j++) {
+                                        imgel.get(j).remove();
+                                    }
+                                }
+                                tradingItem.setDescription(content.get(i).toString());
+                                this.tradingItemMapper.updateByPrimaryKeySelective(tradingItem);
+                            }
+                        }
+                    }
+                }
+
 
                 /**保存产品信息开始**/
-                PublicItemInformation itemInformation=new PublicItemInformation();
-                List<PublicUserConfig> liconf = DataDictionarySupport.getPublicUserConfigByType("itemType",kml.getUserId());
-                //商品分类
+                PublicItemInformation itemInformation = null;
+                if(tradingItem.getSku()!=null){
+                    itemInformation = this.iPublicItemInformation.selectItemInformationBySKU(tradingItem.getSku());
+                }
+                if(itemInformation==null) {
+                    itemInformation = new PublicItemInformation();
+                    List<PublicUserConfig> liconf = DataDictionarySupport.getPublicUserConfigByType("itemType", kml.getUserId());
+                    //商品分类
                 /*String typeid = "";
                 for(PublicUserConfig puc : liconf){
                     if("一键搬家分类".equals(puc.getConfigName())){
@@ -955,49 +1065,55 @@ public class TradingItemImpl implements com.trading.service.ITradingItem {
                 }else{
                     itemInformation.setTypeId(Long.parseLong(typeid));
                 }*/
-                itemInformation.setTypeId(item.getPrimaryCategory().getCategoryID()==null?null:Long.parseLong(item.getPrimaryCategory().getCategoryID()));
-                itemInformation.setTypename(categoryName);
-                itemInformation.setSku(tradingItem.getSku());
-                itemInformation.setName(tradingItem.getItemName());
-                //库存
-                PublicItemInventory inventory = new PublicItemInventory();
-                inventory.setCreateUser(kml.getUserId());
-                inventory.setCreateTime(new Date());
-                iPublicItemInventory.saveItemInventory(inventory);
-                itemInformation.setInventoryId(inventory.getId());
-                //标签
-                //供应商
-                PublicItemSupplier pis = new PublicItemSupplier();
-                pis.setCreateUser(kml.getUserId());
-                pis.setCreateTime(new Date());
-                iPublicItemSupplier.saveItemSupplier(pis);
-                itemInformation.setSupplierId(pis.getId());
-                //申报
-                PublicItemCustom pic = new PublicItemCustom();
-                pic.setCreateTime(new Date());
-                pic.setCreateUser(kml.getUserId());
-                iPublicItemCustom.saveItemCustom(pic);
-                itemInformation.setCustomId(pic.getId());
-                itemInformation.setCreateUser(kml.getUserId());
-                this.iPublicItemInformation.saveItemInformation(itemInformation);
-                //图片信息
-                PictureDetails picds = item.getPictureDetails();
-                if (picds != null) {
-                    List<String> picurl = picds.getPictureURL();
-                    for (int i = 0; i < picurl.size(); i++) {
-                        PublicItemPictureaddrAndAttr ppaa = new PublicItemPictureaddrAndAttr();
-                        ppaa.setCreateTime(new Date());
-                        ppaa.setCreateUser(kml.getUserId());
-                        ppaa.setAttrtype("picture");
-                        ppaa.setAttrname("picture");
-                        ppaa.setAttrvalue(picurl.get(i));
-                        ppaa.setIteminformationId(itemInformation.getId());
-                        this.iPublicItemPictureaddrAndAttr.saveItemPictureaddrAndAttr(ppaa);
+                    itemInformation.setTypeId(item.getPrimaryCategory().getCategoryID() == null ? null : Long.parseLong(item.getPrimaryCategory().getCategoryID()));
+                    itemInformation.setTypename(categoryName);
+                    if (item.getPrimaryCategory().getCategoryID() != null) {
+                        itemInformation.setTypeflag(1);
+                    } else {
+                        itemInformation.setTypeflag(0);
+                    }
+                    itemInformation.setDescription(tradingItem.getDescription());
+
+                    itemInformation.setSku(tradingItem.getSku());
+                    itemInformation.setName(tradingItem.getItemName());
+                    //库存
+                    PublicItemInventory inventory = new PublicItemInventory();
+                    inventory.setCreateUser(kml.getUserId());
+                    inventory.setCreateTime(new Date());
+                    iPublicItemInventory.saveItemInventory(inventory);
+                    itemInformation.setInventoryId(inventory.getId());
+                    //标签
+                    //供应商
+                    PublicItemSupplier pis = new PublicItemSupplier();
+                    pis.setCreateUser(kml.getUserId());
+                    pis.setCreateTime(new Date());
+                    pis.setPrice(tradingItem.getStartprice());
+                    iPublicItemSupplier.saveItemSupplier(pis);
+                    itemInformation.setSupplierId(pis.getId());
+                    //申报
+                    PublicItemCustom pic = new PublicItemCustom();
+                    pic.setCreateTime(new Date());
+                    pic.setCreateUser(kml.getUserId());
+                    iPublicItemCustom.saveItemCustom(pic);
+                    itemInformation.setCustomId(pic.getId());
+                    itemInformation.setCreateUser(kml.getUserId());
+                    this.iPublicItemInformation.saveItemInformation(itemInformation);
+                    //图片信息
+                    PictureDetails picds = item.getPictureDetails();
+                    if (picds != null) {
+                        List<String> picurl = picds.getPictureURL();
+                        for (int i = 0; i < picurl.size(); i++) {
+                            PublicItemPictureaddrAndAttr ppaa = new PublicItemPictureaddrAndAttr();
+                            ppaa.setCreateTime(new Date());
+                            ppaa.setCreateUser(kml.getUserId());
+                            ppaa.setAttrtype("picture");
+                            ppaa.setAttrname("picture");
+                            ppaa.setAttrvalue(picurl.get(i));
+                            ppaa.setIteminformationId(itemInformation.getId());
+                            this.iPublicItemPictureaddrAndAttr.saveItemPictureaddrAndAttr(ppaa);
+                        }
                     }
                 }
-
-
-
                 /**保存产品信息结束**/
 
                 if(tradingItem.getListingtype().equals("Chinese")){//拍买保存数据
@@ -1020,7 +1136,7 @@ public class TradingItemImpl implements com.trading.service.ITradingItem {
                     this.iTradingAddItem.saveAddItem(tai);
                 }
 
-
+                UsercontrollerUser uu = this.usercontrollerUserMapper.selectByPrimaryKey(Integer.parseInt(tradingItem.getCreateUser() + ""));
                 if (item.getVariations() != null) {//多属性
                     //删除下面的所有字属性
                     TradingVariations tvs = this.iTradingVariations.selectByParentId(tradingItem.getId());
@@ -1156,9 +1272,23 @@ public class TradingItemImpl implements com.trading.service.ITradingItem {
                             listr = MyCollectionsUtil.listUnique(listr);
                             for (String str : listr) {
                                 if (str != null && !"".equals(str)) {
-                                    TradingAttrMores tams = this.iTradingAttrMores.toDAOPojo("MuAttrPictureURL", str);
+                                    String targetUrl = str;
+                                    if(str.indexOf("?")>0){
+                                        targetUrl = str.substring(0,str.indexOf("?"));
+                                    }else{
+                                        targetUrl = str;
+                                    }
+                                    String fileNameTons = this.unFtpPoto(targetUrl,uu.getUserLoginId(),tradingItem.getSku());
+                                    String fileUrl = "";
+                                    if(StringUtils.isNotEmpty(fileNameTons)){
+                                        fileUrl = image_url_prefix + uu.getUserLoginId() + "/" + item.getSKU() + "/" + fileNameTons;
+                                    }else{
+                                        fileUrl = targetUrl;
+                                    }
+                                    TradingAttrMores tams = this.iTradingAttrMores.toDAOPojo("MuAttrPictureURL", fileUrl);
                                     tams.setParentId(tplas.getId());
                                     tams.setParentUuid(tplas.getUuid());
+                                    tams.setAttr1(EncryptionUtil.md5Encrypt(str));
                                     this.iTradingAttrMores.saveAttrMores(tams);
                                 }
                             }
@@ -1173,8 +1303,15 @@ public class TradingItemImpl implements com.trading.service.ITradingItem {
                     tpicd.setParentId(tradingItem.getId());
                     tpicd.setParentUuid(tradingItem.getUuid());
                     tpicd.setCreateUser(kml.getUserId());
+                    //下载范本列表中的小图片
+                    String targetUrl = item_list_icon_url+tradingItem.getItemId()+".jpg";
+                    String fileNameTons = this.unFtpPoto(targetUrl,uu.getUserLoginId(),tradingItem.getSku());
+                    if(StringUtils.isNotEmpty(fileNameTons)){
+                        tpicd.setGalleryurl(image_url_prefix + uu.getUserLoginId() + "/" + item.getSKU() + "/" + fileNameTons);
+                    }else{
+                        tpicd.setGalleryurl(targetUrl);
+                    }
                     this.iTradingPictureDetails.savePictureDetails(tpicd);
-                    UsercontrollerUser uu = this.usercontrollerUserMapper.selectByPrimaryKey(Integer.parseInt(tradingItem.getCreateUser() + ""));
                     this.iTradingAttrMores.deleteByParentId("PictureURL", tpicd.getId());
                     List<String> picurl = picd.getPictureURL();
                     for (int i = 0; i < picurl.size(); i++) {
@@ -1186,7 +1323,7 @@ public class TradingItemImpl implements com.trading.service.ITradingItem {
                             }else{
                                 potourl = picurl.get(i).substring(0,picurl.get(i).indexOf("?"));
                             }
-                            URL url = new URL(picurl.get(i));
+                            URL url = new URL(potourl);
                             //打开链接
                             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
                             //设置请求方式为"GET"
@@ -1195,22 +1332,21 @@ public class TradingItemImpl implements com.trading.service.ITradingItem {
                             conn.setConnectTimeout(5 * 1000);
                             //通过输入流获取图片数据
                             InputStream inStream = conn.getInputStream();
-                            String stuff = MyStringUtil.getExtension(picurl.get(i), "");
-                            String fileName = FtpUploadFile.ftpUploadFile(inStream, uu.getUserName() + "/" + item.getSKU(), stuff);
+                            String stuff = MyStringUtil.getExtension(potourl, "");
+                            String fileName = FtpUploadFile.ftpUploadFile(inStream, uu.getUserLoginId() + "/" + item.getSKU(), stuff);
                             inStream.close();
                             String picUrls = "";
                             if(fileName==null){
                                 picUrls = potourl;
                             }else{
-                                picUrls = image_url_prefix + uu.getUserName() + "/" + item.getSKU() + "/" + fileName;
+                                picUrls = image_url_prefix + uu.getUserLoginId() + "/" + item.getSKU() + "/" + fileName;
                             }
                             TradingAttrMores tam = this.iTradingAttrMores.toDAOPojo("PictureURL", picUrls);
                             tam.setParentId(tpicd.getId());
                             tam.setParentUuid(tpicd.getUuid());
+                            tam.setAttr1(EncryptionUtil.md5Encrypt(picUrls));
                             this.iTradingAttrMores.saveAttrMores(tam);
 
-                            tpicd.setGalleryurl(picUrls);
-                            this.iTradingPictureDetails.savePictureDetails(tpicd);
                             //更新商品表中的图片，更新成ＦＴＰ服务器上的地址
                             PublicItemPictureaddrAndAttrExample pipa = new PublicItemPictureaddrAndAttrExample();
                             pipa.createCriteria().andIteminformationIdEqualTo(itemInformation.getId()).andAttrvalueEqualTo(picurl.get(i)).andAttrtypeEqualTo("picture").andAttrnameEqualTo("picture");
@@ -1261,42 +1397,49 @@ public class TradingItemImpl implements com.trading.service.ITradingItem {
                     ReturnPolicy rp = item.getReturnPolicy();
                     TradingReturnpolicyExample tre = new TradingReturnpolicyExample();
                     TradingReturnpolicyExample.Criteria cri = tre.createCriteria();
-
-                    Map m = new HashMap();
-                    m.put("type", "RefundOption");
-                    m.put("value", rp.getRefundOption());
-                    List<TradingDataDictionary> x = DataDictionarySupport.getTradingDataDictionaryByMap(m);
-                    if (x != null && x.size() > 0) {
-                        TradingDataDictionary tdd = x.get(0);
-                        cri.andRefundoptionEqualTo(tdd.getId() + "");
-                        tr.setRefundoption(tdd.getId() + "");
+                    if(rp.getRefundOption()!=null&&!"".equals(rp.getRefundOption())) {
+                        Map m = new HashMap();
+                        m.put("type", "RefundOption");
+                        m.put("value", rp.getRefundOption());
+                        List<TradingDataDictionary> x = DataDictionarySupport.getTradingDataDictionaryByMap(m);
+                        if (x != null && x.size() > 0) {
+                            TradingDataDictionary tdd = x.get(0);
+                            cri.andRefundoptionEqualTo(tdd.getId() + "");
+                            tr.setRefundoption(tdd.getId() + "");
+                        }
                     }
-                    Map m1 = new HashMap();
-                    m1.put("type", "ReturnsWithinOption");
-                    m1.put("value", rp.getReturnsWithinOption());
-                    List<TradingDataDictionary> x1 = DataDictionarySupport.getTradingDataDictionaryByMap(m1);
-                    if (x1 != null && x1.size() > 0) {
-                        TradingDataDictionary tdd = x1.get(0);
-                        cri.andReturnswithinoptionEqualTo(tdd.getId() + "");
-                        tr.setReturnswithinoption(tdd.getId() + "");
+                    if(rp.getReturnsWithinOption()!=null&&!"".equals(rp.getReturnsWithinOption())) {
+                        Map m1 = new HashMap();
+                        m1.put("type", "ReturnsWithinOption");
+                        m1.put("value", rp.getReturnsWithinOption());
+                        List<TradingDataDictionary> x1 = DataDictionarySupport.getTradingDataDictionaryByMap(m1);
+                        if (x1 != null && x1.size() > 0) {
+                            TradingDataDictionary tdd = x1.get(0);
+                            cri.andReturnswithinoptionEqualTo(tdd.getId() + "");
+                            tr.setReturnswithinoption(tdd.getId() + "");
+                        }
                     }
-                    Map m2 = new HashMap();
-                    m2.put("type", "ReturnsAcceptedOption");
-                    m2.put("value", rp.getReturnsAcceptedOption());
-                    List<TradingDataDictionary> x2 = DataDictionarySupport.getTradingDataDictionaryByMap(m2);
-                    if (x2 != null && x2.size() > 0) {
-                        TradingDataDictionary tdd = x2.get(0);
-                        cri.andReturnsacceptedoptionEqualTo(tdd.getId() + "");
-                        tr.setReturnsacceptedoption(tdd.getId() + "");
+                    if(rp.getReturnsAcceptedOption()!=null&&!"".equals(rp.getReturnsAcceptedOption())) {
+                        Map m2 = new HashMap();
+                        m2.put("type", "ReturnsAcceptedOption");
+                        m2.put("value", rp.getReturnsAcceptedOption());
+                        List<TradingDataDictionary> x2 = DataDictionarySupport.getTradingDataDictionaryByMap(m2);
+                        if (x2 != null && x2.size() > 0) {
+                            TradingDataDictionary tdd = x2.get(0);
+                            cri.andReturnsacceptedoptionEqualTo(tdd.getId() + "");
+                            tr.setReturnsacceptedoption(tdd.getId() + "");
+                        }
                     }
-                    Map m3 = new HashMap();
-                    m3.put("type", "ShippingCostPaidByOption");
-                    m3.put("value", rp.getShippingCostPaidByOption());
-                    List<TradingDataDictionary> x3 = DataDictionarySupport.getTradingDataDictionaryByMap(m3);
-                    if (x3 != null && x3.size() > 0) {
-                        TradingDataDictionary tdd = x3.get(0);
-                        cri.andShippingcostpaidbyoptionEqualTo(tdd.getId() + "");
-                        tr.setShippingcostpaidbyoption(tdd.getId() + "");
+                    if(rp.getShippingCostPaidByOption()!=null&&!"".equals(rp.getShippingCostPaidByOption())) {
+                        Map m3 = new HashMap();
+                        m3.put("type", "ShippingCostPaidByOption");
+                        m3.put("value", rp.getShippingCostPaidByOption());
+                        List<TradingDataDictionary> x3 = DataDictionarySupport.getTradingDataDictionaryByMap(m3);
+                        if (x3 != null && x3.size() > 0) {
+                            TradingDataDictionary tdd = x3.get(0);
+                            cri.andShippingcostpaidbyoptionEqualTo(tdd.getId() + "");
+                            tr.setShippingcostpaidbyoption(tdd.getId() + "");
+                        }
                     }
                     cri.andCreateUserEqualTo(kml.getUserId());
                     List<TradingReturnpolicy> litr = this.tradingReturnpolicyMapper.selectByExample(tre);
@@ -1560,11 +1703,38 @@ public class TradingItemImpl implements com.trading.service.ITradingItem {
                         tradingItem.setShippingDeailsId(lits.get(0).getId());
                     }
                 }
-                this.saveTradingItem(tradingItem);
+                this.tradingItemMapper.updateByPrimaryKeySelective(tradingItem);
             }
             DataDictionarySupport.removePublicUserConfig(kml.getUserId());
         }
    // }
+
+    /**
+     * 下载图片到图片服务器
+     * @param targeturl
+     * @param loginid
+     * @param sku
+     * @return
+     */
+    private String unFtpPoto(String targeturl,String loginid,String sku){
+        try {
+            URL url = new URL(targeturl);
+            //打开链接
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            //设置请求方式为"GET"
+            conn.setRequestMethod("GET");
+            //超时响应时间为5秒
+            conn.setConnectTimeout(5 * 1000);
+            //通过输入流获取图片数据
+            InputStream inStream = conn.getInputStream();
+            String stuff = MyStringUtil.getExtension(targeturl, "");
+            String fileName = FtpUploadFile.ftpUploadFile(inStream, loginid + "/" + sku, stuff);
+            inStream.close();
+            return fileName;
+        }catch(Exception e){
+            return null;
+        }
+    }
 
     /**
      * 删除范本信息，只改变状态

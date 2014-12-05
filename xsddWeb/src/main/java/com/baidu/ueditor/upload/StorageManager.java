@@ -215,6 +215,7 @@ public class StorageManager {
                     return new BaseState(false, AppInfo.FAILED_CREATE_FILE);
                 }
             }
+			ftpClient.changeWorkingDirectory(userName);
             boolean skudir = ftpClient.changeWorkingDirectory(skuName);
             if(!skudir){
                 boolean cdSku = ftpClient.makeDirectory(skuName);

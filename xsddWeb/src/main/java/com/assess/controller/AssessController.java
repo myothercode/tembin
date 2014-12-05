@@ -3,6 +3,7 @@ package com.assess.controller;
 import com.base.database.publicd.mapper.PublicUserConfigMapper;
 import com.base.database.publicd.model.PublicUserConfig;
 import com.base.database.trading.model.OrderAutoAssess;
+import com.base.database.trading.model.TradingAssessViewSet;
 import com.base.domains.SessionVO;
 import com.base.domains.querypojos.PaypalQuery;
 import com.base.mybatis.page.Page;
@@ -12,6 +13,9 @@ import com.base.utils.cache.SessionCacheSupport;
 import com.common.base.utils.ajax.AjaxSupport;
 import com.common.base.web.BaseAction;
 import com.orderassess.service.IOrderAutoAssess;
+import com.publicd.service.IPublicUserConfig;
+import com.trading.service.ITradingAssessViewSet;
+import org.apache.http.impl.cookie.DateParseException;
 import org.kohsuke.rngom.parse.host.Base;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -32,9 +36,11 @@ import java.util.List;
 public class AssessController extends BaseAction{
     @Autowired
     private IOrderAutoAssess iOrderAutoAssess;
+    @Autowired
+    private ITradingAssessViewSet iTradingAssessViewSet;
 
     @Autowired
-    private PublicUserConfigMapper publicUserConfigMapper;
+    private IPublicUserConfig iPublicUserConfig;
 
     /**
      * 自动评价跳转界面
@@ -44,13 +50,15 @@ public class AssessController extends BaseAction{
      * @return
      */
     @RequestMapping("/assess/assessManager.do")
-    public ModelAndView assessManager(HttpServletRequest request,HttpServletResponse response,ModelMap modelMap){
+    public ModelAndView assessManager(HttpServletRequest request,HttpServletResponse response,ModelMap modelMap) throws DateParseException {
         SessionVO c= SessionCacheSupport.getSessionVO();
         DataDictionarySupport.removePublicUserConfig(c.getId());
         List<PublicUserConfig> liconfig = DataDictionarySupport.getPublicUserConfigByType("autoAssessType", c.getId());
         if(liconfig!=null&&liconfig.size()>0){
             modelMap.put("userConfig",liconfig.get(0));
         }
+        TradingAssessViewSet ta = this.iTradingAssessViewSet.selectByUserid(c.getId());
+        modelMap.put("ta",ta);
         return forword("assess/assessmanager",modelMap);
     }
 
@@ -115,13 +123,12 @@ public class AssessController extends BaseAction{
         puc.setConfigValue(configValue);
         puc.setCreateDate(new Date());
         puc.setUserId(c.getId());
+        puc.setConfigType("autoAssessType");
         List<PublicUserConfig> liconfig = DataDictionarySupport.getPublicUserConfigByType("autoAssessType", c.getId());
         if(liconfig!=null&&liconfig.size()>0){
             puc.setId(liconfig.get(0).getId());
-            this.publicUserConfigMapper.updateByPrimaryKeySelective(puc);
-        }else{
-            this.publicUserConfigMapper.insertSelective(puc);
         }
+        this.iPublicUserConfig.saveUserConfig(puc);
         AjaxSupport.sendSuccessText("","");
     }
     /**
@@ -136,5 +143,34 @@ public class AssessController extends BaseAction{
         String id = request.getParameter("id");
         this.iOrderAutoAssess.deltelAccessConent(Long.parseLong(id));
         AjaxSupport.sendSuccessText("","");
+    }
+
+
+    /**
+     * 保存评价设置
+     * @param request
+     * @param response
+     * @param modelMap
+     * @throws Exception
+     */
+    @RequestMapping("/ajax/saveAssessViewSet.do")
+    public void saveAssessViewSet(HttpServletRequest request,HttpServletResponse response,ModelMap modelMap) throws Exception {
+        SessionVO c= SessionCacheSupport.getSessionVO();
+        String appRange = request.getParameter("appRange").equals("undefined")?"":request.getParameter("appRange");
+        String setView = request.getParameter("setView").equals("undefined")?"":request.getParameter("setView");
+        TradingAssessViewSet ta = this.iTradingAssessViewSet.selectByUserid(c.getId());
+        if(ta==null){
+            ta = new TradingAssessViewSet();
+            ta.setApprange(appRange);
+            ta.setSetview(setView);
+            ta.setCreateUser(c.getId());
+            ta.setCreateDate(new Date());
+        }else{
+            ta.setApprange(appRange);
+            ta.setSetview(setView);
+        }
+        this.iTradingAssessViewSet.save(ta);
+
+        AjaxSupport.sendSuccessText("",ta);
     }
 }

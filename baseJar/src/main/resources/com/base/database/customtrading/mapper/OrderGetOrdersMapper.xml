@@ -77,6 +77,9 @@
         <if test="folderId!=null">
             and OrderGetOrders.folder=#{folderId}
         </if>
+        <!--<if test="userid!=null">
+            and OrderGetOrders.create_user=#{userid}
+        </if>-->
         <if test="itemType!=null">
             <if test="itemType=='itemId'">
                 and OrderGetOrders.itemID like "%"#{content}"%"

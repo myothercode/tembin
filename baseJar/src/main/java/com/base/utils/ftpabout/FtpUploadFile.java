@@ -39,15 +39,49 @@ public class FtpUploadFile {
                 return null;
             }
 
-            boolean skudir = ftpClient.changeWorkingDirectory(skuName);
-            if(!skudir){
-                boolean cdSku = ftpClient.makeDirectory(skuName);
-                if(!cdSku){
-                    logger.error("在ftp上创建sku目录失败"+":"+skuName);
-                    return null;
+            if(skuName.indexOf("/")>-1){
+                String[] dnames=skuName.split("/");
+                boolean skudir = ftpClient.changeWorkingDirectory(dnames[0]);
+                if(!skudir){
+                    boolean cdSku = ftpClient.makeDirectory(dnames[0]);
+                    if(cdSku){
+                        ftpClient.changeWorkingDirectory(dnames[0]);
+                        boolean cdSku2 = ftpClient.makeDirectory(dnames[1]);
+                        if(cdSku2){
+                            ftpClient.changeWorkingDirectory(dnames[1]);
+                        }else {
+                            logger.error("在ftp上创建sku目录失败1"+":"+dnames[1]);
+                            return null;
+                        }
+
+                    }else {
+                        logger.error("在ftp上创建sku目录失败2"+":"+dnames[0]);
+                        return null;
+                    }
+
+                }else {
+                    boolean cdSku2 = ftpClient.changeWorkingDirectory(dnames[1]);
+                    if(!cdSku2){
+                        boolean cdSku3 = ftpClient.makeDirectory(dnames[1]);
+                        if(!cdSku3){
+                            logger.error("在ftp上创建sku目录失败3"+":"+skuName);
+                            return null;
+                        }
+                    }
+                    ftpClient.changeWorkingDirectory(dnames[1]);
                 }
+            }else {
+                boolean skudir = ftpClient.changeWorkingDirectory(skuName);
+                if(!skudir){
+                    boolean cdSku = ftpClient.makeDirectory(skuName);
+                    if(!cdSku){
+                        logger.error("在ftp上创建sku目录失败4"+":"+skuName);
+                        return null;
+                    }
+                }
+                ftpClient.changeWorkingDirectory(skuName);
             }
-            ftpClient.changeWorkingDirectory(skuName);
+
             // String[] x= ftpClient.listNames();
             // String fileName = new String(file.getName().getBytes("utf-8"),"iso-8859-1");
             fileName= MyStringUtil.generateRandomFilename()+stuff;

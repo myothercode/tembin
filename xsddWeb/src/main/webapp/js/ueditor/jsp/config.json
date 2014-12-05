@@ -10,7 +10,7 @@
     "imageCompressBorder": 1600, /* 图片压缩最长边限制 */
     "imageInsertAlign": "none", /* 插入的图片浮动方式 */
     /* "imageUrlPrefix": "/xsddWeb/getImageStream.do?path=", 图片访问路径前缀 */
-    "imageUrlPrefix": "http@//192.168.0.241/",
+    "imageUrlPrefix": "http@//img.tembin.com/",
     "imagePathFormat": "/{time}{rand:6}", /* 上传保存路径,可以自定义保存路径和文件名格式 */
                                 /* {filename} 会替换成原文件名,配置这项需要注意中文乱码问题 */
                                 /* {rand:6} 会替换成随机数,后面的数字是随机数的位数 */
@@ -30,7 +30,7 @@
     "scrawlFieldName": "upfile", /* 提交的图片表单名称 */
     "scrawlPathFormat": "/{time}{rand:6}", /* 上传保存路径,可以自定义保存路径和文件名格式 */
     "scrawlMaxSize": 2048000, /* 上传大小限制，单位B */
-    "scrawlUrlPrefix": "http@//192.168.0.241/", /* 图片访问路径前缀 */
+    "scrawlUrlPrefix": "http@//img.tembin.com/", /* 图片访问路径前缀 */
     "scrawlInsertAlign": "none",
 
     /* 截图工具上传 */
@@ -76,7 +76,7 @@
     "imageManagerActionName": "listimage", /* 执行图片管理的action名称 */
     "imageManagerListPath": "/img", /* 指定要列出图片的目录 */
     "imageManagerListSize": 20, /* 每次列出文件数量 */
-    "imageManagerUrlPrefix": "http@//192.168.0.241", /* 图片访问路径前缀 */
+    "imageManagerUrlPrefix": "http@//img.tembin.com/", /* 图片访问路径前缀 */
     "imageManagerInsertAlign": "none", /* 插入的图片浮动方式 */
     "imageManagerAllowFiles": [".png", ".jpg", ".jpeg", ".gif", ".bmp"], /* 列出的文件类型 */
 

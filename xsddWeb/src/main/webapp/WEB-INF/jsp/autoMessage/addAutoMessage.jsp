@@ -160,8 +160,18 @@
                 return;
             }
             var checkboxs=$("#regulation").find("input[type=checkbox]:checked");
+            var allOrder1=$("#regulation").find("input[type=checkbox][name=allOrder]:checked");
             if(checkboxs.length==0){
                 alert("选择规则至少选择一个");
+                return;
+            }
+            var countryIds=$("#countryIds").val();
+            var orderItems=$("#orderItems").val();
+            var amounts=$("#amounts").val();
+            var service=$("#service").val();
+            var exceptCountryIds=$("#exceptCountryIds").val();
+            if(!countryIds&&!orderItems&&!amounts&&!service&&!exceptCountryIds&&allOrder1.length==0){
+                alert("选择规则至少一个有效值");
                 return;
             }
             var selectAllOrder=document.getElementById("selectAllOrder");
@@ -197,6 +207,7 @@
         <input type="hidden" name="service" id="service"/>
         <input type="hidden" name="exceptCountryIds" id="exceptCountryIds"/>
         <input type="hidden" name="allOrder" id="allOrder"/>
+        <input type="hidden" name="starUse value="${autoMessage.startuse}">
         <div>
             <br/><br/><br/>
         <div  style="border: 1px #acd0f0 solid;width: 930px;height:150px;margin-left:5px;background-color:whitesmoke">
@@ -435,7 +446,7 @@
                         <input type="checkbox" checked name="allOrder" onclick="addAllOrder();">&nbsp;所有订单<br/><br/>
                     </c:if>
                     <c:if test="${order==null}">
-                        <input type="checkbox" name="allOrder" onclick="addAllOrder();">&nbsp;所有订单<br/><br/>
+                        <input type="checkbox" id="allOrder1" name="allOrder" onclick="addAllOrder();">&nbsp;所有订单<br/><br/>
                     </c:if>
                 </div>
             </div>

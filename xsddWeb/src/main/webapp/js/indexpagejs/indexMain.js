@@ -20,8 +20,8 @@ $(document).ready(function(){
    // doContainer();
     getCharData(doContainer,_getTrenchData,{});//渠道分布
     getCharData(doKnobs,_getOrderCountData,{});//单量走势
-    loadFeedBackReportData();
-    loadItemReportData();
+    loadFeedBackReportData();//查询ebay账号反馈信息统计
+    loadItemReportData();//查询ebay账号刊登信息统计
 
     showBanner_(false);
     /**滚动条滚动到顶部和底部的时候触发事件显示和隐藏banner栏*/

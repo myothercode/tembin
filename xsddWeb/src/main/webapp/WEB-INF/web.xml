@@ -53,6 +53,15 @@
         <url-pattern>/*</url-pattern>
     </filter-mapping>
 
+    <filter>
+        <filter-name>stringFilter</filter-name>
+        <filter-class>com.common.interceptor.filter.StringFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>stringFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+
     <!-- 防止内存泄露，更好的处理内存 -->
     <listener>
         <listener-class>org.springframework.web.util.IntrospectorCleanupListener</listener-class>

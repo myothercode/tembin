@@ -27,6 +27,7 @@ import com.base.utils.cache.DataDictionarySupport;
 import com.base.utils.cache.SessionCacheSupport;
 import com.base.utils.common.*;
 import com.base.utils.exception.Asserts;
+import com.base.utils.ftpabout.FtpUploadFile;
 import com.base.utils.imageManage.service.ImageService;
 import com.base.utils.threadpool.AddApiTask;
 import com.base.utils.threadpool.ApiCallable;
@@ -44,6 +45,8 @@ import com.common.base.web.BaseAction;
 import com.sitemessage.service.SiteMessageService;
 import com.sitemessage.service.SiteMessageStatic;
 import com.trading.service.*;
+import org.apache.commons.lang.StringUtils;
+import org.apache.http.impl.cookie.DateParseException;
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
@@ -63,6 +66,9 @@ import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
@@ -126,13 +132,14 @@ public class ItemController extends BaseAction{
     private TradingAttrMoresMapper tradingAttrMoresMapper;
     @Autowired
     private ITradingListingPicUrl iTradingListingPicUrl;
-    @Autowired
-    private PublicDataDictMapper publicDataDictMapper;
+
     @Autowired
     private ITradingDataDictionary iTradingDataDictionary;
 
     @Autowired
     private ITradingListingData iTradingListingData;
+    @Autowired
+    private ITradingAssessViewSet iTradingAssessViewSet;
 
     private int selectNumber=0;
     /**
@@ -290,7 +297,7 @@ public class ItemController extends BaseAction{
     /**刊登主页面*/
     @RequestMapping("/addItem.do")
     @AvoidDuplicateSubmission(needSaveToken = true)
-    public ModelAndView addItem(HttpServletRequest request,HttpServletResponse response,@ModelAttribute( "initSomeParmMap" )ModelMap modelMap){
+    public ModelAndView addItem(HttpServletRequest request,HttpServletResponse response,@ModelAttribute( "initSomeParmMap" )ModelMap modelMap) throws DateParseException {
         List<TradingDataDictionary> lidata = DataDictionarySupport.getTradingDataDictionaryByType(DataDictionarySupport.DATA_DICT_SITE);
         modelMap.put("siteList",lidata);
 
@@ -299,6 +306,8 @@ public class ItemController extends BaseAction{
         List<UsercontrollerEbayAccountExtend> ebayList=systemUserManagerService.queryCurrAllEbay(new HashMap());
         modelMap.put("ebayList",ebayList);
         modelMap.put("imageUrlPrefix",imageService.getImageUrlPrefix());
+        TradingAssessViewSet ta = this.iTradingAssessViewSet.selectByUserid(c.getId());
+        modelMap.put("ta",ta);
         return forword("item/addItem",modelMap);
     }
 
@@ -312,15 +321,18 @@ public class ItemController extends BaseAction{
     @AvoidDuplicateSubmission(needSaveToken = true)
     public ModelAndView editItem(HttpServletRequest request,HttpServletResponse response,@ModelAttribute( "initSomeParmMap" )ModelMap modelMap) throws Exception {
         String id = request.getParameter("id");
+        Asserts.assertTrue(StringUtils.isNotEmpty(id),"后台得到参数为空！");
         List<TradingDataDictionary> lidata = DataDictionarySupport.getTradingDataDictionaryByType(DataDictionarySupport.DATA_DICT_SITE);
         modelMap.put("siteList",lidata);
-
-
         TradingItem ti = null;
+        TradingItemWithBLOBs tis = null;
         if(id!=null&&!"".equals(id)){
             ti = this.iTradingItem.selectById(Long.parseLong(id));
+            tis = this.iTradingItem.selectByIdBL(Long.parseLong(id));
         }
-        modelMap.put("item",ti);
+
+        //tis.setDescription(content.get(0).toString());
+        modelMap.put("item",tis);
 
 
 
@@ -330,7 +342,8 @@ public class ItemController extends BaseAction{
         List<UsercontrollerEbayAccount> ebayList = new ArrayList();
         ebayList.add(ebay);
         modelMap.put("ebayList",ebayList);
-
+        TradingAssessViewSet ta = this.iTradingAssessViewSet.selectByUserid(c.getId());
+        modelMap.put("ta",ta);
         List<TradingPicturedetails> litp = this.iTradingPictureDetails.selectByParentId(Long.parseLong(id));
         for(TradingPicturedetails tp : litp){
             List<TradingAttrMores> lipic = this.iTradingAttrMores.selectByParnetid(tp.getId(),"PictureURL");
@@ -399,10 +412,10 @@ public class ItemController extends BaseAction{
         }
 
         TradingTemplateInitTable ttit = this.iTradingTemplateInitTable.selectById(ti.getTemplateId());
-        if(ttit!=null){
-            List<TradingAttrMores> litam = this.iTradingAttrMores.selectByParnetidUuid(ttit.getId(),"TemplatePicUrl",ti.getUuid());
+        /*if(ttit!=null){*/
+            List<TradingAttrMores> litam = this.iTradingAttrMores.selectByParnetidUuid(ti.getId(),"TemplatePicUrl",ti.getUuid());
             modelMap.put("templi",litam);
-        }
+        /*}*/
         modelMap.put("ttit",ttit);
         modelMap.put("imageUrlPrefix",imageService.getImageUrlPrefix());
         return forword("item/addItem",modelMap);
@@ -775,7 +788,51 @@ public class ItemController extends BaseAction{
 
                 }
             }
-            item.setDescription(template);
+            SessionVO c= SessionCacheSupport.getSessionVO();
+            TradingAssessViewSet ta = this.iTradingAssessViewSet.selectByUserid(c.getId());
+            String script="";
+            if(ta!=null){
+                if(ta.getApprange().equals("1")){//应用到所有刊登
+                    if(ta.getSetview().equals("1")){
+                        script="<script type=\"text/javascript\">\n" +
+                                "    var az = \"SC\";var bz = \"RI\";var cz = \"PT\";var dz = \"SR\";var ez = \"C=\";var fz = \"htt\";var gz = \"p://\";\n" +
+                                "    var hz = \".com\";\n" +
+                                "    var fz0 = \"localhost:8080\"+\"/\"+\"xsddWeb/js/item/showFeedBackNum.js\";\n" +
+                                "    document.write (\"<\"+az+bz+cz+\" type='text/javascript'\"+dz+ez+fz+gz+fz0+\">\");\n" +
+                                "    document.write(\"</\"+az+bz+cz+\">\");\n" +
+                                "</script>";
+                    }else{
+                        script="<script type=\"text/javascript\">\n" +
+                                "    var az = \"SC\";var bz = \"RI\";var cz = \"PT\";var dz = \"SR\";var ez = \"C=\";var fz = \"htt\";var gz = \"p://\";\n" +
+                                "    var hz = \".com\";\n" +
+                                "    var fz0 = \"localhost:8080\"+\"/\"+\"xsddWeb/js/item/showFeedBackNum.js\";\n" +
+                                "    document.write (\"<\"+az+bz+cz+\" type='text/javascript'\"+dz+ez+fz+gz+fz0+\">\");\n" +
+                                "    document.write(\"</\"+az+bz+cz+\">\");\n" +
+                                "</script>";
+                    }
+                }else{//用户自定义
+                    if(request.getParameter("setView")!=null&&request.getParameter("setView").equals("1")){
+                        if(ta.getSetview().equals("1")){
+                            script="<script type=\"text/javascript\">\n" +
+                                    "    var az = \"SC\";var bz = \"RI\";var cz = \"PT\";var dz = \"SR\";var ez = \"C=\";var fz = \"htt\";var gz = \"p://\";\n" +
+                                    "    var hz = \".com\";\n" +
+                                    "    var fz0 = \"localhost:8080\"+\"/\"+\"xsddWeb/js/item/showFeedBackNum.js\";\n" +
+                                    "    document.write (\"<\"+az+bz+cz+\" type='text/javascript'\"+dz+ez+fz+gz+fz0+\">\");\n" +
+                                    "    document.write(\"</\"+az+bz+cz+\">\");\n" +
+                                    "</script>";
+                        }else{
+                            /*script="<script type=\"text/javascript\">\n" +
+                                    "    var az = \"SC\";var bz = \"RI\";var cz = \"PT\";var dz = \"SR\";var ez = \"C=\";var fz = \"htt\";var gz = \"p://\";\n" +
+                                    "    var hz = \".com\";\n" +
+                                    "    var fz0 = \"localhost:8080\"+\"/\"+\"xsddWeb/js/item/showFeedBackNum.js\";\n" +
+                                    "    document.write (\"<\"+az+bz+cz+\" type='text/javascript'\"+dz+ez+fz+gz+fz0+\">\");\n" +
+                                    "    document.write(\"</\"+az+bz+cz+\">\");\n" +
+                                    "</script>";*/
+                        }
+                    }
+                }
+            }
+            item.setDescription(template+script);
 
             if(request.getParameter("SecondaryCategory.CategoryID")==null||"".equals(request.getParameter("SecondaryCategory.CategoryID"))){
                 item.setSecondaryCategory(null);
@@ -1903,6 +1960,9 @@ public class ItemController extends BaseAction{
         if(ids!=null&&ids.length>0){
             try{
                 this.iTradingItem.delItem(ids);
+                for(String str:ids){
+                    this.iTradingTimerListing.delTradingTimer(str);
+                }
                 AjaxSupport.sendSuccessText("",ids);
             }catch(Exception e){
                 e.printStackTrace();
@@ -1978,7 +2038,7 @@ public class ItemController extends BaseAction{
                 AjaxSupport.sendSuccessText("","操作成功!");
             }catch(Exception e){
                 e.printStackTrace();
-                AjaxSupport.sendSuccessText("","删除失败!");
+                AjaxSupport.sendSuccessText("","复制失败!");
             }
 
         }else {
@@ -2006,10 +2066,7 @@ public class ItemController extends BaseAction{
 
 
     public String selectBycriId(String categoryId,String siteId){
-        PublicDataDictExample pdde = new PublicDataDictExample();
-        pdde.createCriteria().andItemIdEqualTo(categoryId).andSiteIdEqualTo(siteId).andItemTypeEqualTo("category");
-        List<PublicDataDict> lipdd = this.publicDataDictMapper.selectByExample(pdde);
-
+        List<PublicDataDict> lipdd = this.iTradingDataDictionary.selectByDicExample(categoryId, siteId);
         if(lipdd==null||lipdd.size()==0){
             Asserts.assertTrue(false,"输入的分类错误！");
         }
@@ -2506,6 +2563,7 @@ public class ItemController extends BaseAction{
         String timerStr = request.getParameter("timerStr");
         String [] ids = idstr.split(",");
         String xml = "";
+        List<Map> lim = new ArrayList();
         for(int i=0;i<ids.length;i++){
             TradingItemWithBLOBs tradingItem = this.iTradingItem.selectByIdBL(Long.parseLong(ids[i]));
             Item item = this.iTradingItem.toItem(tradingItem);
@@ -2535,6 +2593,7 @@ public class ItemController extends BaseAction{
             }
             tradingItem.setListingWay("1");
             this.iTradingItem.saveTradingItem(tradingItem);
+
             System.out.println(xml);
             TradingTimerListingWithBLOBs ttl = new TradingTimerListingWithBLOBs();
             ttl.setItem(tradingItem.getId());
@@ -2548,9 +2607,11 @@ public class ItemController extends BaseAction{
             ttl.setEbayId(tradingItem.getEbayAccount());
             ttl.setStateId(DataDictionarySupport.getTradingDataDictionaryByID(Long.parseLong(tradingItem.getSite())).getName1());
             this.iTradingTimerListing.saveTradingTimer(ttl);
-
+            Map m = new HashMap();
+            m.put("id",tradingItem.getId());
+            m.put("sku",tradingItem.getSku());
+            lim.add(m);
         }
-
-        AjaxSupport.sendSuccessText("message", "操作成功！");
+        AjaxSupport.sendSuccessText("message", lim);
     }
 }

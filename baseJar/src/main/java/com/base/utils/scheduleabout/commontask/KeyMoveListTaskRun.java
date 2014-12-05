@@ -4,6 +4,7 @@ import com.base.database.keymove.mapper.KeyMoveListMapper;
 import com.base.database.keymove.model.KeyMoveList;
 import com.base.database.keymove.model.KeyMoveListExample;
 import com.base.database.trading.model.TradingItemWithBLOBs;
+import com.base.database.userinfo.model.SystemLog;
 import com.base.domains.userinfo.UsercontrollerDevAccountExtend;
 import com.base.sampleapixml.APINameStatic;
 import com.base.userinfo.service.UserInfoService;
@@ -11,6 +12,8 @@ import com.base.utils.applicationcontext.ApplicationContextUtil;
 import com.base.utils.cache.DataDictionarySupport;
 import com.base.utils.cache.TempStoreDataSupport;
 import com.base.utils.common.CommAutowiredClass;
+import com.base.utils.common.DateUtils;
+import com.base.utils.common.SystemLogUtils;
 import com.base.utils.scheduleabout.BaseScheduledClass;
 import com.base.utils.scheduleabout.MainTask;
 import com.base.utils.scheduleabout.Scheduledable;
@@ -24,9 +27,7 @@ import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by Administrtor on 2014/8/29.
@@ -36,6 +37,7 @@ public class KeyMoveListTaskRun extends BaseScheduledClass implements Scheduleda
     static Logger logger = Logger.getLogger(KeyMoveListTaskRun.class);
     @Override
     public void run() {
+
         String isRunging = TempStoreDataSupport.pullData("task_"+getScheduledType());
         if(StringUtils.isNotEmpty(isRunging)){return;}
         TempStoreDataSupport.pushData("task_" + getScheduledType(), "x");
@@ -48,7 +50,7 @@ public class KeyMoveListTaskRun extends BaseScheduledClass implements Scheduleda
         if(likml!=null&&likml.size()>0&&likml.size()>=20) {
             likml = filterLimitList(likml);//限制每次的执行条数
         }
-
+        String str = DateUtils.formatDateTime(new Date());
         List<Item> liitem = new ArrayList<Item>();
         for(KeyMoveList kml:likml){
             String xml = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n" +
@@ -62,12 +64,13 @@ public class KeyMoveListTaskRun extends BaseScheduledClass implements Scheduleda
             TradingItemWithBLOBs tradingItem = iTradingItem.selectByItemId(kml.getItemId());
             if(tradingItem==null) {
                 try {
-                    UsercontrollerDevAccountExtend d = userInfoService.getDevInfo(kml.getUserId());
+                    UsercontrollerDevAccountExtend d = userInfoService.getDevByOrder(new HashMap());
                     d.setApiSiteid(DataDictionarySupport.getTradingDataDictionaryByID(Long.parseLong(kml.getSiteId())).getName1());
                     d.setApiCallName(APINameStatic.GetItem);
                     AddApiTask addApiTask = new AddApiTask();
                     CommAutowiredClass commPars = (CommAutowiredClass) ApplicationContextUtil.getBean(CommAutowiredClass.class);//获取注入的参数
                     Map<String, String> resMap = addApiTask.exec2(d, xml, commPars.apiUrl);
+                    /*Map<String, String> resMap = addApiTask.exec2(d, xml, "https://api.ebay.com/ws/api.dll");*/
                     String res = resMap.get("message");
                     String ack = SamplePaseXml.getVFromXmlString(res, "Ack");
                     if ("Success".equals(ack)) {//ＡＰＩ成功请求，保存数据
@@ -98,8 +101,8 @@ public class KeyMoveListTaskRun extends BaseScheduledClass implements Scheduleda
                 kml.setTaskFlag("1");
                 keyMapper.updateByPrimaryKeySelective(kml);
             }
-            TempStoreDataSupport.removeData("task_"+getScheduledType());
         }
+        TempStoreDataSupport.removeData("task_"+getScheduledType());
     }
 
     /**只从集合记录取多少条*/

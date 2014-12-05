@@ -27,13 +27,15 @@ function getBindParm(){
             var rr= $.parseJSON(r)
             sessid=rr.sessionid;
             runName=rr.runName;
+            if(sessid==null || sessid=='' ||
+               runName==null || runName==''){alert("不能获取到sessionid或者runname，请联系管理员");return;}
             tokenParm="?SignIn&RuName="+rr.runName+"&SessID="+rr.sessionid;
             //window.open(tokenPageUrl+tokenParm);
             reOpenPage(newWindow);
 
             $.dialog({title: '警告',
                 id: 'Alert',
-                zIndex: 99999999999999999999,
+                zIndex: 99999,
                 icon: 'alert.gif',
                 fixed: true,
              //   lock: true,

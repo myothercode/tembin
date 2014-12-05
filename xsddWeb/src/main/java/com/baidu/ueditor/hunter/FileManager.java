@@ -48,7 +48,7 @@ public class FileManager {
 
         if ("listImage".equalsIgnoreCase(this.action)) {
             List<String> fs = this.getListFromeFTP();
-            if(fs==null){return new BaseState( false, AppInfo.NOT_EXIST );}
+            if(fs==null){return new BaseState( false, /*AppInfo.NOT_EXIST*/"图片路径不存在!"+"::"+this.ftpDirPath );}
             size=fs.size();
             if ( index < 0 || index > fs.size() ) {
                 state = new MultiState( true );
@@ -58,7 +58,7 @@ public class FileManager {
 
         }else {
             if ( !dir.exists() ) {
-                return new BaseState( false, AppInfo.NOT_EXIST );
+                return new BaseState( false, AppInfo.NOT_EXIST+":::"+this.dir );
             }
 
             if ( !dir.isDirectory() ) {

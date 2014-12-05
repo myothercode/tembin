@@ -24,5 +24,5 @@ public interface ITradingAutoMessage {
 
     List<AutoMessageQuery> selectInternationalShippingServiceList(Map map, Page page);
 
-    List<TradingAutoMessage> selectAutoMessageByType(String type);
+    List<TradingAutoMessage> selectAutoMessageByType(String type,Long userid);
 }

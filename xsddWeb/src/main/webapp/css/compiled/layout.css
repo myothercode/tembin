@@ -2103,7 +2103,8 @@ color:#FFF;
 	list-style-type: none;
 	text-align: left;
 	margin-left:-200px;
-	left: -1200em;
+	/*left: -1200em;*/
+    display: none;
 	position: absolute;
 	z-index:10000;
 }

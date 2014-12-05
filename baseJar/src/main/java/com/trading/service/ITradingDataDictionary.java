@@ -65,4 +65,8 @@ public interface ITradingDataDictionary {
     List<PublicDataDict> queryPublicDictAll();
 
     List<PublicUserConfig> selectUserConfigDictionaryByMap(Map<String, String> m);
+
+    List<PublicDataDict> selectByDicExample(String categoryId, String siteId);
+
+    PublicDataDict selectByParentDicExample(String categoryId, String siteId);
 }

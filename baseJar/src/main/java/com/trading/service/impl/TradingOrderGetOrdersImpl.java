@@ -255,7 +255,11 @@ public class TradingOrderGetOrdersImpl implements com.trading.service.ITradingOr
             for(UsercontrollerEbayAccountExtend ebayAccountExtend:ebays){
                 ebayNames.add(ebayAccountExtend.getEbayName());
             }
-            cr.andSelleruseridIn(ebayNames);
+            if(ebayNames.size()>0) {
+                cr.andSelleruseridIn(ebayNames);
+            }else{
+                return new ArrayList<TradingOrderGetOrders>();
+            }
         }
         if(start!=null&&end!=null){
             cr.andPaidtimeBetween(start,end);

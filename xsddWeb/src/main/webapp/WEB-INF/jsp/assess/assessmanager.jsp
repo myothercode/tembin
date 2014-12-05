@@ -13,6 +13,11 @@
             loadAssessData();
             var userConfig = '${userConfig.configValue}';
             $("input[type='radio'][name='selectType'][value='" + userConfig + "']").prop("checked", true);
+            var apprange = '${ta.apprange}';
+            var setview = '${ta.setview}';
+            $("input[type='radio'][name='appRange'][value='"+apprange+"']").prop("checked",true);
+            $("input[type='radio'][name='setview'][value='"+setview+"']").prop("checked",true);
+
         });
         function getContent(json){
             var html="<img src='"+path+"/img/add.png'>&nbsp;&nbsp;<span>"+json.assesscontent+"</span>";
@@ -47,7 +52,7 @@
             var url = path + "/ajax/savePublicUserConfig.do?configValue=" + configValue;
             $().invoke(url, {},
                     [function (m, r) {
-
+                        alert("设置成功！");
                     },
                         function (m, r) {
                             alert(r);
@@ -140,25 +145,57 @@
                         }]
             );
         }
+
+        function setAssessTab(obj){
+            var name=$(obj).attr("name");
+            $(obj).parent().find("dt").each(function (i, d) {
+                if($(d).attr("name")==name){
+                    $(d).attr("class","new_tab_1");
+                }else{
+                    $(d).attr("class","new_tab_2");
+                }
+            });
+            $("div[name='model']").hide();
+            $("#"+name).show();
+        }
+
+        function onAssessViewSet(obj){
+
+            var url = path + "/ajax/saveAssessViewSet.do?appRange=" + $("input[type='radio'][name='appRange']:checked").val()+"&setView="+$("input[type='radio'][name='setview']:checked").val();
+            $().invoke(url, {},
+                    [function (m, r) {
+                        alert("设置成功！");
+                    },
+                        function (m, r) {
+                            alert(r);
+                        }]
+            );
+        }
     </script>
 </head>
 <body>
 <div class="new_all">
-    <div class="here">当前位置：首页 > 客户管理 > <b>自动评价</b></div>
+    <div class="here">当前位置：首页 > 客户管理 > <b>评价管理</b></div>
     <div class="a_bal"></div>
     <div class="new">
+        <div class="new_tab_ls" id="selectModel">
+            <dt id=menu1 name="autoAssess" class=new_tab_1 onclick="setAssessTab(this)">自动评价</dt>
+            <dt id=menu2 name="setAssessRe" class=new_tab_2 onclick="setAssessTab(this)">商品评价关联</dt>
+        </div>
+    </div>
+    <div class="new" id="autoAssess" name="model">
         <h1 style="font-size: 12px;font-weight: bold;">给买家留评价</h1>
         <div class=Contentbox>
-            <div style="line-height: 30px;font-size: 12px;border-bottom: solid rgb(226, 220, 220) 1px;padding-left: 3px;">
+            <div style="line-height: 30px;font-size: 12px;border-bottom: solid rgb(226, 220, 220) 1px;padding-left: 19px;">
                 <input type="radio" name="selectType" value="1" onclick="savePublicUserConfig(this)"/>&nbsp;&nbsp;不自动评价
             </div>
-            <div style="line-height: 30px;font-size: 12px;border-bottom: solid rgb(226, 220, 220) 1px;padding-left: 3px;">
+            <div style="line-height: 30px;font-size: 12px;border-bottom: solid rgb(226, 220, 220) 1px;padding-left: 19px;">
                 <input type="radio" name="selectType" value="2" onclick="savePublicUserConfig(this)"/>&nbsp;&nbsp;收到买家的正面评价时
             </div>
-            <div style="line-height: 30px;font-size: 12px;border-bottom: solid rgb(226, 220, 220) 1px;padding-left: 3px;">
+            <div style="line-height: 30px;font-size: 12px;border-bottom: solid rgb(226, 220, 220) 1px;padding-left: 19px;">
                 <input type="radio" name="selectType" value="3" onclick="savePublicUserConfig(this)"/>&nbsp;&nbsp;发货时
             </div>
-            <div style="line-height: 30px;font-size: 12px;border-bottom: solid rgb(226, 220, 220) 1px;padding-left: 3px;">
+            <div style="line-height: 30px;font-size: 12px;border-bottom: solid rgb(226, 220, 220) 1px;padding-left: 19px;">
                 <input type="radio" name="selectType" value="4" onclick="savePublicUserConfig(this)"/>&nbsp;&nbsp;买家购买物品时
             </div>
             <h6 style="margin: 20px;">系统将在以下正评中随即抽取一条留给买家</h6>
@@ -167,6 +204,26 @@
             </div>
             <div style="margin: 10px;font-size: 12px;">
                 <a style="color: #5897fb" href="javascript:void(0)" onclick="addAssessContent()">添加</a>
+            </div>
+        </div>
+    </div>
+    <div class="new" id="setAssessRe" style="display: none"  name="model">
+        <h1 style="font-size: 12px;font-weight: bold;">关联评价应用范围</h1>
+        <div class=Contentbox>
+            <div style="line-height: 30px;font-size: 12px;border-bottom: solid rgb(226, 220, 220) 1px;padding-left: 19px;">
+                <input type="radio" name="appRange" value="1" onclick="onAssessViewSet(this)"/>&nbsp;&nbsp;应用到所有刊登
+            </div>
+            <div style="line-height: 30px;font-size: 12px;border-bottom: solid rgb(226, 220, 220) 1px;padding-left: 19px;">
+                <input type="radio" name="appRange" value="2" onclick="onAssessViewSet(this)"/>&nbsp;&nbsp;自主选择Linting关联
+            </div>
+        </div>
+        <h1 style="font-size: 12px;font-weight: bold;">评价显示设置</h1>
+        <div class=Contentbox>
+            <div style="line-height: 30px;font-size: 12px;border-bottom: solid rgb(226, 220, 220) 1px;padding-left: 19px;">
+                <input type="radio" name="setview" value="1" onclick="onAssessViewSet(this)"/>&nbsp;&nbsp;只显示好评
+            </div>
+            <div style="line-height: 30px;font-size: 12px;border-bottom: solid rgb(226, 220, 220) 1px;padding-left: 19px;">
+                <input type="radio" name="setview" value="2" onclick="onAssessViewSet(this)"/>&nbsp;&nbsp;显示所有评价（包括中评、差评）
             </div>
         </div>
     </div>

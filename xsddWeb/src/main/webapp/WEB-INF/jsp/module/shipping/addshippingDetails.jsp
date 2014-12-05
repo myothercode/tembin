@@ -12,6 +12,20 @@
 <c:set var="shipping" value="${tradingShippingdetails}"/>
 <head>
     <title></title>
+    <!-- bootstrap -->
+    <link href=
+          <c:url value="/js/selectBoxIt/stylesheets/jquery.selectBoxIt.css"/> rel="stylesheet">
+
+    <%--<link rel="stylesheet" href="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-combined.min.css" />--%>
+    <%--<link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.2/themes/base/jquery-ui.css" />--%>
+    <%--<link type="text/css" rel="stylesheet" href="http://code.jquery.com/mobile/1.2.0/jquery.mobile-1.2.0.min.css" />--%>
+    <%--<link rel="stylesheet" href="http://gregfranko.com/jquery.selectBoxIt.js/css/jquery.selectBoxIt.css" />--%>
+    <script type="text/javascript" src=
+            <c:url value="/js/selectBoxIt/javascripts/jquery-ui.min.js"/>></script>
+    <%--<script src="http://gregfranko.com/jquery.selectBoxIt.js/js/jquery.selectBoxIt.min.js"></script>--%>
+    <script type="text/javascript" src=
+            <c:url value="/js/selectBoxIt/javascripts/jquery.selectBoxIt.min.js"/>></script>
+
     <script>
         var shippingService = "";
         //国际运输选择所有地区
@@ -299,6 +313,7 @@
                 $(".diagle-button-div").hide();
                 converDiv_();
             }
+
         });
         //添加国内运输选项
         function addShippingDetial(obj) {
@@ -348,7 +363,7 @@
             par = openMyDialog({title: '不运送地选项',
                 content: 'url:/xsddWeb/locationList.do?parentId='+sdid+"&parentName="+sdname,
                 icon: 'succeed',
-                width:800,
+                width:1000,
                 parent:api,
                 lock:true,
                 zIndex:2000
@@ -412,6 +427,21 @@
     </script>
     <link href=
           <c:url value="/css/basecss/conter.css"/> type="text/css" rel="stylesheet"/>
+    <style>
+        .form-control{
+            height:26px;
+            border: 1px solid #cccccc;
+            border-radius: 4px;
+        }
+        .selectboxit-container span, .selectboxit-container .selectboxit-options a{
+            height: 26px;
+            line-height: 26px;
+        }
+        .selectboxit-options li {
+            line-height: 26px;
+            height: 26px;
+        }
+    </style>
 </head>
 <body>
 <br/>
@@ -554,7 +584,7 @@
                     <tr>
                         <td align="right">处理时间</td>
                         <td>
-                            <select name="dispatchtimemax">
+                            <select name="dispatchtimemax" style="width: 50px;">
                                 <option value="0">0</option>
                                 <option value="1">1</option>
                                 <option value="2">2</option>
@@ -619,7 +649,8 @@
             <a class="myjqueryuibutton" href="javascript:void(0)" onclick="saveData(this)">确定</a>
         </div>
     </div>
-
+    <br>
+<br>
 </form>
 </body>
 </html>

@@ -36,10 +36,11 @@ public class PublicUserConfigImpl implements com.publicd.service.IPublicUserConf
     }
 
     @Override
-    public List<PublicUserConfig> selectUserConfigByItemType(String configType) {
+    public List<PublicUserConfig> selectUserConfigByItemType(String configType,Long userId) {
         PublicUserConfigExample example=new PublicUserConfigExample();
         PublicUserConfigExample.Criteria cr=example.createCriteria();
         cr.andConfigTypeEqualTo(configType);
+        cr.andUserIdEqualTo(userId);
         List<PublicUserConfig> list=publicUserConfigMapper.selectByExample(example);
         return list;
     }

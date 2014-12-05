@@ -33,6 +33,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -290,11 +291,28 @@ public class ShippingDetailsController extends BaseAction{
         List<TradingAttrMores> litam = this.iTradingAttrMores.selectByParnetid(tradingShippingdetails.getId(),"ExcludeShipToLocation");
         modelMap.put("litam",litam);
         List<TradingDataDictionary> litdd = DataDictionarySupport.getTradingDataDictionaryByType("country");
+        List<TradingDataDictionary> litdd1 = DataDictionarySupport.getTradingDataDictionaryByType("delta");
         String toname = "",tovalue="";
+        List<String> listrs = new ArrayList();
         for(TradingAttrMores tam : litam){
+            for(TradingDataDictionary tdd : litdd1){
+                if(tam.getValue().equals(tdd.getValue())){
+                    toname += tdd.getName()+"，";
+                    tovalue += tdd.getValue()+",";
+                    listrs.add(tdd.getId()+"");
+                }
+            }
             for(TradingDataDictionary tdd : litdd){
                 if(tam.getValue().equals(tdd.getValue())){
-                    toname += tdd.getName()+",";
+                    Boolean isFlag = true;
+                    for(String str:listrs){
+                        if(tdd.getParentId().toString().equals(str)){
+                            isFlag=false;
+                        }
+                    }
+                    if(isFlag) {
+                        toname += tdd.getName() + "，";
+                    }
                     tovalue += tdd.getValue()+",";
                 }
             }
@@ -315,7 +333,7 @@ public class ShippingDetailsController extends BaseAction{
      * @return
      */
     @RequestMapping("/locationList.do")
-    public ModelAndView locationList(HttpServletRequest request,HttpServletResponse response,ModelMap modelMap){
+    public ModelAndView locationList(HttpServletRequest request,HttpServletResponse response,ModelMap modelMap) throws UnsupportedEncodingException {
         String sdid = request.getParameter("parentId");
         String sdname = request.getParameter("parentName");
         if(sdid!=null&&!"".equals(sdid)) {
@@ -323,6 +341,7 @@ public class ShippingDetailsController extends BaseAction{
             modelMap.put("litam", litam);
         }
         if(sdname!=null&&!"".equals(sdname)){
+            sdname = new String(sdname.getBytes("ISO-8859-1"),"UTF-8");
             modelMap.put("sdname",sdname);
         }
 

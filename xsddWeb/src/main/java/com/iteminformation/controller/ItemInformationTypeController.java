@@ -71,11 +71,12 @@ public class ItemInformationTypeController extends BaseAction {
     public ModelAndView addType(HttpServletRequest request,HttpServletResponse response,
                                            @ModelAttribute( "initSomeParmMap" )ModelMap modelMap){
         String id1=request.getParameter("id");
+        SessionVO sessionVO= SessionCacheSupport.getSessionVO();
         Long id=null;
         if(StringUtils.isNotBlank(id1)){
             id=Long.valueOf(id1);
         }
-        List<PublicUserConfig> types=iPublicUserConfig.selectUserConfigByItemType("itemType");
+        List<PublicUserConfig> types=iPublicUserConfig.selectUserConfigByItemType("itemType",sessionVO.getId());
         modelMap.put("types",types);
         modelMap.put("id",id);
         return forword("/itemInformationType/addType",modelMap);

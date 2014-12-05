@@ -86,7 +86,7 @@
 <div class="new_all">
     <div class="here">当前位置：首页 > 刊登管理 > <b>模板管理</b></div>
     <div class="a_bal"></div>
-    <div class="tbbay" style="position: absolute;top: 46px;right: 40px;z-index: 10000;"><a data-toggle="modal" href="javascript:void(0)" class=""  onclick="addTemplateInitTable()">新增模板</a></div>
+    <div class="tbbay" style="position: absolute;top: 28px;right: 40px;z-index: 10000;"><a data-toggle="modal" href="javascript:void(0)" class=""  onclick="addTemplateInitTable()">新增模板</a></div>
     <%--<div class="a_bal"></div>--%>
     <div id="cent">
         <div id="templateInitTableListTable"></div>

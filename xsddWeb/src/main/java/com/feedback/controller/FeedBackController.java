@@ -2,6 +2,7 @@ package com.feedback.controller;
 
 import com.base.database.customtrading.mapper.ItemReportMapper;
 import com.base.database.trading.model.TradingFeedBackDetail;
+import com.base.database.trading.model.TradingItemWithBLOBs;
 import com.base.database.trading.model.TradingListingReport;
 import com.base.domains.SessionVO;
 import com.base.domains.querypojos.CommonParmVO;
@@ -22,6 +23,7 @@ import com.common.base.utils.ajax.AjaxResponse;
 import com.common.base.utils.ajax.AjaxSupport;
 import com.common.base.web.BaseAction;
 import com.trading.service.ITradingFeedBackDetail;
+import com.trading.service.ITradingItem;
 import com.trading.service.ITradingListingSuccess;
 import org.dom4j.Element;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,12 +49,11 @@ public class FeedBackController extends BaseAction {
     private String apiUrl;
     @Autowired
     private UserInfoService userInfoService;
-
-    @Autowired
-    private ItemReportMapper itemReportMapper;
-
     @Autowired
     private ITradingListingSuccess iTradingListingSuccess;
+    @Autowired
+    private ITradingItem iTradingItem;
+
     @RequestMapping("/ajax/saveFeedBackAll.do")
     @ResponseBody
     public void saveFeedBackAll(ModelMap modelMap,CommonParmVO commonParmVO) throws Exception {
@@ -150,6 +151,7 @@ public class FeedBackController extends BaseAction {
     @ResponseBody
     public void getCountSize(ModelMap modelMap,CommonParmVO commonParmVO,HttpServletRequest request,HttpServletResponse response) throws Exception {
         if(request.getParameter("itemid")==null || "0".equals(request.getParameter("itemid"))){return;}
+        TradingItemWithBLOBs tradingItemWithBLOBs = this.iTradingItem.selectByItemId(request.getParameter("itemid"));
         String x= (String) request.getParameter("jsonpCallback");
         Map m = new HashMap();
         m.put("itemid",request.getParameter("itemid"));
@@ -159,10 +161,16 @@ public class FeedBackController extends BaseAction {
         int NeutralSize  = this.iTradingFeedBackDetail.selectByCount(m);
         m.put("commentType","Negative");
         int NegativeSize  = this.iTradingFeedBackDetail.selectByCount(m);
-        String returnStr= "{\"PositiveSize\":\""+PositiveSize+"\",\"NeutralSize\":\""+NeutralSize+"\",\"NegativeSize\":\""+NegativeSize+"\"}";
-        //AjaxSupport.sendSuccessText("returnStr",returnStr);
-        AjaxResponse.sendText(response,"text/plain",x+"("+returnStr+")");
 
+        String outStr = "";
+        if("1".equals(tradingItemWithBLOBs.getAssessSetview())){
+            outStr = "<tr><td><div>PositiveSize:"+PositiveSize+"</div></td></tr>";
+        }else{
+            outStr = "<tr><td><div>PositiveSize:"+PositiveSize+" | Neutral:"+NeutralSize+" | Negative:"+NegativeSize+"</div></td></tr>";
+        }
+        String returnStr= "{\"PositiveSize\":\""+PositiveSize+"\",\"NeutralSize\":\""+NeutralSize+"\",\"NegativeSize\":\""+NegativeSize+"\"}";
+        /*AjaxSupport.sendSuccessText("returnStr",outStr);*/
+        AjaxResponse.sendText(response,"text/plain",x+"({\"htmlStr\":\""+outStr+"\"})");
     }
 
     public void pingDaoList(String commentType) throws Exception {
@@ -222,7 +230,7 @@ public class FeedBackController extends BaseAction {
         Map m = new HashMap();
         m.put("datestr", DateUtils.formatDate(new Date()));
         m.put("userid",c.getId());
-        List<TradingListingReport> lim = this.itemReportMapper.selectItemReportList(m);
+        List<TradingListingReport> lim = this.iTradingListingSuccess.selectItemReportList(m);
         //当天刊登
         List<ListingItemReportQuery> dayListing = this.iTradingListingSuccess.selectListingItemReport(c.getId(),"1","1",null);
         //本周刊登

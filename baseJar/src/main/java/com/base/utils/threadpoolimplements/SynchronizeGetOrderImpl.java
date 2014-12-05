@@ -4,10 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.base.database.trading.model.*;
 import com.base.domains.userinfo.UsercontrollerDevAccountExtend;
-import com.base.sampleapixml.APINameStatic;
-import com.base.sampleapixml.BindAccountAPI;
-import com.base.sampleapixml.GetOrderItemAPI;
-import com.base.sampleapixml.GetOrdersAPI;
+import com.base.sampleapixml.*;
 import com.base.utils.common.DateUtils;
 import com.base.utils.threadpool.AddApiTask;
 import com.base.utils.threadpool.TaskMessageVO;
@@ -98,10 +95,10 @@ public class SynchronizeGetOrderImpl implements ThreadPoolBaseInterFace {
         String ack = null;
         try {
             Map map=new HashMap();
-          /*  Date startTime2= DateUtils.subDays(new Date(), 9);
-            Date endTime= DateUtils.addDays(startTime2, 9);*/
-            Date startTime2= DateUtils.subDays(new Date(),90);
-            Date endTime= DateUtils.addDays(startTime2,90);
+            Date startTime2= DateUtils.subDays(new Date(), 6);
+            Date endTime= DateUtils.addDays(startTime2, 6);
+        /*    Date startTime2= DateUtils.subDays(new Date(),90);
+            Date endTime= DateUtils.addDays(startTime2,90);*/
             Date end1= com.base.utils.common.DateUtils.turnToDateEnd(endTime);
             String start= DateUtils.DateToString(startTime2);
             String end=DateUtils.DateToString(end1);
@@ -128,15 +125,18 @@ public class SynchronizeGetOrderImpl implements ThreadPoolBaseInterFace {
                         //--测试环境
                         Map<String, String>  resMap = addApiTask.exec(d, xml, apiUrl);
                         //--真实环境
-                      /*  Map<String, String>  resMap = addApiTask.exec(d, xml, "https://api.ebay.com/ws/api.dll");*/
+                   /*     Map<String, String>  resMap = addApiTask.exec(d, xml, "https://api.ebay.com/ws/api.dll");*/
                    /* resMap = addApiTask.exec(d, xml, "https://api.ebay.com/ws/api.dll");*/
                         String r1 = resMap.get("stat");
                         res = resMap.get("message");
                         if ("fail".equalsIgnoreCase(r1)) {
+                            logger.error("调用订单API失败!"+res);
                             return;
                         }
                         ack = SamplePaseXml.getVFromXmlString(res, "Ack");
                         if (!"Success".equalsIgnoreCase(ack)) {
+                            String errors = SamplePaseXml.getVFromXmlString(res, "Errors");
+                            logger.error("获取订单失败!" + errors);
                             return;
                         }
                         mapOrder = GetOrdersAPI.parseXMLAndSave(res);
@@ -169,18 +169,16 @@ public class SynchronizeGetOrderImpl implements ThreadPoolBaseInterFace {
                         //--------------自动发送消息-------------------------
                         List<TradingOrderAddMemberMessageAAQToPartner> addmessages=iTradingOrderAddMemberMessageAAQToPartner.selectTradingOrderAddMemberMessageAAQToPartnerByTransactionId(order.getTransactionid(),2,order.getSelleruserid());
                         if(addmessages!=null&&addmessages.size()>0){
-                            List<TradingAutoMessage> partners=iTradingAutoMessage.selectAutoMessageByType("标记已发货");
-                            TradingAutoMessage autoMessage=new TradingAutoMessage();
                             UsercontrollerEbayAccount ebay=iUsercontrollerEbayAccount.selectByEbayAccount(order.getSelleruserid());
+                            List<TradingAutoMessage> partners=iTradingAutoMessage.selectAutoMessageByType("标记已发货",ebay.getUserId());
+                            TradingAutoMessage autoMessage=new TradingAutoMessage();
                             for(TradingAutoMessage partner:partners){
-                                if(partner.getCreateUser()==ebay.getUserId()){
-                                    int day=partner.getDay();
-                                    int hour=partner.getHour();
-                                    Date date=order.getLastmodifiedtime();
-                                    Date date1=org.apache.commons.lang.time.DateUtils.addDays(date,day);
-                                    Date date2=org.apache.commons.lang.time.DateUtils.addHours(date1,hour);
-                                    order.setSendmessagetime(date2);
-                                }
+                                int day=partner.getDay();
+                                int hour=partner.getHour();
+                                Date date=order.getLastmodifiedtime();
+                                Date date1=org.apache.commons.lang.time.DateUtils.addDays(date,day);
+                                Date date2=org.apache.commons.lang.time.DateUtils.addHours(date1,hour);
+                                order.setSendmessagetime(date2);
                             }
                             boolean flag=false;
                             String trackingnumber=order.getShipmenttrackingnumber();
@@ -200,36 +198,31 @@ public class SynchronizeGetOrderImpl implements ThreadPoolBaseInterFace {
                             String trackingnumber=order.getShipmenttrackingnumber();
                             if("Complete".equals(order.getStatus())&&!StringUtils.isNotBlank(trackingnumber)&&"Completed".equals(order.getOrderstatus())){
                                 //付款后发送消息
-                                List<TradingAutoMessage> partners=iTradingAutoMessage.selectAutoMessageByType("收到买家付款");
-                                TradingAutoMessage autoMessage=new TradingAutoMessage();
                                 UsercontrollerEbayAccount ebay=iUsercontrollerEbayAccount.selectByEbayAccount(order.getSelleruserid());
+                                List<TradingAutoMessage> partners=iTradingAutoMessage.selectAutoMessageByType("收到买家付款",ebay.getUserId());
+                                TradingAutoMessage autoMessage=new TradingAutoMessage();
                                 for(TradingAutoMessage partner:partners){
-                                    if(partner.getCreateUser()==ebay.getUserId()){
                                         int day=partner.getDay();
                                         int hour=partner.getHour();
                                         Date date=order.getLastmodifiedtime();
                                         Date date1=org.apache.commons.lang.time.DateUtils.addDays(date,day);
                                         Date date2=org.apache.commons.lang.time.DateUtils.addHours(date1,hour);
                                         order.setSendmessagetime(date2);
-                                    }
                                 }
                                 order.setPaypalflag(1);
                                 order.setShippedflag(null);
                             }
                             if(StringUtils.isNotBlank(trackingnumber)){
-                                List<TradingAutoMessage> partners=iTradingAutoMessage.selectAutoMessageByType("标记已发货");
-                                TradingAutoMessage autoMessage=new TradingAutoMessage();
                                 UsercontrollerEbayAccount ebay=iUsercontrollerEbayAccount.selectByEbayAccount(order.getSelleruserid());
+                                List<TradingAutoMessage> partners=iTradingAutoMessage.selectAutoMessageByType("标记已发货",ebay.getUserId());
+                                TradingAutoMessage autoMessage=new TradingAutoMessage();
                                 for(TradingAutoMessage partner:partners){
-                                    if(partner.getCreateUser()==ebay.getUserId()){
-                                   /* if(partner.getCreateUser()==1){*/
                                         int day=partner.getDay();
                                         int hour=partner.getHour();
                                         Date date=order.getLastmodifiedtime();
                                         Date date1=org.apache.commons.lang.time.DateUtils.addDays(date,day);
                                         Date date2=org.apache.commons.lang.time.DateUtils.addHours(date1,hour);
                                         order.setSendmessagetime(date2);
-                                    }
                                 }
                                 order.setPaypalflag(null);
                                 order.setShippedflag(1);
@@ -240,10 +233,11 @@ public class SynchronizeGetOrderImpl implements ThreadPoolBaseInterFace {
                         //测试环境
                         Map<String,String> itemresmap= GetOrderItemAPI.apiGetOrderItem(d, token, apiUrl, order.getItemid());
                         //真实环境
-                        /*Map<String,String> itemresmap= GetOrderItemAPI.apiGetOrderItem(d, token, "https://api.ebay.com/ws/api.dll", order.getItemid());*/
+                       /* Map<String,String> itemresmap= GetOrderItemAPI.apiGetOrderItem(d, token, "https://api.ebay.com/ws/api.dll", order.getItemid());*/
                         String itemr1 = itemresmap.get("stat");
                         String itemres = itemresmap.get("message");
                         if ("fail".equalsIgnoreCase(itemr1)) {
+                            logger.error("调用订单商品API失败!" + itemres);
                             return;
                         }
                         String itemack = SamplePaseXml.getVFromXmlString(itemres, "Ack");
@@ -377,10 +371,12 @@ public class SynchronizeGetOrderImpl implements ThreadPoolBaseInterFace {
                                 iTradingOrderPictures.saveOrderPictures(specifics);
                             }
                         }else {
+                            String errors = SamplePaseXml.getVFromXmlString(itemres, "Errors");
+                            logger.error("获取订单商品失败!" + errors);
                             return;
                         }
                         //同步account-----
-                       /*UsercontrollerDevAccountExtend ds=new UsercontrollerDevAccountExtend();
+                      /* UsercontrollerDevAccountExtend ds=new UsercontrollerDevAccountExtend();
                        ds.setApiDevName("5d70d647-b1e2-4c7c-a034-b343d58ca425");
                        ds.setApiAppName("sandpoin-23af-4f47-a304-242ffed6ff5b");
                        ds.setApiCertName("165cae7e-4264-4244-adff-e11c3aea204e");
@@ -388,22 +384,25 @@ public class SynchronizeGetOrderImpl implements ThreadPoolBaseInterFace {
                        ds.setApiSiteid("0");
                       ds.setApiCallName("GetAccount");
                      Map accountmap=new HashMap();
-                    accountmap.put("token","AgAAAA**AQAAAA**aAAAAA**CLSRUQ**nY+sHZ2PrBmdj6wVnY+sEZ2PrA2dj6AFlYCjDJGCqA+dj6x9nY+seQ**FdYBAA**AAMAAA**w2sMbwlQ7TBHWxj9EsVedHQRI3+lonY9MDfiyayQbnFkjEanjL/yMCpS/D2B9xHRzRx+ppxWZkRPgeAKJvNotPLLrVTuEzOl5M7pi6Tw8+pzcmIEsOh7HQO78JlyFlvLc/ruE6/hG0E/HO1UX76YBwxp00N9f1NNUpo5u36D/TYsx5O2jXFTKkCOHwz6RW9vtN6TU39aLm+JQme2+NfFFXnbX8MHzoUiX7Sty0R88ZpX5wLp8ZdgXCEc5zZDQziYB1MSXF9hsmby5wKbxFF+OvW/zKADThk1gprgAgnEOucyoao+cUMHopLlYgMbjnLzdCXP5F9z+fkYTnKF6AEl5eHBpcKQGbPzswnKebRoBVw+bI2I1C/iq+PvBUyndFAexjrvlDQbEKr6qb6AWRVTTfkW2ce6a0ixRuCTq35zEpWpfAqkSKo+X23d/Q4V8R30rDXotOWDZL6o408cMO+UQ17uVA2arA1JNkYfc/AZ0T0z7ze5o/yp93jJPlDgi05Ut4fpCAMZw3X85GxrTlbEtawWgoyUbmMuv4f6QHZLZAerOaJA8DRJkzkzjJJ025bp1HvAECOc4ggdv0cofu4q96shssgNYYZJUPM+q4+0fnGK0pxQTNY9SV6vSaVCVoTZJo6vefW7OiHX2/eLoPKFuUfsKXXEv9OY71gD1xzYg/rpCMAqCTq1dKqqyT1R5fxANnoRX7vwkq+7jkCj2fAfKTnHi9mSuBFsilKLmnsqqWy3IGShMgdxiQwBEk6IWi9C");
-                    accountmap.put("Itemid","161282030915");
+                    accountmap.put("token",token);
+                    accountmap.put("Itemid",order.getItemid());
                     accountmap.put("fromTime", start);
-                    accountmap.put("toTime", end);
-                   *//* d.setApiCallName(APINameStatic.GetAccount);
+                   accountmap.put("toTime", end);*/
+                    UsercontrollerDevAccountExtend ds=new UsercontrollerDevAccountExtend();
+                    ds.setApiSiteid("0");
+                    ds.setApiCallName(APINameStatic.GetAccount);
                     Map accountmap=new HashMap();
                     accountmap.put("token",token);
                     accountmap.put("Itemid",order.getItemid());
                     accountmap.put("fromTime", start);
-                    accountmap.put("toTime", end);*//*
+                    accountmap.put("toTime", end);
                     String accountxml = BindAccountAPI.getGetAccount(accountmap);
-                    Map<String, String> accountresmap = addApiTask.exec(ds, accountxml, "https://api.ebay.com/ws/api.dll");
-                   *//* Map<String, String> accountresmap = addApiTask.exec(d, accountxml, apiUrl);*//*
+                    //Map<String, String> accountresmap = addApiTask.exec(ds, accountxml, "https://api.ebay.com/ws/api.dll");
+                    Map<String, String> accountresmap = addApiTask.exec(ds, accountxml, apiUrl);
                     String accountr1 = accountresmap.get("stat");
                     String accountres = accountresmap.get("message");
                     if ("fail".equalsIgnoreCase(accountr1)) {
+                        logger.error("获取account失败!" + accountres);
                         return;
                     }
                     String accountack = SamplePaseXml.getVFromXmlString(accountres, "Ack");
@@ -422,17 +421,21 @@ public class SynchronizeGetOrderImpl implements ThreadPoolBaseInterFace {
                             iTradingOrderGetAccount.saveOrderGetAccount(acc);
                         }
                     }else{
+                        String errors = SamplePaseXml.getVFromXmlString(accountres, "Errors");
+                        logger.error("获取account失败!" + errors);
                         return;
-                    }*/
+                    }
                         //----------------
                         //同步外部交易
-                        /*d.setApiCallName("GetSellerTransactions");
+                        d.setApiCallName("GetSellerTransactions");
                         String sellerxml = BindAccountAPI.GetSellerTransactions(token);//获取接受消息
                         Map<String, String> resSellerMap = addApiTask.exec(d, sellerxml, apiUrl);
+                       /* Map<String, String> resSellerMap = addApiTask.exec(d, sellerxml, "https://api.ebay.com/ws/api.dll");*/
                         //------------------------
                         String sellerR1 = resSellerMap.get("stat");
                         String sellerRes = resSellerMap.get("message");
                         if ("fail".equalsIgnoreCase(sellerR1)) {
+                            logger.error("调用外部交易API失败!" + sellerRes);
                             return;
                         }
                         String sellerAck = SamplePaseXml.getVFromXmlString(res, "Ack");
@@ -447,8 +450,10 @@ public class SynchronizeGetOrderImpl implements ThreadPoolBaseInterFace {
                                 iTradingOrderGetSellerTransactions.saveOrderGetSellerTransactions(list);
                             }
                         } else {
+                            String errors = SamplePaseXml.getVFromXmlString(sellerRes, "Errors");
+                            logger.error("获取外部交易失败!" + errors);
                             return;
-                        }*/
+                        }
                         //---------------------------------------
                         order.setCreateUser(taskMessageVO.getMessageTo());
                         iTradingOrderGetOrders.saveOrderGetOrders(order);
@@ -457,7 +462,7 @@ public class SynchronizeGetOrderImpl implements ThreadPoolBaseInterFace {
             }else {return;}
         } catch (Exception e) {
             e.printStackTrace();
-            logger.error("解析xml出错,请稍后到ebay网站确认结果");
+            logger.error("解析订单xml出错,请稍后到ebay网站确认结果"+res);
             return;
         }
     }

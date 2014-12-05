@@ -39,6 +39,7 @@ public class TradingDataDictionaryImpl implements com.trading.service.ITradingDa
     @Autowired
     private PublicUserConfigMapper publicUserConfigMapper;
 
+
     public String publicDataDictionary="no";//publicDataDictionary表是否已经加载过数据
     public String tradingDataDictionary="no";//tradingDataDictionary表是否已经加载过数据
 
@@ -250,5 +251,26 @@ public class TradingDataDictionaryImpl implements com.trading.service.ITradingDa
         return n;
     }
 
+    @Override
+    public List<PublicDataDict> selectByDicExample(String categoryId,String siteId){
+        PublicDataDictExample pdde = new PublicDataDictExample();
+        pdde.createCriteria().andItemIdEqualTo(categoryId).andSiteIdEqualTo(siteId).andItemTypeEqualTo("category");
+        return this.publicDataDictMapper.selectByExample(pdde);
+    }
+
+    @Override
+    public PublicDataDict selectByParentDicExample(String categoryId,String siteId){
+        List<PublicDataDict> lipdd= this.selectByDicExample(categoryId,siteId);
+        if(lipdd!=null&&lipdd.size()>0){
+            PublicDataDict pdd = lipdd.get(0);
+            if(pdd.getItemParentId().equals("0")){
+                return pdd;
+            }else{
+                return this.selectByParentDicExample(pdd.getItemParentId(),siteId);
+            }
+        }else{
+            return null;
+        }
+    }
 
 }

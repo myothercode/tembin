@@ -60,7 +60,12 @@ public class AutoMessageController extends BaseAction {
         PageJsonBean jsonBean=commonParmVO.getJsonBean();
         Page page=jsonBean.toPage();
         SessionVO sessionVO= SessionCacheSupport.getSessionVO();
+        String status=request.getParameter("status");
+        if(!StringUtils.isNotBlank(status)){
+            status=null;
+        }
         m.put("userId",sessionVO.getId());
+        m.put("status",status);
         List<AutoMessageQuery> lists=iTradingAutoMessage.selectAutoMessageList(m,page);
         if(lists!=null&&lists.size()>0){
            for(AutoMessageQuery auto:lists){
@@ -509,9 +514,13 @@ public class AutoMessageController extends BaseAction {
         String service=request.getParameter("service");
         String exceptCountryIds=request.getParameter("exceptCountryIds");
         String allOrder=request.getParameter("allOrder");
+        String starUse=request.getParameter("starUse");
         TradingAutoMessage message=new TradingAutoMessage();
         if(StringUtils.isNotBlank(id)){
             message.setId(Long.valueOf(id));
+        }
+        if(StringUtils.isNotBlank(starUse)){
+            message.setStartuse(Integer.valueOf(starUse));
         }
         if(StringUtils.isNotBlank(messageId)){
             message.setMessagetemplateId(Long.valueOf(messageId));
@@ -552,6 +561,13 @@ public class AutoMessageController extends BaseAction {
                     iTradingAutoMessageAttr.saveAutoMessageAttr(country);
                 }
             }
+        }else{
+            List<TradingAutoMessageAttr> coutrys=iTradingAutoMessageAttr.selectAutoMessageListByautoMessageId(message.getId(),"country");
+            if(coutrys.size()>0){
+                for(TradingAutoMessageAttr coutry:coutrys){
+                    iTradingAutoMessageAttr.deleteAutoMessageAttr(coutry);
+                }
+            }
         }
         if(StringUtils.isNotBlank(exceptCountryIds)){
             String[] coutryids=exceptCountryIds.split(",");
@@ -561,6 +577,13 @@ public class AutoMessageController extends BaseAction {
                     TradingAutoMessageAttr country=coutrys.get(0);
                     country.setAutomessageId(message.getId());
                     iTradingAutoMessageAttr.saveAutoMessageAttr(country);
+                }
+            }
+        }else{
+            List<TradingAutoMessageAttr> coutrys=iTradingAutoMessageAttr.selectAutoMessageListByautoMessageId(message.getId(),"exceptCountry");
+            if(coutrys.size()>0){
+                for(TradingAutoMessageAttr coutry:coutrys){
+                    iTradingAutoMessageAttr.deleteAutoMessageAttr(coutry);
                 }
             }
         }
@@ -576,6 +599,13 @@ public class AutoMessageController extends BaseAction {
                     }
                 }
             }
+        }else{
+            List<TradingAutoMessageAttr> coutrys=iTradingAutoMessageAttr.selectAutoMessageListByautoMessageId(message.getId(),"orderItem");
+            if(coutrys.size()>0){
+                for(TradingAutoMessageAttr coutry:coutrys){
+                    iTradingAutoMessageAttr.deleteAutoMessageAttr(coutry);
+                }
+            }
         }
         if(StringUtils.isNotBlank(amounts)){
             String[] amounts1=amounts.split(",");
@@ -587,6 +617,13 @@ public class AutoMessageController extends BaseAction {
                     iTradingAutoMessageAttr.saveAutoMessageAttr(country);
                 }
             }
+        }else{
+            List<TradingAutoMessageAttr> coutrys=iTradingAutoMessageAttr.selectAutoMessageListByautoMessageId(message.getId(),"amount");
+            if(coutrys.size()>0){
+                for(TradingAutoMessageAttr coutry:coutrys){
+                    iTradingAutoMessageAttr.deleteAutoMessageAttr(coutry);
+                }
+            }
         }
         if(StringUtils.isNotBlank(service)){
             String[] amounts1=service.split(",");
@@ -596,6 +633,19 @@ public class AutoMessageController extends BaseAction {
                     TradingAutoMessageAttr country=orderItem.get(0);
                     country.setAutomessageId(message.getId());
                     iTradingAutoMessageAttr.saveAutoMessageAttr(country);
+                }
+            }
+        }else{
+            List<TradingAutoMessageAttr> coutrys=iTradingAutoMessageAttr.selectAutoMessageListByautoMessageId(message.getId(),"service");
+            if(coutrys.size()>0){
+                for(TradingAutoMessageAttr coutry:coutrys){
+                    iTradingAutoMessageAttr.deleteAutoMessageAttr(coutry);
+                }
+            }
+            List<TradingAutoMessageAttr> coutrys1=iTradingAutoMessageAttr.selectAutoMessageListByautoMessageId(message.getId(),"internationalService");
+            if(coutrys.size()>0){
+                for(TradingAutoMessageAttr coutry:coutrys1){
+                    iTradingAutoMessageAttr.deleteAutoMessageAttr(coutry);
                 }
             }
         }
@@ -610,7 +660,35 @@ public class AutoMessageController extends BaseAction {
             m.setValue("所有订单");
             iTradingAutoMessageAttr.saveAutoMessageAttr(m);
         }
-        AjaxSupport.sendSuccessText("", "保存成功");
+        AjaxSupport.sendSuccessText("", "保存成功,请确保启用的自动消息的每个类型只有一个");
+    }
+    //启用或者禁用自动消息
+    @RequestMapping("/ajax/startUsing.do")
+    @ResponseBody
+    public void startUsing(CommonParmVO commonParmVO,HttpServletRequest request) throws Exception {
+        String id=request.getParameter("id");
+        String status=request.getParameter("status");
+        if(StringUtils.isNotBlank(id)){
+            TradingAutoMessage message=new TradingAutoMessage();
+            message.setId(Long.valueOf(id));
+            if("1".equals(status)){
+                message.setStartuse(Integer.valueOf(status));
+            }
+            if("0".equals(status)){
+                message.setStartuse(Integer.valueOf(status));
+            }
+            iTradingAutoMessage.saveAutoMessage(message);
+        }else{
+            AjaxSupport.sendFailText("fail","自动消息不存在");
+            return;
+        }
+        if("1".equals(status)){
+            AjaxSupport.sendSuccessText("", "启用成功,请确保启用的自动消息的每个类型只有一个");
+        }else{
+            AjaxSupport.sendSuccessText("", "禁用成功");
+        }
+
+
     }
     //删除autoMessage
     @RequestMapping("/ajax/deleteAutoMessage.do")

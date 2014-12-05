@@ -87,6 +87,7 @@
     var imageUrlPrefix = '${imageUrlPrefix}';
     var url = window.location.href;
     $(document).ready(function () {
+        $("#showImgico").attr("src",path+"/img/new_list_ico.png");
         var categoryId = '${item.categoryid}';
         $("#oneAttr").show();
         $("#twoAttr").hide();
@@ -132,8 +133,6 @@
 
         var ebayAccount = '${item.ebayAccount}';
         $("input[name='ebayAccounts'][value='" + ebayAccount + "']").attr("checked", "checked");
-
-
         var site = '${item.site}';
         if(site!=null&&site!=""){
             $("select[name='site']").find("option[value='" + site + "']").attr("selected", true);
@@ -158,6 +157,7 @@
 
         });
         if(site!=""&&categoryId!="") {
+
             if (localStorage.getItem("category_att_ID" + site + "" + categoryId) != null) {
                 var json = eval("(" + localStorage.getItem("category_att_ID" + site + "" + categoryId) + ")");
                 var jdata = json.result;
@@ -175,22 +175,22 @@
         str += "<td width='100px'><span style='color: dodgerblue;' onclick='showMoreAttrsText(this)'>${liv.quantity}</span><input type='hidden' name='Quantity' onblur='clearThisText(this);' onkeyup='getJoinValue(this)' size='8' class='validate[required] form-control' value='${liv.quantity}'></td>";
         str += "<td width='100px'><span style='color: dodgerblue;' onclick='showMoreAttrsText(this)'>"+parseFloat(price).toFixed(2)+"</span><input type='hidden' name='StartPrice.value' onblur='clearThisText(this);' onkeyup='getJoinValue(this)'  size='8' class='validate[required] form-control' value='"+parseFloat(price).toFixed(2)+"'>&nbsp;<abbr name='curName'></abbr></td>";
         <c:forEach items="${liv.tradingPublicLevelAttr}" var="ta">
-        str += "<td width='100px'><span style='color: dodgerblue;' onclick='showMoreAttrsText(this)'>${ta.value}</span><input type='hidden' name='attr_Value' onkeyup='getJoinValue(this)'  class='validate[required] form-control' onblur='addb(this)' size='10' value='${ta.value}'>";
+        str += "<td width='100px' style='text-align: right;'><span style='color: dodgerblue;' onclick='showMoreAttrsText(this)'>${ta.value}</span><input type='hidden' name='attr_Value' onkeyup='getJoinValue(this)'  class='validate[required] more-control' onblur='addb(this)' size='10' value='${ta.value}'>";
         //str +="&nbsp;<div class='numlist' style='padding-left: 8px;'><div class='ui-select' style='background-image:url("+path+"/img/arrow.gif);height:26px;margin-top:1px; width:80px;min-width:0px;'><select style='width: 80px;padding: 0px;' name='selAttValue_sel' onchange='selectAttrMorValue(this)'></select></div><div>";
-        str +="&nbsp;<div class='ui-select' style='background-image:url("+path+"/img/arrow.gif);height:26px;margin-top: -5px; width:15px;min-width:0px;border: 0px;'><select style='width: 80px;padding: 9px;' name='selAttValue_sel' onchange='selectAttrMorValue(this)'></select></div>";
+        str +="&nbsp;<div class='ui-select' style='margin-bottom: 5px;background-image:url("+path+"/img/arrow.gif);height:26px; width:15px;min-width:0px;border: 0px;'><select style='width: 80px;padding: 9px;' name='selAttValue_sel' onchange='selectAttrMorValue(this)'></select></div>";
         str+="</td>";
         </c:forEach>
-        str += "<td name='del'><img src='"+path+"/img/del.png' onclick='removeCloums(this)'></td>";
+        str += "<td name='del' style='text-align: center;'><img src='"+path+"/img/del2.png' onclick='removeCloums(this)'></td>";
         str += "</tr>";
         $("#moreAttrs").append(str);
         </c:forEach>
         <c:forEach items="${clso}" var="lis" varStatus="status">
         $("#moreAttrs tr:eq(0)").find("th").each(function (i, d) {
             if ($(d).attr("name") == "del") {
-                $(d).before("<th width='100px'><span style='color: dodgerblue;' onclick='showMoreAttrsText(this)'>${lis.value}</span><input type='hidden' onkeyup='getJoinValue(this)'"+
-                "size='8' value='${lis.value}' name='attr_Name' onblur='addc(this)'>&nbsp;" +
-                "<div class='ui-select' style='background-image:url("+path+"/img/arrow.gif);height:26px;margin-top: -5px; width:15px;min-width:0px;border: 0px;'>"+attrValueName+"</div>" +
-                        "&nbsp;<img src='"+path+"/img/del.png' onclick='removeCols(this)'></td>");
+                $(d).before("<th width='100px' style='text-align: right;'><img src='"+path+"/img/del2.png' style='vertical-align: sub;' onclick='removeCols(this)'>&nbsp;<span style='color: dodgerblue;' onclick='showMoreAttrsText(this)'>${lis.value}</span><input type='hidden' onkeyup='getJoinValue(this)'"+
+                "size='8' value='${lis.value}' name='attr_Name' class='' onblur='addc(this)'>&nbsp;" +
+                "<div class='ui-select more-control' style='margin-bottom: 6px;background-image:url("+path+"/img/arrow.gif);height:26px; width:15px;min-width:0px;border: 0px;'>"+attrValueName+"</div>" +
+                        "</th>");
             }
         });
         </c:forEach>
@@ -399,6 +399,10 @@
     .form-control{
         height:26px;
     }
+    #moreAttrs .more-control{
+        border: 1px solid #cccccc;
+        border-radius: 4px;
+    }
     .selectboxit-container span, .selectboxit-container .selectboxit-options a{
         height: 26px;
         line-height: 26px;
@@ -467,6 +471,10 @@
             </select>
         </div>--%>
         <em style="color:#48a5f3"><input type="checkbox" name="OutOfStockControl" value="1" checked>是否开启无货在线</em>
+        <c:if test="${ta.apprange=='2'}">
+            <em style="color:#48a5f3"><input type="checkbox" name="setView" value="1" checked>是否在描述中统计评价信息</em>
+        </c:if>
+
     </li>
     <li>
         <dt>SKU</dt>
@@ -495,7 +503,7 @@
                        value="${item.subtitle}" size="100">
             </div>
         </li>
-        <li class="flip" style=" padding-left:260px;padding-top:9px;" onclick="showSubTitle(this)"><img src="img/new_list_ico.png"></li>
+        <li class="flip" style=" padding-left:260px;padding-top:9px;" onclick="showSubTitle(this)"><img id="showImgico" src=""></li>
     </div>
 
     <h1>分类</h1>
@@ -535,10 +543,10 @@
                 <table width="80%" id="moreAttrs" class="mytable-striped">
                     <tr style="height: 32px;" class="nodrop nodrag">
                         <th style="width: 15px">&nbsp;</td>
-                        <th style="width: 100px;">Sub SKU</td>
+                        <th style="width: 80px;">Sub SKU</td>
                         <th style="width: 100px;">数量</td>
                         <th style="width: 100px;">价格</td>
-                        <th name="del" width="50px;"><a href="javascript:void(0);" style="color: #110BF5;text-decoration: underline;" onclick="addMoreAttr(this);">添加属性</a></td>
+                        <th name="del" width="80px;" style='text-align: center;'><a href="javascript:void(0);" style="color: #110BF5;text-decoration: underline;" onclick="addMoreAttr(this);">添加属性</a></td>
                     </tr>
                 </table>
                 <div style="padding-left: 120px;height: 40px;padding-top: 16px;">

@@ -30,7 +30,6 @@ public class SerDevZeroTaskRun extends BaseScheduledClass implements Scheduledab
     static Logger logger = Logger.getLogger(SerDevZeroTaskRun.class);
     @Override
     public void run() {
-       // CommAutowiredClass commPars = (CommAutowiredClass) ApplicationContextUtil.getBean(CommAutowiredClass.class);//获取注入的参数
         UserInfoServiceMapper userInfoServiceMapper = (UserInfoServiceMapper) ApplicationContextUtil.getBean(UserInfoServiceMapper.class);
         Map map = new HashMap();
         map.put("udate",new Date());

@@ -146,7 +146,7 @@ public class UserManageController extends BaseAction {
             //modelMap.addAttribute("runName",d.getRunname());
             AjaxSupport.sendSuccessText("success","{\"runName\":\""+d.getRunname()+"\",\"sessionid\":\""+sessionid+"\"}");
         }else {
-            String errors=SamplePaseXml.getVFromXmlString(res,"Errors");
+            String errors=SamplePaseXml.getSpecifyElementTextAllInOne(res, "Errors", "LongMessage");
             logger.error("获取apisessionid失败!"+errors);
             AjaxSupport.sendFailText("fail","获取必要的参数失败！请稍后重试");
         }

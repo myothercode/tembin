@@ -73,4 +73,27 @@ public class SessionCacheSupport extends CacheBaseSupport {
         HttpSession session = RequestResponseContext.getRequest().getSession();
         return SessionCacheSupport.get((String) session.getAttribute(USERLOGINID));
     }
+
+
+    /**放入其它值*/
+    /**放入值*/
+    public static<T> void putOther(String key ,T t){
+        Cache cache =cacheManager.getCache(sessionName);
+        Element element=new Element("other_"+key,t);
+        cache.put(element);
+    }
+    /**取出值*/
+    public static <T> T getOther(String key){
+        Cache cache =cacheManager.getCache(sessionName);
+        Element element=cache.get("other_"+key);
+        if(ObjectUtils.isLogicalNull(element)){
+            return null;
+        }
+        return (T)element.getObjectValue();
+    }
+    /**移除值*/
+    public static void removeOther(String key){
+        Cache cache =cacheManager.getCache(sessionName);
+        cache.remove("other_"+key);
+    }
 }

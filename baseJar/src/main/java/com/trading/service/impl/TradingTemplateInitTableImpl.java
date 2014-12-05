@@ -3,6 +3,7 @@ package com.trading.service.impl;
 import com.base.database.customtrading.mapper.TemplateInitTableMapper;
 import com.base.database.trading.mapper.TradingTemplateInitTableMapper;
 import com.base.database.trading.model.TradingTemplateInitTable;
+import com.base.database.trading.model.TradingTemplateInitTableExample;
 import com.base.domains.querypojos.TemplateInitTableQuery;
 import com.base.mybatis.page.Page;
 import com.base.utils.common.ObjectUtils;
@@ -55,5 +56,12 @@ public class TradingTemplateInitTableImpl implements com.trading.service.ITradin
     @Override
     public TradingTemplateInitTable selectById(Long id){
         return this.tradingTemplateInitTableMapper.selectByPrimaryKey(id);
+    }
+
+    @Override
+    public List<TradingTemplateInitTable> selectByType(long typeid){
+        TradingTemplateInitTableExample tte = new TradingTemplateInitTableExample();
+        tte.createCriteria().andTLevelEqualTo("0").andTemplateTypeIdEqualTo(typeid);
+        return this.tradingTemplateInitTableMapper.selectByExampleWithBLOBs(tte);
     }
 }

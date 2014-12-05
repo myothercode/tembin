@@ -7,6 +7,7 @@ $(document).ready(function(){
     getCurAllRole();
     getCurAllEbay();
     selectActionByURL();
+    jQuery("#addSunUserForm").validationEngine();
 });
 /**根据本页地址决定是做什么操作*/
     function selectActionByURL(){
@@ -108,7 +109,7 @@ function submitf(){
     if(!checkCheckBox()){
         return;
     }
-    jQuery("#addSunUserForm").validationEngine();
+
 
     if(!jQuery("#addSunUserForm").validationEngine("validate"))
     {

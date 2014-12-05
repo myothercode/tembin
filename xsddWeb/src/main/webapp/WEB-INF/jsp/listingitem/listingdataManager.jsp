@@ -533,7 +533,7 @@
                     html = "<span style='word-break:break-all;' title='"+json.title+"'><a target='_blank' href='"+serviceItemUrl+json.itemId+"'>"+json.title+"</a></span>";
                 }
             }
-            html+="</br><span>物品号："+json.itemId+"</span>";
+            html+="</br><span style='color: #7B7B7B;'>物品号："+json.itemId+"</span>";
             var remark = "";
             if(json.remark!=null&&json.remark!=""){
                 if(json.remark.length>25){
@@ -548,8 +548,11 @@
             return html;
         }
         function getSku(json){
-            var html = "&nbsp;&nbsp;<a target='_blank' href='" + path + "/editItem.do?id=" + json.docId + "' title='" + json.docTitle + "'><span>" + json.docTitle.substr(0, 6) + "...</span></a>";
-            if(json.docId!=null&&json.docId!="") {
+            var html = "";
+            if(json.docId!=null&&json.docId!=""){
+                html+="&nbsp;&nbsp;<a target='_blank' href='" + path + "/editItem.do?id=" + json.docId + "' title='" + json.docTitle + "'><span>" + json.docTitle.substr(0, 6) + "...</span></a>";
+            }
+            if(json.sku!=null&&json.sku!="") {
                 html += "</br>&nbsp;&nbsp;<a target='_blank' href='"+serviceItemUrl+json.itemId+"'><span style='color:#8BB51B;'>"+json.sku+"</span></a>";
             }
             return html
@@ -578,7 +581,7 @@
                     {title:"图片",name:"Option1",width:"3%",align:"center",format:picUrl},
                     {title:"<span onclick='orderList(this)' style='cursor: pointer;' colu='title' val='0'>物品标题</span>",name:"title",width:"16%",align:"left",format:getTitle},
                     {title:"<span onclick='orderList(this)' style='cursor: pointer;' colu='sku' val='0'>&nbsp;&nbsp;范本</span>/SKU",name:"sku",width:"8%",align:"left",format:getSku},
-                    {title:"<span onclick='orderList(this)' style='cursor: pointer;' colu='ebay_account' val='0'>ebay账户</span>",name:"ebayAccount",width:"4%",align:"left"},
+                    {title:"<span onclick='orderList(this)' style='cursor: pointer;' colu='ebay_account' val='0'>ebay账户</span>",name:"ebayAccount",width:"4%",align:"left",format:getEbayAccount},
                     {title:"<span onclick='orderList(this)' style='cursor: pointer;' colu='site' val='0'>站点</span>",name:"site",width:"2%",align:"left",format:getSiteImg},
                     {title:"<span onclick='orderList(this)' style='cursor: pointer;' colu='listing_type' val='0'>刊登类型</span>",name:"listingType",width:"4%",align:"center",format:listingType},
                     {title:"价格",name:"price",width:"6%",align:"center",format:getPriceHtml},
@@ -593,18 +596,22 @@
             });
             refreshTable();
         }
+        function getEbayAccount(json){
+            return "<span style='color: #7B7B7B;'>"+json.ebayAccount+"</span>";
+        }
         function getendTime(json){
             html="";
-            html = json.endtime.replace(" ","</br>")
+            html = "<span style='color: #7B7B7B;'>"+json.endtime.replace(" ","</br>")+"</span>";
             return html;
         }
         function getDuration(json){
-            var html = "";
+            var html = "<span style='color: #7B7B7B;'>";
             if(json.listingduration.indexOf("Days_")!=-1){
-                html=json.listingduration.substr(json.listingduration.indexOf("_")+1,json.listingduration.length);
+                html+=json.listingduration.substr(json.listingduration.indexOf("_")+1,json.listingduration.length);
             }else{
-                html=json.listingduration;
+                html+=json.listingduration;
             }
+            html+="</span>"
             return html;
         }
         function showText(obj){
@@ -618,17 +625,17 @@
                 htm = "<div style='display:inline;' onclick='showText(this)'><span  style='color: dodgerblue;' >"+json.price.toFixed(2)+"</span>"+
                         "<input onkeypress='return inputNUMAndPoint(event,this,2)' type='hidden' name='price' onblur='updateItemPrice(this)'" +
                         " ids='"+json.id+"' itemId='"+json.itemId+"' " +
-                        "  class='newinputt'  oldval='"+json.price.toFixed(2)+"' value='"+json.price.toFixed(2)+"'/>&nbsp;" +json.currencyId+"<img src=''/></div></br>" ;
+                        "  class='newinputt'  oldval='"+json.price.toFixed(2)+"' value='"+json.price.toFixed(2)+"'/>&nbsp;<lable style='color: #7B7B7B;'>" +json.currencyId+"</lable><img src=''/></div></br>" ;
                 if(json.shippingPrice==null||parseInt(json.shippingPrice)==0){
 
                 }else{
-                    htm+="+$"+json.shippingPrice.toFixed(2)+"&nbsp;"+json.currencyId;
+                    htm+="<lable style='color: #7B7B7B;'>+$"+json.shippingPrice.toFixed(2)+"&nbsp;"+json.currencyId+"</lable>";
                 }
             }else{
                 if(json.shippingPrice==null||parseInt(json.shippingPrice)==0){
-                    htm = json.price.toFixed(2)+"&nbsp;"+json.currencyId;
+                    htm = "<lable style='color: #7B7B7B;'>"+json.price.toFixed(2)+"&nbsp;"+json.currencyId+"</lable>";
                 }else{
-                    htm = json.price.toFixed(2)+"&nbsp;"+json.currencyId+"</br>+$"+json.shippingPrice.toFixed(2)+"&nbsp;"+json.currencyId;
+                    htm = "<lable style='color: #7B7B7B;'>"+json.price.toFixed(2)+"&nbsp;"+json.currencyId+"</br>+$"+json.shippingPrice.toFixed(2)+"&nbsp;"+json.currencyId+"</lable>";
                 }
             }
 
@@ -697,7 +704,7 @@
             return htm;
         }
         function picUrl(json){
-            var htm="<a target='_blank' href='"+serviceItemUrl+json.itemId+"'><img width='50px' height='50px' src='"+itemListIconUrl_+json.itemId+"'/></a>";
+            var htm="<a target='_blank' href='"+serviceItemUrl+json.itemId+"'><img width='50px' height='50px' src='"+itemListIconUrl_+json.itemId+".jpg'/></a>";
             return htm;
         }
         function tjCount(json){
@@ -706,9 +713,9 @@
             if("updatelog"!=nameFolder&&json.listingType=="FixedPriceItem") {
                 htm="<div style='display:inline;' onclick='showText(this)'><span  style='color: dodgerblue;'>"+json.quantity+"</span>" +
                         "<input type='hidden'  onkeypress='return inputOnlyNUM(event,this)' onblur='updateItemPrice(this)' name='quantity' onFocus='showImg(this)' ids='"+json.id+"' itemId='"+json.itemId+"' size='1' " +
-                        "class='newinputt' oldval='"+json.quantity+"' value='"+json.quantity+"'/>/"+json.quantitysold+" <img src=''/></div>";
+                        "class='newinputt' oldval='"+json.quantity+"' value='"+json.quantity+"'/><lable  style='color: #7B7B7B;'>/"+json.quantitysold+"</lable> <img src=''/></div>";
             }else{
-                htm = json.quantity+"/"+json.quantitysold;
+                htm = "<lable  style='color: #7B7B7B;'>"+json.quantity+"/"+json.quantitysold+"</lable>";
             }
             return htm;
         }

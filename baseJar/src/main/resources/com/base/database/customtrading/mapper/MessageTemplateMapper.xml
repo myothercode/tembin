@@ -77,7 +77,7 @@
         <if test="orderby==null">
             order by template.id DESC
         </if>
-        <!--<if test="ebays!=null">
+    <!--    <if test="ebays!=null">
             and addmembermessage.sender in
             <foreach collection="ebays" item="ebay" index="index" open="(" separator="," close=")">
                 #{ebay.ebayName}

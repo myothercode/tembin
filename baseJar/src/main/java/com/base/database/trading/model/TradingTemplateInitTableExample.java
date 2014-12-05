@@ -166,6 +166,10 @@ public class TradingTemplateInitTableExample {
             return criteria.size() > 0;
         }
 
+        public List<Criterion> getAllCriteria() {
+            return criteria;
+        }
+
         public List<Criterion> getCriteria() {
             return criteria;
         }
@@ -650,6 +654,66 @@ public class TradingTemplateInitTableExample {
             addCriterion("template_view_url not between", value1, value2, "templateViewUrl");
             return (Criteria) this;
         }
+
+        public Criteria andTemplateTypeIdIsNull() {
+            addCriterion("template_type_id is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andTemplateTypeIdIsNotNull() {
+            addCriterion("template_type_id is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andTemplateTypeIdEqualTo(Long value) {
+            addCriterion("template_type_id =", value, "templateTypeId");
+            return (Criteria) this;
+        }
+
+        public Criteria andTemplateTypeIdNotEqualTo(Long value) {
+            addCriterion("template_type_id <>", value, "templateTypeId");
+            return (Criteria) this;
+        }
+
+        public Criteria andTemplateTypeIdGreaterThan(Long value) {
+            addCriterion("template_type_id >", value, "templateTypeId");
+            return (Criteria) this;
+        }
+
+        public Criteria andTemplateTypeIdGreaterThanOrEqualTo(Long value) {
+            addCriterion("template_type_id >=", value, "templateTypeId");
+            return (Criteria) this;
+        }
+
+        public Criteria andTemplateTypeIdLessThan(Long value) {
+            addCriterion("template_type_id <", value, "templateTypeId");
+            return (Criteria) this;
+        }
+
+        public Criteria andTemplateTypeIdLessThanOrEqualTo(Long value) {
+            addCriterion("template_type_id <=", value, "templateTypeId");
+            return (Criteria) this;
+        }
+
+        public Criteria andTemplateTypeIdIn(List<Long> values) {
+            addCriterion("template_type_id in", values, "templateTypeId");
+            return (Criteria) this;
+        }
+
+        public Criteria andTemplateTypeIdNotIn(List<Long> values) {
+            addCriterion("template_type_id not in", values, "templateTypeId");
+            return (Criteria) this;
+        }
+
+        public Criteria andTemplateTypeIdBetween(Long value1, Long value2) {
+            addCriterion("template_type_id between", value1, value2, "templateTypeId");
+            return (Criteria) this;
+        }
+
+        public Criteria andTemplateTypeIdNotBetween(Long value1, Long value2) {
+            addCriterion("template_type_id not between", value1, value2, "templateTypeId");
+            return (Criteria) this;
+        }
     }
 
     /**
@@ -686,6 +750,8 @@ public class TradingTemplateInitTableExample {
 
         private boolean listValue;
 
+        private String typeHandler;
+
         public String getCondition() {
             return condition;
         }
@@ -714,16 +780,22 @@ public class TradingTemplateInitTableExample {
             return listValue;
         }
 
+        public String getTypeHandler() {
+            return typeHandler;
+        }
+
         protected Criterion(String condition) {
             super();
             this.condition = condition;
+            this.typeHandler = null;
             this.noValue = true;
         }
 
-        protected Criterion(String condition, Object value) {
+        protected Criterion(String condition, Object value, String typeHandler) {
             super();
             this.condition = condition;
             this.value = value;
+            this.typeHandler = typeHandler;
             if (value instanceof List<?>) {
                 this.listValue = true;
             } else {
@@ -731,12 +803,21 @@ public class TradingTemplateInitTableExample {
             }
         }
 
-        protected Criterion(String condition, Object value, Object secondValue) {
+        protected Criterion(String condition, Object value) {
+            this(condition, value, null);
+        }
+
+        protected Criterion(String condition, Object value, Object secondValue, String typeHandler) {
             super();
             this.condition = condition;
             this.value = value;
             this.secondValue = secondValue;
+            this.typeHandler = typeHandler;
             this.betweenValue = true;
+        }
+
+        protected Criterion(String condition, Object value, Object secondValue) {
+            this(condition, value, secondValue, null);
         }
     }
 }

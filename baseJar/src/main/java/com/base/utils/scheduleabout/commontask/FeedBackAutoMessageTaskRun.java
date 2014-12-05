@@ -118,12 +118,12 @@ public class FeedBackAutoMessageTaskRun extends BaseScheduledClass implements Sc
         Map<String,String> messageMap=new HashMap<String, String>();
         ITradingAutoMessage iTradingAutoMessage = (ITradingAutoMessage) ApplicationContextUtil.getBean(ITradingAutoMessage.class);
         ITradingMessageTemplate iTradingMessageTemplate = (ITradingMessageTemplate) ApplicationContextUtil.getBean(ITradingMessageTemplate.class);
-        List<TradingAutoMessage> partners=iTradingAutoMessage.selectAutoMessageByType(type);
         IUsercontrollerEbayAccount iUsercontrollerEbayAccount = (IUsercontrollerEbayAccount) ApplicationContextUtil.getBean(IUsercontrollerEbayAccount.class);
         UsercontrollerEbayAccount ebay=iUsercontrollerEbayAccount.selectByEbayAccount(order.getSelleruserid());
+        List<TradingAutoMessage> partners=iTradingAutoMessage.selectAutoMessageByType(type,ebay.getUserId());
         if(partners!=null&&partners.size()>0){
             for(TradingAutoMessage partner:partners){
-                if(partner.getCreateUser()==ebay.getUserId()){
+                if(partner.getStartuse()==1){
                     List<TradingMessageTemplate> templates=iTradingMessageTemplate.selectMessageTemplatebyId(partner.getMessagetemplateId());
                     Date date=new Date();
                     if(templates!=null&&templates.size()>0){
@@ -232,6 +232,17 @@ public class FeedBackAutoMessageTaskRun extends BaseScheduledClass implements Sc
                                 }
                             }
                             String body=templates.get(0).getContent();
+                            body=body.replace("{Buyer_eBay_ID}",order.getBuyeruserid());
+                            body=body.replace("{Carrier}",order.getShippingcarrierused());
+                            body=body.replace("{eBay_Item#}",order.getItemid());
+                            body=body.replace("{eBay_Item_Title}",order.getTitle());
+                            body=body.replace("{Payment_Date}",order.getPaidtime()+"");
+                            body=body.replace("{Purchase_Quantity}",order.getQuantitypurchased());
+                            body=body.replace("{Received_Amount}",order.getAmountpaid());
+                            body=body.replace("{Seller_eBay_ID}",order.getSelleruserid());
+                            body=body.replace("{Seller_Email}",order.getSelleremail());
+                            body=body.replace("{Today}",new Date()+"");
+                            body=body.replace("{Track_Code}",order.getShipmenttrackingnumber());
                             String subject=templates.get(0).getName();
                             d.setApiCallName(APINameStatic.AddMemberMessageAAQToPartner);
                             Map map=new HashMap();

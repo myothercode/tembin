@@ -25,7 +25,7 @@
                 columnData:[
                     {title:"",name:"pictureUrl",width:"2%",align:"left",format:makeOption4},
                     {title:"主题",name:"read",width:"8%",align:"center",format:makeOption2,click:makeOption1},
-                    {title:"From > to",name:"sender",width:"8%",align:"center",format:makeOption3,click:makeOption1},
+                    {title:"From > to",name:"sender",width:"8%",align:"center",format:makeOption9,click:makeOption1},
                     {title:"SKU",name:"sku",width:"8%",align:"center",format:makeOption6,click:makeOption1},
                     {title:"修改时间",name:"receivedate",width:"8%",align:"center",format:makeOption7,click:makeOption1},
                     {title:"操作",name:"",width:"8%",align:"center",format:makeOption8}
@@ -109,11 +109,19 @@
         }
         function makeOption3(json){
             if(json.read=="true"){
-                return "<span style=\"color:#999999\">"+json.sender+">"+json.recipientuserid+"</span>";
+                return "<span style=\"color:#999999\">"+json.sender+">"+json.recipientid+"</span>";
             }else{
                 return "<span style=\"color: #0000ff;\">"+json.sender+">"+json.recipientid+"</span>";
             }
         }
+        function makeOption9(json){
+            if(json.read=="true"){
+                return "<span style=\"color:#999999\">"+json.sender+">"+json.recipientuserid+"</span>";
+            }else{
+                return "<span style=\"color: #0000ff;\">"+json.sender+">"+json.recipientuserid+"</span>";
+            }
+        }
+
         function makeOption6(json){
             if(json.read=="true"){
                 return "<span style=\"color:#999999\">"+json.sku+"</span>";
@@ -316,7 +324,7 @@
                 columnData:[
                     {title:"",name:"pictureUrl",width:"2%",align:"left",format:makeOption4},
                     {title:"主题",name:"read",width:"8%",align:"center",format:makeOption2,click:makeOption1},
-                    {title:"From > to",name:"sender",width:"8%",align:"center",format:makeOption3,click:makeOption1},
+                    {title:"From > to",name:"sender",width:"8%",align:"center",format:makeOption9,click:makeOption1},
                     {title:"SKU",name:"sku",width:"8%",align:"center",format:makeOption6,click:makeOption1},
                     {title:"修改时间",name:"receivedate",width:"8%",align:"center",format:makeOption7,click:makeOption1},
                     {title:"操作",name:"",width:"8%",align:"center",format:makeOption8}/*,
@@ -385,7 +393,7 @@
                     columnData:[
                         {title:"",name:"pictureUrl",width:"2%",align:"left",format:makeOption4},
                         {title:"主题",name:"read",width:"8%",align:"center",format:makeOption2,click:makeOption1},
-                        {title:"From > to",name:"sender",width:"8%",align:"center",format:makeOption3,click:makeOption1},
+                        {title:"From > to",name:"sender",width:"8%",align:"center",format:makeOption9,click:makeOption1},
                         {title:"SKU",name:"sku",width:"8%",align:"center",format:makeOption6,click:makeOption1},
                         {title:"修改时间",name:"receivedate",width:"8%",align:"center",format:makeOption7,click:makeOption1},
                         {title:"操作",name:"",width:"8%",align:"center",format:makeOption8}/*,

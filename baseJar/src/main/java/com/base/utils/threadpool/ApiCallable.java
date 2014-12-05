@@ -2,9 +2,12 @@ package com.base.utils.threadpool;
 
 import com.base.domains.userinfo.UsercontrollerDevAccountExtend;
 import com.base.utils.applicationcontext.ApplicationContextUtil;
+import com.base.utils.cache.SessionCacheSupport;
 import com.base.utils.cxfclient.CXFPostClient;
 import com.base.utils.httpclient.ApiHeader;
 import com.base.utils.httpclient.HttpClientUtil;
+import com.base.utils.xmlutils.CheckResXMLUtil;
+import org.apache.commons.lang.StringUtils;
 import org.apache.http.Header;
 import org.apache.http.client.HttpClient;
 import org.apache.http.message.BasicHeader;
@@ -27,6 +30,10 @@ public class ApiCallable implements Callable {
     @Override
     public Object call() throws Exception {
         if(xml==null || url==null || devAccountExtend ==null){return null;}
+        String isLimit=SessionCacheSupport.getOther("devLimit");
+        if(StringUtils.isNotEmpty(isLimit) && "limit".equalsIgnoreCase(isLimit)){
+            return "apiLimit";
+        }
 
         List<BasicHeader> headers=null;
         if(ApiHeader.DISPUTE_API_HEADER.equalsIgnoreCase(devAccountExtend.getHeaderType())){
@@ -38,6 +45,11 @@ public class ApiCallable implements Callable {
         CXFPostClient cxfPostClient = (CXFPostClient) ApplicationContextUtil.getBean(CXFPostClient.class);
         String res = cxfPostClient.sendPostAction(headers,url,xml);
 
+        boolean b= CheckResXMLUtil.checkApiLimit(res);
+        if(b){
+            SessionCacheSupport.putOther("devLimit","limit");//放入次数调用完毕的参数
+            return "apiLimit";
+        }
         return res;
     }
 
@@ -47,5 +59,7 @@ public class ApiCallable implements Callable {
         this.xml=xml;
 
     }
+
+
 
 }

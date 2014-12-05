@@ -1,6 +1,7 @@
 package com.base.utils.scheduleabout;
 
 import com.base.utils.applicationcontext.ApplicationContextUtil;
+import com.base.utils.cache.SessionCacheSupport;
 import com.base.utils.common.AppcenterClassFinder;
 import com.base.utils.common.CommAutowiredClass;
 import com.base.utils.common.DateUtils;
@@ -8,6 +9,8 @@ import com.base.utils.common.MyClassUtil;
 import com.base.utils.scheduleother.StaticParam;
 import com.base.utils.scheduleother.dorun.ScheduleOtherBase;
 import com.base.utils.threadpool.TaskPool;
+import org.apache.commons.codec.StringEncoder;
+import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.quartz.SchedulerException;
@@ -46,9 +49,9 @@ public class MainTask {
     public static final String LISTING_SCHEDULE="listSchedule";//定时刊登任务
     public static final String KEY_MOVE_LIST_TASK="keyMoveListTask";//一键搬家任务
     public static final String AUTO_ASSESS="autoAssess";//自动发送评价
-    public static final String LISTING_DATA="tradingListData";//在线数据同步每晚12点执行
-    public static final String LISTING_REPORT="listingReport";//在线数据同步每晚12点执行
-    public static final String LISTING_TIMER_TASK_DATA="tradingListtimertask";//在线数据同步每两分钟执行
+    public static final String LISTING_DATA="tradingListData";//在线数据同步每晚12点执行 同步在线商品
+    public static final String LISTING_REPORT="listingReport";//首页统计每晚12点执行，统计昨天，上周，上月数据
+    public static final String LISTING_TIMER_TASK_DATA="tradingListtimertask";//在线数据同步每两分钟执行 同步在线商品
     public static final String SET_DEV_ZERO="setDevZero";//将开发帐号的调用次数清零
     public static final String AUTO_MESSAGE="autoMessage";//定时发送自动消息
     public static final String FEEDBACK_AUTOM_ESSAGE="FeedBackAutoMessageTaskRun";//定时发送评价自动消息
@@ -70,10 +73,14 @@ public class MainTask {
     /**主入口,2分钟执行一次的任务*/
     @Scheduled(cron="0 0/2 *  * * ?")
     public void mainMethod(){
+        String isLimit= SessionCacheSupport.getOther("devLimit");
+        if(StringUtils.isNotEmpty(isLimit) && "limit".equalsIgnoreCase(isLimit)){
+            return;
+        }
 
         //定义一组该类型任务需要执行的任务类型
         List<String> doList=new ArrayList<String>();
-        //doList.add(SET_DEV_ZERO); //排除掉归零任务
+       // doList.add(SET_DEV_ZERO); //排除掉归零任务
         doList.add(LISTING_SCHEDULE);
         doList.add(KEY_MOVE_LIST_TASK);
         doList.add(LISTING_TIMER_TASK_DATA);
@@ -85,6 +92,8 @@ public class MainTask {
         doList.add(SYNCHRONIZE_GET_MESSAGES_TIMER);
         doList.add(SYNCHRONIZE_GET_USER_CASES_TIMER);
         doList.add(ITEM_INFORMATION_TYPE);
+
+
         if (isStartTimerTask==null) {
             isStartTimerTask = ApplicationContextUtil.getBean(CommAutowiredClass.class);
         }
@@ -95,6 +104,7 @@ public class MainTask {
             return;
         }else {
             List<String> taskListTe=Arrays.asList(StringUtils.split(isStartTimerTask.isStartTimerTask,","));
+            if(taskListTe==null || taskListTe.isEmpty()){return;}
             for (String t :taskListTe){
                 if(doList.contains(t)){//判断该任务师傅在可执行列表中
                     taskList.add(t);
@@ -161,16 +171,15 @@ public class MainTask {
     }
 
     /**每天凌晨执行一次的任务比如userInfoServiceMapper.initUseNum todo*/
-    @Scheduled(cron="0 1 16 * * ?")
+    @Scheduled(cron="0 45 3 * * ?")
     //@Scheduled(cron="0/10 * *  * * ?")
     private void doItEveryDay() throws Exception{
-
         if (isStartTimerTask==null) {
             isStartTimerTask = (CommAutowiredClass) ApplicationContextUtil.getBean(CommAutowiredClass.class);
         }
 
         List<String> doList=new ArrayList<String>();
-        doList.add(SET_DEV_ZERO); //api次数归零任务
+        //doList.add(SET_DEV_ZERO); //api次数归零任务
         doList.add(LISTING_DATA);
         doList.add(SYNCHRONIZE_GET_ORDERS);
         doList.add(SYNCHRONIZE_FEED_BACK);
@@ -207,16 +216,17 @@ public class MainTask {
 
 
     /**内部循环任务，基本不涉及到api的*/
-    @Scheduled(cron="0 0/1 *  * * ?")
+    @Scheduled(cron="0 0/5 *  * * ?")
     public void mainMethodOther() throws Exception {
 
         if (isStartTimerTask==null) {
             isStartTimerTask = ApplicationContextUtil.getBean(CommAutowiredClass.class);
         }
+        if(isStartTimerTask==null){return;}
         List<String> doList=new ArrayList<String>();
         doList.add(StaticParam.IMG_CHECK_SC);
         doList.add(StaticParam.IMG_CHECK_SC_TAKE);
-        doList.add(StaticParam.INVENTORY_CHECK_SC_TAKE);
+        doList.add(StaticParam.INVENTORY_CHECK_SC_TAKE);//获取库存任务
 
         List<String> taskList=new ArrayList<String>();
 

@@ -16,7 +16,7 @@ window.onload=function(){
     setTimeout(function(){
 
         getShowData();
-    },30000)
+    },5000)
 
 }
 /*$(document).ready(function(){
@@ -33,19 +33,21 @@ function getShowData(){
          var div_="<tr><td><div>PositiveSize:"+(rejson['PositiveSize'])+" | NeutralSize:"+(rejson['NeutralSize'])+" | NegativeSize:"+(rejson['NegativeSize'])+"</div></td></tr> ";
          $(tabledom).before(div_);
     });*/
+    //alert(ebayItemID);
     $.ajax({
         type: "get",
         async: false,
         url: urll,
-        data:{"itemid":"221270069427"},
+        data:{"itemid":ebayItemID},
         dataType: "jsonp",
         jsonp: "jsonpCallback",
         success: function(data){
             var tabledom=$('#EBdescription')[0].parentNode.parentNode;
-            var div_="<tr><td><div>PositiveSize:"+(data['Positive'])+" | Neutral:"+(data['NeutralSize'])+" | Negative:"+(data['NegativeSize'])+"</div></td></tr> ";
-            $(tabledom).before(div_);
+            /*var div_="<tr><td><div>PositiveSize:"+(data['Positive'])+" | Neutral:"+(data['NeutralSize'])+" | Negative:"+(data['NegativeSize'])+"</div></td></tr> ";*/
+            $(tabledom).before(data['htmlStr']);
         },
         error: function(textStatus){
+            alert(textStatus);
             alert("fail");
         }
     });

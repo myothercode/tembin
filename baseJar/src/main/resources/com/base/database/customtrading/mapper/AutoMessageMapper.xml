@@ -14,6 +14,7 @@
       <result column="email" jdbcType="INTEGER" property="email" />
       <result column="day" jdbcType="INTEGER" property="day" />
       <result column="hour" jdbcType="INTEGER" property="hour" />
+      <result column="startUse" jdbcType="INTEGER" property="startuse" />
       <result column="create_user" jdbcType="BIGINT" property="createUser" />
       <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
       <result column="uuid" jdbcType="VARCHAR" property="uuid" />
@@ -42,6 +43,15 @@
         </if>
         <if test="userId!=null">
             and autoMessage.create_user =#{userId}
+        </if>
+        <if test="status!=null">
+            <if test="status==1">
+                and autoMessage.startUse = 1
+            </if>
+            <if test="status==0">
+                and autoMessage.startUse = 0
+            </if>
+
         </if>
         group by autoMessage.id
     </select>

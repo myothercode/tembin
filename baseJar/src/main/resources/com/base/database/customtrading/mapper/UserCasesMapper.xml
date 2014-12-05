@@ -70,5 +70,8 @@
                 and (dis.disputeReason=#{type} or (ebp.appealDecision like "%didn't match the description%"))
             </if>
         </if>
+        <if test="userId!=null">
+            and UserCases.create_user = #{userId}
+        </if>
     </select>
 </mapper>

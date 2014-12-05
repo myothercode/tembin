@@ -73,7 +73,7 @@ function loadDataBuyer(){
         isrowClick: false,
         showIndex: false,
         afterLoadTable:function(){
-            if (url.indexOf("addItem.do") != -1) {
+            if (url.indexOf("addItem.do") != -1||url.indexOf("information/editItem.do") != -1) {
                 var buyerId = getLocalStorage("buyerId");
                 $("input[type='radio'][name='buyerId'][value='" + buyerId + "']").attr("checked", true);
             }else{
@@ -106,7 +106,7 @@ function loadDiscountPriceInfo(){
         isrowClick: false,
         showIndex: false,
         afterLoadTable:function(){
-            if (url.indexOf("addItem.do") != -1) {
+            if (url.indexOf("addItem.do") != -1||url.indexOf("information/editItem.do") != -1) {
                 var discountpriceinfoId1 = getLocalStorage("discountpriceinfoId");
                 $("input[type='radio'][name='discountpriceinfoId'][value='" + discountpriceinfoId1 + "']").attr("checked", true);
             }else{
@@ -137,7 +137,7 @@ var loadItemLocationV=false;
          isrowClick: false,
          showIndex: false,
          afterLoadTable:function(){
-             if (url.indexOf("addItem.do") != -1) {
+             if (url.indexOf("addItem.do") != -1||url.indexOf("information/editItem.do") != -1) {
                  var itemLocationId1 = getLocalStorage("itemLocationId");
                  $("input[type='radio'][name='itemLocationId'][value='" + itemLocationId1 + "']").attr("checked", true);
              }else{
@@ -167,7 +167,7 @@ function loadPayOption(){
         isrowClick: false,
         showIndex: false,
         afterLoadTable:function(){
-            if (url.indexOf("addItem.do") != -1) {
+            if (url.indexOf("addItem.do") != -1||url.indexOf("information/editItem.do") != -1) {
                 var payId1 = getLocalStorage("payId");
                 $("input[type='radio'][name='payId'][value='" + payId1 + "']").attr("checked", true);
             }else{
@@ -198,7 +198,7 @@ if(loadReturnpolicyV==true){return;}
         isrowClick: false,
         showIndex: false,
         afterLoadTable:function(){
-            if (url.indexOf("addItem.do") != -1) {
+            if (url.indexOf("addItem.do") != -1||url.indexOf("information/editItem.do") != -1) {
                 var returnpolicyId1 = getLocalStorage("returnpolicyId");
                 $("input[type='radio'][name='returnpolicyId'][value='" + returnpolicyId1 + "']").attr("checked", true);
             }else{
@@ -231,7 +231,7 @@ function loadShippingDeails(){
         isrowClick: false,
         showIndex: false,
         afterLoadTable:function(){
-            if (url.indexOf("addItem.do") != -1) {
+            if (url.indexOf("addItem.do") != -1||url.indexOf("information/editItem.do") != -1) {
                 var shippingDeailsId1 = getLocalStorage("shippingDeailsId");
                 $("input[type='radio'][name='shippingDeailsId'][value='" + shippingDeailsId1 + "']").attr("checked", true);
             }else{
@@ -259,7 +259,7 @@ function loaddescriptiondetails(){
         isrowClick: false,
         showIndex: false,
         afterLoadTable:function(){
-            if (url.indexOf("addItem.do") != -1) {
+            if (url.indexOf("addItem.do") != -1||url.indexOf("information/editItem.do") != -1) {
                 var sellerItemInfoId1 = getLocalStorage("sellerItemInfoId");
                 $("input[type='radio'][name='sellerItemInfoId'][value='" + sellerItemInfoId1 + "']").attr("checked", true);
             }else{
@@ -374,9 +374,9 @@ function getJoinValue(obj){
 function addValueTr(obj1, obj2) {
     var trStr = '';
     if(obj1!=""&&obj2!=""){
-        trStr = '<tr height="32px;"><td onclick="showText(this)" style="text-align: center"><span name="name" style="color: dodgerblue;">'+obj1+'</span><input type="hidden" onblur="bodyClick();"  onkeyup="getJoinValue(this)" name="name"  class="validate[required] form-control" value="' + obj1 + '"></td><td  onclick="showText(this)"  style="text-align: center"><span name="value"  style="color: dodgerblue;">'+obj2+'</span><input type="hidden"  onkeyup="getJoinValue(this)" name="value" class="validate[required] form-control"  onblur="bodyClick();" value="' + obj2 + '"></td><td style="text-align: center"><img src="'+path+'/img/del.png" onclick="removeROW(this)"></td></tr>';
+        trStr = '<tr height="32px;"><td onclick="showText(this)" style="text-align: center"><span name="name" style="color: dodgerblue;">'+obj1+'</span><input type="hidden" onblur="bodyClick();"  onkeyup="getJoinValue(this)" name="name"  class="validate[required] form-control" value="' + obj1 + '"></td><td  onclick="showText(this)"  style="text-align: center"><span name="value"  style="color: dodgerblue;">'+obj2+'</span><input type="hidden"  onkeyup="getJoinValue(this)" name="value" class="validate[required] form-control"  onblur="bodyClick();" value="' + obj2 + '"></td><td style="text-align: center"><img src="'+path+'/img/del1.png"  style="width: 8px;height: 8px;" onclick="removeROW(this)"></td></tr>';
     }else{
-        trStr = '<tr height="32px;"><td onclick="showText(this)" style="text-align: center"><span name="name" style="display: none;color: dodgerblue;">'+obj1+'</span><input  onblur="bodyClick();" onkeyup="getJoinValue(this)" type="text" name="name"  class="validate[required] form-control" value="' + obj1 + '"></td><td  onclick="showText(this)" style="text-align: center"><span name="value"  style="display: none;color: dodgerblue;">'+obj2+'</span><input type="text"  onkeyup="getJoinValue(this)" name="value"  onblur="bodyClick();" class="validate[required] form-control" value="' + obj2 + '"></td><td  style="text-align: center"><img src="'+path+'/img/del.png" onclick="removeROW(this)"></td></tr>';
+        trStr = '<tr height="32px;"><td onclick="showText(this)" style="text-align: center"><span name="name" style="display: none;color: dodgerblue;">'+obj1+'</span><input  onblur="bodyClick();" onkeyup="getJoinValue(this)" type="text" name="name"  class="validate[required] form-control" value="' + obj1 + '"></td><td  onclick="showText(this)" style="text-align: center"><span name="value"  style="display: none;color: dodgerblue;">'+obj2+'</span><input type="text"  onkeyup="getJoinValue(this)" name="value"  onblur="bodyClick();" class="validate[required] form-control" value="' + obj2 + '"></td><td  style="text-align: center"><img src="'+path+'/img/del1.png" style="width: 8px;height: 8px;" onclick="removeROW(this)"></td></tr>';
     }
     return trStr;
 }
@@ -490,12 +490,12 @@ function addTr(len) {
     str += "<td><span style='display:none;color: dodgerblue;' onclick='showMoreAttrsText(this)'></span><input type='text' name='Quantity'  onblur='clearThisText(this);' onkeyup='getJoinValue(this)' size='8' class='validate[required,custom[integer]] form-control'></td>";
     str += "<td><span style='display:none;color: dodgerblue;' onclick='showMoreAttrsText(this)'></span><input type='text' name='StartPrice.value'  onblur='clearThisText(this);' onkeyup='getJoinValue(this)'  size='8' class='validate[required,custom[number]] form-control'>&nbsp;<abbr name='curName'>"+curName+"</abbr></td>";
     for (var i = 0; i < len; i++) {
-        str += "<td><span style='display:none;color: dodgerblue;' onclick='showMoreAttrsText(this)'></span>" +
-            "<input type='text' name='attr_Value' onkeyup='getJoinValue(this)' class='validate[required] form-control' onblur='addb(this)' size='10' >" +
-            "&nbsp;<div class='ui-select' style='background-image:url("+path+"/img/arrow.gif);height:26px;margin-top: -5px; width:15px;min-width:0px;border: 0px;'><select size='1' style='width: 18px;position: relative;' name='selAttValue_sel' onchange='selectAttrMorValue(this)'></select></div>"+
+        str += "<td  style='text-align: right;'><span style='display:none;color: dodgerblue;' onclick='showMoreAttrsText(this)'></span>" +
+            "<input type='text' name='attr_Value' onkeyup='getJoinValue(this)' class='validate[required] more-control' onblur='addb(this)' size='10' >" +
+            "&nbsp;<div class='ui-select' style='margin-bottom: 5px;background-image:url("+path+"/img/arrow.gif);height:26px; width:15px;min-width:0px;border: 0px;'><select size='1' style='width: 18px;position: relative;' name='selAttValue_sel' onchange='selectAttrMorValue(this)'></select></div>"+
             "</td>";
     }
-    str += "<td name='del'><img src='"+path+"/img/del.png' onclick='removeCloums(this)'></td>";
+    str += "<td name='del'  style='text-align: center;'><img src='"+path+"/img/del2.png' onclick='removeCloums(this)'></td>";
     str += "</tr>";
     return str;
 }
@@ -555,7 +555,9 @@ function returnSelectStr(jdata){
         }
     attrValueName+="</select>";
 }
+var _invokeGetData_type=null;
 function getRequestJson(siteID,id){
+    _invokeGetData_type="string";
     var url=path+"/ajax/getCategorySpecifics.do";
     var data={"parentCategoryID":id,"siteID":siteID};
     $().invoke(
@@ -563,6 +565,7 @@ function getRequestJson(siteID,id){
         data,
         [
             function(m,r){
+                _invokeGetData_type=null;
                 if(r==null || r==''){return;}
                 localStorage.setItem("category_att_ID"+siteID+""+data.parentCategoryID,r);
                 var json= eval("(" + localStorage.getItem("category_att_ID"+siteID+""+data.parentCategoryID) + ")");
@@ -570,7 +573,7 @@ function getRequestJson(siteID,id){
                 returnSelectStr(jdata);
                 //alert(localStorage.getItem("aaa").length);
             },
-            function(m,r){alert(r)}
+            function(m,r){ _invokeGetData_type=null;alert(r)}
         ]
     );
 }
@@ -600,15 +603,15 @@ function addMoreAttr(obj) {
         $(d).find("th,td").each(function (ii, dd) {
             if ($(dd).attr("name") == "del") {
                 if (i == 0) {
-                    $(dd).before("<th width='100px'><span style='display:none;color: dodgerblue;' onclick='showMoreAttrsText(this)'></span>" +
-                        "<input type='text' size='8' onkeyup='getJoinValue(this)' class='validate[required] form-control'" +
-                        " name='attr_Name' onblur='addc(this)'>&nbsp;<div class='ui-select' style='background-image:url("+path+"/img/arrow.gif);height:26px;margin-top: -5px; width:15px;min-width:0px;border: 0px;'>"
-                        +attrValueName+"</div><img src='"+path+"/img/del.png' onclick='removeCols(this)'></td>");
+                    $(dd).before("<th width='100px' style='text-align: right;'><img style='vertical-align: sub;' src='"+path+"/img/del2.png' onclick='removeCols(this)'>&nbsp;<span style='display:none;color: dodgerblue;' onclick='showMoreAttrsText(this)'></span>" +
+                        "<input type='text' size='8' onkeyup='getJoinValue(this)' class='validate[required]'" +
+                        " name='attr_Name' onblur='addc(this)'>&nbsp;<div class='ui-select more-control' style='background-image:url("+path+"/img/arrow.gif);height:26px;margin-top: -5px; width:15px;min-width:0px;border: 0px;'>"
+                        +attrValueName+"</div></th>");
                 } else {
-                    $(dd).before("<td width='100px'><span style='display:none;color: dodgerblue;' onclick='showMoreAttrsText(this)'></span>" +
+                    $(dd).before("<td width='100px' style='text-align: right;'><span style='display:none;color: dodgerblue;' onclick='showMoreAttrsText(this)'></span>" +
                         "<input type='text' size='10' name='attr_Value' onblur='addb(this)' " +
-                        " onkeyup='getJoinValue(this)' class='validate[required] form-control'>" +
-                        "&nbsp;<div class='ui-select' style='background-image:url("+path+"/img/arrow.gif);height:26px;margin-top: -5px; width:15px;min-width:0px;border: 0px;'><select size='1' style='width: 18px;position: relative;' name='selAttValue_sel' onchange='selectAttrMorValue(this)'></select></div>"+
+                        " onkeyup='getJoinValue(this)' class='validate[required] more-control'>" +
+                        "&nbsp;<div class='ui-select' style='margin-bottom: 5px;background-image:url("+path+"/img/arrow.gif);height:26px;margin-top: -5px; width:15px;min-width:0px;border: 0px;'><select size='1' style='width: 18px;position: relative;' name='selAttValue_sel' onchange='selectAttrMorValue(this)'></select></div>"+
                         "</td>");
                 }
             }
@@ -800,7 +803,7 @@ function addPictrueUrl(urls) {
         var urlss= '';
         var isabc = false;
         for (var i = 0; i < urls.length; i++) {
-            var imgsrc = urls[i].src.replace("@", ":");
+            var imgsrc = urls[i].src.replace("http@", "http:");
             var idDuff=generateMixedRandom(5);
             str += '<li><div style="position:relative"><input type="hidden" name="pic_mackid"/> <input type="hidden" name="PictureDetails'+sss.substr(sss.indexOf("_"),sss.length)+'.PictureURL" value="' + urls[i].src + '">' +
                 '<img id=imgtemp'+idDuff+' src=' + imgsrc + ' height=\"80px\" width=\"78px\" />' +
@@ -843,8 +846,8 @@ function addPictrueUrl(urls) {
             $('#picturemore_' + sss).append("<input type='hidden' name='VariationSpecificValue_" + sss + "' value='" + sss + "'>");
         }
         for (var i = 0; i < urls.length; i++) {
-            str+="<li><div style='position:relative'><input type='hidden' name='pic_mackid_more'/><input type='hidden' name='" + sss + "' value='" + urls[i].src + "'><img src='" + urls[i].src.replace("@", ":") + "' height='80' width='78' /><div style='text-align: right;background-color: dimgrey;'><img src='"+path+"/img/newpic_ico.png' onclick='removeThis(this)'></div></div></li>";
-            urlss+=urls[i].src.replace("@", ":")+",";
+            str+="<li><div style='position:relative'><input type='hidden' name='pic_mackid_more'/><input type='hidden' name='" + sss + "' value='" + urls[i].src + "'><img src='" + urls[i].src.replace("http@", "http:") + "' height='80' width='78' /><div style='text-align: right;background-color: dimgrey;'><img src='"+path+"/img/newpic_ico.png' onclick='removeThis(this)'></div></div></li>";
+            urlss+=urls[i].src.replace("http@", "http:")+",";
         }
         var addhtmlstr = $('#picturemore_' + sss).append(str);
         str="";

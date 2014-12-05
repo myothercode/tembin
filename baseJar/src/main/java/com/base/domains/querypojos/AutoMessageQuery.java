@@ -13,6 +13,15 @@ public class AutoMessageQuery extends TradingAutoMessage{
     private String internationalService;
     private String exceptCountry;
     private String allOrder;
+    private Integer startuse;
+
+    public Integer getStartuse() {
+        return startuse;
+    }
+
+    public void setStartuse(Integer startuse) {
+        this.startuse = startuse;
+    }
 
     public String getItem() {
         return item;

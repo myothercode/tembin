@@ -26,6 +26,20 @@
 <!-- this page specific styles -->
 <link rel="stylesheet" href=
 <c:url value="/css/compiled/gallery.css"/> type="text/css" media="screen"/>
+<!-- bootstrap -->
+<link href=
+      <c:url value="/js/selectBoxIt/stylesheets/jquery.selectBoxIt.css"/> rel="stylesheet">
+
+<%--<link rel="stylesheet" href="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-combined.min.css" />--%>
+<%--<link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.2/themes/base/jquery-ui.css" />--%>
+<%--<link type="text/css" rel="stylesheet" href="http://code.jquery.com/mobile/1.2.0/jquery.mobile-1.2.0.min.css" />--%>
+<%--<link rel="stylesheet" href="http://gregfranko.com/jquery.selectBoxIt.js/css/jquery.selectBoxIt.css" />--%>
+<script type="text/javascript" src=
+        <c:url value="/js/selectBoxIt/javascripts/jquery-ui.min.js"/>></script>
+<%--<script src="http://gregfranko.com/jquery.selectBoxIt.js/js/jquery.selectBoxIt.min.js"></script>--%>
+<script type="text/javascript" src=
+        <c:url value="/js/selectBoxIt/javascripts/jquery.selectBoxIt.min.js"/>></script>
+
 <script>
 var myDescription=null;
 var isload = false;
@@ -40,6 +54,9 @@ function next(obj){
     if(isload){
         nextShows(obj);
         $("#bodyid").unblock();
+        $("select").selectBoxIt({
+
+        });
     }/*else{
         setTimeout(function(){
             if(isload){
@@ -331,6 +348,8 @@ function loadListingItem(itemId,ebayAccount,siteid){
                 if(isclic){//如果数据加载完成前，就点击了下一步，那么关闭遮罩层，并执行下一步方法
                     nextShows($("button[type='button'][id='nextShow']"));
                     $("#bodyid").unblock();
+                    $("select").selectBoxIt({
+                    });
                 }
             },
                 function (m, r) {
@@ -545,6 +564,20 @@ setTimeout(function(){
     #showId td{
         padding: 5px;
     }
+    .form-control{
+        height:26px;
+    }
+    .selectboxit-container span, .selectboxit-container .selectboxit-options a{
+        height: 26px;
+        line-height: 26px;
+    }
+    .selectboxit-options li {
+        line-height: 26px;
+        height: 26px;
+    }
+    .new_button{
+        margin-top: 0px;
+    }
 </style>
 </head>
 <body id="bodyid">
@@ -553,7 +586,7 @@ setTimeout(function(){
 </div>
 <form id="form">
 <input type="hidden" name="ItemID" value="${itemidstr}">
-<input type="hidden" name="listingType" value="${item.listingType}">
+<input type="hidden" name="listingType" value="${tldata.listingType}">
 <input type="hidden" name="site" value="${siteid}">
 <div id="selectId" style="padding-left: 100px;padding-top: 20px;padding-bottom: 20px;">
     <table width="70%">
@@ -645,13 +678,11 @@ setTimeout(function(){
             <tr>
                 <td style="width: 120px;text-align: right">paypal账号:</td>
                 <td>
-                    <div class="ui-select">
                     <select name="PayPalEmailAddress" style="width: 300px;">
                         <c:forEach items="${paypalList}" var="pay">
                             <option value="${pay.email}">${pay.paypalAccount}</option>
                         </c:forEach>
                     </select>
-                    </div>
                 </td>
             </tr>
             <%--<tr>
@@ -670,49 +701,41 @@ setTimeout(function(){
             <tr>
                 <td style="text-align: right;width: 120px;">退货政策:</td>
                 <td>
-                    <div class="ui-select">
                     <select name="ReturnPolicy.ReturnsAcceptedOption" style="width: 300px;">
                         <c:forEach items="${acceptList}" var="accept">
                             <option value="${accept.value}">${accept.name}</option>
                         </c:forEach>
                     </select>
-                    </div>
                 </td>
             </tr>
             <tr>
                 <td style="text-align: right">退货天数:</td>
                 <td>
-                    <div class="ui-select">
                     <select name="ReturnPolicy.ReturnsWithinOption" style="width: 300px;">
                         <c:forEach items="${withinList}" var="within">
                             <option value="${within.value}">${within.name}</option>
                         </c:forEach>
                     </select>
-                    </div>
                 </td>
             </tr>
             <tr>
                 <td style="text-align: right">退款方式:</td>
                 <td>
-                    <div class="ui-select">
                     <select name="ReturnPolicy.RefundOption" style="width: 300px;">
                         <c:forEach items="${refundList}" var="pay">
                             <option value="${pay.value}">${pay.name}</option>
                         </c:forEach>
                     </select>
-                    </div>
                 </td>
             </tr>
             <tr>
                 <td style="text-align: right">退货运费由谁承担:</td>
                 <td>
-                    <div class="ui-select">
                     <select name="ReturnPolicy.ShippingCostPaidByOption" style="width: 300px;">
                         <c:forEach items="${costPaidList}" var="pay">
                             <option value="${pay.value}">${pay.name}</option>
                         </c:forEach>
                     </select>
-                    </div>
                 </td>
             </tr>
             <tr>
@@ -749,34 +772,34 @@ setTimeout(function(){
             <div><input type="checkbox" name="BuyerRequirementDetails.LinkedPayPalAccount" value="true"/>没有 PayPal 账户</div>
             <div><input type="checkbox" name="BuyerRequirementDetails.ShipToRegistrationCountry" value="true"/>主要运送地址在我的运送范围之外</div>
             <div><input type="checkbox" name="MaximumUnpaidItemStrikesInfo" onclick="checkData(this)"/>
-                曾收到<div class="ui-select" style="width:4px;"><select  style="width:100px;" name="BuyerRequirementDetails.MaximumUnpaidItemStrikesInfo.Count" disabled="disabled">
+                曾收到<select  style="width:100px;" name="BuyerRequirementDetails.MaximumUnpaidItemStrikesInfo.Count" disabled="disabled">
                     <option value="2">2</option>
                     <option value="3">3</option>
                     <option value="4">4</option>
                     <option value="5">5</option>
-                </select></div>个弃标个案，在过去<div class="ui-select" style="width:4px;"><select  style="width:100px;" name="BuyerRequirementDetails.MaximumUnpaidItemStrikesInfo.Period" disabled="disabled">
+                </select>个弃标个案，在过去<select  style="width:100px;" name="BuyerRequirementDetails.MaximumUnpaidItemStrikesInfo.Period" disabled="disabled">
                     <option value="Days_30">30</option>
                     <option value="Days_180">180</option>
                     <option value="Days_360">360</option>
-                </select></div>天
+                </select>天
             </div>
             <div><input type="checkbox" name="MaximumBuyerPolicyViolations"  onclick="checkData(this)"/>
-                曾收到<div class="ui-select" style="width:4px;"><select  style="width:100px;" name="BuyerRequirementDetails.MaximumBuyerPolicyViolations.Count" disabled="disabled">
+                曾收到<select  style="width:100px;" name="BuyerRequirementDetails.MaximumBuyerPolicyViolations.Count" disabled="disabled">
                     <option value="4">4</option>
                     <option value="5">5</option>
                     <option value="6">6</option>
                     <option value="7">7</option>
-                </select></div>个违反政策检举，在过去<div class="ui-select" style="width:4px;"><select  style="width:100px;" name="BuyerRequirementDetails.MaximumBuyerPolicyViolations.Period" disabled="disabled">
+                </select>个违反政策检举，在过去<select  style="width:100px;" name="BuyerRequirementDetails.MaximumBuyerPolicyViolations.Period" disabled="disabled">
                     <option value="Days_30">30</option>
                     <option value="Days_180">180</option>
-                </select></div>天
+                </select>天
             </div>
-            <div><input type="checkbox" name="MinimumFeedbackScore_flag" onclick="checkData(this)"/>信用指标等于或低于：<div class="ui-select" style="width:4px;"><select  style="width:100px;" name="BuyerRequirementDetails.MinimumFeedbackScore" disabled="disabled">
+            <div><input type="checkbox" name="MinimumFeedbackScore_flag" onclick="checkData(this)"/>信用指标等于或低于：<select  style="width:100px;" name="BuyerRequirementDetails.MinimumFeedbackScore" disabled="disabled">
                 <option value="-1">-1</option>
                 <option value="-2">-2</option>
                 <option value="-3">-3</option>
-            </select></div></div>
-            <div><input type="checkbox" name="MaximumItemCount_flag" onclick="checkData(this)"/>在过去10天内曾出价或购买我的物品，已达到我所设定的限制 <div class="ui-select" style="width:4px;"><select name="BuyerRequirementDetails.MaximumItemRequirements.MaximumItemCount" style="width:100px;" disabled="disabled">
+            </select></div>
+            <div><input type="checkbox" name="MaximumItemCount_flag" onclick="checkData(this)"/>在过去10天内曾出价或购买我的物品，已达到我所设定的限制 <select name="BuyerRequirementDetails.MaximumItemRequirements.MaximumItemCount" style="width:100px;" disabled="disabled">
                 <option value="1">1</option>
                 <option value="2">2</option>
                 <option value="3">3</option>
@@ -791,15 +814,15 @@ setTimeout(function(){
                 <option value="50">50</option>
                 <option value="75">75</option>
                 <option value="100">100</option>
-            </select></div></div>
-            <div style="margin-left: 15px;"><input type="checkbox" name="FeedbackScore_falg" onclick="checkData(this)"/>这项限制只适用于买家信用指数等于或低于 <div class="ui-select" style="width:4px;"><select name="BuyerRequirementDetails.MaximumItemRequirements.MinimumFeedbackScore" style="width:100px;" disabled="disabled">
+            </select></div>
+            <div style="margin-left: 15px;"><input type="checkbox" name="FeedbackScore_falg" onclick="checkData(this)"/>这项限制只适用于买家信用指数等于或低于 <select name="BuyerRequirementDetails.MaximumItemRequirements.MinimumFeedbackScore" style="width:100px;" disabled="disabled">
                 <option value="5">5</option>
                 <option value="4">4</option>
                 <option value="3">3</option>
                 <option value="2">2</option>
                 <option value="1">1</option>
                 <option value="0">0</option>
-            </select></div></div>
+            </select></div>
         </div>
     </td>
 </tr>
@@ -825,8 +848,6 @@ setTimeout(function(){
 <tr id="ConditionID" style="display: none;border-bottom: 1px solid #e5e5e5;">
     <td style="width: 20px;text-align: right;padding-right: 20px;">物品状况</td>
     <td>
-
-        <div class="ui-select">
         <select name="ConditionID" style="width:300px;">
             <option selected="selected" value="1000">New</option>
             <option value="1500">New other (see details)</option>
@@ -835,7 +856,6 @@ setTimeout(function(){
             <option value="3000">Used</option>
             <option value="7000">For parts or not working</option>
         </select>
-        </div>
     </td>
 </tr>
 <tr id="Location" style="display: none;border-bottom: 1px solid #e5e5e5;">
@@ -849,13 +869,11 @@ setTimeout(function(){
             <tr>
                 <td style="text-align: right">国家:</td>
                 <td>
-                    <div class="ui-select">
                     <select name="Country" style="width:300px;">
                         <c:forEach items="${countryList}" var="countryList">
                             <option value="${countryList.value}">${countryList.name}</option>
                         </c:forEach>
                     </select>
-                    </div>
                 </td>
             </tr>
             <tr>
@@ -868,7 +886,6 @@ setTimeout(function(){
 <tr id="DispatchTimeMax" style="display: none;border-bottom: 1px solid #e5e5e5;">
     <td style="width: 20px;text-align: right;padding-right: 20px;">处理时间</td>
     <td>
-        <div class="ui-select">
         <select name="DispatchTimeMax" style="width:300px;">
             <option value="0">0</option>
             <option value="1">1</option>
@@ -881,7 +898,6 @@ setTimeout(function(){
             <option value="20">20</option>
             <option value="30">30</option>
         </select>
-        </div>
         工作日<input type="checkbox" name="GetItFast" value="1">快速寄货
     </td>
 </tr>
@@ -892,7 +908,6 @@ setTimeout(function(){
 <tr id="ListingDuration" style="display: none;border-bottom: 1px solid #e5e5e5;">
     <td style="width: 20px;text-align: right;padding-right: 20px;">刊登天数</td>
     <td>
-        <div class="ui-select">
         <select name="ListingDuration" style="width:300px;">
             <option value="GTC">GTC</option>
             <option value="Days_1">1</option>
@@ -901,7 +916,6 @@ setTimeout(function(){
             <option value="Days_7">7</option>
             <option value="Days_10">10</option>
         </select>
-        </div>
     </td>
 </tr>
 <tr id="ShippingDetails" style="display: none;border-bottom: 1px solid #e5e5e5;">
@@ -941,14 +955,11 @@ setTimeout(function(){
             <tr>
                 <td align="right">不运送国家</td>
                 <td>
-                    <div class="ui-select">
                     <select name="selecttype" onchange="selectLocation(this)" style="width:300px;">
                         <option selected="selected" value="0">运输至所有国家</option>
                         <option value="1">使用 eBay 站点设置</option>
                         <option value="2">选择不运送地区</option>
                     </select>
-                        </div>
-
                 </td>
             </tr>
             <tr>
@@ -1060,11 +1071,11 @@ setTimeout(function(){
         tables +=' <tr> ';
         tables +=' <td align="right"  width="120">运输方式</td> ';
         tables +=' <td> ';
-        tables +=' <div class="ui-select" style="width: 560px;"><select style="width: 560px;" name="ShippingService" shortName="a1"> ';
+        tables +=' <select style="width: 560px;" name="ShippingService" shortName="a1"> ';
         if(shippingService!=""){
             tables +=shippingService;
         }
-        tables +=' </select> </div>';
+        tables +=' </select>';
         tables +=' </td> ';
         tables +=' </tr> ';
         tables +=' <tr> ';
@@ -1111,7 +1122,7 @@ setTimeout(function(){
         intertable +=' <tr> ';
         intertable +=' <td align="right" style="width: 120px;">运输方式</td> ';
         intertable +=' <td> ';
-        intertable +=' <div class="ui-select" style="width: 560px;"><select name="ShippingService" style="width: 560px;"> ';
+        intertable +=' <select name="ShippingService" style="width: 560px;"> ';
         intertable +=' <optgroup label="Expedited services">';
         <c:forEach var="inter1" items="${inter1}">
         if(obj1=='${inter1.value}'){

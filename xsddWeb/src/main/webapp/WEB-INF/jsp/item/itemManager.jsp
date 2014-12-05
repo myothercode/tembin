@@ -331,7 +331,7 @@
         function itemstatus(json){
             var htm = "";
             if(json.listingWay=="1"&&(json.itemId==null||json.itemId=="")){
-                htm="<img title='定时刊登' name='statusimg' src='"+path+"/img/timer.ico'>";
+                htm="<img title='定时刊登' name='statusimg' src='"+path+"/img/timer.png'>";
             }else{
                 if(json.isFlag=="Success"){
                     htm="<img name='statusimg' src='"+path+"/img/new_yes.png'>";
@@ -392,9 +392,11 @@
             hs+="<li style='height:25px' onclick=copyItem('"+json.id+"') value='"+json.id+"' doaction=\"look\" >复制</li>";
             hs+="<li style='height:25px' onclick=renameItem('"+json.id+"') value='"+json.id+"' doaction=\"look\" >重命名</li>";
             hs+="<li style='height:25px' onclick=toFolder('"+json.id+"') value='"+json.id+"' doaction=\"look\" >移动</li>";
-            hs+="<li style='height:25px' onclick=selectTimer('"+json.id+"') value='"+json.id+"' doaction=\"look\" >定时刊登</li>";
+            if(json.isFlag!="Success"&&json.listingWay=="0"){
+                hs+="<li style='height:25px' onclick=selectTimer('"+json.id+"') value='"+json.id+"' doaction=\"look\" >定时刊登</li>";
+            }
             hs+="<li style='height:25px' onclick=listingItem('"+json.id+"','"+json.isFlag+"') value='"+json.id+"' doaction=\"look\" >立即刊登</li>";
-            if($("#selectMoreType").find("option[value='delTimer']").length>0){
+            if(json.listingWay=="1"){
                 hs+="<li style='height:25px' onclick=delTradingTimer('"+json.id+"') value='"+json.id+"' doaction=\"look\" >取消定时</li>";
             }
             hs+="<li style='height:25px' onclick=addRemark('"+json.id+"','"+json.remark+"') value='"+json.id+"' doaction=\"look\" >备注</li>";
@@ -659,7 +661,7 @@
         }else if($(obj).val()=="copy"){//复制
             copyItem(idStr);
         }else if($(obj).val()=="rename"){//重命名
-            renameItem(idStr)
+            renameItem(idStr);
         }else if($(obj).val()=="editMoreItem"){
             editMoreItem(idStr);
         }else if($(obj).val()=="delTimer"){
@@ -759,7 +761,11 @@
     }
     //重命名
     function renameItem(idStr){
-        var htmlstr = "<div>请输入名称：<input type='text' name='fileName' id='fileName' style='border: 1px solid #cccccc;border-radius: 4px;'/></div>";
+        var name = "";
+        if(idStr.indexOf(",")==-1){
+            name = $("input[type='checkbox'][name='modelid'][val='" + idStr + "']").parent().parent().find("td").eq(2).find("span").eq(0).text();
+        }
+        var htmlstr = "<div>请输入名称：<input type='text' name='fileName' size='40' id='fileName' value='"+name+"' style='border: 1px solid #cccccc;border-radius: 4px;'/></div>";
         openMyDialog({title: '请输入名称',
             content: htmlstr,
             icon: 'tips.gif',
@@ -849,7 +855,6 @@
             var url = path+"/ajax/timerListingItem.do?id="+$("#idStr").val()+"&timerStr="+$("#timerListing").val();
             $().invoke(url, {},
                     [function (m, r) {
-                        alert(r);
                         var id=null;
                         if($("#idStr").val().indexOf(",")==-1){
                             id = $("#idStr").val().split(",");
@@ -857,9 +862,20 @@
                             id = $("#idStr").val().substr(0,$("#idStr").val().length-1).split(",");
                         }
                         if(a=="timeSave"){
+                            var str = "";
                             for(var i=0;i<id.length;i++){
-                                $("input[type='checkbox'][name='modelid'][val='"+id[i]+"']").parent().parent().prop("id",id[i]);
-                                $("#"+id[i]).find("img[name='statusimg']").attr("src",path+"/img/timer.ico");
+                                for(var j=0;j< r.length;j++){
+                                    if(id[i]==r[j].id){
+                                        $("input[type='checkbox'][name='modelid'][val='"+id[i]+"']").parent().parent().prop("id",id[i]);
+                                        $("#"+id[i]).find("img[name='statusimg']").attr("src",path+"/img/timer.png");
+                                        $("input[type='checkbox'][name='modelid'][val='" + id[i] + "']").parent().parent().find("td").last().find("ul").append('<li><a href="javascript:void(0)" onclick="delTradingTimer('+id[i]+')" value="'+id[i]+'" doaction="look">取消定时</a></li>');
+                                        $("input[type='checkbox'][name='modelid'][val='" + id[i] + "']").parent().parent().find("td").last().find("ul").find("li").eq(4).remove();
+                                        str+=r[j].sku+"定时设置成功！</br>"
+                                    }
+                                }
+                            }
+                            if(str!=""){
+                                alert(str);
                             }
                         }
                     },
@@ -957,8 +973,6 @@
             </iframe>--%>
                 <div style="width: 100%;float: left;height: 5px"></div>
                 <div id="itemTable"></div>
-
-
         </div>
 
     </div>

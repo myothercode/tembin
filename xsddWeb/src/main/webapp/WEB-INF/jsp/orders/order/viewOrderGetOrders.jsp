@@ -162,7 +162,7 @@
             if(!$("#sendForm").validationEngine("validate")){
                 return;
             }
-            var url=path+"/order/apiGetOrdersSendMessage.do";
+            var url=path+"/order/apiGetOrdersSendMessage.do?flag=${flag}&messageID=${messageID}&parentMessageID=${parentMessageID}";
             var data=$("#sendForm").serialize();
             $().invoke(url,data,
                     [function(m,r){
@@ -282,7 +282,6 @@
 <c:if test="${flag=='false'}">
 <div id="new_svt_1"  style="display: none;">
 </c:if>
-    <link href="../../css/compiled/layout.css" rel="stylesheet" type="text/css">
     <c:forEach items="${orders}" begin="0"  varStatus="status">
     <table width="100%" border="0">
         <tbody><tr>
@@ -459,7 +458,6 @@
 <c:if test="${flag=='false'}">
 <div style="display: block;" id="new_svt_2">
 </c:if>
-    <link href="../../css/compiled/layout.css" rel="stylesheet" type="text/css">
     <table width="100%" border="0">
         <tbody><tr>
             <td width="772"></td>
@@ -604,8 +602,8 @@
                     <input type="hidden" name="selleruserid" value="${order.selleruserid}">
                     <input type="hidden" name="transactionid" value="${order.transactionid}">
                     <input type="hidden" name="itemid1" value="${addMessage1[0].itemid}">
-                    <input type="hidden" name="buyeruserid1" value="${addMessage1[0].recipientid}">
-                    <input type="hidden" name="selleruserid1" value="${addMessage1[0].sender}">
+                    <input type="hidden" name="buyeruserid1" value="${message.sender}">
+                    <input type="hidden" name="selleruserid1" value="${message.recipientuserid}">
                     <input type="hidden" name="subject" value="${addMessage1[0].subject}">
                     <c:if test="${flag=='true'}">
                         <textarea name="body"  id="textarea" style="width:772px;" rows="5"  class="newco_one validate[required]"></textarea>

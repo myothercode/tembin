@@ -154,12 +154,12 @@ public class AutoMessageTaskRun extends BaseScheduledClass implements Scheduleda
         Map<String,String> messageMap=new HashMap<String, String>();
         ITradingAutoMessage iTradingAutoMessage = (ITradingAutoMessage) ApplicationContextUtil.getBean(ITradingAutoMessage.class);
         ITradingMessageTemplate iTradingMessageTemplate = (ITradingMessageTemplate) ApplicationContextUtil.getBean(ITradingMessageTemplate.class);
-        List<TradingAutoMessage> partners=iTradingAutoMessage.selectAutoMessageByType(type);
         IUsercontrollerEbayAccount iUsercontrollerEbayAccount = (IUsercontrollerEbayAccount) ApplicationContextUtil.getBean(IUsercontrollerEbayAccount.class);
         UsercontrollerEbayAccount ebay=iUsercontrollerEbayAccount.selectByEbayAccount(order.getSelleruserid());
+        List<TradingAutoMessage> partners=iTradingAutoMessage.selectAutoMessageByType(type,ebay.getUserId());
         if(partners!=null&&partners.size()>0){
             for(TradingAutoMessage partner:partners){
-                if(partner.getCreateUser()==ebay.getUserId()){
+                if(partner.getStartuse()==1){
                     List<TradingMessageTemplate> templates=iTradingMessageTemplate.selectMessageTemplatebyId(partner.getMessagetemplateId());
                     Date date=new Date();
                     if(templates!=null&&templates.size()>0){
@@ -318,6 +318,7 @@ public class AutoMessageTaskRun extends BaseScheduledClass implements Scheduleda
                                 messageMap.put("flag","false");
                                 messageMap.put("message","自动消息发送失败！请稍后重试,"+order.getOrderid()+order.getSelleruserid());
                             }
+
                         }else{
                             messageMap.put("flag","false");
                             messageMap.put("message","自动消息设置的时间没到");

@@ -72,10 +72,11 @@ public class TradingAutoMessageImpl implements com.trading.service.ITradingAutoM
     }
 
     @Override
-    public List<TradingAutoMessage> selectAutoMessageByType(String type) {
+    public List<TradingAutoMessage> selectAutoMessageByType(String type,Long userid) {
         TradingAutoMessageExample example=new TradingAutoMessageExample();
         TradingAutoMessageExample.Criteria cr=example.createCriteria();
         cr.andTypeEqualTo(type);
+        cr.andCreateUserEqualTo(userid);
         List<TradingAutoMessage> list=tradingAutoMessageMapper.selectByExample(example);
         return list;
     }

@@ -11,7 +11,7 @@ public interface IPublicUserConfig {
 
     void saveUserConfig(PublicUserConfig UserConfig) throws Exception;
 
-    List<PublicUserConfig> selectUserConfigByItemType(String configType);
+    List<PublicUserConfig> selectUserConfigByItemType(String configType,Long userId);
 
     PublicUserConfig selectUserConfigById(Long id);
 

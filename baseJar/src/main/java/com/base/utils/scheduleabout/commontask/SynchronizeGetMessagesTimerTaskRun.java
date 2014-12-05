@@ -44,6 +44,8 @@ public class SynchronizeGetMessagesTimerTaskRun extends BaseScheduledClass imple
         SiteMessageService siteMessageService = (SiteMessageService) ApplicationContextUtil.getBean(SiteMessageService.class);
         UserInfoService userInfoService=(UserInfoService)ApplicationContextUtil.getBean(UserInfoService.class);
         for(TaskGetMessages taskGetMessages:TaskGetMessages){
+            taskGetMessages.setTokenflag(1);
+            iTaskGetMessages.saveListTaskGetMessages(taskGetMessages);
             UsercontrollerDevAccountExtend d = new UsercontrollerDevAccountExtend();//开发者帐号id
             d.setApiSiteid("0");
             //真实环境
@@ -128,10 +130,9 @@ public class SynchronizeGetMessagesTimerTaskRun extends BaseScheduledClass imple
                     taskMessageVO.setMessageFrom("system");
                     taskMessageVO.setOrderAndSeller("Message定时任务:"+taskGetMessages.getId());
                     siteMessageService.addSiteMessage(taskMessageVO);
+                    return;
                 }
-                taskGetMessages.setSavetime(null);
-                taskGetMessages.setTokenflag(1);
-                iTaskGetMessages.saveListTaskGetMessages(taskGetMessages);
+
             } catch (Exception e) {
                 e.printStackTrace();
             }

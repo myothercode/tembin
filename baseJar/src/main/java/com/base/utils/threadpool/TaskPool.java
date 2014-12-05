@@ -1,15 +1,14 @@
 package com.base.utils.threadpool;
 
 import com.base.utils.applicationcontext.ApplicationContextUtil;
+import com.base.utils.exception.MyUncaughtExceptionHandler;
 import com.base.utils.scheduleother.domain.SCBaseVO;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.util.concurrent.ListenableFuture;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.Callable;
+import java.util.concurrent.*;
 
 /**
  * Created by wula on 2014/8/6.
@@ -29,21 +28,32 @@ public class TaskPool {
     public static ThreadPoolTaskExecutor threadPoolTaskExecutor;
     static {
         threadPoolTaskExecutor = (ThreadPoolTaskExecutor)ApplicationContextUtil.getBean("postTaskExecutor",ThreadPoolTaskExecutor.class);
+        ThreadPoolExecutor t=threadPoolTaskExecutor.getThreadPoolExecutor();
+        t.setThreadFactory(new HandlerThreadFactory());
     }
     /**用于定时任务的post请求线程池*/
     public static ThreadPoolTaskExecutor threadPoolTaskExecutor2;
     static {
         threadPoolTaskExecutor2 = (ThreadPoolTaskExecutor)ApplicationContextUtil.getBean("postTaskExecutor2",ThreadPoolTaskExecutor.class);
+        ThreadPoolExecutor t=threadPoolTaskExecutor2.getThreadPoolExecutor();
+        t.setThreadFactory(new HandlerThreadFactory());
     }
     /**用于定时任务的线程池*/
     public static ThreadPoolTaskExecutor scheduledThreadPoolTaskExecutor;
     static {
         scheduledThreadPoolTaskExecutor = (ThreadPoolTaskExecutor)ApplicationContextUtil.getBean("scheduleTaskExecutor",ThreadPoolTaskExecutor.class);
+        //scheduledThreadPoolTaskExecutor.setThreadFactory(new HandlerThreadFactory());
+        ThreadPoolExecutor t=scheduledThreadPoolTaskExecutor.getThreadPoolExecutor();
+        t.setThreadFactory(new HandlerThreadFactory());
+
+
     }
     /**用于内部定时任务的线程池*/
     public static ThreadPoolTaskExecutor otherScheduledThreadPoolTaskExecutor;
     static {
         otherScheduledThreadPoolTaskExecutor = (ThreadPoolTaskExecutor)ApplicationContextUtil.getBean("otherScheduledThreadPoolTaskExecutor",ThreadPoolTaskExecutor.class);
+        ThreadPoolExecutor t=otherScheduledThreadPoolTaskExecutor.getThreadPoolExecutor();
+        t.setThreadFactory(new HandlerThreadFactory());
     }
 
     /**需要执行的任务队列一般是不用调用api的定时任务队列*/
@@ -65,7 +75,19 @@ public class TaskPool {
         return b;
     }
 
-
-
-
 }
+
+
+/**用来替代ThreadFactory*/
+class HandlerThreadFactory implements ThreadFactory {
+    @Override
+    public Thread newThread(Runnable r) {
+        Thread t = new Thread(r);
+        //System.out.println("created " + t + " ID:" + t.getId());
+        t.setUncaughtExceptionHandler(new MyUncaughtExceptionHandler());
+        //System.out.println("eh=" + t.getUncaughtExceptionHandler());
+        return t;
+    }
+}
+
+

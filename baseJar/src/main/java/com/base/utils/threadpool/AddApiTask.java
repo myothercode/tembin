@@ -4,6 +4,7 @@ import com.base.domains.userinfo.UsercontrollerDevAccountExtend;
 import com.base.sampleapixml.APINameStatic;
 import com.base.userinfo.service.UserInfoService;
 import com.base.utils.applicationcontext.ApplicationContextUtil;
+import com.base.utils.xmlutils.CheckResXMLUtil;
 import com.sitemessage.service.SiteMessageService;
 import com.sitemessage.service.SiteMessageStatic;
 import org.apache.commons.lang.StringUtils;
@@ -40,7 +41,7 @@ public class AddApiTask {
                 dt = userInfoService.getDevByOrder(new HashMap());
                 Map map1 = new HashMap();
                 map1.put("id",dt.getId());
-                userInfoService.addUseNum(map1);//累计一次调用量
+                //userInfoService.addUseNum(map1);//累计一次调用量
 
                 if(dt!=null){
                     d.setRunname(dt.getRunname());
@@ -84,10 +85,16 @@ public class AddApiTask {
             map.put("activeCount",String.valueOf(TaskPool.threadPoolTaskExecutor.getActiveCount()) ) ;
             return map;
         }
+
         if(StringUtils.isEmpty(res)){
             map.put("stat","fail");
             map.put("message","调用"+d.getApiCallName()+"失败;没有获取到返回参数");
             map.put("activeCount",String.valueOf(TaskPool.threadPoolTaskExecutor.getActiveCount()) ) ;
+            return map;
+        }
+        if("apiLimit".equalsIgnoreCase(res)){
+            map.put("stat","fail");
+            map.put("message","apiLimit");
             return map;
         }
 
@@ -116,7 +123,7 @@ public class AddApiTask {
                 dt = userInfoService.getDevByOrder(new HashMap());
                 Map map1 = new HashMap();
                 map1.put("id",dt.getId());
-                userInfoService.addUseNum(map1);//累计一次调用量
+                //userInfoService.addUseNum(map1);//累计一次调用量
 
                 if(dt!=null){
                     d.setRunname(dt.getRunname());
@@ -160,10 +167,16 @@ public class AddApiTask {
             map.put("activeCount",String.valueOf(TaskPool.threadPoolTaskExecutor2.getActiveCount()) ) ;
             return map;
         }
+
         if(StringUtils.isEmpty(res)){
             map.put("stat","fail");
             map.put("message","调用"+d.getApiCallName()+"失败;没有获取到返回参数");
             map.put("activeCount",String.valueOf(TaskPool.threadPoolTaskExecutor2.getActiveCount()) ) ;
+            return map;
+        }
+        if("apiLimit".equalsIgnoreCase(res)){
+            map.put("stat","fail");
+            map.put("message","apiLimit");
             return map;
         }
 
@@ -194,7 +207,7 @@ public class AddApiTask {
             dt = userInfoService.getDevByOrder(new HashMap());
             Map map1 = new HashMap();
             map1.put("id",dt.getId());
-            userInfoService.addUseNum(map1);//累计一次调用量
+            //userInfoService.addUseNum(map1);//累计一次调用量
         } catch (Exception e) {
             logger.error("获取开发帐号失败!"+xml,e);
         }

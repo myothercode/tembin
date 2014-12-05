@@ -580,7 +580,11 @@ public class SamplePaseXml {
                     text=last.getTextTrim();
                 }
             }else{
+                if(root==null){
+                    return null;
+                }
                 root=root.element(node);
+
             }
         }
         return text;

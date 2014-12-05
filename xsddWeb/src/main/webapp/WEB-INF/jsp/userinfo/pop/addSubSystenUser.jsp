@@ -36,7 +36,7 @@
             <!-- Text input-->
             <label class="control-label" for="input01">邮箱</label>
             <div class="controls">
-                <input type="text" placeholder="" class="input-xlarge validate[custom[email]]" name="email">
+                <input type="text" placeholder="" class="input-xlarge validate[required,custom[email]]" name="email">
                 <p class="help-block"></p>
             </div>
         </div>

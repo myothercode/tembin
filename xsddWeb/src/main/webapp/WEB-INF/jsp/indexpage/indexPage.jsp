@@ -15,6 +15,12 @@
 <html>
 <head>
     <title>主页</title>
+    <script type="text/javascript">
+        <%
+            String rootPath = request.getContextPath();
+        %>
+        var path='<%=rootPath%>';
+    </script>
     <!-- bootstrap -->
     <link href="<c:url value ="/css/bootstrap/bootstrap.css"/>" rel="stylesheet"/>
     <link href="<c:url value ="/css/bootstrap/bootstrap-overrides.css"/>" type="text/css" rel="stylesheet"/>
@@ -33,8 +39,6 @@
     <script type="text/javascript" src=<c:url value ="/js/jquery/jquery.cookie.js" /> ></script>
     <script src="<c:url value ="/js/bootstrap.min.js"/>"></script>
     <script src="<c:url value ="/js/theme.js"/>"></script>
-    <script src="<c:url value ="/js/indexpagejs/feedBackReport.js"/>"></script>
-    <script src="<c:url value ="/js/indexpagejs/itemReport.js"/>"></script>
     <script type="text/javascript" src=<c:url value ="/js/base.js" /> ></script>
     <script type="text/javascript" src=<c:url value ="/js/util.js" /> ></script>
     <script type="text/javascript" src=<c:url value ="/js/jquery-blockui/jquery.blockUI.min.js" /> ></script>
@@ -47,7 +51,8 @@
     <script src="<c:url value ="/js/indexpagejs/exporting.js"/>"></script>
     <script type="text/javascript" src=<c:url value ="/js/table/jquery.table.js" /> ></script>
     <script src="<c:url value ="/js/indexpagejs/indexMain.js"/>"></script>
-
+    <script src="<c:url value ="/js/indexpagejs/feedBackReport.js"/>"></script>
+    <script src="<c:url value ="/js/indexpagejs/itemReport.js"/>"></script>
     <style type="text/css">
         body {
             background-color: #ffffff;
