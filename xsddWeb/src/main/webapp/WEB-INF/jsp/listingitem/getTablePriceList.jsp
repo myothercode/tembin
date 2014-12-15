@@ -157,17 +157,19 @@
     </script>
 </head>
 <body>
-<div class="modal-header">
-    <h4 class="modal-title">表格调价列表</h4>
-</div>
-<div class="newsj_left" style="padding: 10px;">
-<%--    <span class="newusa_ici_del" onclick="addTablePrice(this)">新增调价</span>--%>
+<%--<div class="newsj_left" style="padding: 10px;">
+&lt;%&ndash;    <span class="newusa_ici_del" onclick="addTablePrice(this)">新增调价</span>&ndash;%&gt;
     <span class="newusa_ici_del" onclick="downloadTemplate(this)">下载模板</span>
-    <span class="newusa_ici_del"  onclick="importTemplate(this);">导入模板</span>
-    <div class="tbbay"><a data-toggle="modal" href="javascript:void(0)" onclick="runPrice()" class="">执行调价</a></div>
+</div>--%>
+<div class="modal-footer" style="padding-left: 50px;margin: 0px;">
+    <a href="javascritp:void(0)" onclick="downloadTemplate(this)" style="color: #0000ff">下载模板</a>
+    &nbsp;&nbsp;&nbsp;
+    <button class="net_put_1"  onclick="importTemplate(this);">导入模板</button>
+    &nbsp;&nbsp;&nbsp;
+    <button class="net_put"  onclick="runPrice()">执行调价</button>
 </div>
 
-<div id="TablePriceList"  style="padding: 10px;">
+<div id="TablePriceList"  style="padding: 5px;">
 </div>
 </body>
 </html>

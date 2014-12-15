@@ -650,6 +650,66 @@ public class KeyMoveListExample {
             addCriterion("paypal_id not between", value1, value2, "paypalId");
             return (Criteria) this;
         }
+
+        public Criteria andProgressIdIsNull() {
+            addCriterion("progress_id is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andProgressIdIsNotNull() {
+            addCriterion("progress_id is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andProgressIdEqualTo(Long value) {
+            addCriterion("progress_id =", value, "progressId");
+            return (Criteria) this;
+        }
+
+        public Criteria andProgressIdNotEqualTo(Long value) {
+            addCriterion("progress_id <>", value, "progressId");
+            return (Criteria) this;
+        }
+
+        public Criteria andProgressIdGreaterThan(Long value) {
+            addCriterion("progress_id >", value, "progressId");
+            return (Criteria) this;
+        }
+
+        public Criteria andProgressIdGreaterThanOrEqualTo(Long value) {
+            addCriterion("progress_id >=", value, "progressId");
+            return (Criteria) this;
+        }
+
+        public Criteria andProgressIdLessThan(Long value) {
+            addCriterion("progress_id <", value, "progressId");
+            return (Criteria) this;
+        }
+
+        public Criteria andProgressIdLessThanOrEqualTo(Long value) {
+            addCriterion("progress_id <=", value, "progressId");
+            return (Criteria) this;
+        }
+
+        public Criteria andProgressIdIn(List<Long> values) {
+            addCriterion("progress_id in", values, "progressId");
+            return (Criteria) this;
+        }
+
+        public Criteria andProgressIdNotIn(List<Long> values) {
+            addCriterion("progress_id not in", values, "progressId");
+            return (Criteria) this;
+        }
+
+        public Criteria andProgressIdBetween(Long value1, Long value2) {
+            addCriterion("progress_id between", value1, value2, "progressId");
+            return (Criteria) this;
+        }
+
+        public Criteria andProgressIdNotBetween(Long value1, Long value2) {
+            addCriterion("progress_id not between", value1, value2, "progressId");
+            return (Criteria) this;
+        }
     }
 
     /**

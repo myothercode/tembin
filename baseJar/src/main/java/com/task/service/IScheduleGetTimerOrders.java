@@ -9,5 +9,5 @@ import java.util.List;
  */
 public interface IScheduleGetTimerOrders {
 
-    void synchronizeOrders(List<TaskGetOrders> taskGetOrders);
+    void synchronizeOrders(List<TaskGetOrders> taskGetOrders) throws Exception;
 }

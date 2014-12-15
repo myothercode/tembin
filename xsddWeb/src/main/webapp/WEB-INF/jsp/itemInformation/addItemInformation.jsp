@@ -18,10 +18,11 @@
     </style>
     <link rel="stylesheet" type="text/css" href="<c:url value ="/css/jqzoom/jqzoom.css" />"/>
     <script type="text/javascript" src=<c:url value ="/js/jqzoom/jquery.jqzoom.js" /> ></script>
-    <script type="text/javascript" src=<c:url value ="/js/ueditor/ueditor.config.js" /> ></script>
+    <script type="text/javascript" src=<c:url value ="/js/batchAjaxUtil.js" /> ></script>
+    <%--<script type="text/javascript" src=<c:url value ="/js/ueditor/ueditor.config.js" /> ></script>
     <script type="text/javascript" src=<c:url value ="/js/ueditor/ueditor.all.js" /> ></script>
     <script type="text/javascript" src=<c:url value ="/js/ueditor/lang/zh-cn/zh-cn.js" /> ></script>
-    <script type="text/javascript" src=<c:url value ="/js/ueditor/dialogs/image/imageextend.js" /> ></script>
+    <script type="text/javascript" src=<c:url value ="/js/ueditor/dialogs/image/imageextend.js" /> ></script>--%>
     <script type="text/javascript" src=<c:url value ="/js/zeroclipboard/dist/ZeroClipboard.min.js" /> ></script>
     <script type="text/javascript" src=<c:url value ="/js/item/addItemInfomation.js" /> ></script>
  <%--   <script type="text/javascript" src=<c:url value="/js/item/addItem.js"/>></script>
@@ -29,67 +30,14 @@
     <script type="text/javascript">
         var api = frameElement.api, W = api.opener;
         var add=0;
-        $(function(){
-            zeroclipInit();
-            var myEditor12=$("#myEditor12").val();
-             $("#myEditor").val(myEditor12);
-            var changeName=document.getElementById("changeName");
-            if(changeName){
-                var va=changeName.innerHTML;
-                if(va.length>85){
-                    va=va.substring(0,85);
-                    changeName.innerHTML=va+"...";
-                }
-            }
-            var li=W.document.getElementById("loadremarks");
-            var spans=$(li).find("span[scop=remark]");
-            var date1="";
-            for(var i=0;i<spans.length;i++){
-                var remarkName=spans[i].innerText;
-               if(i==(spans.length-1)){
-                    date1+=remarkName;
-                }else{
-                    date1+=remarkName+",";
-                }
-            }
-            var date={"names":date1};
-            var id=$("#id").val();
-            var url=path+"/information/ajax/addPictures.do?id="+id;
-            $().invoke(url,date,
-                    [function(m,r){
-                        var div="";
-                        var r1= r.list;
-                        var r2= r.pic;
-                        if(r2.length>0){
-                            for(var i=0;i< r2.length;i++){
-                                var div1=" <td class=\"spic\" style=\"margin-left: 20px;\">" +
-                                        "<div id=\"vspic\">" +
-                                        "<li bs="+i+" id='"+"linkbutton"+i+"'><a href=\"javascript:void(0)\"><img src=\"<c:url value ="/img/a1xl.png" />\" width=\"18\" height=\"18\"></a>" +
-                                "<ul id='picul"+i+"'>" +
-                                "<li><a href=\"javascript:void(0)\" onclick=\"removeThis(this)\">删除</a></li>" +
-                                "<li><textarea style='display: none' id='"+"nowimg"+i+"'>"+r2[i].attrvalue+"</textarea></li>" +
-                                "<li><a href=\"javascript:void(0)\" id='"+"doCopy"+5+"' data='"+i+"' data-clipboard-target='nowimg"+i+"' >复制链接</a></li>" +
-                                "</ul>" +
-                                "</li>" +
-                                "</div>" +
-                                "<div class=\"a1fd\"><a href=\"javascript:void(0)\" title=\"<img  src='"+r2[i].attrvalue+"'/>\" onclick=\"bigfont('"+r2[i].attrvalue+"')\"><img  src=\"<c:url value ="/img/a1fd.png" />\"></a></div>" +
-                                "<input type=\"hidden\" name=\"Picture\" value=\""+r2[i].attrvalue+"\"><div class=\"jqzoom\" id=\""+r2[i].id+"\"><img scop='img' src=\""+r2[i].attrvalue+"\" alt=\"shoe\"   jqimg=\""+r2[i].attrvalue+"\" width=\"120\" height=\"110\"></div></td>";
-                                div+=div1;
-                                //var lq=$(div1).find("a[id=d_clip_button]");
-                            }
-                            $("#addPictureId").append(div);
 
-                        }
+                 /*       }
                         var addPictureId=document.getElementById("addPictureId");
                         var div=$(addPictureId).find("div[id=vspic]");
                         if(div.length>0) {
                             $("#lianjie").remove();
                         }
                         zeroclipInit();
-                        /*setTimeout(function(){
-                            zeroclipInit();
-                        },1000);*/
-
                         Base.token();
 
                     },
@@ -98,8 +46,9 @@
                             Base.token();
                         }]
             );
-        /*    $(".jqzoom").jqueryzoom();*/
-        });
+        *//*    $(".jqzoom").jqueryzoom();*//*
+        });*/
+
         function bigfont(id){
            /* $("#"+id).jqueryzoom({
                 xzoom: 1050,		//zooming div default width(default width value is 200)
@@ -338,33 +287,45 @@
             afterUploadCallback = {"imgURLS": addPictrueUrl};
             sss = a.id;
         }
+        function nofind(){
+            var img=event.srcElement;
+            img.src="http://i.ebayimg.sandbox.ebay.com/00/s/NjAwWDgwMA==/$(KGrHqRHJEkFJ2m+ipUVBUSMpPJdmw~~60_1.JPG";
+            img.onerror=null;
+        }
         function addPictrueUrl(urls) {
+            var divs=$("div[id=vspic]");
             var str = '';
             for (var i = 0; i < urls.length; i++) {
-                str+="<td class=\"spic\" style=\"margin-left: 20px;\">"+
+            /*    str+="<td class=\"spic\" style=\"margin-left: 20px;\">"+
                         "<div id=\"vspic\">" +
-                        "<li bs="+i+" id='"+"linkbutton"+i+"'><a href=\"javascript:void(0)\"><input type=\"hidden\" name=\"Picture\" value='" + urls[i].src.replace("@", ":") + "'><img src=\"<c:url value ="/img/a1xl.png" />\" width=\"18\" height=\"18\"></a>" +
+                        "<li bs="+i+" id='"+"linkbutton"+i+"'><a href=\"javascript:void(0)\"><input type=\"hidden\" name=\"Picture\" value='" + chuLiPotoUrl(urls[i].src.replace("@", ":")) + "'><img src=\"<c:url value ="/img/a1xl.png" />\" width=\"18\" height=\"18\"></a>" +
                         "<ul id='picul"+i+"'>" +
                         "<li><a href=\"javascript:void(0)\" onclick=\"removeThis(this)\">删除</a></li>" +
-                        "<li><textarea style='display: none' id='"+"nowimg"+i+"'>"+ urls[i].src.replace("@", ":") +"</textarea></li>" +
-                        "<li><a href=\"javascript:void(0)\" id='"+"doCopy"+5+"' data='"+i+"' data-clipboard-target='nowimg"+i+"' >复制链接</a></li>" +
+                        "<li><textarea style='display: none' id='"+"nowimg"+(i+divs.length)+"'>"+ chuLiPotoUrl(urls[i].src.replace("@", ":")) +"</textarea></li>" +
+                        "<li><a href=\"javascript:void(0)\" id='"+"doCopy"+(i+divs.length)+"' data='"+(i+divs.length)+"' data-clipboard-target='nowimg"+(i+divs.length)+"' >复制链接</a></li>" +
                         "</ul>" +
                         "</li>" +
                         "</div>" +
                         "<div class=\"a1fd\"><a href=\"javascript:void(0)\" onclick=\"bigfont('"+ urls[i].src.replace("@", ":")+"')\"><img  src=\"<c:url value ="/img/a1fd.png" />\"></a></div>" +
-                        "<img scop='img' src=\"" + urls[i].src.replace("@", ":") +"\" width=\"120\" height=\"110\"></td>";
-              /*  str+="<td class=\"spic\" style=\"margin-left: 20px;\">" +
-                "<div id=\"vspic\">" +
-                "<li bs="+i+" id='"+"linkbutton"+i+"'><a href=\"javascript:void(0)\"><img src=\"<c:url value ="/img/a1xl.png" />\" width=\"18\" height=\"18\"></a>" +
-                "<ul id='picul"+i+"'>" +
-                "<li><a href=\"javascript:void(0)\" onclick=\"removeThis(this)\">删除</a></li>" +
-                "<li><textarea style='display: none' id='"+"nowimg"+i+"'>"+r2[i].attrvalue+"</textarea></li>" +
-                "<li><a href=\"javascript:void(0)\" id='"+"doCopy"+5+"' data='"+i+"' data-clipboard-target='nowimg"+i+"' >复制链接</a></li>" +
-                "</ul>" +
-                "</li>" +
-                "</div>" +
-                "<div class=\"a1fd\"><a href=\"javascript:void(0)\" title=\"<img  src='"+r2[i].attrvalue+"'/>\" onclick=\"bigfont('"+r2[i].attrvalue+"')\"><img  src=\"<c:url value ="/img/a1fd.png" />\"></a></div>" +
-                "<input type=\"hidden\" name=\"Picture\" value=\""+r2[i].attrvalue+"\"><div class=\"jqzoom\" id=\""+r2[i].id+"\"><img scop='img' src=\""+r2[i].attrvalue+"\" alt=\"shoe\"   jqimg=\""+r2[i].attrvalue+"\" width=\"120\" height=\"110\"></div></td>";*/
+                        "<img scop='img' onerror='nofind();'  src=\"" + chuLiPotoUrl(urls[i].src.replace("@", ":")) +"\" width=\"120\" height=\"110\"></td>";
+*/
+                var j=i;
+                if(divs&&divs.length>0){
+                    j=j+divs.length;
+                }
+                str+="<td class=\"spic\" style=\"margin-left: 20px;\">" +
+                        "<div id=\"vspic\">" +
+                        "<li bs="+j+" id='"+"linkbutton"+j+"'><a href=\"javascript:void(0)\"><img src=\"<c:url value ="/img/a1xl.png" />\" width=\"18\" height=\"18\"></a>" +
+                        "<ul id='picul"+j+"'>" +
+                        "<li><a href=\"javascript:void(0)\" onclick=\"removeThis(this)\">删除</a></li>" +
+
+                        "<li><textarea style='display: none' id='"+"nowimg"+j+"'>"+chuLiPotoUrl(urls[i].src.replace("@", ":"))+"</textarea></li>" +
+                        "<li><a href=\"javascript:void(0)\" id='"+"doCopy"+5+"' data='"+j+"' data-clipboard-target='nowimg"+j+"' >复制链接</a></li>" +
+                        "</ul>" +
+                        "</li>" +
+                        "</div>" +
+                        "<div class=\"a1fd\"><a href=\"javascript:void(0)\" onclick=\"bigfont('"+ urls[i].src.replace("@", ":")+"')\"><img  src=\"<c:url value ="/img/a1fd.png" />\"></a></div>" +
+                        "<input type=\"hidden\" name=\"Picture\" value=\""+urls[i].src.replace("@", ":")+"\"><div class=\"jqzoom\" \"><img onerror='nofind();' scop='img' src=\""+chuLiPotoUrl(urls[i].src.replace("@", ":"))+"\" alt=\"shoe\"   jqimg=\""+chuLiPotoUrl(urls[i].src.replace("@", ":"))+"\" width=\"120\" height=\"110\"></div></td>";
             }
             /*$("#picture").append(str);*/
           /*  alert($("#addPictureId"));*/
@@ -454,9 +415,9 @@
                     <td><div class="new_tab">
                         <div class="new_tab_left"></div>
                         <div class="new_tab_right"></div>
-                        <dt id="svt1" style="width: 60px;border-top-left-radius: 5px;border-top-right-radius: 5px;" class="new_ic_1" onclick="setvTab('svt',1,4)">基本信息</dt>
-                        <dt id="svt3" style="width: 60px;border-top-left-radius: 5px;border-top-right-radius: 5px;" onclick="setvTab('svt',3,4)" class="">产品描述</dt>
-                        <dt id="svt2" style="width: 60px;border-top-left-radius: 5px;border-top-right-radius: 5px;" onclick="setvTab('svt',2,4)" class="">产品图片</dt>
+                        <dt id="svt1" style="width: 60px;border-top-left-radius: 5px;border-top-right-radius: 5px;" class="new_ic_1" onclick="setvTab('svt',1,3)">基本信息</dt>
+                        <dt id="svt3" style="width: 60px;border-top-left-radius: 5px;border-top-right-radius: 5px;" onclick="setvTab('svt',3,3)" class="">产品描述</dt>
+                        <dt id="svt2" style="width: 60px;border-top-left-radius: 5px;border-top-right-radius: 5px;" onclick="setvTab('svt',2,3)" class="">产品图片</dt>
                         <span style="float:right; margin-top:8px; margin-right:10px;">
                             <script type=text/plain id='picUrls'></script>
                             <div><a href="javascript:void(0)" id="apicUrls" onclick="addpicture(this)"><img src="<c:url value ="/img/apic_dr.png" />" width="75" height="15"></a></div></span>
@@ -469,7 +430,7 @@
                 <table width="100%" border="0" style="margin-left:40px;">
                     <tbody><tr>
                         <%--<td height="46" align="right">商品名称：</td>--%>
-                        <td  height="46" colspan="2" width="95%"><div class="newselect" style="width: 530px;">
+                        <td  height="46" colspan="2" width="95%"><div class="newselect" style="width:600px;">
                             <span style="float: left;line-height: 65px;width: 91px;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;商品名称：</span><input onchange="changeName(this);" style="margin-top: 15px;" class="form-controlsd validate[required]" type="text" id="informationName" name="name" value="${itemInformation.name}">
                             <c:if test="${itemInformation.typename!=null&&itemInformation.typeflag==1}">
                                 <br/><span id="changeName" style="float:left;margin-left: 5px;font-size:5px;color: lightgray;line-height: 15px;">系统匹配Ebay分类:${itemInformation.typename}</span>
@@ -570,7 +531,7 @@
                     <div class="modal-footer">
                         <button type="button" class="net_put" onclick="submitCommit();">保存</button>
                         <button type="button" class="net_put_1" data-dismiss="modal" onclick="closedialog();">关闭</button>
-                        <button type="button" class="net_put" style="margin-left: 20px;" onclick="setvTab('svt',3,4)">下一步</button>
+                        <button type="button" class="net_put" style="margin-left: 20px;" onclick="setvTab('svt',3,3)">下一步</button>
                     </div>
                 </div>
             </div>
@@ -587,14 +548,15 @@
                     </div>
                 </div>
             </div>
-            <div style="display: none;" id="new_svt_3">
-                <script id="myEditor" type="text/plain" style="width:650px;height:400px;"></script>
-                <textarea id="myEditor12"  style="display: none">${itemInformation.description}</textarea>
+
+            <div style="display: none;height: 500px;" id="new_svt_3">
+                <script id="myEditor" type="text/plain" style="width:670px;height:400px;"></script>
+                <textarea id="myEditor12" style="display: none">${itemInformation.description}</textarea>
                 <div style="bottom: 1px;">
                     <div class="modal-footer">
                         <button type="button" class="net_put" onclick="submitCommit();">保存</button>
                         <button type="button" class="net_put_1" data-dismiss="modal" onclick="closedialog();">关闭</button>
-                        <button type="button" class="net_put" style="margin-left: 20px;" onclick="setvTab('svt',2,4)">下一步</button>
+                        <button type="button" class="net_put" style="margin-left: 20px;" onclick="setvTab('svt',2,3)">下一步</button>
                     </div>
                 </div>
             </div>
@@ -605,7 +567,7 @@
 
 <script type="text/javascript">
     var api = frameElement.api, W = api.opener;
-    var ue = UE.getEditor('myEditor');
+
     var lablId = -1;
     $(function() {
         $("#kk").blur(function() {

@@ -77,7 +77,7 @@
     </form>
     选择图片:<input type="file" accept="image/*" id="multipartFiles" name="multipartFiles"/>
 
-    &nbsp;<button onclick="uploadViewImg()">上传</button>
+    &nbsp;<button onclick="uploadViewImg()" class="net_put">上传</button>
 
 
     <div id="editor">
@@ -107,7 +107,7 @@
 
 
 <div style="bottom: 1px;">
-    <input type="button" value="保存" onclick="submitCommit();"/>
+    <input type="button" value="保存" class="net_put_1" onclick="submitCommit();"/>
 </div>
 </div>
 

@@ -1,5 +1,7 @@
 package com.base.utils.common;
 
+import org.apache.commons.lang.StringUtils;
+
 import java.util.Date;
 
 /**
@@ -46,7 +48,12 @@ public class MyStringUtil {
                 return filename.substring(i );
             }
         }
-        return defExt;
+        return defExt.toLowerCase();
+    }
+    /**提取文件名，不包括后缀*/
+    public static String getFimeNoStuff(String fileName){
+        String stuff=getExtension(fileName,"");
+        return fileName.replace(stuff,"").toLowerCase();
     }
 
 

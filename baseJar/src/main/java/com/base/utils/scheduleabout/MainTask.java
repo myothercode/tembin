@@ -9,8 +9,6 @@ import com.base.utils.common.MyClassUtil;
 import com.base.utils.scheduleother.StaticParam;
 import com.base.utils.scheduleother.dorun.ScheduleOtherBase;
 import com.base.utils.threadpool.TaskPool;
-import org.apache.commons.codec.StringEncoder;
-import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.quartz.SchedulerException;
@@ -54,6 +52,7 @@ public class MainTask {
     public static final String LISTING_TIMER_TASK_DATA="tradingListtimertask";//在线数据同步每两分钟执行 同步在线商品
     public static final String SET_DEV_ZERO="setDevZero";//将开发帐号的调用次数清零
     public static final String AUTO_MESSAGE="autoMessage";//定时发送自动消息
+    public static final String AUTO_COMPLEMENT="autocomplement";//定时发送自动消息
     public static final String FEEDBACK_AUTOM_ESSAGE="FeedBackAutoMessageTaskRun";//定时发送评价自动消息
     public static final String SYNCHRONIZE_GET_ORDERS="synchronize_get_orders";//定时每天插入账号去获取订单
     public static final String SYNCHRONIZE_GET_TIMER_ORDERS="synchronize_get_timer_orders";//定时同步订单每两分钟
@@ -81,8 +80,10 @@ public class MainTask {
         //定义一组该类型任务需要执行的任务类型
         List<String> doList=new ArrayList<String>();
        // doList.add(SET_DEV_ZERO); //排除掉归零任务
+
         doList.add(LISTING_SCHEDULE);
         doList.add(KEY_MOVE_LIST_TASK);
+        doList.add(LISTING_DATA);
         doList.add(LISTING_TIMER_TASK_DATA);
         doList.add(AUTO_MESSAGE);
         doList.add(AUTO_ASSESS);
@@ -92,7 +93,7 @@ public class MainTask {
         doList.add(SYNCHRONIZE_GET_MESSAGES_TIMER);
         doList.add(SYNCHRONIZE_GET_USER_CASES_TIMER);
         doList.add(ITEM_INFORMATION_TYPE);
-
+        doList.add(AUTO_COMPLEMENT);
 
         if (isStartTimerTask==null) {
             isStartTimerTask = ApplicationContextUtil.getBean(CommAutowiredClass.class);
@@ -180,7 +181,7 @@ public class MainTask {
 
         List<String> doList=new ArrayList<String>();
         //doList.add(SET_DEV_ZERO); //api次数归零任务
-        doList.add(LISTING_DATA);
+
         doList.add(SYNCHRONIZE_GET_ORDERS);
         doList.add(SYNCHRONIZE_FEED_BACK);
         doList.add(LISTING_REPORT);

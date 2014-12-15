@@ -9,17 +9,22 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Vector;
+import java.util.*;
 
 /**
  * Created by Administrator on 2014/12/5.
  * 过滤掉一些特殊字符
  */
 public class StringFilter implements Filter {
-    private static String[] excludePaths;//不进行拦截的url
+    private static List<String> excludePaths=new ArrayList<String>();//不进行拦截的url
+    static {
+        excludePaths.add("http://www.tembin.com");
+        excludePaths.add("http://tembin.com");
+        excludePaths.add("http://localhost");
+        excludePaths.add("http://192.168");
+        excludePaths.add("http://localhost");
+        excludePaths.add("http://127.0.0.1");
+    }
 
 
     @Override
@@ -29,16 +34,28 @@ public class StringFilter implements Filter {
 
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
-        Enumeration params = servletRequest.getParameterNames();
+        //Enumeration params = servletRequest.getParameterNames();
         HttpServletRequest request = (HttpServletRequest) servletRequest;
         HttpServletResponse response = (HttpServletResponse) servletResponse;
         String requestUrl = request.getRequestURI();
-        if(!excludeUrl(requestUrl)) {
+
+        if(requestUrl!=null && !requestUrl.endsWith(".do")){//如果不是以do结尾的请求，直接放行
+            filterChain.doFilter(request, response);
+            return;
+        }
+
+        //String host = request.getRemoteHost();
+        String referer=request.getHeader("Referer");
+
+        if(referer==null || !excludeUrl(referer) ){//如果Referer属性没有在可允许范围内，那么返回登陆框
+            response.sendRedirect(request.getContextPath()+"/login.jsp");
+            return;
+        }
+
             Map<String,String[]> m = new HashMap<String,String[]>(request.getParameterMap());
             //m.put("nameoooooooo", new String[]{"newname"});
             request = new ParameterRequestWrapper((HttpServletRequest)request, m);
-            System.out.println("==");
-        }
+            //System.out.println("==");
 
         filterChain.doFilter(request, response);
     }
@@ -52,11 +69,9 @@ public class StringFilter implements Filter {
 
 
     private boolean excludeUrl(String url) {
-        if(excludePaths != null && excludePaths.length > 0) {
-            for (String path : excludePaths) {
-                if(url.toLowerCase().equals(path)) {
-                    return true;
-                }
+        for (String ur : excludePaths){
+            if(url.startsWith(ur)){
+                return true;
             }
         }
         return false;
@@ -174,11 +189,21 @@ class ParameterRequestWrapper extends HttpServletRequestWrapper {
     private static String replaceSpecChar(String str) {
 
         if(StringUtils.isNotEmpty(str)) {
-            String lows=str.toLowerCase();;
             for (String s : safeless) {
-                lows=StringUtils.replace(lows,s,"");
+                str=str.replaceAll("(?i)"+s,"");
             }
-            str=lows;
+
+            /*String lows=str.toLowerCase();;
+            for (String s : safeless) {
+                if (){
+
+                }
+                lows=StringUtils.replaceAll(lows,s,"");
+            }
+            str=lows;*/
+        }
+        if ("".equalsIgnoreCase(str)){
+            str=null;
         }
         return str;
     }

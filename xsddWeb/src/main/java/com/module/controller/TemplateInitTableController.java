@@ -13,7 +13,9 @@ import com.base.utils.imageManage.service.ImageService;
 import com.common.base.utils.ajax.AjaxSupport;
 import com.common.base.web.BaseAction;
 import com.trading.service.ITradingTemplateInitTable;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -23,6 +25,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -46,9 +49,21 @@ public class TemplateInitTableController extends BaseAction{
      * @return
      */
     @RequestMapping("/TemplateInitTableList.do")
-    public ModelAndView TemplateInitTableList(HttpServletRequest request,HttpServletResponse response,ModelMap modelMap){
+    public ModelAndView TemplateInitTableList(HttpServletRequest request,HttpServletResponse response,@ModelAttribute("initSomeParmMap")ModelMap modelMap){
+        modelMap.put("imageUrlPrefix",imageService.getImageUrlPrefix());
         return forword("module/templateinittable/templateinittableList",modelMap);
     }
+
+    /**查询模板分类*/
+    @RequestMapping("/ajax/queryTemplateType.do")
+    @ResponseBody
+    public  void queryTemplateType(){
+        Map map=new HashMap();
+        map.put("userid",SessionCacheSupport.getSessionVO().getId());
+        List<TemplateInitTableQuery> l=iTradingTemplateInitTable.selectTemplateType(map);
+        AjaxSupport.sendSuccessText("",l);
+    }
+
 
     /**
      * 选择模板
@@ -70,10 +85,19 @@ public class TemplateInitTableController extends BaseAction{
         Map m = new HashMap();
         SessionVO c= SessionCacheSupport.getSessionVO();
         m.put("userid",c.getId());
+
         /**分页组装*/
         PageJsonBean jsonBean=commonParmVO.getJsonBean();
         Page page=jsonBean.toPage();
-        List<TemplateInitTableQuery> TemplateInitTable = this.iTradingTemplateInitTable.selectByTemplateInitTableList(m,page);
+
+        List<TemplateInitTableQuery> TemplateInitTable=new ArrayList<TemplateInitTableQuery>();
+        if(StringUtils.isNotEmpty(commonParmVO.getStrV1()) && !"all".equalsIgnoreCase(commonParmVO.getStrV1()) ){
+            m.put("templateTypeId",commonParmVO.getStrV1());
+            TemplateInitTable = this.iTradingTemplateInitTable.selectByTemplateInitTableList(m,page);
+        }else {
+            TemplateInitTable = this.iTradingTemplateInitTable.selectByTemplateInitTableList(m,page);
+        }
+
         jsonBean.setList(TemplateInitTable);
         jsonBean.setTotal((int)page.getTotalCount());
         AjaxSupport.sendSuccessText("", jsonBean);

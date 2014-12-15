@@ -26,4 +26,8 @@ public interface PayPalService {
 
     /**新增一跳paypal记录*/
     void addPayPalAccount(Map map);
+    /**paypal退全款:根据paypal交易号*/
+    String refundTransactionFull(Map map) throws Exception;
+    /**paypal退半款:根据paypal交易号*/
+    String refundTransactionPartial(Map map) throws Exception;
 }

@@ -2655,6 +2655,76 @@ public class TradingOrderGetSellerTransactionsExample {
             return (Criteria) this;
         }
 
+        public Criteria andPaypalpriceIsNull() {
+            addCriterion("paypalPrice is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andPaypalpriceIsNotNull() {
+            addCriterion("paypalPrice is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andPaypalpriceEqualTo(String value) {
+            addCriterion("paypalPrice =", value, "paypalprice");
+            return (Criteria) this;
+        }
+
+        public Criteria andPaypalpriceNotEqualTo(String value) {
+            addCriterion("paypalPrice <>", value, "paypalprice");
+            return (Criteria) this;
+        }
+
+        public Criteria andPaypalpriceGreaterThan(String value) {
+            addCriterion("paypalPrice >", value, "paypalprice");
+            return (Criteria) this;
+        }
+
+        public Criteria andPaypalpriceGreaterThanOrEqualTo(String value) {
+            addCriterion("paypalPrice >=", value, "paypalprice");
+            return (Criteria) this;
+        }
+
+        public Criteria andPaypalpriceLessThan(String value) {
+            addCriterion("paypalPrice <", value, "paypalprice");
+            return (Criteria) this;
+        }
+
+        public Criteria andPaypalpriceLessThanOrEqualTo(String value) {
+            addCriterion("paypalPrice <=", value, "paypalprice");
+            return (Criteria) this;
+        }
+
+        public Criteria andPaypalpriceLike(String value) {
+            addCriterion("paypalPrice like", value, "paypalprice");
+            return (Criteria) this;
+        }
+
+        public Criteria andPaypalpriceNotLike(String value) {
+            addCriterion("paypalPrice not like", value, "paypalprice");
+            return (Criteria) this;
+        }
+
+        public Criteria andPaypalpriceIn(List<String> values) {
+            addCriterion("paypalPrice in", values, "paypalprice");
+            return (Criteria) this;
+        }
+
+        public Criteria andPaypalpriceNotIn(List<String> values) {
+            addCriterion("paypalPrice not in", values, "paypalprice");
+            return (Criteria) this;
+        }
+
+        public Criteria andPaypalpriceBetween(String value1, String value2) {
+            addCriterion("paypalPrice between", value1, value2, "paypalprice");
+            return (Criteria) this;
+        }
+
+        public Criteria andPaypalpriceNotBetween(String value1, String value2) {
+            addCriterion("paypalPrice not between", value1, value2, "paypalprice");
+            return (Criteria) this;
+        }
+
         public Criteria andCreateUserIsNull() {
             addCriterion("create_user is null");
             return (Criteria) this;

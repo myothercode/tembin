@@ -1,11 +1,7 @@
 package com.base.utils.scheduleabout.commontask;
 
-import com.base.database.keymove.mapper.KeyMoveListMapper;
 import com.base.database.keymove.model.KeyMoveList;
-import com.base.database.keymove.model.KeyMoveListExample;
 import com.base.database.publicd.model.PublicUserConfig;
-import com.base.database.task.mapper.TaskGetOrdersMapper;
-import com.base.database.task.model.TaskGetOrdersExample;
 import com.base.database.trading.mapper.TradingFeedBackDetailMapper;
 import com.base.database.trading.mapper.TradingOrderGetOrdersMapper;
 import com.base.database.trading.mapper.UsercontrollerEbayAccountMapper;
@@ -15,7 +11,6 @@ import com.base.domains.SessionVO;
 import com.base.domains.userinfo.UsercontrollerDevAccountExtend;
 import com.base.sampleapixml.APINameStatic;
 import com.base.sampleapixml.BindAccountAPI;
-import com.base.userinfo.service.UserInfoService;
 import com.base.utils.applicationcontext.ApplicationContextUtil;
 import com.base.utils.cache.DataDictionarySupport;
 import com.base.utils.cache.SessionCacheSupport;
@@ -29,16 +24,17 @@ import com.base.utils.scheduleabout.Scheduledable;
 import com.base.utils.threadpool.AddApiTask;
 import com.base.utils.threadpool.TaskMessageVO;
 import com.base.utils.xmlutils.SamplePaseXml;
-import com.base.xmlpojo.trading.addproduct.Item;
 import com.orderassess.service.IAutoAssessDetail;
 import com.orderassess.service.IOrderAutoAssess;
 import com.sitemessage.service.SiteMessageService;
 import com.sitemessage.service.SiteMessageStatic;
-import com.trading.service.ITradingItem;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
-import java.util.*;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Created by Administrtor on 2014/8/29.
@@ -166,6 +162,7 @@ public class AutoAssessTaskRun extends BaseScheduledClass implements Scheduledab
                 try {
                     ack = SamplePaseXml.getVFromXmlString(res, "Ack");
                 } catch (Exception e) {
+                    logger.error("定时AutoAssess解析xml出错:"+e.getMessage());
                     e.printStackTrace();
                 }
                 if ("Success".equalsIgnoreCase(ack)) {
@@ -178,6 +175,7 @@ public class AutoAssessTaskRun extends BaseScheduledClass implements Scheduledab
                     try {
                         sl.setEventdesc(torder.getSelleruserid()+"发送给："+torder.getBuyeruserid()+"评价；发送失败，原因如下："+SamplePaseXml.getSpecifyElementTextAllInOne(res,"Errors","LongMessage"));
                     } catch (Exception e) {
+                        logger.error("定时AutoAssess解析出错:"+e.getMessage());
                         e.printStackTrace();
                     }
                     sl.setEventname(SystemLogUtils.AUTO_ASSESS);
@@ -185,6 +183,7 @@ public class AutoAssessTaskRun extends BaseScheduledClass implements Scheduledab
                     try {
                         SystemLogUtils.saveLog(sl);
                     } catch (Exception e) {
+                        logger.error("定时AutoAssess日志保存出错:"+e.getMessage());
                         e.printStackTrace();
                     }
                 }

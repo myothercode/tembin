@@ -228,3 +228,15 @@ function alySystemMessage(json){
 
     return {"titl":titl,"cont":cont}
 }
+
+
+
+/**预加载资源*/
+function preLoadReSource(){
+    loadEditor();
+}
+//加载编辑器
+function loadEditor(){
+    seriesLoadScripts(ueditorJSS_,function(){
+    });
+}

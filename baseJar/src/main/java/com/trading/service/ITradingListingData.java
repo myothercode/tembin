@@ -1,5 +1,6 @@
 package com.trading.service;
 
+import com.base.database.trading.model.TradingItem;
 import com.base.database.trading.model.TradingListingAmend;
 import com.base.database.trading.model.TradingListingAmendWithBLOBs;
 import com.base.database.trading.model.TradingListingData;
@@ -7,6 +8,7 @@ import com.base.domains.querypojos.ListingDataAmendQuery;
 import com.base.domains.querypojos.ListingDataQuery;
 import com.base.mybatis.page.Page;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -31,4 +33,6 @@ public interface ITradingListingData {
     List<TradingListingData> selectByList(String sku, String ebayAccount);
 
     void saveTradingListingDataList(List<TradingListingData> litld);
+
+    void saveTradingListingDataByTradingItem(TradingItem tradingItem,String res);
 }

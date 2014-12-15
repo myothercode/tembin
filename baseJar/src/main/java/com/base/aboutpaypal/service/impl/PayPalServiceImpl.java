@@ -13,7 +13,9 @@ import com.base.mybatis.page.Page;
 import com.base.utils.cache.SessionCacheSupport;
 import com.base.utils.exception.Asserts;
 import com.base.utils.httpclient.HttpClientUtil;
+import org.apache.commons.lang.StringUtils;
 import org.apache.http.client.HttpClient;
+import org.dom4j.Element;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -109,7 +111,37 @@ public class PayPalServiceImpl implements PayPalService {
         paypalAccount.setCreateUser(sessionVO.getId());
         paypalAccount.setCreateTime(new Date());
         usercontrollerPaypalAccountMapper.insertSelective(paypalAccount);
+    }
 
+    @Override
+    public String refundTransactionFull(Map map) throws Exception {
+        Long paypalid= (Long) map.get("paypalId");
+        String transactionID= (String) map.get("transactionID");
+        UsercontrollerPaypalAccount paypalAccount = usercontrollerPaypalAccountMapper.selectByPrimaryKey(paypalid);
+        HttpClient h= HttpClientUtil.getHttpsClient();
+        String res = HttpClientUtil.post(h,PAYAPL_API_URL, PaypalxmlUtil.getRefundTransactionFull(paypalAccount, transactionID));
+        Element element=PaypalxmlUtil.getSpecElement(res,"Body","RefundTransactionResponse","Ack");
+        String flag=element.getTextTrim();
+        if(!StringUtils.isNotBlank(flag)){
+            return "";
+        }
+        return flag;
+    }
+
+    @Override
+    public String refundTransactionPartial(Map map) throws Exception {
+        Long paypalid= (Long) map.get("paypalId");
+        String transactionID= (String) map.get("transactionID");
+        String money= (String) map.get("money");
+        UsercontrollerPaypalAccount paypalAccount = usercontrollerPaypalAccountMapper.selectByPrimaryKey(paypalid);
+        HttpClient h= HttpClientUtil.getHttpsClient();
+        String res = HttpClientUtil.post(h,PAYAPL_API_URL, PaypalxmlUtil.getRefundTransactionPartial(paypalAccount, transactionID, money));
+        Element element=PaypalxmlUtil.getSpecElement(res,"Body","RefundTransactionResponse","Ack");
+        String flag=element.getTextTrim();
+        if(!StringUtils.isNotBlank(flag)){
+            return "";
+        }
+        return flag;
     }
 
 /*    public static void main(String[] args) throws Exception {

@@ -86,6 +86,7 @@ public class TextContraller extends BaseAction {
     public void doReg(UsercontrollerUser user ,UsercontrollerOrg org,
                       HttpServletRequest request,HttpServletResponse response,
                               @ModelAttribute( "initSomeParmMap" )ModelMap modelMap){
+        Asserts.assertTrue(false,"尚未开放注册");
         //Asserts.assertTrue(ObjectUtils.isNumOrChar(user.getUserLoginId()),"登录名只能由数字和字母组成!");
         Asserts.assertTrue(StringUtils.isNotEmpty(user.getUserEmail()),"邮箱不能为空!");
         Asserts.assertTrue(StringUtils.isNotEmpty(user.getUserPassword()),"密码不能为空!");
@@ -202,7 +203,6 @@ public class TextContraller extends BaseAction {
         String x = TempStoreDataSupport.pullData(request.getSession().getId());
         //testService.serviceTest();
        // testService.testReturnPolicy();
-
         AjaxSupport.sendSuccessText("啊", x);
     }
 
@@ -218,5 +218,4 @@ public class TextContraller extends BaseAction {
         mailUtils.sendMail(email);
         AjaxSupport.sendSuccessText("","a");
     }
-
 }

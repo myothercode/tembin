@@ -6,6 +6,7 @@ import com.base.database.keymove.model.KeyMoveListExample;
 import com.base.database.trading.mapper.TradingListingpicUrlMapper;
 import com.base.database.trading.mapper.UsercontrollerEbayAccountMapper;
 import com.base.database.trading.model.TradingListingpicUrl;
+import com.base.database.trading.model.TradingProgress;
 import com.base.database.trading.model.UsercontrollerEbayAccount;
 import com.base.domains.userinfo.UsercontrollerDevAccountExtend;
 import com.base.sampleapixml.APINameStatic;
@@ -14,6 +15,7 @@ import com.base.utils.threadpool.AddApiTask;
 import com.base.utils.threadpool.TaskMessageVO;
 import com.base.utils.xmlutils.SamplePaseXml;
 import com.base.xmlpojo.trading.addproduct.Item;
+import com.keymove.service.IKeyMoveProgress;
 import com.sitemessage.service.SiteMessageStatic;
 import com.trading.service.IUsercontrollerEbayAccount;
 import org.apache.commons.lang.StringUtils;
@@ -43,6 +45,8 @@ public class SynchronizeKeyMove implements ThreadPoolBaseInterFace {
     public UsercontrollerEbayAccountMapper usercontrollerEbayAccountMapper;
     @Autowired
     public KeyMoveListMapper keyMoveListMapper;
+    @Autowired
+    public IKeyMoveProgress iKeyMoveProgress;
 
     @Override
     public <T> void doWork(String ebpRes, T... t) {
@@ -89,6 +93,12 @@ public class SynchronizeKeyMove implements ThreadPoolBaseInterFace {
                     }
                 }
                 UsercontrollerEbayAccount uea = this.usercontrollerEbayAccountMapper.selectByPrimaryKey(Long.parseLong(userid));
+                TradingProgress tp = new TradingProgress();
+                tp.setCreateUser(Long.parseLong(userid));
+                tp.setDoType("keyMove");
+                tp.setStartDate(new Date());
+                this.iKeyMoveProgress.saveProgress(tp);
+                int is=0;
                 for (Item item : li) {
                     KeyMoveListExample kmle = new KeyMoveListExample();
                     kmle.createCriteria().andItemIdEqualTo(item.getItemID());
@@ -102,8 +112,13 @@ public class SynchronizeKeyMove implements ThreadPoolBaseInterFace {
                         kml.setTaskFlag("0");
                         kml.setSiteId(siteids);
                         kml.setPaypalId(userid);
+                        kml.setProgressId(tp.getId());
                         this.keyMoveListMapper.insertSelective(kml);
+                        is++;
                     }
+                }
+                if(is==0){
+                    this.iKeyMoveProgress.deleteById(tp.getId());
                 }
             }else {
 

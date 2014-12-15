@@ -17,14 +17,16 @@
 <script type="text/javascript" src=<c:url value ="/js/item/buyer.js" /> ></script>
 <script type="text/javascript" src=<c:url value ="/js/item/description.js" /> ></script>
 <script type="text/javascript" src=<c:url value ="/js/item/disprice.js" /> ></script>
-<script type="text/javascript" src=
+<%--<script type="text/javascript" src=
         <c:url value="/js/ueditor/ueditor.config.js"/>></script>
 <script type="text/javascript" src=
         <c:url value="/js/ueditor/ueditor.all.js"/>></script>
 <script type="text/javascript" src=
         <c:url value="/js/ueditor/lang/zh-cn/zh-cn.js"/>></script>
 <script type="text/javascript" src=
-        <c:url value="/js/ueditor/dialogs/image/imageextend.js"/>></script>
+        <c:url value="/js/ueditor/dialogs/image/imageextend.js"/>></script>--%>
+<script type="text/javascript" src=
+        <c:url value="/js/batchAjaxUtil.js"/>></script>
 <script type="text/javascript" src=
         <c:url value="/js/item/addItem.js"/>></script>
 <script type="text/javascript" src=
@@ -69,11 +71,14 @@
 <%--<link rel="stylesheet" href="http://gregfranko.com/jquery.selectBoxIt.js/css/jquery.selectBoxIt.css" />--%>
 
 
-<script type="text/javascript" src=
-        <c:url value="/js/selectBoxIt/javascripts/jquery-ui.min.js"/>></script>
+<%--<script type="text/javascript" src=
+        <c:url value="/js/selectBoxIt/javascripts/jquery-ui.min.js"/>></script>--%>
 <%--<script src="http://gregfranko.com/jquery.selectBoxIt.js/js/jquery.selectBoxIt.min.js"></script>--%>
 <script type="text/javascript" src=
         <c:url value="/js/selectBoxIt/javascripts/jquery.selectBoxIt.min.js"/>></script>
+    <script type="text/javascript" src=
+            <c:url value="/js/jquery-easyui/jquery.easyui.min.js"/>></script>
+
 <script>
 
     var myDescription = null;
@@ -86,6 +91,8 @@
     var sellerItemInfoId = '${item.sellerItemInfoId}';
     var imageUrlPrefix = '${imageUrlPrefix}';
     var url = window.location.href;
+    var title = '${item.title}';
+    var subtitle = '${item.subtitle}';
     $(document).ready(function () {
         $("#showImgico").attr("src",path+"/img/new_list_ico.png");
         var categoryId = '${item.categoryid}';
@@ -118,13 +125,13 @@
                 hiddenTemPic();
             }
             $("#picDivShow").show();
-            $().image_editor.init("picUrls"); //编辑器的实例id
-            $().image_editor.show("apicUrls"); //上传图片的按钮id
+            /*$().image_editor.init("picUrls"); //编辑器的实例id
+            $().image_editor.show("apicUrls"); //上传图片的按钮id*/
         }
         _invokeGetData_type = null;
 
         $("#form").validationEngine();
-        myDescription = UE.getEditor('myDescription', ueditorToolBar);
+        /*myDescription = UE.getEditor('myDescription', ueditorToolBar);*/
 
 
         <c:forEach items="${lipa}" var="pa">
@@ -149,13 +156,12 @@
             listingType="FixedPriceItem";
         }
         $("select[name='listingType']").find("option[value='" + listingType + "']").attr("selected", true);
-        var title = '${item.title}';
+
         $("#incount").text(title.length);
         changeRadio(listingType);
 
-        $("select").selectBoxIt({
+        $("select").selectBoxIt({});
 
-        });
         if(site!=""&&categoryId!="") {
 
             if (localStorage.getItem("category_att_ID" + site + "" + categoryId) != null) {
@@ -225,15 +231,25 @@
          dicMap.put(attrValue.get(attrValue.keys[i]),dics);
          }*/
         $("#picMore").html("");
+        var morePicid="";
         for (var i = 0; i < attrValue.keys.length; i++) {
             /*var m = dicMap.get(attrValue.get(attrValue.keys[i]));
              for(var j = 0;j< m.keys.length;j++){
              $('#'+attrValue.get(attrValue.keys[i])).before("<input type='hidden' name='"+attrValue.get(attrValue.keys[i])+"' value='"+ m.get(j)+"'><img src='"+m.get(j)+"' height='50' width='50' />");
              }*/
             $("#picMore").append(addPic($("#moreAttrs tr:eq(0) th:eq(4)").find("input").val(), attrValue.get(attrValue.keys[i])));
-            $().image_editor.init($("#moreAttrs tr:eq(0) th:eq(4)").find("input").val().replace(" ","_") + "." + attrValue.get(attrValue.keys[i]).replace(" ","_")); //编辑器的实例id
+            /*$().image_editor.init($("#moreAttrs tr:eq(0) th:eq(4)").find("input").val().replace(" ","_") + "." + attrValue.get(attrValue.keys[i]).replace(" ","_")); //编辑器的实例id
 
             $().image_editor.show(attrValue.get(attrValue.keys[i]).replace(" ","_")); //上传图片的按钮id
+*/
+            if(i==attrValue.keys.length-1){
+                morePicid+='{"a":"'+$("#moreAttrs tr:eq(0) th:eq(4)").find("input").val().replace(" ","_") + '.' + attrValue.get(attrValue.keys[i]).replace(" ","_")+'","b":"'+attrValue.get(attrValue.keys[i]).replace(" ","_")+'"}';
+            }else{
+                morePicid+='{"a":"'+$("#moreAttrs tr:eq(0) th:eq(4)").find("input").val().replace(" ","_") + '.' + attrValue.get(attrValue.keys[i]).replace(" ","_")+'","b":"'+attrValue.get(attrValue.keys[i]).replace(" ","_")+'"},';
+            }
+        }
+        if(morePicid!=""){
+            morePicid="["+morePicid+"]";
         }
         var picstr = '';
         <c:if test="${lipic!=null}">
@@ -241,20 +257,20 @@
         showStr += " <section class='example'><ul class='gbin1-list' style='padding-left: 20px;' id='picture_" + ebayAccount + "'></ul></section> ";
         showStr += " <script type=text/plain id='picUrls_" + ebayAccount + "'/>";
 
-        showStr += "<div style='height: 110px;'></div> <div style='padding-left: 60px;'>&nbsp;&nbsp;&nbsp;&nbsp;" +
-                "<b class='new_button'><a href='javascript:void(0)' bsid='upload' id='apicUrls_" + ebayAccount + "' onclick='selectPic(this)' style=''>选择图片</a></b>" +
-                "<b class='new_button'><a href='javascript:void(0)' bsid='online' id='apicUrlsSKU_" + ebayAccount + "' onclick='selectPic(this)' style=''>选择SKU图片</a></b>" +
-                "<b class='new_button'><a href='javascript:void(0)' bsid='remote' id='apicUrlsOther_" + ebayAccount + "' onclick='selectPic(this)' style=''>选择外部图片</a></b>" +
-                "<b class='new_button'><a href='javascript:void(0)' id='apicUrlsclear_" + ebayAccount + "' onclick='clearAllPic(this)' style=''>清空所选图片</a></b>" +
+        showStr += "<div style='padding-left: 20px;'>&nbsp;&nbsp;&nbsp;&nbsp;" +
+                "<b class='new_button' style='margin: 10px;'><a href='javascript:void(0)' bsid='upload' id='apicUrls_" + ebayAccount + "' onclick='selectPic(this)' style=''>选择图片</a></b>" +
+                "<b class='new_button' style='margin: 10px;'><a href='javascript:void(0)' bsid='online' id='apicUrlsSKU_" + ebayAccount + "' onclick='selectPic(this)' style=''>选择SKU图片</a></b>" +
+                "<b class='new_button' style='margin: 10px;'><a href='javascript:void(0)' bsid='remote' id='apicUrlsOther_" + ebayAccount + "' onclick='selectPic(this)' style=''>选择外部图片</a></b>" +
+                "<b class='new_button' style='margin: 10px;'><a href='javascript:void(0)' id='apicUrlsclear_" + ebayAccount + "' onclick='clearAllPic(this)' style=''>清空所选图片</a></b>" +
                 "</div> </div> ";
         $("#showPics").append(showStr);
-        $().image_editor.init("picUrls_" + ebayAccount); //编辑器的实例id
+        /*$().image_editor.init("picUrls_" + ebayAccount); //编辑器的实例id
         $().image_editor.show("apicUrls_" + ebayAccount); //上传图片的按钮id
         $().image_editor.show("apicUrlsSKU_" + ebayAccount); //上传图片的按钮id
-        $().image_editor.show("apicUrlsOther_" + ebayAccount); //上传图片的按钮id
+        $().image_editor.show("apicUrlsOther_" + ebayAccount); //上传图片的按钮id*/
         <c:forEach items="${lipic}" var="lipic" varStatus="status">
         picstr += '<li><div style="position:relative"><input type="hidden" name="pic_mackid" value="${lipic.attr1}"/><input type="hidden" name="PictureDetails_' + ebayAccount + '.PictureURL" value="${lipic.value}">' +
-                '<img src=${lipic.value} height="80px" width="78px" />' +
+                '<img src='+chuLiPotoUrl("${lipic.value}")+' height="80px" width="78px" />' +
                 '<div style="text-align: right;background-color: dimgrey;"><img src="'+path+'/img/newpic_ico.png" onclick="removeThis(this)"></div>';
         picstr += "</li>";
         </c:forEach>
@@ -277,7 +293,7 @@
         <c:forEach items="${lipics}" var="pics">
         $("#picturemore_${pics.tamname}").append("<input type='hidden' name='VariationSpecificValue_${pics.tamname}' value='${pics.tamname}'>");
         <c:forEach items="${pics.litam}" var="pi">
-        $("#picturemore_${pics.tamname}").append("<li><div style='position:relative'><input type='hidden' name='pic_mackid_more' value='${pi.attr1}'/><input type='hidden' name='${pics.tamname}' value='${pi.value}'><img src='${pi.value}' height='80' width='78' /> <div style='text-align: right;background-color: dimgrey;'><img src='"+path+"/img/newpic_ico.png' onclick='removeThis(this)'></div></div></li>");
+        $("#picturemore_${pics.tamname}").append("<li><div style='position:relative'><input type='hidden' name='pic_mackid_more' value='${pi.attr1}'/><input type='hidden' name='${pics.tamname}' value='${pi.value}'><img src="+chuLiPotoUrl('${pi.value}')+" height='80' width='78' /> <div style='text-align: right;background-color: dimgrey;'><img src='"+path+"/img/newpic_ico.png' onclick='removeThis(this)'></div></div></li>");
         </c:forEach>
         </c:forEach>
 
@@ -313,14 +329,8 @@
         }else{
             $("#PrimaryCategoryshow").hide();
         }
-        $("div[name='cliSelect']").bind("click",function(event){
-            //console.log(this.tagName);
-            //console.log($(this).find("select").get(0).html())
-            console.log($(this).find("select").html());
-            //$(this).find("select").trigger("click");
-            //event.stopPropagation();
-        });
-
+        loadEditor(ebayAccount,morePicid);
+        initTitle();
     });
 </script>
 <style type="text/css">
@@ -420,6 +430,34 @@
     #moreAttrs tr{
         height: 32px;
     }
+
+    .new_view li:hover{
+        border:#35a5e5 1px solid;
+        box-shadow: 0 0 5px rgba(81, 203, 238, 1);
+        -webkit-box-shadow: 0 0 5px rgba(81, 203, 238, 1);
+        -moz-box-shadow: 0 0 5px rgba(81, 203, 238, 1);
+        border-radius: 5px;
+    }
+    .new_view li a{
+        text-decoration:none
+    }
+
+    .abc{
+        -moz-transform:scale(-1,1);
+        -webkit-transform:scale(-1,1);
+        -o-transform:scale(-1,1);
+        transform:scale(-1,1);
+        filter:FlipH;
+    }
+
+    .abc1 {
+        -moz-transform: scale(1, -1);
+        -webkit-transform: scale(1 , -1);
+        -o-transform: scale(1, -1);
+        transform: scale(1, -1);
+        filter: FlipV;
+    }
+
 </style>
 </head>
 <c:set var="item" value="${item}"/>
@@ -470,7 +508,7 @@
                 </c:forEach>
             </select>
         </div>--%>
-        <em style="color:#48a5f3"><input type="checkbox" name="OutOfStockControl" value="1" checked>是否开启无货在线</em>
+        <em style="color:#48a5f3">&nbsp;&nbsp;<input type="checkbox" name="OutOfStockControl" value="1" checked>是否开启无货在线 &nbsp;<img id="whzxhelp" width="18px" height="18px" src="/xsddWeb/img/help.png" /></em>
         <c:if test="${ta.apprange=='2'}">
             <em style="color:#48a5f3"><input type="checkbox" name="setView" value="1" checked>是否在描述中统计评价信息</em>
         </c:if>
@@ -487,7 +525,7 @@
     </li>
 
     <div id="titleDiv">
-        <li>
+        <li style="height: 35px;">
             <dt>物品标题</dt>
             <div class="new_left">
                 <input type="text" name="Title_${item.ebayAccount}" id="Title" style="width:400px;"
@@ -495,7 +533,7 @@
                        onkeyup="incount(this)"><span id="incount">0</span>/80
             </div>
         </li>
-        <li style="display:none;">
+        <li style="display:none;height: 35px;">
             <dt>子标题</dt>
             <div class="new_left">
                 <input type="text" name="SubTitle_${item.ebayAccount}" style="width:400px;" class="form-control"
@@ -503,7 +541,7 @@
                        value="${item.subtitle}" size="100">
             </div>
         </li>
-        <li class="flip" style=" padding-left:260px;padding-top:9px;" onclick="showSubTitle(this)"><img id="showImgico" src=""></li>
+        <li class="flip" style=" padding-left:260px;padding-bottom: 20px;height: 5px;" onclick="showSubTitle(this)"><img id="showImgico" src="" class="abc"></li>
     </div>
 
     <h1>分类</h1>
@@ -549,7 +587,7 @@
                         <th name="del" width="80px;" style='text-align: center;'><a href="javascript:void(0);" style="color: #110BF5;text-decoration: underline;" onclick="addMoreAttr(this);">添加属性</a></td>
                     </tr>
                 </table>
-                <div style="padding-left: 120px;height: 40px;padding-top: 16px;">
+                <div style="padding-left: 90px;height: 40px;padding-top: 16px;">
                     <b class="new_button_1"><a data-toggle="modal" href="javascript:void(0);" onclick="addInputSKU(this)">添加SKU项</a></b>
                     <%--<b class="new_button_1"><a data-toggle="modal" href="javascript:void(0);" onclick="addMoreAttr(this);">添加属性</a></b>--%>
                 </div>
@@ -573,7 +611,7 @@
                     <td colspan="3" id="trValue"></td>
                 </tr>--%>
             </table>
-            <div style="padding-left: 120px;height: 40px;padding-top: 16px;">
+            <div style="padding-left: 90px;height: 40px;padding-top: 16px;">
                 <b class="new_button_1"><a data-toggle="modal" href="javascript:void(0);" onclick="addValue();">添加新的物品属性</a></b>
             </div>
 
@@ -605,7 +643,7 @@
             <div style='display: block; vertical-align:text-bottom;height: 100px;'>
                 <script type=text/plain id='blankImg_main'></script>
                 <section class='example'><ul class='gbin1-list' style='padding-left: 60px;' id='showTemplatePic'></ul></section>
-                <div style="padding-left: 100px;">
+                <div style="padding-left: 60px;">
                     <b class="new_button" style="margin-top: 20px;"><a style="padding-bottom: 4px;" href='javascript:void(0)' id='blankImg_id' onclick='selectTemplatePic(this)'>选择模板图片</a></b>
                 </div>
             </div>
@@ -614,7 +652,7 @@
 
     <h1>商品描述</h1>
     <li style="height: 100%;padding-bottom: 20px;">
-        <dt>描述</dt>
+        <dt>&nbsp;</dt>
         <div class="new_left">
             <input type="hidden" name="Description" id="Description">
             <script id="myDescription" type="text/plain" style="width:875px;height:470px;">${item.description}</script>
@@ -672,7 +710,7 @@
         <li>
             <dt>保留价</dt>
             <div class="new_left">
-                <input type="text" name="ReservePrice" style="width:300px;" id="ReservePrice" class="form-control">
+                <input type="text" name="ReservePrice" style="width:300px;" id="ReservePrice" class="validate[required] form-control">
                 <label name="curName" style="border: 1px solid #cccccc;background-color: #eee;line-height: 26px;height: 26px;
                 position: absolute;text-align: center;width: 110px;left: 340px;-webkit-border-top-right-radius: 5px;-webkit-border-bottom-right-radius: 5px;"></label>
             </div>
@@ -680,7 +718,7 @@
         <li>
             <dt>一口价</dt>
             <div class="new_left">
-                <input type="text" name="BuyItNowPrice" style="width:300px;" id="BuyItNowPrice" class="form-control">
+                <input type="text" name="BuyItNowPrice" style="width:300px;" id="BuyItNowPrice" class="validate[required] form-control">
                 <label name="curName" style="border: 1px solid #cccccc;background-color: #eee;line-height: 26px;height: 26px;
                 position: absolute;text-align: center;width: 110px;left: 340px;-webkit-border-top-right-radius: 5px;-webkit-border-bottom-right-radius: 5px;"></label>
             </div>
@@ -688,7 +726,7 @@
         <li>
             <dt>销售比基数</dt>
             <div class="new_left">
-                <input type="text" name="ListingScale" id="ListingScale" class="form-control" style="width:100px;">
+                <input type="text" name="ListingScale" id="ListingScale" class="validate[required] form-control" style="width:100px;">
             </div>
             <%--<em style="color:#48a5f3"><input type="checkbox" name="SecondFlag" value="on">二次交易机会</em>--%>
         </li>
@@ -785,13 +823,12 @@
 </script>--%>
 </body>
 <script>
-    $().image_editor.init("blankImg_main"); //编辑器的实例id
-    $().image_editor.show("blankImg_id"); //上传图片的按钮id
+
     <c:if test="${templi!=null}">
     var strss="";
     <c:forEach items="${templi}" var="temp">
     strss += '<li><div style="position:relative"><input type="hidden" name="blankimg" value="${temp.value}">' +
-            '<img src="${temp.value}" height=\"80px\" width=\"80px\" />' +
+            '<img src="'+chuLiPotoUrl("${temp.value}")+'" height=\"80px\" width=\"80px\" />' +
             '<div style="text-align: right;background-color: dimgrey;"><img src="'+path+'/img/newpic_ico.png" onclick="removeThis(this)"></div></div></li>';
     </c:forEach>
     $("#showTemplatePic").append(strss);

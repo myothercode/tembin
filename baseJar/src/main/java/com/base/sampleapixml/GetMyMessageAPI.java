@@ -9,6 +9,7 @@ import com.base.utils.cache.SessionCacheSupport;
 import com.base.utils.common.DateUtils;
 import com.base.utils.threadpool.AddApiTask;
 import com.base.utils.xmlutils.SamplePaseXml;
+import org.apache.commons.lang.StringUtils;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.DocumentHelper;
@@ -56,7 +57,14 @@ public class GetMyMessageAPI {
             ms.setExpirationdate(date1);
         }
         ms.setResponseenabled(SamplePaseXml.getSpecifyElementText(message,"ResponseDetails","ResponseEnabled"));
-        ms.setResponseurl(SamplePaseXml.getSpecifyElementText(message,"ResponseDetails","ResponseURL"));
+        String responseURL=SamplePaseXml.getSpecifyElementText(message, "ResponseDetails", "ResponseURL");
+        if(StringUtils.isNotBlank(responseURL)&&responseURL.length()>1000){
+            responseURL=responseURL.substring(0,1000);
+        }
+        if(StringUtils.isNotBlank(responseURL)){
+            responseURL="";
+        }
+        ms.setResponseurl(responseURL);
         ms.setFolderid(SamplePaseXml.getSpecifyElementText(message,"Folder","FolderID"));
         ms.setLoginAccountId(accountId);
         ms.setEbayAccountId(ebay);

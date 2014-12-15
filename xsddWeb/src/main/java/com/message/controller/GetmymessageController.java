@@ -1,6 +1,5 @@
 package com.message.controller;
 
-import com.base.aboutpaypal.domain.PaypalVO;
 import com.base.aboutpaypal.service.PayPalService;
 import com.base.database.trading.model.*;
 import com.base.domains.CommonParmVO;
@@ -364,21 +363,14 @@ public class GetmymessageController extends BaseAction{
         List<String> palpays=new ArrayList<String>();
         List<String> grossdetailamounts=new ArrayList<String>();
         List<String> pictures=new ArrayList<String>();
-        List<PaypalVO> accs=new ArrayList<PaypalVO>();
+        List<String> accs=new ArrayList<String>();
         for(TradingOrderGetOrders order:lists){
             List<TradingOrderGetSellerTransactions> sellerTransactions=iTradingOrderGetSellerTransactions.selectTradingOrderGetSellerTransactionsByTransactionId(order.getTransactionid());
             if(sellerTransactions!=null&&sellerTransactions.size()>0){
-                palpays.add(sellerTransactions.get(0).getExternaltransactionid());
-                UsercontrollerEbayAccount u= iUsercontrollerEbayAccount.selectByEbayAccount(order.getSelleruserid());
-                Map map =new HashMap();
-                map.put("paypalId",u.getId());
-                map.put("transactionID",sellerTransactions.get(0).getExternaltransactionid());
-                PaypalVO acc = payPalService.getTransactionDetails(map);
-                /*Map map =new HashMap();
-                map.put("paypalId",1l);
-                map.put("transactionID","4RJ37607494399203");
-                PaypalVO acc = payPalService.getTransactionDetails(map);*/
-                accs.add(acc);
+                if(StringUtils.isNotBlank(sellerTransactions.get(0).getExternaltransactionid())){
+                    palpays.add(sellerTransactions.get(0).getExternaltransactionid());
+                    accs.add(sellerTransactions.get(0).getPaypalprice());
+                }
             }else{
                 palpays.add("");
             }
@@ -532,21 +524,14 @@ public class GetmymessageController extends BaseAction{
             List<String> palpays=new ArrayList<String>();
             List<String> grossdetailamounts=new ArrayList<String>();
             List<String> pictures=new ArrayList<String>();
-            List<PaypalVO> accs=new ArrayList<PaypalVO>();
+            List<String> accs=new ArrayList<String>();
             for(TradingOrderGetOrders order:lists){
                 List<TradingOrderGetSellerTransactions> sellerTransactions=iTradingOrderGetSellerTransactions.selectTradingOrderGetSellerTransactionsByTransactionId(order.getTransactionid());
                 if(sellerTransactions!=null&&sellerTransactions.size()>0){
-                    palpays.add(sellerTransactions.get(0).getExternaltransactionid());
-                    UsercontrollerEbayAccount u= iUsercontrollerEbayAccount.selectByEbayAccount(order.getSelleruserid());
-                    Map map =new HashMap();
-                    map.put("paypalId",u.getId());
-                    map.put("transactionID",sellerTransactions.get(0).getExternaltransactionid());
-                    PaypalVO acc = payPalService.getTransactionDetails(map);
-                  /*  Map map =new HashMap();
-                    map.put("paypalId",1l);
-                    map.put("transactionID","4RJ37607494399203");
-                    PaypalVO acc = payPalService.getTransactionDetails(map);*/
-                    accs.add(acc);
+                    if(StringUtils.isNotBlank(sellerTransactions.get(0).getExternaltransactionid())){
+                        palpays.add(sellerTransactions.get(0).getExternaltransactionid());
+                        accs.add(sellerTransactions.get(0).getPaypalprice());
+                    }
                 }else{
                     palpays.add("");
                 }
@@ -708,16 +693,17 @@ public class GetmymessageController extends BaseAction{
         UsercontrollerDevAccountExtend d = new UsercontrollerDevAccountExtend();
         d.setApiSiteid("0");
         //真实环境
-      /*  UsercontrollerDevAccountExtend d=new UsercontrollerDevAccountExtend();
+    /*    UsercontrollerDevAccountExtend d=new UsercontrollerDevAccountExtend();
         d.setApiDevName("5d70d647-b1e2-4c7c-a034-b343d58ca425");
         d.setApiAppName("sandpoin-23af-4f47-a304-242ffed6ff5b");
         d.setApiCertName("165cae7e-4264-4244-adff-e11c3aea204e");
         d.setApiCompatibilityLevel("881");
         d.setApiSiteid("0");*/
+
         Map map=new HashMap();
         d.setApiCallName(APINameStatic.GetMyMessages);
         request.getSession().setAttribute("dveId", d);
-       Date startTime2= com.base.utils.common.DateUtils.subDays(new Date(),6);
+        Date startTime2= com.base.utils.common.DateUtils.subDays(new Date(),6);
         Date endTime= DateUtils.addDays(startTime2, 6);
     /*    Date startTime2= com.base.utils.common.DateUtils.subDays(new Date(),120);
         Date endTime= DateUtils.addDays(startTime2, 120);*/
@@ -730,8 +716,8 @@ public class GetmymessageController extends BaseAction{
         //测试环境
         String token=userInfoService.getTokenByEbayID(ebay);
         //真实环境
-       /* String token="AgAAAA**AQAAAA**aAAAAA**jek4VA**nY+sHZ2PrBmdj6wVnY+sEZ2PrA2dj6AFlIWnC5iEpAidj6x9nY+seQ**tSsCAA**AAMAAA**y8BaJPw6GUdbbbco8zXEwRR4Ttr9sLd78jL0FyYa0yonvk5hz1RY6DtKkaDtn9NuzluKeFZoqsNbujZP48S4QZhHVa5Dp0bDGqBdKaosolzsrPDm8qozoxbsTiWY8X/M5xev/YU2zJ42/JRGDlEdnQhwCASG1BcSo+DqXuG3asbj0INJr4/HsArf8cCYsPQCtUDkq5QJY6Rvil+Kla/dGhViTQ3gt7a4t3KjxKH+/jlhDU/6sUEKlvb2nY1gCmX8S9pU48c+4Vy6G6NpfcGUcIG/TXFWBTqU0R+v+/6DOIfDW8s90rrLSVMGFqnRxA2sexdEmVhyF5csBmv9+TVfjdyEZK5UgvDqWJHesuDMFTr0KIc8EtdnTQaE3YeZch15DdoEbqcyyBQBZHidBPdDHz/DkpTg7iq1953yKodm2y0mW6aaYAfc5beW+PoqMW8C3WwGJmWZqh3dBi+QEKznEJ9SRg43Bc3q2344JFY7YpIEfJDaQ36BHRcIZxLew8v7RIGL5YYO1BBdTolVV9/eMCQDsUB0mUeMYjxnH5w0K/6CDmJ9WNMQTblNol0x3vhJbil1L/CMP9KGEHj5Yqx0003MLL9Yod7nL89Zpy+a8I/E5byxFt21KZTGE90Ot0LyLpRXsotDwIm5+ZdvATsU6mGADX4tk970CpCeM487v9fn1opouaCBvknCINqXoSeGXLQ7uZFpeqkWts1lIWh9vEuuiuZa4vNoL7aCr+93LTFnsO6AsZp7dmboQcI96I/o";
-        */
+      /*  String token="AgAAAA**AQAAAA**aAAAAA**kRx8VA**nY+sHZ2PrBmdj6wVnY+sEZ2PrA2dj6AGloWiAZCCogSdj6x9nY+seQ**blACAA**AAMAAA**d0Px77QqgOj2GHC7XDNXkRKusIUT1y5uPdXz87hiC9ghsh75Q6hQb3BRbKwkJsFz3BlORq7L8lEiHsqBnFzd65yK1MJ/CQMsY165Q+4Rw664b0dP3vnPzjeN3cfKOkDwwoLqFGrMclvrrpntfSDBcO/r1QaC+CUB0GD6UiuhdyhBIPd1gb+z0KmYCTwpFENyHDzRtiTcT5qCt5eYfYzsve2e6O1c+NsTyBgJzUD1v78aIluxKhoC+huF9Uxscm2DU4mOr0JYONHJCs3dN18fKLp0Dc3hSvmPSIaxPmjcvlVfWuVPtw6KwXvxw8U8PGUdfACzb9ZIBiUEEhFHU6xv73egj2hkN/ZTJr7yu3l+qvDJFHLlgBMoprseFc0tmDi/hbRUILxuOy8TOpGri71DoQBzwuQxxrG5GMJ77NFLOLYxsH6/gpA/7+vFT1X5CUsIv+BYZyY7g3RLZWYem3Gqv9T+sVNC/DEhxmdO1Yx49rAwHcUw3aeXTrKpa1xCNkgHg4Feheu5V6Pu9lb5DQUC9YidqELrLEvos6yoiH31myqAmI72Gt4i7SBjwS8k5O+7xjxhDrKpg0IFwCdQk4PEByoBnud/dDNyCZkZdCqTkb36aqmgdnTANz9M7DtcQTH/Lf6h+Suj3RVSeFfDZcJJDax7Ie5qwte+oHJ6yTuBZ2dt4hMmKZIZwn26Ei+DUfCPhx6nEqcAOf6Sbxf8RxkWJ2pLcIvbifrditHIuyGjOf4yMoIHOcSp6FsVbmkMleBG";
+       */
         map.put("token", token);
         map.put("detail", "ReturnHeaders");
         map.put("startTime", start);

@@ -5,12 +5,14 @@ import com.base.database.publicd.mapper.PublicItemInformationMapper;
 import com.base.database.publicd.model.*;
 import com.base.domains.querypojos.ItemInformationQuery;
 import com.base.mybatis.page.Page;
-import com.base.utils.cache.SessionCacheSupport;
 import com.base.utils.common.ObjectUtils;
 import com.base.utils.exception.Asserts;
 import com.publicd.service.*;
 import org.apache.commons.lang.StringUtils;
 import org.apache.poi.hssf.usermodel.*;
+import org.apache.poi.xssf.usermodel.XSSFRow;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,9 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.servlet.ServletOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -195,8 +195,15 @@ public class PublicItemInformationImpl implements com.publicd.service.IPublicIte
     }
 
     @Override
-    public void importItemInformation(File file) throws Exception {
+    public void importItemInformation(File file ,String fileName) throws Exception {
         InputStream inputStream=new FileInputStream(file);
+        if(fileName.contains("xlsx")){
+            importExcel2007(inputStream);
+        }else{
+            importExcel2003(inputStream);
+        }
+    }
+    private void importExcel2003(InputStream inputStream) throws Exception{
         HSSFWorkbook workbook = new HSSFWorkbook(inputStream);
         int total = workbook.getNumberOfSheets();
         for(int i=0;i<total;i++){
@@ -213,10 +220,10 @@ public class PublicItemInformationImpl implements com.publicd.service.IPublicIte
                 String price="";
                 String discription="";
                 if(row.getCell(0)!=null){
-                   name=row.getCell(0).toString();
+                    name=row.getCell(0).toString();
                 }
                 if(row.getCell(1)!=null){
-                   sku=row.getCell(1).toString();
+                    sku=row.getCell(1).toString();
                 }
                 if(row.getCell(2)!=null){
                     length=row.getCell(2).toString();
@@ -287,7 +294,97 @@ public class PublicItemInformationImpl implements com.publicd.service.IPublicIte
             }
         }
     }
+    private void importExcel2007(InputStream inputStream) throws Exception{
+        XSSFWorkbook workbook = new XSSFWorkbook(inputStream);
+        int total = workbook.getNumberOfSheets();
+        for(int i=0;i<total;i++){
+            XSSFSheet sheet = workbook.getSheetAt(i);
+            for(int j=1;j<=sheet.getLastRowNum();j++){
+                PublicItemInformation itemInformation=new PublicItemInformation();
+                XSSFRow row=sheet.getRow(j);
+                String name="";
+                String sku="";
+                String length="";
+                String width="";
+                String height="";
+                String weight="";
+                String price="";
+                String discription="";
+                if(row.getCell(0)!=null){
+                    name=row.getCell(0).toString();
+                }
+                if(row.getCell(1)!=null){
+                    sku=row.getCell(1).toString();
+                }
+                if(row.getCell(2)!=null){
+                    length=row.getCell(2).toString();
+                }
+                if(row.getCell(3)!=null){
+                    width=row.getCell(3).toString();
+                }
+                if(row.getCell(4)!=null){
+                    height=row.getCell(4).toString();
+                }
+                if(row.getCell(5)!=null){
+                    weight=row.getCell(5).toString();
+                }
+                if(row.getCell(6)!=null){
+                    price=row.getCell(6).toString();
+                }
+                if(row.getCell(7)!=null){
+                    discription=row.getCell(7).toString();
+                }
+                /*String inventory=row.getCell(6).toString();
+                String custom=row.getCell(7).toString();*/
+                PublicItemInformation itemInformation1=selectItemInformationBySKU(sku);
+                if(itemInformation1!=null){
+                    continue;
+                }else{
+                    if(StringUtils.isNotBlank(name)){
+                        itemInformation.setName(name);
+                    }
+                    if(StringUtils.isNotBlank(sku)){
+                        itemInformation.setSku(sku);
+                    }
+                    if(StringUtils.isNotBlank(length)||StringUtils.isNotBlank(width)||StringUtils.isNotBlank(height)){
+                        PublicItemInventory inventory=new PublicItemInventory();
+                        if(StringUtils.isNotBlank(length)){
+                            inventory.setLength(Double.valueOf(length));
+                        }
+                        if(StringUtils.isNotBlank(width)){
+                            inventory.setLength(Double.valueOf(width));
+                        }
+                        if(StringUtils.isNotBlank(height)){
+                            inventory.setLength(Double.valueOf(height));
+                        }
+                        iPublicItemInventory.saveItemInventory(inventory);
+                        itemInformation.setInventoryId(inventory.getId());
+                    }
+                    if(StringUtils.isNotBlank(weight)){
+                        PublicItemCustom custom=new PublicItemCustom();
+                        custom.setWeight(Double.valueOf(weight));
+                        iPublicItemCustom.saveItemCustom(custom);
+                        itemInformation.setCustomId(custom.getId());
+                    }
+                    if(StringUtils.isNotBlank(price)){
+                        PublicItemSupplier supplier=new PublicItemSupplier();
+                        supplier.setPrice(Double.valueOf(price));
+                        iPublicItemSupplier.saveItemSupplier(supplier);
+                        itemInformation.setSupplierId(supplier.getId());
+                    }
+                    if(StringUtils.isNotBlank(discription)){
+                      /*  discription.replaceAll("  ","<br/>");*/
+                        itemInformation.setDescription(discription);
+                    }
+                    saveItemInformation(itemInformation);
+                }
 
+               /* for(int x=0;x<8;x++){
+
+                }*/
+            }
+        }
+    }
     @Override
     public List<PublicItemInformation> selectItemInformationByTypeIsNull() {
         PublicItemInformationExample example=new PublicItemInformationExample();

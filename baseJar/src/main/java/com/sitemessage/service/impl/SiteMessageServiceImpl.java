@@ -100,7 +100,14 @@ public class SiteMessageServiceImpl implements SiteMessageService {
             try {
                 SystemLogUtils.saveLog(systemLog);
             } catch (Exception e) {
-                logger.error("记录日志错误!"+taskMessageVO.getMessageTo()+";"+taskMessageVO.getMessageContext(),e);
+                logger.error("记录日志错误!尝试重新记录"+taskMessageVO.getMessageTo()+";"+taskMessageVO.getMessageContext(),e);
+                systemLog.setEventdesc(StringEscapeUtils.escapeHtml(systemLog.getEventdesc()));
+                try {
+                    SystemLogUtils.saveLog(systemLog);
+                } catch (Exception e1) {
+                    logger.error("尝试失败"+taskMessageVO.getMessageTo()+";"+taskMessageVO.getMessageContext(),e1);
+                }
+
             }
             return;}
 
@@ -109,6 +116,12 @@ public class SiteMessageServiceImpl implements SiteMessageService {
                 SystemLogUtils.saveLog(systemLog);
             } catch (Exception e) {
                 logger.error("记录日志错误!"+taskMessageVO.getMessageTo()+";"+taskMessageVO.getMessageContext(),e);
+                systemLog.setEventdesc(StringEscapeUtils.escapeHtml(systemLog.getEventdesc()));
+                try {
+                    SystemLogUtils.saveLog(systemLog);
+                } catch (Exception e1) {
+                    logger.error("尝试失败"+taskMessageVO.getMessageTo()+";"+taskMessageVO.getMessageContext(),e1);
+                }
             }
             return;
         }
@@ -117,7 +130,11 @@ public class SiteMessageServiceImpl implements SiteMessageService {
             publicSitemessageMapper.insertSelective(taskMessageVO.toPublicSiteMessage());
         } catch (Exception e) {
             taskMessageVO.setMessageContext(StringEscapeUtils.escapeHtml(taskMessageVO.getMessageContext()));
-            publicSitemessageMapper.insertSelective(taskMessageVO.toPublicSiteMessage());
+            try {
+                publicSitemessageMapper.insertSelective(taskMessageVO.toPublicSiteMessage());
+            } catch (Exception e1) {
+                logger.error("记录站点消息失败!"+taskMessageVO.getMessageContext(),e1);
+            }
         }
     }
 

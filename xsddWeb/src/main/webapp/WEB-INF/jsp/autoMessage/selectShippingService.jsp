@@ -50,11 +50,27 @@
             $("#serviceTable1").selectDataAfterSetParm({"bedDetailVO.deptId":"", "isTrue":0});
         }
         function makeOption3(json){
+            var txtBloodType= W.document.getElementById("txtBloodType");
             var htm = "<input type=\"checkbox\"  name=\"templateId\" onclick=\"selectService(this);\" value=" + json.id + " value1='"+json.subject+"'>";
+            var fonts=$(txtBloodType).find("font");
+            for(var i=0;i<fonts.length;i++){
+                var id=$(fonts[i]).attr("id");
+                if(id==(json.id+"")){
+                    htm = "<input checked type=\"checkbox\"  name=\"templateId\" onclick=\"selectService(this);\" value=" + json.id + " value1='"+json.subject+"'>";
+                }
+            }
             return htm;
         }
         function makeOption4(json){
-            var htm = "<input type=\"checkbox\"  name=\"templateId1\" onclick=\"selectService(this);\" value=" + json.id + " value1='"+json.subject+"'>";
+            var txtBloodType= W.document.getElementById("txtBloodType");
+            var fonts=$(txtBloodType).find("font");
+            var  htm="<input type=\"checkbox\"  name=\"templateId1\" onclick=\"selectService(this);\" value=" + json.id + " value1='"+json.subject+"'>";
+            for(var i=0;i<fonts.length;i++){
+                var id=$(fonts[i]).attr("id");
+                if(id==(json.id+"")){
+                    htm="<input checked type=\"checkbox\"  name=\"templateId1\" onclick=\"selectService(this);\" value=" + json.id + " value1='"+json.subject+"'>";
+                }
+            }
             return htm;
         }
         function closedialog(){
@@ -69,14 +85,17 @@
                 }else{
                     name+="<font id='"+$(obj).val()+"' value1='"+$(obj).attr("value1")+"' name='"+$(obj).attr("name")+"'>"+(","+$(obj).attr("value1"))+"</font>";
                 }
-                $(txtBloodType).append($(name));
+                var asd= $(txtBloodType).find("font[id="+$(obj).val()+"]");
+                if(asd.length==0){
+                    $(txtBloodType).append($(name));
+                }
             }else{
                 var lable= W.document.getElementById($(obj).val());
                 $(lable).remove();
             }
         }
         function submitCommit(){
-            /*var s= W.document.getElementById("shippingServiceIds");
+            var s= W.document.getElementById("shippingServiceIds");
             var s1= W.document.getElementById("internationalShippingServiceIds");
             var txtBloodType= W.document.getElementById("txtBloodType");
             var service=$("input[type=checkbox][name=templateId]:checked");
@@ -105,7 +124,7 @@
             }
             $(s).val(shippingServiceIds);
             $(s1).val(internationalShippingServiceIds);
-            $(txtBloodType).val(name+";"+name1);*/
+    /*        $(txtBloodType).val(name+";"+name1);*/
             W.selectShippingService1.close();
         }
     </script>

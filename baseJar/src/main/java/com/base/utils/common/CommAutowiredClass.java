@@ -16,4 +16,11 @@ public class CommAutowiredClass {
     public String serviceItemUrl;//访问商品信息url
     @Value("${EBAY.FINDING.KEY.API.URL}")
     public String findingkeyapiUrl;//访问商品分类信息
+
+
+    /**测试环境发布预览需要的帐号*/
+    @Value("${SANDBOX_EBAY_ID}")
+    public String sandboxEbayID;
+    @Value(("${SANDBOX_DEV_ID}"))
+    public String snadboxDevID;
 }

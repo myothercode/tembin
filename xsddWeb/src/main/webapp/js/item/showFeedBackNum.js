@@ -47,7 +47,6 @@ function getShowData(){
             $(tabledom).before(data['htmlStr']);
         },
         error: function(textStatus){
-            alert(textStatus);
             alert("fail");
         }
     });

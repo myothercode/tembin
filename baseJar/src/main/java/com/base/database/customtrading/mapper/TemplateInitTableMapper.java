@@ -14,4 +14,5 @@ public interface TemplateInitTableMapper {
      * @return
      */
     List<TemplateInitTableQuery> selectByTemplateInitTableList(Map map, Page page);
+    List<TemplateInitTableQuery> selectTemplateType(Map map);
 }

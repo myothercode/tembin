@@ -28,7 +28,7 @@ public interface IPublicItemInformation {
 
     void exportItemInformation(List<PublicItemInformation> list,String outputFile,ServletOutputStream outputStream) throws Exception;
 
-    void importItemInformation(File file) throws Exception;
+    void importItemInformation(File file,String fileName) throws Exception;
 
     List<PublicItemInformation> selectItemInformationByTypeIsNull();
 

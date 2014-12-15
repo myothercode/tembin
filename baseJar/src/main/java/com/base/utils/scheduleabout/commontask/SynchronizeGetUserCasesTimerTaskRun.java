@@ -23,7 +23,13 @@ public class SynchronizeGetUserCasesTimerTaskRun extends BaseScheduledClass impl
 
     public void synchronizeOrders(List<TaskGetUserCases> TaskGetUserCases){
         IScheduleGetUserCasesTimer iScheduleGetUserCasesTimer = (IScheduleGetUserCasesTimer) ApplicationContextUtil.getBean(IScheduleGetUserCasesTimer.class);
-        iScheduleGetUserCasesTimer.synchronizeUserCases(TaskGetUserCases);
+        try {
+            iScheduleGetUserCasesTimer.synchronizeUserCases(TaskGetUserCases);
+        } catch (Exception e) {
+            logger.error("定时同步纠纷出错:",e);
+            TempStoreDataSupport.removeData("task_"+getScheduledType());
+            e.printStackTrace();
+        }
         /*UserInfoService userInfoService=(UserInfoService) ApplicationContextUtil.getBean(UserInfoService.class);*/
 
 
@@ -67,11 +73,12 @@ public class SynchronizeGetUserCasesTimerTaskRun extends BaseScheduledClass impl
 
     @Override
     public Integer crTimeMinu() {
-        ITaskGetUserCases iTaskGetUserCases = (ITaskGetUserCases) ApplicationContextUtil.getBean(ITaskGetUserCases.class);
+        /*ITaskGetUserCases iTaskGetUserCases = (ITaskGetUserCases) ApplicationContextUtil.getBean(ITaskGetUserCases.class);
         List<TaskGetUserCases> list=iTaskGetUserCases.selectTaskGetUserCasesByFlagIsFalseOrderBysaveTime();
         if(list.size()>0&&list.size()<=50){
             return 60;
         }
-        return 2;
+        return 2;*/
+        return 30;
     }
 }

@@ -21,6 +21,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -93,7 +94,8 @@ public class TimeListingItemTaskRunAble extends BaseScheduledClass implements Sc
             Long devId = userVo.getDefaultDevAccount();//获取到开发帐号
             if(ObjectUtils.isLogicalNull(devId)){continue;}
             try {
-                UsercontrollerDevAccountExtend devInfo= userInfoService.getDevInfo(devId);
+                //UsercontrollerDevAccountExtend devInfo= userInfoService.getDevInfo(devId);
+                UsercontrollerDevAccountExtend devInfo = userInfoService.getDevByOrder(new HashMap());
                 devInfo.setApiSiteid(withBLOBs.getStateId());
                 devInfo.setApiCallName(withBLOBs.getApiMethod());
                 AddApiTask addApiTask = new AddApiTask();

@@ -23,7 +23,12 @@ public class SynchronizeGetTimerOrdersTaskRun extends BaseScheduledClass impleme
 
     public void synchronizeOrders(List<TaskGetOrders> taskGetOrders){
         IScheduleGetTimerOrders iScheduleGetTimerOrders=(IScheduleGetTimerOrders) ApplicationContextUtil.getBean(IScheduleGetTimerOrders.class);
-        iScheduleGetTimerOrders.synchronizeOrders(taskGetOrders);
+        try {
+            iScheduleGetTimerOrders.synchronizeOrders(taskGetOrders);
+        } catch (Exception e) {
+            logger.error("定时同步订单失败task:",e);
+            TempStoreDataSupport.removeData("task_"+getScheduledType());
+        }
     }
     @Override
     public void run(){
@@ -38,7 +43,7 @@ public class SynchronizeGetTimerOrdersTaskRun extends BaseScheduledClass impleme
         ITaskGetOrders iTaskGetOrders = (ITaskGetOrders) ApplicationContextUtil.getBean(ITaskGetOrders.class);
         list = iTaskGetOrders.selectTaskGetOrdersByFlagIsFalseOrderBysaveTime();
         synchronizeOrders(list);
-        TempStoreDataSupport.removeData("task_"+getScheduledType());
+
     }
 
     /**只从集合记录取多少条*/
@@ -64,12 +69,13 @@ public class SynchronizeGetTimerOrdersTaskRun extends BaseScheduledClass impleme
 
     @Override
     public Integer crTimeMinu() {
-        ITaskGetOrders iTaskGetOrders = (ITaskGetOrders) ApplicationContextUtil.getBean(ITaskGetOrders.class);
+     /*   ITaskGetOrders iTaskGetOrders = (ITaskGetOrders) ApplicationContextUtil.getBean(ITaskGetOrders.class);
         List<TaskGetOrders> list=iTaskGetOrders.selectTaskGetOrdersByFlagIsFalseOrderBysaveTime();
         if(list.size()>0&&list.size()<=50){
             return 60;
         }else{
             return 2;
-        }
+        }*/
+        return 10;
     }
 }

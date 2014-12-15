@@ -2,6 +2,7 @@ package com.trading.service;
 
 import com.base.database.trading.model.TradingFeedBackDetail;
 import com.base.domains.querypojos.FeedBackReportQuery;
+import com.base.mybatis.page.Page;
 
 import java.util.List;
 import java.util.Map;
@@ -21,4 +22,6 @@ public interface ITradingFeedBackDetail {
     TradingFeedBackDetail selectFeedBackDetailByBuyerAndFeedBackId(String buyer,String feedBackId);
 
     List<FeedBackReportQuery> selectFeedBackReportList(String type);
+
+    List<TradingFeedBackDetail> selectClientAssessFeedBackList(Map m, Page page);
 }

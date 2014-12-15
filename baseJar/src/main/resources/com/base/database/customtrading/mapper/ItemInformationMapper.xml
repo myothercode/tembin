@@ -76,6 +76,7 @@
             and itemInformation.create_user=#{userID}
         </if>
         group by itemInformation.id
+        order by itemInformation.create_time
         /*-------------------------*/
        <!-- select itemInformation.*,
         dic.config_name typeName,

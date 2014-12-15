@@ -31,6 +31,11 @@ import com.publicd.service.*;
 import com.trading.service.*;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.cookie.DateParseException;
 import org.apache.log4j.Logger;
 import org.dom4j.Document;
@@ -47,6 +52,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
+import java.net.URI;
 import java.net.URL;
 import java.net.UnknownHostException;
 import java.util.*;
@@ -739,6 +745,7 @@ public class TradingItemImpl implements com.trading.service.ITradingItem {
             List<TradingAttrMores> litam = this.iTradingAttrMores.selectByParnetid(tpd.getId(),"PictureURL");
             List<String> listr = new ArrayList<String>();
             for(TradingAttrMores tam : litam){
+                Asserts.assertTrue(tam.getAttr1()!=null&&!"".equals(tam.getAttr1()),"图片未成功上传，请重新选择图片上传");
                 List<TradingListingpicUrl> liplu = this.iTradingListingPicUrl.selectByMackId(tam.getAttr1());
                 if(liplu!=null&&liplu.size()>0){
                     TradingListingpicUrl plu = liplu.get(0);
@@ -992,10 +999,10 @@ public class TradingItemImpl implements com.trading.service.ITradingItem {
                                 if (imgel != null && imgel.size() > 0) {
                                     for (int j = 0; j < imgel.size(); j++) {
                                         String picUrl = imgel.get(j).attr("src");
-                                        if (picUrl.indexOf("?") == -1) {
-                                            picUrl = picUrl;
-                                        } else {
+                                        if (picUrl.indexOf("?")>0 ) {
                                             picUrl = picUrl.substring(0, picUrl.indexOf("?"));
+                                        } else {
+                                            picUrl = picUrl;
                                         }
                                         URL url = new URL(picUrl);
                                         //打开链接
@@ -1005,15 +1012,25 @@ public class TradingItemImpl implements com.trading.service.ITradingItem {
                                         //超时响应时间为5秒
                                         conn.setConnectTimeout(5 * 1000);
                                         //通过输入流获取图片数据
-                                        InputStream inStream = conn.getInputStream();
+                                        InputStream inStream = null;
+                                        try{
+                                            inStream = conn.getInputStream();
+                                        }catch(Exception e){
+                                            continue;
+                                        }
                                         String stuff = MyStringUtil.getExtension(picUrl, "");
-                                        String fileName = FtpUploadFile.ftpUploadFile(inStream, uu.getUserLoginId() + "/" + tradingItem.getSku(), stuff);
+                                        String fileName = null;
+                                        try {
+                                            fileName = FtpUploadFile.ftpUploadFile(inStream, uu.getUserLoginId() + "/" + tradingItem.getSku().toLowerCase(), stuff);
+                                        }catch(Exception e){
+                                            continue;
+                                        }
                                         inStream.close();
                                         String picUrls = "";
                                         if (fileName == null) {
                                             picUrls = picUrl;
                                         } else {
-                                            picUrls = image_url_prefix + uu.getUserLoginId() + "/" + tradingItem.getSku() + "/" + fileName;
+                                            picUrls = image_url_prefix + uu.getUserLoginId() + "/" + tradingItem.getSku().toLowerCase() + "/" + fileName;
                                         }
                                         TradingAttrMores tam = new TradingAttrMores();
                                         tam.setParentId(tradingItem.getId());
@@ -1278,10 +1295,10 @@ public class TradingItemImpl implements com.trading.service.ITradingItem {
                                     }else{
                                         targetUrl = str;
                                     }
-                                    String fileNameTons = this.unFtpPoto(targetUrl,uu.getUserLoginId(),tradingItem.getSku());
+                                    String fileNameTons = this.unFtpPoto(targetUrl,uu.getUserLoginId(),(tradingItem.getSku()==null?"null":tradingItem.getSku().toLowerCase()));
                                     String fileUrl = "";
                                     if(StringUtils.isNotEmpty(fileNameTons)){
-                                        fileUrl = image_url_prefix + uu.getUserLoginId() + "/" + item.getSKU() + "/" + fileNameTons;
+                                        fileUrl = image_url_prefix + uu.getUserLoginId() + "/" + (tradingItem.getSku()==null?"null":tradingItem.getSku().toLowerCase()) + "/" + fileNameTons;
                                     }else{
                                         fileUrl = targetUrl;
                                     }
@@ -1303,17 +1320,32 @@ public class TradingItemImpl implements com.trading.service.ITradingItem {
                     tpicd.setParentId(tradingItem.getId());
                     tpicd.setParentUuid(tradingItem.getUuid());
                     tpicd.setCreateUser(kml.getUserId());
+                    List<String> picurl = picd.getPictureURL();
                     //下载范本列表中的小图片
-                    String targetUrl = item_list_icon_url+tradingItem.getItemId()+".jpg";
-                    String fileNameTons = this.unFtpPoto(targetUrl,uu.getUserLoginId(),tradingItem.getSku());
-                    if(StringUtils.isNotEmpty(fileNameTons)){
-                        tpicd.setGalleryurl(image_url_prefix + uu.getUserLoginId() + "/" + item.getSKU() + "/" + fileNameTons);
+                    if(tpicd.getGalleryurl()!=null&&tpicd.getGalleryurl()!=""){
+                        //String targetUrl = item_list_icon_url+tradingItem.getItemId()+".jpg";
+                        String targetUrl = tpicd.getGalleryurl();
+                        if(targetUrl.indexOf("?")>0||targetUrl.indexOf("?")>0){
+                            targetUrl = targetUrl.substring(0,targetUrl.indexOf("?"));
+                        }
+                        String fileNameTons = this.unFtpPoto(targetUrl,uu.getUserLoginId(),(tradingItem.getSku()==null?"null":tradingItem.getSku().toLowerCase()));
+                        if(StringUtils.isNotEmpty(fileNameTons)){
+                            tpicd.setGalleryurl(image_url_prefix + uu.getUserLoginId() + "/" + (tradingItem.getSku()==null?"null":tradingItem.getSku().toLowerCase()) + "/" + fileNameTons);
+                        }else{
+                            tpicd.setGalleryurl(targetUrl);
+                        }
                     }else{
-                        tpicd.setGalleryurl(targetUrl);
+                        String targetUrl = item_list_icon_url+tradingItem.getItemId()+".jpg";
+                        String fileNameTons = this.unFtpPoto(targetUrl,uu.getUserLoginId(),(tradingItem.getSku()==null?"null":tradingItem.getSku().toLowerCase()));
+                        if(StringUtils.isNotEmpty(fileNameTons)){
+                            tpicd.setGalleryurl(image_url_prefix + uu.getUserLoginId() + "/" + (tradingItem.getSku()==null?"null":tradingItem.getSku().toLowerCase()) + "/" + fileNameTons);
+                        }else{
+                            tpicd.setGalleryurl(targetUrl);
+                        }
                     }
                     this.iTradingPictureDetails.savePictureDetails(tpicd);
                     this.iTradingAttrMores.deleteByParentId("PictureURL", tpicd.getId());
-                    List<String> picurl = picd.getPictureURL();
+
                     for (int i = 0; i < picurl.size(); i++) {
                         try {
                             //new一个URL对象
@@ -1333,13 +1365,13 @@ public class TradingItemImpl implements com.trading.service.ITradingItem {
                             //通过输入流获取图片数据
                             InputStream inStream = conn.getInputStream();
                             String stuff = MyStringUtil.getExtension(potourl, "");
-                            String fileName = FtpUploadFile.ftpUploadFile(inStream, uu.getUserLoginId() + "/" + item.getSKU(), stuff);
+                            String fileName = FtpUploadFile.ftpUploadFile(inStream, uu.getUserLoginId() + "/" + (tradingItem.getSku()==null?"null":tradingItem.getSku().toLowerCase()), stuff);
                             inStream.close();
                             String picUrls = "";
                             if(fileName==null){
                                 picUrls = potourl;
                             }else{
-                                picUrls = image_url_prefix + uu.getUserLoginId() + "/" + item.getSKU() + "/" + fileName;
+                                picUrls = image_url_prefix + uu.getUserLoginId() + "/" + (tradingItem.getSku()==null?"null":tradingItem.getSku().toLowerCase()) + "/" + fileName;
                             }
                             TradingAttrMores tam = this.iTradingAttrMores.toDAOPojo("PictureURL", picUrls);
                             tam.setParentId(tpicd.getId());
@@ -1717,6 +1749,7 @@ public class TradingItemImpl implements com.trading.service.ITradingItem {
      * @return
      */
     private String unFtpPoto(String targeturl,String loginid,String sku){
+
         try {
             URL url = new URL(targeturl);
             //打开链接
@@ -1727,6 +1760,7 @@ public class TradingItemImpl implements com.trading.service.ITradingItem {
             conn.setConnectTimeout(5 * 1000);
             //通过输入流获取图片数据
             InputStream inStream = conn.getInputStream();
+
             String stuff = MyStringUtil.getExtension(targeturl, "");
             String fileName = FtpUploadFile.ftpUploadFile(inStream, loginid + "/" + sku, stuff);
             inStream.close();

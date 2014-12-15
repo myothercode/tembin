@@ -119,7 +119,7 @@
                         parent.afterUploadCallback=null;
                         return;
                     }
-                }catch (e){}
+                }catch (e){console.log(e)}
                 editor.execCommand('insertimage', list);
                 remote && editor.fireEvent("catchRemoteImage");
             }
@@ -280,6 +280,12 @@
             }
         },
         getInsertList: function () {
+            var srcArr=new Array();
+            $("input[id='url']").each(function(i,d){
+                srcArr[i]={src:$(d).val(),_src:$(d).val()};
+            });
+            return srcArr;
+//todo 在线图片可以选择多张
             var data = this.getData();
             if(data['url']) {
                 return [{

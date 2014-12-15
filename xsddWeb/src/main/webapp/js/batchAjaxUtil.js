@@ -1,3 +1,13 @@
+
+/**加载ueditor编辑器的一组js*/
+var ueditorJSS_=[path+"/js/ueditor/ueditor.config.js",
+    path+"/js/ueditor/ueditor.all.js",
+    path+"/js/ueditor/lang/zh-cn/zh-cn.js",
+    path+"/js/ueditor/dialogs/image/imageextend.js"];
+
+
+
+
 /**
  * Created by Administrtor on 2014/8/12.
  * 需要批量请求ajax的时候，使用此方法，避免并发过大

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.base.database.customtrading.mapper.ClientAssessFeedBackMapper">
+    <resultMap id="BaseResultMap" type="com.base.database.trading.model.TradingFeedBackDetail">
+        <id column="id" jdbcType="BIGINT" property="id" />
+        <result column="CommentingUser" jdbcType="VARCHAR" property="commentinguser" />
+        <result column="CommentingUserScore" jdbcType="BIGINT" property="commentinguserscore" />
+        <result column="CommentTime" jdbcType="TIMESTAMP" property="commenttime" />
+        <result column="CommentType" jdbcType="VARCHAR" property="commenttype" />
+        <result column="ItemID" jdbcType="VARCHAR" property="itemid" />
+        <result column="Role" jdbcType="VARCHAR" property="role" />
+        <result column="FeedbackID" jdbcType="VARCHAR" property="feedbackid" />
+        <result column="TransactionID" jdbcType="VARCHAR" property="transactionid" />
+        <result column="OrderLineItemID" jdbcType="VARCHAR" property="orderlineitemid" />
+        <result column="ItemTitle" jdbcType="VARCHAR" property="itemtitle" />
+        <result column="ItemPrice" jdbcType="DOUBLE" property="itemprice" />
+        <result column="currencyID" jdbcType="VARCHAR" property="currencyid" />
+        <result column="autoMessageFlag" jdbcType="INTEGER" property="automessageflag" />
+        <result column="sentTime" jdbcType="TIMESTAMP" property="senttime" />
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+        <result column="uuid" jdbcType="VARCHAR" property="uuid" />
+        <result column="user_id" jdbcType="VARCHAR" property="userId" />
+        <result column="ebay_account" jdbcType="VARCHAR" property="ebayAccount" />
+        <result column="CommentText" jdbcType="LONGVARCHAR" property="commenttext" />
+    </resultMap>
+    <select id="selectClientAssessFeedBackList" resultMap="BaseResultMap" parameterType="map">
+        select * from trading_feedbackdetail feed  where 1=1
+        <if test="commentType!=null">
+           and feed.CommentType=#{commentType}
+        </if>
+        <if test="selecttype!=null">
+            and feed.${selecttype} like CONCAT(CONCAT('%', #{selectvalue, jdbcType=VARCHAR}),'%')
+        </if>
+        and feed.ebay_account in (select ebay_account from usercontroller_ebay_account acc where acc.user_id=#{userid})
+    </select>
+
+</mapper>

@@ -10,6 +10,7 @@
 <html>
 <head>
     <%@include file= "/WEB-INF/jsp/commonImport.jsp" %>
+    <script type="text/javascript" src=<c:url value ="/js/batchAjaxUtil.js" /> ></script>
     <script type="text/javascript" src=<c:url value ="/js/commonPage/mainframe/mainFramePage.js" /> ></script>
     <link rel="stylesheet" type="text/css" href="<c:url value ="/js/toolTip/css/toolTip.css"/> "/>
     <script type="text/javascript" src=<c:url value ="/js/toolTip/js/toolTip.js" /> ></script>
@@ -28,6 +29,9 @@
             setWandH();
             setIndexUrl();
             csRightHeight=$("#contentMaindiv").css("height").replace("px","");
+            setTimeout(function(){//预加载一些资源
+                preLoadReSource();
+            },500);
         });
         /**设置主页地址*/
         function setIndexUrl(){

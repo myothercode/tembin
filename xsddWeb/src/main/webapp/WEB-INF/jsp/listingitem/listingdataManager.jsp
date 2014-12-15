@@ -550,7 +550,7 @@
         function getSku(json){
             var html = "";
             if(json.docId!=null&&json.docId!=""){
-                html+="&nbsp;&nbsp;<a target='_blank' href='" + path + "/editItem.do?id=" + json.docId + "' title='" + json.docTitle + "'><span>" + json.docTitle.substr(0, 6) + "...</span></a>";
+                html+="&nbsp;&nbsp;<a target='_blank' href='" + path + "/editItem.do?id=" + json.docId + "&source=listingManager' title='" + json.docTitle + "'><span>" + json.docTitle.substr(0, 6) + "...</span></a>";
             }
             if(json.sku!=null&&json.sku!="") {
                 html += "</br>&nbsp;&nbsp;<a target='_blank' href='"+serviceItemUrl+json.itemId+"'><span style='color:#8BB51B;'>"+json.sku+"</span></a>";

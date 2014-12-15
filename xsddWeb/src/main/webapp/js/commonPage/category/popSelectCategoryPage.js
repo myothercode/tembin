@@ -9,7 +9,6 @@ $(document).ready(function(){
 /**这个就是最终选择的值*/
 var _finalSelectedVal='';
 function getRese(){
-    _invokeGetData_type=null;
     var sitId=$(W.document.getElementsByName("site")).eq(0).val();
     if(title==null ||title=='' || sitId ==null){
         alert('请选择站点并且输入标题！')
@@ -61,7 +60,6 @@ function makeDivId(){
 
 /**获取菜单*/
 var isSearchedCa=false;
-var _invokeGetData_type=null;
 function getMenuData(parentID,level){
     removeDiv(level);
     var sitId=$(W.document.getElementsByName("site")).eq(0).val();
@@ -70,7 +68,6 @@ function getMenuData(parentID,level){
         var jdata=json.result;
         makeMutilSelect(jdata,level);
     }else{
-        _invokeGetData_type="string";
         var url=path+"/ajax/getCategoryMenu.do";
         if(parentID==null){parentID=0;level=1;}
         var data={"parentID":parentID,"siteID":sitId};
@@ -84,7 +81,7 @@ function getMenuData(parentID,level){
                 makeMutilSelect(jdata,level);
 
             },
-        {async: true}
+        {async: true,stringFormat:true}
         )
     }
 }

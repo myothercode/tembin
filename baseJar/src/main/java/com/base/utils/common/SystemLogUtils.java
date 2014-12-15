@@ -10,6 +10,8 @@ import com.base.mybatis.page.Page;
 import com.base.utils.applicationcontext.ApplicationContextUtil;
 import com.base.utils.applicationcontext.RequestResponseContext;
 import com.base.utils.cache.SessionCacheSupport;
+import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.log4j.Logger;
 
 import javax.servlet.http.HttpServletRequest;
 import java.net.InetAddress;
@@ -22,6 +24,7 @@ import java.util.Map;
  * 记录系统日志，包括用户操作等等
  */
 public class SystemLogUtils {
+    static Logger logger = Logger.getLogger(SystemLogUtils.class);
 
     public static final String FIND_PASSWORD="findPassword";//找回密码事件
     public static final String NO_API_Message="noApiMessage";//不系统通知的时候记录失败日志
@@ -44,7 +47,17 @@ public class SystemLogUtils {
         }
 
         SystemLogMapper systemLogMapper = (SystemLogMapper) ApplicationContextUtil.getBean(SystemLogMapper.class);
-        systemLogMapper.insert(systemLog);
+        try {
+            systemLogMapper.insert(systemLog);
+        } catch (Exception e) {
+            logger.error("日志报错！重新尝试"+systemLog.getEventdesc(),e);
+            systemLog.setEventdesc(StringEscapeUtils.escapeXml(systemLog.getEventdesc()));
+            try {
+                systemLogMapper.insert(systemLog);
+            } catch (Exception e1) {
+                throw new Exception("日志报错错误",e1);
+            }
+        }
     }
 
     /**获取ip*/

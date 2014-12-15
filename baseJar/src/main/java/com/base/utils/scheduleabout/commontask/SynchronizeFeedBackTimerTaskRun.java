@@ -46,17 +46,42 @@ public class SynchronizeFeedBackTimerTaskRun extends BaseScheduledClass implemen
         IUsercontrollerEbayAccount iUsercontrollerEbayAccount=(IUsercontrollerEbayAccount)ApplicationContextUtil.getBean(IUsercontrollerEbayAccount.class);
         try{
             for(TaskFeedBack taskFeedBack:taskFeedBacks){
-                taskFeedBack.setTokenflag(1);
-                iTaskFeedBack.saveListTaskFeedBack(taskFeedBack);
                 String res = this.cosPostXml(taskFeedBack,1);
                 Element el = SamplePaseXml.getApiElement(res, "PaginationResult");
                 String pagetStr = SamplePaseXml.getSpecifyElementText(el,"TotalNumberOfPages");
-                String ack = SamplePaseXml.getVFromXmlString(res, "Ack");
-                if(ack.equals("Success")){
+                String ack="";
+                try{
+                    ack = SamplePaseXml.getVFromXmlString(res, "Ack");
+                }catch (Exception e){
+                    logger.error("SynchronizeFeedBackTimerTaskRun第56",e);
+                    ack="";
+                }
+                if(ack.equals("Success")||"Warning".equalsIgnoreCase(ack)){
+                    if("Warning".equalsIgnoreCase(ack)){
+                        List<PublicSitemessage> list1=siteMessageService.selectPublicSitemessageByMessage("synchronize_feed_back_timer_FAIL", "评价定时任务有警告:" + taskFeedBack.getId());
+                        String errors = SamplePaseXml.getVFromXmlString(res, "Errors");
+                        if(!StringUtils.isNotBlank(errors)){
+                            errors = SamplePaseXml.getWarningInformation(res);
+                        }
+                        if(list1==null||list1.size()==0){
+
+                            TaskMessageVO taskMessageVO = new TaskMessageVO();
+                            taskMessageVO.setMessageType(SiteMessageStatic.SYNCHRONIZE_FEED_BACK_TIMER + "_FAIL");
+                            taskMessageVO.setMessageTitle("定时同步评价有警告!");
+                            taskMessageVO.setMessageContext("评价调用API有警告:" + errors);
+                            taskMessageVO.setMessageTo(taskFeedBack.getUserid());
+                            taskMessageVO.setMessageFrom("system");
+                            taskMessageVO.setOrderAndSeller("评价定时任务有警告:"+taskFeedBack.getId());
+                            siteMessageService.addSiteMessage(taskMessageVO);
+
+                        }
+                        logger.error("获取定时评价有警告!" + errors);
+                    }
                     int pages = Integer.parseInt(pagetStr);
                     for(int i = pages;i>0;i--){
                         res = this.cosPostXml(taskFeedBack,i);
                         List<TradingFeedBackDetail> litfb = SamplePaseXml.getFeedBackListElement(res);
+                        List<TradingFeedBackDetail> linewtfb = new ArrayList<TradingFeedBackDetail>();
                         for(TradingFeedBackDetail feedBackDetail:litfb){
                             List<TradingOrderAddMemberMessageAAQToPartner> addmessages=new ArrayList<TradingOrderAddMemberMessageAAQToPartner>();
                             if(feedBackDetail.getTransactionid()!=null){
@@ -79,27 +104,21 @@ public class SynchronizeFeedBackTimerTaskRun extends BaseScheduledClass implemen
                             }
                             if(partners.size()==0&&"Positive".equals(feedBackDetail.getCommenttype())){
                                 List<PublicSitemessage> list1=siteMessageService.selectPublicSitemessageByMessage("synchronize_feed_back_timer_FAIL", "评价定时任务:没有(收到买家的正评)自动消息"+taskFeedBack.getEbayname());
-                                if(list1!=null&&list1.size()>0){
-                                    continue;
-                                }else{
+                                if(list1==null||list1.size()==0){
                                     taskMessageVO.setMessageContext("没有对应的自动消息,"+taskFeedBack.getEbayname()+"请先创建(收到买家的正评)自动消息");
                                     taskMessageVO.setOrderAndSeller("评价定时任务:没有(收到买家的正评)自动消息"+taskFeedBack.getEbayname());
                                     siteMessageService.addSiteMessage(taskMessageVO);
                                 }
                             }else if(partners.size()==0&&"Neutral".equals(feedBackDetail.getCommenttype())){
                                 List<PublicSitemessage> list1=siteMessageService.selectPublicSitemessageByMessage("synchronize_feed_back_timer_FAIL", "评价定时任务:没有(收到买家的中评)自动消息"+taskFeedBack.getEbayname());
-                                if(list1!=null&&list1.size()>0){
-                                    continue;
-                                }else{
+                                if(list1==null||list1.size()==0){
                                     taskMessageVO.setMessageContext("没有对应的自动消息,"+taskFeedBack.getEbayname()+"请先创建(收到买家的中评)自动消息");
                                     taskMessageVO.setOrderAndSeller("评价定时任务:没有(收到买家的中评)自动消息"+taskFeedBack.getEbayname());
                                     siteMessageService.addSiteMessage(taskMessageVO);
                                 }
                             }else if(partners.size()==0&&"Negative".equals(feedBackDetail.getCommenttype())){
                                 List<PublicSitemessage> list1=siteMessageService.selectPublicSitemessageByMessage("synchronize_feed_back_timer_FAIL", "评价定时任务:没有(收到买家的负评)自动消息"+taskFeedBack.getEbayname());
-                                if(list1!=null&&list1.size()>0){
-                                    continue;
-                                }else{
+                                if(list1==null||list1.size()==0){
                                     taskMessageVO.setMessageContext("没有对应的自动消息,"+taskFeedBack.getEbayname()+"请先创建(收到买家的负评)自动消息");
                                     taskMessageVO.setOrderAndSeller("评价定时任务:没有(收到买家的负评)自动消息"+taskFeedBack.getEbayname());
                                     siteMessageService.addSiteMessage(taskMessageVO);
@@ -126,30 +145,25 @@ public class SynchronizeFeedBackTimerTaskRun extends BaseScheduledClass implemen
                             }
                             feedBackDetail.setUserId(taskFeedBack.getUserid()+"");
                             feedBackDetail.setEbayAccount(taskFeedBack.getEbayname());
+                            linewtfb.add(feedBackDetail);
                         }
-                        iTradingFeedBackDetail.saveFeedBackDetail(litfb);
+                        iTradingFeedBackDetail.saveFeedBackDetail(linewtfb);
                     }
+                    Integer flag=taskFeedBack.getTokenflag();
+                    flag=flag+1;
+                    taskFeedBack.setTokenflag(flag);
+                    iTaskFeedBack.saveListTaskFeedBack(taskFeedBack);
                 }else{
                     List<PublicSitemessage> list1=siteMessageService.selectPublicSitemessageByMessage("synchronize_feed_back_timer_FAIL", "评价定时任务:" + taskFeedBack.getId());
-                    if(list1!=null&&list1.size()>0){
-                        return;
+                    if(list1==null||list1.size()==0){
+                        logger.error("定时获取评价参数错误:" + res);
                     }
-                    TaskMessageVO taskMessageVO = new TaskMessageVO();
-                    taskMessageVO.setMessageType(SiteMessageStatic.SYNCHRONIZE_FEED_BACK_TIMER + "_FAIL");
-                    taskMessageVO.setMessageTitle("定时同步评价失败!");
-                    taskMessageVO.setMessageContext("评价调用API失败:" + res);
-                    taskMessageVO.setMessageTo(taskFeedBack.getUserid());
-                    taskMessageVO.setMessageFrom("system");
-                    taskMessageVO.setOrderAndSeller("评价定时任务:"+taskFeedBack.getId());
-                    siteMessageService.addSiteMessage(taskMessageVO);
-
-
-                    return;
                 }
             }
         }catch (Exception e){
-            e.printStackTrace();
+            logger.error("定时同步评价出错:"+e.getMessage());
             TempStoreDataSupport.removeData("task_"+getScheduledType());
+            e.printStackTrace();
         }
 
     }
@@ -209,9 +223,6 @@ public class SynchronizeFeedBackTimerTaskRun extends BaseScheduledClass implemen
 
         ITaskFeedBack iTaskFeedBack = (ITaskFeedBack) ApplicationContextUtil.getBean(ITaskFeedBack.class);
         List<TaskFeedBack> feedBacks=iTaskFeedBack.selectTaskFeedBackByFlagIsFalseOrderBysaveTime();
-        if(feedBacks.size()>2){
-            feedBacks=filterLimitList(feedBacks);
-        }
         synchronizeFeedBack(feedBacks);
         TempStoreDataSupport.removeData("task_"+getScheduledType());
     }
@@ -239,6 +250,6 @@ public class SynchronizeFeedBackTimerTaskRun extends BaseScheduledClass implemen
 
     @Override
     public Integer crTimeMinu() {
-        return null;
+        return 30;
     }
 }

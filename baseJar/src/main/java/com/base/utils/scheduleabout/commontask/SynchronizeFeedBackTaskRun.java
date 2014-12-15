@@ -35,6 +35,7 @@ public class SynchronizeFeedBackTaskRun extends BaseScheduledClass implements Sc
                 iTaskFeedBack.saveListTaskFeedBack(taskFeedBack);
             }
         }catch (Exception e){
+            logger.error("定时每天插入账号去获取评价出错:"+e.getMessage());
             e.printStackTrace();
         }
 
@@ -43,7 +44,7 @@ public class SynchronizeFeedBackTaskRun extends BaseScheduledClass implements Sc
     public void run(){
         UsercontrollerEbayAccountMapper ueam = (UsercontrollerEbayAccountMapper) ApplicationContextUtil.getBean(UsercontrollerEbayAccountMapper.class);
         UsercontrollerEbayAccountExample ueame = new UsercontrollerEbayAccountExample();
-        ueame.createCriteria();
+        ueame.createCriteria().andEbayStatusEqualTo("1");
         List<UsercontrollerEbayAccount> liue = ueam.selectByExampleWithBLOBs(ueame);
         Date date=new Date();
         saveTaskFeedBack(liue,date,"Positive");

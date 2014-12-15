@@ -140,8 +140,8 @@
                 and OrderGetOrders.status = "Incomplete" and OrderGetOrders.orderID
                 IN (SELECT distinct orderID from trading_order_get_orders where status = "Complete")
             </if>
-            <if test="status!='notAllComplete'">
-              and OrderGetOrders.status = #{status}
+            <if test="status=='Incomplete'">
+              and OrderGetOrders.status = "Incomplete"
             </if>
         </if>
         <if test="starttime!=null">
@@ -173,7 +173,7 @@
         </if>
         group by OrderGetOrders.orderID
         <if test="orderby==null">
-            order by OrderGetOrders.createdTime desc
+            order by OrderGetOrders.lastModifiedTime desc
         </if>
         <if test="orderby!=null">
             <if test="orderby=='asc'">

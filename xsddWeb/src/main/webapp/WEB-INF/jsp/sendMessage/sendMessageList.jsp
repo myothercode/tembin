@@ -25,7 +25,7 @@
                     {title:"模板名称",name:"name",width:"8%",align:"center"},
                     {title:"<a href=\"javascript:void(0)\" onclick=\"orderBy(this,'asc');\">消息类型</a>",name:"content",width:"8%",align:"center",format:makeOption4},
                     {title:"状态",name:"status",width:"8%",align:"center",format:makeOption2},
-                    {title:"操作",name:"countNum",width:"8%",align:"left",format:makeOption1}
+                    {title:"&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;操作",name:"countNum",width:"8%",align:"left",format:makeOption1}
                 ],
                 selectDataNow:false,
                 isrowClick:false,
@@ -71,7 +71,7 @@
                     {title:"模板名称",name:"name",width:"8%",align:"center"},
                     {title:htm,name:"content",width:"8%",align:"center",format:makeOption4},
                     {title:"状态",name:"status",width:"8%",align:"center",format:makeOption2},
-                    {title:"操作",name:"countNum",width:"8%",align:"left",format:makeOption1}
+                    {title:"&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;操作",name:"countNum",width:"8%",align:"left",format:makeOption1}
                 ],
                 selectDataNow:false,
                 isrowClick:false,
@@ -200,7 +200,7 @@
                     {title:"模板名称",name:"name",width:"8%",align:"center"},
                     {title:"<a href=\"javascript:void(0)\" onclick=\"orderBy(this,'asc');\">消息类型</a>",name:"content",width:"8%",align:"center",format:makeOption4},
                     {title:"状态",name:"status",width:"8%",align:"center",format:makeOption2},
-                    {title:"操作",name:"countNum",width:"8%",align:"left",format:makeOption1}
+                    {title:"&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;操作",name:"countNum",width:"8%",align:"left",format:makeOption1}
                 ],
                 selectDataNow:false,
                 isrowClick:false,

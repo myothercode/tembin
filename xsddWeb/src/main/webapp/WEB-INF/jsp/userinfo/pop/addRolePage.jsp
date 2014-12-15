@@ -9,6 +9,7 @@
 <%@include file= "/WEB-INF/jsp/smallFormImport.jsp" %>
 <html>
 <head>
+    <link rel="stylesheet" type="text/css" href="<c:url value ="/css/compiled/icons.css"/>"/>
     <title>添加角色</title>
     <script type="text/javascript" src=<c:url value ="/js/systemabout/user/pop/addRolePage.js" /> ></script>
     <script type="text/javascript">
@@ -77,7 +78,7 @@
         </fieldset>
     </form>
     <div class="controls" style="text-align: center">
-        <button class="btn btn-info" onclick="submitRole()">确定</button>
+        <button class="net_put" onclick="submitRole()">确定</button>
     </div>
 </div>
 </body>

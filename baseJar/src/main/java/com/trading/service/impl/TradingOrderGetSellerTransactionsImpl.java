@@ -5,10 +5,12 @@ import com.base.database.trading.model.TradingOrderGetSellerTransactions;
 import com.base.database.trading.model.TradingOrderGetSellerTransactionsExample;
 import com.base.utils.common.ObjectUtils;
 import com.base.utils.exception.Asserts;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -39,7 +41,12 @@ public class TradingOrderGetSellerTransactionsImpl implements com.trading.servic
     public List<TradingOrderGetSellerTransactions> selectTradingOrderGetSellerTransactionsByTransactionId(String TransactionID) {
         TradingOrderGetSellerTransactionsExample example=new TradingOrderGetSellerTransactionsExample();
         TradingOrderGetSellerTransactionsExample.Criteria cr=example.createCriteria();
-        cr.andTransactionidEqualTo(TransactionID);
+        if(StringUtils.isNotBlank(TransactionID)){
+            cr.andTransactionidEqualTo(TransactionID);
+        }
+        else{
+            return new ArrayList<TradingOrderGetSellerTransactions>();
+        }
         List<TradingOrderGetSellerTransactions> list=tradingOrderGetSellerTransactionsMapper.selectByExample(example);
         return list;
     }

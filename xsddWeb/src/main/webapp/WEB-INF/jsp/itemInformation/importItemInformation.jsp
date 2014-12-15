@@ -62,7 +62,7 @@
 
                 <td align="right">
                     <input id="a1" type="file" name="file" style="display:none"/>
-                    <input type=button value="导入excel" class="net_put_2" onclick=a1.click()>
+                    <input type=button value="选择文件" class="net_put_1" onclick=a1.click()>
                     <input type="submit" class="net_put" value="导入" onclick="upload(this.form)"></td>
 
             </tr>

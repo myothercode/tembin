@@ -11,10 +11,8 @@ import com.base.xmlpojo.trading.addproduct.attrclass.ShippingSurcharge;
 import com.base.xmlpojo.trading.addproduct.attrclass.StartPrice;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.http.impl.cookie.DateParseException;
-import org.dom4j.Document;
-import org.dom4j.DocumentException;
-import org.dom4j.DocumentHelper;
-import org.dom4j.Element;
+import org.dom4j.*;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
@@ -112,13 +110,21 @@ public class SamplePaseXml {
                 pd.setPhotoDisplay(pice.elementText("PhotoDisplay"));
             }
             if(pice.elementText("GalleryURL")!=null){
-                pd.setGalleryURL(pice.elementText("GalleryURL"));
+                String url = pice.elementText("GalleryURL");
+                if(url.indexOf("?")>0){
+                    url.substring(0,url.indexOf("?"));
+                }
+                pd.setGalleryURL(url);
             }
             Iterator<Element> itpicurl = pice.elementIterator("PictureURL");
             List<String> urlli = new ArrayList();
             while (itpicurl.hasNext()){
                 Element url = itpicurl.next();
-                urlli.add(url.getStringValue());
+                String urlstr = url.getStringValue();
+                if(urlstr.indexOf("?")>0){
+                    urlstr = urlstr.substring(0,urlstr.indexOf("?"));
+                }
+                urlli.add(urlstr);
             }
             pd.setPictureURL(urlli);
             item.setPictureDetails(pd);
@@ -294,7 +300,11 @@ public class SamplePaseXml {
                 List li = new ArrayList();
                 while (url.hasNext()){
                     Element e = url.next();
-                    li.add(e.getText());
+                    String urlstr = e.getText();
+                    if(urlstr.indexOf("?")>0){
+                        urlstr = urlstr.substring(0,urlstr.indexOf("?"));
+                    }
+                    li.add(urlstr);
                 }
                 vsps.setPictureURL(li);
                 livsps.add(vsps);
@@ -624,7 +634,13 @@ public class SamplePaseXml {
         //商品分类目录查询
         Document document= DocumentHelper.parseText(xml);
         Element rootElt = document.getRootElement();
+        if(rootElt==null){
+            return litrc;
+        }
         Element recommend = rootElt.element("categoryHistogramContainer");
+        if(recommend==null){
+            return litrc;
+        }
         Iterator<Element> ite = recommend.elementIterator("categoryHistogram");
         while (ite.hasNext()){
             Element ele = ite.next();
@@ -730,5 +746,44 @@ public class SamplePaseXml {
                 "  <PictureName>"+picName+"</PictureName><ErrorLanguage>zh_HK</ErrorLanguage>\n" +
                 "</UploadSiteHostedPicturesRequest>";
         return xml;
+    }
+    public static String getWarningInformation(String res) throws Exception {
+        Document document= DocumentHelper.parseText(res);
+        Element rootElt = document.getRootElement();
+        String errors = SamplePaseXml.getSpecifyElementText(rootElt,"Errors","LongMessage");
+        return errors;
+    }
+    public static List<TradingPriceTracking> getPriceTrackingItem(String res,String title) throws Exception {
+        List<TradingPriceTracking> list=new ArrayList<TradingPriceTracking>();
+        Document document= DocumentHelper.parseText(res);
+        Element rootElt = document.getRootElement();
+        Element searchResult=rootElt.element("searchResult");
+        Iterator items=searchResult.elementIterator("item");
+        while(items.hasNext()){
+            TradingPriceTracking priceTracking=new TradingPriceTracking();
+            Element item= (Element) items.next();
+            priceTracking.setItemid(SamplePaseXml.getSpecifyElementText(item, "itemId"));
+            priceTracking.setCategoryid(SamplePaseXml.getSpecifyElementText(item,"primaryCategory","categoryId"));
+            priceTracking.setCategoryname(SamplePaseXml.getSpecifyElementText(item,"primaryCategory","categoryName"));
+            priceTracking.setCurrentprice(SamplePaseXml.getSpecifyElementText(item, "sellingStatus", "currentPrice"));
+            priceTracking.setSellerusername(SamplePaseXml.getSpecifyElementText(item,"sellerInfo","sellerUserName"));
+            priceTracking.setTitle(SamplePaseXml.getSpecifyElementText(item,"title"));
+            priceTracking.setBidcount(SamplePaseXml.getSpecifyElementText(item,"sellingStatus","bidCount"));
+            Element sellingStatus=item.element("sellingStatus");
+            String currencyId1="";
+            if(sellingStatus!=null){
+                Element currentPrice=sellingStatus.element("currentPrice");
+                if(currentPrice!=null){
+                    Attribute currencyId=currentPrice.attribute("currencyId");
+                    if(currencyId!=null){
+                        currencyId1=currencyId.getValue();
+                    }
+                }
+            }
+            priceTracking.setCurrencyid(currencyId1);
+            priceTracking.setQuerytitle(title);
+            list.add(priceTracking);
+        }
+        return list;
     }
 }

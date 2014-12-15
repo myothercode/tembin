@@ -79,7 +79,10 @@
         <a href="javascript:void(0)" class="icon-mini-edit" onclick="modifyTabTitle(4)"></a>
     </div>
 
-    <input type="button" value="保存" onclick="submitCommit();"/>
+       <div class="modal-footer" style="padding:0px;background-color:#F7F7F7;text-align: right;">
+           <button type="button" class="net_put" onclick="submitCommit()">确定</button>
+       </div>
+    <%--<input type="button" value="保存" onclick="submitCommit();"/>--%>
 </div>
 <script type="text/javascript">
 

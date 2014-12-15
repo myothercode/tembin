@@ -813,6 +813,286 @@ public class PublicDataDictCategorySpecificsExample {
             addCriterion("site_id not between", value1, value2, "siteId");
             return (Criteria) this;
         }
+
+        public Criteria andMaxVIsNull() {
+            addCriterion("max_v is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andMaxVIsNotNull() {
+            addCriterion("max_v is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andMaxVEqualTo(String value) {
+            addCriterion("max_v =", value, "maxV");
+            return (Criteria) this;
+        }
+
+        public Criteria andMaxVNotEqualTo(String value) {
+            addCriterion("max_v <>", value, "maxV");
+            return (Criteria) this;
+        }
+
+        public Criteria andMaxVGreaterThan(String value) {
+            addCriterion("max_v >", value, "maxV");
+            return (Criteria) this;
+        }
+
+        public Criteria andMaxVGreaterThanOrEqualTo(String value) {
+            addCriterion("max_v >=", value, "maxV");
+            return (Criteria) this;
+        }
+
+        public Criteria andMaxVLessThan(String value) {
+            addCriterion("max_v <", value, "maxV");
+            return (Criteria) this;
+        }
+
+        public Criteria andMaxVLessThanOrEqualTo(String value) {
+            addCriterion("max_v <=", value, "maxV");
+            return (Criteria) this;
+        }
+
+        public Criteria andMaxVLike(String value) {
+            addCriterion("max_v like", value, "maxV");
+            return (Criteria) this;
+        }
+
+        public Criteria andMaxVNotLike(String value) {
+            addCriterion("max_v not like", value, "maxV");
+            return (Criteria) this;
+        }
+
+        public Criteria andMaxVIn(List<String> values) {
+            addCriterion("max_v in", values, "maxV");
+            return (Criteria) this;
+        }
+
+        public Criteria andMaxVNotIn(List<String> values) {
+            addCriterion("max_v not in", values, "maxV");
+            return (Criteria) this;
+        }
+
+        public Criteria andMaxVBetween(String value1, String value2) {
+            addCriterion("max_v between", value1, value2, "maxV");
+            return (Criteria) this;
+        }
+
+        public Criteria andMaxVNotBetween(String value1, String value2) {
+            addCriterion("max_v not between", value1, value2, "maxV");
+            return (Criteria) this;
+        }
+
+        public Criteria andMinVIsNull() {
+            addCriterion("min_v is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andMinVIsNotNull() {
+            addCriterion("min_v is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andMinVEqualTo(String value) {
+            addCriterion("min_v =", value, "minV");
+            return (Criteria) this;
+        }
+
+        public Criteria andMinVNotEqualTo(String value) {
+            addCriterion("min_v <>", value, "minV");
+            return (Criteria) this;
+        }
+
+        public Criteria andMinVGreaterThan(String value) {
+            addCriterion("min_v >", value, "minV");
+            return (Criteria) this;
+        }
+
+        public Criteria andMinVGreaterThanOrEqualTo(String value) {
+            addCriterion("min_v >=", value, "minV");
+            return (Criteria) this;
+        }
+
+        public Criteria andMinVLessThan(String value) {
+            addCriterion("min_v <", value, "minV");
+            return (Criteria) this;
+        }
+
+        public Criteria andMinVLessThanOrEqualTo(String value) {
+            addCriterion("min_v <=", value, "minV");
+            return (Criteria) this;
+        }
+
+        public Criteria andMinVLike(String value) {
+            addCriterion("min_v like", value, "minV");
+            return (Criteria) this;
+        }
+
+        public Criteria andMinVNotLike(String value) {
+            addCriterion("min_v not like", value, "minV");
+            return (Criteria) this;
+        }
+
+        public Criteria andMinVIn(List<String> values) {
+            addCriterion("min_v in", values, "minV");
+            return (Criteria) this;
+        }
+
+        public Criteria andMinVNotIn(List<String> values) {
+            addCriterion("min_v not in", values, "minV");
+            return (Criteria) this;
+        }
+
+        public Criteria andMinVBetween(String value1, String value2) {
+            addCriterion("min_v between", value1, value2, "minV");
+            return (Criteria) this;
+        }
+
+        public Criteria andMinVNotBetween(String value1, String value2) {
+            addCriterion("min_v not between", value1, value2, "minV");
+            return (Criteria) this;
+        }
+
+        public Criteria andVariationSpecificsIsNull() {
+            addCriterion("Variation_Specifics is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andVariationSpecificsIsNotNull() {
+            addCriterion("Variation_Specifics is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andVariationSpecificsEqualTo(String value) {
+            addCriterion("Variation_Specifics =", value, "variationSpecifics");
+            return (Criteria) this;
+        }
+
+        public Criteria andVariationSpecificsNotEqualTo(String value) {
+            addCriterion("Variation_Specifics <>", value, "variationSpecifics");
+            return (Criteria) this;
+        }
+
+        public Criteria andVariationSpecificsGreaterThan(String value) {
+            addCriterion("Variation_Specifics >", value, "variationSpecifics");
+            return (Criteria) this;
+        }
+
+        public Criteria andVariationSpecificsGreaterThanOrEqualTo(String value) {
+            addCriterion("Variation_Specifics >=", value, "variationSpecifics");
+            return (Criteria) this;
+        }
+
+        public Criteria andVariationSpecificsLessThan(String value) {
+            addCriterion("Variation_Specifics <", value, "variationSpecifics");
+            return (Criteria) this;
+        }
+
+        public Criteria andVariationSpecificsLessThanOrEqualTo(String value) {
+            addCriterion("Variation_Specifics <=", value, "variationSpecifics");
+            return (Criteria) this;
+        }
+
+        public Criteria andVariationSpecificsLike(String value) {
+            addCriterion("Variation_Specifics like", value, "variationSpecifics");
+            return (Criteria) this;
+        }
+
+        public Criteria andVariationSpecificsNotLike(String value) {
+            addCriterion("Variation_Specifics not like", value, "variationSpecifics");
+            return (Criteria) this;
+        }
+
+        public Criteria andVariationSpecificsIn(List<String> values) {
+            addCriterion("Variation_Specifics in", values, "variationSpecifics");
+            return (Criteria) this;
+        }
+
+        public Criteria andVariationSpecificsNotIn(List<String> values) {
+            addCriterion("Variation_Specifics not in", values, "variationSpecifics");
+            return (Criteria) this;
+        }
+
+        public Criteria andVariationSpecificsBetween(String value1, String value2) {
+            addCriterion("Variation_Specifics between", value1, value2, "variationSpecifics");
+            return (Criteria) this;
+        }
+
+        public Criteria andVariationSpecificsNotBetween(String value1, String value2) {
+            addCriterion("Variation_Specifics not between", value1, value2, "variationSpecifics");
+            return (Criteria) this;
+        }
+
+        public Criteria andSelectionModeIsNull() {
+            addCriterion("Selection_Mode is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andSelectionModeIsNotNull() {
+            addCriterion("Selection_Mode is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andSelectionModeEqualTo(String value) {
+            addCriterion("Selection_Mode =", value, "selectionMode");
+            return (Criteria) this;
+        }
+
+        public Criteria andSelectionModeNotEqualTo(String value) {
+            addCriterion("Selection_Mode <>", value, "selectionMode");
+            return (Criteria) this;
+        }
+
+        public Criteria andSelectionModeGreaterThan(String value) {
+            addCriterion("Selection_Mode >", value, "selectionMode");
+            return (Criteria) this;
+        }
+
+        public Criteria andSelectionModeGreaterThanOrEqualTo(String value) {
+            addCriterion("Selection_Mode >=", value, "selectionMode");
+            return (Criteria) this;
+        }
+
+        public Criteria andSelectionModeLessThan(String value) {
+            addCriterion("Selection_Mode <", value, "selectionMode");
+            return (Criteria) this;
+        }
+
+        public Criteria andSelectionModeLessThanOrEqualTo(String value) {
+            addCriterion("Selection_Mode <=", value, "selectionMode");
+            return (Criteria) this;
+        }
+
+        public Criteria andSelectionModeLike(String value) {
+            addCriterion("Selection_Mode like", value, "selectionMode");
+            return (Criteria) this;
+        }
+
+        public Criteria andSelectionModeNotLike(String value) {
+            addCriterion("Selection_Mode not like", value, "selectionMode");
+            return (Criteria) this;
+        }
+
+        public Criteria andSelectionModeIn(List<String> values) {
+            addCriterion("Selection_Mode in", values, "selectionMode");
+            return (Criteria) this;
+        }
+
+        public Criteria andSelectionModeNotIn(List<String> values) {
+            addCriterion("Selection_Mode not in", values, "selectionMode");
+            return (Criteria) this;
+        }
+
+        public Criteria andSelectionModeBetween(String value1, String value2) {
+            addCriterion("Selection_Mode between", value1, value2, "selectionMode");
+            return (Criteria) this;
+        }
+
+        public Criteria andSelectionModeNotBetween(String value1, String value2) {
+            addCriterion("Selection_Mode not between", value1, value2, "selectionMode");
+            return (Criteria) this;
+        }
     }
 
     /**

@@ -87,7 +87,15 @@
                                 coutryid+=r[i]+",";
                             }
                         }
-                        selectShippingServices.innerHTML="<font style=\"color: #0000ff\">国内运输方式:"+name+";国际运输方式:"+name1+"</font>";
+                        var hhh="<font style=\"color: #0000ff\">";
+                        if(name.length>0){
+                            hhh+="国内运输方式:"+name+";";
+                        }
+                        if(name1.length>0){
+                            hhh+="国际运输方式:"+name1+";";
+                        }
+                        hhh+="</font>";
+                        selectShippingServices.innerHTML=hhh;
                         $(service12).val(coutryid);
                         W.selectCountry1.close();
                         Base.token();
@@ -102,6 +110,8 @@
     </script>
 </head>
 <body>
+<input type="hidden" id="shippingServiceIds">
+<input type="hidden" id="internationalShippingServiceIds">
 <div style="padding: 30px;">
     <div style="width:700px;height:250px;background-color: whitesmoke;border: 1px #acd0f0 solid;">
         <div style="padding: 30px;">

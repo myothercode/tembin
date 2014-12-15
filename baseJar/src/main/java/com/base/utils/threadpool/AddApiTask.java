@@ -4,6 +4,7 @@ import com.base.domains.userinfo.UsercontrollerDevAccountExtend;
 import com.base.sampleapixml.APINameStatic;
 import com.base.userinfo.service.UserInfoService;
 import com.base.utils.applicationcontext.ApplicationContextUtil;
+import com.base.utils.common.CommAutowiredClass;
 import com.base.utils.xmlutils.CheckResXMLUtil;
 import com.sitemessage.service.SiteMessageService;
 import com.sitemessage.service.SiteMessageStatic;
@@ -38,9 +39,15 @@ public class AddApiTask {
 
         }else {
             try {
-                dt = userInfoService.getDevByOrder(new HashMap());
-                Map map1 = new HashMap();
-                map1.put("id",dt.getId());
+                if (url.indexOf("api.sandbox.ebay.com")>-1){
+                    CommAutowiredClass autowiredClass = ApplicationContextUtil.getBean(CommAutowiredClass.class);
+                    dt = userInfoService.getDevInfo(Long.valueOf(autowiredClass.snadboxDevID));
+                }else {
+                    dt = userInfoService.getDevByOrder(new HashMap());
+                }
+
+                //Map map1 = new HashMap();
+                //map1.put("id",dt.getId());
                 //userInfoService.addUseNum(map1);//累计一次调用量
 
                 if(dt!=null){

@@ -29,7 +29,7 @@
                     {title:"指定国家",name:"country",width:"8%",align:"left"},
                     {title:"指定账号",name:"amount",width:"8%",align:"left"},
                     {title:"状态",name:"startuse",width:"8%",align:"left",format:makeOption5},
-                    {title:"操作",name:"countNum",width:"8%",align:"left",format:makeOption4}
+                    {title:"&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;操作",name:"countNum",width:"8%",align:"left",format:makeOption4}
                 ],
                 selectDataNow:false,
                 isrowClick:false,
@@ -40,7 +40,25 @@
         function refreshTable(){
             $("#autoMessageTable").selectDataAfterSetParm({"bedDetailVO.deptId":"", "isTrue":0});
         }
-
+        function refreshTable1(url){
+            $("#autoMessageTable").initTable({
+                url:url,
+                columnData:[
+                    {title:"",name:"pictureUrl",width:"2%",align:"left",format:makeOption3},
+                    {title:"标题",name:"subject",width:"8%",align:"left"},
+                    {title:"备注",name:"comment",width:"8%",align:"left"},
+                    {title:"类型",name:"type",width:"8%",align:"left"},
+                    {title:"指定国家",name:"country",width:"8%",align:"left"},
+                    {title:"指定账号",name:"amount",width:"8%",align:"left"},
+                    {title:"状态",name:"startuse",width:"8%",align:"left",format:makeOption5},
+                    {title:"&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;操作",name:"countNum",width:"8%",align:"left",format:makeOption4}
+                ],
+                selectDataNow:false,
+                isrowClick:false,
+                showIndex:false
+            });
+            $("#autoMessageTable").selectDataAfterSetParm({"bedDetailVO.deptId":"", "isTrue":0});
+        }
 
         function makeOption3(json){
             var htm = "<input type=\"checkbox\"  name=\"templateId\" value=" + json.id + ">";
@@ -176,7 +194,7 @@
                     {title:"指定国家",name:"country",width:"8%",align:"left"},
                     {title:"指定账号",name:"amount",width:"8%",align:"left"},
                     {title:"状态",name:"startuse",width:"8%",align:"left",format:makeOption5},
-                    {title:"操作",name:"countNum",width:"8%",align:"left",format:makeOption4}
+                    {title:"&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;操作",name:"countNum",width:"8%",align:"left",format:makeOption4}
                 ],
                 selectDataNow:false,
                 isrowClick:false,

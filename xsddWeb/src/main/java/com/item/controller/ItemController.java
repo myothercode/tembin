@@ -45,9 +45,11 @@ import com.common.base.web.BaseAction;
 import com.sitemessage.service.SiteMessageService;
 import com.sitemessage.service.SiteMessageStatic;
 import com.trading.service.*;
+import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.impl.cookie.DateParseException;
 import org.dom4j.Document;
+import org.dom4j.DocumentException;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.jsoup.select.Elements;
@@ -128,8 +130,7 @@ public class ItemController extends BaseAction{
     private PayPalService payPalService;
     @Autowired
     private SystemUserManagerService systemUserManagerService;
-    @Autowired
-    private TradingAttrMoresMapper tradingAttrMoresMapper;
+
     @Autowired
     private ITradingListingPicUrl iTradingListingPicUrl;
 
@@ -140,6 +141,10 @@ public class ItemController extends BaseAction{
     private ITradingListingData iTradingListingData;
     @Autowired
     private ITradingAssessViewSet iTradingAssessViewSet;
+    @Value("${SERVICE_ITEM_URL}")
+    private String service_item_url;
+    @Autowired
+    private CommAutowiredClass autowiredClass;
 
     private int selectNumber=0;
     /**
@@ -334,8 +339,6 @@ public class ItemController extends BaseAction{
         //tis.setDescription(content.get(0).toString());
         modelMap.put("item",tis);
 
-
-
         SessionVO c= SessionCacheSupport.getSessionVO();
         //List<PublicUserConfig> ebayList = DataDictionarySupport.getPublicUserConfigByType(DataDictionarySupport.PUBLIC_DATA_DICT_PAYPAL, c.getId());
         UsercontrollerEbayAccount ebay = this.iUsercontrollerEbayAccount.selectById(Long.parseLong(ti.getEbayAccount().toString()));
@@ -502,6 +505,7 @@ public class ItemController extends BaseAction{
                     TradingListingpicUrl tam = litam.get(0);
                     if(tam.getEbayurl()==null&&tam.getCheckFlag().equals("0")){
                         Thread.sleep(5000L);
+                        Asserts.assertTrue(picUrl[i]!=null&&!"".equals(picUrl[i]),"图片上传失败，请从新选择图片上传");
                         List<TradingListingpicUrl> litamss = this.iTradingListingPicUrl.selectByMackId(picUrl[i]);
                         tam = litamss.get(0);
                         if(tam.getCheckFlag().equals("1")){
@@ -774,6 +778,21 @@ public class ItemController extends BaseAction{
 
                     template = template.replace("{ContactUsTitle}",tdd.getContactTitle()==null?"ContactTitle":tdd.getContactTitle());
                     template = template.replace("{ContactUs}",tdd.getContactInfo());
+                }else{
+                    template = template.replace("{PaymentMethodTitle}","");
+                    template = template.replace("{PaymentMethod}","");
+
+                    template = template.replace("{ShippingDetailTitle}","");
+                    template = template.replace("{ShippingDetail}","");
+
+                    template = template.replace("{SalesPolicyTitle}","");
+                    template = template.replace("{SalesPolicy}","");
+
+                    template = template.replace("{AboutUsTitle}","");
+                    template = template.replace("{AboutUs}","");
+
+                    template = template.replace("{ContactUsTitle}","");
+                    template = template.replace("{ContactUs}","");
                 }
             }else{//未选择模板，
                 template+=item.getDescription()+"</br>";
@@ -960,7 +979,7 @@ public class ItemController extends BaseAction{
                     TradingTimerListingWithBLOBs ttl = new TradingTimerListingWithBLOBs();
                     ttl.setItem(Long.parseLong(itemMap.get(paypal).toString()));
                     ttl.setTimer(timerListing);
-                    ttl.setTimerMessage(xml);
+                    ttl.setTimerMessage(StringEscapeUtils.escapeXml(xml));
                     if (item.getListingType().equals("Chinese")) {
                         ttl.setApiMethod(APINameStatic.AddItem);
                     } else {
@@ -968,6 +987,7 @@ public class ItemController extends BaseAction{
                     }
                     ttl.setEbayId(paypal);
                     ttl.setStateId(DataDictionarySupport.getTradingDataDictionaryByID(Long.parseLong(tradingItem.getSite())).getName1());
+                    ttl.setTimerFlag("0");
                     this.iTradingTimerListing.saveTradingTimer(ttl);
                     //System.out.println(xml);
                 }
@@ -1073,8 +1093,10 @@ public class ItemController extends BaseAction{
                             tradingItem.setItemId(itemId);
                             tradingItem.setIsFlag("Success");
                             this.iTradingItem.saveTradingItem(tradingItem);
-                            this.iTradingItem.saveListingSuccess(res,itemId);
-                            AjaxSupport.sendSuccessText("message", "操作成功！");
+                            this.iTradingItem.saveListingSuccess(res, itemId);
+                            //新增在线商品表数据
+                            this.iTradingListingData.saveTradingListingDataByTradingItem(tradingItem,res);
+                            AjaxSupport.sendSuccessText("message", "商品SKU为："+tradingItem.getSku()+"，名称为：<a target=_blank style='color:blue' href='"+service_item_url+itemId+"'>"+tradingItem.getItemName()+"<a>，刊登成功！");
                         } else {
                             //String errors = SamplePaseXml.getVFromXmlString(res, "Errors");
                             String errors  = SamplePaseXml.getSpecifyElementTextAllInOne(res,"Errors","LongMessage");
@@ -1086,6 +1108,8 @@ public class ItemController extends BaseAction{
             }
         }else if("updateListing".equals(mouth)){//更新在线刊登
             this.updateListingData(item,tradingItem,request);
+            AjaxSupport.sendSuccessText("message","更新成功！");
+            return;
         }
     }
 
@@ -1157,12 +1181,26 @@ public class ItemController extends BaseAction{
 
                 template = template.replace("{ContactUsTitle}",tdd.getContactTitle()==null?"ContactTitle":tdd.getContactTitle());
                 template = template.replace("{ContactUs}",tdd.getContactInfo());
+            }else{
+                template = template.replace("{PaymentMethodTitle}","");
+                template = template.replace("{PaymentMethod}","");
+
+                template = template.replace("{ShippingDetailTitle}","");
+                template = template.replace("{ShippingDetail}","");
+
+                template = template.replace("{SalesPolicyTitle}","");
+                template = template.replace("{SalesPolicy}","");
+
+                template = template.replace("{AboutUsTitle}","");
+                template = template.replace("{AboutUs}","");
+
+                template = template.replace("{ContactUsTitle}","");
+                template = template.replace("{ContactUs}","");
             }
         }else{//未选择模板，
             template+=item.getDescription()+"</br>";
             if(tradingItem.getSellerItemInfoId()!=null){//如果选择了卖家描述
                 TradingDescriptionDetailsWithBLOBs tdd = this.iTradingDescriptionDetails.selectById(tradingItem.getSellerItemInfoId());
-
                 template+=tdd.getPayTitle()+"</br>"+tdd.getPayInfo()==null?"":tdd.getPayInfo()+"</br>";
                 template+=tdd.getShippingTitle()+"</br>"+tdd.getShippingInfo()==null?"":tdd.getShippingInfo()+"</br>";
                 template+=tdd.getGuaranteeTitle()+"</br>"+tdd.getGuaranteeInfo()==null?"":tdd.getGuaranteeInfo()+"</br>";
@@ -1524,11 +1562,12 @@ public class ItemController extends BaseAction{
         }
         getEbayPicUrl(item,tradingItem,request);
         //getEbayPicUrl(item,tradingItem,paypal);
-        UsercontrollerEbayAccount ua = this.iUsercontrollerEbayAccount.selectById(Long.parseLong(paypal));
+        UsercontrollerEbayAccount ua = this.iUsercontrollerEbayAccount.selectById(Long.valueOf(autowiredClass.sandboxEbayID));
         //PublicUserConfig pUserConfig = DataDictionarySupport.getPublicUserConfigByID(ua.getPaypalAccountId());
         //如果配置ＥＢＡＹ账号时，选择强制使用paypal账号则用该账号
         //item.setPayPalEmailAddress(pUserConfig.getConfigValue());
         //定时刊登时，需要获取保存到数据库中的ＩＤ
+        item.setPayPalEmailAddress("caixu23@gmail.com");
         if (item.getListingType().equals("Chinese")) {
             AddItemRequest addItem = new AddItemRequest();
             addItem.setXmlns("urn:ebay:apis:eBLBaseComponents");
@@ -1776,11 +1815,12 @@ public class ItemController extends BaseAction{
         }
         getEbayPicUrl(item,tradingItem,request);
         //getEbayPicUrl(item,tradingItem,paypal);
-        UsercontrollerEbayAccount ua = this.iUsercontrollerEbayAccount.selectById(Long.parseLong(paypal));
+        UsercontrollerEbayAccount ua = this.iUsercontrollerEbayAccount.selectById(Long.parseLong(autowiredClass.sandboxEbayID));
         //PublicUserConfig pUserConfig = DataDictionarySupport.getPublicUserConfigByID(ua.getPaypalAccountId());
         //如果配置ＥＢＡＹ账号时，选择强制使用paypal账号则用该账号
         //item.setPayPalEmailAddress(pUserConfig.getConfigValue());
         //定时刊登时，需要获取保存到数据库中的ＩＤ
+        item.setPayPalEmailAddress("caixu23@gmail.com");
         if (item.getListingType().equals("Chinese")) {
             AddItemRequest addItem = new AddItemRequest();
             addItem.setXmlns("urn:ebay:apis:eBLBaseComponents");
@@ -1858,6 +1898,13 @@ public class ItemController extends BaseAction{
         }
     }
 
+    /**
+     * 列表界面,立即刊登
+     * @param request
+     * @param response
+     * @param modelMap
+     * @throws Exception
+     */
     @RequestMapping("/ajax/listingItem.do")
     @ResponseBody
     public void listingItem(HttpServletRequest request,HttpServletResponse response,@ModelAttribute( "initSomeParmMap" )ModelMap modelMap) throws Exception {
@@ -1924,7 +1971,9 @@ public class ItemController extends BaseAction{
                 tradingItem.setItemId(itemId);
                 this.iTradingItem.saveTradingItem(tradingItem);
                 this.iTradingItem.saveListingSuccess(res,itemId);
-                successmessage.add("商品SKU为："+tradingItem.getSku()+"，名称为：<a target=_blank style='color:blue' href='http://www.sandbox.ebay.com/itm/"+itemId+"'>"+tradingItem.getItemName()+"<a>，刊登成功！");
+                //新增在线商品数据
+                this.iTradingListingData.saveTradingListingDataByTradingItem(tradingItem,res);
+                successmessage.add("商品SKU为："+tradingItem.getSku()+"，名称为：<a target=_blank style='color:blue' href='"+service_item_url+itemId+"'>"+tradingItem.getItemName()+"<a>，刊登成功！");
             }else{
                 Document document= DocumentHelper.parseText(res);
                 Element rootElt = document.getRootElement();
@@ -2598,7 +2647,7 @@ public class ItemController extends BaseAction{
             TradingTimerListingWithBLOBs ttl = new TradingTimerListingWithBLOBs();
             ttl.setItem(tradingItem.getId());
             ttl.setTimer(DateUtils.parseDateTime(timerStr));
-            ttl.setTimerMessage(xml);
+            ttl.setTimerMessage(StringEscapeUtils.escapeXml(xml));
             if (item.getListingType().equals("Chinese")) {
                 ttl.setApiMethod(APINameStatic.AddItem);
             } else {

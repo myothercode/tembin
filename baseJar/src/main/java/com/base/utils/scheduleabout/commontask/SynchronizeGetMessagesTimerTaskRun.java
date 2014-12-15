@@ -44,7 +44,9 @@ public class SynchronizeGetMessagesTimerTaskRun extends BaseScheduledClass imple
         SiteMessageService siteMessageService = (SiteMessageService) ApplicationContextUtil.getBean(SiteMessageService.class);
         UserInfoService userInfoService=(UserInfoService)ApplicationContextUtil.getBean(UserInfoService.class);
         for(TaskGetMessages taskGetMessages:TaskGetMessages){
-            taskGetMessages.setTokenflag(1);
+            Integer flag=taskGetMessages.getTokenflag();
+            flag=flag+1;
+            taskGetMessages.setTokenflag(flag);
             iTaskGetMessages.saveListTaskGetMessages(taskGetMessages);
             UsercontrollerDevAccountExtend d = new UsercontrollerDevAccountExtend();//开发者帐号id
             d.setApiSiteid("0");
@@ -68,23 +70,47 @@ public class SynchronizeGetMessagesTimerTaskRun extends BaseScheduledClass imple
             String res = resMap.get("message");
             if ("fail".equalsIgnoreCase(r1)) {
                 List<PublicSitemessage> list1=siteMessageService.selectPublicSitemessageByMessage("synchronize_get_messages_timer_FAIL","Message定时任务:"+taskGetMessages.getId());
-                if(list1!=null&&list1.size()>0){
-                    return;
+                if(list1==null||list1.size()==0){
+                    TaskMessageVO taskMessageVO = new TaskMessageVO();
+                    taskMessageVO.setMessageType(SiteMessageStatic.SYNCHRONIZE_GET_MESSAGES_TIMER + "_FAIL");
+                    taskMessageVO.setMessageTitle("定时同步Message失败!");
+                    taskMessageVO.setMessageContext("Message调用API失败:" + res);
+                    taskMessageVO.setMessageTo(taskGetMessages.getUserid());
+                    taskMessageVO.setMessageFrom("system");
+                    taskMessageVO.setOrderAndSeller("Message定时任务:"+taskGetMessages.getId());
+                    siteMessageService.addSiteMessage(taskMessageVO);
+
                 }
-                TaskMessageVO taskMessageVO = new TaskMessageVO();
-                taskMessageVO.setMessageType(SiteMessageStatic.SYNCHRONIZE_GET_MESSAGES_TIMER + "_FAIL");
-                taskMessageVO.setMessageTitle("定时同步Message失败!");
-                taskMessageVO.setMessageContext("Message调用API失败:" + res);
-                taskMessageVO.setMessageTo(taskGetMessages.getUserid());
-                taskMessageVO.setMessageFrom("system");
-                taskMessageVO.setOrderAndSeller("Message定时任务:"+taskGetMessages.getId());
-                siteMessageService.addSiteMessage(taskMessageVO);
-                return;
+                logger.error("调用Message API失败:"+res);
             }
             String ack = null;
             try {
-                ack = SamplePaseXml.getVFromXmlString(res, "Ack");
-                if ("Success".equalsIgnoreCase(ack)) {
+                try{
+                    ack = SamplePaseXml.getVFromXmlString(res, "Ack");
+                }catch (Exception e){
+                    logger.error("SynchronizeGetMessagesTimerTaskRun第91",e);
+                    ack="";
+                }
+                if ("Success".equalsIgnoreCase(ack)||"Warning".equalsIgnoreCase(ack)) {
+                    if("Warning".equalsIgnoreCase(ack)){
+                        List<PublicSitemessage> list1=siteMessageService.selectPublicSitemessageByMessage("synchronize_get_messages_timer_FAIL","Message定时任务有警告:"+taskGetMessages.getId());
+                        String errors = SamplePaseXml.getVFromXmlString(res, "Errors");
+                        if(!StringUtils.isNotBlank(errors)){
+                            errors = SamplePaseXml.getWarningInformation(res);
+                        }
+                        if(list1==null||list1.size()==0){
+                            TaskMessageVO taskMessageVO = new TaskMessageVO();
+                            taskMessageVO.setMessageType(SiteMessageStatic.SYNCHRONIZE_GET_MESSAGES_TIMER + "_FAIL");
+                            taskMessageVO.setMessageTitle("定时同步Message有警告!");
+                            taskMessageVO.setMessageContext("Message调用API有警告:" + errors);
+                            taskMessageVO.setMessageTo(taskGetMessages.getUserid());
+                            taskMessageVO.setMessageFrom("system");
+                            taskMessageVO.setOrderAndSeller("Message定时任务有警告:"+taskGetMessages.getId());
+                            siteMessageService.addSiteMessage(taskMessageVO);
+
+                        }
+                        logger.error("获取定时Message有警告!" + errors);
+                    }
                     List<Element> messages = GetMyMessageAPI.getMessages(res);
                     for(Element message:messages){
                         TradingMessageGetmymessage ms= GetMyMessageAPI.addDatabase(message, taskGetMessages.getUserid(), taskGetMessages.getEbayid());//保存到数据库
@@ -119,21 +145,13 @@ public class SynchronizeGetMessagesTimerTaskRun extends BaseScheduledClass imple
 
                 } else {
                     List<PublicSitemessage> list1=siteMessageService.selectPublicSitemessageByMessage("synchronize_get_messages_timer_FAIL", "Message定时任务:" + taskGetMessages.getId());
-                    if(list1!=null&&list1.size()>0){
-                        return;
+                    if(list1==null||list1.size()==0){
+                        logger.error("定时获取Message参数错误:"+res);
                     }
-                    TaskMessageVO taskMessageVO = new TaskMessageVO();
-                    taskMessageVO.setMessageType(SiteMessageStatic.SYNCHRONIZE_GET_MESSAGES_TIMER + "_FAIL");
-                    taskMessageVO.setMessageTitle("定时同步Message失败!");
-                    taskMessageVO.setMessageContext("Message调用API失败:" + res);
-                    taskMessageVO.setMessageTo(taskGetMessages.getUserid());
-                    taskMessageVO.setMessageFrom("system");
-                    taskMessageVO.setOrderAndSeller("Message定时任务:"+taskGetMessages.getId());
-                    siteMessageService.addSiteMessage(taskMessageVO);
-                    return;
                 }
-
             } catch (Exception e) {
+                TempStoreDataSupport.removeData("task_"+getScheduledType());
+                logger.error("定时同步消息每两分钟出错:"+e.getMessage());
                 e.printStackTrace();
             }
         }
@@ -150,9 +168,6 @@ public class SynchronizeGetMessagesTimerTaskRun extends BaseScheduledClass imple
 
         ITaskGetMessages iTaskGetMessages = (ITaskGetMessages) ApplicationContextUtil.getBean(ITaskGetMessages.class);
         List<TaskGetMessages> list=iTaskGetMessages.selectTaskGetMessagesByFlagIsFalseOrderBysaveTime();
-        if(list.size()>2){
-            list=filterLimitList(list);
-        }
         synchronizeOrders(list);
         TempStoreDataSupport.removeData("task_"+getScheduledType());
     }
@@ -180,6 +195,6 @@ public class SynchronizeGetMessagesTimerTaskRun extends BaseScheduledClass imple
 
     @Override
     public Integer crTimeMinu() {
-        return -1;
+        return 10;
     }
 }

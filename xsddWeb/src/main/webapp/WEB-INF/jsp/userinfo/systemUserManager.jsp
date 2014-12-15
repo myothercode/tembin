@@ -15,6 +15,7 @@
             background-color: #ffffff;
         }
     </style>
+    <link rel="stylesheet" type="text/css" href="<c:url value ="/css/compiled/icons.css"/>"/>
     <script type="text/javascript" src=<c:url value ="/js/systemabout/user/sysusermanager.js" /> ></script>
     <script type="text/javascript" src=<c:url value ="/js/systemabout/user/rolemanager.js" /> ></script>
 </head>
@@ -56,7 +57,7 @@
             </tr>
             <tr>
                 <td height="40" align="right">&nbsp;</td>
-                <td height="40"><input onclick="changePWDFun()" name="提交" type="button" class="newps_put" value="保 存"></td>
+                <td height="40"><input onclick="changePWDFun()" name="提交" type="button" class="net_put" value="保 存"></td>
             </tr>
         </table></form>
 </div>
@@ -105,7 +106,8 @@
             </tr>
             <tr>
                 <td height="40" align="right">&nbsp;</td>
-                <td height="40"><input name="提交" type="submit" class="newps_put" value="确认初始化"></td>
+                <td height="40">
+                    <input name="提交" type="submit" class="net_put" value="确认初始化"></td>
             </tr>
         </table></form>
 </div>

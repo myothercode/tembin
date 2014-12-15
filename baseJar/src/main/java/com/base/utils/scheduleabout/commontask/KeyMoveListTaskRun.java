@@ -4,6 +4,7 @@ import com.base.database.keymove.mapper.KeyMoveListMapper;
 import com.base.database.keymove.model.KeyMoveList;
 import com.base.database.keymove.model.KeyMoveListExample;
 import com.base.database.trading.model.TradingItemWithBLOBs;
+import com.base.database.trading.model.TradingProgress;
 import com.base.database.userinfo.model.SystemLog;
 import com.base.domains.userinfo.UsercontrollerDevAccountExtend;
 import com.base.sampleapixml.APINameStatic;
@@ -20,6 +21,7 @@ import com.base.utils.scheduleabout.Scheduledable;
 import com.base.utils.threadpool.AddApiTask;
 import com.base.utils.xmlutils.SamplePaseXml;
 import com.base.xmlpojo.trading.addproduct.Item;
+import com.keymove.service.IKeyMoveProgress;
 import com.trading.service.ITradingItem;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -42,6 +44,7 @@ public class KeyMoveListTaskRun extends BaseScheduledClass implements Scheduleda
         if(StringUtils.isNotEmpty(isRunging)){return;}
         TempStoreDataSupport.pushData("task_" + getScheduledType(), "x");
         KeyMoveListMapper keyMapper = (KeyMoveListMapper) ApplicationContextUtil.getBean(KeyMoveListMapper.class);
+        IKeyMoveProgress iKeyMoveProgress = (IKeyMoveProgress) ApplicationContextUtil.getBean(IKeyMoveProgress.class);
         UserInfoService userInfoService = (UserInfoService) ApplicationContextUtil.getBean(UserInfoService.class);
         ITradingItem iTradingItem = (ITradingItem) ApplicationContextUtil.getBean(ITradingItem.class);
         KeyMoveListExample kmle = new KeyMoveListExample();
@@ -89,12 +92,16 @@ public class KeyMoveListTaskRun extends BaseScheduledClass implements Scheduleda
                         kml.setTaskFlag("1");
                         keyMapper.updateByPrimaryKeySelective(kml);
                         liitem.add(itemrs);
+                        TradingProgress tp = iKeyMoveProgress.selectById(kml.getProgressId());
+                        tp.setEndDate(new Date());
+                        iKeyMoveProgress.saveProgress(tp);
                     } else {//ＡＰＩ请求失败
                         kml.setTaskFlag("2");
                         keyMapper.updateByPrimaryKeySelective(kml);
                     }
-
                 } catch (Exception e) {
+                    kml.setTaskFlag("2");
+                    keyMapper.updateByPrimaryKeySelective(kml);
                     e.printStackTrace();
                 }
             }else{

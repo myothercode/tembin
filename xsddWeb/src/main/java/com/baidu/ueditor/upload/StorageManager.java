@@ -10,6 +10,7 @@ import java.util.Map;
 import com.base.utils.applicationcontext.ApplicationContextUtil;
 import com.base.utils.common.MyStringUtil;
 import com.base.utils.ftpabout.FtpUploadFile;
+import com.base.utils.imageManage.ImageUtil;
 import com.base.utils.imageManage.service.ImageService;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.ArrayUtils;
@@ -175,13 +176,21 @@ public class StorageManager {
 
     /**ftp上传文件*/
     public static String ftpUploadFile(InputStream inputStream ,String skuName,String stuff){
-        return FtpUploadFile.ftpUploadFile(inputStream,skuName,stuff);
-    }
+		String s="";
+		try {
+			s=FtpUploadFile.ftpUploadFile(inputStream,skuName,stuff);
+		} catch (Exception e) {
+			logger.error(e.getMessage());
+			s="err";
+		}
+		return s;
+	}
 
     public static State ftpUploadFile(File file,String path){
        // http://www.open-open.com/lib/view/open1384090071946.html
         //ftpClient.makeDirectory(new String(pathName.getBytes("UTF-8"),"iso-8859-1"));创建目录
         State state = null;
+		path=path.toLowerCase();
         String[] skuandfname= StringUtils.split(path,"/");
         ArrayUtils.reverse(skuandfname);
         String skuName=skuandfname[1];
@@ -228,9 +237,22 @@ public class StorageManager {
            // String[] x= ftpClient.listNames();
            // String fileName = new String(file.getName().getBytes("utf-8"),"iso-8859-1");
           boolean  result = ftpClient.storeFile(fileName, new FileInputStream(file));
-            if (result) {
+			boolean  result1;
+			try {
+				 result1 = ftpClient.storeFile(MyStringUtil.getFimeNoStuff(fileName)+"_small"+MyStringUtil.getExtension(fileName, ""),
+                        ImageUtil.zoomPic(new FileInputStream(file),80,80));
+			} catch (Exception e) {
+				result1=false;
+				logger.info("ftp上传小图失败!直接上传成大图!"+fileName);
+			}
+
+			if (result) {
                 logger.info("ftp上传成功!");
             }
+			if (!result1){
+				ftpClient.storeFile(MyStringUtil.getFimeNoStuff(fileName)+"_small"+MyStringUtil.getExtension(fileName,""),
+						new FileInputStream(file));
+			}
 
         } catch (Exception e) {
             logger.error("ftp出错"+e.getMessage(),e);

@@ -19,6 +19,8 @@ public interface ITradingTemplateInitTable {
 
     List<TemplateInitTableQuery> selectByTemplateInitTableList(Map map,Page page);
 
+    List<TemplateInitTableQuery> selectTemplateType(Map map);
+
     TradingTemplateInitTable selectById(Long id);
 
     List<TradingTemplateInitTable> selectByType(long typeid);

@@ -12,6 +12,57 @@
 <head>
     <title></title>
     <script type="text/javascript">
+        var imageUrlPrefix = '${imageUrlPrefix}';
+
+        $(document).ready(function(){
+            $("#templateInitTableListTable").initTable({
+                url:path + "/ajax/loadTemplateInitTableList.do?",
+                columnData:[
+                    {title:"模板名字",name:"templateName",width:"8%",align:"left"},
+                    {title:"模板预览",name:"templateViewUrl",width:"8%",align:"left",format:makeImgUrl},
+                    {title:"级别",name:"level",width:"8%",align:"left",format:makeOption2},
+                    {title:"操作",name:"option1",width:"8%",align:"left",format:makeOption1}
+                ],
+                selectDataNow:false,
+                isrowClick:false,
+                showIndex:true
+            });
+            refreshTable();
+            getTemplateType();
+        });
+
+        function makeImgUrl(json){
+            return "<img src="+imageUrlPrefix+json.templateViewUrl+" style='width:100px;height:150px;' />";
+        }
+
+        function getTemplateType(){
+            var url=path + "/ajax/queryTemplateType.do?";
+            $().invoke(
+                    url,
+                    {},
+                    function(i,r){
+                        for(var i in r){
+                            var lihtml="<li class='select2-search-choice1'>";
+                            lihtml+="<div onclick='queryBuP("+(r[i]["templateTypeId"])+",this)'>"+(r[i]["templateTypeName"])+"</div>";
+                            lihtml+="</li>";
+                            $("#s2").append(lihtml);
+                            //alert(r[i]["templateTypeId"])
+                        }
+                    }
+            );
+        }
+
+        function queryBuP(templateTypeId,obj){
+            var p={"strV1":templateTypeId};
+            refreshTable(p);
+
+            var oli=obj.parentNode;
+            $(oli).siblings().removeClass("onclickd");
+            $(oli).addClass("onclickd");
+
+        }
+
+
         var TemplateInitTable;
         function addTemplateInitTable(){
             TemplateInitTable=openMyDialog({title: '新增模板选项',
@@ -39,22 +90,10 @@
             });
         }
 
-        $(document).ready(function(){
-            $("#templateInitTableListTable").initTable({
-                url:path + "/ajax/loadTemplateInitTableList.do?",
-                columnData:[
-                    {title:"模板名字",name:"templateName",width:"8%",align:"left"},
-                    {title:"tLevel",name:"level",width:"8%",align:"left",format:makeOption2},
-                    {title:"操作",name:"option1",width:"8%",align:"left",format:makeOption1}
-                ],
-                selectDataNow:false,
-                isrowClick:false,
-                showIndex:true
-            });
-            refreshTable();
-        });
-        function refreshTable(){
-            $("#templateInitTableListTable").selectDataAfterSetParm({"bedDetailVO.deptId":"", "isTrue":0});
+
+        function refreshTable(p){
+            if(p==null){p={}}
+            $("#templateInitTableListTable").selectDataAfterSetParm(p);
         }
         /**组装操作选项*/
         function makeOption1(json){
@@ -76,11 +115,7 @@
             }
         }
     </script>
-    <style type="text/css">
-        body {
-            background-color: #ffffff;
-        }
-    </style>
+
 </head>
 <body>
 <div class="new_all">
@@ -88,10 +123,68 @@
     <div class="a_bal"></div>
     <div class="tbbay" style="position: absolute;top: 28px;right: 40px;z-index: 10000;"><a data-toggle="modal" href="javascript:void(0)" class=""  onclick="addTemplateInitTable()">新增模板</a></div>
     <%--<div class="a_bal"></div>--%>
+    <div class="select2-container1 select2-container-multi1 " id="s2id_e9" style="width: 90%;">
+        <ul class="select2-choices1" id="s2">
+            <li class="select2-search-choice1">
+                <div onclick="queryBuP('all',this)">全部</div>
+            </li>
+
+        </ul>
+    </div>
+
     <div id="cent">
         <div id="templateInitTableListTable"></div>
     </div>
 </div>
 
+<style type="text/css">
+    body {
+        background-color: #ffffff;
+    }
+    .select2-container-multi1 .select2-choices1 {
+        height: auto !important;
+        height: 1%;
+        margin: 0;
+        padding: 0 5px 0 0;
+        position: relative;
+        border: 1px solid #aaa;
+        cursor: text;
+        overflow: hidden;
+        background-color: #fff;
+
+    }
+
+
+    .select2-container-multi1 .select2-choices1 li {
+        float: left;
+        list-style: none;
+
+    }
+
+
+    .select2-container-multi1 .select2-choices1 .select2-search-choice1 {
+        padding: 3px 5px 3px 5px;
+        margin: 3px 0 3px 5px;
+        position: relative;
+
+        line-height: 13px;
+        color: #333;
+        cursor: default;
+        border: 1px solid #aaaaaa;
+
+        border-radius: 3px;
+        cursor: pointer;
+    }
+
+    .select2-search-choice1:hover{
+        border:#35a5e5 5px solid;
+        box-shadow: 0 0 5px rgba(81, 203, 238, 1);
+    }
+
+    .onclickd{
+        border:#35a5e5 5px solid;
+        box-shadow: 0 0 5px rgba(81, 203, 238, 1);
+    }
+</style>
 </body>
 </html>

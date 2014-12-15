@@ -10,6 +10,7 @@ import org.apache.http.impl.cookie.DateParseException;
 import org.joda.time.DateTime;
 import org.joda.time.Days;
 import org.joda.time.Minutes;
+import org.joda.time.Seconds;
 import org.joda.time.format.DateTimeFormat;
 
 import java.io.Serializable;
@@ -675,6 +676,12 @@ public class DateUtils {
     public static int minuteBetween(Date date1,Date date2){
         int i= Minutes.minutesBetween(new DateTime(date1), new DateTime(date2)).getMinutes();
         // int i= Weeks.weeksBetween(new DateTime(date1), new DateTime(date2)).getWeeks();
+        return i;
+    }
+
+    /**两个日期之间相差多少分钟date2-date1*/
+    public static int secondsBetween(Date date1,Date date2){
+        int i= Seconds.secondsBetween(new DateTime(date1), new DateTime(date2)).getSeconds();
         return i;
     }
 

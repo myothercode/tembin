@@ -46,11 +46,23 @@ public class ListingItemDataTaskRun extends BaseScheduledClass implements Schedu
         List<TradingDataDictionary> litdd = DataDictionarySupport.getTradingDataDictionaryByType("site");
         UsercontrollerEbayAccountMapper ueam = (UsercontrollerEbayAccountMapper) ApplicationContextUtil.getBean(UsercontrollerEbayAccountMapper.class);
         UsercontrollerEbayAccountExample ueame = new UsercontrollerEbayAccountExample();
-        ueame.createCriteria();
+        ueame.createCriteria().andEbayStatusEqualTo("1");
         List<UsercontrollerEbayAccount> liue = ueam.selectByExampleWithBLOBs(ueame);
         for(int i =0 ;i<liue.size();i++) {
+            //先同步美国站点，如果数据不全，那么就需要同步所有站点
             UsercontrollerEbayAccount ue = liue.get(i);
-            for(TradingDataDictionary tdd:litdd){
+            List<ListingDataTask> lidk = iListingDataTask.selectByflag("0",ue.getEbayAccount());
+            if(lidk==null||lidk.size()==0) {
+                ListingDataTask ldt = new ListingDataTask();
+                ldt.setCreateDate(new Date());
+                ldt.setEbayaccount(ue.getEbayAccount());
+                ldt.setSite("0");
+                ldt.setToken(ue.getEbayToken());
+                ldt.setUserid(ue.getUserId());
+                ldt.setTaskFlag("0");
+                iListingDataTask.saveListDataTask(ldt);
+            }
+            /*for(TradingDataDictionary tdd:litdd){//同步21个站点
                 List<ListingDataTask> lidk = iListingDataTask.selectByflag(tdd.getName1(),ue.getEbayAccount());
                 if(lidk==null||lidk.size()==0){
                     ListingDataTask ldt= new ListingDataTask();
@@ -62,7 +74,7 @@ public class ListingItemDataTaskRun extends BaseScheduledClass implements Schedu
                     ldt.setTaskFlag("0");
                     iListingDataTask.saveListDataTask(ldt);
                 }
-            }
+            }*/
         }
     }
 
@@ -87,6 +99,6 @@ public class ListingItemDataTaskRun extends BaseScheduledClass implements Schedu
 
     @Override
     public Integer crTimeMinu() {
-        return null;
+        return 10;
     }
 }

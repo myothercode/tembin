@@ -42,6 +42,7 @@ public class SynchronizeGetUserCasesTaskRun extends BaseScheduledClass implement
                 iTaskGetUserCases.saveListTaskGetUserCases(TaskGetUserCases);
             }
         }catch (Exception e){
+            logger.error("定时每天插入账号去获取纠纷出错:"+e.getMessage());
             e.printStackTrace();
         }
 
@@ -50,7 +51,7 @@ public class SynchronizeGetUserCasesTaskRun extends BaseScheduledClass implement
     public void run(){
         UsercontrollerEbayAccountMapper ueam = (UsercontrollerEbayAccountMapper) ApplicationContextUtil.getBean(UsercontrollerEbayAccountMapper.class);
         UsercontrollerEbayAccountExample ueame = new UsercontrollerEbayAccountExample();
-        ueame.createCriteria();
+        ueame.createCriteria().andEbayStatusEqualTo("1");
         List<UsercontrollerEbayAccount> liue = ueam.selectByExampleWithBLOBs(ueame);
         Date date=new Date();
         saveTaskGetUserCases(liue,date);

@@ -1,13 +1,17 @@
 package com.base.utils.ftpabout;
 
 import com.base.utils.applicationcontext.ApplicationContextUtil;
+import com.base.utils.common.ConvertUtil;
 import com.base.utils.common.MyStringUtil;
+import com.base.utils.imageManage.ImageUtil;
 import com.base.utils.imageManage.service.ImageService;
+import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.net.ftp.FTP;
 import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPReply;
 import org.apache.log4j.Logger;
 
+import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.Map;
 
@@ -18,7 +22,7 @@ public class FtpUploadFile {
     static Logger logger = Logger.getLogger(FtpUploadFile.class);
 
     /**ftp上传文件*/
-    public static String ftpUploadFile(InputStream inputStream ,String skuName,String stuff){
+    public static String ftpUploadFile(InputStream inputStream ,String skuName,String stuff) throws Exception {
         String fileName="";
         FTPClient ftpClient = new FTPClient();
         try {
@@ -40,6 +44,15 @@ public class FtpUploadFile {
             }
 
             if(skuName.indexOf("/")>-1){
+                skuName=skuName.toLowerCase();
+                skuName.replace("?set_id=880000500f","").replace("?set_id=880000500F", "");
+                stuff=stuff.toLowerCase();
+                stuff.replace("?set_id=880000500f","").replace("?set_id=880000500F","");
+                if(stuff.indexOf("?")>-1){
+                    String r=stuff.substring(stuff.lastIndexOf("?"), stuff.length());
+                    stuff=stuff.replace(r,"");
+                }
+
                 String[] dnames=skuName.split("/");
                 boolean skudir = ftpClient.changeWorkingDirectory(dnames[0]);
                 if(!skudir){
@@ -85,14 +98,33 @@ public class FtpUploadFile {
             // String[] x= ftpClient.listNames();
             // String fileName = new String(file.getName().getBytes("utf-8"),"iso-8859-1");
             fileName= MyStringUtil.generateRandomFilename()+stuff;
-            boolean  result = ftpClient.storeFile(fileName, inputStream);
+            inputStream.mark(1);
+            InputStream smin= ConvertUtil.byteTOInputStream(ConvertUtil.InputStreamTOByte(inputStream)) ;
+            InputStream smin1=ConvertUtil.byteTOInputStream(ConvertUtil.InputStreamTOByte(smin)) ;
+            smin.reset();
+            smin1.reset();
+            boolean  result = ftpClient.storeFile(fileName, smin);
+            boolean  result1;
+            try {
+                result1 = ftpClient.storeFile(MyStringUtil.getFimeNoStuff(fileName)+"_small"+MyStringUtil.getExtension(fileName, ""),
+                        ImageUtil.zoomPic(smin1, 80, 80));
+            } catch (Exception e) {
+                result1=false;
+                logger.info("ftp上传小图失败!直接上传成大图!"+fileName,e);
+            }
             if (result) {
                 logger.info("ftp上传成功!");
+            }
+            if (!result1){
+                smin.reset();
+                ftpClient.storeFile(MyStringUtil.getFimeNoStuff(fileName)+"_small"+MyStringUtil.getExtension(fileName,""),
+                        smin);
             }
 
         } catch (Exception e) {
             logger.error("ftp出错"+e.getMessage(),e);
-            return null;
+            throw new Exception(e.getMessage(),e);
+            //return null;
 
         } finally {
             try {

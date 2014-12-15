@@ -51,7 +51,6 @@
             <if test="status==0">
                 and autoMessage.startUse = 0
             </if>
-
         </if>
         group by autoMessage.id
     </select>

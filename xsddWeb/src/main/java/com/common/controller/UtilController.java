@@ -8,16 +8,14 @@ import com.base.database.publicd.model.PublicDataDict;
 import com.base.database.publicd.model.PublicDataDictExample;
 import com.base.database.trading.mapper.UsercontrollerDevAccountMapper;
 import com.base.database.trading.mapper.UsercontrollerEbayAccountMapper;
-import com.base.database.trading.model.TradingDataDictionary;
-import com.base.database.trading.model.TradingReseCategory;
-import com.base.database.trading.model.UsercontrollerDevAccount;
-import com.base.database.trading.model.UsercontrollerEbayAccount;
+import com.base.database.trading.model.*;
 import com.base.database.userinfo.mapper.PublicDataDictCategorySpecificsMapper;
 import com.base.database.userinfo.model.PublicDataDictCategorySpecifics;
 import com.base.database.userinfo.model.PublicDataDictCategorySpecificsExample;
 import com.base.domains.CommonParmVO;
 import com.base.domains.DictDataFilterParmVO;
 import com.base.domains.SessionVO;
+import com.base.domains.querypojos.KeyMoveProgressQuery;
 import com.base.domains.userinfo.UsercontrollerDevAccountExtend;
 import com.base.domains.userinfo.UsercontrollerEbayAccountExtend;
 import com.base.mybatis.page.PageJsonBean;
@@ -33,10 +31,12 @@ import com.base.utils.exception.Asserts;
 import com.base.utils.httpclient.HttpClientUtil;
 import com.base.utils.threadpool.AddApiTask;
 import com.base.utils.threadpool.TaskMessageVO;
+import com.base.utils.tranfiles.DownEbayFile;
 import com.base.utils.xmlutils.SamplePaseXml;
 import com.base.xmlpojo.trading.addproduct.Item;
 import com.common.base.utils.ajax.AjaxSupport;
 import com.common.base.web.BaseAction;
+import com.keymove.service.IKeyMoveProgress;
 import com.sitemessage.service.SiteMessageStatic;
 import com.test.mapper.TestMapper;
 import com.trading.service.ITradingDataDictionary;
@@ -93,6 +93,8 @@ public class UtilController extends BaseAction{
     private KeyMoveListMapper keyMoveListMapper;
     @Autowired
     private SystemUserManagerService systemUserManagerService;
+    @Autowired
+    private IKeyMoveProgress iKeyMoveProgress;
 
     @Value("${EBAY.FINDING.KEY.API.URL}")
     private String findingkeyapiUrl;
@@ -392,6 +394,10 @@ public class UtilController extends BaseAction{
     @ResponseBody
     public String getCategoriesSpec(ModelMap modelMap, HttpServletRequest request) throws Exception {
 
+        DownEbayFile.main(null);
+
+        if(1==1){return "ok";}
+
         List<Map> maps=testMapper.queryTest(new HashMap());
 
 
@@ -460,6 +466,29 @@ i++;
         List<UsercontrollerEbayAccountExtend> ebayList=systemUserManagerService.queryCurrAllEbay(new HashMap());
         modelMap.put("ebayList",ebayList);
         return forword("/userselect/userselect",modelMap);
+    }
+
+    /**
+     * 统计一键搬家进度
+     * @param modelMap
+     * @param request
+     * @throws Exception
+     */
+    @RequestMapping("keymove/keyProgress.do")
+    @ResponseBody
+    public void keyProgress(ModelMap modelMap, HttpServletRequest request) throws Exception {
+        SessionVO c= SessionCacheSupport.getSessionVO();
+        List<KeyMoveProgressQuery> limp = this.iKeyMoveProgress.selectByUserId(c.getId());
+        if(limp!=null&&limp.size()>0){
+            KeyMoveProgressQuery kmpq = limp.get(0);
+            UsercontrollerEbayAccount uea = this.iUsercontrollerEbayAccount.selectById(Long.parseLong(kmpq.getPaypalId()));
+            modelMap.put("ebayAccount",uea.getEbayAccount());
+            TradingProgress tps = this.iKeyMoveProgress.selectById(kmpq.getProgressId());
+            modelMap.put("startDate",DateUtils.secondsBetween(tps.getStartDate(), tps.getEndDate()));
+        }
+        modelMap.put("limp",limp);
+        AjaxSupport.sendSuccessText("message", modelMap);
+
     }
 
     /*一键搬家*/

@@ -26,4 +26,14 @@
         </if>
     </select>
 
+
+    <select id="selectLogList" resultMap="BaseResultMap" parameterType="map">
+        select systemLog.* from system_log systemLog where 1=1
+        <if test="eventName!=null">
+            and systemLog.eventName = #{eventName}
+        </if>
+        and systemLog.operUser in (select ebay.ebay_account from usercontroller_ebay_account ebay where ebay.user_id=#{userId})
+
+    </select>
+
 </mapper>

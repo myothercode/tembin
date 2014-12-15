@@ -347,10 +347,10 @@
             if(json.listingtype=="2"){
                 htm="lx.png";
                 titlestr="多属性";
-            }else if(json.listingtype=="Chinese"){
+            }else if(json.listingtype=="Chinese"||json.listingtype=="chinese"){
                 htm="bids.png";
                 titlestr="拍买";
-            }else if(json.listingtype=="FixedPriceItem"){
+            }else if(json.listingtype=="FixedPriceItem"||json.listingtype=="fixedpriceitem"){
                 htm="buyit.png";
                 titlestr="固价";
             }
@@ -376,7 +376,7 @@
             return htm;
         }
         function picUrl(json){
-            var htm="<img width='50px' height='50px' src='"+json.galleryURL+"'>";
+            var htm="<img width='50px' height='50px' src='"+chuLiPotoUrl(json.galleryURL)+"'>";
             return htm;
         }
         /**组装操作选项*/

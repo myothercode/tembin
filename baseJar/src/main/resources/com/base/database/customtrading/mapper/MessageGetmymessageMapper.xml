@@ -117,6 +117,9 @@
         <if test="read!=null">
             order by MessageGetmymessage.receiveDate
         </if>
+        <if test="read==null">
+            order by MessageGetmymessage.receiveDate desc
+        </if>
     </select>
     <select id="selectMessageGetmymessageBySender" resultMap="BaseResultMap" parameterType="map">
         select MessageGetmymessage.* from trading_message_getmymessage MessageGetmymessage

@@ -1,11 +1,13 @@
 package com.trading.service.impl;
 
+import com.base.database.customtrading.mapper.ClientAssessFeedBackMapper;
 import com.base.database.customtrading.mapper.FeedBackReportMapper;
 import com.base.database.trading.mapper.TradingFeedBackDetailMapper;
 import com.base.database.trading.model.TradingFeedBackDetail;
 import com.base.database.trading.model.TradingFeedBackDetailExample;
 import com.base.domains.SessionVO;
 import com.base.domains.querypojos.FeedBackReportQuery;
+import com.base.mybatis.page.Page;
 import com.base.utils.cache.SessionCacheSupport;
 import com.base.utils.common.DateUtils;
 import com.base.utils.common.ObjectUtils;
@@ -26,7 +28,8 @@ public class TradingFeedBackDetailImpl implements com.trading.service.ITradingFe
     private TradingFeedBackDetailMapper tradingFeedBackDetailMapper;
     @Autowired
     private FeedBackReportMapper feedBackReportMapper;
-
+    @Autowired
+    private ClientAssessFeedBackMapper clientAssessFeedBackMapper;
     @Override
     public void saveFeedBackDetail(List<TradingFeedBackDetail> lifb) throws Exception {
         for(TradingFeedBackDetail tfbd : lifb){
@@ -116,5 +119,10 @@ public class TradingFeedBackDetailImpl implements com.trading.service.ITradingFe
         }
         m.put("userid",c.getId());
         return this.feedBackReportMapper.selectFeedBackReportList(m);
+    }
+
+    @Override
+    public List<TradingFeedBackDetail> selectClientAssessFeedBackList(Map m,Page page){
+        return this.clientAssessFeedBackMapper.selectClientAssessFeedBackList(m,page);
     }
 }

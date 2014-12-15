@@ -423,12 +423,12 @@ function changeRadio(th) {
         $("#twoAttr").show();
         $("#Auction").hide();
         $("dt[name='priceMessage']").show();
-    } else if (obj == "FixedPriceItem") {
+    } else if (obj == "FixedPriceItem"||obj == "fixedpriceitem") {
         $("#oneAttr").show();
         $("#twoAttr").hide();
         $("#Auction").hide();
         $("dt[name='priceMessage']").show();
-    } else if (obj == "Chinese") {
+    } else if (obj == "Chinese"||obj == "chinese") {
         $("#oneAttr").show();
         $("#twoAttr").hide();
         $("#Auction").show();
@@ -555,9 +555,7 @@ function returnSelectStr(jdata){
         }
     attrValueName+="</select>";
 }
-var _invokeGetData_type=null;
 function getRequestJson(siteID,id){
-    _invokeGetData_type="string";
     var url=path+"/ajax/getCategorySpecifics.do";
     var data={"parentCategoryID":id,"siteID":siteID};
     $().invoke(
@@ -565,16 +563,17 @@ function getRequestJson(siteID,id){
         data,
         [
             function(m,r){
-                _invokeGetData_type=null;
                 if(r==null || r==''){return;}
                 localStorage.setItem("category_att_ID"+siteID+""+data.parentCategoryID,r);
                 var json= eval("(" + localStorage.getItem("category_att_ID"+siteID+""+data.parentCategoryID) + ")");
                 var jdata=json.result;
                 returnSelectStr(jdata);
                 //alert(localStorage.getItem("aaa").length);
+                //_invokeGetData_type=null;
             },
-            function(m,r){ _invokeGetData_type=null;alert(r)}
-        ]
+            function(m,r){
+                alert(r)}
+        ],{stringFormat:true}
     );
 }
 function selectAttrValue(obj){
@@ -752,7 +751,7 @@ function addb(obj) {
 function addPic(attrName, attrValue) {
     var str = "";
     str += "<div><div style='padding-top: 20px;'>" + attrName + ":" + attrValue + "</div> <section class='example' style='width: 1200px;'><ul class='gbin1-list' style='padding-left: 20px;' id='picturemore_"+attrValue.replace(" ","_")+"'></ul><div class='a_bal' style='margin-top: 20px;'></div></section> <script type=text/plain id='" + attrName.replace(" ","_") + "." + attrValue.replace(" ","_") + "' />";
-    str += "<div style='padding-left: 50px; '>" +
+    str += "<div style='padding-left: 20px; '>" +
         "<b style='height: 32px;margin-top: 20px;' class='new_button'><a href='javascript:void(0)' id=" + attrValue.replace(" ","_") + " onClick='selectPic(this)'>选择图片</a></b>";
     str += "</div></div>";
     return str;
@@ -765,9 +764,9 @@ var bsid_temp=null;
 function selectPic(a) {
     bsid_temp=null;
     //$().image_editor.show("apicUrls_" + ebayAccount); //上传图片的按钮id
-    if(($("#showPics").find("img").length+$("#picMore").find("img").length/2)>8){
+    if((($("#showPics").find("img").length+$("#picMore").find("img").length)/2)>12){
         setTimeout(function(){closeSelectPicWindow()},200) ;
-        alert("最多只能上传8张图片，上传图片已超过上传张数！");
+        alert("最多只能上传12张图片，上传图片已超过上传张数！");
         return;
     }
     sss = a.id;
@@ -805,8 +804,8 @@ function addPictrueUrl(urls) {
         for (var i = 0; i < urls.length; i++) {
             var imgsrc = urls[i].src.replace("http@", "http:");
             var idDuff=generateMixedRandom(5);
-            str += '<li><div style="position:relative"><input type="hidden" name="pic_mackid"/> <input type="hidden" name="PictureDetails'+sss.substr(sss.indexOf("_"),sss.length)+'.PictureURL" value="' + urls[i].src + '">' +
-                '<img id=imgtemp'+idDuff+' src=' + imgsrc + ' height=\"80px\" width=\"78px\" />' +
+            str += '<li><div style="position:relative"><input type="hidden" name="pic_mackid"/> <input type="hidden" name="PictureDetails'+sss.substr(sss.indexOf("_"),sss.length)+'.PictureURL" value="' + imgsrc + '">' +
+                '<img id=imgtemp'+idDuff+' src=' + chuLiPotoUrl(imgsrc) + ' height=\"80px\" width=\"78px\" />' +
                 '<div style="text-align: right;background-color: dimgrey;"><img src="'+path+'/img/newpic_ico.png" onclick="removeThis(this)"></div></div>';
             //<div style="text-align: right;background-color: dimgrey;"><img src="'+path+'/img/newpic_ico.png" onclick="removeThis(this)"></div>
             str += "</li>";
@@ -829,7 +828,7 @@ function addPictrueUrl(urls) {
                     var tlu = r[i];
                     var len = $(addhtml).find("input[type='hidden'][name='pic_mackid']").length- r.length;
                     $(addhtml).find("input[type='hidden'][name='pic_mackid']").each(function(j,d){
-                        if($(d).val()==""&&(i+len)==j){
+                        if(($(d).val()==""||$(d).val()==null)&&(i+len)==j){
                             $(d).val(tlu.mackId);
                         }
                     });
@@ -846,7 +845,7 @@ function addPictrueUrl(urls) {
             $('#picturemore_' + sss).append("<input type='hidden' name='VariationSpecificValue_" + sss + "' value='" + sss + "'>");
         }
         for (var i = 0; i < urls.length; i++) {
-            str+="<li><div style='position:relative'><input type='hidden' name='pic_mackid_more'/><input type='hidden' name='" + sss + "' value='" + urls[i].src + "'><img src='" + urls[i].src.replace("http@", "http:") + "' height='80' width='78' /><div style='text-align: right;background-color: dimgrey;'><img src='"+path+"/img/newpic_ico.png' onclick='removeThis(this)'></div></div></li>";
+            str+="<li><div style='position:relative'><input type='hidden' name='pic_mackid_more'/><input type='hidden' name='" + sss + "' value='" + urls[i].src.replace("http@", "http:") + "'><img src='" + chuLiPotoUrl(urls[i].src.replace("http@", "http:")) + "' height='80' width='78' /><div style='text-align: right;background-color: dimgrey;'><img src='"+path+"/img/newpic_ico.png' onclick='removeThis(this)'></div></div></li>";
             urlss+=urls[i].src.replace("http@", "http:")+",";
         }
         var addhtmlstr = $('#picturemore_' + sss).append(str);

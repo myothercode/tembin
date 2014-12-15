@@ -8,6 +8,7 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%--<%@include file= "/WEB-INF/jsp/commonImport.jsp" %>--%>
 <%@include file= "/WEB-INF/jsp/smallFormImport.jsp" %>
+<link rel="stylesheet" type="text/css" href="<c:url value ="/css/compiled/icons.css"/>"/>
 <html>
 <c:set var="shipping" value="${tradingShippingdetails}"/>
 <head>
@@ -641,13 +642,8 @@
             </td>
         </tr>
     </table>
-    <div class="diagle-button-div">
- <%--       <div style="margin-right: 5px;">
-            <input type="button" value="确定" onclick="saveData(this)">
-        </div>--%>
-        <div >
-            <a class="myjqueryuibutton" href="javascript:void(0)" onclick="saveData(this)">确定</a>
-        </div>
+    <div class="modal-footer" style="padding:0px;background-color:#FFFFFF;">
+        <button type="button" class="net_put" onclick="saveData(this)">确定</button>
     </div>
     <br>
 <br>

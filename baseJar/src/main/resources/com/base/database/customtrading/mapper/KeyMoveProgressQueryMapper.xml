@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.base.database.customtrading.mapper.KeyMoveProgressQueryMapper">
+  <resultMap id="BaseResultMap" type="com.base.domains.querypojos.KeyMoveProgressQuery">
+    <result column="user_id" jdbcType="BIGINT" property="userId" />
+    <result column="site_id" jdbcType="VARCHAR" property="siteId" />
+    <result column="task_flag" jdbcType="VARCHAR" property="taskFlag" />
+    <result column="paypal_id" jdbcType="VARCHAR" property="paypalId" />
+    <result column="tj_number" jdbcType="BIGINT" property="tjNumber" />
+    <result column="progress_id" jdbcType="BIGINT" property="progressId" />
+  </resultMap>
+    <select id="selectKeyMoveProgressList" resultMap="BaseResultMap" parameterType="map">
+        select user_id,site_id,task_flag,paypal_id,progress_id,count(1) tj_number from key_move_list where 1=1
+        and user_id = #{userId}
+        group by user_id,site_id,task_flag,paypal_id,progress_id
+    </select>
+</mapper>

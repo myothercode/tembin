@@ -43,6 +43,7 @@ public class SynchronizeGetMessagesTaskRun extends BaseScheduledClass implements
                 iTaskGetMessages.saveListTaskGetMessages(TaskGetMessages);
             }
         }catch (Exception e){
+            logger.error("/定时每天插入账号去获取消息出错:"+e.getMessage());
             e.printStackTrace();
         }
 
@@ -51,7 +52,7 @@ public class SynchronizeGetMessagesTaskRun extends BaseScheduledClass implements
     public void run(){
         UsercontrollerEbayAccountMapper ueam = (UsercontrollerEbayAccountMapper) ApplicationContextUtil.getBean(UsercontrollerEbayAccountMapper.class);
         UsercontrollerEbayAccountExample ueame = new UsercontrollerEbayAccountExample();
-        ueame.createCriteria();
+        ueame.createCriteria().andEbayStatusEqualTo("1");
         List<UsercontrollerEbayAccount> liue = ueam.selectByExampleWithBLOBs(ueame);
         Date date=new Date();
         saveTaskGetMessages(liue,date);

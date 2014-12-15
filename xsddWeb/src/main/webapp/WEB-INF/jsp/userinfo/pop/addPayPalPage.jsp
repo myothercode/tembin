@@ -10,6 +10,7 @@
 <html>
 <head>
     <title>添加paypal帐号</title>
+    <link rel="stylesheet" type="text/css" href="<c:url value ="/css/compiled/icons.css"/>"/>
     <script type="text/javascript" src=<c:url value ="/js/systemabout/bindEbayAccount/bindPayPal.js" /> ></script>
 </head>
 <body>
@@ -48,7 +49,7 @@
 
         <!-- Button -->
         <div class="controls">
-            <button onclick="submitTheForm()" class="btn btn-info">确定</button>
+            <button onclick="submitTheForm()" class="net_put">确定</button>
         </div>
     </div>
 </div>

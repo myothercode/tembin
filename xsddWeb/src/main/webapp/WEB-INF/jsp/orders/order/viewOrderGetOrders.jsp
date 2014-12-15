@@ -226,6 +226,65 @@
         }
         $(document).ready(function(){
             $("#sendForm").validationEngine();
+            var paypal=$("#paypal").val();
+            if(paypal!=""){
+                var url=path+"/order/ajax/paypalAmount.do?orderId="+paypal;
+                $().invoke(url,null,
+                        [function(m,r){
+                            console.debug(r);
+                            var spans=document.getElementsByName("price");
+                            var spans1=document.getElementsByName("totalPrice");
+                            var spans2=document.getElementsByName("price1");
+                            for(var i=0;i< r.length;i++){
+                                for(var j=0;j<spans.length;j++){
+                                    if(r.length>spans.length){
+                                        if(r[j]==""){
+                                            spans[j].innerHTML="";
+                                        }else{
+                                            spans[j].innerHTML=r[j];
+                                        }
+                                    }else{
+                                        if(r[i]==""){
+                                            spans[i].innerHTML="";
+                                        }else{
+                                            spans[i].innerHTML=r[i];
+                                        }
+                                    }
+                                }
+                            }
+                            if(r.length==0){
+                                for(var i=0;i<spans.length;i++){
+                                    spans[i].innerHTML="";
+                                }
+                            }
+                            for(var i=0;i<spans.length;i++){
+                                if(spans[i].innerHTML!=""){
+                                   var price10=parseInt(spans[i].innerHTML);
+                                   var price11=parseInt(spans1[i].innerHTML);
+                                   var price12=price11-price10;
+                                   spans2[i].innerHTML=price12+" USD";
+                                   spans[i].innerHTML=spans[i].innerHTML;
+                                }else{
+                                    spans2[i].innerHTML=spans1[i].innerHTML+" USD";
+                                }
+                            }
+                            for(var i=0;i<spans.length;i++){
+                                if(spans[i].innerHTML==""){
+                                    $(spans[i]).attr("style","color:red;");
+                                    spans[i].innerHTML="获取paypal费用失败";
+                                }else{
+                                    spans[i].innerHTML=spans[i].innerHTML+" USD";
+                                }
+                            }
+                            Base.token();
+                        },
+                            function(m,r){
+                                alert(r);
+                                Base.token();
+                            }]
+                );
+            }
+
         });
     </script>
     <style>
@@ -238,6 +297,7 @@
     </style>
 </head>
 <body>
+
 <div class="modal-body">
 <script type="text/javascript">
     function setvTab(name,cursel,n){
@@ -255,9 +315,11 @@
         <td style="line-height:30px;"><span style=" color:#2395F3; font-size:24px; font-family:Arial, Helvetica, sans-serif">
         <c:if test="${flag=='true'}">
             ${order.buyeruserid}</span> [来自eBay账号：${order.selleruserid} 的买家]
+            <input type="hidden" name="orderId" id="paypal" value="${order.orderid}">
         </c:if>
         <c:if test="${flag=='false'}">
             ${message.sender}</span> [来自eBay账号：${message.recipientuserid} 的买家]
+            <input type="hidden" name="orderId" id="paypal" value="">
         </c:if>
         </td>
     </tr>
@@ -424,9 +486,9 @@
                         <img src="<c:url value ="/img/new_no.png"/>" width="22" height="22">
                     </c:if>
                     </td>
-                    <td width="15%" height="30">${orders[status.index].total} USD</td>
-                    <td width="15%" height="30">${accs[status.index].feeAmount}&nbsp;${accs[status.index].feeAmountUnit}</td>
-                    <td width="15%" height="30">${orders[status.index].total-accs[status.index].feeAmount} USD</td>
+                    <td width="15%" height="30"><span name="totalPrice">${orders[status.index].total}</span> USD</td>
+                    <td width="15%" height="30"><span name="price"></span></td>
+                    <td  width="15%" height="30"><span name="price1"></span></td>
                 </tr>
                 <c:if test="${orders[status.index].status=='Incomplete'}">
                     <tr>

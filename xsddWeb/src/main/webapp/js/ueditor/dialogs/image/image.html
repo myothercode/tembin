@@ -21,6 +21,22 @@
             alert("sku没有获取到，图片上传功能不可用!")
         }
         //alert(parent.bsid_temp)
+
+
+        function addRemotePicUrl(){
+            var imgu="<div class=\"row\">"+
+            "<label for=\"url\"><var id=\"lang_input_url\"></var></label>"+
+            "<span>&nbsp;<input class=\"text\" id=\"url\" type=\"text\"/>"+
+            "&nbsp;<img onclick=\"addRemotePicUrl()\" src=\"/xsddWeb/img/new_add.png\" width=\"18\" height=\"18\">"+
+            "&nbsp;<img onclick='delImgUrl(this)' src=\"/xsddWeb/img/del.png\" width=\"18\" height=\"18\">"+
+            "</span></div>";
+            $("#remote .top").append(imgu);
+        }
+        function delImgUrl(delimg){
+            $(delimg.parentNode.parentNode).remove();
+            //alert(delimg.parentNode.parentNode.tagName)
+        }
+
     </script>
 
 </head>
@@ -50,10 +66,12 @@
                 <div class="top">
                     <div class="row">
                         <label for="url"><var id="lang_input_url"></var></label>
-                        <span><input class="text" id="url" type="text"/></span>
+                        <span><input class="text" id="url" type="text"/>
+                            <img src="/xsddWeb/img/new_add.png" width="18" height="18" onclick="addRemotePicUrl()"></span>
                     </div>
                 </div>
-                <div class="left">
+
+                <div class="left" style="display: none;">
                     <div class="row">
                         <label><var id="lang_input_size"></var></label>
                         <span><var id="lang_input_width">&nbsp;&nbsp;</var><input class="text" type="text" id="width"/>px </span>
@@ -73,7 +91,7 @@
                         <span><input class="text" type="text" id="title"/></span>
                     </div>
                 </div>
-                <div class="right"><div id="preview"></div></div>
+                <div class="right" style="display: none;"><div id="preview"></div></div>
             </div>
 
             <!-- 上传图片 -->

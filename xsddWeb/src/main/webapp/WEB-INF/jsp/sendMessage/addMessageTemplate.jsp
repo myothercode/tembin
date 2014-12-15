@@ -47,7 +47,12 @@
                     [function(m,r){
                         alert(r);
                         Base.token;
+                        var checkboxStatus=W.document.getElementById("checkboxStatus");
                         var url=path + "/sendMessage/ajax/loadSendMessageList.do?status=1";
+                        if(checkboxStatus.checked){
+                            var url=path + "/sendMessage/ajax/loadSendMessageList.do?status=0";
+                        }
+
                         W.refreshTable1(url);
                         W.sendGetmymessage.close();
                     },

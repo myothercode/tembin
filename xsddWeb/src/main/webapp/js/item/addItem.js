@@ -17,9 +17,7 @@
  </table>
  * */
 
-var _invokeGetData_type=null;
 function getCategorySpecificsData(id,indiv,funName,attTable){
-    _invokeGetData_type="string";
     var siteID=$(document.getElementsByName("site")).eq(0).val();
     $('#'+indiv).html('');
     if(localStorage.getItem("category_att_ID"+siteID+""+id)!=null){
@@ -39,40 +37,50 @@ function getSpec(id,indiv,funName,attTable){
     var siteID=$(document.getElementsByName("site")).eq(0).val();
     var url=path+"/ajax/getCategorySpecifics.do";
     var data={"parentCategoryID":id,"siteID":siteID};
+   // oldAlert(_invokeGetData_type);
     $().invoke(
         url,
         data,
         [
             function(m,r){
                 if(r==null || r==''){return;}
-                localStorage.setItem("category_att_ID"+siteID+""+data.parentCategoryID,r);
+                if(localStorage.getItem("category_att_ID"+siteID+""+id)==null){
+                    localStorage.setItem("category_att_ID"+siteID+""+data.parentCategoryID,r);
+                }
                 var json= eval("(" + localStorage.getItem("category_att_ID"+siteID+""+data.parentCategoryID) + ")");
                 var jdata=json.result;
+              //  oldAlert(jdata)
                 getAttMainMenu(jdata,indiv,funName,attTable);
                 //alert(localStorage.getItem("aaa").length);
             },
-            function(m,r){alert(r)}
-        ]
+            function(m,r){
+                alert(r)}
+        ],{stringFormat:true}
     );
+
 }
 /**获取属性的种类列表*/
 function getAttMainMenu(json,indiv,funName,attTable){
-    _invokeGetData_type=null;
     if((json==null || json.length==0)||json[0]['itemEnName']=='noval'){return;}
     var m=new Array();
     for(var i in json){
-        var m1=json[i]['itemId'];
+        var m1={"itemid":json[i]['itemId'],"minV":json[i]['minV']};
         m.push(m1);
     }
     var finalm=arrDistinct(m);
     var parentid=json[0]['itemParentId'];
     for(var i in finalm){
-        var domid=replaceTSFH((finalm[i]));
+        var domid=replaceTSFH((finalm[i]["itemid"]));
          //var dv="<a data-toggle=\"modal\" href=\"#myModal\" ><img src=\"../../img/new_add.png\" width=\"18\" height=\"18\"> Country / Region of Manufacture</a>"
         //var dv="<a id=div"+domid+" onclick="+funName+"(this,'"+parentid+"','"+attTable+"') class='att_mb-tag'>"+(finalm[i])+"</a>";
-        var dv="<a style='padding-left: 10px' id=div"+domid+" onclick="+funName+"(this,'"+parentid+"','"+attTable+"') data-toggle=\"modal\">" +
-            "<img  src="+path+"/img/new_add.png width=\"18\" height=\"18\">" +
-            ""+(finalm[i])+"</a>";
+        var dv="<a style='padding-left: 10px' id=div"+domid+" onclick="+funName+"(this,'"+parentid+"','"+attTable+"') data-toggle=\"modal\">" ;
+        if((finalm[i]["minV"])==1){
+            dv+= "<img  src="+path+"/img/new_add1.png width=\"18\" height=\"18\">" ;
+        }else{
+            dv+= "<img  src="+path+"/img/new_add.png width=\"18\" height=\"18\">" ;
+        }
+
+            dv+= ""+(finalm[i]["itemid"])+"</a>";
         $('#'+indiv).append(dv);
     }
     m=null;
@@ -346,6 +354,35 @@ function selectTimer(obj){
 }
 /**保存并提交*/
 function saveData(objs,name) {
+    if($("input[type='radio'][name='buyerId']:checked").val()==null||$("input[type='radio'][name='buyerId']:checked").val()==""){
+        alert("买家要求未选择");
+        return ;
+    }
+    if($("input[type='radio'][name='itemLocationId']:checked").val()==null||$("input[type='radio'][name='itemLocationId']:checked").val()==""){
+        alert("物品所在地未选择！");
+        return ;
+    }
+    if($("input[type='radio'][name='payId']:checked").val()==null||$("input[type='radio'][name='payId']:checked").val()==""){
+        alert("支付方式未选择！");
+        return ;
+    }
+    if($("input[type='radio'][name='returnpolicyId']:checked").val()==null||$("input[type='radio'][name='returnpolicyId']:checked").val()==""){
+        alert("退货政策未选择！");
+        return ;
+    }
+    if($("input[type='radio'][name='shippingDeailsId']:checked").val()==null||$("input[type='radio'][name='shippingDeailsId']:checked").val()==""){
+        alert("运输选项未选择！");
+        return ;
+    }
+    if($("input[type='radio'][name='sellerItemInfoId']:checked").val()==null||$("input[type='radio'][name='sellerItemInfoId']:checked").val()==""){
+        var conf = confirm("你确定不选择商品描述？");
+        if(conf == true) {
+
+        } else {
+            return;
+        }
+    }
+
     if($.type(objs)=="string"){
         objs=$("a[name='"+objs+"']");
     }
@@ -417,15 +454,23 @@ function saveData(objs,name) {
     var data = $('#form').serialize();
     var urll = "/xsddWeb/saveItem.do";
     $(objs).attr("disabled",true);
-    //var api = frameElement.api, W = api.opener;
     $().invoke(
         urll,
         data,
         [function (m, r) {
+            //oldAlert(r);
             //Base.token();
             alert(r);
             $(objs).attr("disabled",false);
-            document.location = path+"/itemManager.do";
+            if(url.indexOf("information/editItem.do")>0){
+                var api = frameElement.api, W = api.opener;
+                W.itemInformation.close();
+            }else if(url.indexOf("source=listingManager")>0){
+                window.close();
+            }else{
+                document.location = path+"/itemManager.do";
+            }
+
         },
             function (m, r) {
                 Base.token();
@@ -607,11 +652,11 @@ function isShowPicLink(){
         var showStr = "<div class='panel' style='display: block'>";
         showStr +=" <section class='example' ><ul class='gbin1-list' style='padding-left: 20px;' id='picture_"+$(d).val()+"'></ul></section> ";
         showStr +=" <script type=text/plain id='picUrls_"+$(d).val()+"'></script> ";
-        showStr +=" <div style='padding-left: 120px;'>" +
-            "<b class='new_button'><a href='javascript:void(0)' bsid='upload' id='apicUrls_"+$(d).val()+"' onclick='selectPic(this)'>选择图片</a></b>" +
-            "<b class='new_button'><a href='javascript:void(0)' bsid='online' id='apicUrlsSKU_" + $(d).val() + "' onclick='selectPic(this)' style=''>选择SKU图片</a></b>" +
-            "<b class='new_button'><a href='javascript:void(0)' bsid='remote' id='apicUrlsOther_" + $(d).val() + "' onclick='selectPic(this)' style=''>选择外部图片</a></b>" +
-            "<b class='new_button'><a href='javascript:void(0)' id='apicUrlsclear_" + $(d).val() + "' onclick='clearAllPic(this)' style=''>清空所选图片</a></b>" +
+        showStr +=" <div style='padding-left: 20px;'>" +
+            "<b class='new_button' style='margin: 10px;'><a href='javascript:void(0)' bsid='upload' id='apicUrls_"+$(d).val()+"' onclick='selectPic(this)'>选择图片</a></b>" +
+            "<b class='new_button' style='margin: 10px;'><a href='javascript:void(0)' bsid='online' id='apicUrlsSKU_" + $(d).val() + "' onclick='selectPic(this)' style=''>选择SKU图片</a></b>" +
+            "<b class='new_button' style='margin: 10px;'><a href='javascript:void(0)' bsid='remote' id='apicUrlsOther_" + $(d).val() + "' onclick='selectPic(this)' style=''>选择外部图片</a></b>" +
+            "<b class='new_button' style='margin: 10px;'><a href='javascript:void(0)' id='apicUrlsclear_" + $(d).val() + "' onclick='clearAllPic(this)' style=''>清空所选图片</a></b>" +
             "</div> </div> ";
         $("#showPics").append(showStr);
         $().image_editor.init("picUrls_"+$(d).val()); //编辑器的实例id
@@ -627,21 +672,21 @@ function initTitle(){
     $("#titleDiv").text("");
     $("input[type='checkbox'][name='ebayAccounts']:checked").each(function(i,d) {
         var titleHtml="";
-        titleHtml+=' <li> ';
+        titleHtml+=' <li  style="height: 35px;"> ';
         titleHtml+=' <dt>物品标题('+$(d).attr("shortName")+')</dt> ';
         titleHtml+=' <div class="new_left"> ';
-        titleHtml+=' <input type="text" name="Title_'+$(d).val()+'" id="Title" style="width:600px;" ';
+        titleHtml+=' <input type="text" name="Title_'+$(d).val()+'" value="'+title+'" id="Title" style="width:600px;" ';
         titleHtml+=' class="validate[required,maxSize[80]] form-control" size="100" ';
         titleHtml+=' onkeyup="incount(this)"><span id="incount">0</span>/80 ';
         titleHtml+=' </div> ';
         titleHtml+=' </li> ';
-        titleHtml+=' <li> ';
+        titleHtml+=' <li style="height: 35px;display:none;"> ';
         titleHtml+=' <dt>子标题('+$(d).attr("shortName")+')</dt> ';
         titleHtml+=' <div class="new_left"> ';
-        titleHtml+=' <input type="text" name="SubTitle_'+$(d).val()+'" style="width:600px;" class="form-control" id="SubTitle_'+$(d).val()+'" ';
+        titleHtml+=' <input type="text" name="SubTitle_'+$(d).val()+'" value="'+subtitle+'" style="width:600px;" class="form-control" id="SubTitle_'+$(d).val()+'" ';
         titleHtml+=' size="100"> ';
         titleHtml+=' </div> ';
-        titleHtml+=' </li><li class="flip" style=" padding-left:260px;padding-top:9px;" onclick="showSubTitle(this)"><img src="img/new_list_ico.png"></li> ';
+        titleHtml+=' </li><li class="flip" style="padding-left:260px;padding-bottom: 20px;height: 5px;" onclick="showSubTitle(this)"><img src="'+path+'/img/new_list_ico.png" class="abc"></li> ';
         $("#titleDiv").append(titleHtml);
     });
 }
@@ -689,6 +734,11 @@ function selectProduct(){
 }
 
 function showSubTitle(obj){
+    if($(obj).find("img").attr("class")=="abc"){
+        $(obj).find("img").attr("class","abc1");
+    }else{
+        $(obj).find("img").attr("class","abc");
+    }
     $(obj).parent().find("li").each(function(i,d){
         if(i==($(obj).index()-1)){
             if($(d).is(":hidden")){
@@ -699,3 +749,37 @@ function showSubTitle(obj){
         }
     });
 }
+
+/**异步加载ueditor的几个js*/
+function loadEditor(ebayAccount,jsonstr){
+    seriesLoadScripts(ueditorJSS_,function(){
+        //初始化描述信息编辑器
+        myDescription = UE.getEditor('myDescription', ueditorToolBar);
+        //初始化图片上传按扭
+        if(ebayAccount!=""){
+            $().image_editor.init("picUrls_" + ebayAccount); //编辑器的实例id
+            $().image_editor.show("apicUrls_" + ebayAccount); //上传图片的按钮id
+            $().image_editor.show("apicUrlsSKU_" + ebayAccount); //上传图片的按钮id
+            $().image_editor.show("apicUrlsOther_" + ebayAccount); //上传图片的按钮id
+        }
+        //初始化多属性图片按扭
+        if(jsonstr!=""){
+            var json = eval("(" + jsonstr + ")");
+            if(json!=null){
+                for(var i=0;i<json.length;i++){
+                    $().image_editor.init(json[i].a);
+                    $().image_editor.show(json[i].b);
+                }
+            }
+        }
+        //模板图片初始化
+        $().image_editor.init("blankImg_main"); //编辑器的实例id
+        $().image_editor.show("blankImg_id"); //上传图片的按钮id
+        if(url.indexOf("addItem.do") != -1){
+            $().image_editor.init("picUrls"); //编辑器的实例id
+            $().image_editor.show("apicUrls"); //上传图片的按钮id
+        }
+    });
+}
+
+

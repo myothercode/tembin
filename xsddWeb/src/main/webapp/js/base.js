@@ -49,6 +49,7 @@ var Base={
 (function ($) {
     var jsonFormat = /^\s*\{[\s\S]*\}\s*$/m;
     $.fn.invoke = function (url, param, fun, config) {
+        if(url==null || url.endWith("null")){return;}
         config = $.extend({}, $.fn.invoke.defaultConfig, config);
         param = param || {};
         //判断是方法数组还是单独的方法
@@ -96,10 +97,16 @@ if(url.indexOf("?")==-1){
                 $.unblockUI();
                 if(status == "success" || status == "notmodified") {
                     var responseText = res.responseText;
-                    if(typeof(_invokeGetData_type)!="undefined" && _invokeGetData_type=='string'){
+
+                    if(config.stringFormat){
                         fun[0].apply(self, ["stringData", responseText]);
                         return;
                     }
+
+                    /*if(typeof(_invokeGetData_type)!="undefined" && _invokeGetData_type=='string'){
+                        fun[0].apply(self, ["stringData", responseText]);
+                        return;
+                    }*/
 
                     if(jsonFormat.test(responseText)) {
                         var re = eval("(" + responseText + ")");
@@ -129,7 +136,9 @@ if(url.indexOf("?")==-1){
                         fun[1] ? fun[1].apply(self, [re["message"], re["result"]]) : (alert(re["message"]));
                         return;
                     }else{
+                        if(responseText==null || responseText==''){return;}
                         Base.handleException(res);
+                        console.log(responseText)
                         fun[1] ? fun[1].apply(self, ["error", "出现错误了！"]) : (alert("出现错误了！"));
                     }
 
@@ -139,7 +148,7 @@ if(url.indexOf("?")==-1){
         return this;
     };
     //默认参数，异步，且以对象模式进行ajax访问
-    $.fn.invoke.defaultConfig = {type: "POST", dataType: "html", async: true, ajaxMode: "ajaxFlag","isConverPage":false};
+    $.fn.invoke.defaultConfig = {type: "POST", dataType: "html", async: true, ajaxMode: "ajaxFlag","isConverPage":false,"stringFormat":false};
 
 
 })(jQuery);

@@ -10,4 +10,5 @@ public interface SystemLogQueryMapper {
 
     List<SystemLogQuery> selectSystemLogList(Map map, Page page);
 
+    List<SystemLogQuery> selectLogList(Map map, Page page);
 }

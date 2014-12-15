@@ -43,13 +43,17 @@ public class SynchronizeGetMessageImpl implements ThreadPoolBaseInterFace {
         String ack = null;
         try {
             ack = SamplePaseXml.getVFromXmlString(res, "Ack");
-            if ("Success".equalsIgnoreCase(ack)) {
+            if ("Success".equalsIgnoreCase(ack)||"Warning".equalsIgnoreCase(ack)) {
+                if("Warning".equalsIgnoreCase(ack)){
+                    String errors = SamplePaseXml.getWarningInformation(res);
+                    logger.error("获取Message有警告!" + errors);
+                }
                 List<Element> messages = GetMyMessageAPI.getMessages(res);
                 for(Element message:messages){
                     TradingMessageGetmymessage ms= GetMyMessageAPI.addDatabase(message, accountId, ebay);//保存到数据库
                     dev.setApiSiteid("0");
                     //真实环境
-                   /* UsercontrollerDevAccountExtend dev=new UsercontrollerDevAccountExtend();
+              /*      UsercontrollerDevAccountExtend dev=new UsercontrollerDevAccountExtend();
                     dev.setApiDevName("5d70d647-b1e2-4c7c-a034-b343d58ca425");
                     dev.setApiAppName("sandpoin-23af-4f47-a304-242ffed6ff5b");
                     dev.setApiCertName("165cae7e-4264-4244-adff-e11c3aea204e");
@@ -63,7 +67,7 @@ public class SynchronizeGetMessageImpl implements ThreadPoolBaseInterFace {
                     //测试环境
                     parms.put("url",apiUrl);
                     //真实环境
-               /* parms.put("url","https://api.ebay.com/ws/api.dll");*/
+                 /*   parms.put("url","https://api.ebay.com/ws/api.dll");*/
                     parms.put("userInfoService",userInfoService);
                     String content=GetMyMessageAPI.getContent(parms);
                     ms.setTextHtml(content);
@@ -74,7 +78,10 @@ public class SynchronizeGetMessageImpl implements ThreadPoolBaseInterFace {
                     ms.setCreateUser(taskMessageVO.getMessageTo());
                     iTradingMessageGetmymessage.saveMessageGetmymessage(ms);
                 }
-            }else {return;}
+            }else {
+                String errors = SamplePaseXml.getVFromXmlString(res, "Errors");
+                logger.error("Message API调用失败!" + errors);
+            }
         } catch (Exception e) {
             e.printStackTrace();
             logger.error("解析xml出错,请稍后到ebay网站确认结果");

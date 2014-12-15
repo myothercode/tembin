@@ -7,6 +7,7 @@ import com.base.utils.threadpool.TaskMessageVO;
 import com.base.utils.xmlutils.SamplePaseXml;
 import com.sitemessage.service.SiteMessageStatic;
 import com.trading.service.ITradingItem;
+import com.trading.service.ITradingListingData;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +23,8 @@ public class DelayListingItemImpl implements ThreadPoolBaseInterFace {
 
     @Autowired
     private ITradingItem iTradingItem;
+    @Autowired
+    private ITradingListingData iTradingListingData;
 
     @Override
     public <T> void doWork(String res,T... t) {
@@ -36,6 +39,9 @@ public class DelayListingItemImpl implements ThreadPoolBaseInterFace {
             ack=SamplePaseXml.getVFromXmlString(res, "Ack");
             if ("Success".equalsIgnoreCase(ack) || "Warning".equalsIgnoreCase(ack)) {
                 this.iTradingItem.saveListingSuccess(res,itemId);
+                TradingItemWithBLOBs itwb = this.iTradingItem.selectByItemId(itemId);
+                //更新在线商品表
+                this.iTradingListingData.saveTradingListingDataByTradingItem(itwb,res);
             }
             else {return;}
         } catch (Exception e) {

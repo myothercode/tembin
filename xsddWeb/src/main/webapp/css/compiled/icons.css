@@ -124,9 +124,9 @@ i.table-delete {
   vertical-align: text-top;
 }
 .net_put{
-	width: 61px;
-	height: 34px;
-	background-image: url(../../img/new_put.png);
+	width: 79px;
+	height: 30px;
+	background-image: url(../../img/new_button_13.png);
 	background-repeat: no-repeat;
 	background-position: 0px 0px;
 	border-top-style: none;
@@ -139,9 +139,9 @@ i.table-delete {
 	margin-right: 21px;
 }
 .net_put_1{
-	width: 61px;
-	height: 34px;
-	background-image: url(../../img/new_put_1.png);
+	width: 79px;
+	height: 30px;
+	background-image: url(../../img/new_button_12.png);
 	background-repeat: no-repeat;
 	background-position: 0px 0px;
 	border-top-style: none;
@@ -149,7 +149,7 @@ i.table-delete {
 	border-bottom-style: none;
 	border-left-style: none;
     font-size: 14px;
-	color: #888;
+	color: #5c5c5c;
 	font-family: "微软雅黑", "宋体", Arial;
 }
 .net_put_2{

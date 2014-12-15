@@ -9,6 +9,7 @@
 <%@include file= "/WEB-INF/jsp/smallFormImport.jsp" %>
 <html>
 <head>
+    <link rel="stylesheet" type="text/css" href="<c:url value ="/css/compiled/icons.css"/>"/>
     <title>添加成员</title>
     <script type="text/javascript" src=<c:url value ="/js/systemabout/user/pop/addSubUser.js" /> ></script>
     <script type="text/javascript">
@@ -98,7 +99,7 @@
 
         <!-- Button -->
         <div style="text-align:center;">
-            <button class="btn btn-primary" onclick="submitf()">确定</button>
+            <button class="net_put" onclick="submitf()">确定</button>
         </div>
 
 </div>

@@ -33,7 +33,7 @@
                     {title:"标签",name:"remark",width:"8%",align:"left",format:makeOption6,click:sellectCheckBox},
                     /*{title:"分类",name:"typeName",width:"8%",align:"left",click:sellectCheckBox},*/
                     {title:"状态",name:"pictureUrl",width:"2%",align:"left",format:makeOption3,click:sellectCheckBox},
-                    {title:"操作",name:"option1",width:"2%",align:"center",format:makeOption1}
+                    {title:"操作&nbsp;&nbsp;",name:"option1",width:"2%",align:"center",format:makeOption1}
                 ],
                 selectDataNow:false,
                 isrowClick:false,
@@ -199,12 +199,18 @@
         }
         function makeOption2(json){
             var htm="";
+
             if(json.pictureUrl){
-                htm="<img src="+json.pictureUrl+" style=\" width: 50px;height: 50px; \">";
+                htm="<img onerror='nofind();'  src="+chuLiPotoUrl(json.pictureUrl)+" style=\" width: 50px;height: 50px; \">";
             }else{
-                htm="<img src='http://i.ebayimg.sandbox.ebay.com/00/s/NjAwWDgwMA==/$(KGrHqRHJEkFJ2m+ipUVBUSMpPJdmw~~60_1.JPG' style=\" width: 50px;height: 50px; \">";
+                htm="<img  src='http://i.ebayimg.sandbox.ebay.com/00/s/NjAwWDgwMA==/$(KGrHqRHJEkFJ2m+ipUVBUSMpPJdmw~~60_1.JPG' style=\" width: 50px;height: 50px; \">";
             }
             return htm;
+        }
+        function nofind(){
+            var img=event.srcElement;
+            img.src="http://img.tembin.com/systemIMG/noimg.jpg";
+            img.onerror=null;
         }
         function makeOption3(json){
             if(json.pictureUrl){
@@ -418,7 +424,7 @@
                     {title:"标签",name:"remark",width:"8%",align:"left",format:makeOption6,click:sellectCheckBox},
                     /*{title:"分类",name:"typeName",width:"8%",align:"left",click:sellectCheckBox},*/
                     {title:"状态",name:"pictureUrl",width:"2%",align:"left",format:makeOption3,click:sellectCheckBox},
-                    {title:"操作",name:"option1",width:"2%",align:"center",format:makeOption1}
+                    {title:"操作&nbsp;&nbsp;",name:"option1",width:"2%",align:"center",format:makeOption1}
                 ],
                 selectDataNow:false,
                 isrowClick:false,
@@ -570,7 +576,7 @@
                     <div id="con_menu_1" style="display: block;">
                         <!--综合开始 -->
                         <div class="new_usa" style="margin-top:20px;">
-                            <li class="new_usa_list" id="loadremarks"><span class="newusa_i" style="width: 75px;">按标签查看：</span><span id="loadremarks1" class="newusa_ici" scop="remark" onclick="onclickremark(null,0)">全部&nbsp;</span><a href="#"><span class="newusa_ici_1" scop="remark" onclick="onclickremark('null',1)">无标签&nbsp;</span></a>
+                            <li class="new_usa_list" id="loadremarks"><span class="newusa_i" style="width: 75px;">标签查看：</span><span id="loadremarks1" class="newusa_ici" scop="remark" onclick="onclickremark(null,0)">全部&nbsp;</span><a href="#"><span class="newusa_ici_1" scop="remark" onclick="onclickremark('null',1)">无标签&nbsp;</span></a>
                             <c:forEach items="${remarks}" var="remark" begin="0"  varStatus="status">
                                 <c:if test="${(status.index+2)%11==0}">
                                     <li class="new_usa_list" id="loadremarks"><span class="newusa_i" style="width: 75px;"></span><a href="#"><span class="newusa_ici_1" scop="remark" onclick="onclickremark('${remark.id}',${status.index+2})">${remark.configName}&nbsp;</span></a>

@@ -73,5 +73,6 @@
         <if test="userId!=null">
             and UserCases.create_user = #{userId}
         </if>
+        order by UserCases.lastModifiedDate desc
     </select>
 </mapper>

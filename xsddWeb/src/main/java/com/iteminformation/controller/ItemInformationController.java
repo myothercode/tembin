@@ -210,9 +210,16 @@ public class ItemInformationController extends BaseAction {
             }else{
                 ti.setCategoryid(information.getTypeId()+"");
             }
-
+            ti.setItemName(information.getName());
             ti.setSite("311");
             ti.setDescription(information.getDescription());
+            ti.setQuantity(5L);
+            if(information.getSupplierId()!=null){
+                PublicItemSupplier supplier=iPublicItemSupplier.selectItemSupplierByid(information.getSupplierId());
+                if(supplier!=null){
+                    ti.setStartprice(supplier.getPrice());
+                }
+            }
         }
         modelMap.put("item",ti);
         modelMap.put("imageUrlPrefix",imageService.getImageUrlPrefix());
@@ -561,7 +568,7 @@ public class ItemInformationController extends BaseAction {
             f.mkdirs();
         }
         file.transferTo(f);
-        iPublicItemInformation.importItemInformation(f);
+        iPublicItemInformation.importItemInformation(f,fileName1);
       /*  for(PublicItemInformation itemInformation:list){
             iPublicItemInformation.saveItemInformation(itemInformation);
         }*/

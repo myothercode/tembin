@@ -1,7 +1,9 @@
 package com.base.utils.scheduleabout.commontask;
 
 import com.base.database.task.model.ListingDataTask;
+import com.base.database.task.model.TaskComplement;
 import com.base.database.trading.mapper.TradingListingDataMapper;
+import com.base.database.trading.model.TradingAutoComplement;
 import com.base.database.trading.model.TradingListingData;
 import com.base.database.trading.model.TradingListingDataExample;
 import com.base.database.trading.model.TradingListingSuccess;
@@ -18,7 +20,9 @@ import com.base.utils.scheduleabout.MainTask;
 import com.base.utils.scheduleabout.Scheduledable;
 import com.base.utils.threadpool.AddApiTask;
 import com.base.utils.xmlutils.SamplePaseXml;
+import com.complement.service.ITradingAutoComplement;
 import com.task.service.IListingDataTask;
+import com.task.service.ITaskComplement;
 import com.trading.service.ITradingListingSuccess;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -66,6 +70,8 @@ public class ListingItemDataTimerTaskRun extends BaseScheduledClass implements S
         TradingListingDataMapper tldm = (TradingListingDataMapper) ApplicationContextUtil.getBean(TradingListingDataMapper.class);
         CommAutowiredClass commPars = (CommAutowiredClass) ApplicationContextUtil.getBean(CommAutowiredClass.class);//获取注入的参数
         ITradingListingSuccess iTradingListingSuccess = (ITradingListingSuccess) ApplicationContextUtil.getBean(ITradingListingSuccess.class);
+        ITradingAutoComplement iTradingAutoComplement = (ITradingAutoComplement) ApplicationContextUtil.getBean(ITradingAutoComplement.class);
+        ITaskComplement iTaskComplement = (ITaskComplement) ApplicationContextUtil.getBean(ITaskComplement.class);
         SimpleDateFormat dft = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         Date beginDate = new Date();
         Calendar date = Calendar.getInstance();
@@ -105,14 +111,37 @@ public class ListingItemDataTimerTaskRun extends BaseScheduledClass implements S
                     if (retrunack.equals("Success")) {
                         List<TradingListingData> litld = SamplePaseXml.getItemListElememt(returnstr, ebayAccount);
                         for(TradingListingData td : litld){
+
                             td.setEbayAccount(ebayAccount);
                             td.setCreateUser(userid);
                             TradingListingDataExample tlde  = new TradingListingDataExample();
                             tlde.createCriteria().andItemIdEqualTo(td.getItemId());
                             List<TradingListingData> litl = tldm.selectByExample(tlde);
+                            List<TradingAutoComplement> litac = iTradingAutoComplement.selectByEbayAccount(td.getEbayAccount());
+                            boolean isFlag = true;
+
                             if(litl!=null&&litl.size()>0){
                                 TradingListingData oldtd = litl.get(0);
                                 td.setId(oldtd.getId());
+                                for(TradingAutoComplement tac:litac){//排除设置好的规则，如果有满足条件的商品就不再做库存补冲
+                                    if(tac.getAutoType().equals("1")&&tac.getSkuKey().equals(td.getSku())){
+                                        isFlag=false;
+                                    }else if(tac.getAutoType().equals("2")&&td.getSku().indexOf(tac.getSkuKey())>0){
+                                        isFlag=false;
+                                    }
+                                }
+                                if(oldtd.getQuantity()>td.getQuantity()&&td.getIsFlag().equals("0")&&isFlag) {
+                                    TaskComplement tc = new TaskComplement();
+                                    tc.setToken(token);
+                                    tc.setSite(siteid);
+                                    tc.setTaskFlag("0");
+                                    tc.setRepValue(oldtd.getQuantity() + "");
+                                    tc.setCreateDate(new Date());
+                                    tc.setItemId(td.getItemId());
+                                    tc.setOldValue(td.getQuantity() + "");
+                                    tc.setEbayAccount(td.getEbayAccount());
+                                    iTaskComplement.saveTaskComplement(tc);
+                                }
                                 tldm.updateByPrimaryKeySelective(td);
                             }else{
                                 tldm.insertSelective(td);
@@ -185,6 +214,6 @@ public class ListingItemDataTimerTaskRun extends BaseScheduledClass implements S
 
     @Override
     public Integer crTimeMinu() {
-        return null;
+        return 2;
     }
 }

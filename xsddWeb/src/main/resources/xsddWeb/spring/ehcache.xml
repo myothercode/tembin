@@ -29,7 +29,7 @@
            maxElementsInMemory="20000"
            eternal="false"
            overflowToDisk="false"
-           timeToLiveSeconds="300"
+           timeToLiveSeconds="900"
             />
 
 </ehcache>

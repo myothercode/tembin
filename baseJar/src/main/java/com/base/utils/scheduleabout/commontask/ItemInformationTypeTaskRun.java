@@ -35,7 +35,6 @@ public class ItemInformationTypeTaskRun extends BaseScheduledClass implements Sc
     private void syschronizeItemInformationType(List<PublicItemInformation> informations){
         CommAutowiredClass commV = (CommAutowiredClass) ApplicationContextUtil.getBean(CommAutowiredClass.class);
         IPublicItemInformation iPublicItemInformation=(IPublicItemInformation) ApplicationContextUtil.getBean(IPublicItemInformation.class);
-
         for(PublicItemInformation itemInformation:informations){
             try {
                 StringBuffer sb = new StringBuffer();
@@ -87,10 +86,14 @@ public class ItemInformationTypeTaskRun extends BaseScheduledClass implements Sc
                     iPublicItemInformation.saveItemInformation(itemInformation);
                 }
             } catch (Exception e) {
+                TempStoreDataSupport.removeData("task_" + getScheduledType());
+                logger.error("商品分类搜索API出错:"+e.getMessage());
                 itemInformation.setTypeflag(1);
                 try {
                     iPublicItemInformation.saveItemInformation(itemInformation);
                 } catch (Exception e1) {
+                    logger.error("保存商品分类到商品中出错:"+e.getMessage());
+                    TempStoreDataSupport.removeData("task_" + getScheduledType());
                     e1.printStackTrace();
                 }
                 e.printStackTrace();

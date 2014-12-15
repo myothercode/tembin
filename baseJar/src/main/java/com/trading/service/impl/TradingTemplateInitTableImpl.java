@@ -54,6 +54,10 @@ public class TradingTemplateInitTableImpl implements com.trading.service.ITradin
         return templateInitTableMapper.selectByTemplateInitTableList(map,page);
     }
     @Override
+    public List<TemplateInitTableQuery> selectTemplateType(Map map) {
+        return templateInitTableMapper.selectTemplateType(map);
+    }
+    @Override
     public TradingTemplateInitTable selectById(Long id){
         return this.tradingTemplateInitTableMapper.selectByPrimaryKey(id);
     }

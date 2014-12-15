@@ -19,7 +19,9 @@
      * 因此，UEditor提供了针对不同页面的编辑器可单独配置的根路径，具体来说，在需要实例化编辑器的页面最顶部写上如下代码即可。当然，需要令此处的URL等于对应的配置。
      * window.UEDITOR_HOME_URL = "/xxxx/xxxx/";
      */
-    var URL = window.UEDITOR_HOME_URL || getUEBasePath();
+   // var URL = window.UEDITOR_HOME_URL || getUEBasePath();
+    /**根据项目地址，更正js以及资源的地址*/
+    var URL=path+"/js/ueditor/";
 
     /**
      * 配置项主体。注意，此处所有涉及到路径的配置别遗漏URL变量。
@@ -78,7 +80,7 @@
 
         //,autoClearinitialContent:true //是否自动清除编辑器初始内容，注意：如果focus属性设置为true,这个也为真，那么编辑器一上来就会触发导致初始化的内容看不到了
 
-        //,focus:false //初始化时，是否让编辑器获得焦点true或false
+        ,focus:true //初始化时，是否让编辑器获得焦点true或false
 
         //如果自定义，最好给p标签如下的行高，要不输入中文时，会有跳动感
         //,initialStyle:'p{line-height:1em}'//编辑器层级的基数,可以用来改变字体等
@@ -97,7 +99,7 @@
         //,autoClearEmptyNode : true //getContent时，是否删除空的inlineElement节点（包括嵌套的情况）
 
         //启用自动保存
-        //,enableAutoSave: true
+        ,enableAutoSave: false
         //自动保存间隔时间， 单位ms
         //,saveInterval: 500
 
@@ -111,7 +113,7 @@
         //粘贴只保留标签，去除标签所有属性
         //,retainOnlyLabelPasted: false
 
-        //,pasteplain:false  //是否默认为纯文本粘贴。false为不使用纯文本粘贴，true为使用纯文本粘贴
+        ,pasteplain:true  //是否默认为纯文本粘贴。false为不使用纯文本粘贴，true为使用纯文本粘贴
         //纯文本粘贴模式下的过滤规则
         //'filterTxtRules' : function(){
         //    function transP(node){
@@ -271,13 +273,13 @@
 
         //undo
         //可以最多回退的次数,默认20
-        //,maxUndoCount:20
+        ,maxUndoCount:5
         //当输入的字符数超过该值时，保存一次现场
         //,maxInputCount:1
 
         //autoHeightEnabled
-        // 是否自动长高,默认true
-        //,autoHeightEnabled:true
+        //是否自动长高,默认true
+        ,autoHeightEnabled:false
 
         //scaleEnabled
         //是否可以拉伸长高,默认true(当开启时，自动长高失效)
@@ -346,8 +348,7 @@
     };
 
     function getUEBasePath(docUrl, confUrl) {
-
-        return getBasePath(docUrl || self.document.URL || self.location.href, confUrl || getConfigFilePath());
+        return getBasePath(docUrl || self.document.URL || self.location.href, confUrl || getConfigFilePath());;
 
     }
 

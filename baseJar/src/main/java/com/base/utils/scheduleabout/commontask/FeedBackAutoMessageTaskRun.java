@@ -58,13 +58,12 @@ public class FeedBackAutoMessageTaskRun extends BaseScheduledClass implements Sc
                 }
                 if ("false".equals(messageMap.get("flag"))) {
                     if("自动消息设置的时间没到到".equals(messageMap.get("message"))){
-                        TempStoreDataSupport.removeData("task_"+getScheduledType());
-                        return;
+
                     }else {
                         SiteMessageService siteMessageService = (SiteMessageService) ApplicationContextUtil.getBean(SiteMessageService.class);
                         List<PublicSitemessage> list=siteMessageService.selectPublicSitemessageByMessage("auto_message_task_run_FAIL",detail.getCommentinguser()+detail.getItemid());
                         if(list!=null&&list.size()>0){
-                            continue;
+
                         }else{
                             TaskMessageVO taskMessageVO = new TaskMessageVO();
                             taskMessageVO.setMessageType(SiteMessageStatic.FEED_BACK_AUTO_MESSAGE_TASK_RUN + "_FAIL");
@@ -75,8 +74,6 @@ public class FeedBackAutoMessageTaskRun extends BaseScheduledClass implements Sc
                             taskMessageVO.setOrderAndSeller(detail.getCommentinguser()+detail.getItemid());
                             siteMessageService.addSiteMessage(taskMessageVO);
                         }
-                        TempStoreDataSupport.removeData("task_"+getScheduledType());
-                        return;
                     }
                 }
                 if ("true".equals(messageMap.get("flag"))) {
@@ -98,7 +95,7 @@ public class FeedBackAutoMessageTaskRun extends BaseScheduledClass implements Sc
                 SiteMessageService siteMessageService = (SiteMessageService) ApplicationContextUtil.getBean(SiteMessageService.class);
                 List<PublicSitemessage> list=siteMessageService.selectPublicSitemessageByMessage("auto_message_task_run_FAIL",detail.getCommentinguser()+detail.getItemid());
                 if(list!=null&&list.size()>0){
-                    continue;
+
                 }else{
                     TaskMessageVO taskMessageVO = new TaskMessageVO();
                     taskMessageVO.setMessageType(SiteMessageStatic.FEED_BACK_AUTO_MESSAGE_TASK_RUN + "_FAIL");
@@ -108,8 +105,6 @@ public class FeedBackAutoMessageTaskRun extends BaseScheduledClass implements Sc
                     taskMessageVO.setOrderAndSeller(detail.getCommentinguser()+detail.getItemid());
                     siteMessageService.addSiteMessage(taskMessageVO);
                 }
-                TempStoreDataSupport.removeData("task_"+getScheduledType());
-                return;
             }
         }
     }
@@ -308,6 +303,8 @@ public class FeedBackAutoMessageTaskRun extends BaseScheduledClass implements Sc
             sendAutoMessage(details);
             TempStoreDataSupport.removeData("task_"+getScheduledType());
         }catch (Exception e){
+            logger.error("评价自动消息发送出错:"+e.getMessage());
+            TempStoreDataSupport.removeData("task_"+getScheduledType());
             e.printStackTrace();
         }
     }

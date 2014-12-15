@@ -183,7 +183,12 @@
             $().invoke(url,date,
                     [function(m,r){
                         alert(r);
-                        W.refreshTable();
+                        var url=path + "/autoMessage/ajax/loadAutoMessageList.do?status=1";
+                        var checkboxStatus= W.document.getElementById("checkboxStatus");
+                        if(checkboxStatus.checked){
+                            url=path + "/autoMessage/ajax/loadAutoMessageList.do?status=0";
+                        }
+                        W.refreshTable1(url);
                         W.autoMessage.close();
                         Base.token();
                     },
@@ -368,19 +373,21 @@
                     </c:if>
                     <c:if test="${services[0]!=null||internationalServices[0]!=null}">
                         <div id='selectShippingService'>买家选择的物流:<a id='selectShippingServices' href='javascript:void(0)' onclick='selectShippingServices();'>
-                            国内运输方式:
+
                             <c:forEach items="${services}" var="item" varStatus="status">
+                                <c:if test="${status.index==0}">国内运输方式:</c:if>
                                 <c:if test="${status.index==(status.count-1)}">
-                            <font style="color: #0000ff">${item.value}</font>
+                                    <font style="color: #0000ff">${item.value};</font>
                                 </c:if>
                                 <c:if test="${status.index!=(status.count-1)}">
                             <font style="color: #0000ff">${item.value},</font>
                                 </c:if>
                             </c:forEach>
-                            ;国际运输方式:
+
                             <c:forEach items="${internationalServices}" var="item" varStatus="status">
+                                <c:if test="${status.index==0}">国际运输方式:</c:if>
                                 <c:if test="${status.index==(status.count-1)}">
-                            <font style="color: #0000ff">${item.value}</font>
+                            <font style="color: #0000ff">${item.value};</font>
                                 </c:if>
                                 <c:if test="${status.index!=(status.count-1)}">
                             <font style="color: #0000ff">${item.value},</font>

@@ -9,5 +9,5 @@ import java.util.List;
  */
 public interface IScheduleGetUserCasesTimer {
 
-    void synchronizeUserCases(List<TaskGetUserCases> taskGetUserCases);
+    void synchronizeUserCases(List<TaskGetUserCases> taskGetUserCases) throws Exception;
 }

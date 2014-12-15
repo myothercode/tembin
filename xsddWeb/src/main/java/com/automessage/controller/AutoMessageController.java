@@ -338,34 +338,40 @@ public class AutoMessageController extends BaseAction {
         }
         if(StringUtils.isNotBlank(service)||StringUtils.isNotBlank(service1)){
             List<Long> list=new ArrayList<Long>();
-            String[] amountIds1=service.split(",");
-            String[] names=name.split(",");
-            for(int i=0;i<amountIds1.length;i++){
-                if(StringUtils.isNotBlank(amountIds1[i])){
-                    TradingAutoMessageAttr attr=new TradingAutoMessageAttr();
-                    attr.setType("service");
-                    if(StringUtils.isNotBlank(autoMessageId)){
-                        attr.setAutomessageId(Long.valueOf(autoMessageId));
+
+            if(StringUtils.isNotBlank(service)){
+                String[] amountIds1=service.split(",");
+                String[] names=name.split(",");
+                for(int i=0;i<amountIds1.length;i++){
+                    if(StringUtils.isNotBlank(amountIds1[i])){
+                        TradingAutoMessageAttr attr=new TradingAutoMessageAttr();
+                        attr.setType("service");
+                        if(StringUtils.isNotBlank(autoMessageId)){
+                            attr.setAutomessageId(Long.valueOf(autoMessageId));
+                        }
+                        attr.setDictionaryId(Long.valueOf(amountIds1[i]));
+                        attr.setValue(names[i]);
+                        iTradingAutoMessageAttr.saveAutoMessageAttr(attr);
+                        list.add(attr.getId());
                     }
-                    attr.setDictionaryId(Long.valueOf(amountIds1[i]));
-                    attr.setValue(names[i]);
-                    iTradingAutoMessageAttr.saveAutoMessageAttr(attr);
-                    list.add(attr.getId());
+
                 }
             }
-            amountIds1=service1.split(",");
-            String[] name1s=name1.split(",");
-            for(int i=0;i<amountIds1.length;i++){
-                if(StringUtils.isNotBlank(amountIds1[i])){
-                    TradingAutoMessageAttr attr=new TradingAutoMessageAttr();
-                    attr.setType("internationalService");
-                    if(StringUtils.isNotBlank(autoMessageId)){
-                        attr.setAutomessageId(Long.valueOf(autoMessageId));
+            if(StringUtils.isNotBlank(service1)){
+                String[] amountIds1=service1.split(",");
+                String[] name1s=name1.split(",");
+                for(int i=0;i<amountIds1.length;i++){
+                    if(StringUtils.isNotBlank(amountIds1[i])){
+                        TradingAutoMessageAttr attr=new TradingAutoMessageAttr();
+                        attr.setType("internationalService");
+                        if(StringUtils.isNotBlank(autoMessageId)){
+                            attr.setAutomessageId(Long.valueOf(autoMessageId));
+                        }
+                        attr.setDictionaryId(Long.valueOf(amountIds1[i]));
+                        attr.setValue(name1s[i]);
+                        iTradingAutoMessageAttr.saveAutoMessageAttr(attr);
+                        list.add(attr.getId());
                     }
-                    attr.setDictionaryId(Long.valueOf(amountIds1[i]));
-                    attr.setValue(name1s[i]);
-                    iTradingAutoMessageAttr.saveAutoMessageAttr(attr);
-                    list.add(attr.getId());
                 }
             }
             AjaxSupport.sendSuccessText("", list);

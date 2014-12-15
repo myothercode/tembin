@@ -17,6 +17,7 @@
         var ebayId="${ebayId}";
 
     </script>
+    <link rel="stylesheet" type="text/css" href="<c:url value ="/css/compiled/icons.css"/>"/>
     <script type="text/javascript" src=<c:url value ="/js/systemabout/bindEbayAccount/bindebay.js" /> ></script>
 </head>
 <body>
@@ -73,7 +74,7 @@
         <label class="control-label"></label>
         <!-- Button -->
         <div class="controls">
-            <button onclick="getBindParm()" class="btn btn-info">账户授权</button>
+            <button onclick="getBindParm()" class="net_put">账户授权</button>
         </div>
     </div>
 
@@ -89,7 +90,7 @@
         <label class="control-label"></label>
         <!-- Button -->
         <div class="controls">
-            <button class="btn btn-info" onclick="fetchToken('edit')">确定修改</button>
+            <button class="net_put" onclick="fetchToken('edit')">确定修改</button>
         </div>
     </div>
 

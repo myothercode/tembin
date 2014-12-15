@@ -2,6 +2,12 @@ package com.base.utils.common;
 
 import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Table;
+import org.apache.commons.lang.StringUtils;
+
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 
 /**
  * Created by Administrtor on 2014/7/22.
@@ -67,4 +73,78 @@ public class ConvertUtil {
 
         }
     }
+
+
+    /***/
+    /**
+     * 将InputStream转换成byte数组
+     * @param in InputStream
+     * @return byte[]
+     * @throws java.io.IOException
+     */
+    public static byte[] InputStreamTOByte(InputStream in) throws IOException {
+
+        ByteArrayOutputStream outStream = new ByteArrayOutputStream();
+        byte[] data = new byte[512];
+        int count = -1;
+        in.mark(1);
+        while((count = in.read(data,0,512)) != -1)
+            outStream.write(data, 0, count);
+        data = null;
+        return outStream.toByteArray();
+    }
+
+    /**
+     * 将byte数组转换成InputStream
+     * @param in
+     * @return
+     * @throws Exception
+     */
+    public static InputStream byteTOInputStream(byte[] in) throws Exception{
+        ByteArrayInputStream is = new ByteArrayInputStream(in);
+        return is;
+    }
+    /**
+     * 将InputStream转换成某种字符编码的String
+     * @param in
+     * @param encoding
+     * @return
+     * @throws Exception
+     */
+    public static String InputStreamTOString(InputStream in,String encoding) throws Exception{
+
+        ByteArrayOutputStream outStream = new ByteArrayOutputStream();
+        byte[] data = new byte[512];
+        int count = -1;
+        while((count = in.read(data,0,512)) != -1)
+            outStream.write(data, 0, count);
+
+        data = null;
+        if(StringUtils.isEmpty(encoding)){encoding="ISO-8859-1";}
+        return new String(outStream.toByteArray(),encoding);
+    }
+    /**
+     * 将String转换成InputStream
+     * @param in
+     * @return
+     * @throws Exception
+     */
+    public static InputStream StringTOInputStream(String in) throws Exception{
+
+        ByteArrayInputStream is = new ByteArrayInputStream(in.getBytes("ISO-8859-1"));
+        return is;
+    }
+
+    /**
+     * 将byte数组转换成String
+     * @param in
+     * @return
+     * @throws Exception
+     */
+    public static String byteTOString(byte[] in) throws Exception{
+        InputStream is = byteTOInputStream(in);
+        return InputStreamTOString(is,null);
+    }
+
+
 }

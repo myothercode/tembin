@@ -507,6 +507,11 @@ function converDiv_(){
 /**获取最顶层window*/
 function getTopWin_(){
 	var obj=window.self;
+
+	if(self.location==top.location){
+		return obj;
+	}
+
 	while(true)
 	{
 		if(obj.document.getElementById("contentMaindiv"))
@@ -554,7 +559,11 @@ function openMyAlert(cont){
 			var that = this, i = 5;
 			var fn = function () {
 				that.title(i + '秒后关闭');
-				!i && that.close();
+				try {
+					!i && that.close();
+				} catch (e) {
+					console.log(e);
+				}
 				i --;
 			};
 			topWin.timer = topWin.setInterval(fn, 1000);
@@ -573,6 +582,28 @@ function openMyAlert(cont){
 		lock:true
 	});
 }
+/**
+ * 大图片地址处理在小图片地址
+ * @param url
+ */
+function chuLiPotoUrl(url){
+    if(url.indexOf("img.tembin.com")>0){
+        if(url!=null&&url!=""){
+            url = url.substr(0,url.lastIndexOf("."))+"_small"+url.substr(url.lastIndexOf("."));
+        }
+    }
+    return url;
+}
+String.prototype.startWith=function(str){
+	var reg=new RegExp("^"+str);
+	return reg.test(this);
+}
+
+String.prototype.endWith=function(str){
+	var reg=new RegExp(str+"$");
+	return reg.test(this);
+}
+
 
 
 

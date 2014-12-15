@@ -49,14 +49,13 @@ public class AutoMessageTaskRun extends BaseScheduledClass implements Scheduleda
                 d.setApiCallName(APINameStatic.AddMemberMessageAAQToPartner);
                 Map<String,String> messageMap=autoSendMessage(order,token,d,"收到买家付款");
                 if("false".equals(messageMap.get("flag"))){
-                    if("自动消息设置的时间没到到".equals(messageMap.get("message"))){
-                        TempStoreDataSupport.removeData("task_"+getScheduledType());
-                        return;
+                    if("自动消息设置的时间没到".equals(messageMap.get("message"))){
+
                     }else {
                         SiteMessageService siteMessageService = (SiteMessageService) ApplicationContextUtil.getBean(SiteMessageService.class);
                         List<PublicSitemessage> list=siteMessageService.selectPublicSitemessageByMessage("auto_message_task_run_FAIL",order.getOrderid()+order.getSelleruserid());
                         if(list!=null&&list.size()>0){
-                            continue;
+
                         }else{
                             TaskMessageVO taskMessageVO = new TaskMessageVO();
                             taskMessageVO.setMessageType(SiteMessageStatic.AUTO_MESSAGE_TASK_RUN + "_FAIL");
@@ -67,8 +66,6 @@ public class AutoMessageTaskRun extends BaseScheduledClass implements Scheduleda
                             taskMessageVO.setOrderAndSeller(order.getOrderid()+order.getSelleruserid());
                             siteMessageService.addSiteMessage(taskMessageVO);
                         }
-                        TempStoreDataSupport.removeData("task_"+getScheduledType());
-                        return;
                     }
                 }
                 if("true".equals(messageMap.get("flag"))){
@@ -107,14 +104,13 @@ public class AutoMessageTaskRun extends BaseScheduledClass implements Scheduleda
                 d.setApiCallName(APINameStatic.AddMemberMessageAAQToPartner);
                 Map<String,String> messageMap=autoSendMessage(order,token,d,"标记已发货");
                 if("false".equals(messageMap.get("flag"))){
-                    if("自动消息设置的时间没到到".equals(messageMap.get("message"))){
-                        TempStoreDataSupport.removeData("task_"+getScheduledType());
-                        return;
+                    if("自动消息设置的时间没到".equals(messageMap.get("message"))){
+
                     }else {
                         SiteMessageService siteMessageService = (SiteMessageService) ApplicationContextUtil.getBean(SiteMessageService.class);
                         List<PublicSitemessage> list=siteMessageService.selectPublicSitemessageByMessage("auto_message_task_run_FAIL",order.getOrderid()+order.getSelleruserid());
                         if(list!=null&&list.size()>0){
-                            continue;
+
                         }else{
                             TaskMessageVO taskMessageVO = new TaskMessageVO();
                             taskMessageVO.setMessageType(SiteMessageStatic.AUTO_MESSAGE_TASK_RUN + "_FAIL");
@@ -125,8 +121,6 @@ public class AutoMessageTaskRun extends BaseScheduledClass implements Scheduleda
                             taskMessageVO.setOrderAndSeller(order.getOrderid()+order.getSelleruserid());
                             siteMessageService.addSiteMessage(taskMessageVO);
                         }
-                        TempStoreDataSupport.removeData("task_"+getScheduledType());
-                        return;
                     }
                 }
                 if("true".equals(messageMap.get("flag"))){
@@ -358,6 +352,8 @@ public class AutoMessageTaskRun extends BaseScheduledClass implements Scheduleda
             sendAutoMessage1(ships);
             TempStoreDataSupport.removeData("task_"+getScheduledType());
         }catch (Exception e){
+            TempStoreDataSupport.removeData("task_"+getScheduledType());
+            logger.error("订单自动消息发送出错:"+e.getMessage());
             e.printStackTrace();
         }
     }

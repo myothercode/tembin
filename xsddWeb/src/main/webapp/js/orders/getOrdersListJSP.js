@@ -15,7 +15,7 @@ function getOrderList1(){
             {title:"<a href=\"javascript:void(0)\" onclick=\"orderByTransactionPrice(this,'asc2');\">数量</a>",name:"quantitypurchased",width:"3%",align:"center"},
             {title:"<a href=\"javascript:void(0)\" onclick=\"orderByTransactionPrice(this,'asc4');\">EBAY账号</a>",name:"selleruserid",width:"8%",align:"left"},
             {title:"状态",name:"shipped",width:"3%",align:"left",format:makeOption4},
-            {title:"操作&nbsp;&nbsp;",name:"option1",width:"8%",align:"center",format:makeOption1}
+            {title:"操作&nbsp;&nbsp;&nbsp;&nbsp;",name:"option1",width:"8%",align:"center",format:makeOption1}
         ],
         selectDataNow:false,
         isrowClick:false,
@@ -125,7 +125,7 @@ function orderByTransactionPrice(obj,orderby){
             {title:"<a href=\"javascript:void(0)\" onclick=\"orderByTransactionPrice(this,'"+orderby3+"');\">数量</a>",name:"quantitypurchased",width:"8%",align:"center"},
             {title:"<a href=\"javascript:void(0)\" onclick=\"orderByTransactionPrice(this,'"+orderby5+"');\">EBAY账号</a>",name:"selleruserid",width:"8%",align:"left"},
             {title:"状态",name:"shipped",width:"3%",align:"left",format:makeOption4},
-            {title:"操作&nbsp;&nbsp;",name:"option1",width:"8%",align:"center",format:makeOption1}
+            {title:"操作&nbsp;&nbsp;&nbsp;&nbsp;",name:"option1",width:"8%",align:"center",format:makeOption1}
         ],
         selectDataNow:false,
         isrowClick:false,
@@ -335,7 +335,7 @@ function submitCommit(){
             {title:"<a href=\"javascript:void(0)\" onclick=\"orderByTransactionPrice(this,'asc2');\">数量</a>",name:"quantitypurchased",width:"3%",align:"center"},
             {title:"<a href=\"javascript:void(0)\" onclick=\"orderByTransactionPrice(this,'asc4');\">EBAY账号</a>",name:"selleruserid",width:"8%",align:"left"},
             {title:"状态",name:"shipped",width:"3%",align:"left",format:makeOption4},
-            {title:"操作&nbsp;&nbsp;",name:"option1",width:"8%",align:"center",format:makeOption1}
+            {title:"操作&nbsp;&nbsp;&nbsp;&nbsp;",name:"option1",width:"8%",align:"center",format:makeOption1}
         ],
         selectDataNow:false,
         isrowClick:false,
@@ -434,7 +434,7 @@ function refreshTable5(table,countryQ,typeQ,daysQ,itemType,content,status,startt
             {title:"<a href=\"javascript:void(0)\" onclick=\"orderByTransactionPrice(this,'asc2');\">数量</a>",name:"quantitypurchased",width:"3%",align:"center"},
             {title:"<a href=\"javascript:void(0)\" onclick=\"orderByTransactionPrice(this,'asc4');\">EBAY账号</a>",name:"selleruserid",width:"8%",align:"left"},
             {title:"状态",name:"shipped",width:"3%",align:"left",format:makeOption4},
-            {title:"操作&nbsp;&nbsp;",name:"option1",width:"8%",align:"center",format:makeOption1}
+            {title:"操作&nbsp;&nbsp;&nbsp;&nbsp;",name:"option1",width:"8%",align:"center",format:makeOption1}
         ],
         selectDataNow:false,
         isrowClick:false,
@@ -824,7 +824,7 @@ function setTab1(name,cursel,n){
                     {title:"<a href=\"javascript:void(0)\" onclick=\"orderByTransactionPrice(this,'asc2');\">数量</a>",name:"quantitypurchased",width:"3%",align:"center"},
                     {title:"<a href=\"javascript:void(0)\" onclick=\"orderByTransactionPrice(this,'asc4');\">EBAY账号</a>",name:"selleruserid",width:"8%",align:"left"},
                     {title:"状态",name:"shipped",width:"3%",align:"left",format:makeOption4},
-                    {title:"操作&nbsp;&nbsp;",name:"option1",width:"8%",align:"center",format:makeOption1}
+                    {title:"操作&nbsp;&nbsp;&nbsp;&nbsp;",name:"option1",width:"8%",align:"center",format:makeOption1}
                 ],
                 selectDataNow:false,
                 isrowClick:false,
@@ -986,7 +986,7 @@ function refreshTable6(table,countryQ,typeQ,daysQ,itemType,content,folderId,star
             {title:"<a href=\"javascript:void(0)\" onclick=\"orderByTransactionPrice(this,'asc2');\">数量</a>",name:"quantitypurchased",width:"3%",align:"center"},
             {title:"<a href=\"javascript:void(0)\" onclick=\"orderByTransactionPrice(this,'asc4');\">EBAY账号</a>",name:"selleruserid",width:"8%",align:"left"},
             {title:"状态",name:"shipped",width:"3%",align:"left",format:makeOption4},
-            {title:"操作&nbsp;&nbsp;",name:"option1",width:"8%",align:"center",format:makeOption1}
+            {title:"操作&nbsp;&nbsp;&nbsp;&nbsp;",name:"option1",width:"8%",align:"center",format:makeOption1}
         ],
         selectDataNow:false,
         isrowClick:false,
@@ -1019,7 +1019,7 @@ function setTab(name,cursel,n){
                 {title:"<a href=\"javascript:void(0)\" onclick=\"orderByTransactionPrice(this,'asc2');\">数量</a>",name:"quantitypurchased",width:"3%",align:"center"},
                 {title:"<a href=\"javascript:void(0)\" onclick=\"orderByTransactionPrice(this,'asc4');\">EBAY账号</a>",name:"selleruserid",width:"8%",align:"left"},
                 {title:"状态",name:"shipped",width:"3%",align:"left",format:makeOption4},
-                {title:"操作&nbsp;&nbsp;",name:"option1",width:"8%",align:"center",format:makeOption1}
+                {title:"操作&nbsp;&nbsp;&nbsp;&nbsp;",name:"option1",width:"8%",align:"center",format:makeOption1}
             ],
             selectDataNow:false,
             isrowClick:false,
