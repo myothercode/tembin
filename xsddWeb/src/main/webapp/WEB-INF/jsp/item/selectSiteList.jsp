@@ -46,7 +46,7 @@
                 </c:if>
                 <td width="30%">
                     <input type="checkbox" name="siteValue" imgurl="${site.imgurl}" showname="${site.name}" value="${site.id}"/>
-                    <img src="<c:url value ='${site.imgurl}'/> "/><span>${site.name}</span>
+                    <img src="<c:url value ='${site.imgurl}'/> " style="vertical-align: baseline;"/><span style="vertical-align: text-bottom;">${site.name}</span>
                 </td>
                 <c:if test="${(index.index+1)%3==0}">
             <tr>

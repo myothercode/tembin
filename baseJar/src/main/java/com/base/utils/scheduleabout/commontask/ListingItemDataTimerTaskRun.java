@@ -83,18 +83,18 @@ public class ListingItemDataTimerTaskRun extends BaseScheduledClass implements S
             Date endDate = dft.parse(dft.format(date.getTime()));
             startTo = DateUtils.DateToString(new Date());
             startFrom = DateUtils.DateToString(endDate);
-        } catch (ParseException e) {
-            e.printStackTrace();
+        } catch (Exception e) {
+            logger.error("ListItemDataTimerTask:",e);
         }
         AddApiTask addApiTask = new AddApiTask();
         UsercontrollerDevAccountExtend d = new UsercontrollerDevAccountExtend();
         d.setApiCallName(APINameStatic.ListingItemList);
         d.setApiSiteid(siteid);
         String colStr = this.getCosXml(ebayAccount, startFrom, startTo, 1, token);
+        String res="";
         try {
             Map<String, String> resMap= addApiTask.exec2(d, colStr, commPars.apiUrl);
-            String res=resMap.get("message");
-            System.out.println(res);
+            res=resMap.get("message");
             String ack = SamplePaseXml.getVFromXmlString(res, "Ack");
             if(ack.equals("Success")) {
                 Document document  = DocumentHelper.parseText(res);
@@ -111,7 +111,6 @@ public class ListingItemDataTimerTaskRun extends BaseScheduledClass implements S
                     if (retrunack.equals("Success")) {
                         List<TradingListingData> litld = SamplePaseXml.getItemListElememt(returnstr, ebayAccount);
                         for(TradingListingData td : litld){
-
                             td.setEbayAccount(ebayAccount);
                             td.setCreateUser(userid);
                             TradingListingDataExample tlde  = new TradingListingDataExample();
@@ -119,7 +118,6 @@ public class ListingItemDataTimerTaskRun extends BaseScheduledClass implements S
                             List<TradingListingData> litl = tldm.selectByExample(tlde);
                             List<TradingAutoComplement> litac = iTradingAutoComplement.selectByEbayAccount(td.getEbayAccount());
                             boolean isFlag = true;
-
                             if(litl!=null&&litl.size()>0){
                                 TradingListingData oldtd = litl.get(0);
                                 td.setId(oldtd.getId());
@@ -142,8 +140,11 @@ public class ListingItemDataTimerTaskRun extends BaseScheduledClass implements S
                                     tc.setEbayAccount(td.getEbayAccount());
                                     iTaskComplement.saveTaskComplement(tc);
                                 }
+                                td.setUpdateDate(new Date());
                                 tldm.updateByPrimaryKeySelective(td);
                             }else{
+                                td.setUpdateDate(new Date());
+                                td.setCreateDate(new Date());
                                 tldm.insertSelective(td);
                             }
                             List<TradingListingSuccess> litls = iTradingListingSuccess.selectByItemid(td.getItemId());
@@ -165,7 +166,7 @@ public class ListingItemDataTimerTaskRun extends BaseScheduledClass implements S
             }
             return "1";
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("listItemDT:"+res,e);
             return "0";
         }
 

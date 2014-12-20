@@ -43,9 +43,9 @@ public class TradingInternationalShippingServiceOptionImpl implements com.tradin
     public TradingInternationalshippingserviceoption toDAOPojo(InternationalShippingServiceOption isso) throws Exception {
         TradingInternationalshippingserviceoption pojo = new TradingInternationalshippingserviceoption();
         ConvertPOJOUtil.convert(pojo,isso);
-        pojo.setShippingservicecost(isso.getShippingServiceCost().getValue());
-        pojo.setShippingservicepriority(isso.getShippingServicePriority().longValue());
-        pojo.setShippingserviceadditionalcost(isso.getShippingServiceAdditionalCost().getValue());
+        pojo.setShippingservicecost(isso.getShippingServiceCost()==null?0d:isso.getShippingServiceCost().getValue());
+        pojo.setShippingservicepriority(isso.getShippingServicePriority()==null?0L:isso.getShippingServicePriority().longValue());
+        pojo.setShippingserviceadditionalcost(isso.getShippingServiceAdditionalCost()==null?0d:isso.getShippingServiceAdditionalCost().getValue());
         return pojo;
     }
 

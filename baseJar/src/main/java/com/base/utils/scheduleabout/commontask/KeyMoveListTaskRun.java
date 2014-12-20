@@ -102,7 +102,7 @@ public class KeyMoveListTaskRun extends BaseScheduledClass implements Scheduleda
                 } catch (Exception e) {
                     kml.setTaskFlag("2");
                     keyMapper.updateByPrimaryKeySelective(kml);
-                    e.printStackTrace();
+                    logger.error("keyMoveListTaskRun:",e);
                 }
             }else{
                 kml.setTaskFlag("1");

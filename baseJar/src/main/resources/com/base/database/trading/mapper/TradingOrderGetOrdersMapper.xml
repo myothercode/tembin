@@ -61,7 +61,11 @@
     <result column="variationSKU" jdbcType="VARCHAR" property="variationsku" />
     <result column="paypalFlag" jdbcType="INTEGER" property="paypalflag" />
     <result column="shippedFlag" jdbcType="INTEGER" property="shippedflag" />
+    <result column="itemFlag" jdbcType="INTEGER" property="itemflag" />
+    <result column="accountFlag" jdbcType="INTEGER" property="accountflag" />
+    <result column="sellerTrasactionFlag" jdbcType="INTEGER" property="sellertrasactionflag" />
     <result column="sendMessageTime" jdbcType="TIMESTAMP" property="sendmessagetime" />
+    <result column="autoMessage_id" jdbcType="BIGINT" property="automessageId" />
     <result column="create_user" jdbcType="BIGINT" property="createUser" />
     <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
     <result column="uuid" jdbcType="VARCHAR" property="uuid" />
@@ -146,7 +150,8 @@
     itemID, sKU, title, quantityPurchased, transactionID, sellingManagerSalesRecordNumber, 
     transactionPrice, paidTime, shippedTime, actualShippingCost, actualHandlingCost, 
     buyerUserID, comment, folder, sellerUserID, variationSKU, paypalFlag, shippedFlag, 
-    sendMessageTime, create_user, create_time, uuid
+    itemFlag, accountFlag, sellerTrasactionFlag, sendMessageTime, autoMessage_id, create_user, 
+    create_time, uuid
   </sql>
   <select id="selectByExample" parameterType="com.base.database.trading.model.TradingOrderGetOrdersExample" resultMap="BaseResultMap">
     <!--
@@ -218,8 +223,9 @@
       actualShippingCost, actualHandlingCost, buyerUserID, 
       comment, folder, sellerUserID, 
       variationSKU, paypalFlag, shippedFlag, 
-      sendMessageTime, create_user, create_time, 
-      uuid)
+      itemFlag, accountFlag, sellerTrasactionFlag, 
+      sendMessageTime, autoMessage_id, create_user, 
+      create_time, uuid)
     values (#{id,jdbcType=BIGINT}, #{orderid,jdbcType=VARCHAR}, #{orderstatus,jdbcType=VARCHAR}, 
       #{adjustmentamount,jdbcType=VARCHAR}, #{amountsaved,jdbcType=VARCHAR}, #{amountpaid,jdbcType=VARCHAR}, 
       #{ebaypaymentstatus,jdbcType=VARCHAR}, #{lastmodifiedtime,jdbcType=TIMESTAMP}, 
@@ -239,8 +245,9 @@
       #{actualshippingcost,jdbcType=DOUBLE}, #{actualhandlingcost,jdbcType=DOUBLE}, #{buyeruserid,jdbcType=VARCHAR}, 
       #{comment,jdbcType=VARCHAR}, #{folder,jdbcType=VARCHAR}, #{selleruserid,jdbcType=VARCHAR}, 
       #{variationsku,jdbcType=VARCHAR}, #{paypalflag,jdbcType=INTEGER}, #{shippedflag,jdbcType=INTEGER}, 
-      #{sendmessagetime,jdbcType=TIMESTAMP}, #{createUser,jdbcType=BIGINT}, #{createTime,jdbcType=TIMESTAMP}, 
-      #{uuid,jdbcType=VARCHAR})
+      #{itemflag,jdbcType=INTEGER}, #{accountflag,jdbcType=INTEGER}, #{sellertrasactionflag,jdbcType=INTEGER}, 
+      #{sendmessagetime,jdbcType=TIMESTAMP}, #{automessageId,jdbcType=BIGINT}, #{createUser,jdbcType=BIGINT}, 
+      #{createTime,jdbcType=TIMESTAMP}, #{uuid,jdbcType=VARCHAR})
   </insert>
   <insert id="insertSelective" parameterType="com.base.database.trading.model.TradingOrderGetOrders">
     <!--
@@ -414,8 +421,20 @@
       <if test="shippedflag != null">
         shippedFlag,
       </if>
+      <if test="itemflag != null">
+        itemFlag,
+      </if>
+      <if test="accountflag != null">
+        accountFlag,
+      </if>
+      <if test="sellertrasactionflag != null">
+        sellerTrasactionFlag,
+      </if>
       <if test="sendmessagetime != null">
         sendMessageTime,
+      </if>
+      <if test="automessageId != null">
+        autoMessage_id,
       </if>
       <if test="createUser != null">
         create_user,
@@ -593,8 +612,20 @@
       <if test="shippedflag != null">
         #{shippedflag,jdbcType=INTEGER},
       </if>
+      <if test="itemflag != null">
+        #{itemflag,jdbcType=INTEGER},
+      </if>
+      <if test="accountflag != null">
+        #{accountflag,jdbcType=INTEGER},
+      </if>
+      <if test="sellertrasactionflag != null">
+        #{sellertrasactionflag,jdbcType=INTEGER},
+      </if>
       <if test="sendmessagetime != null">
         #{sendmessagetime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="automessageId != null">
+        #{automessageId,jdbcType=BIGINT},
       </if>
       <if test="createUser != null">
         #{createUser,jdbcType=BIGINT},
@@ -789,8 +820,20 @@
       <if test="record.shippedflag != null">
         shippedFlag = #{record.shippedflag,jdbcType=INTEGER},
       </if>
+      <if test="record.itemflag != null">
+        itemFlag = #{record.itemflag,jdbcType=INTEGER},
+      </if>
+      <if test="record.accountflag != null">
+        accountFlag = #{record.accountflag,jdbcType=INTEGER},
+      </if>
+      <if test="record.sellertrasactionflag != null">
+        sellerTrasactionFlag = #{record.sellertrasactionflag,jdbcType=INTEGER},
+      </if>
       <if test="record.sendmessagetime != null">
         sendMessageTime = #{record.sendmessagetime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.automessageId != null">
+        autoMessage_id = #{record.automessageId,jdbcType=BIGINT},
       </if>
       <if test="record.createUser != null">
         create_user = #{record.createUser,jdbcType=BIGINT},
@@ -867,7 +910,11 @@
       variationSKU = #{record.variationsku,jdbcType=VARCHAR},
       paypalFlag = #{record.paypalflag,jdbcType=INTEGER},
       shippedFlag = #{record.shippedflag,jdbcType=INTEGER},
+      itemFlag = #{record.itemflag,jdbcType=INTEGER},
+      accountFlag = #{record.accountflag,jdbcType=INTEGER},
+      sellerTrasactionFlag = #{record.sellertrasactionflag,jdbcType=INTEGER},
       sendMessageTime = #{record.sendmessagetime,jdbcType=TIMESTAMP},
+      autoMessage_id = #{record.automessageId,jdbcType=BIGINT},
       create_user = #{record.createUser,jdbcType=BIGINT},
       create_time = #{record.createTime,jdbcType=TIMESTAMP},
       uuid = #{record.uuid,jdbcType=VARCHAR}
@@ -1044,8 +1091,20 @@
       <if test="shippedflag != null">
         shippedFlag = #{shippedflag,jdbcType=INTEGER},
       </if>
+      <if test="itemflag != null">
+        itemFlag = #{itemflag,jdbcType=INTEGER},
+      </if>
+      <if test="accountflag != null">
+        accountFlag = #{accountflag,jdbcType=INTEGER},
+      </if>
+      <if test="sellertrasactionflag != null">
+        sellerTrasactionFlag = #{sellertrasactionflag,jdbcType=INTEGER},
+      </if>
       <if test="sendmessagetime != null">
         sendMessageTime = #{sendmessagetime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="automessageId != null">
+        autoMessage_id = #{automessageId,jdbcType=BIGINT},
       </if>
       <if test="createUser != null">
         create_user = #{createUser,jdbcType=BIGINT},
@@ -1119,7 +1178,11 @@
       variationSKU = #{variationsku,jdbcType=VARCHAR},
       paypalFlag = #{paypalflag,jdbcType=INTEGER},
       shippedFlag = #{shippedflag,jdbcType=INTEGER},
+      itemFlag = #{itemflag,jdbcType=INTEGER},
+      accountFlag = #{accountflag,jdbcType=INTEGER},
+      sellerTrasactionFlag = #{sellertrasactionflag,jdbcType=INTEGER},
       sendMessageTime = #{sendmessagetime,jdbcType=TIMESTAMP},
+      autoMessage_id = #{automessageId,jdbcType=BIGINT},
       create_user = #{createUser,jdbcType=BIGINT},
       create_time = #{createTime,jdbcType=TIMESTAMP},
       uuid = #{uuid,jdbcType=VARCHAR}

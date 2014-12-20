@@ -477,8 +477,7 @@ public class SynchronizeGetOrderImpl implements ThreadPoolBaseInterFace {
                 logger.error("订单API参数错误!" + res);
             }
         } catch (Exception e) {
-            e.printStackTrace();
-            logger.error("解析订单xml出错,请稍后到ebay网站确认结果"+res);
+            logger.error("解析订单xml出错,请稍后到ebay网站确认结果"+res,e);
             return;
         }
     }

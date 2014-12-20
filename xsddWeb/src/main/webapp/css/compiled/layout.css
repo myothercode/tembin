@@ -1863,15 +1863,36 @@ CURSOR: pointer
 	text-decoration: underline;
 }
 .admin_user_input{
-	width: 255px;
-	float: left;
-	height: 35px;
+	width: 240px;
+	float: right;
+  margin-right: 42px;
+  margin-top: -1px;
+	height: 32px;
 	padding-right: 10px;
-	padding-left: 60px;
+	padding-left: 1px;
 	color: #b9b9b9;
 	border: 1px solid #B5BEC3;
+  border-left: none;
 	border-radius: 5px;
+  border-top-left-radius: 0px;
+  border-bottom-left-radius: 0px;
 }
+.admin_user_input_left{
+  width: 35px;
+  float: left;
+  margin-left: 0px;
+  position: inherit;
+  height: 34px;
+  padding-right: 10px;
+  padding-left: 1px;
+  color: #b9b9b9;
+  border: 1px solid #B5BEC3;
+  border-right: none;
+  border-radius: 5px;
+  border-top-right-radius: 0px;
+  border-bottom-right-radius: 0px;
+}
+
 .admin_1{
 	color: #FFFFFF;
 	background-image: url(../../img/admin_1.png);

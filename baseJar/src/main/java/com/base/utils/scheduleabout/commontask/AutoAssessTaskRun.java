@@ -162,8 +162,7 @@ public class AutoAssessTaskRun extends BaseScheduledClass implements Scheduledab
                 try {
                     ack = SamplePaseXml.getVFromXmlString(res, "Ack");
                 } catch (Exception e) {
-                    logger.error("定时AutoAssess解析xml出错:"+e.getMessage());
-                    e.printStackTrace();
+                    logger.error("定时AutoAssess解析xml出错:"+e.getMessage(),e);
                 }
                 if ("Success".equalsIgnoreCase(ack)) {
                     aad.setIsFlag("0");
@@ -175,16 +174,14 @@ public class AutoAssessTaskRun extends BaseScheduledClass implements Scheduledab
                     try {
                         sl.setEventdesc(torder.getSelleruserid()+"发送给："+torder.getBuyeruserid()+"评价；发送失败，原因如下："+SamplePaseXml.getSpecifyElementTextAllInOne(res,"Errors","LongMessage"));
                     } catch (Exception e) {
-                        logger.error("定时AutoAssess解析出错:"+e.getMessage());
-                        e.printStackTrace();
+                        logger.error("定时AutoAssess解析出错:"+e.getMessage(),e);
                     }
                     sl.setEventname(SystemLogUtils.AUTO_ASSESS);
                     sl.setOperuser(userId+"");
                     try {
                         SystemLogUtils.saveLog(sl);
                     } catch (Exception e) {
-                        logger.error("定时AutoAssess日志保存出错:"+e.getMessage());
-                        e.printStackTrace();
+                        logger.error("定时AutoAssess日志保存出错:"+e.getMessage(),e);
                     }
                 }
                 iAutoAssessDetail.saveAutoAssessDetail(aad);

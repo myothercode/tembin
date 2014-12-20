@@ -583,7 +583,7 @@ public class GetOrdersController extends BaseAction {
                         try {
                             acc = payPalService.getTransactionDetails(map3);
                             if("Failure".equals(acc.getAck())){
-                                logger.error("获取paypal费用失败");
+                                logger.error("获取paypal费用失败paypalAmount.do");
                                 transactionses.get(0).setPaypalprice("");
                             }else{
                                 transactionses.get(0).setPaypalprice(acc.getFeeAmount());
@@ -591,7 +591,7 @@ public class GetOrdersController extends BaseAction {
                                 palpayPrice=acc.getFeeAmount();
                             }
                         }catch(Exception e){
-                            logger.error("获取paypal费用失败");
+                            logger.error("paypalAmount.do获取paypal费用失败",e);
                             transactionses.get(0).setPaypalprice("");
                         }
                         palpayAmounts.add(palpayPrice);

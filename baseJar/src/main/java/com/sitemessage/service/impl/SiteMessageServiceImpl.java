@@ -115,12 +115,12 @@ public class SiteMessageServiceImpl implements SiteMessageService {
             try {
                 SystemLogUtils.saveLog(systemLog);
             } catch (Exception e) {
-                logger.error("记录日志错误!"+taskMessageVO.getMessageTo()+";"+taskMessageVO.getMessageContext(),e);
+                //logger.error("记录日志错误!"+taskMessageVO.getMessageTo()+";"+taskMessageVO.getMessageContext(),e);
                 systemLog.setEventdesc(StringEscapeUtils.escapeHtml(systemLog.getEventdesc()));
                 try {
                     SystemLogUtils.saveLog(systemLog);
                 } catch (Exception e1) {
-                    logger.error("尝试失败"+taskMessageVO.getMessageTo()+";"+taskMessageVO.getMessageContext(),e1);
+                    logger.error("尝试记录失败"+taskMessageVO.getMessageTo()+";"+taskMessageVO.getMessageContext(),e1);
                 }
             }
             return;

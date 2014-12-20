@@ -13,6 +13,7 @@ import java.util.Map;
 public interface ITradingPriceTracking {
     void savePriceTracking(TradingPriceTracking tradingPriceTracking) throws Exception;
     List<TradingPriceTracking> getPriceTrackingItem(String title) throws Exception;
-    List<TradingPriceTracking> selectPriceTrackingByTileAndSeller(String itemId,String title,String querytitle,Long userId,String seller);
+    List<TradingPriceTracking> selectPriceTrackingByItemId(String itemId);
     List<PriceTrackingQuery> selectPriceTrackingList(Map map,Page page);
+    List<TradingPriceTracking> selectPriceTracking();
 }

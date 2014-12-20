@@ -41,7 +41,8 @@
     <ul>
         <h1>登录</h1>
         <li style="margin-bottom:20px">
-            <input id="loginId" name="loginId" type="text" class="admin_user_input aemail_1" id="search-keyword" value="请输入你的邮件地址" onfocus="if(this.value=='请输入你的邮件地址'){this.value='';}"  onblur="if(this.value==''){this.value='请输入你的邮件地址';}" />
+            <div class="admin_user_input_left aemail_1"></div>
+            <input id="loginId" name="loginId" type="text" class="admin_user_input " id="search-keyword" value="请输入你的邮件地址" onfocus="if(this.value=='请输入你的邮件地址'){this.value='';}"  onblur="if(this.value==''){this.value='请输入你的邮件地址';}" />
         </li>
         <%--<li>
             <input id="loginId" name="loginId" type="text" class="admin_user_input" id="search-keyword1" value=""
@@ -50,7 +51,8 @@
                    {this.value='请输入你的邮箱';}"&ndash;%&gt; />
         </li>--%>
         <li style="margin-bottom:10px">
-            <input name="password" type="password"  class="admin_user_input aemail_2" id="password"  /></li>
+            <div class="admin_user_input_left aemail_2"></div>
+            <input name="password" type="password"  class="admin_user_input" id="password"  /></li>
         <li>
         <%--<li>
             <input name="password" type="password" class="admin_user_input" id="password" value=""

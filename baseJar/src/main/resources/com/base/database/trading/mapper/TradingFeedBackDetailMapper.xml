@@ -21,6 +21,7 @@
     <result column="currencyID" jdbcType="VARCHAR" property="currencyid" />
     <result column="autoMessageFlag" jdbcType="INTEGER" property="automessageflag" />
     <result column="sentTime" jdbcType="TIMESTAMP" property="senttime" />
+    <result column="autoMessage_id" jdbcType="BIGINT" property="automessageId" />
     <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
     <result column="uuid" jdbcType="VARCHAR" property="uuid" />
     <result column="user_id" jdbcType="VARCHAR" property="userId" />
@@ -106,7 +107,7 @@
     -->
     id, CommentingUser, CommentingUserScore, CommentTime, CommentType, ItemID, Role, 
     FeedbackID, TransactionID, OrderLineItemID, ItemTitle, ItemPrice, currencyID, autoMessageFlag, 
-    sentTime, create_time, uuid, user_id, ebay_account
+    sentTime, autoMessage_id, create_time, uuid, user_id, ebay_account
   </sql>
   <sql id="Blob_Column_List">
     <!--
@@ -132,7 +133,7 @@
       <include refid="Example_Where_Clause" />
     </if>
     <if test="orderByClause != null">
-      order by $orderByClause$
+      order by ${orderByClause}
     </if>
   </select>
   <select id="selectByExample" parameterType="com.base.database.trading.model.TradingFeedBackDetailExample" resultMap="BaseResultMap">
@@ -193,15 +194,17 @@
       Role, FeedbackID, TransactionID, 
       OrderLineItemID, ItemTitle, ItemPrice, 
       currencyID, autoMessageFlag, sentTime, 
-      create_time, uuid, user_id, 
-      ebay_account, CommentText)
+      autoMessage_id, create_time, uuid, 
+      user_id, ebay_account, CommentText
+      )
     values (#{id,jdbcType=BIGINT}, #{commentinguser,jdbcType=VARCHAR}, #{commentinguserscore,jdbcType=BIGINT}, 
       #{commenttime,jdbcType=TIMESTAMP}, #{commenttype,jdbcType=VARCHAR}, #{itemid,jdbcType=VARCHAR}, 
       #{role,jdbcType=VARCHAR}, #{feedbackid,jdbcType=VARCHAR}, #{transactionid,jdbcType=VARCHAR}, 
       #{orderlineitemid,jdbcType=VARCHAR}, #{itemtitle,jdbcType=VARCHAR}, #{itemprice,jdbcType=DOUBLE}, 
       #{currencyid,jdbcType=VARCHAR}, #{automessageflag,jdbcType=INTEGER}, #{senttime,jdbcType=TIMESTAMP}, 
-      #{createTime,jdbcType=TIMESTAMP}, #{uuid,jdbcType=VARCHAR}, #{userId,jdbcType=VARCHAR}, 
-      #{ebayAccount,jdbcType=VARCHAR}, #{commenttext,jdbcType=LONGVARCHAR})
+      #{automessageId,jdbcType=BIGINT}, #{createTime,jdbcType=TIMESTAMP}, #{uuid,jdbcType=VARCHAR}, 
+      #{userId,jdbcType=VARCHAR}, #{ebayAccount,jdbcType=VARCHAR}, #{commenttext,jdbcType=LONGVARCHAR}
+      )
   </insert>
   <insert id="insertSelective" parameterType="com.base.database.trading.model.TradingFeedBackDetail">
     <!--
@@ -254,6 +257,9 @@
       </if>
       <if test="senttime != null">
         sentTime,
+      </if>
+      <if test="automessageId != null">
+        autoMessage_id,
       </if>
       <if test="createTime != null">
         create_time,
@@ -316,6 +322,9 @@
       </if>
       <if test="senttime != null">
         #{senttime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="automessageId != null">
+        #{automessageId,jdbcType=BIGINT},
       </if>
       <if test="createTime != null">
         #{createTime,jdbcType=TIMESTAMP},
@@ -396,6 +405,9 @@
       <if test="record.senttime != null">
         sentTime = #{record.senttime,jdbcType=TIMESTAMP},
       </if>
+      <if test="record.automessageId != null">
+        autoMessage_id = #{record.automessageId,jdbcType=BIGINT},
+      </if>
       <if test="record.createTime != null">
         create_time = #{record.createTime,jdbcType=TIMESTAMP},
       </if>
@@ -437,6 +449,7 @@
       currencyID = #{record.currencyid,jdbcType=VARCHAR},
       autoMessageFlag = #{record.automessageflag,jdbcType=INTEGER},
       sentTime = #{record.senttime,jdbcType=TIMESTAMP},
+      autoMessage_id = #{record.automessageId,jdbcType=BIGINT},
       create_time = #{record.createTime,jdbcType=TIMESTAMP},
       uuid = #{record.uuid,jdbcType=VARCHAR},
       user_id = #{record.userId,jdbcType=VARCHAR},
@@ -467,6 +480,7 @@
       currencyID = #{record.currencyid,jdbcType=VARCHAR},
       autoMessageFlag = #{record.automessageflag,jdbcType=INTEGER},
       sentTime = #{record.senttime,jdbcType=TIMESTAMP},
+      autoMessage_id = #{record.automessageId,jdbcType=BIGINT},
       create_time = #{record.createTime,jdbcType=TIMESTAMP},
       uuid = #{record.uuid,jdbcType=VARCHAR},
       user_id = #{record.userId,jdbcType=VARCHAR},
@@ -524,6 +538,9 @@
       <if test="senttime != null">
         sentTime = #{senttime,jdbcType=TIMESTAMP},
       </if>
+      <if test="automessageId != null">
+        autoMessage_id = #{automessageId,jdbcType=BIGINT},
+      </if>
       <if test="createTime != null">
         create_time = #{createTime,jdbcType=TIMESTAMP},
       </if>
@@ -562,6 +579,7 @@
       currencyID = #{currencyid,jdbcType=VARCHAR},
       autoMessageFlag = #{automessageflag,jdbcType=INTEGER},
       sentTime = #{senttime,jdbcType=TIMESTAMP},
+      autoMessage_id = #{automessageId,jdbcType=BIGINT},
       create_time = #{createTime,jdbcType=TIMESTAMP},
       uuid = #{uuid,jdbcType=VARCHAR},
       user_id = #{userId,jdbcType=VARCHAR},
@@ -589,6 +607,7 @@
       currencyID = #{currencyid,jdbcType=VARCHAR},
       autoMessageFlag = #{automessageflag,jdbcType=INTEGER},
       sentTime = #{senttime,jdbcType=TIMESTAMP},
+      autoMessage_id = #{automessageId,jdbcType=BIGINT},
       create_time = #{createTime,jdbcType=TIMESTAMP},
       uuid = #{uuid,jdbcType=VARCHAR},
       user_id = #{userId,jdbcType=VARCHAR},

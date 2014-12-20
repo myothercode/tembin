@@ -488,6 +488,12 @@ public class TradingItemImpl implements com.trading.service.ITradingItem {
                     tpl.setParentId(tpla.getId());
                     this.iTradingPublicLevelAttr.savePublicLevelAttr(tpl);
                 }
+            }else{
+                List<TradingPublicLevelAttr> litpla = this.iTradingPublicLevelAttr.selectByParentId("ItemSpecifics",tradingItem.getId());
+                for(TradingPublicLevelAttr tpa : litpla){
+                    this.iTradingPublicLevelAttr.deleteByParentID(null,tpa.getId());
+                }
+                this.iTradingPublicLevelAttr.deleteByParentID("ItemSpecifics",tradingItem.getId());
             }
         }
         return itemMap;
@@ -518,7 +524,8 @@ public class TradingItemImpl implements com.trading.service.ITradingItem {
         TradingDiscountpriceinfo tdiscount = this.iTradingDiscountPriceInfo.selectById(tradingItem.getDiscountpriceinfoId());
         TradingBuyerRequirementDetails tbuyer = this.iTradingBuyerRequirementDetails.selectById(tradingItem.getBuyerId());
         TradingReturnpolicy treturn = this.iTradingReturnpolicy.selectById(tradingItem.getReturnpolicyId());
-
+        item.setCountry(DataDictionarySupport.getTradingDataDictionaryByID(tadd.getCountryId()).getValue());
+        item.setLocation(tadd.getAddress());
         //组装刑登xml
         //组装买家要求
         if(tbuyer!=null) {
@@ -538,29 +545,68 @@ public class TradingItemImpl implements com.trading.service.ITradingItem {
         if(tshipping!=null) {
             ShippingDetails sd = this.iTradingShippingDetails.toXmlPojo(tradingItem.getShippingDeailsId());
             item.setShippingDetails(sd);
+            if(tshipping.getDispatchtimemax()!=null&&tshipping.getDispatchtimemax()!=0) {
+                item.setDispatchTimeMax(tshipping.getDispatchtimemax().intValue());
+            }
         }
         String template = "";
         if(tradingItem.getTemplateId()!=null){//如果选择了模板
             TradingTemplateInitTable tttt = this.iTradingTemplateInitTable.selectById(tradingItem.getTemplateId());
             template = tttt.getTemplateHtml();
-            template.replace("{ProductDetail}",item.getDescription());
+            List<TradingAttrMores> litam = this.iTradingAttrMores.selectByParnetidUuid(tradingItem.getId(),"TemplatePicUrl",tradingItem.getUuid());
+
+            String [] tempicUrls = new String[litam.size()];//界面中添加的模板图片
+            for(int i=0;i<litam.size();i++){
+                TradingAttrMores tam = litam.get(i);
+                tempicUrls[i]=tam.getValue();
+            }
+            if(tempicUrls!=null&&tempicUrls.length>0){//如果界面中模板图片不为空，那么替换模板中ＵＲＬ地址
+                org.jsoup.nodes.Document doc = org.jsoup.Jsoup.parse(template);
+                org.jsoup.select.Elements content = doc.getElementsByAttributeValue("name", "blankimg");
+                String url = "";
+                int j=0;
+                for(int i=0;i<content.size();i++){
+                    org.jsoup.nodes.Element el = content.get(i);
+                    url = el.attr("src");
+                    if(url.indexOf("blank.jpg")>0&&j<=tempicUrls.length){
+                        el.attr("src",tempicUrls[j]);
+                        j++;
+                    }
+                }
+                template=doc.html();
+            }
+            template = template.replace("{ProductDetail}",item.getDescription());
             if(tttt!=null&&tradingItem.getSellerItemInfoId()!=null){//如果选择了卖家描述
                 TradingDescriptionDetailsWithBLOBs tdd = this.iTradingDescriptionDetails.selectById(tradingItem.getSellerItemInfoId());
-                template.replace("{PaymentMethodTitle}",tdd.getPayTitle()==null?"PayTitle":tdd.getPayTitle());
-                template.replace("{PaymentMethod}",tdd.getPayInfo());
+                template = template.replace("{PaymentMethodTitle}",tdd.getPayTitle()==null?"PayTitle":tdd.getPayTitle());
+                template = template.replace("{PaymentMethod}",tdd.getPayInfo());
 
-                template.replace("{ShippingDetailTitle}",tdd.getShippingTitle()==null?"ShippingTitle()":tdd.getShippingTitle());
-                template.replace("{ShippingDetail}",tdd.getShippingInfo());
+                template = template.replace("{ShippingDetailTitle}",tdd.getShippingTitle()==null?"ShippingTitle":tdd.getShippingTitle());
+                template = template.replace("{ShippingDetail}",tdd.getShippingInfo());
 
-                template.replace("{SalesPolicyTitle}",tdd.getGuaranteeTitle()==null?"GuaranteeTitle()":tdd.getGuaranteeTitle());
-                template.replace("{SalesPolicy}",tdd.getGuaranteeInfo());
+                template = template.replace("{SalesPolicyTitle}",tdd.getGuaranteeTitle()==null?"GuaranteeTitle":tdd.getGuaranteeTitle());
+                template = template.replace("{SalesPolicy}",tdd.getGuaranteeInfo());
 
-                template.replace("{AboutUsTitle}",tdd.getFeedbackTitle()==null?"FeedbackTitle()":tdd.getFeedbackTitle());
-                template.replace("{AboutUs}",tdd.getFeedbackInfo());
+                template = template.replace("{AboutUsTitle}",tdd.getFeedbackTitle()==null?"FeedbackTitle":tdd.getFeedbackTitle());
+                template = template.replace("{AboutUs}",tdd.getFeedbackInfo());
 
-                template.replace("{ContactUsTitle}",tdd.getContactTitle()==null?"ContactTitle":tdd.getContactTitle());
-                template.replace("{ContactUs}",tdd.getContactInfo());
+                template = template.replace("{ContactUsTitle}",tdd.getContactTitle()==null?"ContactTitle":tdd.getContactTitle());
+                template = template.replace("{ContactUs}",tdd.getContactInfo());
+            }else{
+                template = template.replace("{PaymentMethodTitle}","");
+                template = template.replace("{PaymentMethod}","");
 
+                template = template.replace("{ShippingDetailTitle}","");
+                template = template.replace("{ShippingDetail}","");
+
+                template = template.replace("{SalesPolicyTitle}","");
+                template = template.replace("{SalesPolicy}","");
+
+                template = template.replace("{AboutUsTitle}","");
+                template = template.replace("{AboutUs}","");
+
+                template = template.replace("{ContactUsTitle}","");
+                template = template.replace("{ContactUs}","");
             }
         }else{//未选择模板，
             template+=item.getDescription()+"</br>";
@@ -595,7 +641,9 @@ public class TradingItemImpl implements com.trading.service.ITradingItem {
         }else{
             item.setListingDuration("GTC");
         }
-        item.setDispatchTimeMax(0);
+        if(item.getDispatchTimeMax()==null) {
+            item.setDispatchTimeMax(0);
+        }
 
 
         if(tradingItem.getListingtype().equals("2")){//多属性
@@ -616,6 +664,8 @@ public class TradingItemImpl implements com.trading.service.ITradingItem {
                         for(TradingAttrMores tam : liname){
                             List<TradingListingpicUrl> liplu = this.iTradingListingPicUrl.selectByMackId(tam.getAttr1());
                             TradingListingpicUrl plu = liplu.get(0);
+                            String url = plu.getUrl();
+                            String picName = url.substring(url.lastIndexOf("/")+1,url.lastIndexOf("."));
                             if(plu.getEbayurl()==null&&plu.getCheckFlag().equals("0")){
                                 Thread.sleep(5000L);
                                 List<TradingListingpicUrl> litamss = this.iTradingListingPicUrl.selectByMackId(tam.getAttr1());
@@ -623,10 +673,30 @@ public class TradingItemImpl implements com.trading.service.ITradingItem {
                                 if(plu.getCheckFlag().equals("1")){
                                     listr.add(plu.getEbayurl());
                                 }else{
-                                    Asserts.assertTrue(false,"图片未成功上传，请重新选择图片上传");
+                                    try {
+                                        plu = this.iTradingListingPicUrl.uploadPic(tradingItem,plu.getUrl(),picName,plu);
+                                        if(plu.getEbayurl()==null&&plu.getCheckFlag().equals("2")){
+                                            Asserts.assertTrue(false,"图片上传失败，请从新选择图片上传");
+                                        }else{
+                                            listr.add(plu.getEbayurl());
+                                        }
+                                    } catch (Exception e) {
+                                        logger.error(url+"::",e);
+                                        Asserts.assertTrue(false, "图片上传失败，请从新选择图片上传");
+                                    }
                                 }
                             }else if(plu.getEbayurl()==null&&plu.getCheckFlag().equals("2")){
-                                Asserts.assertTrue(false,"图片未成功上传，请重新选择图片上传");
+                                try {
+                                    plu = this.iTradingListingPicUrl.uploadPic(tradingItem,plu.getUrl(),picName,plu);
+                                    if(plu.getEbayurl()==null&&plu.getCheckFlag().equals("2")){
+                                        Asserts.assertTrue(false,"图片上传失败，请从新选择图片上传");
+                                    }else{
+                                        listr.add(plu.getEbayurl());
+                                    }
+                                } catch (Exception e) {
+                                    logger.error(url+"::",e);
+                                    Asserts.assertTrue(false,"图片上传失败，请从新选择图片上传");
+                                }
                             }else if(plu.getCheckFlag().equals("1")){
                                 listr.add(plu.getEbayurl());
                             }
@@ -749,6 +819,8 @@ public class TradingItemImpl implements com.trading.service.ITradingItem {
                 List<TradingListingpicUrl> liplu = this.iTradingListingPicUrl.selectByMackId(tam.getAttr1());
                 if(liplu!=null&&liplu.size()>0){
                     TradingListingpicUrl plu = liplu.get(0);
+                    String url = plu.getUrl();
+                    String picName = url.substring(url.lastIndexOf("/")+1,url.lastIndexOf("."));
                     if(plu.getEbayurl()==null&&plu.getCheckFlag().equals("0")){
                         Thread.sleep(5000L);
                         List<TradingListingpicUrl> litamss = this.iTradingListingPicUrl.selectByMackId(tam.getAttr1());
@@ -756,10 +828,30 @@ public class TradingItemImpl implements com.trading.service.ITradingItem {
                         if(plu.getCheckFlag().equals("1")){
                             listr.add(plu.getEbayurl());
                         }else{
-                            Asserts.assertTrue(false,"图片未成功上传，请重新选择图片上传");
+                            try {
+                                plu = this.iTradingListingPicUrl.uploadPic(tradingItem,plu.getUrl(),picName,plu);
+                                if(plu.getEbayurl()==null&&plu.getCheckFlag().equals("2")){
+                                    Asserts.assertTrue(false,"图片上传失败，请从新选择图片上传");
+                                }else{
+                                    listr.add(plu.getEbayurl());
+                                }
+                            } catch (Exception e) {
+                                logger.error(url+"::",e);
+                                Asserts.assertTrue(false,"图片上传失败，请从新选择图片上传");
+                            }
                         }
                     }else if(plu.getEbayurl()==null&&plu.getCheckFlag().equals("2")){
-                        Asserts.assertTrue(false,"图片未成功上传，请重新选择图片上传");
+                        try {
+                            plu = this.iTradingListingPicUrl.uploadPic(tradingItem,plu.getUrl(),picName,plu);
+                            if(plu.getEbayurl()==null&&plu.getCheckFlag().equals("2")){
+                                Asserts.assertTrue(false,"图片上传失败，请从新选择图片上传");
+                            }else{
+                                listr.add(plu.getEbayurl());
+                            }
+                        } catch (Exception e) {
+                            logger.error(url+"::",e);
+                            Asserts.assertTrue(false,"图片上传失败，请从新选择图片上传");
+                        }
                     }else if(plu.getCheckFlag().equals("1")){
                         listr.add(plu.getEbayurl());
                     }
@@ -1016,6 +1108,7 @@ public class TradingItemImpl implements com.trading.service.ITradingItem {
                                         try{
                                             inStream = conn.getInputStream();
                                         }catch(Exception e){
+                                            logger.error(url+"ebp:",e);
                                             continue;
                                         }
                                         String stuff = MyStringUtil.getExtension(picUrl, "");
@@ -1023,6 +1116,7 @@ public class TradingItemImpl implements com.trading.service.ITradingItem {
                                         try {
                                             fileName = FtpUploadFile.ftpUploadFile(inStream, uu.getUserLoginId() + "/" + tradingItem.getSku().toLowerCase(), stuff);
                                         }catch(Exception e){
+                                            logger.error(url+"",e);
                                             continue;
                                         }
                                         inStream.close();
@@ -1212,7 +1306,8 @@ public class TradingItemImpl implements com.trading.service.ITradingItem {
                                     tpl.setParentId(tpla.getId());
 
                                     this.iTradingPublicLevelAttr.savePublicLevelAttr(tpl);
-                                }catch(IndexOutOfBoundsException e){
+                                }catch(Exception e){
+                                    logger.error("tradingItem:",e);
                                     continue;
                                 }
                             }
@@ -1388,11 +1483,8 @@ public class TradingItemImpl implements com.trading.service.ITradingItem {
                                 pi.setAttrvalue(picUrls);
                                 this.publicItemPictureaddrAndAttrMapper.updateByPrimaryKeySelective(pi);
                             }
-                        }catch(FileNotFoundException e){
-                            continue;
-                        }catch(UnknownHostException e){
-                            continue;
-                        }catch(IOException e){
+                        }catch(Exception e){
+                            logger.error("",e);
                             continue;
                         }
                     }
@@ -1766,6 +1858,7 @@ public class TradingItemImpl implements com.trading.service.ITradingItem {
             inStream.close();
             return fileName;
         }catch(Exception e){
+            logger.error("::",e);
             return null;
         }
     }
@@ -2006,6 +2099,9 @@ public class TradingItemImpl implements com.trading.service.ITradingItem {
         if(tshipping!=null) {
             ShippingDetails sd = this.iTradingShippingDetails.toXmlPojo(tradingItem.getShippingDeailsId());
             item.setShippingDetails(sd);
+            if(tshipping.getDispatchtimemax()!=null&&tshipping.getDispatchtimemax()!=0) {
+                item.setDispatchTimeMax(tshipping.getDispatchtimemax().intValue());
+            }
         }
         String template = "";
         if(tradingItem.getTemplateId()!=null){//如果选择了模板
@@ -2063,7 +2159,9 @@ public class TradingItemImpl implements com.trading.service.ITradingItem {
         }else{
             item.setListingDuration("GTC");
         }
-        item.setDispatchTimeMax(0);
+        if(item.getDispatchTimeMax()==null) {
+            item.setDispatchTimeMax(0);
+        }
 
 
         if(tradingItem.getListingtype().equals("2")){//多属性
@@ -2228,8 +2326,8 @@ public class TradingItemImpl implements com.trading.service.ITradingItem {
         Document document= null;
         try {
             document = DocumentHelper.parseText(xml);
-        } catch (DocumentException e) {
-            e.printStackTrace();
+        } catch (Exception e) {
+            logger.error(xml+":",e);
         }
         Element rootElt = document.getRootElement();
         Element recommend = rootElt.element("Fees");

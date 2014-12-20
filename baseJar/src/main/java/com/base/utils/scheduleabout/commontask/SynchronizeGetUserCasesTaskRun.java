@@ -42,8 +42,7 @@ public class SynchronizeGetUserCasesTaskRun extends BaseScheduledClass implement
                 iTaskGetUserCases.saveListTaskGetUserCases(TaskGetUserCases);
             }
         }catch (Exception e){
-            logger.error("定时每天插入账号去获取纠纷出错:"+e.getMessage());
-            e.printStackTrace();
+            logger.error("定时每天插入账号去获取纠纷出错:"+e.getMessage(),e);
         }
 
     }

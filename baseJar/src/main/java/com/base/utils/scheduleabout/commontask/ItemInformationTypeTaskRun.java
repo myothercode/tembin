@@ -87,14 +87,13 @@ public class ItemInformationTypeTaskRun extends BaseScheduledClass implements Sc
                 }
             } catch (Exception e) {
                 TempStoreDataSupport.removeData("task_" + getScheduledType());
-                logger.error("商品分类搜索API出错:"+e.getMessage());
+                logger.error("商品分类搜索API出错:"+e.getMessage(),e);
                 itemInformation.setTypeflag(1);
                 try {
                     iPublicItemInformation.saveItemInformation(itemInformation);
                 } catch (Exception e1) {
-                    logger.error("保存商品分类到商品中出错:"+e.getMessage());
+                    logger.error("保存商品分类到商品中出错:"+e.getMessage(),e);
                     TempStoreDataSupport.removeData("task_" + getScheduledType());
-                    e1.printStackTrace();
                 }
                 e.printStackTrace();
             }

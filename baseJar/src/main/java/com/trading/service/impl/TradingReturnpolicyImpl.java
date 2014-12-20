@@ -9,6 +9,7 @@ import com.base.utils.common.ConvertPOJOUtil;
 import com.base.utils.common.ObjectUtils;
 import com.base.utils.exception.Asserts;
 import com.base.xmlpojo.trading.addproduct.ReturnPolicy;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,6 +25,8 @@ import java.util.Map;
 @Service
 @Transactional(rollbackFor = Exception.class)
 public class TradingReturnpolicyImpl implements com.trading.service.ITradingReturnpolicy {
+    static Logger logger = Logger.getLogger(TradingReturnpolicyImpl.class);
+
     @Autowired
     private TradingReturnpolicyMapper tradingReturnpolicyMapper;
 
@@ -56,12 +59,8 @@ public class TradingReturnpolicyImpl implements com.trading.service.ITradingRetu
 
         try {
             ConvertPOJOUtil.convert(tr,pojo);
-        } catch (InvocationTargetException e) {
-            e.printStackTrace();
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-        } catch (NoSuchMethodException e) {
-            e.printStackTrace();
+        } catch (Exception e) {
+            logger.error("",e);
         }
 
         /*tr.setDescription(pojo.getDescription());

@@ -83,5 +83,6 @@
 <input type="button" value="出口易库存" onclick="getChuKouYiData();">
 <input type="button" value="递四方库存" onclick="getDeShiFangData();">
 <input type="button" value="四海邮库存" onclick="getShiHaiYouData();">
+<%--<a href="/xsddWeb/category/saveTradingDic.do">汽车站点运输方式</a>--%>
 </body>
 </html>

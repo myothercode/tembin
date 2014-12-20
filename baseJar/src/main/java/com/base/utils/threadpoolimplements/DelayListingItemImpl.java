@@ -45,7 +45,7 @@ public class DelayListingItemImpl implements ThreadPoolBaseInterFace {
             }
             else {return;}
         } catch (Exception e) {
-            logger.error("解析xml出错,请稍后到ebay网站确认结果,itemid:"+itemId,e);
+            logger.error("解析xml出错,请稍后到ebay网站确认结果,itemid:"+itemId+res,e);
             return;
         }
         if(ObjectUtils.isLogicalNull(itemId)){return;}

@@ -42,8 +42,7 @@ public class SynchronizeGetOrdersTaskRun extends BaseScheduledClass implements S
                 iTaskGetOrders.saveListTaskGetOrders(taskGetOrders);
             }
         }catch (Exception e){
-            logger.error("定时每天插入账号去获取订单出错:"+e.getMessage());
-            e.printStackTrace();
+            logger.error("定时每天插入账号去获取订单出错:"+e.getMessage(),e);
         }
 
     }

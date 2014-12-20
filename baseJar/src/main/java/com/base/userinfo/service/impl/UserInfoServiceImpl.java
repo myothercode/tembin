@@ -19,6 +19,7 @@ import com.base.domains.userinfo.UsercontrollerEbayAccountExtend;
 import com.base.mybatis.page.Page;
 import com.base.userinfo.mapper.UserInfoServiceMapper;
 import com.base.utils.cache.SessionCacheSupport;
+import com.base.utils.cache.TempStoreDataSupport;
 import com.base.utils.common.EncryptionUtil;
 import com.base.utils.common.ObjectUtils;
 import com.base.utils.exception.Asserts;
@@ -166,7 +167,11 @@ public class UserInfoServiceImpl implements com.base.userinfo.service.UserInfoSe
     @Override
     /**获取到用量最小的开发帐号*/
     public UsercontrollerDevAccountExtend getDevByOrder(Map map) throws Exception {
-        UsercontrollerDevAccount u =userInfoServiceMapper.getDevByOrder(map);
+        UsercontrollerDevAccount u =TempStoreDataSupport.pullData("develop_account_info");
+        if(u==null || u.getRunname()==null){
+            u =userInfoServiceMapper.getDevByOrder(map);
+            TempStoreDataSupport.pushData("develop_account_info",u);
+        }
         return u.toExtend();
     }
 

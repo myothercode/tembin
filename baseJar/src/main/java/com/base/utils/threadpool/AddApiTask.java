@@ -77,7 +77,7 @@ public class AddApiTask {
 
             @Override
             public void onFailure(Throwable t) {
-                logger.error("获取"+d.getApiCallName()+"失败"+t.getMessage(),t);
+                logger.error("运行异常！获取"+d.getApiCallName()+"失败!"+t.getMessage(),t);
                 map.put("stat","fail");
                 map.put("message",t.getMessage());
             }
@@ -87,8 +87,9 @@ public class AddApiTask {
         try {
             res = task.get(500, TimeUnit.SECONDS);
         } catch (Exception e) {
+            logger.error("执行线程任务失败！",e);
             map.put("stat","fail");
-            map.put("message",e.getMessage()+"调用"+d.getApiCallName()+"失败");
+            map.put("message",e.getMessage()+"调用"+d.getApiCallName()+"运行异常！失败");
             map.put("activeCount",String.valueOf(TaskPool.threadPoolTaskExecutor.getActiveCount()) ) ;
             return map;
         }
@@ -169,15 +170,16 @@ public class AddApiTask {
         try {
             res = task.get(500, TimeUnit.SECONDS);
         } catch (Exception e) {
+            logger.error("执行线程任务失败2！",e);
             map.put("stat","fail");
-            map.put("message",e.getMessage()+"调用"+d.getApiCallName()+"失败");
+            map.put("message",e.getMessage()+"调用"+d.getApiCallName()+"失败2");
             map.put("activeCount",String.valueOf(TaskPool.threadPoolTaskExecutor2.getActiveCount()) ) ;
             return map;
         }
 
         if(StringUtils.isEmpty(res)){
             map.put("stat","fail");
-            map.put("message","调用"+d.getApiCallName()+"失败;没有获取到返回参数");
+            map.put("message","调用"+d.getApiCallName()+"失败;没有获取到返回参数2");
             map.put("activeCount",String.valueOf(TaskPool.threadPoolTaskExecutor2.getActiveCount()) ) ;
             return map;
         }
@@ -217,6 +219,7 @@ public class AddApiTask {
             //userInfoService.addUseNum(map1);//累计一次调用量
         } catch (Exception e) {
             logger.error("获取开发帐号失败!"+xml,e);
+            return;
         }
 
         if(dt!=null){

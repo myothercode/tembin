@@ -66,7 +66,15 @@
         <if test="selectType!=null and selectType!='docname'">
             and tion.${selectType}  = #{selectValue}
         </if>
-
         order by ${descStr} ${desStr}
+    </select>
+    <select id="selectListDateByExample" resultMap="BaseResultMap" parameterType="map">
+        select listing.* from trading_listing_data listing where 1=1
+        <if test="content!=null">
+           and listing.item_id like "%"#{content}"%"
+       </if>
+       <if test="userId!=null">
+           and listing.create_user= #{userId}
+       </if>
     </select>
 </mapper>

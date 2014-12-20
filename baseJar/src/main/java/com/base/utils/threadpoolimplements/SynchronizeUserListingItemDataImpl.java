@@ -87,7 +87,6 @@ public class SynchronizeUserListingItemDataImpl implements ThreadPoolBaseInterFa
                     String colStr = this.getCosXml(ebayAccount, startFrom, startTo, i, token);
                     Map<String, String> resMap = addApiTask.exec(d, colStr, apiUrl);
                     String res = resMap.get("message");
-                    System.out.println(res);
                     String ack = SamplePaseXml.getVFromXmlString(res, "Ack");
                     if (ack.equals("Success")) {
                         List<TradingListingData> litld = SamplePaseXml.getItemListElememt(res, ebayAccount);
@@ -124,8 +123,7 @@ public class SynchronizeUserListingItemDataImpl implements ThreadPoolBaseInterFa
                 }
             }else {return;}
         } catch (Exception e) {
-            e.printStackTrace();
-            logger.error("解析xml出错,请稍后到ebay网站确认结果");
+            logger.error("解析xml出错,请稍后到ebay网站确认结果12"+ebpRes,e);
             return;
         }
     }

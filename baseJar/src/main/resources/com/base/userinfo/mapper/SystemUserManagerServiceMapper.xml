@@ -26,6 +26,30 @@
     GROUP BY u.user_id ORDER BY u.`STATUS` desc,u.user_id asc
 </select>
 
+    <select id="queryAllUsersByOrgID" parameterType="map" resultType="com.base.domains.userinfo.UsercontrollerUserExtend">
+        select u.user_id userId  ,
+        u.user_name userName,
+        u.user_login_id userLoginId,
+        u.user_org_id userOrgId,
+        u.user_parent_id userParentId,
+        u.`status` `status`,
+        u.user_email userEmail,
+        u.tel_phone telPhone,
+        u.address address,
+        org.org_name orgName,
+        group_concat(r.role_name) roleName
+        from usercontroller_user u
+        LEFT JOIN usercontroller_org org on u.user_org_id=org.org_id
+        LEFT JOIN usercontroller_user_role ur on ur.user_id=u.user_id
+        left JOIN usercontroller_role r on ur.role_id=r.role_id
+        where u.user_org_id=#{orgID}
+        and u.user_parent_id is not null
+        <if test="isShowStopOnly=='yes'">
+            and u.status = '1'
+        </if>
+        GROUP BY u.user_id ORDER BY u.`STATUS` desc,u.user_id asc
+    </select>
+
     <select id="queryUserRoleByUserID" resultType="com.base.domains.RoleVO" parameterType="map">
         SELECT DISTINCT ur.role_id roleID ,r.role_name roleName from usercontroller_user_role ur
         INNER JOIN usercontroller_role r on ur.role_id=r.role_id

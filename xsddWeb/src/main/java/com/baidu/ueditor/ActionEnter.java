@@ -107,7 +107,7 @@ public class ActionEnter {
                 ImageService imageService1= (ImageService) ApplicationContextUtil.getBean(ImageService.class);
                 String p1= imageService1.getImageDir();
                 String userLoginID=imageService1.getImageUserDir();
-                String skuPath=request.getParameter("_sku");
+                String skuPath=request.getParameter("_sku").toLowerCase();
                 if(StringUtils.isEmpty(skuPath)){
                     state=new BaseState(false);
                     state.putInfo("fail","sku不能为空");

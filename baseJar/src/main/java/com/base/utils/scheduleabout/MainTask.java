@@ -63,6 +63,11 @@ public class MainTask {
     public static final String SYNCHRONIZE_GET_USER_CASES="synchronize_get_user_cases";//定时每天插入账号去获取纠纷
     public static final String SYNCHRONIZE_GET_USER_CASES_TIMER="synchronize_get_user_cases_timer";//定时同步纠纷每两分钟
     public static final String ITEM_INFORMATION_TYPE="item_information_type";//定时每两分钟去调用商品分类名称和ID
+    public static final String SYNCHRONIZE_GET_ORDERS_ITEM_TIMER="synchronize_get_orders_item_timer";//定时同步根据订单订单商品每两分钟
+    public static final String SYNCHRONIZE_GET_ORDERS_ACCOUNT_TIMER="synchronize_get_orders_account_timer";//定时账户根据订单订单商品每两分钟
+    public static final String SYNCHRONIZE_GET_ORDERS_SELLER_TRANSACTION_TIMER="synchronize_get_orders_seller_transaction_timer";//定时外部交易根据订单订单商品每两分钟
+    public static final String PRICE_TRACKING_BY_ITEMID="price_tracking_by_itemid";//定时价格跟踪商品
+    public static final String SYNCHRONIZE_GET_ORDERS_TRACK_NUMBER_TIMER="synchronize_get_orders_track_number_timer";//定时价获取91track状态
 
     /**
      * 记录任务上次运行的时间
@@ -94,7 +99,11 @@ public class MainTask {
         doList.add(SYNCHRONIZE_GET_USER_CASES_TIMER);
         doList.add(ITEM_INFORMATION_TYPE);
         doList.add(AUTO_COMPLEMENT);
-
+        doList.add(SYNCHRONIZE_GET_ORDERS_ITEM_TIMER);
+        doList.add(SYNCHRONIZE_GET_ORDERS_ACCOUNT_TIMER);
+        doList.add(SYNCHRONIZE_GET_ORDERS_SELLER_TRANSACTION_TIMER);
+        doList.add(SYNCHRONIZE_GET_ORDERS_TRACK_NUMBER_TIMER);
+        doList.add(PRICE_TRACKING_BY_ITEMID);
         if (isStartTimerTask==null) {
             isStartTimerTask = ApplicationContextUtil.getBean(CommAutowiredClass.class);
         }

@@ -28,7 +28,6 @@ public class SynchronizeGetUserCasesTimerTaskRun extends BaseScheduledClass impl
         } catch (Exception e) {
             logger.error("定时同步纠纷出错:",e);
             TempStoreDataSupport.removeData("task_"+getScheduledType());
-            e.printStackTrace();
         }
         /*UserInfoService userInfoService=(UserInfoService) ApplicationContextUtil.getBean(UserInfoService.class);*/
 

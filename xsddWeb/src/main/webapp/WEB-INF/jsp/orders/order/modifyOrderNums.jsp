@@ -68,12 +68,12 @@
                     </td>
                     <td height="28" align="center">
                         <div class="newselect" style="margin-top:9px;width: auto;">
-                            <input style="width: auto" name="ShippingCarrierUsed${status.index}" id="ShippingCarrierUsed${status.index}" class="form-controlsd" type="text">
+                            <input style="width: auto;margin-left: 40px;" name="ShippingCarrierUsed${status.index}" id="ShippingCarrierUsed${status.index}" class="form-controlsd" type="text">
                         </div>
                     </td>
                     <td height="28" align="center">
                         <div class="newselect" style="margin-top:9px;width: auto;">
-                            <input style="width: auto" name="ShipmentTrackingNumber${status.index}" id="ShipmentTrackingNumber${status.index}" class="form-controlsd" type="text">
+                            <input style="width: auto;margin-left: 40px;" name="ShipmentTrackingNumber${status.index}" id="ShipmentTrackingNumber${status.index}" class="form-controlsd" type="text">
                         </div>
                     </td>
                 </tr>
@@ -95,8 +95,9 @@
             </tr>--%>
             <tr>
                 <td height="28" align="right">&nbsp;</td>
+                <td height="28" ></td>
+                <td height="28"></td>
                 <td height="28" style=" padding-top:22px;"><button type="button" class="net_put" onclick="submitCommit();">保存</button><button type="button" class="net_put_1" data-dismiss="modal" onclick="closedialog();">关闭</button></td>
-                <td height="28">&nbsp;</td>
             </tr>
             </tbody></table>
 

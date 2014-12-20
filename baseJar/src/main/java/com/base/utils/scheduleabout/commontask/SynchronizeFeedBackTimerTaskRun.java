@@ -2,9 +2,7 @@ package com.base.utils.scheduleabout.commontask;
 
 import com.base.database.sitemessage.model.PublicSitemessage;
 import com.base.database.task.model.TaskFeedBack;
-import com.base.database.trading.model.TradingAutoMessage;
-import com.base.database.trading.model.TradingFeedBackDetail;
-import com.base.database.trading.model.TradingOrderAddMemberMessageAAQToPartner;
+import com.base.database.trading.model.*;
 import com.base.domains.userinfo.UsercontrollerDevAccountExtend;
 import com.base.sampleapixml.APINameStatic;
 import com.base.utils.applicationcontext.ApplicationContextUtil;
@@ -40,7 +38,6 @@ public class SynchronizeFeedBackTimerTaskRun extends BaseScheduledClass implemen
         SiteMessageService siteMessageService = (SiteMessageService) ApplicationContextUtil.getBean(SiteMessageService.class);
         ITradingFeedBackDetail iTradingFeedBackDetail=(ITradingFeedBackDetail)ApplicationContextUtil.getBean(ITradingFeedBackDetail.class);
         ITradingOrderAddMemberMessageAAQToPartner iTradingOrderAddMemberMessageAAQToPartner=(ITradingOrderAddMemberMessageAAQToPartner)ApplicationContextUtil.getBean(ITradingOrderAddMemberMessageAAQToPartner.class);
-        ITradingListingData iTradingListingData = (ITradingListingData) ApplicationContextUtil.getBean(ITradingListingData.class);
         ITradingAutoMessage iTradingAutoMessage=(ITradingAutoMessage)ApplicationContextUtil.getBean(ITradingAutoMessage.class);
         ITaskFeedBack iTaskFeedBack = (ITaskFeedBack) ApplicationContextUtil.getBean(ITaskFeedBack.class);
         IUsercontrollerEbayAccount iUsercontrollerEbayAccount=(IUsercontrollerEbayAccount)ApplicationContextUtil.getBean(IUsercontrollerEbayAccount.class);
@@ -124,7 +121,8 @@ public class SynchronizeFeedBackTimerTaskRun extends BaseScheduledClass implemen
                                     siteMessageService.addSiteMessage(taskMessageVO);
                                 }
                             }
-                            for(TradingAutoMessage partner:partners){
+                            feedBackDetail=autoMessageSet(partners,taskFeedBack.getUserid(),feedBackDetail);
+                            /*for(TradingAutoMessage partner:partners){
                                 if(partner.getStartuse()==1){
                                     int day=partner.getDay();
                                     int hour=partner.getHour();
@@ -133,7 +131,7 @@ public class SynchronizeFeedBackTimerTaskRun extends BaseScheduledClass implemen
                                     Date date2=org.apache.commons.lang.time.DateUtils.addHours(date1,hour);
                                     feedBackDetail.setSenttime(date2);
                                 }
-                            }
+                            }*/
                             if(addmessages.size()>0){
                                 feedBackDetail.setAutomessageflag(1);
                             }else{
@@ -163,9 +161,137 @@ public class SynchronizeFeedBackTimerTaskRun extends BaseScheduledClass implemen
         }catch (Exception e){
             logger.error("定时同步评价出错:"+e.getMessage());
             TempStoreDataSupport.removeData("task_"+getScheduledType());
-            e.printStackTrace();
         }
 
+    }
+    private TradingFeedBackDetail autoMessageSet(List<TradingAutoMessage> partners,Long userId,TradingFeedBackDetail feedBackDetail){
+        ITradingOrderGetOrders iTradingOrderGetOrders=(ITradingOrderGetOrders)ApplicationContextUtil.getBean(ITradingOrderGetOrders.class);
+        ITradingAutoMessageAttr iTradingAutoMessageAttr=(ITradingAutoMessageAttr)ApplicationContextUtil.getBean(ITradingAutoMessageAttr.class);
+        List<TradingOrderGetOrders> orders=iTradingOrderGetOrders.selectOrderGetOrdersByBuyerAndItemid(feedBackDetail.getItemid(),feedBackDetail.getCommentinguser());
+        TradingOrderGetOrders order=null;
+        if(orders!=null&&orders.size()>0){
+            order=orders.get(0);
+        }
+        for(TradingAutoMessage partner:partners){
+            if(partner==null){
+                feedBackDetail.setAutomessageId(0L);
+            }
+            if (partner.getStartuse() == 1) {
+                Boolean autoFlag = false;
+                List<TradingAutoMessageAttr> allOrders = iTradingAutoMessageAttr.selectAutoMessageListByautoMessageId(partner.getId(), "allOrder");
+                if(order!=null){
+                    if (allOrders != null && allOrders.size() > 0) {
+                        autoFlag = true;
+                    } else {
+                        Boolean orderItemFlag = false;
+                        Boolean countryFlag = false;
+                        Boolean amountFlag = false;
+                        Boolean serviceFlag = false;
+                        Boolean internationalServiceFlag = false;
+                        Boolean exceptCountryFlag = false;
+                        List<TradingAutoMessageAttr> orderItemAttrs = iTradingAutoMessageAttr.selectAutoMessageListByautoMessageId(partner.getId(), "orderItem");
+                        List<TradingAutoMessageAttr> countryAttrs = iTradingAutoMessageAttr.selectAutoMessageListByautoMessageId(partner.getId(), "country");
+                        List<TradingAutoMessageAttr> amountAttrs = iTradingAutoMessageAttr.selectAutoMessageListByautoMessageId(partner.getId(), "amount");
+                        List<TradingAutoMessageAttr> serviceAttrs = iTradingAutoMessageAttr.selectAutoMessageListByautoMessageId(partner.getId(), "service");
+                        List<TradingAutoMessageAttr> internationalServiceAttrs = iTradingAutoMessageAttr.selectAutoMessageListByautoMessageId(partner.getId(), "internationalService");
+                        List<TradingAutoMessageAttr> exceptCountryAttrs = iTradingAutoMessageAttr.selectAutoMessageListByautoMessageId(partner.getId(), "exceptCountry");
+                        if (orderItemAttrs != null && orderItemAttrs.size() > 0) {
+                            for (TradingAutoMessageAttr orderItemAttr : orderItemAttrs) {
+                                String sku = order.getSku();
+                                if (orderItemAttr.getValue().contains(sku)) {
+                                    orderItemFlag = true;
+                                }
+                            }
+                        } else {
+                            orderItemFlag = true;
+                        }
+                        if (countryAttrs != null && countryAttrs.size() > 0) {
+                            for (TradingAutoMessageAttr countryAttr : countryAttrs) {
+                                String country = order.getCountry();
+                                if (countryAttr.getValue().contains(country)) {
+                                    countryFlag = true;
+                                }
+                            }
+                        } else {
+                            countryFlag = true;
+                        }
+                        if (amountAttrs != null && amountAttrs.size() > 0) {
+                            for (TradingAutoMessageAttr amountAttr : amountAttrs) {
+                                String amount = order.getSelleruserid();
+                                if (amountAttr.getValue().contains(amount)) {
+                                    amountFlag = true;
+                                }
+                            }
+                        } else {
+                            amountFlag = true;
+                        }
+                        if (serviceAttrs != null && serviceAttrs.size() > 0) {
+                            for (TradingAutoMessageAttr serviceAttr : serviceAttrs) {
+                                String service = order.getSelectedshippingservice();
+                                if (serviceAttr.getValue().contains(service)) {
+                                    serviceFlag = true;
+                                }
+                            }
+                            if (internationalServiceAttrs != null && internationalServiceAttrs.size() > 0) {
+                                for (TradingAutoMessageAttr internationalServiceAttr : internationalServiceAttrs) {
+                                    String internationalService = order.getSelectedshippingservice();
+                                    if (internationalServiceAttr.getValue().contains(internationalService)) {
+                                        internationalServiceFlag = true;
+                                    }
+                                }
+                            } else {
+                                internationalServiceFlag = true;
+                            }
+                        } else if (internationalServiceAttrs != null && internationalServiceAttrs.size() > 0) {
+                            for (TradingAutoMessageAttr internationalServiceAttr : internationalServiceAttrs) {
+                                String internationalService = order.getSelectedshippingservice();
+                                if (internationalServiceAttr.getValue().contains(internationalService)) {
+                                    internationalServiceFlag = true;
+                                }
+                            }
+                            serviceFlag = true;
+                        } else {
+                            serviceFlag = true;
+                            internationalServiceFlag = true;
+                        }
+                        if (exceptCountryAttrs != null && exceptCountryAttrs.size() > 0) {
+                            for (TradingAutoMessageAttr exceptCountryAttr : exceptCountryAttrs) {
+                                String country = order.getCountry();
+                                if (!exceptCountryAttr.getValue().contains(country)) {
+                                    exceptCountryFlag = true;
+                                }
+                            }
+                        } else {
+                            exceptCountryFlag = true;
+                        }
+                        if (exceptCountryFlag && internationalServiceFlag && serviceFlag && amountFlag && countryFlag && orderItemFlag) {
+                            autoFlag = true;
+                        }
+                    }
+                    if (autoFlag) {
+                        Date date2 = sendAutoMessageTime(partner, feedBackDetail);
+                        feedBackDetail.setSenttime(date2);
+                        feedBackDetail.setAutomessageId(partner.getId());
+                        continue;
+                    }else{
+                        feedBackDetail.setAutomessageId(0L);
+                    }
+                }else{
+                    feedBackDetail.setAutomessageId(0L);
+                }
+            }else{
+                feedBackDetail.setAutomessageId(0L);
+            }
+        }
+        return feedBackDetail;
+    }
+    private Date sendAutoMessageTime(TradingAutoMessage partner,TradingFeedBackDetail feedBackDetail){
+        int day = partner.getDay();
+        int hour = partner.getHour();
+        Date date = feedBackDetail.getCommenttime();
+        Date date1 = org.apache.commons.lang.time.DateUtils.addDays(date, day);
+        Date date2 = org.apache.commons.lang.time.DateUtils.addHours(date1, hour);
+        return date2;
     }
     public String cosPostXml(TaskFeedBack taskFeedBack,int pageNumber){
         //真实环境

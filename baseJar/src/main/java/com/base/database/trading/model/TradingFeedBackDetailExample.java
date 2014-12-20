@@ -166,6 +166,10 @@ public class TradingFeedBackDetailExample {
             return criteria.size() > 0;
         }
 
+        public List<Criterion> getAllCriteria() {
+            return criteria;
+        }
+
         public List<Criterion> getCriteria() {
             return criteria;
         }
@@ -1181,6 +1185,66 @@ public class TradingFeedBackDetailExample {
             return (Criteria) this;
         }
 
+        public Criteria andAutomessageIdIsNull() {
+            addCriterion("autoMessage_id is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andAutomessageIdIsNotNull() {
+            addCriterion("autoMessage_id is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andAutomessageIdEqualTo(Long value) {
+            addCriterion("autoMessage_id =", value, "automessageId");
+            return (Criteria) this;
+        }
+
+        public Criteria andAutomessageIdNotEqualTo(Long value) {
+            addCriterion("autoMessage_id <>", value, "automessageId");
+            return (Criteria) this;
+        }
+
+        public Criteria andAutomessageIdGreaterThan(Long value) {
+            addCriterion("autoMessage_id >", value, "automessageId");
+            return (Criteria) this;
+        }
+
+        public Criteria andAutomessageIdGreaterThanOrEqualTo(Long value) {
+            addCriterion("autoMessage_id >=", value, "automessageId");
+            return (Criteria) this;
+        }
+
+        public Criteria andAutomessageIdLessThan(Long value) {
+            addCriterion("autoMessage_id <", value, "automessageId");
+            return (Criteria) this;
+        }
+
+        public Criteria andAutomessageIdLessThanOrEqualTo(Long value) {
+            addCriterion("autoMessage_id <=", value, "automessageId");
+            return (Criteria) this;
+        }
+
+        public Criteria andAutomessageIdIn(List<Long> values) {
+            addCriterion("autoMessage_id in", values, "automessageId");
+            return (Criteria) this;
+        }
+
+        public Criteria andAutomessageIdNotIn(List<Long> values) {
+            addCriterion("autoMessage_id not in", values, "automessageId");
+            return (Criteria) this;
+        }
+
+        public Criteria andAutomessageIdBetween(Long value1, Long value2) {
+            addCriterion("autoMessage_id between", value1, value2, "automessageId");
+            return (Criteria) this;
+        }
+
+        public Criteria andAutomessageIdNotBetween(Long value1, Long value2) {
+            addCriterion("autoMessage_id not between", value1, value2, "automessageId");
+            return (Criteria) this;
+        }
+
         public Criteria andCreateTimeIsNull() {
             addCriterion("create_time is null");
             return (Criteria) this;
@@ -1486,6 +1550,8 @@ public class TradingFeedBackDetailExample {
 
         private boolean listValue;
 
+        private String typeHandler;
+
         public String getCondition() {
             return condition;
         }
@@ -1514,16 +1580,22 @@ public class TradingFeedBackDetailExample {
             return listValue;
         }
 
+        public String getTypeHandler() {
+            return typeHandler;
+        }
+
         protected Criterion(String condition) {
             super();
             this.condition = condition;
+            this.typeHandler = null;
             this.noValue = true;
         }
 
-        protected Criterion(String condition, Object value) {
+        protected Criterion(String condition, Object value, String typeHandler) {
             super();
             this.condition = condition;
             this.value = value;
+            this.typeHandler = typeHandler;
             if (value instanceof List<?>) {
                 this.listValue = true;
             } else {
@@ -1531,12 +1603,21 @@ public class TradingFeedBackDetailExample {
             }
         }
 
-        protected Criterion(String condition, Object value, Object secondValue) {
+        protected Criterion(String condition, Object value) {
+            this(condition, value, null);
+        }
+
+        protected Criterion(String condition, Object value, Object secondValue, String typeHandler) {
             super();
             this.condition = condition;
             this.value = value;
             this.secondValue = secondValue;
+            this.typeHandler = typeHandler;
             this.betweenValue = true;
+        }
+
+        protected Criterion(String condition, Object value, Object secondValue) {
+            this(condition, value, secondValue, null);
         }
     }
 }

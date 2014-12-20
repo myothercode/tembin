@@ -44,6 +44,12 @@ public interface SystemUserManagerService {
     /**判断某个账户是否有某个角色roleID参见role表*/
     boolean pdRole(Long roleID, List<RoleVO> roleVOList);
 
+    /**判断当前用户是否有管理员权限*/
+    boolean isAdminRole();
+
+    /**根据当前用户的orgid查询所有系统用户*/
+    List<UsercontrollerUserExtend> queryAllUsersByOrgID(String isShowStop);
+
     /**修改密码*/
     void changePWD(String oldPWD, String newPWD);
 

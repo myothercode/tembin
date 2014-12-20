@@ -40,6 +40,7 @@ import com.sitemessage.service.SiteMessageStatic;
 import com.task.service.IListingDataTask;
 import com.trading.service.*;
 import org.apache.commons.lang.math.NumberUtils;
+import org.apache.log4j.Logger;
 import org.apache.poi.hssf.usermodel.*;
 import org.apache.poi.ss.usermodel.Picture;
 import org.dom4j.Document;
@@ -70,6 +71,8 @@ import java.util.*;
  */
 @Controller
 public class ListingItemController extends BaseAction {
+    static Logger logger = Logger.getLogger(ListingItemController.class);
+
     @Autowired
     private UserInfoService userInfoService;
     @Autowired
@@ -618,11 +621,11 @@ public class ListingItemController extends BaseAction {
                 this.iTradingListingData.saveTradingListingDataList(litld);
                 AjaxSupport.sendSuccessText("","操作成功!");
             } catch (Exception e) {
-                e.printStackTrace();
+                logger.error("shiftListingToFolder.do报错",e);
                 AjaxSupport.sendSuccessText("","操作失败!");
             }
         }else{
-            AjaxSupport.sendSuccessText("","操作失败，你未选择商品，或你选择的商品不存在!");
+            AjaxSupport.sendSuccessText("", "操作失败，你未选择商品，或你选择的商品不存在!");
         }
 
     }
@@ -781,18 +784,15 @@ public class ListingItemController extends BaseAction {
         AjaxSupport.sendSuccessText("",litld);
     }
 
-    public void saveEndListingItem(String xml,String itemId){
+    public void saveEndListingItem(String xml,String itemId) throws Exception{
         List<TradingListingSuccess> litls = this.iTradingListingSuccess.selectByItemid(itemId);
-        try {
             String EndTime = SamplePaseXml.getVFromXmlString(xml, "EndTime");
             if(litls!=null&&litls.size()>0){
                 TradingListingSuccess tls = litls.get(0);
                 tls.setEndDate(DateUtils.returnDate(EndTime));
                 this.iTradingListingSuccess.save(tls);
             }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+
     }
 
     public String costXml(String itemid,String reason,String token){
@@ -1497,6 +1497,7 @@ public class ListingItemController extends BaseAction {
                     Item ites = new Item();
                     ites.setItemID(item.getItemID());
                     ites.setShippingDetails(item.getShippingDetails());
+                    ites.setDispatchTimeMax(item.getDispatchTimeMax());
                     rir.setItem(ites);
                     tla.setCosxml("<?xml version=\"1.0\" encoding=\"utf-8\"?>"+PojoXmlUtil.pojoToXml(rir));
                 }
@@ -1589,13 +1590,11 @@ public class ListingItemController extends BaseAction {
         date.set(Calendar.DATE, date.get(Calendar.DATE) - 119);
         String startTo="";
         String startFrom="";
-        try {
+        
             Date endDate = dft.parse(dft.format(date.getTime()));
             startTo = DateUtils.DateToString(new Date());
             startFrom = DateUtils.DateToString(endDate);
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
+
         //站点列表
         AddApiTask addApiTask = new AddApiTask();
         UsercontrollerDevAccountExtend d = new UsercontrollerDevAccountExtend();

@@ -1,6 +1,7 @@
 package com.base.utils.scheduleabout.commontask;
 
 import com.base.database.task.model.TaskGetOrders;
+import com.base.database.trading.model.TradingOrderGetOrders;
 import com.base.utils.applicationcontext.ApplicationContextUtil;
 import com.base.utils.cache.TempStoreDataSupport;
 import com.base.utils.scheduleabout.BaseScheduledClass;
@@ -43,13 +44,13 @@ public class SynchronizeGetTimerOrdersTaskRun extends BaseScheduledClass impleme
         ITaskGetOrders iTaskGetOrders = (ITaskGetOrders) ApplicationContextUtil.getBean(ITaskGetOrders.class);
         list = iTaskGetOrders.selectTaskGetOrdersByFlagIsFalseOrderBysaveTime();
         synchronizeOrders(list);
-
+        TempStoreDataSupport.removeData("task_"+getScheduledType());
     }
 
     /**只从集合记录取多少条*/
-    private List<TaskGetOrders> filterLimitList(List<TaskGetOrders> tlist){
+    private List<TradingOrderGetOrders> filterLimitList(List<TradingOrderGetOrders> tlist){
 
-        return filterLimitListFinal(tlist,50);
+        return filterLimitListFinal(tlist,20);
 
         /*List<TaskGetOrders> x=new ArrayList<TaskGetOrders>();
         for (int i = 0;i<2;i++){

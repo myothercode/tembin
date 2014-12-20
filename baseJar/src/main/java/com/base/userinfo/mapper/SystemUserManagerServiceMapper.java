@@ -13,8 +13,11 @@ import java.util.Map;
  * 系统用户管理操作
  */
 public interface SystemUserManagerServiceMapper {
-    /**查询当前登录账户一级子账户的信息*/
+    /**根据创建者查询当前登录账户一级子账户的信息*/
     public List<UsercontrollerUserExtend> queryAccountListByUserID(Map map,Page page);
+
+    /**根据orgid查询当前登录账户一级子账户的信息*/
+    public List<UsercontrollerUserExtend> queryAllUsersByOrgID(Map map);
 
     /**根据用户id查询用户有那些角色*/
     public List<RoleVO> queryUserRoleByUserID(Map map);

@@ -30,7 +30,7 @@ import java.util.Map;
 
 /**
  * Created by Administrtor on 2014/9/13.
- * 用户点击在线同步商品
+ * 图片上传到ebay
  */
 @Service
 public class SynchronizeUserListingPicUrlImpl implements ThreadPoolBaseInterFace {
@@ -61,8 +61,7 @@ public class SynchronizeUserListingPicUrlImpl implements ThreadPoolBaseInterFace
             }
             this.tldm.updateByPrimaryKeySelective(tlu);
         } catch (Exception e) {
-            e.printStackTrace();
-            logger.error("解析xml出错,请稍后到ebay网站确认结果");
+            logger.error("解析xml出错,请稍后到ebay网站确认结果13"+ebpRes,e);
             return;
         }
     }

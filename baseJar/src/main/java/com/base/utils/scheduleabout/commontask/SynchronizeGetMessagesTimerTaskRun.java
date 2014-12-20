@@ -151,8 +151,7 @@ public class SynchronizeGetMessagesTimerTaskRun extends BaseScheduledClass imple
                 }
             } catch (Exception e) {
                 TempStoreDataSupport.removeData("task_"+getScheduledType());
-                logger.error("定时同步消息每两分钟出错:"+e.getMessage());
-                e.printStackTrace();
+                logger.error("定时同步消息每两分钟出错:"+e.getMessage(),e);
             }
         }
     }

@@ -16,9 +16,7 @@
             background-color: #ffffff;
         }
     </style>
-    <script type="text/javascript" src=<c:url value ="/js/ueditor/ueditor.config.js" /> ></script>
-    <link rel="stylesheet" type="text/css" href="<c:url value ="/js/toolTip/css/toolTip.css"/> "/>
-    <script type="text/javascript" src=<c:url value ="/js/toolTip/js/toolTip.js" /> ></script>
+
     <%--产品信息--%>
     <script type="text/javascript">
         var itemInformation;
@@ -37,7 +35,8 @@
                 ],
                 selectDataNow:false,
                 isrowClick:false,
-                showIndex:false
+                showIndex:false,
+                showDataNullMsgContext:'没有商品记录!'
             });
             refreshTable();
         });
@@ -50,7 +49,7 @@
             }
         }
         function refreshTable(){
-            $("#ItemInformationListTable").selectDataAfterSetParm({"bedDetailVO.deptId":"", "isTrue":0});
+            $("#ItemInformationListTable").selectDataAfterSetParm({});
         }
         function makeOption6(json){
             if(json.remark&&json.remark!=""){
@@ -414,7 +413,7 @@
             var information=$("#information").val();
             var itemType=$("#itemTypeid").val();
             var content=$("#content").val();*/
-            $("#ItemInformationListTable").initTable({
+            /*$("#ItemInformationListTable").initTable({
                 url:path + "/information/ajax/loadItemInformationList.do?",
                 columnData:[
                     {title:"",name:"pictureUrl",width:"2%",align:"left",format:makeOption4,click:sellectCheckBox},
@@ -422,7 +421,7 @@
                     {title:"商品/SKU",name:"sku",width:"4%",align:"left",format:makeOption7,click:sellectCheckBox},
                     {title:"产品名称",name:"name",width:"36%",align:"left",format:makeOption8,click:sellectCheckBox},
                     {title:"标签",name:"remark",width:"8%",align:"left",format:makeOption6,click:sellectCheckBox},
-                    /*{title:"分类",name:"typeName",width:"8%",align:"left",click:sellectCheckBox},*/
+                    {title:"分类",name:"typeName",width:"8%",align:"left",click:sellectCheckBox},
                     {title:"状态",name:"pictureUrl",width:"2%",align:"left",format:makeOption3,click:sellectCheckBox},
                     {title:"操作&nbsp;&nbsp;",name:"option1",width:"2%",align:"center",format:makeOption1}
                 ],
@@ -430,7 +429,7 @@
                 isrowClick:false,
                 showIndex:false
             });
-            $("#ItemInformationListTable").selectDataAfterSetParm();
+            $("#ItemInformationListTable").selectDataAfterSetParm();*/
             refreshTable2(remark,information,itemType,content,conmmentForm);
         }
         function onclickremark(remark,n){
@@ -479,7 +478,7 @@
             submitCommit1(remark,information,itemType,content,conmmentForm);
         }
         function refreshTable2(remark,information,itemType,content,conmmentForm){
-            $("#ItemInformationListTable").selectDataAfterSetParm({"bedDetailVO.deptId":"", "isTrue":0,"remark":remark,"information":information,"itemType":itemType,"content":content,"comment":conmmentForm});
+            $("#ItemInformationListTable").selectDataAfterSetParm({"remark":remark,"information":information,"itemType":itemType,"content":content,"comment":conmmentForm});
         }
     </script>
     <%--产品信息分类--%>
@@ -497,7 +496,7 @@
                 isrowClick:false,
                 showIndex:true
             });
-            refreshTable1();
+           // refreshTable1();
         });
         function refreshTable1(){
             $("#ItemInformationTypeListTable").selectDataAfterSetParm({"bedDetailVO.deptId":"", "isTrue":0});

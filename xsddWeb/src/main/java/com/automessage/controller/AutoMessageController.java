@@ -139,6 +139,43 @@ public class AutoMessageController extends BaseAction {
                 order=orders.get(0);
             }
         }
+        String orderItemIds="";
+        String countryIds="";
+        String amountIds="";
+        String serviceIds="";
+        String exceptCountryIds="";
+        String internationalServiceIds="";
+        if(items!=null&&items.size()>0){
+            for(TradingAutoMessageAttr item:items){
+                orderItemIds+=item.getId()+",";
+            }
+        }
+        if(countrys!=null&&countrys.size()>0){
+            for(TradingAutoMessageAttr country:countrys){
+                countryIds+=country.getId()+",";
+            }
+        }
+        if(amounts!=null&&amounts.size()>0){
+            for(TradingAutoMessageAttr amount:amounts){
+                amountIds+=amount.getId()+",";
+            }
+        }
+        if(services!=null&&services.size()>0){
+            for(TradingAutoMessageAttr service:services){
+                serviceIds+=service.getId()+",";
+            }
+        }
+        if(exceptCountrys!=null&&exceptCountrys.size()>0){
+            for(TradingAutoMessageAttr exceptCountry:exceptCountrys){
+                exceptCountryIds+=exceptCountry.getId()+",";
+            }
+        }
+        if(internationalServices!=null&&internationalServices.size()>0){
+            for(TradingAutoMessageAttr internationalService:internationalServices){
+                internationalServiceIds+=internationalService.getId()+",";
+            }
+        }
+        serviceIds=serviceIds+internationalServiceIds;
         modelMap.put("items",items);
         modelMap.put("countrys",countrys);
         modelMap.put("amounts",amounts);
@@ -147,6 +184,11 @@ public class AutoMessageController extends BaseAction {
         modelMap.put("order",order);
         modelMap.put("exceptCountrys",exceptCountrys);
         modelMap.put("autoMessage",autoMessage);
+        modelMap.put("orderItemIds",orderItemIds);
+        modelMap.put("countryIds",countryIds);
+        modelMap.put("amountIds",amountIds);
+        modelMap.put("serviceIds",serviceIds);
+        modelMap.put("exceptCountryIds",exceptCountryIds);
         return forword("autoMessage/addAutoMessage",modelMap);
     }
     /**添加备注初始化*/

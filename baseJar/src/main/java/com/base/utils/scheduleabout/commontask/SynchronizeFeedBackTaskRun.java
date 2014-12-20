@@ -35,8 +35,7 @@ public class SynchronizeFeedBackTaskRun extends BaseScheduledClass implements Sc
                 iTaskFeedBack.saveListTaskFeedBack(taskFeedBack);
             }
         }catch (Exception e){
-            logger.error("定时每天插入账号去获取评价出错:"+e.getMessage());
-            e.printStackTrace();
+            logger.error("定时每天插入账号去获取评价出错:"+e.getMessage(),e);
         }
 
     }

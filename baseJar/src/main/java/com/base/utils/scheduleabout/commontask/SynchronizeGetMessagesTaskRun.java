@@ -43,8 +43,7 @@ public class SynchronizeGetMessagesTaskRun extends BaseScheduledClass implements
                 iTaskGetMessages.saveListTaskGetMessages(TaskGetMessages);
             }
         }catch (Exception e){
-            logger.error("/定时每天插入账号去获取消息出错:"+e.getMessage());
-            e.printStackTrace();
+            logger.error("/定时每天插入账号去获取消息出错:"+e.getMessage(),e);
         }
 
     }

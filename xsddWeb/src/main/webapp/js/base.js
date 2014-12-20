@@ -153,6 +153,42 @@ if(url.indexOf("?")==-1){
 
 })(jQuery);
 
+/**有控制请求频率功能的ajax请求，用于提示框提示的查询*/
+var delay1_invoke_p={"url":"","param":null,"fun":null,"conf":null};
+var delay_task_num=null;
+var delay_exe_bs_=null;
+;(function ($) {
+    $.fn.delayInvoke=function(url,param,fun,conf){
+        if(url==null || url==''){return;}
+        if(url.indexOf("?")>-1){alert("请不要传入有参数的url地址！");return;}
+        //if(delay_exe_bs_==1){return;}
+        /*if(delay_exe_time_!=null){
+            var t = ComputationSecond(new Date(),delay_exe_time_,"ms");
+        }
+        delay_exe_time_=new Date();*/
+
+        if(!Base.isArray(fun)) {
+            fun = [fun];
+        }
+        delay1_invoke_p.url=url;
+        delay1_invoke_p.param=param;
+        delay1_invoke_p.fun=fun[0];
+        delay1_invoke_p.conf=conf;
+        if(delay_task_num!=null){
+            clearTimeout(delay_task_num);
+        }
+        delay_exe_bs_=1;
+        delay_task_num=setTimeout(function(){
+            var tfun=function(m,r){
+                (delay1_invoke_p.fun)(m,r);
+                delay_exe_bs_=null;
+            }
+            $().invoke(delay1_invoke_p.url,delay1_invoke_p.param,tfun,delay1_invoke_p.conf);
+        },600);
+
+
+    }
+})(jQuery);
 
 
 /**提供组装好的ul 下拉 {liString,ulid,showname,inputid,inputval}

@@ -28,7 +28,7 @@ public class MenuServiceImpl implements MenuService {
 
     }
 
-    /**获取所有菜单*/
+    /**获取所有菜单,但是排除掉系统设置*/
     @Override
     public List<PermissionVO> getAllMenuList(Map map){
         return userInfoServiceMapper.queryAllPermission(map);

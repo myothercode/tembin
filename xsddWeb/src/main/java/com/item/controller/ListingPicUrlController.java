@@ -25,6 +25,7 @@ import com.trading.service.ITradingDataDictionary;
 import com.trading.service.ITradingListingPicUrl;
 import com.trading.service.ITradingPayPal;
 import com.trading.service.IUsercontrollerEbayAccount;
+import org.apache.log4j.Logger;
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
@@ -46,7 +47,7 @@ import java.util.*;
  */
 @Controller
 public class ListingPicUrlController extends BaseAction{
-
+    static Logger logger = Logger.getLogger(ListingPicUrlController.class);
 
     @Autowired
     private ITradingListingPicUrl iTradingListingPicUrl;
@@ -81,7 +82,15 @@ public class ListingPicUrlController extends BaseAction{
                 this.iTradingListingPicUrl.saveListingPicUrl(tlu);
                 lipic.add(tlu);
                 UsercontrollerEbayAccount ua = this.iUsercontrollerEbayAccount.selectById(Long.parseLong(ebayid));
-                String picName = url.substring(url.lastIndexOf("/")+1,url.lastIndexOf("."));
+                String picName = "";
+                if(url!=null){
+                    try {
+                        picName = url.substring(url.lastIndexOf("/")+1,url.lastIndexOf("."));
+                    } catch (Exception e) {
+                        logger.error("图片地址不对!",e);
+                        continue;
+                    }
+                }
 
                 String xml=SamplePaseXml.uploadEbayImage(ua,url,picName);//获取xml
 

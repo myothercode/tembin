@@ -6,7 +6,6 @@ import com.base.domains.userinfo.UsercontrollerDevAccountExtend;
 import com.base.sampleapixml.APINameStatic;
 import com.base.sampleapixml.BindAccountAPI;
 import com.base.utils.applicationcontext.ApplicationContextUtil;
-import com.base.utils.cache.DataDictionarySupport;
 import com.base.utils.cache.TempStoreDataSupport;
 import com.base.utils.common.CommAutowiredClass;
 import com.base.utils.scheduleabout.BaseScheduledClass;
@@ -42,31 +41,43 @@ public class AutoMessageTaskRun extends BaseScheduledClass implements Scheduleda
             ITradingOrderGetOrders iTradingOrderGetOrders= (ITradingOrderGetOrders) ApplicationContextUtil.getBean(ITradingOrderGetOrders.class);
             IUsercontrollerEbayAccount iUsercontrollerEbayAccount = (IUsercontrollerEbayAccount) ApplicationContextUtil.getBean(IUsercontrollerEbayAccount.class);
             UsercontrollerEbayAccount ebay=iUsercontrollerEbayAccount.selectByEbayAccount(order.getSelleruserid());
+            SiteMessageService siteMessageService = (SiteMessageService) ApplicationContextUtil.getBean(SiteMessageService.class);
             String token=ebay.getEbayToken();
             if(StringUtils.isNotBlank(token)){
                 UsercontrollerDevAccountExtend d = new UsercontrollerDevAccountExtend();//开发者帐号id
                 d.setApiSiteid("0");
                 d.setApiCallName(APINameStatic.AddMemberMessageAAQToPartner);
-                Map<String,String> messageMap=autoSendMessage(order,token,d,"收到买家付款");
+                Map<String,String> messageMap=autoSendMessage(order,token,d);
                 if("false".equals(messageMap.get("flag"))){
-                    if("自动消息设置的时间没到".equals(messageMap.get("message"))){
-
-                    }else {
-                        SiteMessageService siteMessageService = (SiteMessageService) ApplicationContextUtil.getBean(SiteMessageService.class);
+                    if("自动消息设置的时间没到".equals(messageMap.get("message"))||"没有匹配的自动消息".equals(messageMap.get("message"))){
+                        logger.error("AutoMessageTaskRun第54:"+messageMap.get("message"));
                         List<PublicSitemessage> list=siteMessageService.selectPublicSitemessageByMessage("auto_message_task_run_FAIL",order.getOrderid()+order.getSelleruserid());
-                        if(list!=null&&list.size()>0){
-
-                        }else{
+                        if(list==null||list.size()==0){
                             TaskMessageVO taskMessageVO = new TaskMessageVO();
                             taskMessageVO.setMessageType(SiteMessageStatic.AUTO_MESSAGE_TASK_RUN + "_FAIL");
-                            taskMessageVO.setMessageTitle("定时发送付款或发货后的自动消息失败!");
+                            taskMessageVO.setMessageTitle(messageMap.get("message"));
                             taskMessageVO.setMessageContext(messageMap.get("message"));
                             taskMessageVO.setMessageTo(ebay.getUserId());
                             taskMessageVO.setMessageFrom("system");
                             taskMessageVO.setOrderAndSeller(order.getOrderid()+order.getSelleruserid());
                             siteMessageService.addSiteMessage(taskMessageVO);
                         }
+                    }else {
+                        logger.error("AutoMessageTaskRun第67:"+messageMap.get("message"));
                     }
+                    TradingOrderAddMemberMessageAAQToPartner message=new TradingOrderAddMemberMessageAAQToPartner();
+                    message.setBody(messageMap.get("body"));
+                    message.setSender(order.getSelleruserid());
+                    message.setItemid(order.getItemid());
+                    message.setRecipientid(order.getBuyeruserid());
+                    message.setSubject(messageMap.get("subject"));
+                    message.setTransactionid(order.getTransactionid());
+                    message.setCreateUser(order.getCreateUser());
+                    message.setMessagetype(2);
+                    message.setReplied("false");
+                    message.setMessageflag(1);
+                    message.setFailereason(messageMap.get("message"));
+                    iTradingOrderAddMemberMessageAAQToPartner.saveOrderAddMemberMessageAAQToPartner(message);
                 }
                 if("true".equals(messageMap.get("flag"))){
                     TradingOrderAddMemberMessageAAQToPartner message=new TradingOrderAddMemberMessageAAQToPartner();
@@ -89,6 +100,7 @@ public class AutoMessageTaskRun extends BaseScheduledClass implements Scheduleda
         }
     }
     //自动发送发货消息
+
     public void sendAutoMessage1(List<TradingOrderGetOrders> orders) throws Exception{
         //--------------自动发送消息-------------------------
         for(TradingOrderGetOrders order:orders){
@@ -102,26 +114,38 @@ public class AutoMessageTaskRun extends BaseScheduledClass implements Scheduleda
                 UsercontrollerDevAccountExtend d = new UsercontrollerDevAccountExtend();//开发者帐号id
                 d.setApiSiteid("0");
                 d.setApiCallName(APINameStatic.AddMemberMessageAAQToPartner);
-                Map<String,String> messageMap=autoSendMessage(order,token,d,"标记已发货");
+                Map<String,String> messageMap=autoSendMessage(order,token,d);
                 if("false".equals(messageMap.get("flag"))){
-                    if("自动消息设置的时间没到".equals(messageMap.get("message"))){
-
-                    }else {
+                    if("自动消息设置的时间没到".equals(messageMap.get("message"))||"没有匹配的自动消息".equals(messageMap.get("message"))){
+                        logger.error("AutoMessageTaskRun第110:"+messageMap.get("message"));
                         SiteMessageService siteMessageService = (SiteMessageService) ApplicationContextUtil.getBean(SiteMessageService.class);
                         List<PublicSitemessage> list=siteMessageService.selectPublicSitemessageByMessage("auto_message_task_run_FAIL",order.getOrderid()+order.getSelleruserid());
-                        if(list!=null&&list.size()>0){
-
-                        }else{
+                        if(list==null||list.size()==0){
                             TaskMessageVO taskMessageVO = new TaskMessageVO();
                             taskMessageVO.setMessageType(SiteMessageStatic.AUTO_MESSAGE_TASK_RUN + "_FAIL");
-                            taskMessageVO.setMessageTitle("定时发送付款或发货后的自动消息失败!");
+                            taskMessageVO.setMessageTitle(messageMap.get("message"));
                             taskMessageVO.setMessageContext(messageMap.get("message"));
                             taskMessageVO.setMessageTo(ebay.getUserId());
                             taskMessageVO.setMessageFrom("system");
                             taskMessageVO.setOrderAndSeller(order.getOrderid()+order.getSelleruserid());
                             siteMessageService.addSiteMessage(taskMessageVO);
                         }
+                    }else {
+                        logger.error("AutoMessageTaskRun第124:"+messageMap.get("message"));
                     }
+                    TradingOrderAddMemberMessageAAQToPartner message=new TradingOrderAddMemberMessageAAQToPartner();
+                    message.setBody(messageMap.get("body"));
+                    message.setSender(order.getSelleruserid());
+                    message.setItemid(order.getItemid());
+                    message.setRecipientid(order.getBuyeruserid());
+                    message.setSubject(messageMap.get("subject"));
+                    message.setTransactionid(order.getTransactionid());
+                    message.setCreateUser(order.getCreateUser());
+                    message.setMessagetype(2);
+                    message.setReplied("false");
+                    message.setMessageflag(2);
+                    message.setFailereason(messageMap.get("message"));
+                    iTradingOrderAddMemberMessageAAQToPartner.saveOrderAddMemberMessageAAQToPartner(message);
                 }
                 if("true".equals(messageMap.get("flag"))){
                     TradingOrderAddMemberMessageAAQToPartner message=new TradingOrderAddMemberMessageAAQToPartner();
@@ -143,189 +167,76 @@ public class AutoMessageTaskRun extends BaseScheduledClass implements Scheduleda
             }
         }
     }
-    private Map<String,String> autoSendMessage(TradingOrderGetOrders order,String token,UsercontrollerDevAccountExtend d,String type) throws Exception{
-        CommAutowiredClass commPars = (CommAutowiredClass) ApplicationContextUtil.getBean(CommAutowiredClass.class);//获取注入的参数
+    private Map<String,String> autoSendMessage(TradingOrderGetOrders order,String token,UsercontrollerDevAccountExtend d) throws Exception{
+        Long automessageId=order.getAutomessageId();
         Map<String,String> messageMap=new HashMap<String, String>();
-        ITradingAutoMessage iTradingAutoMessage = (ITradingAutoMessage) ApplicationContextUtil.getBean(ITradingAutoMessage.class);
-        ITradingMessageTemplate iTradingMessageTemplate = (ITradingMessageTemplate) ApplicationContextUtil.getBean(ITradingMessageTemplate.class);
-        IUsercontrollerEbayAccount iUsercontrollerEbayAccount = (IUsercontrollerEbayAccount) ApplicationContextUtil.getBean(IUsercontrollerEbayAccount.class);
-        UsercontrollerEbayAccount ebay=iUsercontrollerEbayAccount.selectByEbayAccount(order.getSelleruserid());
-        List<TradingAutoMessage> partners=iTradingAutoMessage.selectAutoMessageByType(type,ebay.getUserId());
-        if(partners!=null&&partners.size()>0){
-            for(TradingAutoMessage partner:partners){
-                if(partner.getStartuse()==1){
-                    List<TradingMessageTemplate> templates=iTradingMessageTemplate.selectMessageTemplatebyId(partner.getMessagetemplateId());
-                    Date date=new Date();
-                    if(templates!=null&&templates.size()>0){
-                        if(date.after(order.getSendmessagetime())){
-                            ITradingAutoMessageAttr iTradingAutoMessageAttr=(ITradingAutoMessageAttr)ApplicationContextUtil.getBean(ITradingAutoMessageAttr.class);
-                            List<TradingAutoMessageAttr> allOrders=iTradingAutoMessageAttr.selectAutoMessageListByautoMessageId(partner.getId(),"allOrder");
-                            List<TradingAutoMessageAttr> orderItems=iTradingAutoMessageAttr.selectAutoMessageListByautoMessageId(partner.getId(),"orderItem");
-                            List<TradingAutoMessageAttr> countrys=iTradingAutoMessageAttr.selectAutoMessageListByautoMessageId(partner.getId(),"country");
-                            List<TradingAutoMessageAttr> amounts=iTradingAutoMessageAttr.selectAutoMessageListByautoMessageId(partner.getId(),"amount");
-                            List<TradingAutoMessageAttr> services=iTradingAutoMessageAttr.selectAutoMessageListByautoMessageId(partner.getId(),"service");
-                            List<TradingAutoMessageAttr> internationalServices=iTradingAutoMessageAttr.selectAutoMessageListByautoMessageId(partner.getId(),"internationalService");
-                            List<TradingAutoMessageAttr> exceptCountrys=iTradingAutoMessageAttr.selectAutoMessageListByautoMessageId(partner.getId(),"exceptCountry");
-                            if(allOrders==null&&allOrders.size()==0){
-                                if(orderItems.size()>0){
-                                    Boolean orderItemFlag=false;
-                                    for(TradingAutoMessageAttr orderItem:orderItems){
-                                        if(order.getSku().equals(orderItem.getValue())){
-                                            orderItemFlag=true;
-                                        }
-                                    }
-                                    if(!orderItemFlag){
-                                        messageMap.put("flag","false");
-                                        messageMap.put("message","该订单("+order.getOrderid()+")SKU("+order.getSku()+")不包含在自动消息中指定商品SKU,"+order.getSelleruserid()+"请重新设置自动消息"+type);
-                                        return messageMap;
-                                    }
-                                }
-                                if(countrys.size()>0){
-                                    Boolean countryFlag=false;
-                                    for(TradingAutoMessageAttr country:countrys){
-                                        TradingDataDictionary cs=DataDictionarySupport.getTradingDataDictionaryByID(country.getDictionaryId());
-                                        if(DataDictionarySupport.DATA_DICT_DELTA.equals(cs.getType())){
-                                            List<TradingDataDictionary> lidata = DataDictionarySupport.getTradingDataDictionaryByType(DataDictionarySupport.DATA_DICT_COUNTRY,cs.getParentId());
-                                            for(TradingDataDictionary li:lidata){
-                                                if(order.getCountry().equals(li.getValue())){
-                                                    countryFlag=true;
-                                                }
-                                            }
-                                        }else if(DataDictionarySupport.DATA_DICT_COUNTRY.equals(cs.getType())){
-                                            if(order.getCountry().equals(cs.getValue())){
-                                                countryFlag=true;
-                                            }
-                                        }
-                                    }
-                                    if(!countryFlag){
-                                        messageMap.put("flag","false");
-                                        messageMap.put("message","该订单("+order.getOrderid()+")目的地国家("+order.getCountry()+")不包含在自动消息订单目的地中,"+order.getSelleruserid()+"请重新设置自动消息"+type);
-                                        return messageMap;
-                                    }
-                                }
-                                if(amounts.size()>0){
-                                    Boolean amountFlag=false;
-                                    for(TradingAutoMessageAttr amout:amounts){
-                                        if(order.getSelleruserid().equals(amout.getValue())){
-                                            amountFlag=true;
-                                        }
-                                    }
-                                    if(!amountFlag){
-                                        messageMap.put("flag","false");
-                                        messageMap.put("message","订单("+order.getOrderid()+")买家账号("+order.getSelleruserid()+")不包含在自动消息指定的账号中,"+order.getSelleruserid()+"请重新设置自动消息"+type);
-                                        return messageMap;
-                                    }
-                                }
-                                Boolean serviceFlag=false;
-                                Boolean internationalServiceFlag=false;
-                                if(services.size()>0){
-                                    for(TradingAutoMessageAttr service:services){
-                                        if(order.getSelectedshippingservice().equals(service.getType())){
-                                            serviceFlag=true;
-                                        }
-                                    }
-                                }
-                                if(internationalServices.size()>0){
-                                    for(TradingAutoMessageAttr internationalService:internationalServices){
-                                        if(order.getSelectedshippingservice().equals(internationalService.getType())){
-                                            internationalServiceFlag=true;
-                                        }
-                                    }
-                                }
-                                if(!serviceFlag&&!internationalServiceFlag){
-                                    messageMap.put("flag","false");
-                                    messageMap.put("message","订单("+order.getOrderid()+")物流方式("+order.getSelectedshippingservice()+")不包含在自动消息指定物流方式中,"+order.getSelleruserid()+"请重新设置自动消息"+type);
-                                    return messageMap;
-                                }
-                                if(exceptCountrys.size()>0){
-                                    Boolean exceptCountryFlag=false;
-                                    for(TradingAutoMessageAttr exceptCountry:exceptCountrys){
-                                        TradingDataDictionary cs=DataDictionarySupport.getTradingDataDictionaryByID(exceptCountry.getDictionaryId());
-                                        if(DataDictionarySupport.DATA_DICT_DELTA.equals(cs.getType())){
-                                            List<TradingDataDictionary> lidata = DataDictionarySupport.getTradingDataDictionaryByType(DataDictionarySupport.DATA_DICT_COUNTRY,cs.getParentId());
-                                            for(TradingDataDictionary li:lidata){
-                                                if(order.getCountry().equals(li.getValue())){
-                                                    exceptCountryFlag=true;
-                                                }
-                                            }
-                                        }else if(DataDictionarySupport.DATA_DICT_COUNTRY.equals(cs.getType())){
-                                            if(order.getCountry().equals(cs.getValue())){
-                                                exceptCountryFlag=true;
-                                            }
-                                        }
-                                    }
-                                    if(!exceptCountryFlag){
-                                        messageMap.put("flag","false");
-                                        messageMap.put("message","该订单("+order.getOrderid()+")目的地国家之外("+order.getCountry()+")不包含在自动消息订单目的地之外中,"+order.getSelleruserid()+"请重新设置自动消息"+type);
-                                        return messageMap;
-                                    }
-                                }
-                            }
-                            String body=templates.get(0).getContent();
-                            body=body.replace("{Buyer_eBay_ID}",order.getBuyeruserid());
-                            body=body.replace("{Carrier}",order.getShippingcarrierused());
-                            body=body.replace("{eBay_Item#}",order.getItemid());
-                            body=body.replace("{eBay_Item_Title}",order.getTitle());
-                            body=body.replace("{Payment_Date}",order.getPaidtime()+"");
-                            body=body.replace("{Purchase_Quantity}",order.getQuantitypurchased());
-                            body=body.replace("{Received_Amount}",order.getAmountpaid());
-                            body=body.replace("{Seller_eBay_ID}",order.getSelleruserid());
-                            body=body.replace("{Seller_Email}",order.getSelleremail());
-                            body=body.replace("{Today}",new Date()+"");
-                            body=body.replace("{Track_Code}",order.getShipmenttrackingnumber());
-                            String subject=templates.get(0).getName();
-                            //--测试环境
-                            d.setApiCallName(APINameStatic.AddMemberMessageAAQToPartner);
-                            //--真实环境
-                          /*  d=new UsercontrollerDevAccountExtend();
-                            d.setApiDevName("5d70d647-b1e2-4c7c-a034-b343d58ca425");
-                            d.setApiAppName("sandpoin-23af-4f47-a304-242ffed6ff5b");
-                            d.setApiCertName("165cae7e-4264-4244-adff-e11c3aea204e");
-                            d.setApiCompatibilityLevel("883");
-                            d.setApiSiteid("0");
-                            d.setApiCallName(APINameStatic.AddMemberMessageAAQToPartner);*/
-                            Map map=new HashMap();
-                            messageMap.put("body",body);
-                            messageMap.put("subject",subject);
-                            map.put("token", token);
-                            map.put("subject",subject);
-                            map.put("body",body);
-                            map.put("itemid",order.getItemid());
-                            map.put("buyeruserid",order.getBuyeruserid());
-                            String xml = BindAccountAPI.getAddMemberMessageAAQToPartner(map);
-                            AddApiTask addApiTask = new AddApiTask();
-                            //--测试环境
-                                Map<String, String> resMap = addApiTask.exec2(d, xml, commPars.apiUrl);
-                            //--真实环境
+        if(automessageId!=null&&automessageId!=0L){
+            Date date=new Date();
+            Date date1=order.getSendmessagetime();
+            if(date1!=null&&date.after(date1)){
+                ITradingAutoMessage iTradingAutoMessage = (ITradingAutoMessage) ApplicationContextUtil.getBean(ITradingAutoMessage.class);
+                ITradingMessageTemplate iTradingMessageTemplate = (ITradingMessageTemplate) ApplicationContextUtil.getBean(ITradingMessageTemplate.class);
+                List<TradingAutoMessage> autoMessage=iTradingAutoMessage.selectAutoMessageById(automessageId);
+                List<TradingMessageTemplate> templates=iTradingMessageTemplate.selectMessageTemplatebyId(autoMessage.get(0).getMessagetemplateId());
+                CommAutowiredClass commPars = (CommAutowiredClass) ApplicationContextUtil.getBean(CommAutowiredClass.class);//获取注入的参数
+                String body=templates.get(0).getContent();
+                body=body.replace("{Buyer_eBay_ID}",order.getBuyeruserid());
+                body=body.replace("{Carrier}",order.getShippingcarrierused());
+                body=body.replace("{eBay_Item#}",order.getItemid());
+                body=body.replace("{eBay_Item_Title}",order.getTitle());
+                body=body.replace("{Payment_Date}",order.getPaidtime()+"");
+                body=body.replace("{Purchase_Quantity}",order.getQuantitypurchased());
+                body=body.replace("{Received_Amount}",order.getAmountpaid());
+                body=body.replace("{Seller_eBay_ID}",order.getSelleruserid());
+                body=body.replace("{Seller_Email}",order.getSelleremail());
+                body=body.replace("{Today}",new Date()+"");
+                body=body.replace("{Track_Code}",order.getShipmenttrackingnumber());
+                String subject=templates.get(0).getName();
+                //--测试环境
+                d.setApiCallName(APINameStatic.AddMemberMessageAAQToPartner);
+                //--真实环境
+                /*d=new UsercontrollerDevAccountExtend();
+                d.setApiDevName("5d70d647-b1e2-4c7c-a034-b343d58ca425");
+                d.setApiAppName("sandpoin-23af-4f47-a304-242ffed6ff5b");
+                d.setApiCertName("165cae7e-4264-4244-adff-e11c3aea204e");
+                d.setApiCompatibilityLevel("883");
+                d.setApiSiteid("0");
+                d.setApiCallName(APINameStatic.AddMemberMessageAAQToPartner);*/
+                Map map=new HashMap();
+                messageMap.put("body",body);
+                messageMap.put("subject",subject);
+                map.put("token", token);
+                map.put("subject",subject);
+                map.put("body",body);
+                map.put("itemid",order.getItemid());
+                map.put("buyeruserid",order.getBuyeruserid());
+                String xml = BindAccountAPI.getAddMemberMessageAAQToPartner(map);
+                AddApiTask addApiTask = new AddApiTask();
+                //--测试环境
+                Map<String, String> resMap = addApiTask.exec2(d, xml, commPars.apiUrl);
+                //--真实环境
                             /*Map<String, String> resMap = addApiTask.exec2(d, xml,"https://api.ebay.com/ws/api.dll");*/
-                            String r1 = resMap.get("stat");
-                            String res = resMap.get("message");
-                            if ("fail".equalsIgnoreCase(r1)) {
-                                messageMap.put("flag","false");
-                                messageMap.put("message",res);
-                            }
-                            String ack = SamplePaseXml.getVFromXmlString(res, "Ack");
-                            if ("Success".equalsIgnoreCase(ack)) {
-                                messageMap.put("flag","true");
-                                messageMap.put("message","发送成功");
-                            }else{
-                                messageMap.put("flag","false");
-                                messageMap.put("message","自动消息发送失败！请稍后重试,"+order.getOrderid()+order.getSelleruserid());
-                            }
-
-                        }else{
-                            messageMap.put("flag","false");
-                            messageMap.put("message","自动消息设置的时间没到");
-                        }
-                    }
+                String r1 = resMap.get("stat");
+                String res = resMap.get("message");
+                if ("fail".equalsIgnoreCase(r1)) {
+                    messageMap.put("flag","false");
+                    messageMap.put("message","发送失败第200:"+res);
+                }
+                String ack = SamplePaseXml.getVFromXmlString(res, "Ack");
+                if ("Success".equalsIgnoreCase(ack)) {
+                    messageMap.put("flag","true");
+                    messageMap.put("message","发送成功");
                 }else{
                     messageMap.put("flag","false");
-                    messageMap.put("message","无对应的自动消息,"+order.getSelleruserid()+"请先创建"+type+"的自动消息");
+                    messageMap.put("message","自动消息发送失败！请稍后重试第208,"+order.getOrderid()+order.getSelleruserid());
                 }
+            }else{
+                messageMap.put("flag","false");
+                messageMap.put("message","自动消息设置的时间没到");
             }
         }else{
             messageMap.put("flag","false");
-            messageMap.put("message","无对应的自动消息,"+order.getSelleruserid()+"请先创建"+type+"的自动消息");
+            messageMap.put("message","没有匹配的自动消息");
         }
         return messageMap;
     }
@@ -353,8 +264,7 @@ public class AutoMessageTaskRun extends BaseScheduledClass implements Scheduleda
             TempStoreDataSupport.removeData("task_"+getScheduledType());
         }catch (Exception e){
             TempStoreDataSupport.removeData("task_"+getScheduledType());
-            logger.error("订单自动消息发送出错:"+e.getMessage());
-            e.printStackTrace();
+            logger.error("订单自动消息发送出错:"+e.getMessage(),e);
         }
     }
 

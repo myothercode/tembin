@@ -50,6 +50,7 @@ function getSpec(id,indiv,funName,attTable){
                 var json= eval("(" + localStorage.getItem("category_att_ID"+siteID+""+data.parentCategoryID) + ")");
                 var jdata=json.result;
               //  oldAlert(jdata)
+                returnSelectStr(jdata);
                 getAttMainMenu(jdata,indiv,funName,attTable);
                 //alert(localStorage.getItem("aaa").length);
             },
@@ -59,18 +60,40 @@ function getSpec(id,indiv,funName,attTable){
     );
 
 }
+
+
+/**属性数组去重*/
+function AttrArrDistinct(ar){
+    var m,n=[],o= {};
+    for(var i in ar){
+        var ob=ar[i]["itemId"];
+        var bbb=true;
+        for(var ii in n){
+            var ob1=n[ii]["itemId"];
+            if(ob==ob1){
+                bbb=false;
+                break;
+            }
+        }
+        if(bbb){
+            n.push(ar[i])
+        }
+    }
+return n
+}
 /**获取属性的种类列表*/
 function getAttMainMenu(json,indiv,funName,attTable){
     if((json==null || json.length==0)||json[0]['itemEnName']=='noval'){return;}
     var m=new Array();
     for(var i in json){
-        var m1={"itemid":json[i]['itemId'],"minV":json[i]['minV']};
+        //console.log(json[i]['itemId'])
+        var m1={"itemId":json[i]['itemId'],"minV":json[i]['minV']};
         m.push(m1);
     }
-    var finalm=arrDistinct(m);
+    var finalm=AttrArrDistinct(m);
     var parentid=json[0]['itemParentId'];
     for(var i in finalm){
-        var domid=replaceTSFH((finalm[i]["itemid"]));
+        var domid=replaceTSFH((finalm[i]["itemId"]));
          //var dv="<a data-toggle=\"modal\" href=\"#myModal\" ><img src=\"../../img/new_add.png\" width=\"18\" height=\"18\"> Country / Region of Manufacture</a>"
         //var dv="<a id=div"+domid+" onclick="+funName+"(this,'"+parentid+"','"+attTable+"') class='att_mb-tag'>"+(finalm[i])+"</a>";
         var dv="<a style='padding-left: 10px' id=div"+domid+" onclick="+funName+"(this,'"+parentid+"','"+attTable+"') data-toggle=\"modal\">" ;
@@ -80,7 +103,7 @@ function getAttMainMenu(json,indiv,funName,attTable){
             dv+= "<img  src="+path+"/img/new_add.png width=\"18\" height=\"18\">" ;
         }
 
-            dv+= ""+(finalm[i]["itemid"])+"</a>";
+            dv+= ""+(finalm[i]["itemId"])+"</a>";
         $('#'+indiv).append(dv);
     }
     m=null;
@@ -112,7 +135,7 @@ function afterClickAttr(obj, parentid,attTable) {
         ohtml + "</td>" +
         "<td onclick='onclickmulAttrTD(this)' style='text-align: center'><span name='values' style='color: rgb(30, 144, 255); display: inline;'>"+optionData[0]['itemEnName']+"</span>" +
         "<input id=_value"+domid+" type='hidden' name='value'>" + select + "</td>" +
-        "<td style='text-align: center'>" + "<img src='/xsddWeb/img/del.png' onclick='removeThisTr(this)' />" + "</td></tr>";
+        "<td style='text-align: center'>" + "<img src='/xsddWeb/img/del1.png' style='width: 8px;height: 8px;' onclick='removeThisTr(this)' />" + "</td></tr>";
     $('#'+attTable).append(tr);
     $(obj).hide();
     //try{
@@ -403,21 +426,21 @@ function saveData(objs,name) {
         $('#form').validationEngine('updatePromptsPosition')
         return;
     }
-    if(($("#showPics").find("img").length+$("#picMore").find("img").length/2)>8){
-        alert("最多只能上传8张图片，上传图片已超过上传限制！");
+    if(countChoosePic()>12){
+        alert("最多只能上传12张图片，上传图片已超过上传限制！");
         return;
     }
     var pciValue = new Map();
     $("#moreAttrs tr td:nth-child(5)").each(function (i,d) {
         if($(d).find("input[name='attr_Value']").val()!=undefined&&$(d).find("input[name='attr_Value']").val()!=""){
-            pciValue.put($(d).find("input[name='attr_Value']").val(),$(d).find("input[name='attr_Value']").val());
+            pciValue.put($(d).find("input[name='attr_Value']").val().replace(" ","_").replace(".","").replace("+",""),$(d).find("input[name='attr_Value']").val().replace(" ","_").replace(".","").replace("+",""));
         }
     });
     for(var i=0;i<pciValue.keys.length;i++){
-        $("input[type='hidden'][name='"+pciValue.keys[i].replace(" ","_")+"']").each(function(ii,dd){
+        $("input[type='hidden'][name='"+pciValue.keys[i].replace(" ","_").replace(".","").replace("+","")+"']").each(function(ii,dd){
             $(dd).prop("name","Variations.Pictures.VariationSpecificPictureSet["+i+"].PictureURL["+ii+"]");
         });
-        $("input[type='hidden'][name='VariationSpecificValue_"+pciValue.keys[i].replace(" ","_")+"']").prop("name","Variations.Pictures.VariationSpecificPictureSet["+i+"].VariationSpecificValue");
+        $("input[type='hidden'][name='VariationSpecificValue_"+pciValue.keys[i].replace(" ","_").replace(".","").replace("+","")+"']").prop("name","Variations.Pictures.VariationSpecificPictureSet["+i+"].VariationSpecificValue");
     }
 
     var nameList = $("input[type='hidden'][name='name']").each(function(i,d){
@@ -430,7 +453,6 @@ function saveData(objs,name) {
         var t="ItemSpecifics.NameValueList["+i+"].";
         $(d).prop("name",t+name_);
     });
-
     $("input[type='hidden'][name='attr_Name']").each(function(i,d){
         var t="Variations.VariationSpecificsSet.NameValueList["+i+"].Name";
         $(d).prop("name",t);

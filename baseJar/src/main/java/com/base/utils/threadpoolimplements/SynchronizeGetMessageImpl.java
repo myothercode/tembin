@@ -83,8 +83,7 @@ public class SynchronizeGetMessageImpl implements ThreadPoolBaseInterFace {
                 logger.error("Message API调用失败!" + errors);
             }
         } catch (Exception e) {
-            e.printStackTrace();
-            logger.error("解析xml出错,请稍后到ebay网站确认结果");
+            logger.error("解析xml出错,请稍后到ebay网站确认结果199"+res,e);
             return;
         }
 

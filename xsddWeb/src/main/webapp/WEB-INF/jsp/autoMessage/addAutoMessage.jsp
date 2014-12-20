@@ -206,11 +206,11 @@
 <body>
 <form class="form-horizontal" id="autoMessageForm">
         <input type="hidden" name="id" id="id" value="${autoMessage.id}">
-        <input type="hidden" name="countryIds" id="countryIds"/>
-        <input type="hidden" name="orderItems" id="orderItems"/>
-        <input type="hidden" name="amounts" id="amounts"/>
-        <input type="hidden" name="service" id="service"/>
-        <input type="hidden" name="exceptCountryIds" id="exceptCountryIds"/>
+        <input type="hidden" name="countryIds" id="countryIds" value="${countryIds}"/>
+        <input type="hidden" name="orderItems" id="orderItems" value="${orderItemIds}"/>
+        <input type="hidden" name="amounts" id="amounts" value="${amountIds}"/>
+        <input type="hidden" name="service" id="service" value="${serviceIds}"/>
+        <input type="hidden" name="exceptCountryIds" id="exceptCountryIds" value="${exceptCountryIds}"/>
         <input type="hidden" name="allOrder" id="allOrder"/>
         <input type="hidden" name="starUse value="${autoMessage.startuse}">
         <div>

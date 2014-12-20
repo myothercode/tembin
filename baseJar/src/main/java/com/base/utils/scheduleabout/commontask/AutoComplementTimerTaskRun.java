@@ -94,14 +94,13 @@ public class AutoComplementTimerTaskRun extends BaseScheduledClass implements Sc
             try {
                 returnString = this.cosPostXml(xml, APINameStatic.ReviseItem);
             } catch (Exception e) {
-                e.printStackTrace();
+                logger.error(xml + ":AutoComplementTimerTaskRun:", e);
             }
-            System.out.println(returnString);
             String ack = null;
             try {
                 ack = SamplePaseXml.getVFromXmlString(returnString, "Ack");
             } catch (Exception e) {
-                e.printStackTrace();
+                logger.error(returnString+":AutoComplementTimerTaskRun:",e);
             }
             if("Success".equalsIgnoreCase(ack)||"Warning".equalsIgnoreCase(ack)){//修改数量成功
                 tc.setTaskFlag("1");
@@ -110,20 +109,20 @@ public class AutoComplementTimerTaskRun extends BaseScheduledClass implements Sc
                 try {
                     this.saveSystemLog(context,"AutoComplement",tc.getEbayAccount());
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    logger.error(context+"记录日志报错:AutoComplementTimerTaskRun:",e);
                 }
             }else{//修改数量失败
                 try {
                     String context="商品号为："+tc.getItemId()+";自动调整数量：由："+tc.getOldValue()+"调整为："+tc.getRepValue()+";执行失败！失败原因如下："+SamplePaseXml.getSpecifyElementTextAllInOne(returnString,"Errors","LongMessage");
                     this.saveSystemLog(context,"AutoComplement",tc.getEbayAccount());
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    logger.error("记录日志报错:AutoComplementTimerTaskRun:",e);
                 }
             }
             try {
                 Thread.sleep(5000L);
             } catch (InterruptedException e) {
-                e.printStackTrace();
+                logger.error("暂停线程出错:AutoComplementTimerTaskRun:",e);
             }
         }
         TempStoreDataSupport.removeData("task_"+getScheduledType());

@@ -384,7 +384,7 @@ function removeROW(obj) {
     $(obj).parent().parent().remove();
 }
 function addAttrTr(showName, name, value) {
-    var trStr = '<tr height="32px;"><td onclick="showText(this)" style="text-align: center"><span name="name">'+showName+'</span><input type="hidden" name="name" val="1" class="validate[required] form-control" value="' + name + '"></td><td  onclick="showText(this)"  style="text-align: center"><span name="value">'+value+'</span><input type="hidden" onkeyup="getJoinValue(this)" name="value" class="validate[required] form-control" value="' + value + '"  onblur="bodyClick();"></td><td style="text-align: center"><img src="'+path+'/img/del.png" onclick="removeROW(this)"></td></tr>';
+    var trStr = '<tr height="32px;"><td onclick="showText(this)" style="text-align: center"><span name="name">'+showName+'</span><input type="hidden" name="name" val="1" class="validate[required] form-control" value="' + name + '"></td><td  onclick="showText(this)"  style="text-align: center"><span name="value">'+value+'</span><input type="hidden" onkeyup="getJoinValue(this)" name="value" class="validate[required] form-control" value="' + value + '"  onblur="bodyClick();"></td><td style="text-align: center"><img src="'+path+'/img/del1.png" style="width: 8px;height: 8px;" onclick="removeROW(this)"></td></tr>';
 /*    var trStr = '<tr><td>' + showName + '</td><td><input type="text" name="' + name + '" value="' + value + '"></td></tr>';*/
     return trStr;
 }
@@ -556,7 +556,8 @@ function returnSelectStr(jdata){
     attrValueName+="</select>";
 }
 function getRequestJson(siteID,id){
-    var url=path+"/ajax/getCategorySpecifics.do";
+    return;//转移至additem.js getSpec方法
+    /*var url=path+"/ajax/getCategorySpecifics.do";
     var data={"parentCategoryID":id,"siteID":siteID};
     $().invoke(
         url,
@@ -574,7 +575,7 @@ function getRequestJson(siteID,id){
             function(m,r){
                 alert(r)}
         ],{stringFormat:true}
-    );
+    );*/
 }
 function selectAttrValue(obj){
     $(obj).parent().parent().find("[name='attr_Name']").val($(obj).val());
@@ -699,13 +700,13 @@ function addc(obj) {
     if ($(obj.parentNode)[0].cellIndex == 4) {
         $("#moreAttrs tr td:nth-child(5)").each(function (i, d) {
             if ($(d).find("input[name='attr_Value']").val() != undefined && $(d).find("input[name='attr_Value']").val() != "") {
-                attrValue.put($(d).find("input[name='attr_Value']").val(), $(d).find("input[name='attr_Value']").val());
+                attrValue.put($(d).find("input[name='attr_Value']").val().repl.replace(" ","_").replace(".",""), $(d).find("input[name='attr_Value']").val().replace(" ","_").replace(".",""));
             }
         });
         $("#picMore").html("");
         for (var i = 0; i < attrValue.keys.length; i++) {
             $("#picMore").append(addPic(attrName, attrValue.get(attrValue.keys[i])));
-            $().image_editor.init(attrName+"."+attrValue.get(attrValue.keys[i])); //编辑器的实例id
+            $().image_editor.init(attrName+"this"+attrValue.get(attrValue.keys[i])); //编辑器的实例id
             $().image_editor.show(attrValue.get(attrValue.keys[i])); //上传图片的按钮id
         }
     }
@@ -721,7 +722,8 @@ function addb(obj) {
     if ($(obj.parentNode)[0].cellIndex == 4||(obj.tagName=="SELECT"&&$(obj.parentNode.parentNode)[0].cellIndex)) {
         $("#moreAttrs tr td:nth-child(5)").each(function (i, d) {
             if ($(d).find("input[name='attr_Value']").val() != undefined && $(d).find("input[name='attr_Value']").val() != "") {
-                attrValue.put($(d).find("input[name='attr_Value']").val(), $(d).find("input[name='attr_Value']").val());
+                var vals = $(d).find("input[name='attr_Value']").val();
+                attrValue.put(vals.replace(" ","_").replace(".","").replace("+",""), vals.replace(" ","_").replace(".","").replace("+",""));
             }
         });
         var dicMap = new Map()
@@ -742,19 +744,42 @@ function addb(obj) {
                 $('#picturemore_' + attrValue.get(attrValue.keys[i])).append("<li><div style='position:relative'><input type='hidden' name='pic_mackid_more'/><input type='hidden' name='" + attrValue.get(attrValue.keys[i]) + "' value='" + m.get(j) + "'><img src='" + m.get(j) + "' height='80' width='78' /><div style='text-align: right;background-color: dimgrey;'><img src='"+path+"/img/newpic_ico.png' onclick='removeThis(this)'></div></div></li>");
                 //$('#' + attrValue.get(attrValue.keys[i])).before("<input type='hidden' name='" + attrValue.get(attrValue.keys[i]) + "' value='" + m.get(j) + "'><img src='" + m.get(j) + "' height='50' width='50' />");
             }
-            $().image_editor.init(attrName+"."+attrValue.get(attrValue.keys[i])); //编辑器的实例id
+            $().image_editor.init(attrName+"this"+attrValue.get(attrValue.keys[i])); //编辑器的实例id
             $().image_editor.show(attrValue.get(attrValue.keys[i])); //上传图片的按钮id
         }
     }
     clearThisText(obj);
 }
 function addPic(attrName, attrValue) {
+    var vals = "";
+    $("#moreAttrs tr td:nth-child(5)").each(function (i, d) {
+        if ($(d).find("input[name='attr_Value']").val() != undefined && $(d).find("input[name='attr_Value']").val() != "") {
+            /*var vals = $(d).find("input[name='attr_Value']").val();
+            attrValue.put(vals.replace(" ","_").replace(".",""), vals.replace(" ","_").replace(".",""));*/
+            if($(d).find("input[name='attr_Value']").val().replace(" ","_").replace(".","").replace("+","")==attrValue||$(d).find("input[name='attr_Value']").val()==attrValue){
+                vals=$(d).find("input[name='attr_Value']").val();
+            }
+        }
+    });
     var str = "";
-    str += "<div><div style='padding-top: 20px;'>" + attrName + ":" + attrValue + "</div> <section class='example' style='width: 1200px;'><ul class='gbin1-list' style='padding-left: 20px;' id='picturemore_"+attrValue.replace(" ","_")+"'></ul><div class='a_bal' style='margin-top: 20px;'></div></section> <script type=text/plain id='" + attrName.replace(" ","_") + "." + attrValue.replace(" ","_") + "' />";
+    str += "<div><div style='padding-top: 20px;'>" + attrName + ":" + vals + "</div> <section class='example' style='width: 1200px;'><ul class='gbin1-list' style='padding-left: 20px;' id='picturemore_"+attrValue.replace(" ","_").replace(".","").replace("+","")+"'></ul><div class='a_bal' style='margin-top: 20px;'></div></section> <script type=text/plain id='" + attrName.replace(" ","_").replace(".","").replace("+","") + "this" + attrValue.replace(" ","_").replace(".","").replace("+","") + "' />";
     str += "<div style='padding-left: 20px; '>" +
-        "<b style='height: 32px;margin-top: 20px;' class='new_button'><a href='javascript:void(0)' id=" + attrValue.replace(" ","_") + " onClick='selectPic(this)'>选择图片</a></b>";
+        "<b style='height: 32px;margin-top: 20px;' class='new_button'><a href='javascript:void(0)' id=" + attrValue.replace(" ","_").replace(".","").replace("+","") + " bsid='"+attrValue.replace(" ","_").replace(".","").replace("+","")+"' onClick='selectPic(this)'>选择图片</a></b>";
     str += "</div></div>";
     return str;
+}
+
+
+/**统计当前已经选择了多少图片*/
+    function countChoosePic(){
+     var ii=0;
+    $("#showPics,#picMore").find("img").each(function(i,d){
+       if($(d).attr("src").indexOf("newpic_ico.png")==-1){
+            ii++
+           //console.log($(d).attr("src")+"+++")
+       }
+    });
+    return ii;
 }
 
 var afterUploadCallback = null;
@@ -764,7 +789,8 @@ var bsid_temp=null;
 function selectPic(a) {
     bsid_temp=null;
     //$().image_editor.show("apicUrls_" + ebayAccount); //上传图片的按钮id
-    if((($("#showPics").find("img").length+$("#picMore").find("img").length)/2)>12){
+   // console.log(countChoosePic()+"=====")
+    if(countChoosePic()>12){
         setTimeout(function(){closeSelectPicWindow()},200) ;
         alert("最多只能上传12张图片，上传图片已超过上传张数！");
         return;

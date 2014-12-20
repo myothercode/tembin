@@ -16,8 +16,7 @@
             background-color: #ffffff;
         }
     </style>
-    <link rel="stylesheet" type="text/css" href="<c:url value ="/js/toolTip/css/toolTip.css"/> "/>
-    <script type="text/javascript" src=<c:url value ="/js/toolTip/js/toolTip.js" /> ></script>
+
     <style type="text/css">
         *{margin:0;padding:0;list-style-type:none;}
         a,img{border:0;}

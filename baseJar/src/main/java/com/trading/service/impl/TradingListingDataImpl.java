@@ -10,6 +10,7 @@ import com.base.domains.querypojos.ListingDataQuery;
 import com.base.mybatis.page.Page;
 import com.base.utils.cache.DataDictionarySupport;
 import com.base.utils.common.DateUtils;
+import org.apache.log4j.Logger;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.DocumentHelper;
@@ -30,6 +31,7 @@ import java.util.Map;
 @Service
 @Transactional(rollbackFor = Exception.class)
 public class TradingListingDataImpl implements com.trading.service.ITradingListingData {
+    static Logger logger = Logger.getLogger(TradingListingDataImpl.class);
     @Autowired
     private ListingDataMapper listingDataMapper;
     @Autowired
@@ -98,8 +100,8 @@ public class TradingListingDataImpl implements com.trading.service.ITradingListi
         Document document= null;
         try {
             document = DocumentHelper.parseText(res);
-        } catch (DocumentException e) {
-            e.printStackTrace();
+        } catch (Exception e) {
+            logger.error(res+":",e);
         }
         Element rootElt = document.getRootElement();
         Date startDate= DateUtils.returnDate(rootElt.elementText("StartTime"));
@@ -128,5 +130,10 @@ public class TradingListingDataImpl implements com.trading.service.ITradingListi
         tld.setStarttime(startDate);
         tld.setEndtime(endDate);
         this.tradingListingDataMapper.insertSelective(tld);
+    }
+
+    @Override
+    public List<ListingDataQuery> selectListDateByExample(Map map, Page page) {
+        return listingDataMapper.selectListDateByExample(map,page);
     }
 }

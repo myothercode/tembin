@@ -73,14 +73,10 @@ public class TradingPriceTrackingImpl implements com.trading.service.ITradingPri
     }
 
     @Override
-    public List<TradingPriceTracking> selectPriceTrackingByTileAndSeller(String itemId,String title,String querytitle, Long userId, String seller) {
+    public List<TradingPriceTracking> selectPriceTrackingByItemId(String itemId) {
         TradingPriceTrackingExample example=new TradingPriceTrackingExample();
         TradingPriceTrackingExample.Criteria cr=example.createCriteria();
-        cr.andTitleEqualTo(title);
-        cr.andCreateUserEqualTo(userId);
-        cr.andSellerusernameEqualTo(seller);
         cr.andItemidEqualTo(itemId);
-        cr.andQuerytitleEqualTo(querytitle);
         List<TradingPriceTracking> list=tradingPriceTrackingMapper.selectByExample(example);
         return list;
     }
@@ -88,6 +84,14 @@ public class TradingPriceTrackingImpl implements com.trading.service.ITradingPri
     @Override
     public List<PriceTrackingQuery> selectPriceTrackingList(Map map, Page page) {
         return priceTrackingMapper.selectPriceTrackingList(map,page);
+    }
+
+    @Override
+    public List<TradingPriceTracking> selectPriceTracking() {
+        TradingPriceTrackingExample example=new TradingPriceTrackingExample();
+        TradingPriceTrackingExample.Criteria cr=example.createCriteria();
+        List<TradingPriceTracking> list=tradingPriceTrackingMapper.selectByExample(example);
+        return list;
     }
 
 }

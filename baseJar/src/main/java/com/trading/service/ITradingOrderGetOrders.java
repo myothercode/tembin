@@ -39,4 +39,13 @@ public interface ITradingOrderGetOrders {
     TradingOrderGetOrders selectOrderGetOrdersById(Long id);
 
     void deleteOrderGetOrders(Long id) throws Exception;
+
+    List<TradingOrderGetOrders> selectOrderGetOrdersByItemFlag();
+
+    List<TradingOrderGetOrders> selectOrderGetOrdersByAccountFlag();
+
+    List<TradingOrderGetOrders> selectOrderGetOrdersBySellerTrasactionFlag();
+
+    List<TradingOrderGetOrders> selectOrderGetOrdersByTrackNumber();
+
 }

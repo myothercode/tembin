@@ -1,6 +1,7 @@
 package com.complement.service;
 
 import com.base.database.trading.model.TradingAutoComplement;
+import com.base.database.trading.model.TradingListingData;
 import com.base.domains.querypojos.SystemLogQuery;
 import com.base.mybatis.page.Page;
 
@@ -17,9 +18,13 @@ public interface ITradingAutoComplement {
 
     int delAutoComplement(long id);
 
+    void delByEbayId(Long ebayId);
+
     TradingAutoComplement selectById(long id);
 
     List<SystemLogQuery> selectLogList(Map m, Page page);
 
     List<TradingAutoComplement> selectByEbayAccount(String ebayAccount);
+
+    void checkAutoComplementType(TradingListingData tradingListingData, String token, String siteid);
 }

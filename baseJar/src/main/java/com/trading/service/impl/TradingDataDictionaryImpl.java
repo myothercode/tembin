@@ -185,7 +185,6 @@ public class TradingDataDictionaryImpl implements com.trading.service.ITradingDa
             try {
                 publicDataDictMapper.insertSelective(publicDataDict);
             } catch (Exception e) {
-                e.printStackTrace();
                 continue;
             }
         }

@@ -48,6 +48,7 @@ import com.trading.service.*;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.impl.cookie.DateParseException;
+import org.apache.log4j.Logger;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.DocumentHelper;
@@ -80,6 +81,7 @@ import java.util.concurrent.TimeUnit;
 @Controller
 @Scope(value = "prototype")
 public class ItemController extends BaseAction{
+    static Logger logger = Logger.getLogger(ItemController.class);
 
     @Autowired
     private ITradingItem iTradingItem;
@@ -290,7 +292,7 @@ public class ItemController extends BaseAction{
                 this.iTradingItem.saveTradingItemList(litld);
                 AjaxSupport.sendSuccessText("","操作成功!");
             } catch (Exception e) {
-                e.printStackTrace();
+                logger.error("",e);
                 AjaxSupport.sendSuccessText("","操作失败!");
             }
         }else{
@@ -449,7 +451,7 @@ public class ItemController extends BaseAction{
                             try {
                                 this.iTradingPictureDetails.savePictureDetails(tp);
                             } catch (Exception e) {
-                                e.printStackTrace();
+                                logger.error("处理刊登图片",e);
                             }
                         }
                     }
@@ -503,6 +505,8 @@ public class ItemController extends BaseAction{
                 List<TradingListingpicUrl> litam = this.iTradingListingPicUrl.selectByMackId(picUrl[i]);
                 if(litam!=null&&litam.size()>0){
                     TradingListingpicUrl tam = litam.get(0);
+                    String url = tam.getUrl();
+                    String picName = url.substring(url.lastIndexOf("/")+1,url.lastIndexOf("."));
                     if(tam.getEbayurl()==null&&tam.getCheckFlag().equals("0")){
                         Thread.sleep(5000L);
                         Asserts.assertTrue(picUrl[i]!=null&&!"".equals(picUrl[i]),"图片上传失败，请从新选择图片上传");
@@ -511,10 +515,30 @@ public class ItemController extends BaseAction{
                         if(tam.getCheckFlag().equals("1")){
                             liebaypic.add(tam.getEbayurl());
                         }else{
-                            Asserts.assertTrue(false,"图片上传失败，请从新选择图片上传");
+                            try {
+                                tam = this.iTradingListingPicUrl.uploadPic(tradingItem,tam.getUrl(),picName,tam);
+                                if(tam.getEbayurl()==null&&tam.getCheckFlag().equals("2")){
+                                    Asserts.assertTrue(false,"图片上传失败，请从新选择图片上传");
+                                }else{
+                                    liebaypic.add(tam.getEbayurl());
+                                }
+                            } catch (Exception e) {
+                                logger.error(url+"图片上传失败！",e);
+                                Asserts.assertTrue(false, "图片上传失败，请从新选择图片上传");
+                            }
                         }
                     }else if(tam.getEbayurl()==null&&tam.getCheckFlag().equals("2")){
-                        Asserts.assertTrue(false,"图片上传失败，请从新选择图片上传");
+                        try {
+                            tam = this.iTradingListingPicUrl.uploadPic(tradingItem,tam.getUrl(),picName,tam);
+                            if(tam.getEbayurl()==null&&tam.getCheckFlag().equals("2")){
+                                Asserts.assertTrue(false,"图片上传失败，请从新选择图片上传");
+                            }else{
+                                liebaypic.add(tam.getEbayurl());
+                            }
+                        } catch (Exception e) {
+                            logger.error(url+"",e);
+                            Asserts.assertTrue(false, "图片上传失败，请从新选择图片上传");
+                        }
                     }else if(tam.getCheckFlag().equals("1")){
                         liebaypic.add(tam.getEbayurl());
                     }
@@ -689,7 +713,7 @@ public class ItemController extends BaseAction{
                 return null;
             }
         }catch(Exception e){
-            e.printStackTrace();
+            logger.error(res+":::",e);
             return null;
         }
 
@@ -719,7 +743,8 @@ public class ItemController extends BaseAction{
             TradingDiscountpriceinfo tdiscount = this.iTradingDiscountPriceInfo.selectById(tradingItem.getDiscountpriceinfoId());
             TradingBuyerRequirementDetails tbuyer = this.iTradingBuyerRequirementDetails.selectById(tradingItem.getBuyerId());
             TradingReturnpolicy treturn = this.iTradingReturnpolicy.selectById(tradingItem.getReturnpolicyId());
-
+            item.setCountry(DataDictionarySupport.getTradingDataDictionaryByID(tadd.getCountryId()).getValue());
+            item.setLocation(tadd.getAddress());
             //组装刑登xml
             //组装买家要求
             if(tbuyer!=null) {
@@ -739,6 +764,9 @@ public class ItemController extends BaseAction{
             if(tshipping!=null) {
                 ShippingDetails sd = this.iTradingShippingDetails.toXmlPojo(tradingItem.getShippingDeailsId());
                 item.setShippingDetails(sd);
+                if(tshipping.getDispatchtimemax()!=null&&tshipping.getDispatchtimemax()!=0) {
+                    item.setDispatchTimeMax(tshipping.getDispatchtimemax().intValue());
+                }
             }
             String template = "";
             if(tradingItem.getTemplateId()!=null){//如果选择了模板
@@ -871,7 +899,9 @@ public class ItemController extends BaseAction{
             limo.add("PayPal");
             item.setPaymentMethods(limo);
             item.setListingDuration(item.getListingDuration() == null ? "GTC" : item.getListingDuration());
-            item.setDispatchTimeMax(0);
+            if(item.getDispatchTimeMax()==null) {
+                item.setDispatchTimeMax(0);
+            }
             if(item.getVariations()!=null) {
                 List<Variation> livt = item.getVariations().getVariation();
                 for(int i = 0 ; i<livt.size();i++){
@@ -1084,6 +1114,7 @@ public class ItemController extends BaseAction{
                         String r1 = resMap.get("stat");
                         String res = resMap.get("message");
                         if ("fail".equalsIgnoreCase(r1)) {
+                            logger.error("数据已保存，但刊登失败！由于返回报文不全，无法得到更详细的信息！");
                             AjaxSupport.sendFailText("fail", "数据已保存，但刊登失败！");
                             return;
                         }
@@ -1100,7 +1131,7 @@ public class ItemController extends BaseAction{
                         } else {
                             //String errors = SamplePaseXml.getVFromXmlString(res, "Errors");
                             String errors  = SamplePaseXml.getSpecifyElementTextAllInOne(res,"Errors","LongMessage");
-
+                            logger.error("刊登失败："+errors);
                             AjaxSupport.sendFailText("fail", "数据已保存，但刊登失败！"+errors);
                         }
                     }
@@ -1142,6 +1173,9 @@ public class ItemController extends BaseAction{
         if(tshipping!=null) {
             ShippingDetails sd = this.iTradingShippingDetails.toXmlPojo(tradingItem.getShippingDeailsId());
             item.setShippingDetails(sd);
+            if(tshipping.getDispatchtimemax()!=null&&tshipping.getDispatchtimemax()!=0) {
+                item.setDispatchTimeMax(tshipping.getDispatchtimemax().intValue());
+            }
         }
         String template = "";
         if(tradingItem.getTemplateId()!=null){//如果选择了模板
@@ -1229,7 +1263,9 @@ public class ItemController extends BaseAction{
         limo.add("PayPal");
         item.setPaymentMethods(limo);
         item.setListingDuration(item.getListingDuration() == null ? "GTC" : item.getListingDuration());
-        item.setDispatchTimeMax(0);
+        if(item.getDispatchTimeMax()==null) {
+            item.setDispatchTimeMax(0);
+        }
         if(item.getVariations()!=null) {
             List<Variation> livt = item.getVariations().getVariation();
             for(int i = 0 ; i<livt.size();i++){
@@ -1417,6 +1453,9 @@ public class ItemController extends BaseAction{
         if(tshipping!=null) {
             ShippingDetails sd = this.iTradingShippingDetails.toXmlPojo(tradingItem.getShippingDeailsId());
             item.setShippingDetails(sd);
+            if(tshipping.getDispatchtimemax()!=null&&tshipping.getDispatchtimemax()!=0) {
+                item.setDispatchTimeMax(tshipping.getDispatchtimemax().intValue());
+            }
         }
         String template = "";
         if(tradingItem.getTemplateId()!=null){//如果选择了模板
@@ -1490,7 +1529,9 @@ public class ItemController extends BaseAction{
         limo.add("PayPal");
         item.setPaymentMethods(limo);
         item.setListingDuration(item.getListingDuration() == null ? "GTC" : item.getListingDuration());
-        item.setDispatchTimeMax(0);
+        if(item.getDispatchTimeMax()!=null) {
+            item.setDispatchTimeMax(0);
+        }
         if(item.getVariations()!=null) {
             List<Variation> livt = item.getVariations().getVariation();
             for(int i = 0 ; i<livt.size();i++){
@@ -1670,6 +1711,9 @@ public class ItemController extends BaseAction{
         if(tshipping!=null) {
             ShippingDetails sd = this.iTradingShippingDetails.toXmlPojo(tradingItem.getShippingDeailsId());
             item.setShippingDetails(sd);
+            if(tshipping.getDispatchtimemax()!=null&&tshipping.getDispatchtimemax()!=0) {
+                item.setDispatchTimeMax(tshipping.getDispatchtimemax().intValue());
+            }
         }
         String template = "";
         if(tradingItem.getTemplateId()!=null){//如果选择了模板
@@ -1743,7 +1787,9 @@ public class ItemController extends BaseAction{
         limo.add("PayPal");
         item.setPaymentMethods(limo);
         item.setListingDuration(item.getListingDuration() == null ? "GTC" : item.getListingDuration());
-        item.setDispatchTimeMax(0);
+        if(item.getDispatchTimeMax()==null) {
+            item.setDispatchTimeMax(0);
+        }
         if(item.getVariations()!=null) {
             List<Variation> livt = item.getVariations().getVariation();
             for(int i = 0 ; i<livt.size();i++){
@@ -2014,7 +2060,7 @@ public class ItemController extends BaseAction{
                 }
                 AjaxSupport.sendSuccessText("",ids);
             }catch(Exception e){
-                e.printStackTrace();
+                logger.error("删除失败!",e);
                 AjaxSupport.sendSuccessText("","删除失败!");
             }
 
@@ -2043,7 +2089,7 @@ public class ItemController extends BaseAction{
                 this.iTradingItem.rename(ids,fileName);
                 AjaxSupport.sendSuccessText("","操作成功!");
             }catch(Exception e){
-                e.printStackTrace();
+                logger.error(id+"::",e);
                 AjaxSupport.sendSuccessText("","删除失败!");
             }
 
@@ -2086,7 +2132,7 @@ public class ItemController extends BaseAction{
                 this.iTradingItem.copyItem(ids,ebayaccount);
                 AjaxSupport.sendSuccessText("","操作成功!");
             }catch(Exception e){
-                e.printStackTrace();
+                logger.error("复制报错",e);
                 AjaxSupport.sendSuccessText("","复制失败!");
             }
 

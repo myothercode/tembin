@@ -16,7 +16,8 @@ function loadItemReportData(){
         selectDataNow:true,
         isrowClick:false,
         showIndex:false,
-        onlyFirstPage: true
+        onlyFirstPage: true,
+        showDataNullMsgContext:'没有查询到刊登报告!'
     });
 }
 function getthatmonth(json){

@@ -26,7 +26,8 @@
 
 			onlyFirstPage: false,//只有一页数据
 
-			showDataNullMsg:true//当查询数据为空时，显示提示信息
+			showDataNullMsg:true,//当查询数据为空时，是否显示提示信息
+			showDataNullMsgContext:'没有查询到结果!'//当查询数据为空时，显示提示信息,当showDataNullMsg为空时生效
 		};
 		var SUCCESS = true;// 初始化状态
 		if(typeof obj == 'object') {
@@ -230,7 +231,7 @@
 						.append($("<td></td>").attr("colspan",leftTrSize).attr("width","50%").attr("height", 200).attr("align","right")
 								.append($("<img src='" + path + "/js/table/100.png'>")))
 						.append($("<td></td>").attr("colspan",rightTrSize).attr("width","50%").attr("align", "left").attr("style","font-size:20px;")
-							.html("\u6CA1\u6709\u641C\u7D22\u5230\u7ED3\u679C!"))
+							.html(option.showDataNullMsgContext))
 				);
 			}
 		}

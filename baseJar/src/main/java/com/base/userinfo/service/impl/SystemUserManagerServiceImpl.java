@@ -19,6 +19,7 @@ import com.base.utils.cache.TempStoreDataSupport;
 import com.base.utils.common.*;
 import com.base.utils.exception.Asserts;
 import com.base.utils.mailUtil.MailUtils;
+import com.google.common.collect.Collections2;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.mail.Email;
 import org.apache.commons.mail.EmailException;
@@ -57,7 +58,7 @@ public class SystemUserManagerServiceImpl implements SystemUserManagerService {
     private UsercontrollerUserEbayMapper userEbayMapper;
 
     @Override
-    /**查询系统用户以及列表*/
+    /**根据创建者查询系统用户以及列表*/
     public List<UsercontrollerUserExtend> queryAccountListByUserID(Map map, Page page){
         SessionVO sessionVO= SessionCacheSupport.getSessionVO();
         map.put("userID",sessionVO.getId());
@@ -108,7 +109,7 @@ public class SystemUserManagerServiceImpl implements SystemUserManagerService {
     }
 
     @Override
-    /**查询账户绑定了哪些ebay账户*/
+    /**查询账户被分配了哪些ebay账户*/
     public List<UsercontrollerEbayAccountExtend> queryCurrAllEbay(Map map){
         if(!map.containsKey("userID") && !map.containsKey("AllEbay")){
             SessionVO sessionVO=SessionCacheSupport.getSessionVO();
@@ -121,7 +122,7 @@ public class SystemUserManagerServiceImpl implements SystemUserManagerService {
         return ebays;
     }
     @Override
-    /**查询账户绑定了哪些ebay账户*/
+    /**查询账户绑定了哪些ebay账户--绑定开发帐号的操作*/
     public List<UsercontrollerEbayAccountExtend> queryACurrAllEbay(Map map){
         SessionVO sessionVO=SessionCacheSupport.getSessionVO();
         map.put("userID",sessionVO.getId());
@@ -203,7 +204,7 @@ public class SystemUserManagerServiceImpl implements SystemUserManagerService {
     }
 
     @Override
-    /**判断某个账户是否有某个角色roleID参见role表*/
+    /**判断某个账户是否有某个角色roleID参见role表,比如判断当前用户是否有管理员权限*/
     public boolean pdRole(Long roleID,List<RoleVO> roleVOList){
         for (RoleVO roleVO : roleVOList){
             if(roleID==roleVO.getRoleID()){
@@ -212,6 +213,32 @@ public class SystemUserManagerServiceImpl implements SystemUserManagerService {
         }
         return false;
     }
+
+    @Override
+    /**判断当前用户是否有管理员权限*/
+    public boolean isAdminRole(){
+       SessionVO sessionVO=SessionCacheSupport.getSessionVO();
+        List<RoleVO> roleVOs = sessionVO.getRoleVOList();
+        for (RoleVO roleVO : roleVOs){
+            if(roleVO.getRoleID()==1L){
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @Override
+    /**根据当前用户的orgid查询所有系统用户*/
+    public List<UsercontrollerUserExtend> queryAllUsersByOrgID(String isShowStop){
+        SessionVO sessionVO=SessionCacheSupport.getSessionVO();
+        if(sessionVO==null){throw new RuntimeException("sessionVO不能为空!");}
+        Map map=new HashMap();
+        map.put("orgID",sessionVO.getOrgId());
+        if(StringUtils.isEmpty(isShowStop)){isShowStop="no";}
+        map.put("isShowStopOnly",isShowStop);
+        return systemUserManagerServiceMapper.queryAllUsersByOrgID(map);
+    }
+
 
     /**清除并添加用户的权限和ebay帐号信息*/
     private void insertRoleAndEbay(AddSubUserVO addSubUserVO,UsercontrollerUser user){

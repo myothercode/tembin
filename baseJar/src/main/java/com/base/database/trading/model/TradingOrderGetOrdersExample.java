@@ -3925,6 +3925,186 @@ public class TradingOrderGetOrdersExample {
             return (Criteria) this;
         }
 
+        public Criteria andItemflagIsNull() {
+            addCriterion("itemFlag is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andItemflagIsNotNull() {
+            addCriterion("itemFlag is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andItemflagEqualTo(Integer value) {
+            addCriterion("itemFlag =", value, "itemflag");
+            return (Criteria) this;
+        }
+
+        public Criteria andItemflagNotEqualTo(Integer value) {
+            addCriterion("itemFlag <>", value, "itemflag");
+            return (Criteria) this;
+        }
+
+        public Criteria andItemflagGreaterThan(Integer value) {
+            addCriterion("itemFlag >", value, "itemflag");
+            return (Criteria) this;
+        }
+
+        public Criteria andItemflagGreaterThanOrEqualTo(Integer value) {
+            addCriterion("itemFlag >=", value, "itemflag");
+            return (Criteria) this;
+        }
+
+        public Criteria andItemflagLessThan(Integer value) {
+            addCriterion("itemFlag <", value, "itemflag");
+            return (Criteria) this;
+        }
+
+        public Criteria andItemflagLessThanOrEqualTo(Integer value) {
+            addCriterion("itemFlag <=", value, "itemflag");
+            return (Criteria) this;
+        }
+
+        public Criteria andItemflagIn(List<Integer> values) {
+            addCriterion("itemFlag in", values, "itemflag");
+            return (Criteria) this;
+        }
+
+        public Criteria andItemflagNotIn(List<Integer> values) {
+            addCriterion("itemFlag not in", values, "itemflag");
+            return (Criteria) this;
+        }
+
+        public Criteria andItemflagBetween(Integer value1, Integer value2) {
+            addCriterion("itemFlag between", value1, value2, "itemflag");
+            return (Criteria) this;
+        }
+
+        public Criteria andItemflagNotBetween(Integer value1, Integer value2) {
+            addCriterion("itemFlag not between", value1, value2, "itemflag");
+            return (Criteria) this;
+        }
+
+        public Criteria andAccountflagIsNull() {
+            addCriterion("accountFlag is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andAccountflagIsNotNull() {
+            addCriterion("accountFlag is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andAccountflagEqualTo(Integer value) {
+            addCriterion("accountFlag =", value, "accountflag");
+            return (Criteria) this;
+        }
+
+        public Criteria andAccountflagNotEqualTo(Integer value) {
+            addCriterion("accountFlag <>", value, "accountflag");
+            return (Criteria) this;
+        }
+
+        public Criteria andAccountflagGreaterThan(Integer value) {
+            addCriterion("accountFlag >", value, "accountflag");
+            return (Criteria) this;
+        }
+
+        public Criteria andAccountflagGreaterThanOrEqualTo(Integer value) {
+            addCriterion("accountFlag >=", value, "accountflag");
+            return (Criteria) this;
+        }
+
+        public Criteria andAccountflagLessThan(Integer value) {
+            addCriterion("accountFlag <", value, "accountflag");
+            return (Criteria) this;
+        }
+
+        public Criteria andAccountflagLessThanOrEqualTo(Integer value) {
+            addCriterion("accountFlag <=", value, "accountflag");
+            return (Criteria) this;
+        }
+
+        public Criteria andAccountflagIn(List<Integer> values) {
+            addCriterion("accountFlag in", values, "accountflag");
+            return (Criteria) this;
+        }
+
+        public Criteria andAccountflagNotIn(List<Integer> values) {
+            addCriterion("accountFlag not in", values, "accountflag");
+            return (Criteria) this;
+        }
+
+        public Criteria andAccountflagBetween(Integer value1, Integer value2) {
+            addCriterion("accountFlag between", value1, value2, "accountflag");
+            return (Criteria) this;
+        }
+
+        public Criteria andAccountflagNotBetween(Integer value1, Integer value2) {
+            addCriterion("accountFlag not between", value1, value2, "accountflag");
+            return (Criteria) this;
+        }
+
+        public Criteria andSellertrasactionflagIsNull() {
+            addCriterion("sellerTrasactionFlag is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andSellertrasactionflagIsNotNull() {
+            addCriterion("sellerTrasactionFlag is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andSellertrasactionflagEqualTo(Integer value) {
+            addCriterion("sellerTrasactionFlag =", value, "sellertrasactionflag");
+            return (Criteria) this;
+        }
+
+        public Criteria andSellertrasactionflagNotEqualTo(Integer value) {
+            addCriterion("sellerTrasactionFlag <>", value, "sellertrasactionflag");
+            return (Criteria) this;
+        }
+
+        public Criteria andSellertrasactionflagGreaterThan(Integer value) {
+            addCriterion("sellerTrasactionFlag >", value, "sellertrasactionflag");
+            return (Criteria) this;
+        }
+
+        public Criteria andSellertrasactionflagGreaterThanOrEqualTo(Integer value) {
+            addCriterion("sellerTrasactionFlag >=", value, "sellertrasactionflag");
+            return (Criteria) this;
+        }
+
+        public Criteria andSellertrasactionflagLessThan(Integer value) {
+            addCriterion("sellerTrasactionFlag <", value, "sellertrasactionflag");
+            return (Criteria) this;
+        }
+
+        public Criteria andSellertrasactionflagLessThanOrEqualTo(Integer value) {
+            addCriterion("sellerTrasactionFlag <=", value, "sellertrasactionflag");
+            return (Criteria) this;
+        }
+
+        public Criteria andSellertrasactionflagIn(List<Integer> values) {
+            addCriterion("sellerTrasactionFlag in", values, "sellertrasactionflag");
+            return (Criteria) this;
+        }
+
+        public Criteria andSellertrasactionflagNotIn(List<Integer> values) {
+            addCriterion("sellerTrasactionFlag not in", values, "sellertrasactionflag");
+            return (Criteria) this;
+        }
+
+        public Criteria andSellertrasactionflagBetween(Integer value1, Integer value2) {
+            addCriterion("sellerTrasactionFlag between", value1, value2, "sellertrasactionflag");
+            return (Criteria) this;
+        }
+
+        public Criteria andSellertrasactionflagNotBetween(Integer value1, Integer value2) {
+            addCriterion("sellerTrasactionFlag not between", value1, value2, "sellertrasactionflag");
+            return (Criteria) this;
+        }
+
         public Criteria andSendmessagetimeIsNull() {
             addCriterion("sendMessageTime is null");
             return (Criteria) this;
@@ -3982,6 +4162,66 @@ public class TradingOrderGetOrdersExample {
 
         public Criteria andSendmessagetimeNotBetween(Date value1, Date value2) {
             addCriterion("sendMessageTime not between", value1, value2, "sendmessagetime");
+            return (Criteria) this;
+        }
+
+        public Criteria andAutomessageIdIsNull() {
+            addCriterion("autoMessage_id is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andAutomessageIdIsNotNull() {
+            addCriterion("autoMessage_id is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andAutomessageIdEqualTo(Long value) {
+            addCriterion("autoMessage_id =", value, "automessageId");
+            return (Criteria) this;
+        }
+
+        public Criteria andAutomessageIdNotEqualTo(Long value) {
+            addCriterion("autoMessage_id <>", value, "automessageId");
+            return (Criteria) this;
+        }
+
+        public Criteria andAutomessageIdGreaterThan(Long value) {
+            addCriterion("autoMessage_id >", value, "automessageId");
+            return (Criteria) this;
+        }
+
+        public Criteria andAutomessageIdGreaterThanOrEqualTo(Long value) {
+            addCriterion("autoMessage_id >=", value, "automessageId");
+            return (Criteria) this;
+        }
+
+        public Criteria andAutomessageIdLessThan(Long value) {
+            addCriterion("autoMessage_id <", value, "automessageId");
+            return (Criteria) this;
+        }
+
+        public Criteria andAutomessageIdLessThanOrEqualTo(Long value) {
+            addCriterion("autoMessage_id <=", value, "automessageId");
+            return (Criteria) this;
+        }
+
+        public Criteria andAutomessageIdIn(List<Long> values) {
+            addCriterion("autoMessage_id in", values, "automessageId");
+            return (Criteria) this;
+        }
+
+        public Criteria andAutomessageIdNotIn(List<Long> values) {
+            addCriterion("autoMessage_id not in", values, "automessageId");
+            return (Criteria) this;
+        }
+
+        public Criteria andAutomessageIdBetween(Long value1, Long value2) {
+            addCriterion("autoMessage_id between", value1, value2, "automessageId");
+            return (Criteria) this;
+        }
+
+        public Criteria andAutomessageIdNotBetween(Long value1, Long value2) {
+            addCriterion("autoMessage_id not between", value1, value2, "automessageId");
             return (Criteria) this;
         }
 

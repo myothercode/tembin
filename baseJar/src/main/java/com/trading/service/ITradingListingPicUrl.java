@@ -1,5 +1,6 @@
 package com.trading.service;
 
+import com.base.database.trading.model.TradingItem;
 import com.base.database.trading.model.TradingListingpicUrl;
 
 import java.util.List;
@@ -11,4 +12,6 @@ public interface ITradingListingPicUrl {
     void saveListingPicUrl(TradingListingpicUrl tradingListingpicUrl) throws Exception;
 
     List<TradingListingpicUrl> selectByMackId(String mackId);
+
+    TradingListingpicUrl uploadPic(TradingItem tradingItem, String url, String picName, TradingListingpicUrl tlu) throws Exception;
 }

@@ -235,7 +235,7 @@ function loadListingItem(itemId,ebayAccount,siteid){
                     for(var i=0;i<item.pictureDetails.pictureURL.length;i++){
                         var lipic = item.pictureDetails.pictureURL[i];
                         picstr += '<li><div style="position:relative"><input type="hidden" name="PictureDetails_' + ebayAccount + '.PictureURL" value="'+lipic+'">' +
-                                '<img src=${lipic} height="80px" width="78px" />' +
+                                '<img src="'+lipic+'" height="80px" width="78px" />' +
                                 '<div style="text-align: right;background-color: dimgrey;width: 78px;"><img src="' + path + '/img/newpic_ico.png" onclick="removeThis(this)"></div>';
                         picstr += "</li>";
                     }

@@ -137,8 +137,8 @@ public class ItemReportTaskRun extends BaseScheduledClass implements Scheduledab
                             }
                             tldm.save(tlr);
                         }
-                    } catch (DateParseException e) {
-                        e.printStackTrace();
+                    } catch (Exception e) {
+                        logger.error("itemReportTask出错!",e);
                     }
                 }
             }

@@ -1,5 +1,8 @@
 package com.inventory.controller;
 
+import com.base.domains.querypojos.CommonParmVO;
+import com.base.domains.querypojos.ItemInventoryQuery;
+import com.base.mybatis.page.Page;
 import com.base.sampleapixml.BindAccountAPI;
 import com.base.userinfo.service.UserInfoService;
 import com.base.utils.annotations.AvoidDuplicateSubmission;
@@ -7,6 +10,7 @@ import com.base.utils.httpclient.HttpClientUtil;
 import com.common.base.utils.ajax.AjaxSupport;
 import com.common.base.web.BaseAction;
 import com.inventory.service.IItemInventory;
+import org.apache.commons.lang.StringUtils;
 import org.apache.http.client.HttpClient;
 import org.apache.http.message.BasicHeader;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +23,9 @@ import org.springframework.web.servlet.ModelAndView;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by Administrtor on 2014/9/17.
@@ -119,4 +125,22 @@ public class InventoryController extends BaseAction {
         AjaxSupport.sendSuccessText("success", "获取成功");
     }
 
+    /**获取list数据的ajax方法*/
+    @RequestMapping("/ajax/loadInventorySkuList.do")
+    @ResponseBody
+    public void loadInventorySkuList(CommonParmVO commonParmVO,HttpServletRequest request) throws Exception {
+        String content=request.getParameter("content");
+        if(!StringUtils.isNotBlank(content)){
+            content=null;
+        }
+        Map m = new HashMap();
+        /**分页组装*/
+        Map map=new HashMap();
+        map.put("content",content);
+        Page page=new Page();
+        page.setCurrentPage(1);
+        page.setPageSize(10);
+        List<ItemInventoryQuery> lists= this.iItemInventory.selectBySku(map,page);
+        AjaxSupport.sendSuccessText("", lists);
+    }
 }

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.base.database.customtrading.mapper.SetComplementQueryMapper">
+  <resultMap id="BaseResultMap" type="com.base.domains.querypojos.SetComplementQuery">
+      <id column="id" property="id" jdbcType="BIGINT" />
+      <result column="complement_type" property="complementType" jdbcType="VARCHAR" />
+      <result column="ebay_id" property="ebayId" jdbcType="BIGINT" />
+      <result column="ebay_account" property="ebayAccount" jdbcType="VARCHAR" />
+      <result column="create_user" property="createUser" jdbcType="BIGINT" />
+      <result column="create_date" property="createDate" jdbcType="TIMESTAMP" />
+      <result column="update_user" property="updateUser" jdbcType="BIGINT" />
+      <result column="update_date" property="updateDate" jdbcType="TIMESTAMP" />
+      <result column="create_user_name" property="createUserName" jdbcType="VARCHAR" />
+      <result column="update_user_name" property="updateUserName" jdbcType="VARCHAR" />
+  </resultMap>
+    <select id="selectSetComplementByList" resultMap="BaseResultMap" parameterType="map">
+        select scom.*,cuser1.user_name create_user_name,cuser2.user_name update_user_name from trading_set_complement scom
+        inner join usercontroller_user_ebay uebay on scom.ebay_id=uebay.ebay_id
+        left join usercontroller_user cuser1 on scom.create_user=cuser1.user_id
+        left join  usercontroller_user cuser2 on scom.update_user= cuser2.user_id
+        where uebay.user_id=#{userId}
+    </select>
+</mapper>

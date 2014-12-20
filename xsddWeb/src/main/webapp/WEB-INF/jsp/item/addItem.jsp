@@ -243,9 +243,9 @@
             $().image_editor.show(attrValue.get(attrValue.keys[i]).replace(" ","_")); //上传图片的按钮id
 */
             if(i==attrValue.keys.length-1){
-                morePicid+='{"a":"'+$("#moreAttrs tr:eq(0) th:eq(4)").find("input").val().replace(" ","_") + '.' + attrValue.get(attrValue.keys[i]).replace(" ","_")+'","b":"'+attrValue.get(attrValue.keys[i]).replace(" ","_")+'"}';
+                morePicid+='{"a":"'+$("#moreAttrs tr:eq(0) th:eq(4)").find("input").val().replace(" ","_").replace(".","").replace("+","") + 'this' + attrValue.get(attrValue.keys[i]).replace(" ","_").replace(".","").replace("+","")+'","b":"'+attrValue.get(attrValue.keys[i]).replace(" ","_").replace(".","").replace("+","")+'"}';
             }else{
-                morePicid+='{"a":"'+$("#moreAttrs tr:eq(0) th:eq(4)").find("input").val().replace(" ","_") + '.' + attrValue.get(attrValue.keys[i]).replace(" ","_")+'","b":"'+attrValue.get(attrValue.keys[i]).replace(" ","_")+'"},';
+                morePicid+='{"a":"'+$("#moreAttrs tr:eq(0) th:eq(4)").find("input").val().replace(" ","_").replace(".","").replace("+","") + 'this' + attrValue.get(attrValue.keys[i]).replace(" ","_").replace(".","").replace("+","")+'","b":"'+attrValue.get(attrValue.keys[i]).replace(" ","_").replace(".","").replace("+","")+'"},';
             }
         }
         if(morePicid!=""){

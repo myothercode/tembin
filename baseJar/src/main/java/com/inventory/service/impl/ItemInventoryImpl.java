@@ -4,17 +4,21 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.support.spring.FastJsonHttpMessageConverter;
 import com.base.aboutpaypal.paypalutils.PaypalxmlUtil;
+import com.base.database.customtrading.mapper.ItemInventoryQueryMapper;
 import com.base.database.inventory.mapper.ItemInventoryMapper;
 import com.base.database.inventory.mapper.ShihaiyouInventoryMapper;
 import com.base.database.inventory.model.ItemInventory;
 import com.base.database.inventory.model.ItemInventoryExample;
 import com.base.database.inventory.model.ShihaiyouInventory;
 import com.base.database.inventory.model.ShihaiyouInventoryExample;
+import com.base.domains.querypojos.ItemInventoryQuery;
+import com.base.mybatis.page.Page;
 import com.base.utils.common.DateUtils;
 import com.base.utils.httpclient.HttpClientUtil;
 import com.inventory.service.ItemInventoryStatic;
 import org.apache.http.client.HttpClient;
 import org.apache.http.message.BasicHeader;
+import org.apache.log4j.Logger;
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
@@ -35,10 +39,15 @@ import java.util.*;
 @Service
 @Transactional(rollbackFor = Exception.class)
 public class ItemInventoryImpl implements com.inventory.service.IItemInventory {
+    static Logger logger = Logger.getLogger(ItemInventoryImpl.class);
+
     @Autowired
     private ItemInventoryMapper itemInventoryMapper;
     @Autowired
     private ShihaiyouInventoryMapper shihaiyouInventoryMapper;
+    @Autowired
+    private ItemInventoryQueryMapper itemInventoryQueryMapper;
+
     @Value("${CHUKOUYI_URL}")
     private String chukouyi_url;
     @Value("${CHUKOUYI_TOKEN}")
@@ -107,7 +116,7 @@ public class ItemInventoryImpl implements com.inventory.service.IItemInventory {
                     body = JSON.parseObject(jsons.get("body").toString(), HashMap.class);
                     dt = JSON.parseArray(body.get("stock_detail").toString());
                 }catch(Exception e){
-                    e.printStackTrace();
+                    logger.error("itemInventory:"+res,e);
                     continue;
                 }
                 for(int i=0;i<dt.size();i++){
@@ -126,8 +135,7 @@ public class ItemInventoryImpl implements com.inventory.service.IItemInventory {
             }
             this.saveListItemInventory(liii);
         } catch (Exception e) {
-            System.out.println(abcd);
-            e.printStackTrace();
+            logger.error("itemInvent:",e);
         }
     }
 
@@ -150,8 +158,9 @@ public class ItemInventoryImpl implements com.inventory.service.IItemInventory {
         list.add(head1);
         list.add(head2);
         list.add(head3);
+        String res="";
         try {
-            String res = HttpClientUtil.post(httpClient,"http://system.4haiyou.com/Merchant/invetoryapi.asmx",xml,"utf-8",list);
+            res = HttpClientUtil.post(httpClient,"http://system.4haiyou.com/Merchant/invetoryapi.asmx",xml,"utf-8",list);
             Element el = PaypalxmlUtil.getSpecElement(res, "Body", "QueryInventoryResponse", "QueryInventoryResult");
             String ack = el.element("ACK").getText();
             if("Success".equals(ack)){
@@ -181,7 +190,7 @@ public class ItemInventoryImpl implements com.inventory.service.IItemInventory {
             }
 
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error(res+":",e);
         }
     }
     @Override
@@ -229,7 +238,7 @@ public class ItemInventoryImpl implements com.inventory.service.IItemInventory {
                     md5_str = "0".concat(md5_str);
                 }
             } catch (NoSuchAlgorithmException e) {
-                e.printStackTrace();
+                logger.error("md5..",e);
             }
             return md5_str;
         }
@@ -239,12 +248,13 @@ public class ItemInventoryImpl implements com.inventory.service.IItemInventory {
     @Override
     public void getDeShiFangInventory(){
         HttpClient httpClient= HttpClientUtil.getHttpClient();
+        String res="";
         try {
-            //
+
             BasicHeader head1 =  new BasicHeader("Content-Type","application/json");
             List<BasicHeader> list=new ArrayList<BasicHeader>();
             list.add(head1);
-            String res = HttpClientUtil.post(httpClient,deshifang_url+ItemInventoryStatic.DESHIFANG_GETINVENTORY+"?format=json&customerId="+deshifang_customerid+"&token="+deshifang_toden+"&language=en_US","{}","utf-8",list);
+            res = HttpClientUtil.post(httpClient,deshifang_url+ItemInventoryStatic.DESHIFANG_GETINVENTORY+"?format=json&customerId="+deshifang_customerid+"&token="+deshifang_toden+"&language=en_US","{}","utf-8",list);
             Map jsons = JSON.parseObject(res, HashMap.class);
             JSONArray dt = JSON.parseArray(jsons.get("data").toString());
             List<ItemInventory> liii = new ArrayList<ItemInventory>();
@@ -264,8 +274,13 @@ public class ItemInventoryImpl implements com.inventory.service.IItemInventory {
             }
             this.saveListItemInventory(liii);
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("itemInvent11" + res,e);
         }
+    }
+
+    @Override
+    public List<ItemInventoryQuery> selectBySku(Map map,Page page){
+        return this.itemInventoryQueryMapper.selectItemInventoryList(map,page);
     }
 
 }

@@ -284,5 +284,41 @@ public class TradingOrderGetOrdersImpl implements com.trading.service.ITradingOr
         }
     }
 
+    @Override
+    public List<TradingOrderGetOrders> selectOrderGetOrdersByItemFlag() {
+        TradingOrderGetOrdersExample example=new TradingOrderGetOrdersExample();
+        TradingOrderGetOrdersExample.Criteria cr=example.createCriteria();
+        cr.andItemflagEqualTo(0);
+        List<TradingOrderGetOrders> list=tradingOrderGetOrdersMapper.selectByExample(example);
+        return list;
+    }
+
+    @Override
+    public List<TradingOrderGetOrders> selectOrderGetOrdersByAccountFlag() {
+        TradingOrderGetOrdersExample example=new TradingOrderGetOrdersExample();
+        TradingOrderGetOrdersExample.Criteria cr=example.createCriteria();
+        cr.andAccountflagEqualTo(0);
+        List<TradingOrderGetOrders> list=tradingOrderGetOrdersMapper.selectByExample(example);
+        return list;
+    }
+
+    @Override
+    public List<TradingOrderGetOrders> selectOrderGetOrdersBySellerTrasactionFlag() {
+        TradingOrderGetOrdersExample example=new TradingOrderGetOrdersExample();
+        TradingOrderGetOrdersExample.Criteria cr=example.createCriteria();
+        cr.andSellertrasactionflagEqualTo(0);
+        List<TradingOrderGetOrders> list=tradingOrderGetOrdersMapper.selectByExample(example);
+        return list;
+    }
+
+    @Override
+    public List<TradingOrderGetOrders> selectOrderGetOrdersByTrackNumber() {
+        TradingOrderGetOrdersExample example=new TradingOrderGetOrdersExample();
+        TradingOrderGetOrdersExample.Criteria cr=example.createCriteria();
+        cr.andShipmenttrackingnumberIsNotNull();
+        List<TradingOrderGetOrders> list=tradingOrderGetOrdersMapper.selectByExample(example);
+        return list;
+    }
+
 
 }

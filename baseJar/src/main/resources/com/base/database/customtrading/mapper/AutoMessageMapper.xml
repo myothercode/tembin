@@ -55,11 +55,11 @@
         group by autoMessage.id
     </select>
     <select id="selectInternationalShippingServiceList" resultMap="BaseResultMap" parameterType="map">
-        select dic.id id,dic.name subject from trading_data_dictionary dic where 1=1
+        select dic.id id,dic.value subject from trading_data_dictionary dic where 1=1
         and dic.type ="International transport"
     </select>
     <select id="selectShippingServiceOptionList" resultMap="BaseResultMap" parameterType="map">
-        select dic.id id,dic.name subject from trading_data_dictionary dic where 1=1
+        select dic.id id,dic.value subject from trading_data_dictionary dic where 1=1
         and dic.type ="domestic transportation"
         <if test="siteId!=null">
             and dic.parent_id = #{siteId}

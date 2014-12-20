@@ -786,4 +786,30 @@ public class SamplePaseXml {
         }
         return list;
     }
+    //解析价格跟踪
+    public static List<TradingPriceTracking> getPriceTrackingItemByItemId(String res) throws Exception {
+        List<TradingPriceTracking> priceTrackings=new ArrayList<TradingPriceTracking>();
+        Document document= DocumentHelper.parseText(res);
+        Element rootElt = document.getRootElement();
+        Iterator items=rootElt.elementIterator("Item");
+        while(items.hasNext()){
+            TradingPriceTracking priceTracking=new TradingPriceTracking();
+            Element item= (Element) items.next();
+            priceTracking.setItemid(SamplePaseXml.getSpecifyElementText(item,"ItemID"));
+            priceTracking.setTitle(SamplePaseXml.getSpecifyElementText(item,"Title"));
+            priceTracking.setCurrentprice(SamplePaseXml.getSpecifyElementText(item,"ConvertedCurrentPrice"));
+            priceTracking.setBidcount(SamplePaseXml.getSpecifyElementText(item,"BidCount"));
+            Element ConvertedCurrentPrice=item.element("ConvertedCurrentPrice");
+            String currencyId1="";
+            if(ConvertedCurrentPrice!=null){
+                Attribute currencyId=ConvertedCurrentPrice.attribute("currencyId");
+                if(currencyId!=null){
+                    currencyId1=currencyId.getValue();
+                }
+            }
+            priceTracking.setCurrencyid(currencyId1);
+            priceTrackings.add(priceTracking);
+        }
+        return priceTrackings;
+    }
 }

@@ -47,6 +47,7 @@ public class RoleManagerServiceImpl implements RoleManagerService {
     @Override
     /**删除一个角色*/
     public void deleteRoleById(Map map){
+        if(map.get("roleId")==null){return;}
         Integer rid=((Long)map.get("roleId")).intValue();
         UsercontrollerRole usercontrollerRole = usercontrollerRoleMapper.selectByPrimaryKey(rid);
         SessionVO sessionVO= SessionCacheSupport.getSessionVO();

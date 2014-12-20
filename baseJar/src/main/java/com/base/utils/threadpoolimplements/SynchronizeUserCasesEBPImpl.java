@@ -67,8 +67,7 @@ public class SynchronizeUserCasesEBPImpl implements ThreadPoolBaseInterFace {
                 }
             }else {return;}
         } catch (Exception e) {
-            e.printStackTrace();
-            logger.error("解析xml出错,请稍后到ebay网站确认结果");
+            logger.error("解析xml出错,请稍后到ebay网站确认结果16"+ebpRes,e);
             return;
         }
     }

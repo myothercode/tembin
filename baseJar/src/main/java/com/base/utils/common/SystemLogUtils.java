@@ -50,12 +50,13 @@ public class SystemLogUtils {
         try {
             systemLogMapper.insert(systemLog);
         } catch (Exception e) {
-            logger.error("日志报错！重新尝试"+systemLog.getEventdesc(),e);
+            //logger.error("日志报错！重新尝试"+systemLog.getEventdesc(),e);
             systemLog.setEventdesc(StringEscapeUtils.escapeXml(systemLog.getEventdesc()));
             try {
                 systemLogMapper.insert(systemLog);
             } catch (Exception e1) {
-                throw new Exception("日志报错错误",e1);
+                logger.error("日志报错！"+systemLog.getEventdesc(),e);
+                //throw new Exception("日志报错错误",e1);
             }
         }
     }

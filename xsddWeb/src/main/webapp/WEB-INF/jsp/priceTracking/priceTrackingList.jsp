@@ -95,6 +95,24 @@
                 lock:true
             });
         }
+        function autoSetPrice(){
+            var url=path+"/priceTracking/autoSetPrice.do?";
+            priceTracking=openMyDialog({title: '自动调价',
+                content: 'url:'+url,
+                icon: 'succeed',
+                width:600,
+                lock:true
+            });
+        }
+        function assignItem(){
+            var url=path+"/priceTracking/assignItem.do?";
+            priceTracking=openMyDialog({title: '自动调价',
+                content: 'url:'+url,
+                icon: 'succeed',
+                width:500,
+                lock:true
+            });
+        }
     </script>
 </head>
 <body>
@@ -144,8 +162,9 @@
 
 </div></div></div></div></div></div>
     <div class="modal-footer" style="text-align: right">
+        <button type="button" class="net_put_1" data-dismiss="modal" onclick="assignItem();">指定跟踪</button>
         <button type="button" class="net_put_1" data-dismiss="modal" onclick="setPrice();">自定调价</button>
-        <button type="button" class="net_put_1" data-dismiss="modal" onclick="setPrice();">自动调价</button>
+        <button type="button" class="net_put_1" data-dismiss="modal" onclick="autoSetPrice();">自动调价</button>
          <button type="button" class="net_put" onclick="submitCommit();">保存</button>
     </div>
 </body>

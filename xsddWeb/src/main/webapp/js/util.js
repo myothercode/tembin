@@ -73,6 +73,34 @@ function strIsDateOrTime(str){
     return "none";
 }
 
+/**时间相减返回秒数如果ms不为空，那么返回毫秒*/
+function ComputationSecond(oDate1,oDate2,ms){
+	if(oDate2==null){return 10}
+	var date3 = parseInt(Math.abs(oDate1 - oDate2));   //时间差的毫秒数
+	//计算相差的年数
+	var years = Math.floor(date3 / (12 * 30 * 24 * 3600 * 1000));
+	//计算相差的月数
+	var leave = date3 % (12 * 30 * 24 * 3600 * 1000);
+	var months = Math.floor(leave / (30 * 24 * 3600 * 1000));
+	//计算出相差天数
+	var leave0 = leave % (30 * 24 * 3600 * 1000);
+	var days = Math.floor(leave0 / (24 * 3600 * 1000));
+	//计算出小时数
+	var leave1 = leave0 % (24 * 3600 * 1000);     //计算天数后剩余的毫秒数
+	var hours = Math.floor(leave1 / (3600 * 1000));
+	//计算相差分钟数
+	var leave2 = leave1 % (3600 * 1000);         //计算小时数后剩余的毫秒数
+	var minutes = Math.floor(leave2 / (60 * 1000));
+	//计算相差秒数
+	var leave3 = leave2 % (60 * 1000);       //计算分钟数后剩余的毫秒数
+
+	if(ms!=null){
+		return leave3;
+	}
+
+	var seconds = Math.round(leave3 / 1000);
+	return seconds;
+}
 
 //加减乘除
 function accAdd(arg1, arg2) {
@@ -525,22 +553,18 @@ function getTopWin_(){
 /**一个替代alert的弹出提示框*/
 function myAlert(cont){
 	var topWin=getTopWin_();
-	//oldAlert($.type(top.windowCache.winDlg) )
-	//if(top.windowCache.winDlg){top.windowCache.winDlg.close();}
+
 	var isFirstOpen=topWin.diagTempPar_;
 	$("body").queue(function(){
-		try{openMyAlert(cont)}catch (e){oldAlert(cont);console.log(e)}
+		try{openMyAlert(cont)}catch (e){oldAlert(cont);console.log(e);}
 	});
 	if(isFirstOpen==0 || isFirstOpen==null){
 		$("body").dequeue();
 	}
-	//oldAlert(top.windowCache.winDlg.config.id)
 
 }
 function openMyAlert(cont){
 	var topWin=getTopWin_();
-	//try{top.windowCache.winDlg.close()}catch (e){}
-	//var api = frameElement.api, W = api.opener;
 	topWin.diagTempPar_=topWin.$.dialog({title: '',
 		//id: 'myAlert2',
 		content: '<table style="width: 500px;height: 100px;font-weight: bold;text-align: center;font-size: 14px;letter-spacing: 4px">' +
@@ -556,21 +580,23 @@ function openMyAlert(cont){
 		zIndex:999999,
 		height:100,
 		init: function () {
-			var that = this, i = 5;
+			/*var that = this, i = 30;
 			var fn = function () {
-				that.title(i + '秒后关闭');
+				that.title(i + '秒后自动关闭');
 				try {
 					!i && that.close();
 				} catch (e) {
+					oldAlert(cont);
 					console.log(e);
+					//return;
 				}
 				i --;
 			};
 			topWin.timer = topWin.setInterval(fn, 1000);
-			fn();
+			fn();*/
 		},
 		close: function () {
-			topWin.clearInterval(topWin.timer);
+			//topWin.clearInterval(topWin.timer);
 			//oldAlert($("body").queue().length)
 			if($("body").queue().length==1){
 				topWin.diagTempPar_=0;
@@ -597,12 +623,15 @@ function chuLiPotoUrl(url){
 String.prototype.startWith=function(str){
 	var reg=new RegExp("^"+str);
 	return reg.test(this);
-}
+};
 
 String.prototype.endWith=function(str){
 	var reg=new RegExp(str+"$");
 	return reg.test(this);
-}
+};
+
+
+
 
 
 

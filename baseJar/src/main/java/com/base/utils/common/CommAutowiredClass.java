@@ -23,4 +23,11 @@ public class CommAutowiredClass {
     public String sandboxEbayID;
     @Value(("${SANDBOX_DEV_ID}"))
     public String snadboxDevID;
+
+
+    /**91track信息*/
+    @Value("${TOKEN_91TRACK}")
+    public String token91Track;
+    @Value("${URL_91TRACK}")
+    public String url91Track;
 }

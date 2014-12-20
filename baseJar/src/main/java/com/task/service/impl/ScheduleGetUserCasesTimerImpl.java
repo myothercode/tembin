@@ -1,7 +1,5 @@
 package com.task.service.impl;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
 import com.base.database.sitemessage.model.PublicSitemessage;
 import com.base.database.task.model.TaskGetUserCases;
 import com.base.database.trading.model.*;
@@ -16,20 +14,12 @@ import com.task.service.IScheduleGetUserCasesTimer;
 import com.task.service.ITaskGetUserCases;
 import com.trading.service.*;
 import org.apache.commons.lang.StringUtils;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.net.URI;
-import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -82,17 +72,6 @@ public class ScheduleGetUserCasesTimerImpl implements IScheduleGetUserCasesTimer
                 String r1 = resMap.get("stat");
                 String res = resMap.get("message");
                 if ("fail".equalsIgnoreCase(r1)) {
-                    List<PublicSitemessage> list1=siteMessageService.selectPublicSitemessageByMessage("synchronize_get_user_cases_timer_FAIL", "CASE定时任务:" + taskGetUserCases.getId());
-                    if(list1==null||list1.size()==0){
-                        TaskMessageVO taskMessageVO = new TaskMessageVO();
-                        taskMessageVO.setMessageType(SiteMessageStatic.SYNCHRONIZE_GET_USER_CASES_TIMER + "_FAIL");
-                        taskMessageVO.setMessageTitle("定时同步CASE失败!");
-                        taskMessageVO.setMessageContext("CASE调用API失败:" + res);
-                        taskMessageVO.setMessageTo(taskGetUserCases.getUserid());
-                        taskMessageVO.setMessageFrom("system");
-                        taskMessageVO.setOrderAndSeller("CASE定时任务:"+taskGetUserCases.getId());
-                        siteMessageService.addSiteMessage(taskMessageVO);
-                    }
                     logger.error("定时纠纷调用API失败"+res+"\n\nXML:"+xml);
                 }
                 String ack = "";
@@ -155,33 +134,9 @@ public class ScheduleGetUserCasesTimerImpl implements IScheduleGetUserCasesTimer
                             r1 = resMap.get("stat");
                             res = resMap.get("message");
                             if ("fail".equalsIgnoreCase(r1)) {
-                                List<PublicSitemessage> list1=siteMessageService.selectPublicSitemessageByMessage("synchronize_get_user_cases_timer_FAIL","CASE定时任务:"+taskGetUserCases.getId());
-                                if(list1==null||list1.size()==0){
-                                    TaskMessageVO taskMessageVO = new TaskMessageVO();
-                                    taskMessageVO.setMessageType(SiteMessageStatic.SYNCHRONIZE_GET_USER_CASES_TIMER + "_FAIL");
-                                    taskMessageVO.setMessageTitle("定时同步CASE失败!");
-                                    taskMessageVO.setMessageContext("CASE调用API失败:" + res);
-                                    taskMessageVO.setMessageTo(taskGetUserCases.getUserid());
-                                    taskMessageVO.setMessageFrom("system");
-                                    taskMessageVO.setOrderAndSeller("CASE定时任务:"+taskGetUserCases.getId());
-                                    siteMessageService.addSiteMessage(taskMessageVO);
-
-                                }
                                 logger.error("循环中的定时纠纷API调用失败:"+res+"\n\nXML:"+xml);
                             }
                             if (!"Success".equalsIgnoreCase(ack)&&!"Warning".equalsIgnoreCase(ack)){
-                                List<PublicSitemessage> list1=siteMessageService.selectPublicSitemessageByMessage("synchronize_get_user_cases_timer_FAIL","CASE定时任务:"+taskGetUserCases.getId());
-                                if(list1==null||list1.size()==0){
-                                    TaskMessageVO taskMessageVO = new TaskMessageVO();
-                                    taskMessageVO.setMessageType(SiteMessageStatic.SYNCHRONIZE_GET_USER_CASES_TIMER + "_FAIL");
-                                    taskMessageVO.setMessageTitle("定时同步CASE失败!");
-                                    taskMessageVO.setMessageContext("CASE调用API失败:" + res);
-                                    taskMessageVO.setMessageTo(taskGetUserCases.getUserid());
-                                    taskMessageVO.setMessageFrom("system");
-                                    taskMessageVO.setOrderAndSeller("CASE定时任务:"+taskGetUserCases.getId());
-                                    siteMessageService.addSiteMessage(taskMessageVO);
-
-                                }
                                 logger.error("循环中的定时同步纠纷API参数错误"+res+"\n\nXML:"+xml);
                             }
                             if("Warning".equalsIgnoreCase(ack)){
@@ -199,18 +154,6 @@ public class ScheduleGetUserCasesTimerImpl implements IScheduleGetUserCasesTimer
                                         logger.error("ScheduleGetUserCasesTimerImpl第193"+res,e);
                                         errors="纠纷警告194";
                                     }
-                                }
-                                List<PublicSitemessage> list1=siteMessageService.selectPublicSitemessageByMessage("synchronize_get_user_cases_timer_FAIL", "CASE定时任务有警告:" + taskGetUserCases.getId());
-                                if(list1==null||list1.size()==0){
-                                    TaskMessageVO taskMessageVO = new TaskMessageVO();
-                                    taskMessageVO.setMessageType(SiteMessageStatic.SYNCHRONIZE_GET_USER_CASES_TIMER + "_FAIL");
-                                    taskMessageVO.setMessageTitle("定时同步CASE有警告!");
-                                    taskMessageVO.setMessageContext("CASE调用API有警告:" + errors);
-                                    taskMessageVO.setMessageTo(taskGetUserCases.getUserid());
-                                    taskMessageVO.setMessageFrom("system");
-                                    taskMessageVO.setOrderAndSeller("CASE定时任务有警告:"+taskGetUserCases.getId());
-                                    siteMessageService.addSiteMessage(taskMessageVO);
-
                                 }
                                 logger.error("获取定时CASE有警告!" + errors);
                             }
@@ -249,18 +192,6 @@ public class ScheduleGetUserCasesTimerImpl implements IScheduleGetUserCasesTimer
                                     String ebpRes = resEbpMap.get("message");
 
                                     if ("fail".equalsIgnoreCase(ebpR1)) {
-                                        List<PublicSitemessage> list1 = siteMessageService.selectPublicSitemessageByMessage("synchronize_get_user_cases_ebp_timer_FAIL", "CASE_EBP定时任务:" + taskGetUserCases.getId());
-                                        if(list1==null||list1.size()==0){
-                                            TaskMessageVO taskMessageVO = new TaskMessageVO();
-                                            taskMessageVO.setMessageType(SiteMessageStatic.SYNCHRONIZE_GET_USER_CASES_EBP_TIMER + "_FAIL");
-                                            taskMessageVO.setMessageTitle("定时同步CASE_EBP失败!");
-                                            taskMessageVO.setMessageContext("CASE_EBP调用API失败:" + ebpRes);
-                                            taskMessageVO.setMessageTo(taskGetUserCases.getUserid());
-                                            taskMessageVO.setMessageFrom("system");
-                                            taskMessageVO.setOrderAndSeller("CASE_EBP定时任务:" + taskGetUserCases.getId());
-                                            siteMessageService.addSiteMessage(taskMessageVO);
-
-                                        }
                                         logger.error("定时同步CASE_EBP的API失败"+ebpRes+"\n\nXML:"+ebpXml);
                                     }
                                     String ebpAck = "";
@@ -308,18 +239,6 @@ public class ScheduleGetUserCasesTimerImpl implements IScheduleGetUserCasesTimer
                                             }
                                         }
                                     } else {
-                                        List<PublicSitemessage> list1 = siteMessageService.selectPublicSitemessageByMessage("synchronize_get_user_cases_ebp_timer_FAIL", "CASE_EBP定时任务:" + taskGetUserCases.getId());
-                                        if(list1==null||list1.size()==0){
-                                            TaskMessageVO taskMessageVO = new TaskMessageVO();
-                                            taskMessageVO.setMessageType(SiteMessageStatic.SYNCHRONIZE_GET_USER_CASES_EBP_TIMER + "_FAIL");
-                                            taskMessageVO.setMessageTitle("定时同步CASE_EBP失败!");
-                                            taskMessageVO.setMessageContext("CASE_EBP调用API失败:" + ebpRes);
-                                            taskMessageVO.setMessageTo(taskGetUserCases.getUserid());
-                                            taskMessageVO.setMessageFrom("system");
-                                            taskMessageVO.setOrderAndSeller("CASE_EBP定时任务:" + taskGetUserCases.getId());
-                                            siteMessageService.addSiteMessage(taskMessageVO);
-
-                                        }
                                         logger.error("定时同步CASE_EBP的参数错误"+ebpRes+"\n\nXML:"+ebpXml);
 
                                     }
@@ -346,20 +265,7 @@ public class ScheduleGetUserCasesTimerImpl implements IScheduleGetUserCasesTimer
                                     r1 = resMap.get("stat");
                                     res = resMap.get("message");
                                     if ("fail".equalsIgnoreCase(r1)) {
-                                        List<PublicSitemessage> list1 = siteMessageService.selectPublicSitemessageByMessage("synchronize_get_user_cases_dispute_timer_FAIL", "CASE_dispute定时任务:" + taskGetUserCases.getId());
-                                        if(list1==null||list1.size()==0){
-                                            TaskMessageVO taskMessageVO = new TaskMessageVO();
-                                            taskMessageVO.setMessageType(SiteMessageStatic.SYNCHRONIZE_GET_USER_CASES_DISPUTE_TIMER + "_FAIL");
-                                            taskMessageVO.setMessageTitle("定时同步CASE_dispute失败!");
-                                            taskMessageVO.setMessageContext("CASE_dispute调用API失败:" + res);
-                                            taskMessageVO.setMessageTo(taskGetUserCases.getUserid());
-                                            taskMessageVO.setMessageFrom("system");
-                                            taskMessageVO.setOrderAndSeller("CASE_dispute定时任务:" + taskGetUserCases.getId());
-                                            siteMessageService.addSiteMessage(taskMessageVO);
-
-                                        }
                                         logger.error("定时同步CASE_dispute的API失败"+res+"\n\nXML:"+xml);
-
                                     }
                                     String Ack = "";
                                     try{
@@ -399,18 +305,6 @@ public class ScheduleGetUserCasesTimerImpl implements IScheduleGetUserCasesTimer
                                             }
                                         }
                                     } else {
-                                        List<PublicSitemessage> list1 = siteMessageService.selectPublicSitemessageByMessage("synchronize_get_user_cases_dispute_timer_FAIL", "CASE_dispute定时任务:" + taskGetUserCases.getId());
-                                        if(list1==null||list1.size()==0){
-                                            TaskMessageVO taskMessageVO = new TaskMessageVO();
-                                            taskMessageVO.setMessageType(SiteMessageStatic.SYNCHRONIZE_GET_USER_CASES_DISPUTE_TIMER + "_FAIL");
-                                            taskMessageVO.setMessageTitle("定时同步CASE_dispute失败!");
-                                            taskMessageVO.setMessageContext("CASE_dispute调用API失败:" + res);
-                                            taskMessageVO.setMessageTo(taskGetUserCases.getUserid());
-                                            taskMessageVO.setMessageFrom("system");
-                                            taskMessageVO.setOrderAndSeller("CASE_dispute定时任务:" + taskGetUserCases.getId());
-                                            siteMessageService.addSiteMessage(taskMessageVO);
-
-                                        }
                                         logger.error("定时同步CASE_dispute的参数错误"+res+"\n\nXML:"+xml);
                                     }
                                 }
@@ -418,50 +312,8 @@ public class ScheduleGetUserCasesTimerImpl implements IScheduleGetUserCasesTimer
                         }
                     }
                 }else{
-                    List<PublicSitemessage> list1=siteMessageService.selectPublicSitemessageByMessage("synchronize_get_user_cases_timer_FAIL","CASE定时任务:"+taskGetUserCases.getId());
-                    if(list1==null||list1.size()==0){
-                        TaskMessageVO taskMessageVO = new TaskMessageVO();
-                        taskMessageVO.setMessageType(SiteMessageStatic.SYNCHRONIZE_GET_USER_CASES_TIMER + "_FAIL");
-                        taskMessageVO.setMessageTitle("定时同步CASE失败!");
-                        taskMessageVO.setMessageContext("CASE调用API失败:" + res);
-                        taskMessageVO.setMessageTo(taskGetUserCases.getUserid());
-                        taskMessageVO.setMessageFrom("system");
-                        taskMessageVO.setOrderAndSeller("CASE定时任务:"+taskGetUserCases.getId());
-                        siteMessageService.addSiteMessage(taskMessageVO);
-
-                    }
                     logger.error("定时同步纠纷API参数错误"+res+"\n\nXML:"+xml);
                 }
-
             }
-    }
-
-    public String queryTrack(TradingOrderGetOrders order) throws Exception {
-        BufferedReader in = null;
-        String content = null;
-        String trackNum=order.getShipmenttrackingnumber();
-        String token=(URLEncoder.encode("RXYaxblwfBeNY+2zFVDbCYTz91r+VNWmyMTgXE4v16gCffJam2FcsPUpiau6F8Yk"));
-        String url="http://api.91track.com/track?culture=zh-CN&numbers="+trackNum+"&token="+token;
-        /*String url="http://api.91track.com/track?culture=en&numbers="+"RD275816257CN"+"&token="+token;*/
-        HttpClient client=new DefaultHttpClient();
-        HttpGet get=new HttpGet();
-        get.setURI(new URI(url));
-        HttpResponse response = client.execute(get);
-
-        in = new BufferedReader(new InputStreamReader(response.getEntity()
-                .getContent()));
-        StringBuffer sb = new StringBuffer("");
-        String line ="";
-        String NL = System.getProperty("line.separator");
-        while ((line = in.readLine()) != null) {
-            sb.append(line + NL);
-        }
-        in.close();
-        content = sb.toString();
-        String[] arr=content.split(",");
-        String content1="{"+arr[1]+"}";
-        JSONObject json = JSON.parseObject(content1);
-        String status=json.getString("Status");
-        return status;
     }
 }
