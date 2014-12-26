@@ -101,7 +101,7 @@ public class SynchronizeKeyMove implements ThreadPoolBaseInterFace {
                 int is=0;
                 for (Item item : li) {
                     KeyMoveListExample kmle = new KeyMoveListExample();
-                    kmle.createCriteria().andItemIdEqualTo(item.getItemID());
+                    kmle.createCriteria().andItemIdEqualTo(item.getItemID()).andTaskFlagNotEqualTo("2");
                     List<KeyMoveList> likml = this.keyMoveListMapper.selectByExample(kmle);
                     if(likml==null||likml.size()==0){
                         KeyMoveList kml = new KeyMoveList();

@@ -1093,6 +1093,76 @@ public class PublicDataDictExample {
             addCriterion("Selection_Mode not between", value1, value2, "selectionMode");
             return (Criteria) this;
         }
+
+        public Criteria andVariationsenabledIsNull() {
+            addCriterion("VariationsEnabled is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andVariationsenabledIsNotNull() {
+            addCriterion("VariationsEnabled is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andVariationsenabledEqualTo(String value) {
+            addCriterion("VariationsEnabled =", value, "variationsenabled");
+            return (Criteria) this;
+        }
+
+        public Criteria andVariationsenabledNotEqualTo(String value) {
+            addCriterion("VariationsEnabled <>", value, "variationsenabled");
+            return (Criteria) this;
+        }
+
+        public Criteria andVariationsenabledGreaterThan(String value) {
+            addCriterion("VariationsEnabled >", value, "variationsenabled");
+            return (Criteria) this;
+        }
+
+        public Criteria andVariationsenabledGreaterThanOrEqualTo(String value) {
+            addCriterion("VariationsEnabled >=", value, "variationsenabled");
+            return (Criteria) this;
+        }
+
+        public Criteria andVariationsenabledLessThan(String value) {
+            addCriterion("VariationsEnabled <", value, "variationsenabled");
+            return (Criteria) this;
+        }
+
+        public Criteria andVariationsenabledLessThanOrEqualTo(String value) {
+            addCriterion("VariationsEnabled <=", value, "variationsenabled");
+            return (Criteria) this;
+        }
+
+        public Criteria andVariationsenabledLike(String value) {
+            addCriterion("VariationsEnabled like", value, "variationsenabled");
+            return (Criteria) this;
+        }
+
+        public Criteria andVariationsenabledNotLike(String value) {
+            addCriterion("VariationsEnabled not like", value, "variationsenabled");
+            return (Criteria) this;
+        }
+
+        public Criteria andVariationsenabledIn(List<String> values) {
+            addCriterion("VariationsEnabled in", values, "variationsenabled");
+            return (Criteria) this;
+        }
+
+        public Criteria andVariationsenabledNotIn(List<String> values) {
+            addCriterion("VariationsEnabled not in", values, "variationsenabled");
+            return (Criteria) this;
+        }
+
+        public Criteria andVariationsenabledBetween(String value1, String value2) {
+            addCriterion("VariationsEnabled between", value1, value2, "variationsenabled");
+            return (Criteria) this;
+        }
+
+        public Criteria andVariationsenabledNotBetween(String value1, String value2) {
+            addCriterion("VariationsEnabled not between", value1, value2, "variationsenabled");
+            return (Criteria) this;
+        }
     }
 
     /**

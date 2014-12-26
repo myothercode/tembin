@@ -20,6 +20,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -175,6 +176,7 @@ public class ScheduleGetUserCasesTimerImpl implements IScheduleGetUserCasesTimer
                                     userCases.setHandled(0);
                                 }
                                 userCases.setCreateUser(taskGetUserCases.getUserid());
+                                userCases.setUpdatetime(new Date());
                                 iTradingGetUserCases.saveGetUserCases(userCases);
                                 String caseType = userCases.getCasetype();
                                 String caseId = userCases.getCaseid();

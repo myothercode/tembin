@@ -15,6 +15,10 @@ $(document).ready(function () {
     setTimeout(function(){
         loadEditor();
         initLoadImage();
+        var myEditor12=$("#myEditor12").val();
+        $("#myEditor").val(myEditor12);
+        var dynamicPic=$("#dynamicPic");
+        $("#dynamicPic").remove();
     },500)
 
 })
@@ -131,11 +135,13 @@ function setvTab(name,cursel,n){
         svt.className=i==cursel?"new_ic_1":"";
         con.style.display=i==cursel?"block":"none";
     }
-    if(cursel==3){
-        var myEditor12=$("#myEditor12").val();
-        $("#myEditor").val(myEditor12);
-        UE.getEditor('myEditor').setContent(myEditor12);
-    }
+    /*if(cursel==3){
+        setTimeout(function(){
+            var myEditor12=$("#myEditor12").val();
+            $("#myEditor").val(myEditor12);
+            UE.getEditor('myEditor').setContent(myEditor12);
+        },500)
+    }*/
 }
 
 /**编辑器的工具栏*/

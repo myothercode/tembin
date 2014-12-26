@@ -2,6 +2,7 @@ package com.order.controller;
 
 import com.base.aboutpaypal.domain.PaypalVO;
 import com.base.aboutpaypal.service.PayPalService;
+import com.base.database.publicd.model.PublicItemInformation;
 import com.base.database.publicd.model.PublicUserConfig;
 import com.base.database.trading.model.*;
 import com.base.database.userinfo.model.SystemLog;
@@ -27,6 +28,7 @@ import com.base.utils.threadpool.TaskMessageVO;
 import com.base.utils.xmlutils.SamplePaseXml;
 import com.common.base.utils.ajax.AjaxSupport;
 import com.common.base.web.BaseAction;
+import com.publicd.service.IPublicItemInformation;
 import com.publicd.service.IPublicUserConfig;
 import com.sitemessage.service.SiteMessageStatic;
 import com.trading.service.*;
@@ -88,7 +90,8 @@ public class GetOrdersController extends BaseAction {
     private ITradingGetUserCases iTradingGetUserCases;
     @Autowired
     private ITradingDataDictionary iTradingDataDictionary;
-
+    @Autowired
+    private IPublicItemInformation iPublicItemInformation;
    /* @Autowired
     private ITradingOrderVariation iTradingOrderVariation;
     @Autowired
@@ -749,6 +752,8 @@ public class GetOrdersController extends BaseAction {
         modelMap.put("recipient",lists1.get(0).getSelleruserid());
         modelMap.put("accs",accs);
         modelMap.put("flag","true");
+        modelMap.put("messageFlag","false");
+        modelMap.put("orderFlag","true");
         modelMap.put("palpayPrice",palpayPrice);
         /*Map<String,String> map=new HashMap<String, String>();
         map.put("orderStatus","Completed");
@@ -756,6 +761,19 @@ public class GetOrdersController extends BaseAction {
         map.put("buyaccount",lists.get(0).getBuyeruserid());
         List<OrderGetOrdersQuery> querys= this.iTradingOrderGetOrders.selectOrderGetOrdersByGroupList(map,page);*/
         return forword("orders/order/viewOrderGetOrders",modelMap);
+    }
+    //链接商品信息
+    @RequestMapping("/ajax/connectItemInformation.do")
+    @AvoidDuplicateSubmission(needRemoveToken = true)
+    @ResponseBody
+    public void connectItemInformation( HttpServletRequest request,HttpServletResponse response,ModelMap modelMap) throws Exception {
+        String sku=request.getParameter("sku");
+        PublicItemInformation information=iPublicItemInformation.selectItemInformationBySKU(sku);
+        if(information!=null){
+            AjaxSupport.sendSuccessText("",information);
+        }else{
+            AjaxSupport.sendFailText("fail","没有找到对应的商品信息");
+        }
     }
     //退款选项初始化
     @RequestMapping("/initIssueRefund.do")

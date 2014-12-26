@@ -104,6 +104,7 @@ public class MainTask {
         doList.add(SYNCHRONIZE_GET_ORDERS_SELLER_TRANSACTION_TIMER);
         doList.add(SYNCHRONIZE_GET_ORDERS_TRACK_NUMBER_TIMER);
         doList.add(PRICE_TRACKING_BY_ITEMID);
+      //  doList.add("Test_Test_test");
         if (isStartTimerTask==null) {
             isStartTimerTask = ApplicationContextUtil.getBean(CommAutowiredClass.class);
         }

@@ -102,10 +102,16 @@ public class AutoComplementTimerTaskRun extends BaseScheduledClass implements Sc
             } catch (Exception e) {
                 logger.error(returnString+":AutoComplementTimerTaskRun:",e);
             }
+            String doName = "";
+            if(tc.getDataType().equals("1")){
+                doName="自动补数";
+            }else if(tc.getDataType().equals("2")){
+                doName="库存补数";
+            }
             if("Success".equalsIgnoreCase(ack)||"Warning".equalsIgnoreCase(ack)){//修改数量成功
                 tc.setTaskFlag("1");
                 iTaskComplement.saveTaskComplement(tc);
-                String context="商品号为："+tc.getItemId()+";自动调整数量：由："+tc.getOldValue()+"调整为："+tc.getRepValue()+";执行成功！";
+                String context="商品号为："+tc.getItemId()+";执行方式："+doName+";自动调整数量：由"+tc.getOldValue()+"调整为："+tc.getRepValue()+";执行成功！";
                 try {
                     this.saveSystemLog(context,"AutoComplement",tc.getEbayAccount());
                 } catch (Exception e) {
@@ -113,7 +119,7 @@ public class AutoComplementTimerTaskRun extends BaseScheduledClass implements Sc
                 }
             }else{//修改数量失败
                 try {
-                    String context="商品号为："+tc.getItemId()+";自动调整数量：由："+tc.getOldValue()+"调整为："+tc.getRepValue()+";执行失败！失败原因如下："+SamplePaseXml.getSpecifyElementTextAllInOne(returnString,"Errors","LongMessage");
+                    String context="商品号为："+tc.getItemId()+";执行方式："+doName+";自动调整数量：由"+tc.getOldValue()+"调整为："+tc.getRepValue()+";执行失败！失败原因如下："+SamplePaseXml.getSpecifyElementTextAllInOne(returnString,"Errors","LongMessage");
                     this.saveSystemLog(context,"AutoComplement",tc.getEbayAccount());
                 } catch (Exception e) {
                     logger.error("记录日志报错:AutoComplementTimerTaskRun:",e);

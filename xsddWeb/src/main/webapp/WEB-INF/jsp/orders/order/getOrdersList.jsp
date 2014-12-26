@@ -122,7 +122,7 @@
                 <span onclick="moveFolder(1);" class="newusa_ici_del">移动到文件夹</span>
                 <span onclick="modifyOrderNums(1);" class="newusa_ici_del">上传跟踪号</span>
             </div>
-            <div class="tbbay"><a data-toggle="modal" href="javascript:#" onclick="getBindParm();" >同步eBay</a></div>
+            <div class="tbbay"><a data-toggle="modal" href="javascript:void(0)" onclick="getBindParm();" >同步eBay</a></div>
         </div>
     </div>
     <!--综合结束 -->

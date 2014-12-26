@@ -1,8 +1,8 @@
 package com.base.database.customtrading.mapper;
 
-import com.base.database.trading.model.TradingAutoComplement;
 import com.base.database.trading.model.TradingInventoryComplement;
 import com.base.domains.querypojos.ItemInventoryQuery;
+import com.base.domains.querypojos.SiHaiYouInventoryQuery;
 import com.base.mybatis.page.Page;
 
 import java.util.List;
@@ -30,4 +30,9 @@ public interface ItemInventoryQueryMapper {
      * @return
      */
     List<TradingInventoryComplement> selectInventoryComplementList(Map map,Page page);
+
+
+    List<ItemInventoryQuery> selectItemInventoryTableList(Map map, Page page);
+
+    List<SiHaiYouInventoryQuery> selectItemInventoryTableList1(Map map, Page page);
 }

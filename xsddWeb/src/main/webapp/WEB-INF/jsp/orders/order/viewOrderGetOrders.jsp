@@ -37,6 +37,10 @@
             $("#frameRight").attr("src",path + "/order/viewOrderAbstractRight.do?orderId=${orderId}");
             $("#frameDown").attr("src",path + "/order/viewOrderAbstractDown.do?orderId=${orderId}");*/
             $("#frameBuyHistory").attr("src",path + "/order/viewOrderBuyHistory.do?orderId=${orderId}");
+            var messageFlag="${messageFlag}";
+            if(messageFlag=='true'){
+                W.refreshTable();
+            }
         });
         function dialogClose(){
             W.OrderGetOrders.close();
@@ -286,6 +290,35 @@
             }
 
         });
+    function liTrack(){
+        window.open("http://www.91track.com/track");
+    }
+    function lianjieEbay(obj,itemid){
+        window.open(serviceItemUrl+itemid+"");
+    }
+        var itemInformation;
+    function connectItemInformation(sku){
+        var url=path+"/order/ajax/connectItemInformation.do?sku="+sku;
+        $().invoke(url,null,
+                [function(m,r){
+                    var url=path+"/information/addItemInformation.do?id="+ r.id+"&orderFlag=true";
+                    itemInformation = openMyDialog({title: '商品信息',
+                        content:'url:'+url,
+                        icon: 'succeed',
+                        width:725,
+                        height:700,
+                        parent:api,
+                        lock:true,
+                        zIndex:2000
+                    });
+                    Base.token();
+                },
+                    function(m,r){
+                        alert(r);
+                        Base.token();
+                    }]
+        );
+    }
     </script>
     <style>
         .table-a table{border:1px solid rgba(0, 0, 0, 0.23)
@@ -328,18 +361,29 @@
             <div class="new_tab_left"></div>
             <div class="new_tab_right"></div>
             <c:if test="${flag=='true'}">
-                <dt id="svt1" class="new_ic_1" onclick="setvTab('svt',1,4)">订单摘要</dt>
-                <dt id="svt2"  onclick="setvTab('svt',2,4)" class="">回复消息</dt>
+                <c:if test="${messageFlag=='true'}">
+                    <dt id="svt1"  class="" onclick="setvTab('svt',1,4)">订单摘要</dt>
+                    <dt id="svt2" class="new_ic_1"  onclick="setvTab('svt',2,4)">回复消息</dt>
+                </c:if>
+                <c:if test="${orderFlag=='true'}">
+                    <dt id="svt1" class="new_ic_1" onclick="setvTab('svt',1,4)">订单摘要</dt>
+                    <dt id="svt2"  onclick="setvTab('svt',2,4)" class="">回复消息</dt>
+                </c:if>
             </c:if>
             <c:if test="${flag=='false'}">
-                <dt id="svt2" class="new_ic_1"  onclick="setvTab('svt',2,4)" class="">回复消息</dt>
+                <dt id="svt2" class="new_ic_1"  onclick="setvTab('svt',2,4)" >回复消息</dt>
             </c:if>
         </div></td>
     </tr>
 
     </tbody></table>
 <c:if test="${flag=='true'}">
-<div id="new_svt_1"  style="display: block;">
+    <c:if test="${messageFlag=='true'}">
+        <div id="new_svt_1"  style="display: none;">
+    </c:if>
+    <c:if test="${orderFlag=='true'}">
+        <div id="new_svt_1"  style="display: block;">
+    </c:if>
 </c:if>
 <c:if test="${flag=='false'}">
 <div id="new_svt_1"  style="display: none;">
@@ -408,7 +452,7 @@
         <tr>
             <td><table width="100%" border="0">
                 <tbody><tr>
-                    <td width="41%" rowspan="10"><img src="${pictures[status.index]}" width="297" height="247"></td>
+                    <td width="41%" rowspan="10"><img onclick="lianjieEbay(this,${orders[status.index].itemid})" src="${pictures[status.index]}" width="297" height="247"></td>
                     <td width="21%" height="30"><strong>Item No.</strong><br></td>
                     <td width="38%" height="30">${orders[status.index].itemid}</td>
                 </tr>
@@ -430,7 +474,7 @@
                 </tr>
                 <tr>
                     <td height="30"><strong>SKU</strong><br></td>
-                    <td width="38%" height="30">${orders[status.index].sku}</td>
+                    <td width="38%" height="30"><a href="javascript:void(0)" onclick="connectItemInformation('${orders[status.index].sku}');">${orders[status.index].sku}</a></td>
                 </tr>
                 <tr>
                     <td height="30"><strong>买家选择运输</strong><br></td>
@@ -515,7 +559,13 @@
     </div>
 </div>
 <c:if test="${flag=='true'}">
-<div style="display: none;" id="new_svt_2">
+
+    <c:if test="${messageFlag=='true'}">
+        <div style="display: block;" id="new_svt_2">
+    </c:if>
+    <c:if test="${orderFlag=='true'}">
+        <div style="display: none;" id="new_svt_2">
+    </c:if>
 </c:if>
 <c:if test="${flag=='false'}">
 <div style="display: block;" id="new_svt_2">
@@ -528,7 +578,7 @@
             <td rowspan="5" valign="top" style="margin-left:20px; padding-left:15px; padding-top:20px; padding-right:20px; line-height:25px;background:#F4F4F4"><strong>订单号</strong><br>
                 ${order.orderid}(已配货)<br>
                 <strong>物流跟踪号</strong><br>
-                ${order.shipmenttrackingnumber}<br>
+                <a href="javascript:void(0)" onclick="liTrack();">${order.shipmenttrackingnumber}</a><br>
                 <strong>发货时间：</strong><br>
                 ${order.shippedtime}<br>
                 <strong>付款时间：</strong><br>
@@ -544,7 +594,7 @@
                     </tr>
                     <tr>
                         <td><img src="${pictures[status.index]}" width="46" height="46"></td>
-                        <td style=" color:#5F93D7">${orders[status.index].title}</td>
+                        <td style=" color:#5F93D7"><a href="javascript:void(0)" onclick="lianjieEbay(this,${orders[status.index].itemid});">${orders[status.index].title}</a></td>
                     </tr>
                     </tbody></table>
                 </c:forEach>

@@ -3,6 +3,7 @@ package com.test.controller;
 import com.base.database.publicd.model.PublicDataDict;
 import com.base.database.publicd.model.PublicUserConfig;
 import com.base.database.trading.model.TradingDataDictionary;
+import com.base.database.userinfo.model.SystemLog;
 import com.base.database.userinfo.model.UsercontrollerOrg;
 import com.base.database.userinfo.model.UsercontrollerUser;
 import com.base.domains.LoginVO;
@@ -13,6 +14,7 @@ import com.base.utils.cache.DataDictionarySupport;
 import com.base.utils.cache.SessionCacheSupport;
 import com.base.utils.cache.TempStoreDataSupport;
 import com.base.utils.common.ObjectUtils;
+import com.base.utils.common.SystemLogUtils;
 import com.base.utils.exception.Asserts;
 import com.base.utils.mailUtil.MailUtils;
 import com.common.base.utils.ajax.AjaxSupport;
@@ -41,10 +43,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by chace.cai on 2014/6/20.
@@ -143,6 +142,17 @@ public class TextContraller extends BaseAction {
         SessionCacheSupport.remove(sessionVO.getLoginId());
         sessionVO.setSessionID(request.getSession().getId());
         SessionCacheSupport.put(sessionVO);
+
+        SystemLog systemLog=new SystemLog();
+        systemLog.setCreatedate(new Date());
+        systemLog.setEventname(SystemLogUtils.USER_LOGIN_LOG);
+        systemLog.setOperuser(sessionVO.getLoginId());
+        systemLog.setEventdesc("用户登陆！");
+        try {
+            SystemLogUtils.saveLog(systemLog);
+        } catch (Exception e) {
+            logger.error("记录登陆日志报错!",e);
+        }
         return redirect("mainFrame.do");
         //modelMap.put("ccc",sessionVO.getUserName());
         //return forword("test",modelMap);
@@ -153,7 +163,7 @@ public class TextContraller extends BaseAction {
         SessionVO sessionVO=SessionCacheSupport.getSessionVO();
         SessionCacheSupport.remove(sessionVO.getLoginId());
         HttpSession session = request.getSession();
-        session.removeAttribute(SessionCacheSupport.USERLOGINID);
+        //session.removeAttribute(SessionCacheSupport.USERLOGINID);
         session.invalidate();
         return redirect("/login.jsp");
     }

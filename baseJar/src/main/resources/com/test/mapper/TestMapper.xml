@@ -6,7 +6,7 @@
  </select>
 
 <update id="updateTest" parameterType="map">
-    update testTable d set d.StringV=#{StringV} where d.id=#{id}
+    update public_data_dict d set d.VariationsEnabled=#{VariationsEnabled} where d.id=#{id}
 </update>
 
 <select id="selectForCatchData" parameterType="map" resultType="com.base.database.publicd.model.PublicDataDict">
@@ -18,6 +18,15 @@
     (select DISTINCT public_data_dict.item_parent_id from public_data_dict where item_type='categorySpecifics')
     and site_id = #{siteID}
 </select>
+
+
+    <select id="selectpddhData" parameterType="map" resultType="com.base.database.publicd.model.PublicDataDict">
+        select id,item_id itemId,site_id siteId,
+        VariationsEnabled variationsenabled
+        from public_data_dict
+        where VariationsEnabled  is null AND site_id=#{siteid} LIMIT 10
+
+    </select>
 
 
 </mapper>

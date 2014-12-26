@@ -642,7 +642,11 @@ public class ListingItemController extends BaseAction {
         String id = request.getParameter("id");
         String [] ids = id.split(",");
         String remark = request.getParameter("remark");
-        remark = new String(remark.getBytes("ISO-8859-1"),"UTF-8");
+        if(remark==null||"".equals(remark)){
+            remark="";
+        }else {
+            remark = new String(remark.getBytes("ISO-8859-1"), "UTF-8");
+        }
         List<TradingListingData> litld = new ArrayList<TradingListingData>();
         for(int i=0;i<ids.length;i++) {
             TradingListingData tld = this.iTradingListingData.selectById(Long.parseLong(ids[i]));

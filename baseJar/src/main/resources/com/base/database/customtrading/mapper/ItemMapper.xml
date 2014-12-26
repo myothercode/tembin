@@ -124,4 +124,10 @@
         ) ebayaccount where items.ebay_name=ebayaccount.ebay_account
         order by ${descStr} ${desStr}
     </select>
+
+
+    <select id="selectByEbayIdSiteList" resultMap="BaseResultMap" parameterType="map">
+        select site from trading_item where ebay_account=#{ebayAccount} group by site
+    </select>
+
 </mapper>

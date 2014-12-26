@@ -17,50 +17,63 @@
     <script type="text/javascript" src=<c:url value="/js/jquery-ui/multiselect/jquery.multiselect.js"/>></script>
 
     <script>
+        var selextCount_=0;
+        var nowCoun_=0;
         $(document).ready(function() {
-            $("select").each(function(i,d){
+            selextCount_=$("select").length;
+            $("select").each(function (i, d) {
                 var id = $(d).attr("id");
-                var urll = path+'/ajax/countryList.do?parentid='+id;
+                var urll = path + '/ajax/countryList.do?parentid=' + id;
                 $().invoke(
                         urll,
                         {},
                         [function (m, r) {
+                            nowCoun_++;
                             var htm = "";
-                            for(var i = 0;i< r.length;i++){
+                            for (var i = 0; i < r.length; i++) {
                                 var data = r[i];
-                                htm+="<option value='"+data.value+"'>"+data.name+"</option>";
+                                htm += "<option value='" + data.value + "'>" + data.name + "</option>";
                             }
                             $(d).append(htm);
+
+                            if(nowCoun_>=selextCount_){
+                                inisSelectFun();
+                                initfun();
+                                loadSelectValue();
+                                nowCoun_=0;
+                            }
+
                         },
                             function (m, r) {
+                                nowCoun_++;
                             }]
                 );
             });
-           setTimeout(function(){
-               $("select").multiselect({
-                   selectList:6,
-                   click: function(event, ui){
-                       //oldAlert(ui.value + ' ' + (ui.checked ? 'checked' : 'unchecked') );
-                       if(!ui.checked){
-                           $(this).parent().find("input[type='checkbox'][name='county']").attr("checked",false);
-                       }
-                   },
-                   close: function(){
-                       tjSelect();
-                   },
-                   position: {
-                       my: 'left bottom',
-                       at: 'left top'
-                   }
-               });
-                },100);
-            //初始化选择的点击事件
-            initfun();
-            setTimeout(function(){
-                loadSelectValue();
-            },200);
+        })
 
-        });
+        function inisSelectFun(){
+            $('select').multiselect({
+                selectList:6,
+                click: function(event, ui){
+                    //oldAlert(ui.value + ' ' + (ui.checked ? 'checked' : 'unchecked') );
+                    if(!ui.checked){
+                        $(this).parent().find("input[type='checkbox'][name='county']").attr("checked",false);
+                    }
+                },
+                close: function(){
+                    tjSelect();
+                },
+                position: {
+                    my: 'left bottom',
+                    at: 'left top'
+                }
+            });
+        };
+
+
+
+
+
         function loadSelectValue(){
             var strAbc="";
             <c:forEach items="${litam}" var="litam">
@@ -222,7 +235,7 @@
         <br>
         <c:forEach var="data" items="${li3}">
             <c:if test="${data.name1=='Additional Locations'}">
-                <input type="checkbox" name="location" value="${data.id}" value1="${data.name}">${data.name}
+                <input type="checkbox" name="location" value="${data.value}" value1="${data.name}">${data.name}
             </c:if>
         </c:forEach>
     </div>

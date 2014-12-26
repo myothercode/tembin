@@ -83,7 +83,7 @@ public class ItemReportTaskRun extends BaseScheduledClass implements Scheduledab
 
                 for(int i=0;i<m.size();i++){
                     try {
-                        List<TradingListingReport> litlr = tldm.selectByNowDate((String) m.get(i + ""));
+                        List<TradingListingReport> litlr = tldm.selectByNowDate((String) m.get(i + ""),uu.getUserId()+"");
                         if(litlr!=null&&litlr.size()>0){
                             TradingListingReport tlr = litlr.get(0);
                             if(m.get(i+"").equals("1")){

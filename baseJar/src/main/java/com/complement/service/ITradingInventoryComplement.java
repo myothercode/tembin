@@ -24,4 +24,6 @@ public interface ITradingInventoryComplement {
     TradingInventoryComplement selectById(long id);
 
     List<TradingInventoryComplementMore> slectByParentId(long parentId);
+
+    TradingInventoryComplement selectBySkuOrEbayAccount(String sku, String ebayAccount);
 }

@@ -228,6 +228,9 @@
                         }]
             );
             onloadTable(loadurl);
+            if(localStorage.getItem("siteListStr")!=null){
+                $("#li_countyselect").html(localStorage.getItem("siteListStr"));
+            }
         });
         var returnItem ="";
         function addItem(){

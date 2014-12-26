@@ -8,9 +8,11 @@ import com.base.domains.querypojos.BuyerRequirementDetailsQuery;
 import com.base.domains.querypojos.PaypalQuery;
 import com.base.domains.querypojos.ShippingdetailsQuery;
 import com.base.domains.userinfo.UsercontrollerEbayAccountExtend;
+import com.base.domains.userinfo.UsercontrollerUserExtend;
 import com.base.mybatis.page.Page;
 import com.base.mybatis.page.PageJsonBean;
 import com.base.userinfo.service.SystemUserManagerService;
+import com.base.userinfo.service.impl.SystemUserManagerServiceImpl;
 import com.base.utils.annotations.AvoidDuplicateSubmission;
 import com.base.utils.cache.DataDictionarySupport;
 import com.base.utils.cache.SessionCacheSupport;
@@ -60,6 +62,7 @@ public class ShippingDetailsController extends BaseAction{
     private IUsercontrollerEbayAccount iUsercontrollerEbayAccount;
     @Autowired
     private SystemUserManagerService systemUserManagerService;
+
     /**
      * 查询数据并展示
      * @param modelMap
@@ -71,7 +74,17 @@ public class ShippingDetailsController extends BaseAction{
     public void loadShippingDetailsList(HttpServletRequest request,ModelMap modelMap,CommonParmVO commonParmVO){
         SessionVO c= SessionCacheSupport.getSessionVO();
         Map m = new HashMap();
-        m.put("userid",c.getId());
+        if(systemUserManagerService.isAdminRole()){
+            List<UsercontrollerUserExtend> liuue = systemUserManagerService.queryAllUsersByOrgID("yes");
+            List<String> liue = new ArrayList<String>();
+            for(UsercontrollerUserExtend uue:liuue){
+                liue.add(uue.getUserId()+"");
+            }
+            liue.add(c.getId()+"");
+            m.put("liue",liue);
+        }else{
+            m.put("userid",c.getId());
+        }
         String checkFlag = request.getParameter("checkFlag");
         m.put("checkFlag",checkFlag);
         /**分页组装*/
@@ -89,7 +102,16 @@ public class ShippingDetailsController extends BaseAction{
                 }
             }
             sq.setLits(lits);
-            sq.setLiti(this.iTradingInternationalShippingServiceOption.selectByParentid(sq.getId()));
+            List<TradingInternationalshippingserviceoption> liin = this.iTradingInternationalShippingServiceOption.selectByParentid(sq.getId());
+            for(TradingInternationalshippingserviceoption in: liin){
+                if(in.getShippingservice()!=null){
+                    TradingDataDictionary tdds = DataDictionarySupport.getTradingDataDictionaryByID(Long.parseLong(in.getShippingservice()));
+                    if(tdds!=null) {
+                        in.setShippingservice(tdds.getName());
+                    }
+                }
+            }
+            sq.setLiti(liin);
         }
         jsonBean.setList(lisq);
         jsonBean.setTotal((int)page.getTotalCount());

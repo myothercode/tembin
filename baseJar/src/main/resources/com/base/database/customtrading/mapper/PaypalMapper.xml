@@ -33,6 +33,10 @@
         <if test="userid!=null">
             and paypal.create_user = #{userid}
         </if>
+        <if test="liue!=null">
+            and paypal.create_user in
+            <foreach item="ue" index="index" collection="liue" open="(" separator="," close=")">#{ue,jdbcType=VARCHAR}</foreach>
+        </if>
         order by id desc
     </select>
 </mapper>

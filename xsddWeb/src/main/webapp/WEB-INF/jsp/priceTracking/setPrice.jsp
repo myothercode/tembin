@@ -29,7 +29,9 @@
                     {title:"最大数量",name:"bidcount",width:"5%",align:"left"},
                     {title:"卖家",name:"sellerusername",width:"5%",align:"left"},
                     {title:"价格",name:"currentprice",width:"5%",align:"left"},
-                    {title:"单位",name:"currencyid",width:"5%",align:"left"}
+                    {title:"单位",name:"currencyid",width:"5%",align:"left"},
+                    {title:"开始时间",name:"starttime",width:"8%",align:"left"},
+                    {title:"结束时间",name:"endtime",width:"8%",align:"left"}
                 ],
                 selectDataNow:false,
                 isrowClick:false,
@@ -51,7 +53,9 @@
                     {title:"最大数量",name:"bidcount",width:"5%",align:"left"},
                     {title:"卖家",name:"sellerusername",width:"5%",align:"left"},
                     {title:"价格",name:"currentprice",width:"5%",align:"left"},
-                    {title:"单位",name:"currencyid",width:"5%",align:"left"}
+                    {title:"单位",name:"currencyid",width:"5%",align:"left"},
+                    {title:"开始时间",name:"starttime",width:"8%",align:"left"},
+                    {title:"结束时间",name:"endtime",width:"8%",align:"left"}
                 ],
                 selectDataNow:false,
                 isrowClick:false,

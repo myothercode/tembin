@@ -3,6 +3,7 @@ package com.base.utils.scheduleabout.commontask;
 import com.base.database.keymove.mapper.KeyMoveListMapper;
 import com.base.database.keymove.model.KeyMoveList;
 import com.base.database.keymove.model.KeyMoveListExample;
+import com.base.database.trading.model.TradingDataDictionary;
 import com.base.database.trading.model.TradingItemWithBLOBs;
 import com.base.database.trading.model.TradingProgress;
 import com.base.database.userinfo.model.SystemLog;
@@ -48,7 +49,10 @@ public class KeyMoveListTaskRun extends BaseScheduledClass implements Scheduleda
         UserInfoService userInfoService = (UserInfoService) ApplicationContextUtil.getBean(UserInfoService.class);
         ITradingItem iTradingItem = (ITradingItem) ApplicationContextUtil.getBean(ITradingItem.class);
         KeyMoveListExample kmle = new KeyMoveListExample();
-        kmle.createCriteria().andTaskFlagEqualTo("0");
+        List<String> lis = new ArrayList<String>();
+        lis.add("0");//未执行
+        lis.add("3");//执行一次，且失败，
+        kmle.createCriteria().andTaskFlagIn(lis);
         List<KeyMoveList> likml = keyMapper.selectByExampleWithBLOBs(kmle);
         if(likml!=null&&likml.size()>0&&likml.size()>=20) {
             likml = filterLimitList(likml);//限制每次的执行条数
@@ -86,7 +90,16 @@ public class KeyMoveListTaskRun extends BaseScheduledClass implements Scheduleda
                         categoryName = categoryName.replace(":","->");
                         Item itemrs = SamplePaseXml.getItem(res);
                         itemrs.setUUID(kml.getUserId() + "");
-                        itemrs.setSite(kml.getSiteId());
+                        Map ms = new HashMap();
+                        ms.put("type","site");
+                        ms.put("value",itemrs.getSite());
+                        List<TradingDataDictionary> litdd = DataDictionarySupport.getTradingDataDictionaryByMap(ms);
+                        if(litdd!=null&&litdd.size()>0){
+                            itemrs.setSite(litdd.get(0).getId()+"");
+                        }else{
+                            logger.error("通过站点值，查询站点信息报错");
+                            continue;
+                        }
                         iTradingItem.saveListingItem(itemrs, kml,categoryName);
                         //保存成功更新任务表
                         kml.setTaskFlag("1");
@@ -96,11 +109,19 @@ public class KeyMoveListTaskRun extends BaseScheduledClass implements Scheduleda
                         tp.setEndDate(new Date());
                         iKeyMoveProgress.saveProgress(tp);
                     } else {//ＡＰＩ请求失败
-                        kml.setTaskFlag("2");
+                        if("3".equals(kml.getTaskFlag())){
+                            kml.setTaskFlag("2");
+                        }else{
+                            kml.setTaskFlag("3");
+                        }
                         keyMapper.updateByPrimaryKeySelective(kml);
                     }
                 } catch (Exception e) {
-                    kml.setTaskFlag("2");
+                    if("3".equals(kml.getTaskFlag())){
+                        kml.setTaskFlag("2");
+                    }else{
+                        kml.setTaskFlag("3");
+                    }
                     keyMapper.updateByPrimaryKeySelective(kml);
                     logger.error("keyMoveListTaskRun:",e);
                 }

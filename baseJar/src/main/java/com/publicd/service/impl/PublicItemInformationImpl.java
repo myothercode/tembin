@@ -196,6 +196,8 @@ public class PublicItemInformationImpl implements com.publicd.service.IPublicIte
 
     @Override
     public void importItemInformation(File file ,String fileName) throws Exception {
+
+
         InputStream inputStream=new FileInputStream(file);
         if(fileName.contains("xlsx")){
             importExcel2007(inputStream);

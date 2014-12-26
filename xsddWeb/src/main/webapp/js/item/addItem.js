@@ -426,7 +426,7 @@ function saveData(objs,name) {
         $('#form').validationEngine('updatePromptsPosition')
         return;
     }
-    if(countChoosePic()>12){
+    if(countChoosePic()>11){
         alert("最多只能上传12张图片，上传图片已超过上传限制！");
         return;
     }

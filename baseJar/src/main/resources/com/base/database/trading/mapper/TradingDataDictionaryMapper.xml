@@ -149,6 +149,9 @@
       #{value,jdbcType=VARCHAR}, #{value1,jdbcType=VARCHAR}, #{name1,jdbcType=VARCHAR}, 
       #{parentId,jdbcType=BIGINT}, #{imgurl,jdbcType=VARCHAR}, #{uuid,jdbcType=VARCHAR}, 
       #{dataDesc,jdbcType=VARCHAR})
+      <selectKey resultType="long" keyProperty="id" order="AFTER">
+          SELECT LAST_INSERT_ID()
+      </selectKey>
   </insert>
   <insert id="insertSelective" parameterType="com.base.database.trading.model.TradingDataDictionary">
     <!--
@@ -220,6 +223,9 @@
         #{dataDesc,jdbcType=VARCHAR},
       </if>
     </trim>
+      <selectKey resultType="long" keyProperty="id" order="AFTER">
+          SELECT LAST_INSERT_ID()
+      </selectKey>
   </insert>
   <select id="countByExample" parameterType="com.base.database.trading.model.TradingDataDictionaryExample" resultType="java.lang.Integer">
     <!--

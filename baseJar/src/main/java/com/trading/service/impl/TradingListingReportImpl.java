@@ -36,9 +36,9 @@ public class TradingListingReportImpl implements com.trading.service.ITradingLis
     }
 
     @Override
-    public List<TradingListingReport> selectByNowDate(String dataType) throws DateParseException {
+    public List<TradingListingReport> selectByNowDate(String dataType,String userId) throws DateParseException {
         TradingListingReportExample tlse = new TradingListingReportExample();
-        tlse.createCriteria().andCreateDateBetween(DateUtils.turnToDateStart(new Date()),DateUtils.turnToDateEnd(new Date())).andDatatypeEqualTo(dataType);
+        tlse.createCriteria().andCreateDateBetween(DateUtils.turnToDateStart(new Date()),DateUtils.turnToDateEnd(new Date())).andDatatypeEqualTo(dataType).andUserIdEqualTo(userId);
         return this.tradingListingReportMapper.selectByExample(tlse);
     }
 

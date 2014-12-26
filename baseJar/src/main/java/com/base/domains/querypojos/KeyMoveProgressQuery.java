@@ -18,6 +18,66 @@ public class KeyMoveProgressQuery{
 
     private Long progressId;
 
+    private String startDate;
+
+    private String endDate;
+
+    private String ebayAccount;
+
+    private String waitcount;
+
+    private String docount;
+
+    private String errorcount;
+
+    public String getWaitcount() {
+        return waitcount;
+    }
+
+    public void setWaitcount(String waitcount) {
+        this.waitcount = waitcount;
+    }
+
+    public String getDocount() {
+        return docount;
+    }
+
+    public void setDocount(String docount) {
+        this.docount = docount;
+    }
+
+    public String getErrorcount() {
+        return errorcount;
+    }
+
+    public void setErrorcount(String errorcount) {
+        this.errorcount = errorcount;
+    }
+
+    public String getEbayAccount() {
+        return ebayAccount;
+    }
+
+    public void setEbayAccount(String ebayAccount) {
+        this.ebayAccount = ebayAccount;
+    }
+
+    public String getStartDate() {
+        return startDate;
+    }
+
+    public void setStartDate(String startDate) {
+        this.startDate = startDate;
+    }
+
+    public String getEndDate() {
+        return endDate;
+    }
+
+    public void setEndDate(String endDate) {
+        this.endDate = endDate;
+    }
+
     public Long getUserId() {
         return userId;
     }

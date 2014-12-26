@@ -2,7 +2,6 @@ package com.inventory.service.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.support.spring.FastJsonHttpMessageConverter;
 import com.base.aboutpaypal.paypalutils.PaypalxmlUtil;
 import com.base.database.customtrading.mapper.ItemInventoryQueryMapper;
 import com.base.database.inventory.mapper.ItemInventoryMapper;
@@ -12,6 +11,7 @@ import com.base.database.inventory.model.ItemInventoryExample;
 import com.base.database.inventory.model.ShihaiyouInventory;
 import com.base.database.inventory.model.ShihaiyouInventoryExample;
 import com.base.domains.querypojos.ItemInventoryQuery;
+import com.base.domains.querypojos.SiHaiYouInventoryQuery;
 import com.base.mybatis.page.Page;
 import com.base.utils.common.DateUtils;
 import com.base.utils.httpclient.HttpClientUtil;
@@ -19,10 +19,7 @@ import com.inventory.service.ItemInventoryStatic;
 import org.apache.http.client.HttpClient;
 import org.apache.http.message.BasicHeader;
 import org.apache.log4j.Logger;
-import org.dom4j.Document;
-import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
-import org.dom4j.xpath.DefaultXPath;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -281,6 +278,30 @@ public class ItemInventoryImpl implements com.inventory.service.IItemInventory {
     @Override
     public List<ItemInventoryQuery> selectBySku(Map map,Page page){
         return this.itemInventoryQueryMapper.selectItemInventoryList(map,page);
+    }
+
+    @Override
+    public List<ItemInventory> selectBySku(String sku){
+        ItemInventoryExample iie = new ItemInventoryExample();
+        iie.createCriteria().andSkuEqualTo(sku);
+        return this.itemInventoryMapper.selectByExample(iie);
+    }
+
+    @Override
+    public List<ShihaiyouInventory> selectShiHaiYouByBySku(String sku){
+        ShihaiyouInventoryExample shie = new ShihaiyouInventoryExample();
+        shie.createCriteria().andSkuEqualTo(sku).andStatusEqualTo("Available");//查询可用库存
+        return this.shihaiyouInventoryMapper.selectByExample(shie);
+    }
+
+    @Override
+    public List<ItemInventoryQuery> selectItemInventoryTableList(Map map, Page page) {
+        return itemInventoryQueryMapper.selectItemInventoryTableList(map,page);
+    }
+
+    @Override
+    public List<SiHaiYouInventoryQuery> selectItemInventoryTableList1(Map map, Page page) {
+        return itemInventoryQueryMapper.selectItemInventoryTableList1(map,page);
     }
 
 }

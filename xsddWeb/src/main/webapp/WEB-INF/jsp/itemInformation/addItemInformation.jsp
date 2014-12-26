@@ -529,7 +529,9 @@
                     </tbody></table>
                 <div style="bottom: 1px;">
                     <div class="modal-footer">
-                        <button type="button" class="net_put" onclick="submitCommit();">保存</button>
+                        <c:if test="${orderFlag=='false'}">
+                            <button type="button" class="net_put" onclick="submitCommit();">保存</button>
+                        </c:if>
                         <button type="button" class="net_put_1" data-dismiss="modal" onclick="closedialog();">关闭</button>
                         <button type="button" class="net_put" style="margin-left: 20px;" onclick="setvTab('svt',3,3)">下一步</button>
                     </div>
@@ -542,7 +544,9 @@
                     </tbody></table>
                 <div style="bottom: 1px;">
                     <div class="modal-footer">
-                        <button type="button" class="net_put" onclick="submitCommit();">保存</button>
+                        <c:if test="${orderFlag=='false'}">
+                            <button type="button" class="net_put" onclick="submitCommit();">保存</button>
+                        </c:if>
                         <button type="button" class="net_put_1" data-dismiss="modal" onclick="closedialog();">关闭</button>
 
                     </div>
@@ -550,11 +554,14 @@
             </div>
 
             <div style="display: none;height: 500px;" id="new_svt_3">
+                <div id="dynamicPic" style="width: 600" align="center"><img  src="/xsddWeb/img/longLoading.gif" /></div>
                 <script id="myEditor" type="text/plain" style="width:670px;height:400px;"></script>
                 <textarea id="myEditor12" style="display: none">${itemInformation.description}</textarea>
                 <div style="bottom: 1px;">
                     <div class="modal-footer">
-                        <button type="button" class="net_put" onclick="submitCommit();">保存</button>
+                        <c:if test="${orderFlag=='false'}">
+                            <button type="button" class="net_put" onclick="submitCommit();">保存</button>
+                        </c:if>
                         <button type="button" class="net_put_1" data-dismiss="modal" onclick="closedialog();">关闭</button>
                         <button type="button" class="net_put" style="margin-left: 20px;" onclick="setvTab('svt',2,3)">下一步</button>
                     </div>

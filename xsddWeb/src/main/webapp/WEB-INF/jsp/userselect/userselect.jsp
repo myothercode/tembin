@@ -41,46 +41,89 @@
                //初始化进度条，如果已经初始化则会跳过
             updateProgressbarValue();   //调用函数
         });
+
+        function getTableStr(ebayAccount,startDate,endDate,count,errorcount,waitcount,id){
+            var html = '<table width="90%">'
+                    + '<tr style="height: 34px;">'
+                    + '<td style="text-align: right;">ebay账号：</td>'
+                    + '<td>'
+                    + '<span id="ebyac">'+ebayAccount
+                    + '</span>'
+                    + '<span style="padding-left: 200px;">'
+                    + '已用时间：'
+                    + '</span>'
+                    + '<span id="start'+id+'">'+startDate
+                    + '</span>'
+                    + '<span style="padding-left: 100px;">'
+                    + '剩余时间：'
+                    + '</span>'
+                    + '<span id="end'+id+'">'+endDate
+                    + '</span>'
+                    + '</td>'
+                    + '</tr>'
+                    + '<tr>'
+                    + '<td width="200px;" style="text-align: right;">搬家进度：</td>'
+                    + '<td>'
+                    + '<div id="progress'+id+'" style="">'
+                    + '<div class="progress-label" id="progress-label'+id+'"></div>'
+                    + '</div>'
+                    + '</td>'
+                    + '</tr>'
+                    + '<tr>'
+                    + '<td></td>'
+                    + '<td style="text-align: center">'
+                    + '(<span id="compcount'+id+'">'+count+'</span>个商品已搬家，<span id="errorcount'+id+'">'+errorcount+'</span>个商品搬家失败，<span id="waitcount'+id+'">'+waitcount+'</span>个商品等待搬家)'
+                    + '</td>'
+                    + '</tr>'
+                    + '</table>';
+            return html;
+        }
         function updateProgressbarValue(){
+            val=0;
             var urll =path+ "/keymove/keyProgress.do";
             $().invoke(
                     urll,
                     {},
                     [function (m, r) {
-                        $("#ebyac").text(r.ebayAccount);
                         var rs = r.limp;
-                        if(rs==null||rs==""){
-                            $("#mainTable").hide();
-                        }else{
-                            $("#mainTable").show();
-                        }
-                        var countNumber = 0;
-                        var count = 0;
-                        var errorcount=0
-                        $("#start").text(formatSeconds(r.startDate));
-                        for (var i = 0; i < rs.length; i++) {
-                            if (rs[i].taskFlag == "1") {
-                                count = rs[i].tjNumber;
-                            }else if (rs[i].taskFlag == "2") {
-                                errorcount = rs[i].tjNumber;
-                            }
-                            countNumber += rs[i].tjNumber;
-                        }
+                        if(rs==null||rs.length==0){
+                            val=100;
+                        }else {
+                            var isFlag = false;
+                            for (var i = 0; i < rs.length; i++) {
+                                var data = rs[i];
+                                var html = getTableStr(data.ebayAccount, formatSeconds(data.startDate), formatSeconds(parseInt(data.startDate) / (parseInt(data.docount) + parseInt(data.errorcount)) * (parseInt(data.waitcount) + parseInt(data.docount) + parseInt(data.errorcount))), data.docount, data.errorcount, data.waitcount, data.progressId);
+                                if ($("#progress" + data.progressId).html() == "" || $("#progress" + data.progressId).html() == null || $("#progress" + data.progressId).html() == 'undefined') {
+                                    $("#mainTable").append(html);
+                                    //oldAlert(html);
+                                }
 
-                        $("#end").text(formatSeconds(parseInt(r.startDate)/(count+errorcount)*(countNumber-count-errorcount)));
-                        $("#compcount").text(count+"");
-                        $("#errorcount").text(errorcount);
-                        $("#waitcount").text(countNumber-count-errorcount);
-                        val = (count+errorcount) / countNumber * 100;
-                        $("#progress").progressbar({value: val,
-                            change:function(){
-                                $(".progress-label").text(parseFloat($("#progress").progressbar("value")).toFixed(2)+"%");
-                            },
-                            complete:function(){
-                                $(".progress-label").text("100%");
-                            }});
-                        if (val < 100) {
-                            setTimeout(updateProgressbarValue, 2000);    //使用setTimeout函数延迟调用updateProgressbarValue函数，延迟时间为500毫秒
+                                $("#start" + data.progressId).text(formatSeconds(data.startDate));
+                                var endStr = formatSeconds(parseInt(data.startDate) / (parseInt(data.docount) + parseInt(data.errorcount)) * (parseInt(data.waitcount) + parseInt(data.docount) + parseInt(data.errorcount)));
+                                if (endStr == "NaN秒") {
+                                    endStr = "未知";
+                                }
+                                $("#end" + data.progressId).text(endStr);
+                                $("#compcount" + data.progressId).text(data.docount);
+                                $("#errorcount" + data.progressId).text(data.errorcount);
+                                $("#waitcount" + data.progressId).text(data.waitcount);
+                                val = (parseInt(data.docount) + parseInt(data.errorcount)) / (parseInt(data.waitcount) + parseInt(data.docount) + parseInt(data.errorcount)) * 100;
+                                if (val < 100) {
+                                    isFlag = true;
+                                }
+                                $("#progress" + data.progressId).progressbar({
+                                    value: val,
+                                    change: function () {
+                                        $("#progress-label" + data.progressId).text(parseFloat(val).toFixed(2) + "%");
+                                    },
+                                    complete: function () {
+                                        $("#progress-label" + data.progressId).text("100%");
+                                    }
+                                });
+                            }
+                            if (isFlag) {
+                                setTimeout(updateProgressbarValue, 2000);
+                            }
                         }
                     },
                         function (m, r) {
@@ -92,6 +135,9 @@
 
 
         function formatSeconds(value) {
+            if(value==0){
+                return "未知";
+            }
             var theTime = parseInt(value);// 秒
             var theTime1 = 0;// 分
             var theTime2 = 0;// 小时
@@ -162,42 +208,7 @@
 
 
     <div id="mainTable">
-    <table width="90%">
-        <tr style="height: 34px;">
-            <td style="text-align: right;">ebay账号：</td>
-            <td>
-                <span id="ebyac">
 
-                </span>
-                <span style="padding-left: 200px;">
-                    已用时间：
-                </span>
-                <span id="start">
-
-                </span>
-                <span style="padding-left: 100px;">
-                    剩余时间：
-                </span>
-                <span id="end">
-
-                </span>
-            </td>
-        </tr>
-        <tr>
-            <td width="200px;" style="text-align: right;">搬家进度：</td>
-            <td>
-                <div id="progress" style="">
-                    <div class="progress-label"></div>
-                </div>
-            </td>
-        </tr>
-        <tr>
-            <td></td>
-            <td style="text-align: center">
-                (<span id="compcount"></span>个商品已搬家，<span id="errorcount"></span>个商品搬家失败，<span id="waitcount"></span>个商品等待搬家)
-            </td>
-        </tr>
-    </table>
     </div>
 </div>
 </body>

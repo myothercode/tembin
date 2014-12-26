@@ -52,7 +52,7 @@
             and tion.QuantitySold = 0
         </if>
         <if test="county!=null">
-            and tion.site = #{county}
+            and dic.id = #{county}
         </if>
         <if test="listingtype!=null">
             and tion.listing_type = #{listingtype}

@@ -96,7 +96,7 @@
             intertable +=' <tr> ';
             intertable +=' <td align="right">运费</td> ';
             intertable +=' <td> ';
-            intertable +=' <input type="text" name="ShippingServiceCost.value" class="validate[required,custom[number]]" value="'+obj2+'" id="numberShippingServiceCost2"> ';
+            intertable +=' <input type="text" name="ShippingServiceCost.value"  onkeypress="return inputNUMAndPoint(event,this,2)" class="validate[required,custom[number]]" value="'+obj2+'" id="numberShippingServiceCost2"> ';
             //intertable +=' <input type="checkbox" name="isFee"> 免费 ';
             intertable += ' <input type="checkbox" name="interFreeShipping" value="1" onclick="shippingfee(this)"> 免费 ';
             intertable +=' </td> ';
@@ -104,7 +104,7 @@
             intertable +=' <tr> ';
             intertable +=' <td align="right">额外每件加收</td> ';
             intertable +=' <td> ';
-            intertable +=' <input type="text" name="ShippingServiceAdditionalCost.value" class="validate[required,custom[number]]" value="'+obj3+'" id="numberShippingServiceAdditionalCost2"> ';
+            intertable +=' <input type="text" name="ShippingServiceAdditionalCost.value"  onkeypress="return inputNUMAndPoint(event,this,2)" class="validate[required,custom[number]]" value="'+obj3+'" id="numberShippingServiceAdditionalCost2"> ';
             intertable +=' </td> ';
             intertable +=' </tr> ';
             intertable +=' <tr> ';
@@ -182,6 +182,13 @@
             }
             return str;
         }
+        function checkFeeShipping(obj){
+            if(parseFloat($(obj).val())==0.0){
+
+            }else{
+                $(obj).parent().find("[type='checkbox']").attr("checked",false);
+            }
+        }
         //创国内运输表
         function createTables(obj1,obj2,obj3,obj4,obj5){
             //用于国内运输选项
@@ -208,7 +215,7 @@
                 tables += ' <tr> ';
                 tables += ' <td align="right">运费</td> ';
                 tables += ' <td> ';
-                tables += ' <input type="text" name="ShippingServiceCost.value"  class="validate[required,custom[number]]" value="' + obj2 + '" id="numberShippingServiceCost"> ';
+                tables += ' <input type="text" name="ShippingServiceCost.value"  class="validate[required,custom[number]]"  onkeypress="return inputNUMAndPoint(event,this,2)" onblur="checkFeeShipping(this)" value="' + obj2 + '" id="numberShippingServiceCost"> ';
                 if (obj3 == "1") {
                     tables += ' <input type="checkbox" name="FreeShipping" value="1" checked onclick="shippingfee(this)"> 免费 ';
                 } else {
@@ -219,13 +226,13 @@
                 tables += ' <tr> ';
                 tables += ' <td align="right">额外每件加收</td> ';
                 tables += ' <td> ';
-                tables += ' <input type="text" name="ShippingServiceAdditionalCost.value" class="validate[required,custom[number]]" value="' + obj4 + '" id="numberShippingServiceAdditionalCost"> ';
+                tables += ' <input type="text" name="ShippingServiceAdditionalCost.value" class="validate[required,custom[number]]"  onkeypress="return inputNUMAndPoint(event,this,2)" value="' + obj4 + '" id="numberShippingServiceAdditionalCost"> ';
                 tables += ' </td> ';
                 tables += ' </tr> ';
                 tables += ' <tr> ';
                 tables += ' <td align="right">AK,HI,PR 额外收费</td> ';
                 tables += ' <td> ';
-                tables += ' <input type="text" name="ShippingSurcharge.value" class="validate[required,custom[number]]" value="' + obj5 + '" id="numberShippingSurcharge"> ';
+                tables += ' <input type="text" name="ShippingSurcharge.value" class="validate[required,custom[number]]"  onkeypress="return inputNUMAndPoint(event,this,2)" value="' + obj5 + '" id="numberShippingSurcharge"> ';
                 tables += ' </td> ';
                 tables += ' </tr> ';
             }
@@ -362,12 +369,11 @@
             var sdid = '${tradingShippingdetails.id}';
             var sdname = '${tamstr}';
             par = openMyDialog({title: '不运送地选项',
-                content: 'url:/xsddWeb/locationList.do?parentId='+sdid+"&parentName="+sdname,
-                icon: 'succeed',
+                content: 'url:/xsddWeb/locationList.do?parentId='+sdid+"&parentName=",
                 width:1000,
                 parent:api,
                 lock:true,
-                zIndex:2000
+                zIndex:20000
             });
         }
         var api = frameElement.api, W = api.opener;

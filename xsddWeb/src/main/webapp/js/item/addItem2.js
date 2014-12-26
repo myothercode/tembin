@@ -70,7 +70,6 @@ function loadDataBuyer(){
             {title:"操作",name:"option1",width:"5%",align:"center",format:makeOption1buyer}
         ],
         selectDataNow: false,
-        isrowClick: false,
         showIndex: false,
         afterLoadTable:function(){
             if (url.indexOf("addItem.do") != -1||url.indexOf("information/editItem.do") != -1) {
@@ -79,6 +78,10 @@ function loadDataBuyer(){
             }else{
                 $("input[name='buyerId'][value='" + buyid + "']").attr("checked", "checked");
             }
+        },isrowClick: true,
+        rowClickMethod: function (obj,o){
+            $("input[type='radio'][name='buyerId']").attr("checked", false);
+            $("input[type='radio'][name='buyerId'][value='" + obj.id + "']").attr("checked", true);
         }
     });
     refreshTablebuyer();
@@ -103,7 +106,6 @@ function loadDiscountPriceInfo(){
             {title:"操作",name:"option1",width:"8%",align:"left",format:makeOption1Disprice}
         ],
         selectDataNow: false,
-        isrowClick: false,
         showIndex: false,
         afterLoadTable:function(){
             if (url.indexOf("addItem.do") != -1||url.indexOf("information/editItem.do") != -1) {
@@ -112,6 +114,10 @@ function loadDiscountPriceInfo(){
             }else{
                 $("input[name='discountpriceinfoId'][value='" + discountpriceinfoId + "']").attr("checked", "checked");
             }
+        },isrowClick: true,
+        rowClickMethod: function (obj,o){
+            $("input[type='radio'][name='discountpriceinfoId']").attr("checked", false);
+            $("input[type='radio'][name='discountpriceinfoId'][value='" + obj.id + "']").attr("checked", true);
         }
     });
     refreshTableDisPrice();
@@ -134,7 +140,6 @@ var loadItemLocationV=false;
              {title:"操作",name:"option1",width:"8%",align:"left",format:makeOption1address}
          ],
          selectDataNow: false,
-         isrowClick: false,
          showIndex: false,
          afterLoadTable:function(){
              if (url.indexOf("addItem.do") != -1||url.indexOf("information/editItem.do") != -1) {
@@ -143,6 +148,10 @@ var loadItemLocationV=false;
              }else{
                  $("input[name='itemLocationId'][value='" + itemLocationId + "']").attr("checked", "checked");
              }
+         },isrowClick: true,
+         rowClickMethod: function (obj,o){
+             $("input[type='radio'][name='itemLocationId']").attr("checked", false);
+             $("input[type='radio'][name='itemLocationId'][value='" + obj.id + "']").attr("checked", true);
          }
      });
      refreshTableAddress();
@@ -164,7 +173,6 @@ function loadPayOption(){
             {title:"动作",name:"option1",width:"8%",align:"left",format:makeOption1paypal}
         ],
         selectDataNow: false,
-        isrowClick: false,
         showIndex: false,
         afterLoadTable:function(){
             if (url.indexOf("addItem.do") != -1||url.indexOf("information/editItem.do") != -1) {
@@ -173,6 +181,10 @@ function loadPayOption(){
             }else{
                 $("input[name='payId'][value='" + payid + "']").attr("checked", "checked");
             }
+        },isrowClick: true,
+        rowClickMethod: function (obj,o){
+            $("input[type='radio'][name='payId']").attr("checked", false);
+            $("input[type='radio'][name='payId'][value='" + obj.id + "']").attr("checked", true);
         }
     });
     refreshTablepaypal();
@@ -195,7 +207,6 @@ if(loadReturnpolicyV==true){return;}
             {title:"操作",name:"option1",width:"5%",align:"left",format:makeOption1returnpolicy}
         ],
         selectDataNow: false,
-        isrowClick: false,
         showIndex: false,
         afterLoadTable:function(){
             if (url.indexOf("addItem.do") != -1||url.indexOf("information/editItem.do") != -1) {
@@ -204,6 +215,10 @@ if(loadReturnpolicyV==true){return;}
             }else{
                 $("input[name='returnpolicyId'][value='" + returnpolicyId + "']").attr("checked", "checked");
             }
+        },isrowClick: true,
+        rowClickMethod: function (obj,o){
+            $("input[type='radio'][name='returnpolicyId']").attr("checked", false);
+            $("input[type='radio'][name='returnpolicyId'][value='" + obj.id + "']").attr("checked", true);
         }
     });
     refreshTablereturnpolicy();
@@ -228,7 +243,6 @@ function loadShippingDeails(){
 
         ],
         selectDataNow: false,
-        isrowClick: false,
         showIndex: false,
         afterLoadTable:function(){
             if (url.indexOf("addItem.do") != -1||url.indexOf("information/editItem.do") != -1) {
@@ -237,6 +251,12 @@ function loadShippingDeails(){
             }else{
                 $("input[name='shippingDeailsId'][value='" + shippingDeailsId + "']").attr("checked", "checked");
             }
+        },
+        isrowClick: true,
+        rowClickMethod: function (obj,o){
+            $("input[type='radio'][name='shippingDeailsId']").attr("checked", false);
+            var val = $(o).find("input[type='radio'][name='shippingDeailsId']").val();
+            $("input[type='radio'][name='shippingDeailsId'][value='" + val + "']").attr("checked", true);
         }
     });
     refreshTableShipping();
@@ -256,7 +276,6 @@ function loaddescriptiondetails(){
             {title:"操作",name:"option1",width:"8%",align:"left",format:makeOption1descript}
         ],
         selectDataNow: false,
-        isrowClick: false,
         showIndex: false,
         afterLoadTable:function(){
             if (url.indexOf("addItem.do") != -1||url.indexOf("information/editItem.do") != -1) {
@@ -265,6 +284,10 @@ function loaddescriptiondetails(){
             }else{
                 $("input[name='sellerItemInfoId'][value='" + sellerItemInfoId + "']").attr("checked", "checked");
             }
+        },isrowClick: true,
+        rowClickMethod: function (obj,o){
+            $("input[type='radio'][name='sellerItemInfoId']").attr("checked", false);
+            $("input[type='radio'][name='sellerItemInfoId'][value='" + obj.id + "']").attr("checked", true);
         }
     });
     refreshTableDesciption();
@@ -329,9 +352,26 @@ function showMoreAttrsText(obj){
     $(obj).hide();
 }
 function clearThisText(obj) {
+    if($(obj.parentNode)[0].cellIndex==2||$(obj.parentNode)[0].cellIndex==3){
+        var indexs=$(obj.parentNode)[0].cellIndex;
+        var val = $(obj).val();
+        if(indexs==3){
+            val=parseFloat(val).toFixed(2)
+        }
+        $("#moreAttrs tr td:nth-child(" + (indexs+ 1) + ")").each(function(i,d){
+            if($(d).find("input").val()==""||$(d).find("input").val()==null){
+                $(d).find("span").text(val);
+                $(d).find("span").show();
+                $(d).find("input").val(val);
+                if($(d).find("input").attr("type")=="text"){
+                    $(d).find("input").attr("type","hidden");
+                }
+            }
+        });
+    }
+
     if ($(obj).val() != "") {
-        if(
-            $(obj).validationEngine("validate")){
+        if($(obj).validationEngine("validate")){
             $(obj).validationEngine();
             return;
         }else{
@@ -371,6 +411,7 @@ function showText(obj){
 function getJoinValue(obj){
     $(obj).parent().find("span").text($(obj).val());
 }
+
 function addValueTr(obj1, obj2) {
     var trStr = '';
     if(obj1!=""&&obj2!=""){
@@ -428,11 +469,33 @@ function changeRadio(th) {
         $("#twoAttr").hide();
         $("#Auction").hide();
         $("dt[name='priceMessage']").show();
+        $("#picMore").html("");
+        $("#moreAttrs").find("tr").each(function(i,d){
+            if(i!=0){
+                $(d).remove();
+            }
+        });
+        $("#moreAttrs tr:eq(0) th").each(function(i,d){
+            if($(d).find("select").html()!=undefined&&$(d).find("select").html()!=""){
+                $(d).remove();
+            }
+        });
     } else if (obj == "Chinese"||obj == "chinese") {
         $("#oneAttr").show();
         $("#twoAttr").hide();
         $("#Auction").show();
         $("dt[name='priceMessage']").show();
+        $("#picMore").html("");
+        $("#moreAttrs").find("tr").each(function(i,d){
+            if(i!=0){
+                $(d).remove();
+            }
+        });
+        $("#moreAttrs tr:eq(0) th").each(function(i,d){
+            if($(d).find("select").html()!=undefined&&$(d).find("select").html()!=""){
+                $(d).remove();
+            }
+        });
     }
 }
 //点击添回SKU输入项
@@ -486,9 +549,9 @@ function addTr(len) {
     var str = "";
     str += "<tr>";
     str += "<td class='dragHandle'  width='5px;'></td>";
-    str += "<td><span style='display:none;color: dodgerblue;' onclick='showMoreAttrsText(this)'></span><input type='text' name='SKU'  onblur='clearThisText(this);' onkeyup='getJoinValue(this)'  class='validate[required] form-control'></td>";
-    str += "<td><span style='display:none;color: dodgerblue;' onclick='showMoreAttrsText(this)'></span><input type='text' name='Quantity'  onblur='clearThisText(this);' onkeyup='getJoinValue(this)' size='8' class='validate[required,custom[integer]] form-control'></td>";
-    str += "<td><span style='display:none;color: dodgerblue;' onclick='showMoreAttrsText(this)'></span><input type='text' name='StartPrice.value'  onblur='clearThisText(this);' onkeyup='getJoinValue(this)'  size='8' class='validate[required,custom[number]] form-control'>&nbsp;<abbr name='curName'>"+curName+"</abbr></td>";
+    str += "<td><span style='display:none;color: dodgerblue;' onclick='showMoreAttrsText(this)'></span><input type='text' name='SKU' style='width:100px;'  onblur='clearThisText(this);' onkeyup='getJoinValue(this)'  class='validate[required] form-control'></td>";
+    str += "<td><span style='display:none;color: dodgerblue;' onclick='showMoreAttrsText(this)'></span><input type='text' name='Quantity'  onblur='clearThisText(this);'  onkeypress='return inputOnlyNUM(event,this)' onkeyup='getJoinValue(this)' size='8' class='validate[required,custom[integer]] form-control'></td>";
+    str += "<td><span style='display:none;color: dodgerblue;' onclick='showMoreAttrsText(this)'></span><input type='text' name='StartPrice.value'  onblur='clearThisText(this);' onkeyup='getJoinValue(this)'  onkeypress='return inputNUMAndPoint(event,this,2)'  size='8' class='validate[required,custom[number]] form-control'>&nbsp;<abbr name='curName'>"+curName+"</abbr></td>";
     for (var i = 0; i < len; i++) {
         str += "<td  style='text-align: right;'><span style='display:none;color: dodgerblue;' onclick='showMoreAttrsText(this)'></span>" +
             "<input type='text' name='attr_Value' onkeyup='getJoinValue(this)' class='validate[required] more-control' onblur='addb(this)' size='10' >" +
@@ -700,7 +763,7 @@ function addc(obj) {
     if ($(obj.parentNode)[0].cellIndex == 4) {
         $("#moreAttrs tr td:nth-child(5)").each(function (i, d) {
             if ($(d).find("input[name='attr_Value']").val() != undefined && $(d).find("input[name='attr_Value']").val() != "") {
-                attrValue.put($(d).find("input[name='attr_Value']").val().repl.replace(" ","_").replace(".",""), $(d).find("input[name='attr_Value']").val().replace(" ","_").replace(".",""));
+                attrValue.put(replaceTSFH($(d).find("input[name='attr_Value']").val().replace(" ","_").replace(".","")), $(d).find("input[name='attr_Value']").val().replace(" ","_").replace(".",""));
             }
         });
         $("#picMore").html("");
@@ -723,7 +786,7 @@ function addb(obj) {
         $("#moreAttrs tr td:nth-child(5)").each(function (i, d) {
             if ($(d).find("input[name='attr_Value']").val() != undefined && $(d).find("input[name='attr_Value']").val() != "") {
                 var vals = $(d).find("input[name='attr_Value']").val();
-                attrValue.put(vals.replace(" ","_").replace(".","").replace("+",""), vals.replace(" ","_").replace(".","").replace("+",""));
+                attrValue.put(replaceTSFH(vals.replace(" ","_").replace(".","").replace("+","")), replaceTSFH(vals.replace(" ","_").replace(".","").replace("+","")));
             }
         });
         var dicMap = new Map()
@@ -756,15 +819,15 @@ function addPic(attrName, attrValue) {
         if ($(d).find("input[name='attr_Value']").val() != undefined && $(d).find("input[name='attr_Value']").val() != "") {
             /*var vals = $(d).find("input[name='attr_Value']").val();
             attrValue.put(vals.replace(" ","_").replace(".",""), vals.replace(" ","_").replace(".",""));*/
-            if($(d).find("input[name='attr_Value']").val().replace(" ","_").replace(".","").replace("+","")==attrValue||$(d).find("input[name='attr_Value']").val()==attrValue){
+            if(replaceTSFH($(d).find("input[name='attr_Value']").val().replace(" ","_").replace(".","").replace("+",""))==attrValue||$(d).find("input[name='attr_Value']").val()==attrValue){
                 vals=$(d).find("input[name='attr_Value']").val();
             }
         }
     });
     var str = "";
-    str += "<div><div style='padding-top: 20px;'>" + attrName + ":" + vals + "</div> <section class='example' style='width: 1200px;'><ul class='gbin1-list' style='padding-left: 20px;' id='picturemore_"+attrValue.replace(" ","_").replace(".","").replace("+","")+"'></ul><div class='a_bal' style='margin-top: 20px;'></div></section> <script type=text/plain id='" + attrName.replace(" ","_").replace(".","").replace("+","") + "this" + attrValue.replace(" ","_").replace(".","").replace("+","") + "' />";
+    str += "<div><div style='padding-top: 20px;'>" + attrName + ":" + vals + "</div> <section class='example' style='width: 1200px;'><ul class='gbin1-list' style='padding-left: 20px;' id='picturemore_"+replaceTSFH(attrValue.replace(" ","_").replace(".","").replace("+",""))+"'></ul><div class='a_bal' style='margin-top: 20px;'></div></section> <script type=text/plain id='" + replaceTSFH(attrName.replace(" ","_").replace(".","").replace("+","")) + "this" + replaceTSFH(attrValue.replace(" ","_").replace(".","").replace("+","")) + "' />";
     str += "<div style='padding-left: 20px; '>" +
-        "<b style='height: 32px;margin-top: 20px;' class='new_button'><a href='javascript:void(0)' id=" + attrValue.replace(" ","_").replace(".","").replace("+","") + " bsid='"+attrValue.replace(" ","_").replace(".","").replace("+","")+"' onClick='selectPic(this)'>选择图片</a></b>";
+        "<b style='height: 32px;margin-top: 20px;' class='new_button'><a href='javascript:void(0)' id=" + replaceTSFH(attrValue.replace(" ","_").replace(".","").replace("+","")) + " bsid='"+replaceTSFH(attrValue.replace(" ","_").replace(".","").replace("+",""))+"' onClick='selectPic(this)'>选择图片</a></b>";
     str += "</div></div>";
     return str;
 }
@@ -773,7 +836,7 @@ function addPic(attrName, attrValue) {
 /**统计当前已经选择了多少图片*/
     function countChoosePic(){
      var ii=0;
-    $("#showPics,#picMore").find("img").each(function(i,d){
+    $("#showPics").find("img").each(function(i,d){
        if($(d).attr("src").indexOf("newpic_ico.png")==-1){
             ii++
            //console.log($(d).attr("src")+"+++")
@@ -790,7 +853,7 @@ function selectPic(a) {
     bsid_temp=null;
     //$().image_editor.show("apicUrls_" + ebayAccount); //上传图片的按钮id
    // console.log(countChoosePic()+"=====")
-    if(countChoosePic()>12){
+    if(countChoosePic()>11){
         setTimeout(function(){closeSelectPicWindow()},200) ;
         alert("最多只能上传12张图片，上传图片已超过上传张数！");
         return;
@@ -864,6 +927,7 @@ function addPictrueUrl(urls) {
                     alert(r);
                 }]
         );
+        $("#picNumber").text(countChoosePic());
     } else {//多属性图片
         var str = '';
         var urlss= '';
@@ -910,6 +974,7 @@ function initDraug(){
 }
 function removeThis(obj) {
     $(obj).parent().parent().parent().remove();
+    $("#picNumber").text(countChoosePic());
 }
 function hiddenTemPic(){
     $("#showTemplate").hide();
@@ -965,7 +1030,8 @@ function queryType() {
         content: 'url:' + path + '/category/initQueryCategoryPage.do?title='+title,
         icon: 'succeed',
         zIndex:2000,
-        width: 650,
+        width: 850,
+        height:600,
         lock: true
     });
 }

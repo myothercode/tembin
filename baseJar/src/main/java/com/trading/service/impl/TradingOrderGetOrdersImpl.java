@@ -8,8 +8,11 @@ import com.base.domains.querypojos.OrderGetOrdersQuery;
 import com.base.domains.userinfo.UsercontrollerEbayAccountExtend;
 import com.base.mybatis.page.Page;
 import com.base.userinfo.service.SystemUserManagerService;
+import com.base.utils.cache.TempStoreDataSupport;
 import com.base.utils.common.ObjectUtils;
 import com.base.utils.exception.Asserts;
+import com.base.utils.threadpool.TaskPool;
+import com.trading.service.ITradingOrderGetOrdersNoTransaction;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.apache.poi.hssf.usermodel.*;
@@ -25,7 +28,7 @@ import java.io.IOException;
 import java.util.*;
 
 /**
- * 退货政策
+ * 订单
  * Created by lq on 2014/7/29.
  */
 @Service
@@ -39,9 +42,11 @@ public class TradingOrderGetOrdersImpl implements com.trading.service.ITradingOr
     private OrderGetOrdersMapper orderGetOrdersMapper;
     @Autowired
     private SystemUserManagerService systemUserManagerService;
+    @Autowired
+    private ITradingOrderGetOrdersNoTransaction iTradingOrderGetOrdersNoTransaction;
     @Override
     public void saveOrderGetOrders(TradingOrderGetOrders OrderGetOrders) throws Exception {
-        if(OrderGetOrders.getId()==null){
+        /*if(OrderGetOrders.getId()==null){
             ObjectUtils.toInitPojoForInsert(OrderGetOrders);
             tradingOrderGetOrdersMapper.insert(OrderGetOrders);
         }else{
@@ -49,7 +54,12 @@ public class TradingOrderGetOrdersImpl implements com.trading.service.ITradingOr
             Asserts.assertTrue(t != null && t.getCreateUser() != null, "没有找到记录或者记录创建者为空");
             ObjectUtils.valiUpdate(t.getCreateUser(),TradingOrderGetOrdersMapper.class,OrderGetOrders.getId(),"Synchronize");
             tradingOrderGetOrdersMapper.updateByPrimaryKeySelective(OrderGetOrders);
+        }*/
+        TaskPool.togos.put(OrderGetOrders);
+        if ("0".equals(TaskPool.togosBS[0])){
+            iTradingOrderGetOrdersNoTransaction.saveOrderGetOrders(OrderGetOrders);
         }
+
     }
 
     @Override
@@ -315,7 +325,8 @@ public class TradingOrderGetOrdersImpl implements com.trading.service.ITradingOr
     public List<TradingOrderGetOrders> selectOrderGetOrdersByTrackNumber() {
         TradingOrderGetOrdersExample example=new TradingOrderGetOrdersExample();
         TradingOrderGetOrdersExample.Criteria cr=example.createCriteria();
-        cr.andShipmenttrackingnumberIsNotNull();
+       /* cr.andShipmenttrackingnumberIsNotNull();*/
+        cr.andTrackstatusNotEqualTo("4");
         List<TradingOrderGetOrders> list=tradingOrderGetOrdersMapper.selectByExample(example);
         return list;
     }

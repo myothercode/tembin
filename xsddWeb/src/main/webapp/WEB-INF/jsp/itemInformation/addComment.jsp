@@ -36,7 +36,7 @@
                             var tr=$(inputs[i]).parent().parent();
                             var tds=$(tr).find("td");
                             var td1=$("#addPictureId").find("td");
-                            var img1=$(td1[0]).find("img[scop=img]")
+                            var img1=$(td1[0]).find("img[scop=img]");
                             for(var j=0;j<tds.length;j++){
                                 if(j==2){
                                     var value=$("#comment").val();

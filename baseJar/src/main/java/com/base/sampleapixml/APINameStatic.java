@@ -87,5 +87,9 @@ public class APINameStatic {
      *一般的纠纷
      */
     public static final  String GetDispute="GetDispute";
+    /**
+     * 商品相似目录列表
+     */
+    public static final  String GetSuggestedCategories="GetSuggestedCategories";
 }
 

@@ -1,5 +1,7 @@
 package com.test.service.impl;
 
+import com.base.database.publicd.mapper.PublicDataDictMapper;
+import com.base.database.publicd.model.PublicDataDict;
 import com.base.database.trading.mapper.TradingPicturesMapper;
 import com.base.database.trading.model.*;
 import com.base.mybatis.page.Page;
@@ -35,6 +37,8 @@ public class TestServiceImpl implements TestService {
     private ITradingItem iTradingItem;
     @Autowired
     private ITradingBuyerRequirementDetails iTradingBuyerRequirementDetails;
+ @Autowired
+ private PublicDataDictMapper publicDataDictMapper;
 
 
     @Override
@@ -446,4 +450,17 @@ public class TestServiceImpl implements TestService {
         //this.itradingReturnpolicy.saveTradingReturnpolicy(tr);
 
     }
+
+
+
+
+
+ @Override
+ public void  updateData(PublicDataDict publicDataDict){
+
+  int x= publicDataDictMapper.updateByPrimaryKeySelective(publicDataDict);
+
+ }
+
+
 }

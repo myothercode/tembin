@@ -26,6 +26,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.dom4j.Element;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -51,12 +52,14 @@ public class SynchronizeGetMessagesTimerTaskRun extends BaseScheduledClass imple
             UsercontrollerDevAccountExtend d = new UsercontrollerDevAccountExtend();//开发者帐号id
             d.setApiSiteid("0");
             //真实环境
-            /*UsercontrollerDevAccountExtend d=new UsercontrollerDevAccountExtend();
+          /*  UsercontrollerDevAccountExtend d=new UsercontrollerDevAccountExtend();
             d.setApiDevName("5d70d647-b1e2-4c7c-a034-b343d58ca425");
             d.setApiAppName("sandpoin-23af-4f47-a304-242ffed6ff5b");
             d.setApiCertName("165cae7e-4264-4244-adff-e11c3aea204e");
             d.setApiCompatibilityLevel("881");
             d.setApiSiteid("0");*/
+
+
             Map map=new HashMap();
             d.setApiCallName(APINameStatic.GetMyMessages);
             map.put("token", taskGetMessages.getToken());
@@ -66,6 +69,7 @@ public class SynchronizeGetMessagesTimerTaskRun extends BaseScheduledClass imple
             String xml = BindAccountAPI.getGetMyMessages(map);//获取接受消息
             AddApiTask addApiTask = new AddApiTask();
             Map<String, String> resMap = addApiTask.exec2(d, xml,commPars.apiUrl);
+           // Map<String, String> resMap = addApiTask.exec2(d, xml,"https://api.ebay.com/ws/api.dll");
             String r1 = resMap.get("stat");
             String res = resMap.get("message");
             if ("fail".equalsIgnoreCase(r1)) {
@@ -116,12 +120,12 @@ public class SynchronizeGetMessagesTimerTaskRun extends BaseScheduledClass imple
                         TradingMessageGetmymessage ms= GetMyMessageAPI.addDatabase(message, taskGetMessages.getUserid(), taskGetMessages.getEbayid());//保存到数据库
                         d.setApiSiteid("0");
                         //真实环境
-                   /* UsercontrollerDevAccountExtend dev=new UsercontrollerDevAccountExtend();
-                    dev.setApiDevName("5d70d647-b1e2-4c7c-a034-b343d58ca425");
-                    dev.setApiAppName("sandpoin-23af-4f47-a304-242ffed6ff5b");
-                    dev.setApiCertName("165cae7e-4264-4244-adff-e11c3aea204e");
-                    dev.setApiCompatibilityLevel("881");
-                    dev.setApiSiteid("0");*/
+                /*     d=new UsercontrollerDevAccountExtend();
+                    d.setApiDevName("5d70d647-b1e2-4c7c-a034-b343d58ca425");
+                    d.setApiAppName("sandpoin-23af-4f47-a304-242ffed6ff5b");
+                    d.setApiCertName("165cae7e-4264-4244-adff-e11c3aea204e");
+                    d.setApiCompatibilityLevel("881");
+                    d.setApiSiteid("0");*/
                         d.setApiCallName(APINameStatic.GetMyMessages);
                         Map parms=new HashMap();
                         parms.put("messageId", ms.getMessageid());
@@ -140,6 +144,7 @@ public class SynchronizeGetMessagesTimerTaskRun extends BaseScheduledClass imple
                             ms.setId(getmymessages.get(0).getId());
                         }
                         ms.setCreateUser(taskGetMessages.getUserid());
+                        ms.setUpdatetime(new Date());
                         iTradingMessageGetmymessage.saveMessageGetmymessage(ms);
                     }
 

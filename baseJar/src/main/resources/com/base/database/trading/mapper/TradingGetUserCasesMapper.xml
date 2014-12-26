@@ -24,6 +24,7 @@
     <result column="create_user" jdbcType="BIGINT" property="createUser" />
     <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
     <result column="uuid" jdbcType="VARCHAR" property="uuid" />
+    <result column="updateTime" jdbcType="TIMESTAMP" property="updatetime" />
   </resultMap>
   <sql id="Example_Where_Clause">
     <!--
@@ -98,7 +99,7 @@
     -->
     id, caseId, caseType, buyerId, sellerId, status, itemId, itemTitle, transactionId, 
     caseQuantity, caseAmount, respondByDate, creationDate, lastModifiedDate, handled, 
-    create_user, create_time, uuid
+    create_user, create_time, uuid, updateTime
   </sql>
   <select id="selectByExample" parameterType="com.base.database.trading.model.TradingGetUserCasesExample" resultMap="BaseResultMap">
     <!--
@@ -156,15 +157,15 @@
       itemId, itemTitle, transactionId, 
       caseQuantity, caseAmount, respondByDate, 
       creationDate, lastModifiedDate, handled, 
-      create_user, create_time, uuid
-      )
+      create_user, create_time, uuid, 
+      updateTime)
     values (#{id,jdbcType=BIGINT}, #{caseid,jdbcType=VARCHAR}, #{casetype,jdbcType=VARCHAR}, 
       #{buyerid,jdbcType=VARCHAR}, #{sellerid,jdbcType=VARCHAR}, #{status,jdbcType=VARCHAR}, 
       #{itemid,jdbcType=VARCHAR}, #{itemtitle,jdbcType=VARCHAR}, #{transactionid,jdbcType=VARCHAR}, 
       #{casequantity,jdbcType=VARCHAR}, #{caseamount,jdbcType=VARCHAR}, #{respondbydate,jdbcType=TIMESTAMP}, 
       #{creationdate,jdbcType=TIMESTAMP}, #{lastmodifieddate,jdbcType=TIMESTAMP}, #{handled,jdbcType=INTEGER}, 
-      #{createUser,jdbcType=BIGINT}, #{createTime,jdbcType=TIMESTAMP}, #{uuid,jdbcType=VARCHAR}
-      )
+      #{createUser,jdbcType=BIGINT}, #{createTime,jdbcType=TIMESTAMP}, #{uuid,jdbcType=VARCHAR}, 
+      #{updatetime,jdbcType=TIMESTAMP})
   </insert>
   <insert id="insertSelective" parameterType="com.base.database.trading.model.TradingGetUserCases">
     <!--
@@ -227,6 +228,9 @@
       <if test="uuid != null">
         uuid,
       </if>
+      <if test="updatetime != null">
+        updateTime,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
       <if test="id != null">
@@ -282,6 +286,9 @@
       </if>
       <if test="uuid != null">
         #{uuid,jdbcType=VARCHAR},
+      </if>
+      <if test="updatetime != null">
+        #{updatetime,jdbcType=TIMESTAMP},
       </if>
     </trim>
   </insert>
@@ -356,6 +363,9 @@
       <if test="record.uuid != null">
         uuid = #{record.uuid,jdbcType=VARCHAR},
       </if>
+      <if test="record.updatetime != null">
+        updateTime = #{record.updatetime,jdbcType=TIMESTAMP},
+      </if>
     </set>
     <if test="_parameter != null">
       <include refid="Update_By_Example_Where_Clause" />
@@ -384,7 +394,8 @@
       handled = #{record.handled,jdbcType=INTEGER},
       create_user = #{record.createUser,jdbcType=BIGINT},
       create_time = #{record.createTime,jdbcType=TIMESTAMP},
-      uuid = #{record.uuid,jdbcType=VARCHAR}
+      uuid = #{record.uuid,jdbcType=VARCHAR},
+      updateTime = #{record.updatetime,jdbcType=TIMESTAMP}
     <if test="_parameter != null">
       <include refid="Update_By_Example_Where_Clause" />
     </if>
@@ -447,6 +458,9 @@
       <if test="uuid != null">
         uuid = #{uuid,jdbcType=VARCHAR},
       </if>
+      <if test="updatetime != null">
+        updateTime = #{updatetime,jdbcType=TIMESTAMP},
+      </if>
     </set>
     where id = #{id,jdbcType=BIGINT}
   </update>
@@ -472,7 +486,8 @@
       handled = #{handled,jdbcType=INTEGER},
       create_user = #{createUser,jdbcType=BIGINT},
       create_time = #{createTime,jdbcType=TIMESTAMP},
-      uuid = #{uuid,jdbcType=VARCHAR}
+      uuid = #{uuid,jdbcType=VARCHAR},
+      updateTime = #{updatetime,jdbcType=TIMESTAMP}
     where id = #{id,jdbcType=BIGINT}
   </update>
 </mapper>

@@ -25,6 +25,7 @@
                 }
             });
             returnHtml +='<a href="javascript:void(0)" onclick="selectSiteList(this)"><span style="padding-left: 20px;vertical-align: middle;color: royalblue">更多...</span></a>';
+            localStorage.setItem("siteListStr",returnHtml);
             $(W.document).find("li[id='li_countyselect']").html(returnHtml);
             W.siteListPage.close();
         }

@@ -7,6 +7,7 @@ import com.base.database.task.model.ListingDataTask;
 import com.base.database.trading.mapper.TradingListingDataMapper;
 import com.base.database.trading.mapper.UsercontrollerEbayAccountMapper;
 import com.base.database.trading.model.*;
+import com.base.domains.querypojos.ItemQuery;
 import com.base.domains.userinfo.UsercontrollerDevAccountExtend;
 import com.base.sampleapixml.APINameStatic;
 import com.base.userinfo.service.UserInfoService;
@@ -43,6 +44,7 @@ public class ListingItemDataTaskRun extends BaseScheduledClass implements Schedu
     @Override
     public void run() {
         IListingDataTask iListingDataTask = (IListingDataTask) ApplicationContextUtil.getBean(IListingDataTask.class);
+        ITradingItem iTradingItem = (ITradingItem) ApplicationContextUtil.getBean(ITradingItem.class);
         List<TradingDataDictionary> litdd = DataDictionarySupport.getTradingDataDictionaryByType("site");
         UsercontrollerEbayAccountMapper ueam = (UsercontrollerEbayAccountMapper) ApplicationContextUtil.getBean(UsercontrollerEbayAccountMapper.class);
         UsercontrollerEbayAccountExample ueame = new UsercontrollerEbayAccountExample();
@@ -51,16 +53,34 @@ public class ListingItemDataTaskRun extends BaseScheduledClass implements Schedu
         for(int i =0 ;i<liue.size();i++) {
             //先同步美国站点，如果数据不全，那么就需要同步所有站点
             UsercontrollerEbayAccount ue = liue.get(i);
-            List<ListingDataTask> lidk = iListingDataTask.selectByflag("0",ue.getEbayAccount());
-            if(lidk==null||lidk.size()==0) {
-                ListingDataTask ldt = new ListingDataTask();
-                ldt.setCreateDate(new Date());
-                ldt.setEbayaccount(ue.getEbayAccount());
-                ldt.setSite("0");
-                ldt.setToken(ue.getEbayToken());
-                ldt.setUserid(ue.getUserId());
-                ldt.setTaskFlag("0");
-                iListingDataTask.saveListDataTask(ldt);
+            List<ItemQuery> liiq = iTradingItem.selectByEbayIdSiteList(ue.getId()+"");
+            if(liiq!=null&&liiq.size()>0){
+                for(ItemQuery iq:liiq){
+                    String site = DataDictionarySupport.getTradingDataDictionaryByID(Long.parseLong(iq.getSite())).getName1();
+                    List<ListingDataTask> lidk = iListingDataTask.selectByflag(site,ue.getEbayAccount());
+                    if(lidk==null||lidk.size()==0) {
+                        ListingDataTask ldt = new ListingDataTask();
+                        ldt.setCreateDate(new Date());
+                        ldt.setEbayaccount(ue.getEbayAccount());
+                        ldt.setSite(site);
+                        ldt.setToken(ue.getEbayToken());
+                        ldt.setUserid(ue.getUserId());
+                        ldt.setTaskFlag("0");
+                        iListingDataTask.saveListDataTask(ldt);
+                    }
+                }
+            }else{
+                List<ListingDataTask> lidk = iListingDataTask.selectByflag("0",ue.getEbayAccount());
+                if(lidk==null||lidk.size()==0) {
+                    ListingDataTask ldt = new ListingDataTask();
+                    ldt.setCreateDate(new Date());
+                    ldt.setEbayaccount(ue.getEbayAccount());
+                    ldt.setSite("0");
+                    ldt.setToken(ue.getEbayToken());
+                    ldt.setUserid(ue.getUserId());
+                    ldt.setTaskFlag("0");
+                    iListingDataTask.saveListDataTask(ldt);
+                }
             }
             /*for(TradingDataDictionary tdd:litdd){//同步21个站点
                 List<ListingDataTask> lidk = iListingDataTask.selectByflag(tdd.getName1(),ue.getEbayAccount());

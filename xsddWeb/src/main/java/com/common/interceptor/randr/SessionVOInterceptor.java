@@ -49,7 +49,12 @@ public class SessionVOInterceptor extends HandlerInterceptorAdapter {
                 ||StringUtils.isEmpty(sessionVO.getSessionID())
                 || !sessionVO.getSessionID().equalsIgnoreCase(request.getSession().getId())){
             if(sessionVO!=null){
-                logger.error(sessionVO.getLoginId()+"session里面有,缓存里面没有登录信息，重新登录");
+                logger.error(sessionVO.getLoginId()+":sessionVO中的ID"+sessionVO.getSessionID()+
+                        "session中的id:"+request.getSession().getId()+
+                        ":缓存中的id与当前登陆的id不一致！重新登陆！");
+            }
+            if(sessionVO==null){
+                logger.error("由于缓存中已经没有sessionVO，重新登陆!");
             }
 
             session.removeAttribute(SessionCacheSupport.USERLOGINID);

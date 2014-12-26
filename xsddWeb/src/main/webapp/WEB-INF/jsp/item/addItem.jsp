@@ -177,9 +177,9 @@
         var price='${liv.startprice}';
         var str = "";
         str += "<tr style='height: 32px;'><td class='dragHandle' width='15px;'></td>";
-        str += "<td width='100px'><span style='color: dodgerblue;' onclick='showMoreAttrsText(this)'>${liv.sku}</span><input type='hidden' name='SKU' onblur='clearThisText(this);' onkeyup='getJoinValue(this)' class='validate[required] form-control' value='${liv.sku}'></td>";
-        str += "<td width='100px'><span style='color: dodgerblue;' onclick='showMoreAttrsText(this)'>${liv.quantity}</span><input type='hidden' name='Quantity' onblur='clearThisText(this);' onkeyup='getJoinValue(this)' size='8' class='validate[required] form-control' value='${liv.quantity}'></td>";
-        str += "<td width='100px'><span style='color: dodgerblue;' onclick='showMoreAttrsText(this)'>"+parseFloat(price).toFixed(2)+"</span><input type='hidden' name='StartPrice.value' onblur='clearThisText(this);' onkeyup='getJoinValue(this)'  size='8' class='validate[required] form-control' value='"+parseFloat(price).toFixed(2)+"'>&nbsp;<abbr name='curName'></abbr></td>";
+        str += "<td width='100px'><span style='color: dodgerblue;' onclick='showMoreAttrsText(this)'>${liv.sku}</span><input type='hidden' name='SKU' onblur='clearThisText(this);'  style='width:100px;' onkeyup='getJoinValue(this)' class='validate[required] form-control' value='${liv.sku}'></td>";
+        str += "<td width='100px'><span style='color: dodgerblue;' onclick='showMoreAttrsText(this)'>${liv.quantity}</span><input type='hidden' name='Quantity' onblur='clearThisText(this);'  onkeypress='return inputOnlyNUM(event,this)' onkeyup='getJoinValue(this)' size='8' class='validate[required] form-control' value='${liv.quantity}'></td>";
+        str += "<td width='100px'><span style='color: dodgerblue;' onclick='showMoreAttrsText(this)'>"+parseFloat(price).toFixed(2)+"</span><input type='hidden' name='StartPrice.value' onblur='clearThisText(this);' onkeypress='return inputNUMAndPoint(event,this,2)' onkeyup='getJoinValue(this)'  size='8' class='validate[required] form-control' value='"+parseFloat(price).toFixed(2)+"'>&nbsp;<abbr name='curName'></abbr></td>";
         <c:forEach items="${liv.tradingPublicLevelAttr}" var="ta">
         str += "<td width='100px' style='text-align: right;'><span style='color: dodgerblue;' onclick='showMoreAttrsText(this)'>${ta.value}</span><input type='hidden' name='attr_Value' onkeyup='getJoinValue(this)'  class='validate[required] more-control' onblur='addb(this)' size='10' value='${ta.value}'>";
         //str +="&nbsp;<div class='numlist' style='padding-left: 8px;'><div class='ui-select' style='background-image:url("+path+"/img/arrow.gif);height:26px;margin-top:1px; width:80px;min-width:0px;'><select style='width: 80px;padding: 0px;' name='selAttValue_sel' onchange='selectAttrMorValue(this)'></select></div><div>";
@@ -243,9 +243,9 @@
             $().image_editor.show(attrValue.get(attrValue.keys[i]).replace(" ","_")); //上传图片的按钮id
 */
             if(i==attrValue.keys.length-1){
-                morePicid+='{"a":"'+$("#moreAttrs tr:eq(0) th:eq(4)").find("input").val().replace(" ","_").replace(".","").replace("+","") + 'this' + attrValue.get(attrValue.keys[i]).replace(" ","_").replace(".","").replace("+","")+'","b":"'+attrValue.get(attrValue.keys[i]).replace(" ","_").replace(".","").replace("+","")+'"}';
+                morePicid+='{"a":"'+replaceTSFH($("#moreAttrs tr:eq(0) th:eq(4)").find("input").val().replace(" ","_").replace(".","").replace("+","")) + 'this' + replaceTSFH(attrValue.get(attrValue.keys[i]).replace(" ","_").replace(".","").replace("+",""))+'","b":"'+replaceTSFH(attrValue.get(attrValue.keys[i]).replace(" ","_").replace(".","").replace("+",""))+'"}';
             }else{
-                morePicid+='{"a":"'+$("#moreAttrs tr:eq(0) th:eq(4)").find("input").val().replace(" ","_").replace(".","").replace("+","") + 'this' + attrValue.get(attrValue.keys[i]).replace(" ","_").replace(".","").replace("+","")+'","b":"'+attrValue.get(attrValue.keys[i]).replace(" ","_").replace(".","").replace("+","")+'"},';
+                morePicid+='{"a":"'+replaceTSFH($("#moreAttrs tr:eq(0) th:eq(4)").find("input").val().replace(" ","_").replace(".","").replace("+","")) + 'this' + replaceTSFH(attrValue.get(attrValue.keys[i]).replace(" ","_").replace(".","").replace("+",""))+'","b":"'+replaceTSFH(attrValue.get(attrValue.keys[i]).replace(" ","_").replace(".","").replace("+",""))+'"},';
             }
         }
         if(morePicid!=""){
@@ -275,7 +275,9 @@
         picstr += "</li>";
         </c:forEach>
         $("#picture_" + ebayAccount).append(picstr);
+        $("#picNumber").text(countChoosePic());
         </c:if>
+
 
 
         /*    var str = '';
@@ -313,7 +315,7 @@
         $("select[name='ListingFlag']").find("option[value='" + listingflag + "']").prop("selected", true);
         $("input[name='SecondFlag'][value='" + secondflag + "']").prop("checked", true);
         initDraug();//初始化拖动图片
-        changeBackcolour();
+       changeBackcolour();
         setTimeout(function(){
             initModel();
         },100);
@@ -568,7 +570,13 @@
         <li style=" padding-left:80px;padding-top:9px;background:#F7F7F7"></li>
     </div>
 
-    <h1>商品图片</h1>
+    <h1>
+        商品图片
+        <span style="font-weight: 100;padding-left: 30px;">
+            已选择图片：<span id="picNumber"></span>张｜最多12张图片
+        </span>
+    </h1>
+
 <span id="showPics">
 
 </span>
@@ -807,20 +815,12 @@
 
 
 <link rel="stylesheet" type="text/css" href="<c:url value ="/js/toolTip/qtip2/jquery.qtip.min.css"/> "/>
-<%--<script type="text/javascript" src=<c:url value ="/js/toolTip/qtip2/jquery.qtip.min.js" /> ></script>
-<script type="text/javascript" src=<c:url value ="/js/toolTip/qtip2/jquery-ui.min.js" /> ></script>--%>
+
 <script type="text/javascript" src=<c:url value ="/js/batchAjaxUtil.js" /> ></script>
 <script type="text/javascript" src=<c:url value ="/js/toolTip/loadTipTool.js" /> ></script>
 
 
-<%--<link rel="stylesheet" type="text/css" href="<c:url value ="/js/toolTip/css/jQuery.toolTip.css"/> "/>
-    <script type="text/javascript" src=<c:url value ="/js/toolTip/js/jQuery.toolTip.js" /> ></script>
-<script type="text/javascript">
-    $(document).ready(function(){
-        $('.tooltip').toolTip();
-    })
 
-</script>--%>
 </body>
 <script>
 

@@ -3,9 +3,7 @@ package com.complement.service.impl;
 import com.base.database.customtrading.mapper.ItemInventoryQueryMapper;
 import com.base.database.trading.mapper.TradingInventoryComplementMapper;
 import com.base.database.trading.mapper.TradingInventoryComplementMoreMapper;
-import com.base.database.trading.model.TradingInventoryComplement;
-import com.base.database.trading.model.TradingInventoryComplementMore;
-import com.base.database.trading.model.TradingInventoryComplementMoreExample;
+import com.base.database.trading.model.*;
 import com.base.mybatis.page.Page;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -73,5 +71,16 @@ public class TradingInventoryComplementImpl implements com.complement.service.IT
         TradingInventoryComplementMoreExample tme = new TradingInventoryComplementMoreExample();
         tme.createCriteria().andParentIdEqualTo(parentId);
         return this.tradingInventoryComplementMoreMapper.selectByExample(tme);
+    }
+    @Override
+    public TradingInventoryComplement selectBySkuOrEbayAccount(String sku,String ebayAccount){
+        TradingInventoryComplementExample tice = new TradingInventoryComplementExample();
+        tice.createCriteria().andItemSkuEqualTo(sku).andEbayAccountEqualTo(ebayAccount);
+        List<TradingInventoryComplement> litic = this.tradingInventoryComplementMapper.selectByExample(tice);
+        if(litic!=null&&litic.size()>0){
+            return litic.get(0);
+        }else{
+            return null;
+        }
     }
 }

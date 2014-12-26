@@ -18,6 +18,7 @@ import com.base.utils.common.ObjectUtils;
 import com.base.utils.exception.Asserts;
 import com.base.utils.xmlutils.SamplePaseXml;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,8 +31,11 @@ import java.util.Map;
  * 数据字典、trading数据字典和用户配置字典都是这个service
  */
 @Service
+@Scope(value = "prototype")
 @Transactional(rollbackFor = Exception.class)
 public class TradingDataDictionaryImpl implements com.trading.service.ITradingDataDictionary {
+    private int selectNumber=0;
+
     @Autowired
     private TradingDataDictionaryMapper tradingDataDictionaryMapper;
     @Autowired
@@ -46,7 +50,7 @@ public class TradingDataDictionaryImpl implements com.trading.service.ITradingDa
 
     @Override
     public void saveDataDictionary(TradingDataDictionary tradingDataDictionary){
-        this.tradingDataDictionaryMapper.insert(tradingDataDictionary);
+        this.tradingDataDictionaryMapper.insertSelective(tradingDataDictionary);
     }
 
     @Override
@@ -262,9 +266,12 @@ public class TradingDataDictionaryImpl implements com.trading.service.ITradingDa
         List<PublicDataDict> lipdd= this.selectByDicExample(categoryId,siteId);
         if(lipdd!=null&&lipdd.size()>0){
             PublicDataDict pdd = lipdd.get(0);
-            if(pdd.getItemParentId().equals("0")){
+            if("0".equals(pdd.getItemParentId()) || pdd.getItemId().equals(pdd.getItemParentId()) ){
+                selectNumber=0;
                 return pdd;
             }else{
+                selectNumber++;
+                if(selectNumber>=5){selectNumber=0;return pdd;}
                 return this.selectByParentDicExample(pdd.getItemParentId(),siteId);
             }
         }else{

@@ -5,8 +5,10 @@ import com.base.database.trading.model.TradingReturnpolicy;
 import com.base.domains.CommonParmVO;
 import com.base.domains.SessionVO;
 import com.base.domains.querypojos.ReturnpolicyQuery;
+import com.base.domains.userinfo.UsercontrollerUserExtend;
 import com.base.mybatis.page.Page;
 import com.base.mybatis.page.PageJsonBean;
+import com.base.userinfo.service.SystemUserManagerService;
 import com.base.utils.annotations.AvoidDuplicateSubmission;
 import com.base.utils.cache.DataDictionarySupport;
 import com.base.utils.cache.SessionCacheSupport;
@@ -24,6 +26,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -37,6 +40,8 @@ public class ReturnpolicyController extends BaseAction{
 
     @Autowired
     private ITradingReturnpolicy iTradingReturnpolicy;
+    @Autowired
+    private SystemUserManagerService systemUserManagerService;
 
     @RequestMapping("/ReturnpolicyList.do")
     @AvoidDuplicateSubmission(needSaveToken = true)
@@ -55,7 +60,17 @@ public class ReturnpolicyController extends BaseAction{
         String checkFlag = request.getParameter("checkFlag");
         m.put("checkFlag",checkFlag);
         SessionVO c= SessionCacheSupport.getSessionVO();
-        m.put("userid",c.getId());
+        if(systemUserManagerService.isAdminRole()){
+            List<UsercontrollerUserExtend> liuue = systemUserManagerService.queryAllUsersByOrgID("yes");
+            List<String> liue = new ArrayList<String>();
+            for(UsercontrollerUserExtend uue:liuue){
+                liue.add(uue.getUserId()+"");
+            }
+            liue.add(c.getId()+"");
+            m.put("liue",liue);
+        }else{
+            m.put("userid",c.getId());
+        }
         /**分页组装*/
         PageJsonBean jsonBean=commonParmVO.getJsonBean();
         Page page=jsonBean.toPage();

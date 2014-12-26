@@ -8,8 +8,13 @@ import com.base.database.trading.model.*;
 import com.base.domains.querypojos.ListingDataAmendQuery;
 import com.base.domains.querypojos.ListingDataQuery;
 import com.base.mybatis.page.Page;
+import com.base.userinfo.service.SystemUserManagerService;
 import com.base.utils.cache.DataDictionarySupport;
 import com.base.utils.common.DateUtils;
+import com.thoughtworks.xstream.mapper.Mapper;
+import com.trading.service.ITradingVariation;
+import com.trading.service.ITradingVariations;
+import com.trading.service.IUsercontrollerEbayAccount;
 import org.apache.log4j.Logger;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
@@ -40,7 +45,13 @@ public class TradingListingDataImpl implements com.trading.service.ITradingListi
     private TradingListingDataMapper tradingListingDataMapper;
     @Autowired
     private TradingListingAmendMapper tradingListingAmendMapper;
-    @Value("ITEM_LIST_ICON_URL")
+    @Autowired
+    private IUsercontrollerEbayAccount iUsercontrollerEbayAccount;
+    @Autowired
+    private ITradingVariations iTradingVariations;
+    @Autowired
+    private ITradingVariation iTradingVariation;
+    @Value("${ITEM_LIST_ICON_URL}")
     private String item_list_icon_url;
     @Override
     public List<ListingDataQuery> selectData(Map map, Page page){
@@ -103,18 +114,34 @@ public class TradingListingDataImpl implements com.trading.service.ITradingListi
         } catch (Exception e) {
             logger.error(res+":",e);
         }
+        UsercontrollerEbayAccount ue = this.iUsercontrollerEbayAccount.selectById(Long.parseLong(tradingItem.getEbayAccount()));
         Element rootElt = document.getRootElement();
         Date startDate= DateUtils.returnDate(rootElt.elementText("StartTime"));
         Date endDate=DateUtils.returnDate(rootElt.elementText("EndTime"));
         TradingListingData tld = new TradingListingData();
+        if("2".equals(tradingItem.getListingtype())) {
+            TradingVariations vs = this.iTradingVariations.selectByParentId(tradingItem.getId());
+            List<TradingVariation> livar = this.iTradingVariation.selectByParentId(vs.getId());
+            if (livar != null && livar.size() > 0) {
+                double price = livar.get(0).getStartprice();
+                long quantity = livar.get(0).getQuantity();
+                tld.setQuantity(quantity);
+                tld.setPrice(price);
+            }else{
+                tld.setQuantity(0l);
+                tld.setPrice(0d);
+            }
+        }else{
+            tld.setPrice(tradingItem.getStartprice()==null?0d:tradingItem.getStartprice());
+            tld.setQuantity(tradingItem.getQuantity());
+        }
         tld.setCreateDate(new Date());
-        tld.setEbayAccount(tradingItem.getEbayAccount());
+        tld.setEbayAccount(ue.getEbayAccount());
         tld.setIsFlag("0");
-        tld.setQuantity(tradingItem.getQuantity());
         tld.setQuantitysold(0L);
+        tld.setShippingPrice(0d);
         tld.setSku(tradingItem.getSku());
         tld.setBuyitnowprice(0d);
-        tld.setPrice(tradingItem.getStartprice());
         tld.setCurrencyId(tradingItem.getCurrency());
         tld.setItemId(tradingItem.getItemId());
         tld.setListingduration(tradingItem.getListingduration());
@@ -123,7 +150,6 @@ public class TradingListingDataImpl implements com.trading.service.ITradingListi
         tld.setSite(DataDictionarySupport.getTradingDataDictionaryByID(Long.parseLong(tradingItem.getSite())).getValue());
         tld.setSiteName(DataDictionarySupport.getTradingDataDictionaryByID(Long.parseLong(tradingItem.getSite())).getValue());
         tld.setUpdateDate(new Date());
-        tld.setShippingPrice(0d);
         tld.setReserveprice(0d);
         tld.setPicUrl(item_list_icon_url+tradingItem.getItemId()+".jpg");
         tld.setListingType(tradingItem.getListingtype());

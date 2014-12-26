@@ -143,6 +143,7 @@ public class SynchronizeFeedBackTimerTaskRun extends BaseScheduledClass implemen
                             }
                             feedBackDetail.setUserId(taskFeedBack.getUserid()+"");
                             feedBackDetail.setEbayAccount(taskFeedBack.getEbayname());
+                            feedBackDetail.setUpdatetime(new Date());
                             linewtfb.add(feedBackDetail);
                         }
                         iTradingFeedBackDetail.saveFeedBackDetail(linewtfb);

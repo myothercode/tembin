@@ -1,5 +1,6 @@
 package com.base.utils.threadpool;
 
+import com.base.database.trading.model.TradingOrderGetOrders;
 import com.base.utils.applicationcontext.ApplicationContextUtil;
 import com.base.utils.exception.MyUncaughtExceptionHandler;
 import com.base.utils.scheduleother.domain.SCBaseVO;
@@ -7,6 +8,7 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.util.concurrent.ListenableFuture;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.*;
 
@@ -58,6 +60,16 @@ public class TaskPool {
 
     /**需要执行的任务队列一般是不用调用api的定时任务队列*/
     public final static BlockingQueue<SCBaseVO> SCBaseQueue = new ArrayBlockingQueue<SCBaseVO>(60);
+
+    /**有些执行需要争夺资源的任务，做成一个队列*/
+    public final static BlockingQueue<TradingOrderGetOrders> togos=new ArrayBlockingQueue<TradingOrderGetOrders>(600);
+    public final static String[] togosBS=new String[1];
+    static {
+        togosBS[0]="0";
+    }
+
+
+
 
 
     /**判断指定名字的线程是否还在运行*/

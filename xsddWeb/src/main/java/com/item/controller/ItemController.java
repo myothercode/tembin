@@ -363,48 +363,51 @@ public class ItemController extends BaseAction{
             modelMap.put("lipa",lipa);
         }
 
-
-        TradingVariations tvs = this.iTradingVariations.selectByParentId(ti.getId());
-        if(tvs!=null){
-            Map m = new HashMap();
-            m.put("userid",c.getId());
-            m.put("parentid",tvs.getId());
-            List<VariationQuery> liv = this.iTradingVariation.selectByParentId(m);
-            if(liv!=null&&liv.size()>0){
-                for(VariationQuery iv : liv){
-                    List<TradingPublicLevelAttr> litpa= this.iTradingPublicLevelAttr.selectByParentId("VariationSpecifics",iv.getId());
-                    for(TradingPublicLevelAttr tap : litpa){
-                        iv.setTradingPublicLevelAttr(this.iTradingPublicLevelAttr.selectByParentId(null,tap.getId()));
+        if(ti.getListingtype().equals("2")) {
+            TradingVariations tvs = this.iTradingVariations.selectByParentId(ti.getId());
+            if (tvs != null) {
+                Map m = new HashMap();
+                m.put("userid", c.getId());
+                m.put("parentid", tvs.getId());
+                List<VariationQuery> liv = this.iTradingVariation.selectByParentId(m);
+                if (liv != null && liv.size() > 0) {
+                    for (VariationQuery iv : liv) {
+                        List<TradingPublicLevelAttr> litpa = this.iTradingPublicLevelAttr.selectByParentId("VariationSpecifics", iv.getId());
+                        for (TradingPublicLevelAttr tap : litpa) {
+                            iv.setTradingPublicLevelAttr(this.iTradingPublicLevelAttr.selectByParentId(null, tap.getId()));
+                        }
                     }
+                    modelMap.put("liv", liv);
                 }
-                modelMap.put("liv",liv);
-            }
-            TradingPublicLevelAttr tpla = this.iTradingPublicLevelAttr.selectByParentId("VariationSpecificsSet",tvs.getId()).get(0);
-            List<TradingPublicLevelAttr> litpa= this.iTradingPublicLevelAttr.selectByParentId("NameValueList",tpla.getId());
-            List li = new ArrayList();
-            for(TradingPublicLevelAttr tp :litpa){
-                li.add(this.iTradingAttrMores.selectByParnetid(tp.getId(),"Name").get(0));
-            }
-            modelMap.put("clso",li);
+                TradingPublicLevelAttr tpla = this.iTradingPublicLevelAttr.selectByParentId("VariationSpecificsSet", tvs.getId()).get(0);
+                List<TradingPublicLevelAttr> litpa = this.iTradingPublicLevelAttr.selectByParentId("NameValueList", tpla.getId());
+                List li = new ArrayList();
+                for (TradingPublicLevelAttr tp : litpa) {
+                    li.add(this.iTradingAttrMores.selectByParnetid(tp.getId(), "Name").get(0));
+                }
+                modelMap.put("clso", li);
 
-            TradingPictures tpes = this.iTradingPictures.selectParnetId(tvs.getId());
-            if(tpes!=null) {
-                List<TradingPublicLevelAttr> livsps = this.iTradingPublicLevelAttr.selectByParentId("VariationSpecificPictureSet", tpes.getId());
-                List lipics = new ArrayList();
-                for (int i = 0; i < livsps.size(); i++) {
-                    Map ms = new HashMap();
-                    TradingPublicLevelAttr tpa = livsps.get(i);
-                    List<TradingPublicLevelAttr> livspsss = this.iTradingPublicLevelAttr.selectByParentId("VariationSpecificValue", tpa.getId());
-                    List<TradingAttrMores> litam = this.iTradingAttrMores.selectByParnetid(tpa.getId(), "MuAttrPictureURL");
-                    ms.put("litam", litam);
-                    ms.put("tamname", livspsss.get(0).getValue());
-                    lipics.add(ms);
-                }
-                if (lipics.size() > 0) {
-                    modelMap.put("lipics", lipics);
+                TradingPictures tpes = this.iTradingPictures.selectParnetId(tvs.getId());
+                if (tpes != null) {
+                    List<TradingPublicLevelAttr> livsps = this.iTradingPublicLevelAttr.selectByParentId("VariationSpecificPictureSet", tpes.getId());
+                    List lipics = new ArrayList();
+                    for (int i = 0; i < livsps.size(); i++) {
+                        Map ms = new HashMap();
+                        TradingPublicLevelAttr tpa = livsps.get(i);
+                        List<TradingPublicLevelAttr> livspsss = this.iTradingPublicLevelAttr.selectByParentId("VariationSpecificValue", tpa.getId());
+                        List<TradingAttrMores> litam = this.iTradingAttrMores.selectByParnetid(tpa.getId(), "MuAttrPictureURL");
+                        ms.put("litam", litam);
+                        ms.put("tamname", livspsss.get(0).getValue());
+                        lipics.add(ms);
+                    }
+                    if (lipics.size() > 0) {
+                        modelMap.put("lipics", lipics);
+                    }
                 }
             }
         }
+
+
         List<TradingPicturedetails> lipd = this.iTradingPictureDetails.selectByParentId(Long.parseLong(id));
         for(TradingPicturedetails pd : lipd){
             List<TradingAttrMores> litam = this.iTradingAttrMores.selectByParnetid(pd.getId(),"PictureURL");
@@ -787,6 +790,16 @@ public class ItemController extends BaseAction{
                         }
                     }
                     template=doc.html();
+                }else{
+                    org.jsoup.nodes.Document doc = org.jsoup.Jsoup.parse(template);
+                    org.jsoup.select.Elements content = doc.getElementsByAttributeValue("name", "blankimg");
+                    String url = "";
+                    int j=0;
+                    for(int i=0;i<content.size();i++){
+                        org.jsoup.nodes.Element el = content.get(i);
+                        el.remove();
+                    }
+                    template=doc.html();
                 }
 
                 template = template.replace("{ProductDetail}",tradingItem.getDescription());
@@ -904,25 +917,27 @@ public class ItemController extends BaseAction{
             }
             if(item.getVariations()!=null) {
                 List<Variation> livt = item.getVariations().getVariation();
-                for(int i = 0 ; i<livt.size();i++){
-                    Variation vtion = livt.get(i);
-                    List<VariationSpecifics> livar = new ArrayList();
-                    VariationSpecifics vsf = new VariationSpecifics();
-                    List<NameValueList> linvls = item.getVariations().getVariationSpecificsSet().getNameValueList();
-                    if(linvls!=null&&linvls.size()>0){
-                        List<NameValueList> linameList = new ArrayList();
-                        for(NameValueList vs : linvls){
-                            NameValueList nvl = new NameValueList();
-                            nvl.setName(vs.getName());
-                            List li = new ArrayList();
-                            li.add(vs.getValue().get(i));
-                            nvl.setValue(li);
-                            linameList.add(nvl);
+                if(livt!=null){
+                    for(int i = 0 ; i<livt.size();i++){
+                        Variation vtion = livt.get(i);
+                        List<VariationSpecifics> livar = new ArrayList();
+                        VariationSpecifics vsf = new VariationSpecifics();
+                        List<NameValueList> linvls = item.getVariations().getVariationSpecificsSet().getNameValueList();
+                        if(linvls!=null&&linvls.size()>0){
+                            List<NameValueList> linameList = new ArrayList();
+                            for(NameValueList vs : linvls){
+                                NameValueList nvl = new NameValueList();
+                                nvl.setName(vs.getName());
+                                List li = new ArrayList();
+                                li.add(vs.getValue().get(i));
+                                nvl.setValue(li);
+                                linameList.add(nvl);
+                            }
+                            vsf.setNameValueList(linameList);
                         }
-                        vsf.setNameValueList(linameList);
+                        livar.add(vsf);
+                        vtion.setVariationSpecifics(livar);
                     }
-                    livar.add(vsf);
-                    vtion.setVariationSpecifics(livar);
                 }
                 item.getVariations().setVariation(livt);
                 item.getVariations().getPictures().setVariationSpecificName(item.getVariations().getVariationSpecificsSet().getNameValueList().get(0).getName());
@@ -1130,7 +1145,16 @@ public class ItemController extends BaseAction{
                             AjaxSupport.sendSuccessText("message", "商品SKU为："+tradingItem.getSku()+"，名称为：<a target=_blank style='color:blue' href='"+service_item_url+itemId+"'>"+tradingItem.getItemName()+"<a>，刊登成功！");
                         } else {
                             //String errors = SamplePaseXml.getVFromXmlString(res, "Errors");
-                            String errors  = SamplePaseXml.getSpecifyElementTextAllInOne(res,"Errors","LongMessage");
+                            Document document= DocumentHelper.parseText(res);
+                            Element rootElt = document.getRootElement();
+                            Iterator<Element> e =  rootElt.elementIterator("Errors");
+                            String errors = "";
+                            if(e!=null){
+                                while (e.hasNext()){
+                                    Element es = e.next();
+                                    errors+=es.elementText("LongMessage")+"/n";
+                                }
+                            }
                             logger.error("刊登失败："+errors);
                             AjaxSupport.sendFailText("fail", "数据已保存，但刊登失败！"+errors);
                         }
@@ -1194,6 +1218,16 @@ public class ItemController extends BaseAction{
                         el.attr("src",tempicUrls[j]);
                         j++;
                     }
+                }
+                template=doc.html();
+            }else{
+                org.jsoup.nodes.Document doc = org.jsoup.Jsoup.parse(template);
+                org.jsoup.select.Elements content = doc.getElementsByAttributeValue("name", "blankimg");
+                String url = "";
+                int j=0;
+                for(int i=0;i<content.size();i++){
+                    org.jsoup.nodes.Element el = content.get(i);
+                    el.remove();
                 }
                 template=doc.html();
             }
@@ -1476,6 +1510,16 @@ public class ItemController extends BaseAction{
                     }
                 }
                 template=doc.html();
+            }else{
+                org.jsoup.nodes.Document doc = org.jsoup.Jsoup.parse(template);
+                org.jsoup.select.Elements content = doc.getElementsByAttributeValue("name", "blankimg");
+                String url = "";
+                int j=0;
+                for(int i=0;i<content.size();i++){
+                    org.jsoup.nodes.Element el = content.get(i);
+                    el.remove();
+                }
+                template=doc.html();
             }
 
             template = template.replace("{ProductDetail}",tradingItem.getDescription());
@@ -1732,6 +1776,16 @@ public class ItemController extends BaseAction{
                         el.attr("src",tempicUrls[j]);
                         j++;
                     }
+                }
+                template=doc.html();
+            }else{
+                org.jsoup.nodes.Document doc = org.jsoup.Jsoup.parse(template);
+                org.jsoup.select.Elements content = doc.getElementsByAttributeValue("name", "blankimg");
+                String url = "";
+                int j=0;
+                for(int i=0;i<content.size();i++){
+                    org.jsoup.nodes.Element el = content.get(i);
+                    el.remove();
                 }
                 template=doc.html();
             }
@@ -2025,7 +2079,17 @@ public class ItemController extends BaseAction{
                 Element rootElt = document.getRootElement();
                 Element tl = rootElt.element("Errors");
                 String longMessage = tl.elementText("LongMessage");
-                errormessage.add("商品SKU为："+tradingItem.getSku()+"，名称为："+tradingItem.getItemName()+"，刊登失败！失败原因："+longMessage);
+
+                Iterator<Element> e =  rootElt.elementIterator("Errors");
+                String errors = "";
+                if(e!=null){
+                    while (e.hasNext()){
+                        Element es = e.next();
+                        errors+=es.elementText("LongMessage")+"/n";
+                    }
+                }
+                logger.error("商品SKU为："+tradingItem.getSku()+"，名称为："+tradingItem.getItemName()+"，刊登失败！失败原因："+errors);
+                errormessage.add("商品SKU为："+tradingItem.getSku()+"，名称为："+tradingItem.getItemName()+"，刊登失败！失败原因："+errors);
             }
         }
         Map m = new HashMap();
@@ -2638,7 +2702,11 @@ public class ItemController extends BaseAction{
         String id = request.getParameter("id");
         String [] ids = id.split(",");
         String remark = request.getParameter("remark");
-        remark = new String(remark.getBytes("ISO-8859-1"),"UTF-8");
+        if(remark==null||"".equals(remark)){
+            remark="";
+        }else {
+            remark = new String(remark.getBytes("ISO-8859-1"), "UTF-8");
+        }
         List<TradingItem> litld = new ArrayList<TradingItem>();
         for(int i=0;i<ids.length;i++) {
             TradingItemWithBLOBs tradingItem = this.iTradingItem.selectByIdBL(Long.parseLong(ids[i]));

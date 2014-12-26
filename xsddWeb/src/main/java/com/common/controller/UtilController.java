@@ -18,10 +18,12 @@ import com.base.domains.SessionVO;
 import com.base.domains.querypojos.KeyMoveProgressQuery;
 import com.base.domains.userinfo.UsercontrollerDevAccountExtend;
 import com.base.domains.userinfo.UsercontrollerEbayAccountExtend;
+import com.base.mybatis.page.Page;
 import com.base.mybatis.page.PageJsonBean;
 import com.base.sampleapixml.APINameStatic;
 import com.base.userinfo.service.SystemUserManagerService;
 import com.base.userinfo.service.UserInfoService;
+import com.base.userinfo.service.impl.UserInfoServiceImpl;
 import com.base.utils.cache.DataDictionarySupport;
 import com.base.utils.cache.SessionCacheSupport;
 import com.base.utils.common.DateUtils;
@@ -43,6 +45,7 @@ import com.trading.service.ITradingDataDictionary;
 import com.trading.service.ITradingItem;
 import com.trading.service.ITradingReseCategory;
 import com.trading.service.IUsercontrollerEbayAccount;
+import com.trading.service.impl.UsercontrollerEbayAccountImpl;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
 import org.apache.http.client.HttpClient;
@@ -80,7 +83,11 @@ public class UtilController extends BaseAction{
     @Autowired
     private ITradingReseCategory iTradingReseCategory;
     @Autowired
-    public PublicDataDictCategorySpecificsMapper publicDataDictMapper;
+    public PublicDataDictCategorySpecificsMapper publicDataDictCategorySpecificsMapper;
+    @Autowired
+    public PublicDataDictMapper publicDataDictMapper;
+
+
     @Autowired
     public TestMapper testMapper;
     @Autowired
@@ -95,6 +102,7 @@ public class UtilController extends BaseAction{
     private SystemUserManagerService systemUserManagerService;
     @Autowired
     private IKeyMoveProgress iKeyMoveProgress;
+
 
     @Value("${EBAY.FINDING.KEY.API.URL}")
     private String findingkeyapiUrl;
@@ -130,7 +138,7 @@ public class UtilController extends BaseAction{
         PublicDataDictCategorySpecificsExample tradingDataDictionaryExample =new PublicDataDictCategorySpecificsExample();
         tradingDataDictionaryExample.createCriteria().andItemTypeEqualTo(DictCollectionsUtil.categorySpecifics)
         .andItemParentIdEqualTo(parentCategoryID).andSiteIdEqualTo(siteID);
-        List<PublicDataDictCategorySpecifics> publicDataDictList = this.publicDataDictMapper.selectByExample(tradingDataDictionaryExample);
+        List<PublicDataDictCategorySpecifics> publicDataDictList = this.publicDataDictCategorySpecificsMapper.selectByExample(tradingDataDictionaryExample);
 
 
 
@@ -210,6 +218,23 @@ public class UtilController extends BaseAction{
     }
 
     /**
+     * 查询相似分类列表xml
+     * @param token
+     * @param title
+     * @return
+     */
+    public String getCosXml(String token,String title){
+        String xml = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n" +
+                "<GetSuggestedCategoriesRequest xmlns=\"urn:ebay:apis:eBLBaseComponents\">\n" +
+                "<RequesterCredentials>\n" +
+                "<eBayAuthToken>"+token+"</eBayAuthToken>\n" +
+                "</RequesterCredentials>\n" +
+                "<Query>"+title+"</Query>\n" +
+                "</GetSuggestedCategoriesRequest>​";
+        return xml;
+    }
+
+    /**
      * 通过ＡＰＩ查询相似分类
      * @param title
 
@@ -217,38 +242,37 @@ public class UtilController extends BaseAction{
     @RequestMapping("/ajax/getReseCategoryMenu.do")
     @ResponseBody
     public void getReseCategoryMenu(ModelMap modelMap,String title,String siteid,CommonParmVO commonParmVO) throws Exception {
-        StringBuffer sb = new StringBuffer();
-        sb.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
-        sb.append("<findItemsByKeywordsRequest xmlns=\"http://www.ebay.com/marketplace/search/v1/services\">");
-        sb.append("<keywords>" + title + "</keywords>");
-        sb.append("<outputSelector>CategoryHistogram</outputSelector>");
-        sb.append("<paginationInput>");
-        sb.append("<pageNumber>1</pageNumber><entriesPerPage>1</entriesPerPage>");
-        sb.append("</paginationInput>");
-        sb.append("</findItemsByKeywordsRequest>");
-        List<TradingReseCategory> litr = new ArrayList<TradingReseCategory>();
         TradingDataDictionary tdd = DataDictionarySupport.getTradingDataDictionaryByID(Long.parseLong(siteid));
-        if(title!=null&&!"".equals(title)) {
-            List<BasicHeader> headers = new ArrayList<BasicHeader>();
-            headers.add(new BasicHeader("X-EBAY-SOA-SERVICE-NAME", "FindingService"));
-            headers.add(new BasicHeader("X-EBAY-SOA-OPERATION-NAME", "findItemsByKeywords"));
-            headers.add(new BasicHeader("X-EBAY-SOA-SERVICE-VERSION", "1.12.0"));
-            headers.add(new BasicHeader("X-EBAY-SOA-GLOBAL-ID", tdd.getDataDesc()));
-            headers.add(new BasicHeader("X-EBAY-SOA-SECURITY-APPNAME", "sandpoin-23af-4f47-a304-242ffed6ff5b"));
-            headers.add(new BasicHeader("X-EBAY-SOA-REQUEST-DATA-FORMAT", "XML"));
-            HttpClient httpClient = HttpClientUtil.getHttpsClient();
-            String res = HttpClientUtil.post(httpClient, findingkeyapiUrl, sb.toString(), "UTF-8", headers);
-            litr = SamplePaseXml.selectCategoryByKey(res, title);
-            for (int i = 0; i < litr.size() - 1; i++) {
-                TradingReseCategory tr1 = litr.get(i);
-                for (int j = litr.size() - 1; j > i; j--) {
-                    TradingReseCategory tr2 = litr.get(j);
-                    if (tr1.getCategoryId().equals(tr2.getCategoryId())) {
-                        litr.remove(j);
-                    }
-                }
+        UsercontrollerDevAccountExtend d = userInfoService.getDevByOrder(new HashMap());
+        SessionVO c= SessionCacheSupport.getSessionVO();
+        Page page  = new Page();
+        page.setPageSize(10);
+        page.setCurrentPage(1);
+        page.setTotalCount(10);
+        List<UsercontrollerEbayAccountExtend> liuea = this.userInfoService.getEbayAccountForCurrUser(new HashMap(), page);
+        String token="";
+        if(liuea!=null){
+            UsercontrollerEbayAccountExtend uea = liuea.get(0);
+            token = this.userInfoService.getTokenByEbayID(uea.getId());
+        }
+        String xml = this.getCosXml(token,title);
+        //String xml = this.getCosXml("AgAAAA**AQAAAA**aAAAAA**kRx8VA**nY+sHZ2PrBmdj6wVnY+sEZ2PrA2dj6AGloWiAZCCogSdj6x9nY+seQ**blACAA**AAMAAA**d0Px77QqgOj2GHC7XDNXkRKusIUT1y5uPdXz87hiC9ghsh75Q6hQb3BRbKwkJsFz3BlORq7L8lEiHsqBnFzd65yK1MJ/CQMsY165Q+4Rw664b0dP3vnPzjeN3cfKOkDwwoLqFGrMclvrrpntfSDBcO/r1QaC+CUB0GD6UiuhdyhBIPd1gb+z0KmYCTwpFENyHDzRtiTcT5qCt5eYfYzsve2e6O1c+NsTyBgJzUD1v78aIluxKhoC+huF9Uxscm2DU4mOr0JYONHJCs3dN18fKLp0Dc3hSvmPSIaxPmjcvlVfWuVPtw6KwXvxw8U8PGUdfACzb9ZIBiUEEhFHU6xv73egj2hkN/ZTJr7yu3l+qvDJFHLlgBMoprseFc0tmDi/hbRUILxuOy8TOpGri71DoQBzwuQxxrG5GMJ77NFLOLYxsH6/gpA/7+vFT1X5CUsIv+BYZyY7g3RLZWYem3Gqv9T+sVNC/DEhxmdO1Yx49rAwHcUw3aeXTrKpa1xCNkgHg4Feheu5V6Pu9lb5DQUC9YidqELrLEvos6yoiH31myqAmI72Gt4i7SBjwS8k5O+7xjxhDrKpg0IFwCdQk4PEByoBnud/dDNyCZkZdCqTkb36aqmgdnTANz9M7DtcQTH/Lf6h+Suj3RVSeFfDZcJJDax7Ie5qwte+oHJ6yTuBZ2dt4hMmKZIZwn26Ei+DUfCPhx6nEqcAOf6Sbxf8RxkWJ2pLcIvbifrditHIuyGjOf4yMoIHOcSp6FsVbmkMleBG",title);
+        d.setApiSiteid(tdd.getName1());
+        //d.setApiSiteid("0");
+        d.setApiCallName(APINameStatic.GetSuggestedCategories);
+        AddApiTask addApiTask = new AddApiTask();
+        Map<String, String> resMap = addApiTask.exec(d, xml, apiUrl);
+        //Map<String, String> resMap = addApiTask.exec(d, xml, "https://api.ebay.com/ws/api.dll");
+        List<TradingReseCategory> litr = new ArrayList<TradingReseCategory>();
+        String r1 = resMap.get("stat");
+        if(!r1.equals("fail")){
+            String res = resMap.get("message");
+            String ack = SamplePaseXml.getVFromXmlString(res, "Ack");
+            if ("Success".equalsIgnoreCase(ack) || "Warning".equalsIgnoreCase(ack)) {
+                litr = SamplePaseXml.selectCategoryByKey(res);
             }
         }
+
         PageJsonBean jsonBean=commonParmVO.getJsonBean();
         jsonBean.setPageCount(20);
         jsonBean.setPageNum(1);
@@ -367,22 +391,38 @@ public class UtilController extends BaseAction{
     public ModelAndView getCategories(ModelMap modelMap, HttpServletRequest request) throws Exception {
         String xml = "";
 
-        List<TradingDataDictionary> lidata = DataDictionarySupport.getTradingDataDictionaryByType(DataDictionarySupport.DATA_DICT_SITE);
+        /*List<TradingDataDictionary> lidata = DataDictionarySupport.getTradingDataDictionaryByType(DataDictionarySupport.DATA_DICT_SITE);
         modelMap.put("siteList", lidata);
         for (int i = 0; i < lidata.size(); i++) {
             TradingDataDictionary tdd = lidata.get(i);
             if(tdd.getId()==291||tdd.getId()==311){
                 continue;
-            }
-            xml="<?xml version=\"1.0\" encoding=\"utf-8\"?>\n" +
+            }*/
+        TradingDataDictionary tdd=new TradingDataDictionary();
+        tdd.setName1("0");
+        tdd.setId(311L);
+          String xml1="<?xml version=\"1.0\" encoding=\"utf-8\"?>\n" +
                     "<GetCategoriesRequest xmlns=\"urn:ebay:apis:eBLBaseComponents\">\n" +
                     "<RequesterCredentials>\n" +
-                    "<eBayAuthToken>AgAAAA**AQAAAA**aAAAAA**wV1JUQ**nY+sHZ2PrBmdj6wVnY+sEZ2PrA2dj6wFk4GhCpGGoA+dj6x9nY+seQ**cx0CAA**AAMAAA**2kuzIn+bBej1QDsDFfI2N74mj8psZYNYrtgX97fzWSGXO7EjvdlE9leu9HCY1bR9wdrzlAE7AKcT9Oz5BDNZbNQLS+uoifmNUM47lSqxWeYTQS2GtMK25LPYhxY+OQp6UVZ8lUh6Oqr91ub03emzufuZHo+6KSNJfNXMtOBVaB7PDeBQyNWoFBO0/LYiS5ql6HXB7vCj0W+K/iT4t3aPs5KlXAXjewM/Sa+nUDtjT9SseqrKrxdZx5fkAePeSrBs229tdCrkTtE0n+ZE9ppwJjElZpu7yfQL44McNa16KBxYYO0PnX7ENg2yMxf3H4aji0BEfB41lrC1LwhmNSebJGrJXRQVS9jmZyDqYiBdn1t536va/LPTP8kc3GZ7hnZRJuhMxoGGgx4ev5Hip0L7dk6cAPKHIkHUIjfA5pwVHEJZpvea+7uvwAh5pj9U7r6rmB9FXH2G9l+F5SytYlIXsDjwNtrEN53k5HrM0vhnGdd7pUwvyu7Nu4U5aPkZQZjTr6OrTWioDsZZwEz+pf0scw0IYweMhicCqMTNbvkJsj2cikX49C6XSAcoUyrGtGa11vFChrifmq74dPZmUEtT1hDtwL1Ix3VPyZcJtTukKljxa0W0IwIe676X5HmiGhvk5qPPUImkXcZdQUK1gMdZmw0seMl5xmFG33kKVSD9H0p0JAEF4lOcDvjADQZtwLXY3qIhvYcKdOrIffrUAURnJRYnrB/MixizWvw252xBn9tmxpm68O3KsGBzcUwEB0Su</eBayAuthToken>\n" +
+                    "<eBayAuthToken>AgAAAA**AQAAAA**aAAAAA**ODN9VA**nY+sHZ2PrBmdj6wVnY+sEZ2PrA2dj6wFk4GhCpGGoA+dj6x9nY+seQ**Sd0CAA**AAMAAA**a8K8fmx7s3vurAo/SGFiTl1PTp5pI/+JwbMuDqmBGpz/3++lJUPnHvIVgzjMBQtP89Qx/RDRY0s2Y10elagAew81uMb4EkWRIZIYw7YZdpp+ExQ5BUNnopAPRXeWz9ODtU2ujdk7m1y+wGLeNS8iFwP3bmHjcGyMLHDWvKkyBsky/y9kbpTmMbcry3SlUVykFG5cYeQFgpEjqJohfH6mX2T7NcD0L0eVWzrU4/Wh7NFpmGfxsgzN1e3FA89sLG6HZfJhSg+SBRT+dR29BAf2A9oVI6+yIctnfGPnHL68UrGzmgh+EgUf8aQW8n17zLEZEatUjpwlrAoRIH/CbG+gVZkSkGQyxI/WoqWtwAZKyAApvOSqGNYVRwef61GHMmAyf7eXojMBP3na1wMMAHpde6APji+3QiDlGT49T6wzcUA8TPRTTIQCYuqsEBY0tAjVrTEwcbsPUW9/533q8MNsVywH99VDme1fsKKLK4v93mZg9JzAMbdeNIfrtcH8CVQYQzv4n+xGNvchUD8pwGtZ98RxGk/8dZr0pEMZpcM70YNGLAtzbNEsPvfPdQfDUV6bgsHRBzySa+jAeCDesslrC3fanWJFFa/7YjLnNqdcVpWsC0V/uRWbdzOJ9mo2+sJelL5mPCgWS+YdFHYgdxYRnJCb/VBkkrm7IuSHUuBXWVdlaqs5Miu0fWIj0CZ/KYjBZK7XZyAN7LP1spAiFQJ2vo8/UCqcoay4ftMT68QgNcAyucVEr8gAF7k7RFDFEYSf</eBayAuthToken>\n" +
                     "</RequesterCredentials>\n" +
                     "<CategorySiteID>"+tdd.getName1()+"</CategorySiteID>\n" +
                     "<DetailLevel>ReturnAll</DetailLevel>\n" +
                     "<Version>885</Version>\n" +
                     "</GetCategoriesRequest>​";
+
+xml="<?xml version=\"1.0\" encoding=\"utf-8\"?>\n" +
+        "<GetCategoryFeaturesRequest xmlns=\"urn:ebay:apis:eBLBaseComponents\">\n" +
+        "<RequesterCredentials>\n" +
+        "<eBayAuthToken>AgAAAA**AQAAAA**aAAAAA**QM20Uw**nY+sHZ2PrBmdj6wVnY+sEZ2PrA2dj6wFk4GhCpGGoA+dj6x9nY+seQ**Sd0CAA**AAMAAA**a8K8fmx7s3vurAo/SGFiTl1PTp5pI/+JwbMuDqmBGpz/3++lJUPnHvIVgzjMBQtP89Qx/RDRY0s2Y10elagAew81uMb4EkWRIZIYw7YZdpp+ExQ5BUNnopAPRXeWz9ODtU2ujdk7m1y+wGLeNS8iFwP3bmHjcGyMLHDWvKkyBsky/y9kbpTmMbcry3SlUVykFG5cYeQFgpEjqJohfH6mX2T7NcD0L0eVWzrU4/Wh7NFpmGfxsgzN1e3FA89sLG6HZfJhSg+SBRT+dR29BAf2A9oVI6+yIctnfGPnHL68UrGzmgh+EgUf8aQW8n17zLEZEatUjpwlrAoRIH/CbG+gVZkSkGQyxI/WoqWtwAZKyAApvOSqGNYVRwef61GHMmAyf7eXojMBP3na1wMMAHpde6APji+3QiDlGT49T6wzcUA8TPRTTIQCYuqsEBY0tAjVrTEwcbsPUW9/533q8MNsVywH99VDme1fsKKLK4v93mZg9JzAMbdeNIfrtcH8CVQYQzv4n+xGNvchUD8pwGtZ98RxGk/8dZr0pEMZpcM70YNGLAtzbNEsPvfPdQfDUV6bgsHRBzySa+jAeCDesslrC3fanWJFFa/7YjLnNqdcVpWsC0V/uRWbdzOJ9mo2+sJelL5mPCgWS+YdFHYgdxYRnJCb/VBkkrm7IuSHUuBXWVdlaqs5Miu0fWIj0CZ/KYjBZK7XZyAN7LP1spAiFQJ2vo8/UCqcoay4ftMT68QgNcAyucVEr8gAF7k7RFDFEYSf</eBayAuthToken>\n" +
+        "</RequesterCredentials>\n" +
+        "<CategoryID>43304</CategoryID>\n" +
+        "<ViewAllNodes>true</ViewAllNodes>\n" +
+        "<AllFeaturesForCategory>true</AllFeaturesForCategory>\n" +
+        "<DetailLevel>ReturnAll</DetailLevel>\n" +
+        "</GetCategoryFeaturesRequest>";
+
+
             List<BasicHeader> headers = new ArrayList<BasicHeader>();
             headers.add(new BasicHeader("X-EBAY-API-COMPATIBILITY-LEVEL","885"));
             headers.add(new BasicHeader("X-EBAY-API-DEV-NAME", "5d70d647-b1e2-4c7c-a034-b343d58ca425"));
@@ -392,16 +432,25 @@ public class UtilController extends BaseAction{
             headers.add(new BasicHeader("X-EBAY-API-CALL-NAME",APINameStatic.GetCategories));
             HttpClient httpClient= HttpClientUtil.getHttpsClient();
             String res= HttpClientUtil.post(httpClient, "https://api.sandbox.ebay.com/ws/api.dll", xml.toString(), "UTF-8", headers);
-            List<PublicDataDict> litdd = SamplePaseXml.selectPublicDataDict(res);
+
+
+            /*List<PublicDataDict> litdd = SamplePaseXml.selectPublicDataDict(res);
             for (PublicDataDict pdd : litdd) {
-                pdd.setSiteId(tdd.getId().toString());
+                PublicDataDict ppp=new PublicDataDict();
+                ppp.setSiteId(tdd.getId().toString());
+                ppp.setItemId(pdd.getItemId());
+                ppp.setVariationSpecifics();
+
+                PublicDataDictExample dataDictExample=new PublicDataDictExample();
+                dataDictExample.createCriteria().andSiteIdEqualTo(ppp.getSiteId())
+                        .andItemIdEqualTo(ppp.getItemId());
                 try {
-                 //   this.publicDataDictMapper.insertSelective(pdd);
+                    this.publicDataDictMapper.updateByExampleSelective(ppp);
                 }catch(Exception e){
                     continue;
                 }
-            }
-        }
+            }*/
+
         return forword("/test",modelMap);
     }
 
@@ -497,11 +546,14 @@ i++;
         SessionVO c= SessionCacheSupport.getSessionVO();
         List<KeyMoveProgressQuery> limp = this.iKeyMoveProgress.selectByUserId(c.getId());
         if(limp!=null&&limp.size()>0){
-            KeyMoveProgressQuery kmpq = limp.get(0);
-            UsercontrollerEbayAccount uea = this.iUsercontrollerEbayAccount.selectById(Long.parseLong(kmpq.getPaypalId()));
-            modelMap.put("ebayAccount",uea.getEbayAccount());
-            TradingProgress tps = this.iKeyMoveProgress.selectById(kmpq.getProgressId());
-            modelMap.put("startDate",DateUtils.secondsBetween(tps.getStartDate(), tps.getEndDate()));
+            for(KeyMoveProgressQuery kmpq:limp) {
+                UsercontrollerEbayAccount uea = this.iUsercontrollerEbayAccount.selectById(Long.parseLong(kmpq.getPaypalId()));
+                kmpq.setEbayAccount(uea.getEbayAccount());
+                /*modelMap.put("ebayAccount", uea.getEbayAccount());*/
+                TradingProgress tps = this.iKeyMoveProgress.selectById(kmpq.getProgressId());
+                kmpq.setStartDate(DateUtils.secondsBetween(tps.getStartDate(), tps.getEndDate())+"");
+                /*modelMap.put("startDate", DateUtils.secondsBetween(tps.getStartDate(), tps.getEndDate()));*/
+            }
         }
         modelMap.put("limp",limp);
         AjaxSupport.sendSuccessText("message", modelMap);

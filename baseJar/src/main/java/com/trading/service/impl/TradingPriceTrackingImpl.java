@@ -49,6 +49,7 @@ public class TradingPriceTrackingImpl implements com.trading.service.ITradingPri
         List<TradingPriceTracking> list=new ArrayList<TradingPriceTracking>();
         String xml="<?xml version=\"1.0\" encoding=\"UTF-8\"?>"+
                 "<findItemsByKeywordsRequest xmlns=\"http://www.ebay.com/marketplace/search/v1/services\">"+
+                "<sortOrder>EndTime</sortOrder>"+
                 "<keywords>" + title + "</keywords>"+
                 "<outputSelector>SellerInfo</outputSelector>"+
                 "<paginationInput>"+

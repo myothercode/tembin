@@ -64,7 +64,6 @@
                 url='url:'+url+'?messageID='+messageid;
             }
             OrderGetOrders=openMyDialog({title: '查看消息',
-
                 content: url,
                 icon: 'succeed',
                 width:1200,
@@ -75,11 +74,11 @@
         }
         function makeOption8(json){
             var hs="";
-            hs+="<li style=\"height:25px;\" onclick=selectOption("+json.messageid+","+json.id+",this); value='1' doaction=\"readed\" >处理消息</li>";
+            hs+="<li style=\"height:25px;\" onclick=selectOption("+json.messageid+","+json.id+",this); value='1' doaction=\"readed\" ><font>处理消息</font></li>";
             if(json.read=="true"){
-                hs+="<li style=\"height:25px;\" onclick=selectOption("+json.messageid+","+json.id+",this); value='2' doaction=\"look\" >标记未读</li>";
+                hs+="<li style=\"height:25px;\" onclick=selectOption("+json.messageid+","+json.id+",this); value='2' doaction=\"look\" ><font>标记未读</font></li>";
             }else{
-                hs+="<li style=\"height:25px;\" onclick=selectOption("+json.messageid+","+json.id+",this); value='3' doaction=\"look\" >标记已读</li>";
+                hs+="<li style=\"height:25px;\" onclick=selectOption("+json.messageid+","+json.id+",this); value='3' doaction=\"look\" ><font>标记已读</font></li>";
             }
             var pp={"liString":hs};
             return getULSelect(pp);
@@ -465,7 +464,39 @@
             $().invoke(url, null,
                     [function (m, r) {
                         alert(r);
-                        refreshTable();
+                        if(value1!=null){
+                            refreshTable();
+                        }else{
+                            var input= $("input[type=checkbox][name=templateId][value="+id+"]");
+                            var tr=$(input).parent().parent();
+                            var spans=$(tr).find("span");
+                            for(var i=0;i<spans.length;i++){
+                                if(value2=='true'){
+                                    $(spans[i]).attr("style","color: #999999;");
+                                    if(i==(spans.length-1)){
+                                        var div=$(spans[i]).parent();
+                                        var a=$(div).find("a");
+                                        $(a).attr("value","2");
+                                       /* hs+="<li style=\"height:25px;\" onclick=selectOption("+json.messageid+","+json.id+",this); value='3' doaction=\"look\" >标记已读</li>";*/
+                                        console.debug(a);
+                                        var font=a.find("font");
+                                        font[0].innerHTML="标记未读";
+                                    }
+                                }
+                                if(value2=='false'){
+                                    $(spans[i]).attr("style","color: #0000ff;");
+                                    if(i==(spans.length-1)){
+                                        var div=$(spans[i]).parent();
+                                        var a=$(div).find("a");
+                                        $(a).attr("value","3");
+                                        console.debug(a);
+                                        var font=a.find("font");
+                                        font[0].innerHTML="标记已读";
+                                    }
+                                }
+
+                            }
+                        }
                         Base.token();
                     },
                         function (m, r) {

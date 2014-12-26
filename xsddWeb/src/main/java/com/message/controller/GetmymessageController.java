@@ -433,6 +433,8 @@ public class GetmymessageController extends BaseAction{
         modelMap.put("grossdetailamounts",grossdetailamounts);
         modelMap.put("pictures",pictures);
         modelMap.put("accs",accs);
+        modelMap.put("messageFlag","true");
+        modelMap.put("orderFlag","false");
         return forword("orders/order/viewOrderGetOrders",modelMap);
     }
    /**
@@ -452,6 +454,12 @@ public class GetmymessageController extends BaseAction{
         m.put("messageID",messageID);
         m.put("ebays",ebays);
         List<MessageGetmymessageQuery> messages=iTradingMessageGetmymessage.selectMessageGetmymessageBySender(m);
+        for(TradingMessageGetmymessage messageGetmymessage:messages){
+            if("false".equals(messageGetmymessage.getRead())){
+                messageGetmymessage.setRead("true");
+                iTradingMessageGetmymessage.saveMessageGetmymessage(messageGetmymessage);
+            }
+        }
             List<TradingOrderAddMemberMessageAAQToPartner> addMessages=new ArrayList<TradingOrderAddMemberMessageAAQToPartner>();
             List<TradingMessageGetmymessage> messages1=new ArrayList<TradingMessageGetmymessage>();
             List<TradingMessageGetmymessage> messageList=new ArrayList<TradingMessageGetmymessage>();
@@ -460,37 +468,55 @@ public class GetmymessageController extends BaseAction{
                  messageList=iTradingMessageGetmymessage.selectMessageGetmymessageByItemIdAndSender(messages.get(0).getItemid(),messages.get(0).getSender(),messages.get(0).getRecipientuserid());
                  addmessageList=iTradingOrderAddMemberMessageAAQToPartner.selectTradingOrderAddMemberMessageAAQToPartnerByItemIdAndSender(messages.get(0).getItemid(),4,messages.get(0).getRecipientuserid(),messages.get(0).getSender());
             }
-            messages1.addAll(messageList);
-            addMessages.addAll(addmessageList);
+           /* messages1.addAll(messageList);
+            addMessages.addAll(addmessageList);*/
             if(messages1.size()==0&&messages.size()>0){
                 messages1.add(messages.get(0));
             }
             for(TradingMessageGetmymessage message:messages1){
-                TradingOrderAddMemberMessageAAQToPartner partner=new TradingOrderAddMemberMessageAAQToPartner();
-                partner.setSender(message.getSender());
-                partner.setSubject(message.getSubject());
-                partner.setRecipientid(message.getRecipientuserid());
-                partner.setCreateTime(message.getReceivedate());
-                partner.setItemid(message.getItemid());
                 String text=message.getTextHtml();
                 if(!"eBay".equals(message.getSender())){
                     if(StringUtils.isNotBlank(text)){
                         String text4="";
+                        String text5="";
                         String[] text1=text.split("<table border=\"0\" cellpadding=\"2\" cellspacing=\"3\" width=\"100%\"><tr><td>");
+                        List<TradingOrderAddMemberMessageAAQToPartner> addMessages3=new ArrayList<TradingOrderAddMemberMessageAAQToPartner>();
                         for(int i=1;i<text1.length;i++){
+                            TradingOrderAddMemberMessageAAQToPartner partner=new TradingOrderAddMemberMessageAAQToPartner();
+                            TradingOrderAddMemberMessageAAQToPartner partner1=new TradingOrderAddMemberMessageAAQToPartner();
+                            partner.setSender(message.getSender());
+                            partner.setSubject(message.getSubject());
+                            partner.setRecipientid(message.getRecipientuserid());
+                            partner.setCreateTime(message.getReceivedate());
+                            partner.setItemid(message.getItemid());
+                            partner1.setSender(message.getRecipientuserid());
+                            partner1.setSubject(message.getSubject());
+                            partner1.setRecipientid(message.getSender());
+                            partner1.setCreateTime(message.getReceivedate());
+                            partner1.setItemid(message.getItemid());
                             String[] text2=text1[i].split("<div style=\"font-weight:bold; font-size:10pt; font-family:arial, sans-serif; color:#000\">- "+message.getSender());
                             if(text2[0].contains(message.getRecipientuserid())){
                                 String text3=text2[0];
-
                                 if(!text3.contains("- "+message.getRecipientuserid())){
-                                    text4+=text3+"<br/>";
+                                    text4=text3+"<br/>";
                                     partner.setBody(text4);
-
+                                    addMessages3.add(partner);
+                                }
+                            }
+                            String[] text6=text1[i].split("<div style=\"font-weight:bold; font-size:10pt; font-family:arial, sans-serif; color:#000\">- "+message.getRecipientuserid());
+                            if(text6[0].contains(message.getSender())){
+                                String text7=text6[0];
+                                if(!text7.contains("- "+message.getSender())){
+                                    text5=text7+"<br/>";
+                                    partner1.setBody(text5);
+                                    addMessages3.add(partner1);
                                 }
                             }
                         }
-                        if(partner.getBody()!=null||!"".equals(partner.getBody())){
-                            addMessages.add(partner);
+                        Object[] addMessages3s=addMessages3.toArray();
+                        for(int i=addMessages3s.length-1;i>=0;i--){
+                            TradingOrderAddMemberMessageAAQToPartner messageAAQToPartner= (TradingOrderAddMemberMessageAAQToPartner) addMessages3s[i];
+                            addMessages.add(messageAAQToPartner);
                         }
                     }
                 }
@@ -592,8 +618,8 @@ public class GetmymessageController extends BaseAction{
         modelMap.put("pictures",pictures);
         modelMap.put("messageID",messageID);
         modelMap.put("parentMessageID",messages.get(0).getExternalmessageid());
-
-
+        modelMap.put("messageFlag","true");
+        modelMap.put("orderFlag","false");
         modelMap.put("accs",accs);
         return forword("orders/order/viewOrderGetOrders",modelMap);
     }
@@ -669,12 +695,14 @@ public class GetmymessageController extends BaseAction{
         String transactionid=request.getParameter("transactionid");
         String seller=request.getParameter("seller");
         String paypal=request.getParameter("paypal");
-        List<TradingOrderGetOrders> orders=iTradingOrderGetOrders.selectOrderGetOrdersByTransactionId(transactionid,seller);
-        if(orders.size()>0){
-            List<TradingOrderGetItem> items=iTradingOrderGetItem.selectOrderGetItemByItemId(orders.get(0).getItemid());
-            modelMap.put("order",orders.get(0));
-            if(items.size()>0){
-                modelMap.put("item",items.get(0));
+        if(StringUtils.isNotBlank(transactionid)){
+            List<TradingOrderGetOrders> orders=iTradingOrderGetOrders.selectOrderGetOrdersByTransactionId(transactionid,seller);
+            if(orders.size()>0){
+                List<TradingOrderGetItem> items=iTradingOrderGetItem.selectOrderGetItemByItemId(orders.get(0).getItemid());
+                modelMap.put("order",orders.get(0));
+                if(items.size()>0){
+                    modelMap.put("item",items.get(0));
+                }
             }
         }
         modelMap.put("date",new Date());

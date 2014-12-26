@@ -121,25 +121,6 @@ public class ListingItemDataTimerTaskRun extends BaseScheduledClass implements S
                             if(litl!=null&&litl.size()>0){
                                 TradingListingData oldtd = litl.get(0);
                                 td.setId(oldtd.getId());
-                                for(TradingAutoComplement tac:litac){//排除设置好的规则，如果有满足条件的商品就不再做库存补冲
-                                    if(tac.getAutoType().equals("1")&&tac.getSkuKey().equals(td.getSku())){
-                                        isFlag=false;
-                                    }else if(tac.getAutoType().equals("2")&&td.getSku().indexOf(tac.getSkuKey())>0){
-                                        isFlag=false;
-                                    }
-                                }
-                                if(oldtd.getQuantity()>td.getQuantity()&&td.getIsFlag().equals("0")&&isFlag) {
-                                    TaskComplement tc = new TaskComplement();
-                                    tc.setToken(token);
-                                    tc.setSite(siteid);
-                                    tc.setTaskFlag("0");
-                                    tc.setRepValue(oldtd.getQuantity() + "");
-                                    tc.setCreateDate(new Date());
-                                    tc.setItemId(td.getItemId());
-                                    tc.setOldValue(td.getQuantity() + "");
-                                    tc.setEbayAccount(td.getEbayAccount());
-                                    iTaskComplement.saveTaskComplement(tc);
-                                }
                                 td.setUpdateDate(new Date());
                                 tldm.updateByPrimaryKeySelective(td);
                             }else{
@@ -147,6 +128,7 @@ public class ListingItemDataTimerTaskRun extends BaseScheduledClass implements S
                                 td.setCreateDate(new Date());
                                 tldm.insertSelective(td);
                             }
+                            iTradingAutoComplement.checkAutoComplementType(td,token,siteid);
                             List<TradingListingSuccess> litls = iTradingListingSuccess.selectByItemid(td.getItemId());
                             if(litls==null||litls.size()==0){
                                 TradingListingSuccess tls = new TradingListingSuccess();
@@ -166,7 +148,7 @@ public class ListingItemDataTimerTaskRun extends BaseScheduledClass implements S
             }
             return "1";
         } catch (Exception e) {
-            logger.error("listItemDT:"+res,e);
+            logger.error("listItemDT:",e);
             return "0";
         }
 

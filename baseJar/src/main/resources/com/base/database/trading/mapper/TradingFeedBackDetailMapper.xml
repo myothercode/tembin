@@ -26,6 +26,7 @@
     <result column="uuid" jdbcType="VARCHAR" property="uuid" />
     <result column="user_id" jdbcType="VARCHAR" property="userId" />
     <result column="ebay_account" jdbcType="VARCHAR" property="ebayAccount" />
+    <result column="updateTime" jdbcType="TIMESTAMP" property="updatetime" />
   </resultMap>
   <resultMap extends="BaseResultMap" id="ResultMapWithBLOBs" type="com.base.database.trading.model.TradingFeedBackDetail">
     <!--
@@ -107,7 +108,7 @@
     -->
     id, CommentingUser, CommentingUserScore, CommentTime, CommentType, ItemID, Role, 
     FeedbackID, TransactionID, OrderLineItemID, ItemTitle, ItemPrice, currencyID, autoMessageFlag, 
-    sentTime, autoMessage_id, create_time, uuid, user_id, ebay_account
+    sentTime, autoMessage_id, create_time, uuid, user_id, ebay_account, updateTime
   </sql>
   <sql id="Blob_Column_List">
     <!--
@@ -195,16 +196,16 @@
       OrderLineItemID, ItemTitle, ItemPrice, 
       currencyID, autoMessageFlag, sentTime, 
       autoMessage_id, create_time, uuid, 
-      user_id, ebay_account, CommentText
-      )
+      user_id, ebay_account, updateTime, 
+      CommentText)
     values (#{id,jdbcType=BIGINT}, #{commentinguser,jdbcType=VARCHAR}, #{commentinguserscore,jdbcType=BIGINT}, 
       #{commenttime,jdbcType=TIMESTAMP}, #{commenttype,jdbcType=VARCHAR}, #{itemid,jdbcType=VARCHAR}, 
       #{role,jdbcType=VARCHAR}, #{feedbackid,jdbcType=VARCHAR}, #{transactionid,jdbcType=VARCHAR}, 
       #{orderlineitemid,jdbcType=VARCHAR}, #{itemtitle,jdbcType=VARCHAR}, #{itemprice,jdbcType=DOUBLE}, 
       #{currencyid,jdbcType=VARCHAR}, #{automessageflag,jdbcType=INTEGER}, #{senttime,jdbcType=TIMESTAMP}, 
       #{automessageId,jdbcType=BIGINT}, #{createTime,jdbcType=TIMESTAMP}, #{uuid,jdbcType=VARCHAR}, 
-      #{userId,jdbcType=VARCHAR}, #{ebayAccount,jdbcType=VARCHAR}, #{commenttext,jdbcType=LONGVARCHAR}
-      )
+      #{userId,jdbcType=VARCHAR}, #{ebayAccount,jdbcType=VARCHAR}, #{updatetime,jdbcType=TIMESTAMP}, 
+      #{commenttext,jdbcType=LONGVARCHAR})
   </insert>
   <insert id="insertSelective" parameterType="com.base.database.trading.model.TradingFeedBackDetail">
     <!--
@@ -273,6 +274,9 @@
       <if test="ebayAccount != null">
         ebay_account,
       </if>
+      <if test="updatetime != null">
+        updateTime,
+      </if>
       <if test="commenttext != null">
         CommentText,
       </if>
@@ -337,6 +341,9 @@
       </if>
       <if test="ebayAccount != null">
         #{ebayAccount,jdbcType=VARCHAR},
+      </if>
+      <if test="updatetime != null">
+        #{updatetime,jdbcType=TIMESTAMP},
       </if>
       <if test="commenttext != null">
         #{commenttext,jdbcType=LONGVARCHAR},
@@ -420,6 +427,9 @@
       <if test="record.ebayAccount != null">
         ebay_account = #{record.ebayAccount,jdbcType=VARCHAR},
       </if>
+      <if test="record.updatetime != null">
+        updateTime = #{record.updatetime,jdbcType=TIMESTAMP},
+      </if>
       <if test="record.commenttext != null">
         CommentText = #{record.commenttext,jdbcType=LONGVARCHAR},
       </if>
@@ -454,6 +464,7 @@
       uuid = #{record.uuid,jdbcType=VARCHAR},
       user_id = #{record.userId,jdbcType=VARCHAR},
       ebay_account = #{record.ebayAccount,jdbcType=VARCHAR},
+      updateTime = #{record.updatetime,jdbcType=TIMESTAMP},
       CommentText = #{record.commenttext,jdbcType=LONGVARCHAR}
     <if test="_parameter != null">
       <include refid="Update_By_Example_Where_Clause" />
@@ -484,7 +495,8 @@
       create_time = #{record.createTime,jdbcType=TIMESTAMP},
       uuid = #{record.uuid,jdbcType=VARCHAR},
       user_id = #{record.userId,jdbcType=VARCHAR},
-      ebay_account = #{record.ebayAccount,jdbcType=VARCHAR}
+      ebay_account = #{record.ebayAccount,jdbcType=VARCHAR},
+      updateTime = #{record.updatetime,jdbcType=TIMESTAMP}
     <if test="_parameter != null">
       <include refid="Update_By_Example_Where_Clause" />
     </if>
@@ -553,6 +565,9 @@
       <if test="ebayAccount != null">
         ebay_account = #{ebayAccount,jdbcType=VARCHAR},
       </if>
+      <if test="updatetime != null">
+        updateTime = #{updatetime,jdbcType=TIMESTAMP},
+      </if>
       <if test="commenttext != null">
         CommentText = #{commenttext,jdbcType=LONGVARCHAR},
       </if>
@@ -584,6 +599,7 @@
       uuid = #{uuid,jdbcType=VARCHAR},
       user_id = #{userId,jdbcType=VARCHAR},
       ebay_account = #{ebayAccount,jdbcType=VARCHAR},
+      updateTime = #{updatetime,jdbcType=TIMESTAMP},
       CommentText = #{commenttext,jdbcType=LONGVARCHAR}
     where id = #{id,jdbcType=BIGINT}
   </update>
@@ -611,7 +627,8 @@
       create_time = #{createTime,jdbcType=TIMESTAMP},
       uuid = #{uuid,jdbcType=VARCHAR},
       user_id = #{userId,jdbcType=VARCHAR},
-      ebay_account = #{ebayAccount,jdbcType=VARCHAR}
+      ebay_account = #{ebayAccount,jdbcType=VARCHAR},
+      updateTime = #{updatetime,jdbcType=TIMESTAMP}
     where id = #{id,jdbcType=BIGINT}
   </update>
 </mapper>

@@ -1,5 +1,7 @@
 package com.test.service.impl;
 
+import com.base.database.publicd.mapper.PublicDataDictMapper;
+import com.base.database.publicd.model.PublicDataDict;
 import com.base.database.trading.mapper.TradingPicturesMapper;
 import com.base.database.trading.model.TradingBuyerRequirementDetails;
 import com.base.database.trading.model.TradingItemWithBLOBs;
@@ -32,11 +34,7 @@ public class Test1ServiceImpl implements Test1Service {
     @Autowired
     private ITradingReturnpolicy itradingReturnpolicy;
     @Autowired
-    private TradingPicturesMapper tradingPicturesMapper;
-    @Autowired
-    private ITradingItem iTradingItem;
-    @Autowired
-    private ITradingBuyerRequirementDetails iTradingBuyerRequirementDetails;
+    private PublicDataDictMapper publicDataDictMapper;
 
 
     @Override
@@ -49,6 +47,21 @@ public class Test1ServiceImpl implements Test1Service {
         testMapper.updateTest(map);
 
 
+    }
+
+
+    @Override
+    public List<PublicDataDict> selectpddhData(Map map){
+        return testMapper.selectpddhData(map);
+    }
+
+
+    @Override
+    public void  updateData(PublicDataDict publicDataDict){
+        int x= publicDataDictMapper.updateByPrimaryKeySelective(publicDataDict);
+
+        PublicDataDict xx=publicDataDictMapper.selectByPrimaryKey(publicDataDict.getId());
+        System.out.println(x);
     }
 
 

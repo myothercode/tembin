@@ -115,6 +115,9 @@ function showData(json){
     for(var i=0;i<json.lits.length;i++){
         html+='<tr><td style="border:1px solid #dddddd;" width="220px">'+json.lits[i].shippingservice+'</td><td style="border:1px solid #dddddd;" width="60px">'+json.lits[i].shippingservicecost.toFixed(2)+'&nbsp'+json.currencyId+'</td><td style="border:1px solid #dddddd;"  width="60px">'+json.lits[i].shippingserviceadditionalcost.toFixed(2)+'&nbsp'+json.currencyId+'</td><td style="border:1px solid #dddddd;"  width="60px">'+json.lits[i].shippingsurcharge.toFixed(2)+'&nbsp'+json.currencyId+'</td></tr>';
     }
+    for(var i=0;i<json.liti.length;i++){
+        html+='<tr><td style="border:1px solid #dddddd;" width="220px">'+json.liti[i].shippingservice+'</td><td style="border:1px solid #dddddd;" width="60px">'+json.liti[i].shippingservicecost.toFixed(2)+'&nbsp'+json.currencyId+'</td><td style="border:1px solid #dddddd;"  width="60px">'+json.liti[i].shippingserviceadditionalcost.toFixed(2)+'&nbsp'+json.currencyId+'</td><td style="border:1px solid #dddddd;"  width="60px">&nbsp</td></tr>';
+    }
     html+='</table></div>';
     return html;
 }

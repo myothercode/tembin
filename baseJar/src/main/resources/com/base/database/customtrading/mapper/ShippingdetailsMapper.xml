@@ -61,6 +61,10 @@
         <if test="userid!=null">
             and shipping.create_user = #{userid}
         </if>
+        <if test="liue!=null">
+            and shipping.create_user in
+            <foreach item="ue" index="index" collection="liue" open="(" separator="," close=")">#{ue,jdbcType=VARCHAR}</foreach>
+        </if>
         <if test="checkFlag!=null">
             and shipping.check_flag = #{checkFlag}
         </if>

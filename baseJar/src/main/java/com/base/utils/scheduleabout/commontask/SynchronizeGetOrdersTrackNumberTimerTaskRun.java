@@ -15,6 +15,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -26,14 +27,30 @@ public class SynchronizeGetOrdersTrackNumberTimerTaskRun extends BaseScheduledCl
     public void synchronizeOrderTrackNumer(List<TradingOrderGetOrders> orderses){
         ITradingOrderGetOrdersNoTransaction iTradingOrderGetOrdersNoTransaction=(ITradingOrderGetOrdersNoTransaction) ApplicationContextUtil.getBean(ITradingOrderGetOrdersNoTransaction.class);
         try {
-            List<JSONObject> list= OrderQueryTrack.queryTrack(orderses);
-            if(list!=null&&list.size()>0){
-                for(TradingOrderGetOrders order:orderses){
-                    for(JSONObject json:list){
-                        if(order.getShipmenttrackingnumber().equals(json.get("Number"))){
-                            order.setTrackstatus(json.get("Status")+"");
-                            iTradingOrderGetOrdersNoTransaction.saveOrderGetOrders(order);
+            List<JSONObject> list=new ArrayList<JSONObject>();
+            if(orderses.size()>0&&orderses!=null){
+                list = OrderQueryTrack.queryTrack(orderses);
+                if(list!=null&&list.size()>0){
+                    Boolean trackFlag=false;
+                    for(TradingOrderGetOrders order:orderses){
+                        for(JSONObject json:list){
+                            if(!"0".equals(json.get("Status"))&&json!=null){
+                                if(json.get("Number")!=null&&order.getShipmenttrackingnumber().equals(json.get("Number"))){
+                                    order.setTrackstatus(json.get("Status")+"");
+                                    trackFlag=true;
+                                    TaskPool.togos.put(order);
+                                    iTradingOrderGetOrdersNoTransaction.saveOrderGetOrders(order);
+                                }
+                            }
                         }
+                    }
+                    if("0".equals(TaskPool.togosBS[0])){
+                        iTradingOrderGetOrdersNoTransaction.saveOrderGetOrders(null);
+                    }
+                    Object status=list.get(0).get("Status");
+                    if(!trackFlag&&status!=null&&"0".equals(status.toString())){
+                        logger.error("SynchronizeGetOrdersTrackNumberTimerTaskRun91track调用失败:"+list.get(0).get("Error"));
+                        MainTask.taskRunTime.put("91trackTask_ERROR",new Date());
                     }
                 }
             }

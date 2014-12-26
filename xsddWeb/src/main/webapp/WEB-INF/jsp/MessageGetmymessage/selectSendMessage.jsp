@@ -62,6 +62,7 @@
         }
         function submitCommit(){
             var checkboxs=$("input[type=radio][name=templateId]:checked");
+            var paypal="${paypal}";
             if(checkboxs.length==1){
                 var textarea=W.document.getElementById("textarea");
                 var id=$(checkboxs[0]).attr("value");

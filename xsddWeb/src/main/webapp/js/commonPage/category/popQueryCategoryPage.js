@@ -13,9 +13,10 @@ function getRese(){
     $("#rese1").initTable({
         url:path + "/ajax/getReseCategoryMenu.do?title="+title+"&siteid="+sitId,
         columnData:[
-            {title: "选项", name: "option1", width: "8%", align: "left", format: showRadio},
+            {title: "选项", name: "option1", width: "4%", align: "left", format: showRadio},
             {title:"ID",name:"categoryId",width:"8%",align:"left"},
-            {title:"名称",name:"categoryName",width:"80%",align:"left"}
+            {title:"名称",name:"categoryName",width:"80%",align:"left"},
+            {title:"接近度",name:"categoryKey",width:"8%",align:"left"}
         ],
         selectDataNow:true,
         isrowClick:false,

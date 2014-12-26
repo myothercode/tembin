@@ -6,6 +6,7 @@ import com.base.domains.CommonParmVO;
 import com.base.domains.SessionVO;
 import com.base.domains.querypojos.ItemInformationQuery;
 import com.base.domains.userinfo.UsercontrollerEbayAccountExtend;
+import com.base.domains.userinfo.UsercontrollerUserExtend;
 import com.base.mybatis.page.Page;
 import com.base.mybatis.page.PageJsonBean;
 import com.base.userinfo.service.SystemUserManagerService;
@@ -110,11 +111,22 @@ public class ItemInformationController extends BaseAction {
         }
         Map m = new HashMap();
         SessionVO sessionVO=SessionCacheSupport.getSessionVO();
+        Boolean adminFlag=systemUserManagerService.isAdminRole();
         m.put("remark",remark);
         m.put("information",information);
         m.put("itemType",itemType);
         m.put("content",content);
         m.put("comment",comment);
+        if(adminFlag){
+            List<UsercontrollerUserExtend> orgUsers=systemUserManagerService.queryAllUsersByOrgID("yes");
+            UsercontrollerUserExtend admin=new UsercontrollerUserExtend();
+            admin.setUserId((int) sessionVO.getId());
+            orgUsers.add(admin);
+            m.put("orgUsers",orgUsers);
+            m.put("adminFlag","true");
+        }else{
+            m.put("adminFlag","false");
+        }
         if(sessionVO!=null){
             m.put("userID",sessionVO.getId());
         }else{
@@ -391,6 +403,7 @@ public class ItemInformationController extends BaseAction {
     public ModelAndView addItemInformation(HttpServletRequest request,HttpServletResponse response,
                                         @ModelAttribute( "initSomeParmMap" )ModelMap modelMap){
         String id=request.getParameter("id");
+        String orderFlag=request.getParameter("orderFlag");
         PublicItemInformation itemInformation=new PublicItemInformation();
         PublicItemInventory inventory=new PublicItemInventory();
         PublicItemCustom custom=new PublicItemCustom();
@@ -424,7 +437,11 @@ public class ItemInformationController extends BaseAction {
                 }
             }
         }
-
+        if(StringUtils.isNotBlank(orderFlag)&&"true".equals(orderFlag)){
+            modelMap.put("orderFlag","true");
+        }else{
+            modelMap.put("orderFlag","false");
+        }
         List<PublicUserConfig> types=iPublicUserConfig.selectUserConfigByItemType("itemType",sessionVO.getId());
         String root=request.getContextPath();
         modelMap.put("types",types);

@@ -9,6 +9,7 @@ import com.base.domains.querypojos.PriceTrackingQuery;
 import com.base.mybatis.page.Page;
 import com.base.mybatis.page.PageJsonBean;
 import com.base.utils.cache.SessionCacheSupport;
+import com.base.utils.common.DateUtils;
 import com.common.base.utils.ajax.AjaxSupport;
 import com.common.base.web.BaseAction;
 import com.trading.service.ITradingListingData;
@@ -77,9 +78,17 @@ public class PriceTrackingController extends BaseAction{
         String title=request.getParameter("title");
         String queryTitle=request.getParameter("queryTitle");
         String bidcount=request.getParameter("bidcount");
+        String starttime=request.getParameter("starttime");
+        String endtime=request.getParameter("endtime");
         TradingPriceTracking tracking=new TradingPriceTracking();
         if(StringUtils.isNotBlank(itemid)){
             tracking.setItemid(itemid);
+        }
+        if(StringUtils.isNotBlank(starttime)){
+            tracking.setStarttime(DateUtils.parseDateTime(starttime));
+        }
+        if(StringUtils.isNotBlank(endtime)){
+            tracking.setEndtime(DateUtils.parseDateTime(endtime));
         }
         if(StringUtils.isNotBlank(sellerusername)){
             tracking.setSellerusername(sellerusername);

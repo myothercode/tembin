@@ -113,7 +113,7 @@ public class TradingBuyerRequirementDetailsImpl implements com.trading.service.I
                 brd.setLinkedPayPalAccount(tbrd.getLinkedpaypalaccount().equals("1")?true:false);
             }
             if(tbrd.getShiptoregistrationcountry()!=null){
-                brd.setShipToRegistrationCountry(tbrd.getShiptoregistrationcountry().equals("1")?true:false);
+                brd.setShipToRegistrationCountry(tbrd.getShiptoregistrationcountry().equals("0")?true:false);
             }
             if(tbrd.getZerofeedbackscore()!=null){
                 brd.setZeroFeedbackScore(tbrd.getZerofeedbackscore().equals("1")?true:false);

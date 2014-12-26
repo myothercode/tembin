@@ -80,6 +80,6 @@ public class SynchronizeGetOrdersSellerTransactionTimerTaskRun extends BaseSched
         }else{
             return 2;
         }*/
-        return 10;
+        return 20;
     }
 }

@@ -105,7 +105,8 @@ public class DictCollectionsUtil {
 
     /**根据字典中的类型筛选出指定条件的list<TradingDataDictionary>对象*/
     public static List<TradingDataDictionary> dataTradingCollectionFilterByType(List<TradingDataDictionary> ts,final String type){
-         Collection<TradingDataDictionary> x= Collections2.filter(ts, new Predicate<TradingDataDictionary>() {
+        if(ts==null || ts.isEmpty()){return null;}
+        Collection<TradingDataDictionary> x= Collections2.filter(ts, new Predicate<TradingDataDictionary>() {
              @Override
              public boolean apply(TradingDataDictionary tradingDataDictionary) {
                  return type.equalsIgnoreCase(tradingDataDictionary.getType());
@@ -117,6 +118,7 @@ public class DictCollectionsUtil {
 
     /**根据map中的条件来筛选publicDataDictionary对象集合*/
     public static List<PublicDataDict> publicDataDictCollectionFilterByMap(List<PublicDataDict> ts,final Map<String , String> map){
+        if(ts==null || ts.isEmpty()){return null;}
         Collection<PublicDataDict> x= Collections2.filter(ts, new Predicate<PublicDataDict>() {
             @Override
             public boolean apply(PublicDataDict tradingDataDictionary) {
@@ -154,6 +156,7 @@ public class DictCollectionsUtil {
 
     /**根据map中的条件来筛选TradingDataDictionary对象集合*/
     public static List<TradingDataDictionary> dataTradingCollectionFilterByMap(List<TradingDataDictionary> ts,final Map<String , String> map){
+        if(ts==null || ts.isEmpty()){return null;}
         Collection<TradingDataDictionary> x= Collections2.filter(ts, new Predicate<TradingDataDictionary>() {
             @Override
             public boolean apply(TradingDataDictionary tradingDataDictionary) {
@@ -191,12 +194,14 @@ public class DictCollectionsUtil {
 
     /**根据字典中的ID筛选出指定条件的list<TradingDataDictionary>对象*/
     public static TradingDataDictionary dataTradingCollectionFilterByID(List<TradingDataDictionary> ts,final Long id){
+        if(ts==null || ts.isEmpty()){return null;}
         Collection<TradingDataDictionary> x= Collections2.filter(ts, new Predicate<TradingDataDictionary>() {
             @Override
             public boolean apply(TradingDataDictionary tradingDataDictionary) {
                 return id==tradingDataDictionary.getId()||id.equals(tradingDataDictionary.getId());
             }
         });
+        if(x==null || x.isEmpty()){return null;}
         TradingDataDictionary[] tt = x.toArray(new TradingDataDictionary[]{});
         return Arrays.asList(tt).get(0);
     }
@@ -205,18 +210,21 @@ public class DictCollectionsUtil {
 
     /**根据字典中的类型筛选出指定条件的list<publicDataDictionary>对象*/
     public static PublicDataDict dataPublicCollectionFilterByType(List<PublicDataDict> ts,final String type){
+        if(ts==null || ts.isEmpty()){return null;}
         Collection<PublicDataDict> x= Collections2.filter(ts, new Predicate<PublicDataDict>() {
             @Override
             public boolean apply(PublicDataDict tradingDataDictionary) {
                 return type.equalsIgnoreCase(tradingDataDictionary.getItemType());
             }
         });
+        if(x==null || x.isEmpty()){return null;}
         PublicDataDict[] tt = x.toArray(new PublicDataDict[]{});
         return Arrays.asList(tt).get(0);
     }
 
     /**根据字典中的ID筛选出指定条件的<publicDataDictionary>对象*/
     public static List<PublicDataDict> dataPublicCollectionsFilterByID(List<PublicDataDict> ts,final Long id){
+        if(ts==null || ts.isEmpty()){return null;}
         Collection<PublicDataDict> x= Collections2.filter(ts, new Predicate<PublicDataDict>() {
             @Override
             public boolean apply(PublicDataDict tradingDataDictionary) {
@@ -229,6 +237,7 @@ public class DictCollectionsUtil {
 
     /**根据字典中的ItemID筛选出指定条件的<publicDataDictionary>对象*/
     public static List<PublicDataDict> dataPublicCollectionsFilterByItemIDs(List<PublicDataDict> ts,final String itemId,final String type){
+        if(ts==null || ts.isEmpty()){return null;}
         Collection<PublicDataDict> x= Collections2.filter(ts, new Predicate<PublicDataDict>() {
             @Override
             public boolean apply(PublicDataDict tradingDataDictionary) {
@@ -241,6 +250,7 @@ public class DictCollectionsUtil {
 
     /**根据字典中的itemID筛选出指定条件的<publicDataDictionary>对象*/
     public static List<PublicDataDict> dataPublicCollectionsFilterByItemID(List<PublicDataDict> ts,final Long id){
+        if(ts==null || ts.isEmpty()){return null;}
         Collection<PublicDataDict> x= Collections2.filter(ts, new Predicate<PublicDataDict>() {
             @Override
             public boolean apply(PublicDataDict tradingDataDictionary) {
@@ -253,6 +263,7 @@ public class DictCollectionsUtil {
 
     /**根据字典中的parentID和itemtype筛选出指定条件的<publicDataDictionary>对象*/
     public static List<PublicDataDict> dataPublicCollectionsFilterByParentID(List<PublicDataDict> ts,DictDataFilterParmVO vo){
+        if(ts==null || ts.isEmpty()){return null;}
         final Long id=vo.getLongV1();
         final String itemType = vo.getStringV1();
         final String siteID = vo.getStringV2();
@@ -271,6 +282,7 @@ public class DictCollectionsUtil {
     }
     /**根据字典中的parentID和itemlevel筛选出指定条件的<publicDataDictionary>对象*/
     public static List<PublicDataDict> dataPublicCollectionsFilterByItemLevel(List<PublicDataDict> ts,DictDataFilterParmVO v){
+        if(ts==null || ts.isEmpty()){return null;}
         final Long id = v.getLongV1();
         final String itemLevel=v.getStringV1();
         final String itemType=v.getStringV2();
@@ -307,6 +319,7 @@ public class DictCollectionsUtil {
 
     /**根据字典中的ID筛选出指定条件的<publicDataDictionary>对象*/
     public static PublicDataDict dataPublicCollectionFilterByID(List<PublicDataDict> ts,final Long id){
+        if(ts==null || ts.isEmpty()){return null;}
         Collection<PublicDataDict> x= Collections2.filter(ts, new Predicate<PublicDataDict>() {
             @Override
             public boolean apply(PublicDataDict tradingDataDictionary) {
@@ -320,6 +333,7 @@ public class DictCollectionsUtil {
     /*====================*/
     /**根据字典中的类型和用户id筛选出指定条件的list<PublicUserConfig>对象*/
     public static List<PublicUserConfig> dataUserConfigCollectionFilterByType(List<PublicUserConfig> ts,final String type,final Long userId){
+        if(ts==null || ts.isEmpty()){return null;}
         Collection<PublicUserConfig> x= Collections2.filter(ts, new Predicate<PublicUserConfig>() {
             @Override
             public boolean apply(PublicUserConfig tradingDataDictionary) {
@@ -332,6 +346,7 @@ public class DictCollectionsUtil {
 
     /**根据字典中的ID筛选出指定条件的<PublicUserConfig>对象*/
     public static PublicUserConfig dataUserConfigCollectionFilterByID(List<PublicUserConfig> ts,final Long id){
+        if(ts==null || ts.isEmpty()){return null;}
         Collection<PublicUserConfig> x= Collections2.filter(ts, new Predicate<PublicUserConfig>() {
             @Override
             public boolean apply(PublicUserConfig tradingDataDictionary) {
@@ -344,6 +359,7 @@ public class DictCollectionsUtil {
 
     /**根据map中的条件来筛选PublicUserConfig对象集合*/
     public static List<PublicUserConfig> dataUserConfigCollectionFilterByMap(List<PublicUserConfig> ts,final Map<String , String> map){
+        if(ts==null || ts.isEmpty()){return null;}
         Collection<PublicUserConfig> x= Collections2.filter(ts, new Predicate<PublicUserConfig>() {
             @Override
             public boolean apply(PublicUserConfig publicUserConfig) {

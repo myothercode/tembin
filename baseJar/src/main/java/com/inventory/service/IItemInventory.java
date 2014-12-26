@@ -3,6 +3,7 @@ package com.inventory.service;
 import com.base.database.inventory.model.ItemInventory;
 import com.base.database.inventory.model.ShihaiyouInventory;
 import com.base.domains.querypojos.ItemInventoryQuery;
+import com.base.domains.querypojos.SiHaiYouInventoryQuery;
 import com.base.mybatis.page.Page;
 
 import java.util.List;
@@ -29,4 +30,12 @@ public interface IItemInventory {
     void getDeShiFangInventory();
 
     List<ItemInventoryQuery> selectBySku(Map map, Page page);
+
+    List<ItemInventory> selectBySku(String sku);
+
+    List<ShihaiyouInventory> selectShiHaiYouByBySku(String sku);
+
+    List<ItemInventoryQuery> selectItemInventoryTableList(Map map, Page page);
+
+    List<SiHaiYouInventoryQuery> selectItemInventoryTableList1(Map map, Page page);
 }

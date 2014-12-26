@@ -27,6 +27,24 @@
             $().invoke(url,data,
                     [function(m,r){
                         alert(r);
+                        var id="${order.id}";
+                        var input=$(W.document).find("input[name=checkbox][value1="+id+"]");
+                        var tr=$(input).parent().parent();
+                        var tds=$(tr).find("td");
+                        var td=tds[2];
+                        /*----------------------------------*/
+                        var mmm=td.innerHTML;
+                        var htm="<br/><span class=\"newdf\" style='border-radius: 3px;' title=\""+$("#comment").val()+"\">备注："+$("#comment").val()+"</span>";
+                        /*--------------------------------------------*/
+                        if(mmm.indexOf("备注")>0){
+                            var span=$(mmm).find("span[id=commentId]");
+                            mmm=mmm.substring(0,mmm.indexOf("备注"))+"备注："+$("#comment").val()+"</span>";
+                            td.innerHTML=mmm;
+                            /*td.innerHTML=mmm+htm;*/
+                        }else{
+                            td.innerHTML=mmm+htm;
+                        }
+
                         W.OrderGetOrders.close();
                         /*W.viewsendMessage1.close();*/
                         Base.token;

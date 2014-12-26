@@ -69,6 +69,7 @@
     <result column="create_user" jdbcType="BIGINT" property="createUser" />
     <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
     <result column="uuid" jdbcType="VARCHAR" property="uuid" />
+    <result column="updateTime" jdbcType="TIMESTAMP" property="updatetime" />
   </resultMap>
   <sql id="Example_Where_Clause">
     <!--
@@ -151,7 +152,7 @@
     transactionPrice, paidTime, shippedTime, actualShippingCost, actualHandlingCost, 
     buyerUserID, comment, folder, sellerUserID, variationSKU, paypalFlag, shippedFlag, 
     itemFlag, accountFlag, sellerTrasactionFlag, sendMessageTime, autoMessage_id, create_user, 
-    create_time, uuid
+    create_time, uuid, updateTime
   </sql>
   <select id="selectByExample" parameterType="com.base.database.trading.model.TradingOrderGetOrdersExample" resultMap="BaseResultMap">
     <!--
@@ -225,7 +226,8 @@
       variationSKU, paypalFlag, shippedFlag, 
       itemFlag, accountFlag, sellerTrasactionFlag, 
       sendMessageTime, autoMessage_id, create_user, 
-      create_time, uuid)
+      create_time, uuid, updateTime
+      )
     values (#{id,jdbcType=BIGINT}, #{orderid,jdbcType=VARCHAR}, #{orderstatus,jdbcType=VARCHAR}, 
       #{adjustmentamount,jdbcType=VARCHAR}, #{amountsaved,jdbcType=VARCHAR}, #{amountpaid,jdbcType=VARCHAR}, 
       #{ebaypaymentstatus,jdbcType=VARCHAR}, #{lastmodifiedtime,jdbcType=TIMESTAMP}, 
@@ -247,7 +249,8 @@
       #{variationsku,jdbcType=VARCHAR}, #{paypalflag,jdbcType=INTEGER}, #{shippedflag,jdbcType=INTEGER}, 
       #{itemflag,jdbcType=INTEGER}, #{accountflag,jdbcType=INTEGER}, #{sellertrasactionflag,jdbcType=INTEGER}, 
       #{sendmessagetime,jdbcType=TIMESTAMP}, #{automessageId,jdbcType=BIGINT}, #{createUser,jdbcType=BIGINT}, 
-      #{createTime,jdbcType=TIMESTAMP}, #{uuid,jdbcType=VARCHAR})
+      #{createTime,jdbcType=TIMESTAMP}, #{uuid,jdbcType=VARCHAR}, #{updatetime,jdbcType=TIMESTAMP}
+      )
   </insert>
   <insert id="insertSelective" parameterType="com.base.database.trading.model.TradingOrderGetOrders">
     <!--
@@ -445,6 +448,9 @@
       <if test="uuid != null">
         uuid,
       </if>
+      <if test="updatetime != null">
+        updateTime,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
       <if test="id != null">
@@ -635,6 +641,9 @@
       </if>
       <if test="uuid != null">
         #{uuid,jdbcType=VARCHAR},
+      </if>
+      <if test="updatetime != null">
+        #{updatetime,jdbcType=TIMESTAMP},
       </if>
     </trim>
   </insert>
@@ -844,6 +853,9 @@
       <if test="record.uuid != null">
         uuid = #{record.uuid,jdbcType=VARCHAR},
       </if>
+      <if test="record.updatetime != null">
+        updateTime = #{record.updatetime,jdbcType=TIMESTAMP},
+      </if>
     </set>
     <if test="_parameter != null">
       <include refid="Update_By_Example_Where_Clause" />
@@ -917,7 +929,8 @@
       autoMessage_id = #{record.automessageId,jdbcType=BIGINT},
       create_user = #{record.createUser,jdbcType=BIGINT},
       create_time = #{record.createTime,jdbcType=TIMESTAMP},
-      uuid = #{record.uuid,jdbcType=VARCHAR}
+      uuid = #{record.uuid,jdbcType=VARCHAR},
+      updateTime = #{record.updatetime,jdbcType=TIMESTAMP}
     <if test="_parameter != null">
       <include refid="Update_By_Example_Where_Clause" />
     </if>
@@ -1115,6 +1128,9 @@
       <if test="uuid != null">
         uuid = #{uuid,jdbcType=VARCHAR},
       </if>
+      <if test="updatetime != null">
+        updateTime = #{updatetime,jdbcType=TIMESTAMP},
+      </if>
     </set>
     where id = #{id,jdbcType=BIGINT}
   </update>
@@ -1185,7 +1201,8 @@
       autoMessage_id = #{automessageId,jdbcType=BIGINT},
       create_user = #{createUser,jdbcType=BIGINT},
       create_time = #{createTime,jdbcType=TIMESTAMP},
-      uuid = #{uuid,jdbcType=VARCHAR}
+      uuid = #{uuid,jdbcType=VARCHAR},
+      updateTime = #{updatetime,jdbcType=TIMESTAMP}
     where id = #{id,jdbcType=BIGINT}
   </update>
 </mapper>

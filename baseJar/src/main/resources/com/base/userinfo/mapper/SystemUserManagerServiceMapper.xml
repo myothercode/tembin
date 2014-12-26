@@ -43,7 +43,6 @@
         LEFT JOIN usercontroller_user_role ur on ur.user_id=u.user_id
         left JOIN usercontroller_role r on ur.role_id=r.role_id
         where u.user_org_id=#{orgID}
-        and u.user_parent_id is not null
         <if test="isShowStopOnly=='yes'">
             and u.status = '1'
         </if>

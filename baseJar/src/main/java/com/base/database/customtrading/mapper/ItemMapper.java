@@ -13,4 +13,5 @@ public interface ItemMapper {
 
     List<ItemQuery> selectByItemList(Map map,Page page);
 
+    List<ItemQuery> selectByEbayIdSiteList(Map map,Page page);
 }

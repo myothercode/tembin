@@ -13,4 +13,9 @@ public interface TestMapper {
     List<Map> queryTest(Map map);
     void updateTest(Map map);
     List<PublicDataDict> selectForCatchData(Map map);
+
+
+    List<PublicDataDict> selectpddhData(Map map);
+
+
 }

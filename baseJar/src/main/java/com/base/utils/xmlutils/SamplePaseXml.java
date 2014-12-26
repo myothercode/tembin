@@ -10,6 +10,7 @@ import com.base.xmlpojo.trading.addproduct.attrclass.ShippingServiceCost;
 import com.base.xmlpojo.trading.addproduct.attrclass.ShippingSurcharge;
 import com.base.xmlpojo.trading.addproduct.attrclass.StartPrice;
 import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.http.impl.cookie.DateParseException;
 import org.dom4j.*;
 
@@ -472,17 +473,20 @@ public class SamplePaseXml {
                 }
 
                 Element maxUnpaid = buyere.element("MaximumUnpaidItemStrikesInfo");
-                MaximumUnpaidItemStrikesInfo muis = new MaximumUnpaidItemStrikesInfo();
-                muis.setCount(Integer.getInteger(maxUnpaid.elementText("Count")));
-                muis.setPeriod(maxUnpaid.elementText("Period"));
-                brd.setMaximumUnpaidItemStrikesInfo(muis);
+                if(maxUnpaid!=null){
+                    MaximumUnpaidItemStrikesInfo muis = new MaximumUnpaidItemStrikesInfo();
+                    muis.setCount(Integer.getInteger(maxUnpaid.elementText("Count")));
+                    muis.setPeriod(maxUnpaid.elementText("Period"));
+                    brd.setMaximumUnpaidItemStrikesInfo(muis);
+                }
 
                 Element maxPolicy = buyere.element("MaximumBuyerPolicyViolations");
-                MaximumBuyerPolicyViolations mbpv= new MaximumBuyerPolicyViolations();
-                mbpv.setCount(Integer.parseInt(maxPolicy.elementText("Count")));
-                mbpv.setPeriod(maxPolicy.elementText("Period"));
-                brd.setMaximumBuyerPolicyViolations(mbpv);
-
+                if(maxPolicy!=null){
+                    MaximumBuyerPolicyViolations mbpv= new MaximumBuyerPolicyViolations();
+                    mbpv.setCount(Integer.parseInt(maxPolicy.elementText("Count")));
+                    mbpv.setPeriod(maxPolicy.elementText("Period"));
+                    brd.setMaximumBuyerPolicyViolations(mbpv);
+                }
                 item.setBuyerRequirementDetails(brd);
             }
 
@@ -610,51 +614,38 @@ public class SamplePaseXml {
     /**
      * 通过Title 查询是相似分类信息
      * @param xml
-     * @param key
      * @return
      * @throws DocumentException
      */
-    public static List<TradingReseCategory> selectCategoryByKey(String xml,String key) throws DocumentException {
+    public static List<TradingReseCategory> selectCategoryByKey(String xml) throws DocumentException {
         List<TradingReseCategory> litrc = new ArrayList();
-        //之前是做商品所属分类查询
-        /*Document document= DocumentHelper.parseText(xml);
-        Element rootElt = document.getRootElement();
-        Element recommend = rootElt.element("searchResult");
-        Iterator<Element> iter = recommend.elementIterator("item");
-        while (iter.hasNext()){
-            Element ele=iter.next();
-            Element elecate = ele.element("primaryCategory");
-            TradingReseCategory trc = new TradingReseCategory();
-            trc.setId(Long.parseLong(elecate.elementText("categoryId")));
-            trc.setCategoryId(elecate.elementText("categoryId"));
-            trc.setCategoryName(StringEscapeUtils.escapeHtml(elecate.elementText("categoryName")));
-            trc.setCategoryKey(key);
-            litrc.add(trc);
-        }*/
         //商品分类目录查询
         Document document= DocumentHelper.parseText(xml);
         Element rootElt = document.getRootElement();
         if(rootElt==null){
             return litrc;
         }
-        Element recommend = rootElt.element("categoryHistogramContainer");
+        Element recommend = rootElt.element("SuggestedCategoryArray");
         if(recommend==null){
             return litrc;
         }
-        Iterator<Element> ite = recommend.elementIterator("categoryHistogram");
+        Iterator<Element> ite = recommend.elementIterator("SuggestedCategory");
         while (ite.hasNext()){
             Element ele = ite.next();
-            Iterator<Element> child = ele.elementIterator("childCategoryHistogram");
-            while (child.hasNext()){
-                Element chiel = child.next();
-                TradingReseCategory trc = new TradingReseCategory();
-                trc.setId(Long.parseLong(chiel.elementText("categoryId")));
-                trc.setCategoryId(chiel.elementText("categoryId"));
-                trc.setCategoryName(StringEscapeUtils.escapeHtml(ele.elementText("categoryName"))+" : "+StringEscapeUtils.escapeHtml(chiel.elementText("categoryName")));
-                trc.setCategoryKey(key);
-                litrc.add(trc);
+            Element cate = ele.element("Category");
+            Element PercentItemFound = ele.element("PercentItemFound");
+            TradingReseCategory trc = new TradingReseCategory();
+            trc.setId(Long.parseLong(cate.elementText("CategoryID")));
+            trc.setCategoryId(cate.elementText("CategoryID"));
+            Iterator<Element> ites = cate.elementIterator("CategoryParentName");
+            String cateName = "";
+            while (ites.hasNext()){
+                Element ent = ites.next();
+                cateName=cateName+ent.getText()+":";
             }
-            break;
+            trc.setCategoryKey(PercentItemFound.getText()+"%");
+            trc.setCategoryName(cateName+cate.elementText("CategoryName"));
+            litrc.add(trc);
         }
         return litrc;
     }
@@ -763,12 +754,20 @@ public class SamplePaseXml {
             TradingPriceTracking priceTracking=new TradingPriceTracking();
             Element item= (Element) items.next();
             priceTracking.setItemid(SamplePaseXml.getSpecifyElementText(item, "itemId"));
-            priceTracking.setCategoryid(SamplePaseXml.getSpecifyElementText(item,"primaryCategory","categoryId"));
-            priceTracking.setCategoryname(SamplePaseXml.getSpecifyElementText(item,"primaryCategory","categoryName"));
+            priceTracking.setCategoryid(SamplePaseXml.getSpecifyElementText(item, "primaryCategory", "categoryId"));
+            priceTracking.setCategoryname(SamplePaseXml.getSpecifyElementText(item, "primaryCategory", "categoryName"));
             priceTracking.setCurrentprice(SamplePaseXml.getSpecifyElementText(item, "sellingStatus", "currentPrice"));
-            priceTracking.setSellerusername(SamplePaseXml.getSpecifyElementText(item,"sellerInfo","sellerUserName"));
-            priceTracking.setTitle(SamplePaseXml.getSpecifyElementText(item,"title"));
-            priceTracking.setBidcount(SamplePaseXml.getSpecifyElementText(item,"sellingStatus","bidCount"));
+            priceTracking.setSellerusername(SamplePaseXml.getSpecifyElementText(item, "sellerInfo", "sellerUserName"));
+            priceTracking.setTitle(SamplePaseXml.getSpecifyElementText(item, "title"));
+            priceTracking.setBidcount(SamplePaseXml.getSpecifyElementText(item, "sellingStatus", "bidCount"));
+            String starttime=SamplePaseXml.getSpecifyElementText(item,"listingInfo","startTime");
+            String endtime=SamplePaseXml.getSpecifyElementText(item,"listingInfo","endTime");
+            if(StringUtils.isNotBlank(starttime)){
+                priceTracking.setStarttime(DateUtils.returnDate(starttime));
+            }
+            if(StringUtils.isNotBlank(endtime)){
+                priceTracking.setEndtime(DateUtils.returnDate(endtime));
+            }
             Element sellingStatus=item.element("sellingStatus");
             String currencyId1="";
             if(sellingStatus!=null){
@@ -800,6 +799,10 @@ public class SamplePaseXml {
             priceTracking.setCurrentprice(SamplePaseXml.getSpecifyElementText(item,"ConvertedCurrentPrice"));
             priceTracking.setBidcount(SamplePaseXml.getSpecifyElementText(item,"BidCount"));
             Element ConvertedCurrentPrice=item.element("ConvertedCurrentPrice");
+            String endtime=SamplePaseXml.getSpecifyElementText(item,"EndTime");
+            if(StringUtils.isNotBlank(endtime)){
+                priceTracking.setEndtime(DateUtils.returnDate(endtime));
+            }
             String currencyId1="";
             if(ConvertedCurrentPrice!=null){
                 Attribute currencyId=ConvertedCurrentPrice.attribute("currencyId");

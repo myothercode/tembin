@@ -11,5 +11,5 @@ import java.util.List;
 public interface ITradingListingReport {
     void save(TradingListingReport tradingListingReport);
 
-    List<TradingListingReport> selectByNowDate(String dataType) throws DateParseException;
+    List<TradingListingReport> selectByNowDate(String dataType,String userId) throws DateParseException;
 }

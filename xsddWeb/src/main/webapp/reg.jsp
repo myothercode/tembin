@@ -80,28 +80,28 @@ body {
 <h1>注册</h1>
 <form id="regForm" method="post">
     <li style="margin-bottom:20px">
-        <input name="userEmail" type="text" class="admin_user_input aemail_1"
+        <input name="userEmail" type="text" class="admin_user_input_y aemail_1"
                id="userEmail" value="你的邮箱" onfocus="if(this.value=='你的邮箱'){this.value='';}"  onblur="if(this.value==''){this.value='你的邮箱';}" />
     </li>
     <li style="margin-bottom:20px">
-        <input name="userName" type="text" class="admin_user_input aemail_1"
+        <input name="userName" type="text" class="admin_user_input_y aemail_1"
                id="userName" value="姓名" onfocus="if(this.value=='姓名'){this.value='';}"  onblur="if(this.value==''){this.value='姓名';}" />
     </li>
     <li style="margin-bottom:20px">
-        <input name="telPhone" type="text" class="admin_user_input aemail_6"
+        <input name="telPhone" type="text" class="admin_user_input_y aemail_6"
                id="phone" value="电话号码" onfocus="if(this.value=='电话号码'){this.value='';}"  onblur="if(this.value==''){this.value='电话号码';}" />
     </li>
     <li style="margin-bottom:20px">
-        <input name="orgName" type="text" class="admin_user_input aemail_7"
+        <input name="orgName" type="text" class="admin_user_input_y aemail_7"
                id="orgName" value="公司名" onfocus="if(this.value=='公司名'){this.value='';}"  onblur="if(this.value==''){this.value='公司名';}" />
     </li>
     <li style="margin-bottom:20px">
-        <input name="userPassword" type="password" class="admin_user_input aemail_4"
+        <input name="userPassword" type="password" class="admin_user_input_y aemail_4"
                id="pword1" value=""  /></li>
     <li style="margin-bottom:10px">
-        <input name="psw2" type="password" class="admin_user_input aemail_5" id="pword2" value="" /></li>
+        <input name="psw2" type="password" class="admin_user_input_y aemail_5" id="pword2" value="" /></li>
     <li style="margin-bottom:10px">
-        <input name="yqm" type="text" class="admin_user_input aemail_5" id="yqm" value="邀请码" onfocus="if(this.value=='邀请码'){this.value='';}"  onblur="if(this.value==''){this.value='邀请码';}" /></li>
+        <input name="yqm" type="text" class="admin_user_input_y aemail_5" id="yqm" value="邀请码" onfocus="if(this.value=='邀请码'){this.value='';}"  onblur="if(this.value==''){this.value='邀请码';}" /></li>
 
     <li class="nbb"  style=" height:32px;"></li>
 </form>
@@ -122,35 +122,35 @@ body {
     <%--<form id="regForm" method="post">
         <li style="height: 15px;margin-top: 5px">邮箱</li>
     <li>
-        <input name="userEmail" type="text" class="admin_user_input" id="userEmail" value=""  />
+        <input name="userEmail" type="text" class="admin_user_input_y" id="userEmail" value=""  />
     </li>
 
         <li style="height: 15px;margin-top: 5px">姓名</li>
         <li>
-            <input name="userName" type="text" class="admin_user_input" id="userName" value=""  />
+            <input name="userName" type="text" class="admin_user_input_y" id="userName" value=""  />
         </li>
 
         <li style="height: 15px;margin-top: 5px">电话号码</li>
     <li>
-        <input name="telPhone" type="text" class="admin_user_input" id="phone" value=""  />
+        <input name="telPhone" type="text" class="admin_user_input_y" id="phone" value=""  />
     </li>
 
         <li style="height: 15px;margin-top: 5px">公司名</li>
     <li>
-        <input name="orgName" type="text" class="admin_user_input" id="orgName" value=""  />
+        <input name="orgName" type="text" class="admin_user_input_y" id="orgName" value=""  />
     </li>
 
         <li style="height: 15px;margin-top: 5px">输入密码</li>
 <li>
-<input title="输入密码" name="userPassword" type="password" class="admin_user_input" id="pword1" value=""  /></li>
+<input title="输入密码" name="userPassword" type="password" class="admin_user_input_y" id="pword1" value=""  /></li>
         <li style="height: 15px;margin-top: 5px">确认密码</li>
         <li >
-       <input title="确认密码" name="vps" type="password" class="admin_user_input" id="pword2" value=""  />
+       <input title="确认密码" name="vps" type="password" class="admin_user_input_y" id="pword2" value=""  />
         </li>
 
         <li style="height: 15px;margin-top: 5px">邀请码</li>
         <li>
-            <input name="yqm" type="text" class="admin_user_input" id="yqm" value=""  />
+            <input name="yqm" type="text" class="admin_user_input_y" id="yqm" value=""  />
         </li>
 
     </form>

@@ -47,4 +47,6 @@ public interface ITradingItem {
     Item toEditItem(TradingItem tradingItem) throws Exception;
 
     void saveListingSuccess(String xml, String itemId) throws DateParseException;
+
+    List<ItemQuery> selectByEbayIdSiteList(String ebayId);
 }

@@ -11,8 +11,10 @@
 <html>
 <head>
     <title></title>
+
     <link rel="stylesheet" type="text/css" href="<c:url value ="/js/select2/select2.css" />"/>
     <script type="text/javascript" src=<c:url value ="/js/select2/select2.min.js" /> ></script>
+    <script type="text/javascript" src=<c:url value ="/js/select2/mySelect2.js" /> ></script>
     <style type="text/css">
         body {
             background-color: #ffffff;
@@ -60,7 +62,7 @@
         <td width="50px;"></td>
         <td style="height: 50px;"><label  class="control-label" style="line-height: 30px;" >物品号:</label></td>
         <td style="height: 50px;"><div class="controls">
-            <input onchange="queryItemId(this);" name="worker" id="worker" multiple class="multiSelect" style="width: 300px;margin-left: 5px;">
+            <input onchange="queryItemId(this);" name="worker" id="worker" multiple class="multiSelect" style="width: 300px;margin-left: 5px;" value="">
             <input type="hidden" name="itemId" id="itemId" value="">
         </div>
             <input type="hidden" name="workers" id="workers" /></td>
@@ -93,6 +95,8 @@
         $(document).ready(function(){
             $("#autoPriceItemForm").validationEngine();
         });
+       /* mySelect2I([{url:path+"/priceTracking/ajax/loadItemListing.do",
+                    data:{currInputName:"content"},bs:".multiSelect",multiple:false,fun:null,maping:{id:"id",text:"sku"}}]);*/
         $('.multiSelect').select2({
             multiple: false, query: function (query) {
                 var content=query.term;
@@ -127,17 +131,6 @@
                     });
                     query.callback(data);
                 }
-
-               /*   preload_data= [
-                 { id: 'user0', text: 'Disabled User'}
-                 , { id: 'user1', text: 'Jane Doe'}
-                 , { id: 'user2', text: 'John Doe' }
-                 , { id: 'user3', text: 'Robert Paulson'}
-                 , { id: 'user5', text: 'Spongebob Squarepants'}
-                 , { id: 'user6', text: 'Planet Bob' }
-                 , { id: 'user7', text: 'Inigo Montoya' }
-                 ];*/
-
             }
         });
         $('.multiSelect').select2('data', preload_data)

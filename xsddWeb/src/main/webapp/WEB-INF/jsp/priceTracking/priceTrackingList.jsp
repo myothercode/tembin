@@ -30,7 +30,9 @@
                     {title:"最大数量",name:"bidcount",width:"5%",align:"left"},
                     {title:"卖家",name:"sellerusername",width:"5%",align:"left"},
                     {title:"价格",name:"currentprice",width:"5%",align:"left"},
-                    {title:"单位",name:"currencyid",width:"5%",align:"left"}
+                    {title:"单位",name:"currencyid",width:"5%",align:"left"},
+                    {title:"开始时间",name:"starttime",width:"8%",align:"left"},
+                    {title:"结束时间",name:"endtime",width:"8%",align:"left"}
                 ],
                 selectDataNow:false,
                 isrowClick:false,
@@ -49,6 +51,8 @@
                     "<input type='hidden'id='currentprice' value='"+json.currentprice+"'>"+
                     "<input type='hidden'id='currencyid' value='"+json.currencyid+"'>"+
                     "<input type='hidden'id='bidcount' value='"+json.bidcount+"'>"+
+                    "<input type='hidden'id='starttime' value='"+json.starttime+"'>"+
+                    "<input type='hidden'id='endtime' value='"+json.endtime+"'>"+
                     "<input type='checkbox' id='checkbox' name='checkbox'/></div>";
             return htm;
         }
@@ -63,8 +67,10 @@
                     var currencyid=$(div).find("input[id=currencyid]").val();
                     var title=$(div).find("input[id=title]").val();
                     var bidcount=$(div).find("input[id=bidcount]").val();
+                    var starttime=$(div).find("input[id=starttime]").val();
+                    var endtime=$(div).find("input[id=endtime]").val();
                     var qeuryContent=$("#qeuryContent").val();
-                    var url=path+"/priceTracking/ajax/savepriceTracking.do?itemid="+itemid+"&sellerusername="+sellerusername+"&currentprice="+currentprice+"&currencyid="+currencyid+"&title="+title+"&queryTitle="+qeuryContent+"&bidcount="+bidcount;
+                    var url=path+"/priceTracking/ajax/savepriceTracking.do?itemid="+itemid+"&sellerusername="+sellerusername+"&currentprice="+currentprice+"&currencyid="+currencyid+"&title="+title+"&queryTitle="+qeuryContent+"&bidcount="+bidcount+"&starttime="+starttime+"&endtime="+endtime;
                     var data=$("#addRemarkForm").serialize();
                     $().invoke(url,null,
                             [function(m,r){

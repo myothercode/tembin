@@ -31,7 +31,7 @@ public class OrderQueryTrack {
         if(lastTime!=null){
             int c= DateUtils.minuteBetween(lastTime, new Date());//现在时间与上次时间相差多少分钟
             if(c<120){//间隔两个小时
-                return new ArrayList<JSONObject>();
+                return null;
             }
             MainTask.taskRunTime.remove("91trackTask_ERROR");
         }
@@ -54,7 +54,7 @@ public class OrderQueryTrack {
                 logger.error(url+"无效token");
             }
             MainTask.taskRunTime.put("91trackTask_ERROR",new Date());
-            return new ArrayList<JSONObject>();
+            return null;
         }
         if(res.startsWith("{")){
             res="["+res+"]";
@@ -73,7 +73,7 @@ public class OrderQueryTrack {
             MainTask.taskRunTime.put("91trackTask_ERROR", new Date());
             logger.error(url+":OrderQueryTrack:"+res,e);
             //return jsonns;
-            return new ArrayList<JSONObject>();
+            return null;
         }
 
        /* Map<String,String> jsons = null;

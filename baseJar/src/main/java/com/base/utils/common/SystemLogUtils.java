@@ -31,6 +31,8 @@ public class SystemLogUtils {
     public static final String ORDER_OPERATE_RECORD="orderOperateRecord";//订单操作记录
     public static final String AUTO_ASSESS="autoAssess";//自动发送评价
     public static final String ITEM_INFORMATION_TYPE="itemInformationType";//保存本地数据库没有的商品分类
+    public static final String USER_LOGIN_LOG="user_login_log";//登陆日志
+    public static final String USER_UNLOGIN_LOG="user_unlogin_log";//退出日志
 
     /**祝需要传入三个值
      * log.setEventname();

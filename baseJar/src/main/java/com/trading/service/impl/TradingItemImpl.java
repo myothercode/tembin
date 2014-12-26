@@ -261,6 +261,32 @@ public class TradingItemImpl implements com.trading.service.ITradingItem {
                     }
                 }
             /*}*/
+            if(!item.getListingType().equals("2")){
+                TradingVariations tvs = this.iTradingVariations.selectByParentId(tradingItem.getId());
+                if(tvs!=null) {
+                    List<TradingVariation> dlitv = this.iTradingVariation.selectByParentId(tvs.getId());
+                    for (TradingVariation tv : dlitv) {
+                        List<TradingPublicLevelAttr> litpla = this.iTradingPublicLevelAttr.selectByParentId("VariationSpecifics", tv.getId());
+                        for (TradingPublicLevelAttr tpa : litpla) {
+                            this.iTradingPublicLevelAttr.deleteByParentID(null, tpa.getId());
+                        }
+                        this.iTradingPublicLevelAttr.deleteByParentID("VariationSpecifics", tv.getId());
+                    }
+                    this.iTradingVariation.deleteParentId(tvs.getId());
+
+                    List<TradingPublicLevelAttr> litpla = this.iTradingPublicLevelAttr.selectByParentId("VariationSpecificsSet", tvs.getId());
+                    for (TradingPublicLevelAttr tpa : litpla) {
+                        List<TradingPublicLevelAttr> li = this.iTradingPublicLevelAttr.selectByParentId("NameValueList", tpa.getId());
+                        for (TradingPublicLevelAttr l : li) {
+                            this.iTradingAttrMores.deleteByParentId("Name", l.getId());
+                            this.iTradingAttrMores.deleteByParentId("Value", l.getId());
+                        }
+                        this.iTradingPublicLevelAttr.deleteByParentID("NameValueList", tpa.getId());
+                    }
+                    this.iTradingPublicLevelAttr.deleteByParentID("VariationSpecificsSet", tvs.getId());
+                }
+            }
+
             itemMap.put(paypals[is],tradingItem.getId());
             if(item.getListingType().equals("Chinese")){//拍买商品保存数据
                 TradingAddItem tai = this.iTradingAddItem.selectParentId(tradingItem.getId());
@@ -413,7 +439,8 @@ public class TradingItemImpl implements com.trading.service.ITradingItem {
                                             TradingAttrMores tams = this.iTradingAttrMores.toDAOPojo("MuAttrPictureURL", str);
                                             tams.setParentId(tplas.getId());
                                             tams.setParentUuid(tplas.getUuid());
-                                            tams.setAttr1(morePicUrl[i]);
+                                            String mackId = EncryptionUtil.md5Encrypt(str);
+                                            tams.setAttr1(mackId);
                                             this.iTradingAttrMores.saveAttrMores(tams);
                                         }
                                     }
@@ -1301,10 +1328,9 @@ public class TradingItemImpl implements com.trading.service.ITradingItem {
                         if (linvls != null && linvls.size() > 0) {
                             for (NameValueList vs : linvls) {
                                 try {
-                                    TradingPublicLevelAttr tpl = this.iTradingPublicLevelAttr.toDAOPojo(vs.getName(), vs.getValue().get(i));
+                                    TradingPublicLevelAttr tpl = this.iTradingPublicLevelAttr.toDAOPojo(vs.getName(), vs.getValue().get(0));
                                     tpl.setParentUuid(tpla.getUuid());
                                     tpl.setParentId(tpla.getId());
-
                                     this.iTradingPublicLevelAttr.savePublicLevelAttr(tpl);
                                 }catch(Exception e){
                                     logger.error("tradingItem:",e);
@@ -1679,7 +1705,7 @@ public class TradingItemImpl implements com.trading.service.ITradingItem {
                             } else {
                                 tbrds.setMinimumfeedbackscore(null);
                             }
-                            if (brd.getMaximumItemRequirements().getMinimumFeedbackScore() != null) {
+                            if (brd.getMaximumItemRequirements()!=null&&brd.getMaximumItemRequirements().getMinimumFeedbackScore() != null) {
                                 tbrds.setFeedbackscore(Long.parseLong(brd.getMaximumItemRequirements().getMinimumFeedbackScore() + ""));
                             } else {
                                 tbrds.setFeedbackscore(null);
@@ -1775,7 +1801,20 @@ public class TradingItemImpl implements com.trading.service.ITradingItem {
                             ms.put("value",tsp.getShippingservice());
                             ms.put("parentId",tradingItem.getSite());
                             List<TradingDataDictionary> litdd = DataDictionarySupport.getTradingDataDictionaryByMap(ms);
-                            tsp.setShippingservice(litdd.get(0).getId()+"");
+                            String shipoid = "";
+                            if(litdd!=null&&litdd.size()>0){
+                                shipoid = litdd.get(0).getId()+"";
+                            }else{
+                                SystemLog sl = new SystemLog();
+                                sl.setOperuser("system");
+                                sl.setCreatedate(new Date());
+                                sl.setEventname("notShipping");
+                                sl.setEventdesc("type:domestic transportation,value:"+tsp.getShippingservice()+",parentId:"+tradingItem.getSite());
+                                SystemLogUtils.saveLog(sl);
+                                logger.error("运输选项不全，已记录到system_log表中，由系统人员维护");
+                                continue;
+                            }
+                            tsp.setShippingservice(shipoid);
                             tsp.setParentUuid(tradingShippingdetails.getUuid());
                             tsp.setParentId(tradingShippingdetails.getId());
                             tsp.setCreateUser(kml.getUserId());
@@ -2357,5 +2396,20 @@ public class TradingItemImpl implements com.trading.service.ITradingItem {
             tls.setItemId(itemId);
             this.iTradingListingSuccess.save(tls);
         }
+    }
+
+    /**
+     * 传入Ｅbay账号ＩＤ，查询该Ｅbay账号刊登过的站点
+     * @return
+     */
+    @Override
+    public List<ItemQuery> selectByEbayIdSiteList(String ebayId){
+        Map map = new HashMap();
+        map.put("ebayAccount",ebayId);
+        Page page = new Page();
+        page.setPageSize(30);
+        page.setTotalCount(1000);
+        page.setCurrentPage(1);
+        return this.itemMapper.selectByEbayIdSiteList(map,page);
     }
 }

@@ -10,6 +10,7 @@ import java.io.IOException;
 
 /**
  * Created by chace.cai on 2014/4/11.
+ * 记录定时任务线程错误
  * 重写 DailyRollingFileAppender 方法，使其具有改变log默认路径的能力该类为记录定时任务日志
  */
 public class MyTaskTimerDailyRollingFileAppender extends DailyRollingFileAppender {

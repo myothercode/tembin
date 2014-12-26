@@ -6,9 +6,11 @@ import com.base.database.task.model.TaskGetOrders;
 import com.base.database.trading.model.*;
 import com.base.domains.userinfo.UsercontrollerDevAccountExtend;
 import com.base.sampleapixml.*;
+import com.base.utils.cache.TempStoreDataSupport;
 import com.base.utils.common.DateUtils;
 import com.base.utils.threadpool.AddApiTask;
 import com.base.utils.threadpool.TaskMessageVO;
+import com.base.utils.threadpool.TaskPool;
 import com.base.utils.xmlutils.SamplePaseXml;
 import com.sitemessage.service.SiteMessageService;
 import com.sitemessage.service.SiteMessageStatic;
@@ -102,7 +104,7 @@ public class ScheduleGetTimerOrdersImpl implements IScheduleGetTimerOrders {
                 d.setApiSiteid("0");
                 d.setApiCallName(APINameStatic.GetOrders);
                 //真实
-               /* UsercontrollerDevAccountExtend d=new UsercontrollerDevAccountExtend();
+             /*   UsercontrollerDevAccountExtend d=new UsercontrollerDevAccountExtend();
                 d.setApiDevName("5d70d647-b1e2-4c7c-a034-b343d58ca425");
                 d.setApiAppName("sandpoin-23af-4f47-a304-242ffed6ff5b");
                 d.setApiCertName("165cae7e-4264-4244-adff-e11c3aea204e");
@@ -167,12 +169,18 @@ public class ScheduleGetTimerOrdersImpl implements IScheduleGetTimerOrders {
                     int totalPage= Integer.parseInt(totalPage1);
                     for(int i=1;i<=totalPage;i++) {
                         if (i != 1) {
-                            d.setApiSiteid("0");
-                            d.setApiCallName(APINameStatic.GetOrders);
+                            UsercontrollerDevAccountExtend ds=new UsercontrollerDevAccountExtend();
+                         /*   ds.setApiDevName("5d70d647-b1e2-4c7c-a034-b343d58ca425");
+                            ds.setApiAppName("sandpoin-23af-4f47-a304-242ffed6ff5b");
+                            ds.setApiCertName("165cae7e-4264-4244-adff-e11c3aea204e");
+                            ds.setApiCompatibilityLevel("883");*/
+
+                            ds.setApiSiteid("0");
+                            ds.setApiCallName(APINameStatic.GetOrders);
                             map.put("page", i + "");
                             xml = BindAccountAPI.getGetOrders(map);
-                            resMap = addApiTask.exec2(d, xml,apiUrl);
-                            //resMap = addApiTask.exec2(d, xml, "https://api.ebay.com/ws/api.dll");
+                            resMap = addApiTask.exec2(ds, xml,apiUrl);
+                            //resMap = addApiTask.exec2(ds, xml, "https://api.ebay.com/ws/api.dll");
                    /* resMap = addApiTask.exec2(d, xml, "https://api.ebay.com/ws/api.dll");*/
                             r1 = resMap.get("stat");
                             res = resMap.get("message");
@@ -249,11 +257,13 @@ public class ScheduleGetTimerOrdersImpl implements IScheduleGetTimerOrders {
                                 }
                             }
                             for (TradingOrderGetOrders order : orders) {
-                                List<TradingOrderGetOrders> ls = iTradingOrderGetOrders.selectOrderGetOrdersByOrderId(order.getOrderid());
-                                for (TradingOrderGetOrders l : ls) {
-                                    if (l.getTransactionid().equals(order.getTransactionid())) {
-                                        order.setId(l.getId());
-                                    }
+                                List<TradingOrderGetOrders> ls = iTradingOrderGetOrders.selectOrderGetOrdersByTransactionId(order.getTransactionid(),order.getSelleruserid());
+                                if(ls!=null&&ls.size()>0){
+                                    order.setId(ls.get(0).getId());
+                                }else{
+                                    order.setAccountflag(0);
+                                    order.setSellertrasactionflag(0);
+                                    order.setItemflag(0);
                                 }
                                 //-----获取跟踪号状态-----------
                                /* if (order.getShipmenttrackingnumber() != null) {
@@ -355,10 +365,11 @@ public class ScheduleGetTimerOrdersImpl implements IScheduleGetTimerOrders {
                                     }
                                 }
                                 order.setCreateUser(taskGetOrder.getUserid());
-                                order.setAccountflag(0);
-                                order.setSellertrasactionflag(0);
-                                order.setItemflag(0);
-                                iTradingOrderGetOrdersNoTransaction.saveOrderGetOrders(order);
+                                TaskPool.togos.put(order);
+                                //iTradingOrderGetOrdersNoTransaction.saveOrderGetOrders(order);
+                            }
+                            if("0".equals(TaskPool.togosBS[0])){
+                                iTradingOrderGetOrdersNoTransaction.saveOrderGetOrders(null);
                             }
                         }
                     }
@@ -650,11 +661,14 @@ public class ScheduleGetTimerOrdersImpl implements IScheduleGetTimerOrders {
                         iTradingOrderPictures.saveOrderPictures(specifics);
                     }
                     order.setItemflag(1);
-                    iTradingOrderGetOrdersNoTransaction.saveOrderGetOrders(order);
+                    TaskPool.togos.put(order);
                 } else {
                     logger.error("Order定时同步商品获取apisessionid失败!" + itemres + "\n\norderId:" + order.getOrderid());
                 }
             }
+        }
+        if("0".equals(TaskPool.togosBS[0])){
+            iTradingOrderGetOrdersNoTransaction.saveOrderGetOrders(null);
         }
     }
 
@@ -664,7 +678,7 @@ public class ScheduleGetTimerOrdersImpl implements IScheduleGetTimerOrders {
         UsercontrollerDevAccountExtend ds = new UsercontrollerDevAccountExtend();//开发者帐号id
         ds.setApiSiteid("0");
         //真实环境
-        /*UsercontrollerDevAccountExtend ds=new UsercontrollerDevAccountExtend();
+       /* UsercontrollerDevAccountExtend ds=new UsercontrollerDevAccountExtend();
         ds.setApiDevName("5d70d647-b1e2-4c7c-a034-b343d58ca425");
         ds.setApiAppName("sandpoin-23af-4f47-a304-242ffed6ff5b");
         ds.setApiCertName("165cae7e-4264-4244-adff-e11c3aea204e");
@@ -725,13 +739,17 @@ public class ScheduleGetTimerOrdersImpl implements IScheduleGetTimerOrders {
                         acc.setCreateUser(order.getCreateUser());
                         iTradingOrderGetAccount.saveOrderGetAccount(acc);
                         order.setAccountflag(1);
-                        iTradingOrderGetOrdersNoTransaction.saveOrderGetOrders(order);
+                        TaskPool.togos.put(order);
+                        //iTradingOrderGetOrdersNoTransaction.saveOrderGetOrders(order);
 
                     }
                 } else {
                     logger.error("Order定时同步account获取apisessionid失败!" + accountres+"\n\nXML"+accountxml);
                 }
             }
+        }
+        if("0".equals(TaskPool.togosBS[0])){
+            iTradingOrderGetOrdersNoTransaction.saveOrderGetOrders(null);
         }
 
     }
@@ -780,12 +798,17 @@ public class ScheduleGetTimerOrdersImpl implements IScheduleGetTimerOrders {
                         list.setCreateUser(order.getCreateUser());
                         iTradingOrderGetSellerTransactions.saveOrderGetSellerTransactions(list);
                         order.setSellertrasactionflag(1);
-                        iTradingOrderGetOrdersNoTransaction.saveOrderGetOrders(order);
+                        TaskPool.togos.put(order);
+
                     }
+
                 } else {
                     logger.error("Order定时同步外部交易获取apisessionid失败!" + sellerRes+"\n\nXML"+sellerxml);
                 }
             }
+        }
+        if("0".equals(TaskPool.togosBS[0])){
+            iTradingOrderGetOrdersNoTransaction.saveOrderGetOrders(null);
         }
     }
 

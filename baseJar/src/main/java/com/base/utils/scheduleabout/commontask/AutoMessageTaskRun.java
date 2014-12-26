@@ -39,6 +39,7 @@ public class AutoMessageTaskRun extends BaseScheduledClass implements Scheduleda
         for(TradingOrderGetOrders order:orders){
             ITradingOrderAddMemberMessageAAQToPartner iTradingOrderAddMemberMessageAAQToPartner = (ITradingOrderAddMemberMessageAAQToPartner) ApplicationContextUtil.getBean(ITradingOrderAddMemberMessageAAQToPartner.class);
             ITradingOrderGetOrders iTradingOrderGetOrders= (ITradingOrderGetOrders) ApplicationContextUtil.getBean(ITradingOrderGetOrders.class);
+            ITradingOrderGetOrdersNoTransaction iTradingOrderGetOrdersNoTransaction=(ITradingOrderGetOrdersNoTransaction)ApplicationContextUtil.getBean(ITradingOrderGetOrdersNoTransaction.class);
             IUsercontrollerEbayAccount iUsercontrollerEbayAccount = (IUsercontrollerEbayAccount) ApplicationContextUtil.getBean(IUsercontrollerEbayAccount.class);
             UsercontrollerEbayAccount ebay=iUsercontrollerEbayAccount.selectByEbayAccount(order.getSelleruserid());
             SiteMessageService siteMessageService = (SiteMessageService) ApplicationContextUtil.getBean(SiteMessageService.class);
@@ -94,7 +95,8 @@ public class AutoMessageTaskRun extends BaseScheduledClass implements Scheduleda
                     order.setPaypalflag(null);
                     order.setShippedflag(null);
                     iTradingOrderAddMemberMessageAAQToPartner.saveOrderAddMemberMessageAAQToPartner(message);
-                    iTradingOrderGetOrders.saveOrderGetOrders(order);
+                    TaskPool.togos.put(order);
+                    iTradingOrderGetOrdersNoTransaction.saveOrderGetOrders(order);
                 }
             }
         }
@@ -107,6 +109,7 @@ public class AutoMessageTaskRun extends BaseScheduledClass implements Scheduleda
             ITradingOrderAddMemberMessageAAQToPartner iTradingOrderAddMemberMessageAAQToPartner = (ITradingOrderAddMemberMessageAAQToPartner) ApplicationContextUtil.getBean(ITradingOrderAddMemberMessageAAQToPartner.class);
             ITradingOrderGetOrders iTradingOrderGetOrders= (ITradingOrderGetOrders) ApplicationContextUtil.getBean(ITradingOrderGetOrders.class);
             IUsercontrollerEbayAccount iUsercontrollerEbayAccount = (IUsercontrollerEbayAccount) ApplicationContextUtil.getBean(IUsercontrollerEbayAccount.class);
+            ITradingOrderGetOrdersNoTransaction iTradingOrderGetOrdersNoTransaction=(ITradingOrderGetOrdersNoTransaction)ApplicationContextUtil.getBean(ITradingOrderGetOrdersNoTransaction.class);
             UsercontrollerEbayAccount ebay=iUsercontrollerEbayAccount.selectByEbayAccount(order.getSelleruserid());
             String token=ebay.getEbayToken();
             if(StringUtils.isNotBlank(token)){
@@ -163,6 +166,7 @@ public class AutoMessageTaskRun extends BaseScheduledClass implements Scheduleda
                     order.setShippedflag(null);
                     iTradingOrderAddMemberMessageAAQToPartner.saveOrderAddMemberMessageAAQToPartner(message);
                     iTradingOrderGetOrders.saveOrderGetOrders(order);
+
                 }
             }
         }
