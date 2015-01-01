@@ -13,8 +13,14 @@
     <title></title>
     <script>
     </script>
+    <style type="text/css">
+        body {
+            background-color: #ffffff;
+        }
+    </style>
 </head>
 <body>
+
 <%--<button name="search" onclick="showDiv(this)">选择分类</button>
 <button name="rese" onclick="showDiv(this)">相似分类</button>--%>
 <div id="search">
@@ -23,14 +29,15 @@
 <div id="rese1" style="display: none;">
 
 </div>
-
+<br/>
 
 <div style="width: 600px" id="choose">
-<div id="mainDiv"  style="width: 580px;height: 400px"></div>
+<div id="mainDiv"  style="width: 580px;height: 380px"></div>
 <div id="menuPath" style="float: left;width: 550px;overflow: hidden"></div>
 </div>
-<div>
-    <input type="button" value="确定" onclick="que()">
+<div style="text-align: right;">
+    <button type="button" class="net_put" onclick="que()">确定</button>
+    <%--<input type="button" class="newps_put" value="确定" onclick="que()">--%>
 </div>
 </body>
 </html>

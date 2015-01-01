@@ -2,35 +2,39 @@ package com.base.utils.scheduleabout.commontask;
 
 import com.base.database.trading.model.TradingOrderGetOrders;
 import com.base.utils.applicationcontext.ApplicationContextUtil;
-import com.base.utils.cache.TempStoreDataSupport;
 import com.base.utils.scheduleabout.BaseScheduledClass;
 import com.base.utils.scheduleabout.MainTask;
 import com.base.utils.scheduleabout.Scheduledable;
 import com.base.utils.threadpool.TaskPool;
 import com.task.service.IScheduleGetTimerOrders;
 import com.trading.service.ITradingOrderGetOrders;
-import org.apache.commons.lang.StringUtils;
+import com.trading.service.ITradingOrderGetOrdersNoTransaction;
 import org.apache.log4j.Logger;
 
 import java.util.List;
 
 /**
  * Created by Administrtor on 2014/8/29.
- * 在线商品每晚执行，定时任务 //两分钟
+ * 根据订单定时同步account获取其成交费，定时任务 //两分钟
  */
 public class SynchronizeGetOrdersAccountTimerTaskRun extends BaseScheduledClass implements Scheduledable {
     static Logger logger = Logger.getLogger(SynchronizeGetOrdersAccountTimerTaskRun.class);
 
+    int synchronizeOrderAcoountbj=0;//0为可以执行，1为不能执行
+
     public void synchronizeOrderAcoount(List<TradingOrderGetOrders> orders){
+        synchronizeOrderAcoountbj=1;
         IScheduleGetTimerOrders iScheduleGetTimerOrders=(IScheduleGetTimerOrders) ApplicationContextUtil.getBean(IScheduleGetTimerOrders.class);
+        ITradingOrderGetOrdersNoTransaction iTradingOrderGetOrdersNoTransaction=(ITradingOrderGetOrdersNoTransaction) ApplicationContextUtil.getBean(ITradingOrderGetOrdersNoTransaction.class);
         if(orders!=null&&orders.size()>0){
             try{
                 iScheduleGetTimerOrders.synchronizeOrderAccount(orders);
             }catch (Exception e){
-                logger.error("定时同步订单Account失败task:",e);
-                TempStoreDataSupport.removeData("task_"+getScheduledType());
+                synchronizeOrderAcoountbj=0;
+                logger.error("定时同步订单Account失败task:", e);
             }
         }
+        synchronizeOrderAcoountbj=0;
     }
     @Override
     public void run(){
@@ -38,16 +42,26 @@ public class SynchronizeGetOrdersAccountTimerTaskRun extends BaseScheduledClass 
         if(i>30){
             return;
         }
-        String isRunging = TempStoreDataSupport.pullData("task_"+getScheduledType());
-        if(StringUtils.isNotEmpty(isRunging)){return;}
-        TempStoreDataSupport.pushData("task_" + getScheduledType(), "x");
+
+        if (synchronizeOrderAcoountbj==1){
+            logger.error(getScheduledType()+"===synchronizeOrderAcoountbj之前的任务还未完成继续等待下一个循环===");
+            return;
+        }
+
+        Boolean b= TaskPool.threadIsAliveByName("thread_" + getScheduledType());
+        if(b){
+            logger.error(getScheduledType()+"===之前的任务还未完成继续等待下一个循环===");
+            return;
+        }
+        Thread.currentThread().setName("thread_" + getScheduledType());
+
+
         ITradingOrderGetOrders iTradingOrderGetOrders=(ITradingOrderGetOrders) ApplicationContextUtil.getBean(ITradingOrderGetOrders.class);
         List<TradingOrderGetOrders> orders=iTradingOrderGetOrders.selectOrderGetOrdersByAccountFlag();
         if(orders.size()>20){
             orders=filterLimitList(orders);
         }
         synchronizeOrderAcoount(orders);
-        TempStoreDataSupport.removeData("task_" + getScheduledType());
     }
 
     /**只从集合记录取多少条*/
@@ -80,6 +94,6 @@ public class SynchronizeGetOrdersAccountTimerTaskRun extends BaseScheduledClass 
         }else{
             return 2;
         }*/
-        return 10;
+        return 30;
     }
 }

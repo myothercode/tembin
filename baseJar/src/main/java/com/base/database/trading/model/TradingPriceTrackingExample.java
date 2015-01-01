@@ -1075,6 +1075,216 @@ public class TradingPriceTrackingExample {
             return (Criteria) this;
         }
 
+        public Criteria andPictureurlIsNull() {
+            addCriterion("pictureUrl is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andPictureurlIsNotNull() {
+            addCriterion("pictureUrl is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andPictureurlEqualTo(String value) {
+            addCriterion("pictureUrl =", value, "pictureurl");
+            return (Criteria) this;
+        }
+
+        public Criteria andPictureurlNotEqualTo(String value) {
+            addCriterion("pictureUrl <>", value, "pictureurl");
+            return (Criteria) this;
+        }
+
+        public Criteria andPictureurlGreaterThan(String value) {
+            addCriterion("pictureUrl >", value, "pictureurl");
+            return (Criteria) this;
+        }
+
+        public Criteria andPictureurlGreaterThanOrEqualTo(String value) {
+            addCriterion("pictureUrl >=", value, "pictureurl");
+            return (Criteria) this;
+        }
+
+        public Criteria andPictureurlLessThan(String value) {
+            addCriterion("pictureUrl <", value, "pictureurl");
+            return (Criteria) this;
+        }
+
+        public Criteria andPictureurlLessThanOrEqualTo(String value) {
+            addCriterion("pictureUrl <=", value, "pictureurl");
+            return (Criteria) this;
+        }
+
+        public Criteria andPictureurlLike(String value) {
+            addCriterion("pictureUrl like", value, "pictureurl");
+            return (Criteria) this;
+        }
+
+        public Criteria andPictureurlNotLike(String value) {
+            addCriterion("pictureUrl not like", value, "pictureurl");
+            return (Criteria) this;
+        }
+
+        public Criteria andPictureurlIn(List<String> values) {
+            addCriterion("pictureUrl in", values, "pictureurl");
+            return (Criteria) this;
+        }
+
+        public Criteria andPictureurlNotIn(List<String> values) {
+            addCriterion("pictureUrl not in", values, "pictureurl");
+            return (Criteria) this;
+        }
+
+        public Criteria andPictureurlBetween(String value1, String value2) {
+            addCriterion("pictureUrl between", value1, value2, "pictureurl");
+            return (Criteria) this;
+        }
+
+        public Criteria andPictureurlNotBetween(String value1, String value2) {
+            addCriterion("pictureUrl not between", value1, value2, "pictureurl");
+            return (Criteria) this;
+        }
+
+        public Criteria andShippingservicecostIsNull() {
+            addCriterion("shippingServiceCost is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andShippingservicecostIsNotNull() {
+            addCriterion("shippingServiceCost is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andShippingservicecostEqualTo(String value) {
+            addCriterion("shippingServiceCost =", value, "shippingservicecost");
+            return (Criteria) this;
+        }
+
+        public Criteria andShippingservicecostNotEqualTo(String value) {
+            addCriterion("shippingServiceCost <>", value, "shippingservicecost");
+            return (Criteria) this;
+        }
+
+        public Criteria andShippingservicecostGreaterThan(String value) {
+            addCriterion("shippingServiceCost >", value, "shippingservicecost");
+            return (Criteria) this;
+        }
+
+        public Criteria andShippingservicecostGreaterThanOrEqualTo(String value) {
+            addCriterion("shippingServiceCost >=", value, "shippingservicecost");
+            return (Criteria) this;
+        }
+
+        public Criteria andShippingservicecostLessThan(String value) {
+            addCriterion("shippingServiceCost <", value, "shippingservicecost");
+            return (Criteria) this;
+        }
+
+        public Criteria andShippingservicecostLessThanOrEqualTo(String value) {
+            addCriterion("shippingServiceCost <=", value, "shippingservicecost");
+            return (Criteria) this;
+        }
+
+        public Criteria andShippingservicecostLike(String value) {
+            addCriterion("shippingServiceCost like", value, "shippingservicecost");
+            return (Criteria) this;
+        }
+
+        public Criteria andShippingservicecostNotLike(String value) {
+            addCriterion("shippingServiceCost not like", value, "shippingservicecost");
+            return (Criteria) this;
+        }
+
+        public Criteria andShippingservicecostIn(List<String> values) {
+            addCriterion("shippingServiceCost in", values, "shippingservicecost");
+            return (Criteria) this;
+        }
+
+        public Criteria andShippingservicecostNotIn(List<String> values) {
+            addCriterion("shippingServiceCost not in", values, "shippingservicecost");
+            return (Criteria) this;
+        }
+
+        public Criteria andShippingservicecostBetween(String value1, String value2) {
+            addCriterion("shippingServiceCost between", value1, value2, "shippingservicecost");
+            return (Criteria) this;
+        }
+
+        public Criteria andShippingservicecostNotBetween(String value1, String value2) {
+            addCriterion("shippingServiceCost not between", value1, value2, "shippingservicecost");
+            return (Criteria) this;
+        }
+
+        public Criteria andShippingcurrencyidIsNull() {
+            addCriterion("shippingCurrencyId is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andShippingcurrencyidIsNotNull() {
+            addCriterion("shippingCurrencyId is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andShippingcurrencyidEqualTo(String value) {
+            addCriterion("shippingCurrencyId =", value, "shippingcurrencyid");
+            return (Criteria) this;
+        }
+
+        public Criteria andShippingcurrencyidNotEqualTo(String value) {
+            addCriterion("shippingCurrencyId <>", value, "shippingcurrencyid");
+            return (Criteria) this;
+        }
+
+        public Criteria andShippingcurrencyidGreaterThan(String value) {
+            addCriterion("shippingCurrencyId >", value, "shippingcurrencyid");
+            return (Criteria) this;
+        }
+
+        public Criteria andShippingcurrencyidGreaterThanOrEqualTo(String value) {
+            addCriterion("shippingCurrencyId >=", value, "shippingcurrencyid");
+            return (Criteria) this;
+        }
+
+        public Criteria andShippingcurrencyidLessThan(String value) {
+            addCriterion("shippingCurrencyId <", value, "shippingcurrencyid");
+            return (Criteria) this;
+        }
+
+        public Criteria andShippingcurrencyidLessThanOrEqualTo(String value) {
+            addCriterion("shippingCurrencyId <=", value, "shippingcurrencyid");
+            return (Criteria) this;
+        }
+
+        public Criteria andShippingcurrencyidLike(String value) {
+            addCriterion("shippingCurrencyId like", value, "shippingcurrencyid");
+            return (Criteria) this;
+        }
+
+        public Criteria andShippingcurrencyidNotLike(String value) {
+            addCriterion("shippingCurrencyId not like", value, "shippingcurrencyid");
+            return (Criteria) this;
+        }
+
+        public Criteria andShippingcurrencyidIn(List<String> values) {
+            addCriterion("shippingCurrencyId in", values, "shippingcurrencyid");
+            return (Criteria) this;
+        }
+
+        public Criteria andShippingcurrencyidNotIn(List<String> values) {
+            addCriterion("shippingCurrencyId not in", values, "shippingcurrencyid");
+            return (Criteria) this;
+        }
+
+        public Criteria andShippingcurrencyidBetween(String value1, String value2) {
+            addCriterion("shippingCurrencyId between", value1, value2, "shippingcurrencyid");
+            return (Criteria) this;
+        }
+
+        public Criteria andShippingcurrencyidNotBetween(String value1, String value2) {
+            addCriterion("shippingCurrencyId not between", value1, value2, "shippingcurrencyid");
+            return (Criteria) this;
+        }
+
         public Criteria andCreateUserIsNull() {
             addCriterion("create_user is null");
             return (Criteria) this;

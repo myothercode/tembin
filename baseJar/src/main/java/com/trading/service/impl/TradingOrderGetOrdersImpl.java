@@ -325,7 +325,7 @@ public class TradingOrderGetOrdersImpl implements com.trading.service.ITradingOr
     public List<TradingOrderGetOrders> selectOrderGetOrdersByTrackNumber() {
         TradingOrderGetOrdersExample example=new TradingOrderGetOrdersExample();
         TradingOrderGetOrdersExample.Criteria cr=example.createCriteria();
-       /* cr.andShipmenttrackingnumberIsNotNull();*/
+        cr.andShipmenttrackingnumberIsNotNull();
         cr.andTrackstatusNotEqualTo("4");
         List<TradingOrderGetOrders> list=tradingOrderGetOrdersMapper.selectByExample(example);
         return list;

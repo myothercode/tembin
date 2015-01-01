@@ -28,7 +28,7 @@ import java.util.Map;
 
 /**
  * Created by Administrtor on 2014/8/29.
- * 在线商品每晚执行，定时任务
+ * 订单定时发送自动消息，定时任务
  */
 public class AutoMessageTaskRun extends BaseScheduledClass implements Scheduledable {
     static Logger logger = Logger.getLogger(AutoMessageTaskRun.class);
@@ -36,10 +36,10 @@ public class AutoMessageTaskRun extends BaseScheduledClass implements Scheduleda
     //自动发送付款消息
     public void sendAutoMessage(List<TradingOrderGetOrders> orders) throws Exception{
         //--------------自动发送消息-------------------------
+        ITradingOrderGetOrdersNoTransaction iTradingOrderGetOrdersNoTransaction=(ITradingOrderGetOrdersNoTransaction)ApplicationContextUtil.getBean(ITradingOrderGetOrdersNoTransaction.class);
         for(TradingOrderGetOrders order:orders){
             ITradingOrderAddMemberMessageAAQToPartner iTradingOrderAddMemberMessageAAQToPartner = (ITradingOrderAddMemberMessageAAQToPartner) ApplicationContextUtil.getBean(ITradingOrderAddMemberMessageAAQToPartner.class);
             ITradingOrderGetOrders iTradingOrderGetOrders= (ITradingOrderGetOrders) ApplicationContextUtil.getBean(ITradingOrderGetOrders.class);
-            ITradingOrderGetOrdersNoTransaction iTradingOrderGetOrdersNoTransaction=(ITradingOrderGetOrdersNoTransaction)ApplicationContextUtil.getBean(ITradingOrderGetOrdersNoTransaction.class);
             IUsercontrollerEbayAccount iUsercontrollerEbayAccount = (IUsercontrollerEbayAccount) ApplicationContextUtil.getBean(IUsercontrollerEbayAccount.class);
             UsercontrollerEbayAccount ebay=iUsercontrollerEbayAccount.selectByEbayAccount(order.getSelleruserid());
             SiteMessageService siteMessageService = (SiteMessageService) ApplicationContextUtil.getBean(SiteMessageService.class);
@@ -96,20 +96,22 @@ public class AutoMessageTaskRun extends BaseScheduledClass implements Scheduleda
                     order.setShippedflag(null);
                     iTradingOrderAddMemberMessageAAQToPartner.saveOrderAddMemberMessageAAQToPartner(message);
                     TaskPool.togos.put(order);
-                    iTradingOrderGetOrdersNoTransaction.saveOrderGetOrders(order);
                 }
             }
+        }
+        if("0".equals(TaskPool.togosBS[0])){
+            iTradingOrderGetOrdersNoTransaction.saveOrderGetOrders(null);
         }
     }
     //自动发送发货消息
 
     public void sendAutoMessage1(List<TradingOrderGetOrders> orders) throws Exception{
         //--------------自动发送消息-------------------------
+        ITradingOrderGetOrdersNoTransaction iTradingOrderGetOrdersNoTransaction=(ITradingOrderGetOrdersNoTransaction)ApplicationContextUtil.getBean(ITradingOrderGetOrdersNoTransaction.class);
         for(TradingOrderGetOrders order:orders){
             ITradingOrderAddMemberMessageAAQToPartner iTradingOrderAddMemberMessageAAQToPartner = (ITradingOrderAddMemberMessageAAQToPartner) ApplicationContextUtil.getBean(ITradingOrderAddMemberMessageAAQToPartner.class);
             ITradingOrderGetOrders iTradingOrderGetOrders= (ITradingOrderGetOrders) ApplicationContextUtil.getBean(ITradingOrderGetOrders.class);
             IUsercontrollerEbayAccount iUsercontrollerEbayAccount = (IUsercontrollerEbayAccount) ApplicationContextUtil.getBean(IUsercontrollerEbayAccount.class);
-            ITradingOrderGetOrdersNoTransaction iTradingOrderGetOrdersNoTransaction=(ITradingOrderGetOrdersNoTransaction)ApplicationContextUtil.getBean(ITradingOrderGetOrdersNoTransaction.class);
             UsercontrollerEbayAccount ebay=iUsercontrollerEbayAccount.selectByEbayAccount(order.getSelleruserid());
             String token=ebay.getEbayToken();
             if(StringUtils.isNotBlank(token)){
@@ -165,10 +167,12 @@ public class AutoMessageTaskRun extends BaseScheduledClass implements Scheduleda
                     order.setPaypalflag(null);
                     order.setShippedflag(null);
                     iTradingOrderAddMemberMessageAAQToPartner.saveOrderAddMemberMessageAAQToPartner(message);
-                    iTradingOrderGetOrders.saveOrderGetOrders(order);
-
+                    TaskPool.togos.put(order);
                 }
             }
+        }
+        if("0".equals(TaskPool.togosBS[0])){
+            iTradingOrderGetOrdersNoTransaction.saveOrderGetOrders(null);
         }
     }
     private Map<String,String> autoSendMessage(TradingOrderGetOrders order,String token,UsercontrollerDevAccountExtend d) throws Exception{

@@ -66,6 +66,19 @@ public class SessionCacheSupport extends CacheBaseSupport {
         Cache cache =cacheManager.getCache(sessionName);
         cache.remove(userLoginId);
     }
+    /**session销毁的时候移除值*/
+    public static void removeCa(String userLoginId,String sesionID){
+        Cache cache =cacheManager.getCache(sessionName);
+        Element element=cache.get(userLoginId);
+        if(!ObjectUtils.isLogicalNull(element)){
+            SessionVO sessionVO=(SessionVO)element.getObjectValue();
+            if (sesionID.equalsIgnoreCase(sessionVO.getSessionID()) ){
+                cache.remove(userLoginId);
+            }
+        }
+
+
+    }
 
     /**获取当前用户session*/
     public static SessionVO getSessionVO(){

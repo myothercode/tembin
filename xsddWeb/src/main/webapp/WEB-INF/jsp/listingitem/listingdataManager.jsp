@@ -191,7 +191,6 @@
                 $(d).find("span").attr("class","newusa_ici_1");
             });
             $(obj).find("span").attr("class","newusa_ici");
-
             if(loadurl.indexOf("&ebayaccount=")!=-1){
                 if(loadurl.substr(loadurl.indexOf("ebayaccount=")).indexOf("&")!=-1){
                     var str = loadurl.substr(loadurl.indexOf("ebayaccount="));
@@ -993,7 +992,7 @@
                     <span class="newusa_i">选择账号：</span>
                     <a href="javascript:void(0)" onclick="selectEbayAccount(this)"  value=""><span class="newusa_ici">全部</span></a>
                     <c:forEach items="${ebayList}" var="ebay">
-                        <a href="javascript:void(0)" onclick="selectEbayAccount(this)" value="${ebay.ebayAccount}"><span class="newusa_ici_1">${ebay.ebayNameCode}</span></a>
+                        <a href="javascript:void(0)" onclick="selectEbayAccount(this)" value="${ebay.ebayName}"><span class="newusa_ici_1">${ebay.ebayNameCode}</span></a>
                     </c:forEach>
                 </li>
                 <li class="new_usa_list">

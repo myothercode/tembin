@@ -70,7 +70,7 @@ public class TradingListingPicUrlImpl implements com.trading.service.ITradingLis
         String res = resMap.get("message");
         String ack = SamplePaseXml.getVFromXmlString(res, "Ack");
         if ("Success".equalsIgnoreCase(ack) || "Warning".equalsIgnoreCase(ack)) {//成功
-            Document document= DocumentHelper.parseText(res);
+            Document document= SamplePaseXml.formatStr2Doc(res);
             Element rootElt = document.getRootElement();
             Element picelt = rootElt.element("SiteHostedPictureDetails");
             String fullUrl = picelt.elementText("FullURL");

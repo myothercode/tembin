@@ -1,6 +1,5 @@
 package com.pricetracking.controller;
 
-import com.base.database.trading.model.TradingListingData;
 import com.base.database.trading.model.TradingPriceTracking;
 import com.base.domains.CommonParmVO;
 import com.base.domains.SessionVO;
@@ -80,6 +79,9 @@ public class PriceTrackingController extends BaseAction{
         String bidcount=request.getParameter("bidcount");
         String starttime=request.getParameter("starttime");
         String endtime=request.getParameter("endtime");
+        String shippingServiceCost=request.getParameter("shippingServiceCost");
+        String shippingCurrencyId=request.getParameter("shippingCurrencyId");
+        String pictureurl=request.getParameter("pictureurl");
         TradingPriceTracking tracking=new TradingPriceTracking();
         if(StringUtils.isNotBlank(itemid)){
             tracking.setItemid(itemid);
@@ -108,13 +110,25 @@ public class PriceTrackingController extends BaseAction{
         if(StringUtils.isNotBlank(bidcount)){
             tracking.setBidcount(bidcount);
         }
+        if(StringUtils.isNotBlank(shippingServiceCost)){
+            tracking.setShippingservicecost(shippingServiceCost);
+        }
+        if(StringUtils.isNotBlank(shippingCurrencyId)){
+            tracking.setShippingcurrencyid(shippingCurrencyId);
+        }
+        if(StringUtils.isNotBlank(pictureurl)){
+            tracking.setPictureurl(pictureurl);
+        }
         SessionVO sessionVO= SessionCacheSupport.getSessionVO();
         List<TradingPriceTracking> trackings= iTradingPriceTracking.selectPriceTrackingByItemId(itemid);
         if(trackings!=null&&trackings.size()>0){
             tracking.setId(trackings.get(0).getId());
         }
         iTradingPriceTracking.savePriceTracking(tracking);
-        AjaxSupport.sendSuccessText("", "保存成功");
+        Map map=new HashMap();
+        map.put("message","保存成功");
+        map.put("itemid",itemid);
+        AjaxSupport.sendSuccessText("", map);
     }
     //指定物品号来跟踪
     @RequestMapping("/ajax/saveItemPrice.do")
@@ -142,6 +156,11 @@ public class PriceTrackingController extends BaseAction{
         return forword("/priceTracking/setPrice",modelMap);
     }
 
+    //添加竞争对手
+    @RequestMapping("/addCompetitors.do")
+    public ModelAndView addCompetitors(HttpServletRequest request,HttpServletResponse response,ModelMap modelMap){
+        return forword("/priceTracking/addCompetitors",modelMap);
+    }
     //自定义调价初始化
     @RequestMapping("/autoSetPrice.do")
     public ModelAndView autoSetPrice(HttpServletRequest request,HttpServletResponse response,ModelMap modelMap){
@@ -151,6 +170,12 @@ public class PriceTrackingController extends BaseAction{
     @RequestMapping("/assignItem.do")
     public ModelAndView assignItem(HttpServletRequest request,HttpServletResponse response,ModelMap modelMap){
         return forword("/priceTracking/assignItem",modelMap);
+    }
+
+    //搜索竞争对手
+    @RequestMapping("/searchCompetitors.do")
+    public ModelAndView searchCompetitors(HttpServletRequest request,HttpServletResponse response,ModelMap modelMap){
+        return forword("/priceTracking/searchCompetitors",modelMap);
     }
 
     @RequestMapping("/ajax/priceTrackingQueryList.do")
@@ -190,24 +215,30 @@ public class PriceTrackingController extends BaseAction{
     @ResponseBody
     public void saveAutoPriceListingDate(CommonParmVO commonParmVO,HttpServletRequest request) throws Exception {
         String itemId=request.getParameter("itemId");
-        String quantity=request.getParameter("quantity");
-        String percent=request.getParameter("percent");
+        String competitorIds=request.getParameter("competitorIds");
         if(StringUtils.isNotBlank(itemId)){
-            TradingListingData data=iTradingListingData.selectByItemid(itemId);
-            if(data!=null){
-                Integer qua=Integer.valueOf(quantity);
-                if(data.getQuantity()<qua){
-                    Double percent1=Double.valueOf(percent);
-                    Double price=data.getPrice()*(1+percent1);
-                    data.setPrice(price);
-                }else{
-                    Double percent1=Double.valueOf(percent);
-                    Double price=data.getPrice()*(1-percent1);
-                    data.setPrice(price);
+            if(StringUtils.isNotBlank(competitorIds)){
+                String[] ids=competitorIds.split(",");
+                for(String id:ids){
+                    String competitorPrice=request.getParameter("competitorPrice"+id);
+                    String competitorRanking=request.getParameter("competitorRanking"+id);
+                    if("0".equals(competitorRanking)&&"0".equals(competitorPrice)){
+                        AjaxSupport.sendFailText("fail","未给竞争对手添加规则");
+                        return;
+                    }
+                    if(!"0".equals(competitorPrice)){
+                        String competitorPriceAdd=request.getParameter("competitorPriceAdd"+id);
+                        String competitorPriceInput=request.getParameter("competitorPriceInput"+id);
+                        String competitorPriceSymbol=request.getParameter("competitorPriceSymbol"+id);
+                    }
+                    if(!"0".equals(competitorRanking)){
+                        String competitorRankingAdd=request.getParameter("competitorRankingAdd"+id);
+                        String competitorRankingInput=request.getParameter("competitorRankingInput"+id);
+                        String competitorRankingSymbol=request.getParameter("competitorRankingSymbol"+id);
+                    }
                 }
-                AjaxSupport.sendSuccessText("","调价成功");
             }else{
-                AjaxSupport.sendFailText("fail","在线商品中没有找到");
+                AjaxSupport.sendFailText("fail","未添加竞争对手");
             }
         }else{
             AjaxSupport.sendFailText("fail","物品号为空");

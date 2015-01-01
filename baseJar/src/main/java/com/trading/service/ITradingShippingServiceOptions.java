@@ -18,5 +18,5 @@ public interface ITradingShippingServiceOptions {
 
     void deleteByParentId(Long id);
 
-    List<ShippingServiceOptions> toXmlPojo(Long id,TradingShippingdetails tradingShippingdetails) throws Exception;
+    List<ShippingServiceOptions> toXmlPojo(Long id,TradingShippingdetails tradingShippingdetails,Long docId) throws Exception;
 }

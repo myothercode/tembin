@@ -42,5 +42,32 @@ public class TradingListingReportImpl implements com.trading.service.ITradingLis
         return this.tradingListingReportMapper.selectByExample(tlse);
     }
 
+    /**
+     * 初始化统计数据
+     * @param userId
+     */
+    @Override
+    public void initListingReport(long userId){
+        Map m = new HashMap();
+        m.put("0","1");
+        m.put("1","2");
+        m.put("2","3");
+        m.put("3","4");
+        m.put("4","5");
+        m.put("5","6");
+        for(int i=0;i<m.size();i++){
+            TradingListingReport tlr = new TradingListingReport();
+            tlr.setDatatype(m.get(i+"").toString());
+            tlr.setDay("0");
+            tlr.setYesterday("0");
+            tlr.setWeek("0");
+            tlr.setThatweek("0");
+            tlr.setMonth("0");
+            tlr.setThatmonth("0");
+            tlr.setUserId(userId+"");
+            tlr.setCreateDate(new Date());
+            this.save(tlr);
+        }
+    }
 }
 

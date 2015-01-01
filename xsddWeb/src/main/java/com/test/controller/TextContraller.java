@@ -13,6 +13,7 @@ import com.base.utils.applicationcontext.ApplicationContextUtil;
 import com.base.utils.cache.DataDictionarySupport;
 import com.base.utils.cache.SessionCacheSupport;
 import com.base.utils.cache.TempStoreDataSupport;
+import com.base.utils.common.CommAutowiredClass;
 import com.base.utils.common.ObjectUtils;
 import com.base.utils.common.SystemLogUtils;
 import com.base.utils.exception.Asserts;
@@ -200,12 +201,16 @@ public class TextContraller extends BaseAction {
 
     @RequestMapping("/test2.do")
     @ResponseBody
-    public void test2(HttpServletRequest request,@RequestParam("tt")String tt) throws Exception {
+    public void test2(HttpServletRequest request) throws Exception {
+
+        CommAutowiredClass x=ApplicationContextUtil.getBean(CommAutowiredClass.class);
+        System.out.println(x.getSiteURL("3"));
+
         //request.getSession().setAttribute("vvv","eee");
         //testService.serviceTest();
        // testService.testReturnPolicy();
 //userInfoService.ebayIsBindDev(6L);
-        AjaxSupport.sendSuccessText("啊", tt);
+        AjaxSupport.sendSuccessText("啊", x.getSiteURL("3"));
     }
     @RequestMapping("/xxlogin.do")
     @ResponseBody

@@ -54,8 +54,8 @@
     <!--负责post的线程池-->
     <bean id="postTaskExecutor"
           class="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor">
-        <property name="corePoolSize" value="12" />  <!-- 并发线程数,想达到真正的并发效果,最好对应CPU的线程数及核心数 -->
-        <property name="keepAliveSeconds" value="20" />
+        <property name="corePoolSize" value="10" />  <!-- 并发线程数,想达到真正的并发效果,最好对应CPU的线程数及核心数 -->
+        <property name="keepAliveSeconds" value="10" />
         <property name="maxPoolSize" value="60" />     <!-- 最大线程池容量 -->
         <property name="queueCapacity" value="65" />   <!-- 超过最大线程池容量后,允许的线程队列数 -->
         <property name="rejectedExecutionHandler">
@@ -69,8 +69,8 @@
     </bean>
     <bean id="postTaskExecutor2"
           class="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor">
-    <property name="corePoolSize" value="5" />  <!-- 并发线程数,想达到真正的并发效果,最好对应CPU的线程数及核心数 -->
-    <property name="keepAliveSeconds" value="20" />
+    <property name="corePoolSize" value="7" />  <!-- 并发线程数,想达到真正的并发效果,最好对应CPU的线程数及核心数 -->
+    <property name="keepAliveSeconds" value="10" />
     <property name="maxPoolSize" value="60" />     <!-- 最大线程池容量 -->
     <property name="queueCapacity" value="65" />   <!-- 超过最大线程池容量后,允许的线程队列数 -->
     <property name="rejectedExecutionHandler">
@@ -79,11 +79,11 @@
     </bean>
 
 
-    <!--线程池-->
+    <!--定时任务线程池-->
     <bean id="scheduleTaskExecutor"
           class="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor">
-        <property name="corePoolSize" value="5" />  <!-- 并发线程数,想达到真正的并发效果,最好对应CPU的线程数及核心数 -->
-        <property name="keepAliveSeconds" value="30" />
+        <property name="corePoolSize" value="10" />  <!-- 并发线程数,想达到真正的并发效果,最好对应CPU的线程数及核心数 -->
+        <property name="keepAliveSeconds" value="1" />
         <property name="maxPoolSize" value="30" />     <!-- 最大线程池容量 -->
         <property name="queueCapacity" value="35" />   <!-- 超过最大线程池容量后,允许的线程队列数 -->
         <property name="rejectedExecutionHandler"> <bean class="java.util.concurrent.ThreadPoolExecutor$CallerRunsPolicy" /> </property>
@@ -94,7 +94,7 @@
     <bean id="otherScheduledThreadPoolTaskExecutor"
           class="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor">
         <property name="corePoolSize" value="10" />  <!-- 并发线程数,想达到真正的并发效果,最好对应CPU的线程数及核心数 -->
-        <property name="keepAliveSeconds" value="30" />
+        <property name="keepAliveSeconds" value="10" />
         <property name="maxPoolSize" value="30" />     <!-- 最大线程池容量 -->
         <property name="queueCapacity" value="35" />   <!-- 超过最大线程池容量后,允许的线程队列数 -->
         <property name="rejectedExecutionHandler"> <bean class="java.util.concurrent.ThreadPoolExecutor$CallerRunsPolicy" /> </property>

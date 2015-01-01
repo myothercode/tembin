@@ -78,10 +78,13 @@
         <c:url value="/js/selectBoxIt/javascripts/jquery.selectBoxIt.min.js"/>></script>
     <script type="text/javascript" src=
             <c:url value="/js/jquery-easyui/jquery.easyui.min.js"/>></script>
-
+<link rel="stylesheet" type="text/css" href="<c:url value ="/js/select2/select2.css" />"/>
+<script type="text/javascript" src=<c:url value ="/js/select2/select2.min.js" /> ></script>
+<script type="text/javascript" src=<c:url value ="/js/select2/mySelect2.js" /> ></script>
 <script>
 
     var myDescription = null;
+    var docId = '${item.id}';
     var payid = '${item.payId}';
     var buyid = '${item.buyerId}';
     var discountpriceinfoId = '${item.discountpriceinfoId}';
@@ -140,6 +143,9 @@
 
         var ebayAccount = '${item.ebayAccount}';
         $("input[name='ebayAccounts'][value='" + ebayAccount + "']").attr("checked", "checked");
+        if(ebayAccount==null||ebayAccount==""){
+            $("input[name='ebayAccounts'] :eq(0)").attr("checked", "checked");
+        }
         var site = '${item.site}';
         if(site!=null&&site!=""){
             $("select[name='site']").find("option[value='" + site + "']").attr("selected", true);
@@ -333,6 +339,9 @@
         }
         loadEditor(ebayAccount,morePicid);
         initTitle();
+
+        initSelectMore();
+        $("#select2-chosen-1").text(_sku);
     });
 </script>
 <style type="text/css">
@@ -519,10 +528,10 @@
     <li>
         <dt>SKU</dt>
         <div class="new_left">
-            <input type="text" name="SKU" id="sku" style="width:300px;" class="validate[required] form-control"
+            <input type="text" name="SKU" id="sku" style="width:300px;" multiple class="multiSelect"
                    onblur="onShow(this)" value="${item.sku}">
-            <b class="new_button"><a data-toggle="modal" href="javascript:void(0)"
-                                     onclick="selectProduct()">选择产品</a></b>
+            <%--<b class="new_button"><a data-toggle="modal" href="javascript:void(0)"
+                                     onclick="selectProduct()">选择产品</a></b>--%>
         </div>
     </li>
 

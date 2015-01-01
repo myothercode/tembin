@@ -41,7 +41,7 @@ public class GetOrderItemAPI {
     }
     public static Map<String,Object> parseXMLAndSave(String res) throws Exception {
         Map<String,Object> map=new HashMap<String, Object>();
-        Document document= DocumentHelper.parseText(res);
+        Document document= SamplePaseXml.formatStr2Doc(res);
         Element root=document.getRootElement();
         Element Item=root.element("Item");
         TradingOrderGetItem orderItem=new TradingOrderGetItem();

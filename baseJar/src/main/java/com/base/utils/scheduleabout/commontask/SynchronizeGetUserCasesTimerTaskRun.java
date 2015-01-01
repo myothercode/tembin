@@ -16,7 +16,7 @@ import java.util.List;
 
 /**
  * Created by Administrtor on 2014/8/29.
- * 在线商品每晚执行，定时任务
+ * 定时同步纠纷，定时任务
  */
 public class SynchronizeGetUserCasesTimerTaskRun extends BaseScheduledClass implements Scheduledable {
     static Logger logger = Logger.getLogger(SynchronizeGetUserCasesTimerTaskRun.class);

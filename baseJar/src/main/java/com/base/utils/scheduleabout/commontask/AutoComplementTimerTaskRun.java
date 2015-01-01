@@ -45,16 +45,21 @@ import java.util.*;
 public class AutoComplementTimerTaskRun extends BaseScheduledClass implements Scheduledable {
     static Logger logger = Logger.getLogger(AutoComplementTimerTaskRun.class);
 
-    public String getColXml(String token,String itemid,String quvalue){
+    public String getColXml(String token,String itemid,String quvalue,Double reqPrice){
         String xml="<?xml version=\"1.0\" encoding=\"utf-8\"?><ReviseItemRequest xmlns=\"urn:ebay:apis:eBLBaseComponents\">\n" +
                 "  <RequesterCredentials>\n" +
                 "    <eBayAuthToken>"+token+"</eBayAuthToken>\n" +
                 "  </RequesterCredentials>\n" +
                 "  <ErrorLanguage>en_US</ErrorLanguage>\n" +
                 "  <WarningLevel>High</WarningLevel>\n" +
-                "  <Item>\n" +
-                "    <Quantity>"+quvalue+"</Quantity>\n" +
-                "    <ItemID>"+itemid+"</ItemID>\n" +
+                "  <Item>\n";
+        if(quvalue!=null) {
+            xml += "    <Quantity>" + quvalue + "</Quantity>\n";
+        }
+        if (reqPrice != null&&reqPrice > 0){
+            xml += "    <StartPrice>"+reqPrice+"</StartPrice>";
+        }
+        xml+="    <ItemID>"+itemid+"</ItemID>\n" +
                 "  </Item>\n" +
                 "</ReviseItemRequest>";
         return xml;
@@ -89,7 +94,7 @@ public class AutoComplementTimerTaskRun extends BaseScheduledClass implements Sc
         }
         String taskFlag="";
         for(TaskComplement tc:lildt){
-            String xml = this.getColXml(tc.getToken(),tc.getItemId(),tc.getRepValue());
+            String xml = this.getColXml(tc.getToken(),tc.getItemId(),tc.getRepValue(),tc.getRepPrice());
             String returnString = null;
             try {
                 returnString = this.cosPostXml(xml, APINameStatic.ReviseItem);
@@ -115,14 +120,30 @@ public class AutoComplementTimerTaskRun extends BaseScheduledClass implements Sc
                 try {
                     this.saveSystemLog(context,"AutoComplement",tc.getEbayAccount());
                 } catch (Exception e) {
-                    logger.error(context+"记录日志报错:AutoComplementTimerTaskRun:",e);
+                    logger.error(context+"记录日志报错(补数):AutoComplementTimerTaskRun:",e);
+                }
+                if(tc.getRepPrice()!=null&&tc.getRepPrice()>0){
+                    context="商品号为："+tc.getItemId()+";执行方式：自动调价;自动调整价格：由"+tc.getOldValue()+"调整为："+tc.getRepPrice()+";执行成功！";
+                    try {
+                        this.saveSystemLog(context,"AutoPriceComplement",tc.getEbayAccount());
+                    } catch (Exception e) {
+                        logger.error(context+"记录日志报错（调价）:AutoComplementTimerTaskRun:",e);
+                    }
                 }
             }else{//修改数量失败
                 try {
                     String context="商品号为："+tc.getItemId()+";执行方式："+doName+";自动调整数量：由"+tc.getOldValue()+"调整为："+tc.getRepValue()+";执行失败！失败原因如下："+SamplePaseXml.getSpecifyElementTextAllInOne(returnString,"Errors","LongMessage");
                     this.saveSystemLog(context,"AutoComplement",tc.getEbayAccount());
                 } catch (Exception e) {
-                    logger.error("记录日志报错:AutoComplementTimerTaskRun:",e);
+                    logger.error("记录日志报错（补数）:AutoComplementTimerTaskRun:",e);
+                }
+                if(tc.getRepPrice()!=null&&tc.getRepPrice()>0){
+                    try {
+                        String context="商品号为："+tc.getItemId()+";执行方式：自动调价;自动调整价格：由"+tc.getOldPrice()+"调整为："+tc.getRepPrice()+";执行失败！失败原因如下："+SamplePaseXml.getSpecifyElementTextAllInOne(returnString,"Errors","LongMessage");
+                        this.saveSystemLog(context,"AutoPriceComplement",tc.getEbayAccount());
+                    } catch (Exception e) {
+                        logger.error("记录日志报错(调价):AutoComplementTimerTaskRun:",e);
+                    }
                 }
             }
             try {

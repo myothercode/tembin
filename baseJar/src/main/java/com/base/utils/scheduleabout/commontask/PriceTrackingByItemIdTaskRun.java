@@ -24,7 +24,7 @@ import java.util.List;
 
 /**
  * Created by Administrtor on 2014/8/29.
- * 在线商品每晚执行，定时任务
+ * 价格跟踪定时去某个卖家商品，定时任务
  */
 public class PriceTrackingByItemIdTaskRun extends BaseScheduledClass implements Scheduledable {
     static Logger logger = Logger.getLogger(PriceTrackingByItemIdTaskRun.class);

@@ -42,13 +42,13 @@
             updateProgressbarValue();   //调用函数
         });
 
-        function getTableStr(ebayAccount,startDate,endDate,count,errorcount,waitcount,id){
-            var html = '<table width="90%">'
+        function getTableStr(startDateStr,siteName,ebayAccount,startDate,endDate,count,errorcount,waitcount,id){
+            var html = '<table width="95%" align="center">'
                     + '<tr style="height: 34px;">'
                     + '<td style="text-align: right;">ebay账号：</td>'
                     + '<td>'
                     + '<span id="ebyac">'+ebayAccount
-                    + '</span>'
+                    + '&nbsp;&nbsp;[开始时间：'+startDateStr+',站点：'+siteName+']</span>'
                     + '<span style="padding-left: 200px;">'
                     + '已用时间：'
                     + '</span>'
@@ -62,19 +62,20 @@
                     + '</td>'
                     + '</tr>'
                     + '<tr>'
-                    + '<td width="200px;" style="text-align: right;">搬家进度：</td>'
+                    + '<td width="100px;" style="text-align: right;">搬家进度：</td>'
                     + '<td>'
                     + '<div id="progress'+id+'" style="">'
                     + '<div class="progress-label" id="progress-label'+id+'"></div>'
                     + '</div>'
                     + '</td>'
                     + '</tr>'
-                    + '<tr>'
+                    + '<tr style="height: 30px;">'
                     + '<td></td>'
                     + '<td style="text-align: center">'
                     + '(<span id="compcount'+id+'">'+count+'</span>个商品已搬家，<span id="errorcount'+id+'">'+errorcount+'</span>个商品搬家失败，<span id="waitcount'+id+'">'+waitcount+'</span>个商品等待搬家)'
                     + '</td>'
                     + '</tr>'
+                    + '<tr><td colspan="2" style="border-bottom: 1px solid #ddd;"></td></tr>'
                     + '</table>';
             return html;
         }
@@ -92,7 +93,7 @@
                             var isFlag = false;
                             for (var i = 0; i < rs.length; i++) {
                                 var data = rs[i];
-                                var html = getTableStr(data.ebayAccount, formatSeconds(data.startDate), formatSeconds(parseInt(data.startDate) / (parseInt(data.docount) + parseInt(data.errorcount)) * (parseInt(data.waitcount) + parseInt(data.docount) + parseInt(data.errorcount))), data.docount, data.errorcount, data.waitcount, data.progressId);
+                                var html = getTableStr(data.startDateStr,data.siteName,data.ebayAccount, formatSeconds(data.startDate), formatSeconds(parseInt(data.startDate) / (parseInt(data.docount) + parseInt(data.errorcount)) * (parseInt(data.waitcount) + parseInt(data.docount) + parseInt(data.errorcount))), data.docount, data.errorcount, data.waitcount, data.progressId);
                                 if ($("#progress" + data.progressId).html() == "" || $("#progress" + data.progressId).html() == null || $("#progress" + data.progressId).html() == 'undefined') {
                                     $("#mainTable").append(html);
                                     //oldAlert(html);

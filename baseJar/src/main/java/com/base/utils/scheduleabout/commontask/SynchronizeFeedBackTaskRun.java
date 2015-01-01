@@ -16,7 +16,7 @@ import java.util.List;
 
 /**
  * Created by Administrtor on 2014/8/29.
- * 在线商品每晚执行，定时任务
+ * 每天执行一次评价task列表
  */
 public class SynchronizeFeedBackTaskRun extends BaseScheduledClass implements Scheduledable {
     static Logger logger = Logger.getLogger(SynchronizeFeedBackTaskRun.class);

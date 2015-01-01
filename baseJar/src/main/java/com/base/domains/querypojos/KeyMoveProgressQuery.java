@@ -30,6 +30,26 @@ public class KeyMoveProgressQuery{
 
     private String errorcount;
 
+    private String startDateStr;
+
+    private String siteName;
+
+    public String getStartDateStr() {
+        return startDateStr;
+    }
+
+    public void setStartDateStr(String startDateStr) {
+        this.startDateStr = startDateStr;
+    }
+
+    public String getSiteName() {
+        return siteName;
+    }
+
+    public void setSiteName(String siteName) {
+        this.siteName = siteName;
+    }
+
     public String getWaitcount() {
         return waitcount;
     }

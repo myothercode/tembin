@@ -1,7 +1,6 @@
 package com.listingitem.controller;
 
 import com.base.aboutpaypal.service.PayPalService;
-import com.base.database.customtrading.mapper.ListingDataTaskQueryMapper;
 import com.base.database.publicd.model.PublicUserConfig;
 import com.base.database.task.model.ListingDataTask;
 import com.base.database.trading.model.*;
@@ -24,7 +23,6 @@ import com.base.utils.cache.SessionCacheSupport;
 import com.base.utils.common.DateUtils;
 import com.base.utils.common.EncryptionUtil;
 import com.base.utils.common.ObjectUtils;
-import com.base.utils.common.SystemLogUtils;
 import com.base.utils.exception.Asserts;
 import com.base.utils.threadpool.AddApiTask;
 import com.base.utils.threadpool.TaskMessageVO;
@@ -41,11 +39,10 @@ import com.task.service.IListingDataTask;
 import com.trading.service.*;
 import org.apache.commons.lang.math.NumberUtils;
 import org.apache.log4j.Logger;
-import org.apache.poi.hssf.usermodel.*;
-import org.apache.poi.ss.usermodel.Picture;
+import org.apache.poi.hssf.usermodel.HSSFRow;
+import org.apache.poi.hssf.usermodel.HSSFSheet;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.dom4j.Document;
-import org.dom4j.DocumentException;
-import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -61,8 +58,6 @@ import org.springframework.web.servlet.ModelAndView;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
-import java.net.URLDecoder;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -837,6 +832,18 @@ public class ListingItemController extends BaseAction {
         List<TradingListingData> litld = new ArrayList<TradingListingData>();
         for(int i=0;i<ids.length;i++){
             TradingListingData tld = this.iTradingListingData.selectById(Long.parseLong(ids[i]));
+            //临时存放站点货币
+            Map m = new HashMap();
+            m.put("type","site");
+            m.put("value",tld.getSite());
+
+            List<TradingDataDictionary> litdd = DataDictionarySupport.getTradingDataDictionaryByMap(m);
+            if(litdd!=null&&litdd.size()>0){
+                TradingDataDictionary tdd = litdd.get(0);
+                tld.setListingduration(tdd.getValue1());
+            }else{
+                tld.setListingduration("");
+            }
             litld.add(tld);
         }
         modelMap.put("litld",litld);
@@ -939,7 +946,7 @@ public class ListingItemController extends BaseAction {
                 this.saveSystemLog(resStr,"快速修改报错",SiteMessageStatic.LISTING_DATA_UPDATE);
                 tla.setIsFlag("0");
                 this.iTradingListingAmend.saveListingAmend(tla);
-                Document document= DocumentHelper.parseText(returnString);
+                Document document= SamplePaseXml.formatStr2Doc(returnString);
                 Element rootElt = document.getRootElement();
                 Element tl = rootElt.element("Errors");
                 String longMessage = tl.elementText("LongMessage");
@@ -1146,7 +1153,7 @@ public class ListingItemController extends BaseAction {
         }else{
             tla.setIsFlag("0");
             this.iTradingListingAmend.saveListingAmend(tla);
-            Document document= DocumentHelper.parseText(returnString);
+            Document document= SamplePaseXml.formatStr2Doc(returnString);
             Element rootElt = document.getRootElement();
             Element tl = rootElt.element("Errors");
             String longMessage = tl.elementText("LongMessage");
@@ -1522,7 +1529,7 @@ public class ListingItemController extends BaseAction {
 
             }else{
                 this.saveAmend(litla,"0");
-                Document document= DocumentHelper.parseText(returnString);
+                Document document= SamplePaseXml.formatStr2Doc(returnString);
                 Element rootElt = document.getRootElement();
                 Element tl = rootElt.element("Errors");
                 String longMessage = tl.elementText("LongMessage");

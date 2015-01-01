@@ -107,4 +107,14 @@
         group by dic.id
 
     </select>
+
+
+    <select id="selectItemInformationByOrgId" resultMap="BaseResultMap" parameterType="map">
+        select * from public_item_information mation where mation.create_user IN
+        (select DISTINCT users.user_id from usercontroller_user users where users.user_org_id
+        = (select user_org_id from usercontroller_user where user_id=#{userId}))
+        <if test="content!=null">
+          and mation.sku like "%"#{content}"%"
+        </if>
+    </select>
 </mapper>

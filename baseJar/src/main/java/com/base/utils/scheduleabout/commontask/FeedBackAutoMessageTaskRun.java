@@ -25,7 +25,7 @@ import java.util.*;
 
 /**
  * Created by Administrtor on 2014/8/29.
- * 在线商品每晚执行，定时任务
+ * 评价发送自动消息，定时任务
  */
 public class FeedBackAutoMessageTaskRun extends BaseScheduledClass implements Scheduledable {
     static Logger logger = Logger.getLogger(FeedBackAutoMessageTaskRun.class);

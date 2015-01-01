@@ -22,6 +22,7 @@
     </style>
     <script type="text/javascript">
         var api = frameElement.api, W = api.opener;
+        var searchCompetitors;
         function closedialog(){
             W.priceTracking.close();
         }
@@ -31,14 +32,29 @@
             }
             var itemId=$("#itemId").val();
             if(itemId==""){
-                alert("请选择需要调价的物品号")
+                alert("请选择需要调价的物品号");
                 return;
             }
             var url=path+"/priceTracking/ajax/saveAutoPriceListingDate.do?";
+            var inputs=$("input[name=competitorHidden]");
+            console.debug(inputs);
+            if(inputs.length>0){
+                var ids="";
+                for(var i=0;i<inputs.length;i++){
+                    console.debug($(inputs[i]));
+                    if(i==(inputs.length-1)){
+                        ids+=$(inputs[i]).val();
+                    }else{
+                        ids+=$(inputs[i]).val()+",";
+                    }
+                }
+                url=path+"/priceTracking/ajax/saveAutoPriceListingDate.do?competitorIds="+ids;
+            }
             var data=$("#autoPriceItemForm").serialize();
             $().invoke(url,data,
                     [function(m,r){
                         alert(r);
+                        W.priceTracking.refreshTable();
                         W.priceTracking.close();
                         /*W.viewsendMessage1.close();*/
                         Base.token;
@@ -52,22 +68,41 @@
         function queryItemId(obj){
             $("#itemId").val(obj.value);
         }
+
+        function addCompetitors(){
+            var url=path+"/priceTracking/addCompetitors.do?";
+            searchCompetitors=openMyDialog({title: '添加竞争对手',
+                content: 'url:'+url,
+                icon: 'succeed',
+                width:1000,
+                lock:true,
+                zIndex:1500
+            });
+        }
+        function deleteTr(obj){
+            var tr=$(obj).parent().parent();
+            $(tr).remove();
+        }
+        function insertCompetitors(obj){
+            var tr=$(obj).parent().parent();
+
+        }
     </script>
 </head>
 <body>
 <br/><br/>
 <form id="autoPriceItemForm">
-<table>
+<table id="competitorId">
     <tr>
         <td width="50px;"></td>
         <td style="height: 50px;"><label  class="control-label" style="line-height: 30px;" >物品号:</label></td>
-        <td style="height: 50px;"><div class="controls">
-            <input onchange="queryItemId(this);" name="worker" id="worker" multiple class="multiSelect" style="width: 300px;margin-left: 5px;" value="">
+        <td style="height: 50px;width: 400px;"><div class="controls">
+            <input onchange="queryItemId(this);" name="worker" id="worker" multiple class="multiSelect" style="width: 300px;margin-left: 5px;" value=" ">
             <input type="hidden" name="itemId" id="itemId" value="">
         </div>
             <input type="hidden" name="workers" id="workers" /></td>
     </tr>
-    <tr>
+   <%-- <tr>
         <td></td>
         <td style="height: 50px;"><label  class="control-label" style="line-height: 30px;" >临界数量:</label></td>
         <td style="height: 50px;"><input name="quantity" type="text" class="form-controlsd  validate[required]"></td>
@@ -76,7 +111,8 @@
         <td></td>
         <td style="height: 50px;"><label  class="control-label" style="line-height: 30px;" >降价比例:</label></td>
         <td style="height: 50px;"><input name="percent" type="text" class="form-controlsd  validate[required]"></td>
-    </tr>
+    </tr>--%>
+    <tr><td></td><td ><a href="javascript:void(0)" onclick="addCompetitors();" style="color: #0000ff;margin-left: 10px;" >添加竞争对手</a></td><td></td></tr>
 </table>
 </form>
 

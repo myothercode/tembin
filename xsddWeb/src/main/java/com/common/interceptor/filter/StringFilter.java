@@ -38,8 +38,8 @@ public class StringFilter implements Filter {
         HttpServletRequest request = (HttpServletRequest) servletRequest;
         HttpServletResponse response = (HttpServletResponse) servletResponse;
         String requestUrl = request.getRequestURI();
-
-        if(requestUrl!=null && !requestUrl.endsWith(".do")){//如果不是以do结尾的请求，直接放行
+        String rhost=request.getRemoteHost();
+        if((requestUrl!=null && !requestUrl.endsWith(".do") ) || rhost.startsWith("127.0.0.1")){//如果不是以do结尾的请求，直接放行
             filterChain.doFilter(request, response);
             return;
         }

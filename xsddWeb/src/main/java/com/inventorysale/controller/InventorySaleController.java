@@ -1,6 +1,7 @@
 package com.inventorysale.controller;
 
 import com.base.database.inventory.model.ItemInventory;
+import com.base.database.inventory.model.ShihaiyouInventory;
 import com.base.domains.CommonParmVO;
 import com.base.mybatis.page.Page;
 import com.base.mybatis.page.PageJsonBean;
@@ -63,13 +64,30 @@ public class InventorySaleController extends BaseAction{
         modelMap.put("inventory",inventory.get(0));
         return forword("/inventorySale/editChuKouYi",modelMap);
     }
-
+    @RequestMapping("/editSiHaiYou.do")
+    public ModelAndView editSiHaiYou(HttpServletRequest request,HttpServletResponse response,ModelMap modelMap){
+        String sku=request.getParameter("sku");
+        List<ShihaiyouInventory> inventory= iItemInventory.selectShiHaiYouByBySku(sku);
+        modelMap.put("inventory",inventory.get(0));
+        return forword("/inventorySale/editSiHaiYou",modelMap);
+    }
     /**获取list数据的ajax方法*/
     @RequestMapping(" /ajax/saveChuKouYi.do")
     @ResponseBody
     public void saveChuKouYi(CommonParmVO commonParmVO,HttpServletRequest request) throws Exception {
         String id=request.getParameter("id");
         String sku=request.getParameter("sku");
+        List<ItemInventory> inventorie=iItemInventory.selectBySku(sku);
         AjaxSupport.sendSuccessText("","保存成功");
+    }
+    /**获取list数据的ajax方法*/
+    @RequestMapping(" /ajax/saveShiHaiYou.do")
+    @ResponseBody
+    public void saveShiHaiYou(CommonParmVO commonParmVO,HttpServletRequest request) throws Exception {
+        String id=request.getParameter("id");
+        String sku=request.getParameter("sku");
+        List<ShihaiyouInventory> inventories=iItemInventory.selectShiHaiYouByBySku(sku);
+        AjaxSupport.sendSuccessText("","保存成功");
+
     }
 }

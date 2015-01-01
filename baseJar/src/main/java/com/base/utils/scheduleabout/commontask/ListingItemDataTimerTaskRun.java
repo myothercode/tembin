@@ -19,6 +19,7 @@ import com.base.utils.scheduleabout.BaseScheduledClass;
 import com.base.utils.scheduleabout.MainTask;
 import com.base.utils.scheduleabout.Scheduledable;
 import com.base.utils.threadpool.AddApiTask;
+import com.base.utils.threadpool.TaskPool;
 import com.base.utils.xmlutils.SamplePaseXml;
 import com.complement.service.ITradingAutoComplement;
 import com.task.service.IListingDataTask;
@@ -97,7 +98,7 @@ public class ListingItemDataTimerTaskRun extends BaseScheduledClass implements S
             res=resMap.get("message");
             String ack = SamplePaseXml.getVFromXmlString(res, "Ack");
             if(ack.equals("Success")) {
-                Document document  = DocumentHelper.parseText(res);
+                Document document  = SamplePaseXml.formatStr2Doc(res);
                 Element rootElt = document.getRootElement();
                 Element totalElt = rootElt.element("PaginationResult");
                 String totalCount = totalElt.elementText("TotalNumberOfEntries");
@@ -156,9 +157,14 @@ public class ListingItemDataTimerTaskRun extends BaseScheduledClass implements S
     }
     @Override
     public void run() {
-        String isRunging = TempStoreDataSupport.pullData("task_"+getScheduledType());
-        if(StringUtils.isNotEmpty(isRunging)){return;}
-        TempStoreDataSupport.pushData("task_" + getScheduledType(), "x");
+
+        Boolean b= TaskPool.threadIsAliveByName("thread_" + getScheduledType());
+        if(b){
+            logger.error(getScheduledType()+"===之前的任务还未完成继续等待下一个循环===");
+            return;
+        }
+        Thread.currentThread().setName("thread_" + getScheduledType());
+
         IListingDataTask iListingDataTask = (IListingDataTask) ApplicationContextUtil.getBean(IListingDataTask.class);
         List<ListingDataTask> lildt = iListingDataTask.selectByTimerTaskflag();
         if(lildt.size()>2){
@@ -171,7 +177,6 @@ public class ListingItemDataTimerTaskRun extends BaseScheduledClass implements S
             ldt.setCreateDate(new Date());
             iListingDataTask.saveListDataTask(ldt);
         }
-        TempStoreDataSupport.removeData("task_"+getScheduledType());
     }
 
     /**只从集合记录取多少条*/

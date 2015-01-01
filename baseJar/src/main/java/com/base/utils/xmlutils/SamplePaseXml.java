@@ -5,15 +5,14 @@ import com.base.database.trading.model.*;
 import com.base.utils.common.DateUtils;
 import com.base.utils.common.DictCollectionsUtil;
 import com.base.xmlpojo.trading.addproduct.*;
-import com.base.xmlpojo.trading.addproduct.attrclass.ShippingServiceAdditionalCost;
-import com.base.xmlpojo.trading.addproduct.attrclass.ShippingServiceCost;
-import com.base.xmlpojo.trading.addproduct.attrclass.ShippingSurcharge;
-import com.base.xmlpojo.trading.addproduct.attrclass.StartPrice;
+import com.base.xmlpojo.trading.addproduct.attrclass.*;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.impl.cookie.DateParseException;
 import org.dom4j.*;
+import org.dom4j.io.SAXReader;
 
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
@@ -24,9 +23,18 @@ import java.util.List;
  * 解析结构比较简单的xml
  */
 public class SamplePaseXml {
+
+    public static Document formatStr2Doc(String xml) throws Exception{
+        SAXReader reader = new SAXReader();
+        Document document = reader.read(new ByteArrayInputStream(xml.getBytes("UTF-8")));
+        return document;
+    }
+
+
     public static String getVFromXmlString(String xml,String nodeName) throws Exception {
         //ByteArrayInputStream is = new ByteArrayInputStream(res.getBytes());//文件
-        Document document= DocumentHelper.parseText(xml);
+        Document document=formatStr2Doc(xml);
+        //Document document = DocumentHelper.parseText(xml);
         Element rootElt = document.getRootElement();
         //Iterator iter = rootElt.elementIterator("SessionID");
         Element e =  rootElt.element(nodeName);
@@ -40,9 +48,9 @@ public class SamplePaseXml {
      * @return
      * @throws DocumentException
      */
-    public static Item getItem(String xml) throws DocumentException {
+    public static Item getItem(String xml) throws Exception {
         Item item = new Item();
-        Document document= DocumentHelper.parseText(xml);
+        Document document= formatStr2Doc(xml);
         Element rootElt = document.getRootElement();
         Element element = rootElt.element("Item");
         item.setTitle(element.elementText("Title"));
@@ -156,17 +164,21 @@ public class SamplePaseXml {
             }
 
             Element maxUnpaid = buyere.element("MaximumUnpaidItemStrikesInfo");
-            MaximumUnpaidItemStrikesInfo muis = new MaximumUnpaidItemStrikesInfo();
-            String count = maxUnpaid.elementText("Count");
-            muis.setCount(Integer.parseInt(count));
-            muis.setPeriod(maxUnpaid.elementText("Period"));
-            brd.setMaximumUnpaidItemStrikesInfo(muis);
+            if(maxUnpaid!=null) {
+                MaximumUnpaidItemStrikesInfo muis = new MaximumUnpaidItemStrikesInfo();
+                String count = maxUnpaid.elementText("Count");
+                muis.setCount(Integer.parseInt(count));
+                muis.setPeriod(maxUnpaid.elementText("Period"));
+                brd.setMaximumUnpaidItemStrikesInfo(muis);
+            }
 
             Element maxPolicy = buyere.element("MaximumBuyerPolicyViolations");
-            MaximumBuyerPolicyViolations mbpv= new MaximumBuyerPolicyViolations();
-            mbpv.setCount(Integer.parseInt(maxPolicy.elementText("Count")));
-            mbpv.setPeriod(maxPolicy.elementText("Period"));
-            brd.setMaximumBuyerPolicyViolations(mbpv);
+            if(maxPolicy!=null) {
+                MaximumBuyerPolicyViolations mbpv = new MaximumBuyerPolicyViolations();
+                mbpv.setCount(Integer.parseInt(maxPolicy.elementText("Count")));
+                mbpv.setPeriod(maxPolicy.elementText("Period"));
+                brd.setMaximumBuyerPolicyViolations(mbpv);
+            }
             if(buyere.elementText("LinkedPayPalAccount")!=null) {
                 brd.setLinkedPayPalAccount(buyere.elementText("LinkedPayPalAccount").equals("true") ? true : false);
             }
@@ -226,6 +238,39 @@ public class SamplePaseXml {
         }
         if(liint.size()>0){
             sd.setInternationalShippingServiceOption(liint);
+        }
+        //计算所需的长宽高
+        Element re = elsd.element("CalculatedShippingRate");
+        if(re!=null){
+            CalculatedShippingRate csr = new CalculatedShippingRate();
+            if(re.elementText("InternationalPackagingHandlingCosts")!=null){
+                csr.setPackagingHandlingCosts(new PackagingHandlingCosts(re.attributeValue("currencyID"),Double.parseDouble(re.elementText("InternationalPackagingHandlingCosts"))));
+            }
+            if(re.elementText("OriginatingPostalCode")!=null){
+                csr.setOriginatingPostalCode(re.elementText("OriginatingPostalCode"));
+            }
+            if(re.elementText("PackageDepth")!=null){
+                csr.setPackageDepth(Double.parseDouble(re.elementText("PackageDepth")));
+            }
+            if(re.elementText("PackageLength")!=null){
+                csr.setPackageLength(Double.parseDouble(re.elementText("PackageLength")));
+            }
+            if(re.elementText("PackageWidth")!=null){
+                csr.setPackageWidth(Double.parseDouble(re.elementText("PackageWidth")));
+            }
+            if(re.elementText("ShippingIrregular")!=null){
+                csr.setShippingIrregular(Boolean.parseBoolean(re.elementText("ShippingIrregular")));
+            }
+            if(re.elementText("ShippingPackage")!=null){
+                csr.setShippingPackage(re.elementText("ShippingPackage"));
+            }
+            if(re.elementText("WeightMajor")!=null){
+                csr.setWeightMajor(Double.parseDouble(re.elementText("WeightMajor")));
+            }
+            if(re.elementText("WeightMinor")!=null){
+                csr.setWeightMinor(Double.parseDouble(re.elementText("WeightMinor")));
+            }
+            sd.setCalculatedShippingRate(csr);
         }
         sd.setShippingType(elsd.elementText("ShippingType"));
         item.setShippingDetails(sd);
@@ -333,9 +378,9 @@ public class SamplePaseXml {
      * @return
      * @throws DocumentException
      */
-    public static List<TradingListingData> getItemListElememt(String xml,String ebayAccount) throws DocumentException, DateParseException {
+    public static List<TradingListingData> getItemListElememt(String xml,String ebayAccount) throws Exception {
         List li = new ArrayList();
-        Document document= DocumentHelper.parseText(xml);
+        Document document= formatStr2Doc(xml);
         Element rootElt = document.getRootElement();
         Element recommend = rootElt.element("ItemArray");
         Iterator<Element> iter = recommend.elementIterator("Item");
@@ -392,8 +437,8 @@ public class SamplePaseXml {
             item.setBuyitnowprice(Double.parseDouble(element.element("ListingDetails").elementText("ConvertedBuyItNowPrice")));
             item.setReserveprice(Double.parseDouble(element.element("ListingDetails").elementText("ConvertedReservePrice")));
             item.setListingduration(element.elementText("ListingDuration"));
-            item.setStarttime(DateUtils.parseDateTime(element.element("ListingDetails").elementText("StartTime").replace("T"," ").replace(".000Z","")));
-            item.setEndtime(DateUtils.parseDateTime(element.element("ListingDetails").elementText("EndTime").replace("T"," ").replace(".000Z","")));
+            item.setStarttime(DateUtils.returnDate(element.element("ListingDetails").elementText("StartTime")));
+            item.setEndtime(DateUtils.returnDate(element.element("ListingDetails").elementText("EndTime")));
             String url = element.element("PictureDetails").elementText("GalleryURL");
 
             //item.setPicUrl(url.substring(0,url.lastIndexOf("_")+1)+"14"+url.substring(url.lastIndexOf(".")));
@@ -409,9 +454,9 @@ public class SamplePaseXml {
      * @return
      * @throws DocumentException
      */
-    public static List<Item> getItemElememt(String xml) throws DocumentException {
+    public static List<Item> getItemElememt(String xml) throws Exception {
         List li = new ArrayList();
-        Document document= DocumentHelper.parseText(xml);
+        Document document= formatStr2Doc(xml);
         Element rootElt = document.getRootElement();
         Element recommend = rootElt.element("ItemArray");
         Iterator<Element> iter = recommend.elementIterator("Item");
@@ -467,15 +512,21 @@ public class SamplePaseXml {
             if(buyere!=null) {
                 Element maxiteme = buyere.element("MaximumItemRequirements");
                 if(maxiteme!=null) {
-                    mirs.setMaximumItemCount(Integer.parseInt(maxiteme.elementText("MaximumItemCount")));
-                    mirs.setMinimumFeedbackScore(Integer.parseInt(maxiteme.elementText("MinimumFeedbackScore")));
+                    if(StringUtils.isNotEmpty(maxiteme.elementText("MaximumItemCount"))) {
+                        mirs.setMaximumItemCount(Integer.parseInt(maxiteme.elementText("MaximumItemCount")));
+                    }
+                    if(StringUtils.isNotEmpty(maxiteme.elementText("MinimumFeedbackScore"))) {
+                        mirs.setMinimumFeedbackScore(Integer.parseInt(maxiteme.elementText("MinimumFeedbackScore")));
+                    }
                     brd.setMaximumItemRequirements(mirs);
                 }
 
                 Element maxUnpaid = buyere.element("MaximumUnpaidItemStrikesInfo");
                 if(maxUnpaid!=null){
                     MaximumUnpaidItemStrikesInfo muis = new MaximumUnpaidItemStrikesInfo();
-                    muis.setCount(Integer.getInteger(maxUnpaid.elementText("Count")));
+                    if(StringUtils.isNotEmpty(maxUnpaid.elementText("Count"))) {
+                        muis.setCount(Integer.getInteger(maxUnpaid.elementText("Count")));
+                    }
                     muis.setPeriod(maxUnpaid.elementText("Period"));
                     brd.setMaximumUnpaidItemStrikesInfo(muis);
                 }
@@ -483,7 +534,9 @@ public class SamplePaseXml {
                 Element maxPolicy = buyere.element("MaximumBuyerPolicyViolations");
                 if(maxPolicy!=null){
                     MaximumBuyerPolicyViolations mbpv= new MaximumBuyerPolicyViolations();
-                    mbpv.setCount(Integer.parseInt(maxPolicy.elementText("Count")));
+                    if(StringUtils.isNotEmpty(maxPolicy.elementText("Count"))) {
+                        mbpv.setCount(Integer.parseInt(maxPolicy.elementText("Count")));
+                    }
                     mbpv.setPeriod(maxPolicy.elementText("Period"));
                     brd.setMaximumBuyerPolicyViolations(mbpv);
                 }
@@ -500,9 +553,9 @@ public class SamplePaseXml {
      * @return
      * @throws DocumentException
      */
-    public static List<TradingFeedBackDetail> getFeedBackListElement(String xml) throws DocumentException {
+    public static List<TradingFeedBackDetail> getFeedBackListElement(String xml) throws Exception {
         List<TradingFeedBackDetail> lifb = new ArrayList();
-        Document document= DocumentHelper.parseText(xml);
+        Document document= formatStr2Doc(xml);
         Element rootElt = document.getRootElement();
         Element recommend = rootElt.element("FeedbackDetailArray");
         Iterator<Element> iter = recommend.elementIterator("FeedbackDetail");
@@ -532,7 +585,7 @@ public class SamplePaseXml {
     /**将商品目录属性api返回的xml解析为List<PublicDataDict>*/
     public static List<PublicDataDict> getListForPublicDataDict(String xml) throws Exception {
         List<PublicDataDict> publicDataDictList = new ArrayList<PublicDataDict>();
-        Document document= DocumentHelper.parseText(xml);
+        Document document= formatStr2Doc(xml);
         Element rootElt = document.getRootElement();
         Element recommend = rootElt.element("Recommendations");
 
@@ -571,7 +624,7 @@ public class SamplePaseXml {
      * 获取根需要解析的元素
      */
     public static Element getApiElement(String xml,String nodeName) throws  Exception{
-        Document document= DocumentHelper.parseText(xml);
+        Document document= formatStr2Doc(xml);
         Element rootElt = document.getRootElement();
         Element root=  rootElt.element(nodeName);
         return root;
@@ -606,7 +659,7 @@ public class SamplePaseXml {
 
     /**直接根据nodes来获取消息*/
     public static String getSpecifyElementTextAllInOne(String res,String... nodes) throws Exception {
-        Document document= DocumentHelper.parseText(res);
+        Document document= formatStr2Doc(res);
         Element rootElt = document.getRootElement();
         return getSpecifyElementText(rootElt,nodes);
     }
@@ -617,10 +670,10 @@ public class SamplePaseXml {
      * @return
      * @throws DocumentException
      */
-    public static List<TradingReseCategory> selectCategoryByKey(String xml) throws DocumentException {
+    public static List<TradingReseCategory> selectCategoryByKey(String xml) throws Exception {
         List<TradingReseCategory> litrc = new ArrayList();
         //商品分类目录查询
-        Document document= DocumentHelper.parseText(xml);
+        Document document= formatStr2Doc(xml);
         Element rootElt = document.getRootElement();
         if(rootElt==null){
             return litrc;
@@ -656,10 +709,10 @@ public class SamplePaseXml {
      * @return
      * @throws DocumentException
      */
-    public static List<TradingReseCategory> selectCategoryBytitle(String xml,String key) throws DocumentException {
+    public static List<TradingReseCategory> selectCategoryBytitle(String xml,String key) throws Exception {
         List<TradingReseCategory> litrc = new ArrayList();
         //之前是做商品所属分类查询
-        Document document= DocumentHelper.parseText(xml);
+        Document document= formatStr2Doc(xml);
         Element rootElt = document.getRootElement();
         Element recommend = rootElt.element("searchResult");
         Iterator<Element> iter = recommend.elementIterator("item");
@@ -683,9 +736,9 @@ public class SamplePaseXml {
      * @return
      * @throws DocumentException
      */
-    public static List<TradingDataDictionary> selectShippingService(String xml) throws DocumentException {
+    public static List<TradingDataDictionary> selectShippingService(String xml) throws Exception {
         List<TradingDataDictionary> lidata = new ArrayList();
-        Document document= DocumentHelper.parseText(xml);
+        Document document= formatStr2Doc(xml);
         Element rootElt = document.getRootElement();
         Iterator<Element> ies = rootElt.elementIterator("ShippingServiceDetails");
         while (ies.hasNext()){
@@ -706,9 +759,9 @@ public class SamplePaseXml {
      * @return
      * @throws DocumentException
      */
-    public static List<PublicDataDict> selectPublicDataDict(String xml) throws DocumentException {
+    public static List<PublicDataDict> selectPublicDataDict(String xml) throws Exception {
         List<PublicDataDict> lidata = new ArrayList();
-        Document document= DocumentHelper.parseText(xml);
+        Document document= formatStr2Doc(xml);
         Element rootElt = document.getRootElement();
         Element el = rootElt.element("CategoryArray");
         Iterator<Element> ies = el.elementIterator("Category");
@@ -739,14 +792,14 @@ public class SamplePaseXml {
         return xml;
     }
     public static String getWarningInformation(String res) throws Exception {
-        Document document= DocumentHelper.parseText(res);
+        Document document= formatStr2Doc(res);
         Element rootElt = document.getRootElement();
         String errors = SamplePaseXml.getSpecifyElementText(rootElt,"Errors","LongMessage");
         return errors;
     }
     public static List<TradingPriceTracking> getPriceTrackingItem(String res,String title) throws Exception {
         List<TradingPriceTracking> list=new ArrayList<TradingPriceTracking>();
-        Document document= DocumentHelper.parseText(res);
+        Document document= formatStr2Doc(res);
         Element rootElt = document.getRootElement();
         Element searchResult=rootElt.element("searchResult");
         Iterator items=searchResult.elementIterator("item");
@@ -760,6 +813,7 @@ public class SamplePaseXml {
             priceTracking.setSellerusername(SamplePaseXml.getSpecifyElementText(item, "sellerInfo", "sellerUserName"));
             priceTracking.setTitle(SamplePaseXml.getSpecifyElementText(item, "title"));
             priceTracking.setBidcount(SamplePaseXml.getSpecifyElementText(item, "sellingStatus", "bidCount"));
+            priceTracking.setPictureurl(SamplePaseXml.getSpecifyElementText(item,"galleryURL"));
             String starttime=SamplePaseXml.getSpecifyElementText(item,"listingInfo","startTime");
             String endtime=SamplePaseXml.getSpecifyElementText(item,"listingInfo","endTime");
             if(StringUtils.isNotBlank(starttime)){
@@ -780,6 +834,17 @@ public class SamplePaseXml {
                 }
             }
             priceTracking.setCurrencyid(currencyId1);
+            Element shippingInfo=item.element("shippingInfo");
+            if(shippingInfo!=null){
+                Element shippingServiceCost=shippingInfo.element("shippingServiceCost");
+                if(shippingServiceCost!=null){
+                    Attribute shippingcurrencyId=shippingServiceCost.attribute("currencyId");
+                    if(shippingcurrencyId!=null){
+                        priceTracking.setShippingcurrencyid(shippingcurrencyId.getValue());
+                    }
+                    priceTracking.setShippingservicecost(shippingServiceCost.getTextTrim());
+                }
+            }
             priceTracking.setQuerytitle(title);
             list.add(priceTracking);
         }
@@ -788,7 +853,7 @@ public class SamplePaseXml {
     //解析价格跟踪
     public static List<TradingPriceTracking> getPriceTrackingItemByItemId(String res) throws Exception {
         List<TradingPriceTracking> priceTrackings=new ArrayList<TradingPriceTracking>();
-        Document document= DocumentHelper.parseText(res);
+        Document document= formatStr2Doc(res);
         Element rootElt = document.getRootElement();
         Iterator items=rootElt.elementIterator("Item");
         while(items.hasNext()){

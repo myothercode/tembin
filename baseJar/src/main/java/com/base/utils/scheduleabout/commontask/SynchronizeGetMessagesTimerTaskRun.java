@@ -33,7 +33,7 @@ import java.util.Map;
 
 /**
  * Created by Administrtor on 2014/8/29.
- * 在线商品每晚执行，定时任务
+ * 定时同步message，定时任务
  */
 public class SynchronizeGetMessagesTimerTaskRun extends BaseScheduledClass implements Scheduledable {
     static Logger logger = Logger.getLogger(SynchronizeGetMessagesTimerTaskRun.class);

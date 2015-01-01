@@ -23,12 +23,14 @@ import com.base.utils.cache.TempStoreDataSupport;
 import com.base.utils.common.EncryptionUtil;
 import com.base.utils.common.ObjectUtils;
 import com.base.utils.exception.Asserts;
+import com.trading.service.ITradingListingReport;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -56,7 +58,8 @@ public class UserInfoServiceImpl implements com.base.userinfo.service.UserInfoSe
     private UsercontrollerOrgMapper usercontrollerOrgMapper;
     @Autowired
     private UsercontrollerUserRoleMapper userRoleMapper;
-
+    @Autowired
+    private ITradingListingReport iTradingListingReport;
 
     @Override
     public SessionVO getUserInfo(LoginVO loginVO){
@@ -74,6 +77,15 @@ public class UserInfoServiceImpl implements com.base.userinfo.service.UserInfoSe
             Map map1=new HashMap();
             map1.put("idArray",roleVOs);
             permissions = userInfoServiceMapper.queryPermissionByRoleID(map1);//获取权限列表
+            if (sessionVO.getParentId()!=0L){
+                Iterator<PermissionVO> it= permissions.iterator();
+                while (it.hasNext()){
+                    PermissionVO pv=it.next();
+                    if((pv.getParentID()!=null && pv.getParentID()==6L) || pv.getPermissionID()==6L){
+                        it.remove();
+                    }
+                }
+            }
             sessionVO.setPermissions(permissions);
         }
        return sessionVO;
@@ -262,7 +274,8 @@ public class UserInfoServiceImpl implements com.base.userinfo.service.UserInfoSe
         user.setUserPassword(EncryptionUtil.pwdEncrypt(user.getUserPassword(), user.getUserLoginId()));
         user.setUserParentId(null);
         userMapper.insert(user);
-
+        //初始化首页统计信息
+        this.iTradingListingReport.initListingReport(user.getUserId());
         UsercontrollerUserRole userRole = new UsercontrollerUserRole();
         userRole.setUserId(user.getUserId());
         userRole.setRoleId(1);//通过网页注册的帐号，默认都是管理员帐号

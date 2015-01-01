@@ -800,6 +800,126 @@ public class TaskComplementExample {
             addCriterion("data_type not between", value1, value2, "dataType");
             return (Criteria) this;
         }
+
+        public Criteria andRepPriceIsNull() {
+            addCriterion("rep_price is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andRepPriceIsNotNull() {
+            addCriterion("rep_price is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andRepPriceEqualTo(Double value) {
+            addCriterion("rep_price =", value, "repPrice");
+            return (Criteria) this;
+        }
+
+        public Criteria andRepPriceNotEqualTo(Double value) {
+            addCriterion("rep_price <>", value, "repPrice");
+            return (Criteria) this;
+        }
+
+        public Criteria andRepPriceGreaterThan(Double value) {
+            addCriterion("rep_price >", value, "repPrice");
+            return (Criteria) this;
+        }
+
+        public Criteria andRepPriceGreaterThanOrEqualTo(Double value) {
+            addCriterion("rep_price >=", value, "repPrice");
+            return (Criteria) this;
+        }
+
+        public Criteria andRepPriceLessThan(Double value) {
+            addCriterion("rep_price <", value, "repPrice");
+            return (Criteria) this;
+        }
+
+        public Criteria andRepPriceLessThanOrEqualTo(Double value) {
+            addCriterion("rep_price <=", value, "repPrice");
+            return (Criteria) this;
+        }
+
+        public Criteria andRepPriceIn(List<Double> values) {
+            addCriterion("rep_price in", values, "repPrice");
+            return (Criteria) this;
+        }
+
+        public Criteria andRepPriceNotIn(List<Double> values) {
+            addCriterion("rep_price not in", values, "repPrice");
+            return (Criteria) this;
+        }
+
+        public Criteria andRepPriceBetween(Double value1, Double value2) {
+            addCriterion("rep_price between", value1, value2, "repPrice");
+            return (Criteria) this;
+        }
+
+        public Criteria andRepPriceNotBetween(Double value1, Double value2) {
+            addCriterion("rep_price not between", value1, value2, "repPrice");
+            return (Criteria) this;
+        }
+
+        public Criteria andOldPriceIsNull() {
+            addCriterion("old_price is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andOldPriceIsNotNull() {
+            addCriterion("old_price is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andOldPriceEqualTo(Double value) {
+            addCriterion("old_price =", value, "oldPrice");
+            return (Criteria) this;
+        }
+
+        public Criteria andOldPriceNotEqualTo(Double value) {
+            addCriterion("old_price <>", value, "oldPrice");
+            return (Criteria) this;
+        }
+
+        public Criteria andOldPriceGreaterThan(Double value) {
+            addCriterion("old_price >", value, "oldPrice");
+            return (Criteria) this;
+        }
+
+        public Criteria andOldPriceGreaterThanOrEqualTo(Double value) {
+            addCriterion("old_price >=", value, "oldPrice");
+            return (Criteria) this;
+        }
+
+        public Criteria andOldPriceLessThan(Double value) {
+            addCriterion("old_price <", value, "oldPrice");
+            return (Criteria) this;
+        }
+
+        public Criteria andOldPriceLessThanOrEqualTo(Double value) {
+            addCriterion("old_price <=", value, "oldPrice");
+            return (Criteria) this;
+        }
+
+        public Criteria andOldPriceIn(List<Double> values) {
+            addCriterion("old_price in", values, "oldPrice");
+            return (Criteria) this;
+        }
+
+        public Criteria andOldPriceNotIn(List<Double> values) {
+            addCriterion("old_price not in", values, "oldPrice");
+            return (Criteria) this;
+        }
+
+        public Criteria andOldPriceBetween(Double value1, Double value2) {
+            addCriterion("old_price between", value1, value2, "oldPrice");
+            return (Criteria) this;
+        }
+
+        public Criteria andOldPriceNotBetween(Double value1, Double value2) {
+            addCriterion("old_price not between", value1, value2, "oldPrice");
+            return (Criteria) this;
+        }
     }
 
     /**

@@ -78,7 +78,7 @@ public class SynchronizeUserListingItemDataImpl implements ThreadPoolBaseInterFa
         try {
             ebpAck = SamplePaseXml.getVFromXmlString(ebpRes, "Ack");
             if ("Success".equalsIgnoreCase(ebpAck)) {
-                Document document= DocumentHelper.parseText(ebpRes);
+                Document document= SamplePaseXml.formatStr2Doc(ebpRes);
                 Element rootElt = document.getRootElement();
                 Element totalElt = rootElt.element("PaginationResult");
                 String totalCount = totalElt.elementText("TotalNumberOfEntries");

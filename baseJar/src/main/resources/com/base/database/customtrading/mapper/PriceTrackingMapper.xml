@@ -33,5 +33,6 @@
         <if test="qeuryContent!=null">
            and tracking.queryTitle =#{qeuryContent}
         </if>
+        order by tracking.create_time desc
     </select>
 </mapper>

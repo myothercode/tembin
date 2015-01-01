@@ -20,7 +20,7 @@ public class GetEBPCaseDetailAPI {
         TradingGetEBPCaseDetail ebpCaseDetail=new TradingGetEBPCaseDetail();
         List<TradingCaseResponseHistory> historyList=new ArrayList<TradingCaseResponseHistory>();
         List<TradingCasePaymentDetail> paymentDetailList=new ArrayList<TradingCasePaymentDetail>();
-        Document document= DocumentHelper.parseText(res);
+        Document document= SamplePaseXml.formatStr2Doc(res);
         Element root=document.getRootElement();
         Element caseDetail=root.element("caseDetail");
         ebpCaseDetail.setOpenreason(SamplePaseXml.getSpecifyElementText(caseDetail,"openReason"));

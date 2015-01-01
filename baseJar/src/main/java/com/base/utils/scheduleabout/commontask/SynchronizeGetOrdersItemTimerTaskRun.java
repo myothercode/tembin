@@ -9,6 +9,7 @@ import com.base.utils.scheduleabout.Scheduledable;
 import com.base.utils.threadpool.TaskPool;
 import com.task.service.IScheduleGetTimerOrders;
 import com.trading.service.ITradingOrderGetOrders;
+import com.trading.service.ITradingOrderGetOrdersNoTransaction;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
@@ -16,19 +17,19 @@ import java.util.List;
 
 /**
  * Created by Administrtor on 2014/8/29.
- * 在线商品每晚执行，定时任务 //两分钟
+ * 定时同步订单商品，定时任务 //两分钟
  */
 public class SynchronizeGetOrdersItemTimerTaskRun extends BaseScheduledClass implements Scheduledable {
     static Logger logger = Logger.getLogger(SynchronizeGetOrdersItemTimerTaskRun.class);
 
     public void synchronizeOrderItems(List<TradingOrderGetOrders> orders){
         IScheduleGetTimerOrders iScheduleGetTimerOrders=(IScheduleGetTimerOrders) ApplicationContextUtil.getBean(IScheduleGetTimerOrders.class);
+        ITradingOrderGetOrdersNoTransaction iTradingOrderGetOrdersNoTransaction=(ITradingOrderGetOrdersNoTransaction) ApplicationContextUtil.getBean(ITradingOrderGetOrdersNoTransaction.class);
         if(orders!=null&&orders.size()>0){
             try{
                 iScheduleGetTimerOrders.synchronizeOrderItems(orders);
             }catch (Exception e){
                 logger.error("定时同步订单商品失败task:",e);
-                TempStoreDataSupport.removeData("task_"+getScheduledType());
             }
         }
     }
@@ -80,6 +81,6 @@ public class SynchronizeGetOrdersItemTimerTaskRun extends BaseScheduledClass imp
         }else{
             return 2;
         }*/
-        return 10;
+        return 30;
     }
 }

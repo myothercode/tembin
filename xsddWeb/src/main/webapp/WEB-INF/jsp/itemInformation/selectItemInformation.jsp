@@ -23,7 +23,7 @@
             $("#ItemInformationListTable").initTable({
                 url:path + "/information/ajax/loadItemInformationList.do?",
                 columnData:[
-                    {title:"",name:"pictureUrl",width:"8%",align:"left",format:makeOption4},
+                    {title:"选择",name:"option",width:"8%",align:"left",format:makeOption4},
                     {title:"图片",name:"pictureUrl",width:"8%",align:"left",format:makeOption2},
                     {title:"商品SKU",name:"sku",width:"8%",align:"left"},
                     {title:"商品名称",name:"name",width:"8%",align:"left"},
@@ -32,13 +32,10 @@
                     {title:"状态",name:"pictureUrl",width:"8%",align:"left",format:makeOption3}
                 ],
                 selectDataNow:false,
-                isrowClick:false,
                 showIndex:false,
                 isrowClick: true,
                 rowClickMethod: function (obj,o){
-                    $("input[type='radio'][name='information']").each(function(i,d){
-                        $(d).removeAttr("checked")
-                    });
+                    $("input[type='radio'][name='information']").attr("checked",false);
                     $("input[type='radio'][name='information'][value='"+obj.id+"']").prop("checked",true);
                 }
             });
@@ -59,7 +56,9 @@
             }
         }
         function makeOption4(json){
-            var htm = "<input type=\"radio\"  name=\"information\" productname="+json.name+" productsku="+json.sku+" value=" + json.id + ">";
+            var htm = "<input type=\"radio\"  name=\"information\" value=" + json.id + " />";
+            htm+="<input type='hidden' id='productname_"+json.id+"' value='"+json.name+"'/>";
+            htm+="<input type='hidden' id='productsku_"+json.id+"' value='"+json.sku+"'/>";
             return htm;
         }
         function okSelect(){
@@ -69,8 +68,8 @@
                 alert("请选择产品");
                 return;
             }
-            var productname = $("input[type='radio'][name='information']:checked").attr("productname");
-            var productsku = $("input[type='radio'][name='information']:checked").attr("productsku");
+            var productname = $("#productname_"+val).val();
+            var productsku = $("#productsku_"+val).val();
             W._sku = productsku;
             W.document.getElementById('itemName').value=productname;
             W.document.getElementById('sku').value=productsku;
@@ -122,6 +121,7 @@
     </script>
 </head>
 <body>
+<div style="height: 34px;"></div>
 <input type="button" value="确定" onclick="okSelect()">
 <div id="ItemInformationListTable"></div>
 </body>

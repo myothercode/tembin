@@ -11,8 +11,6 @@ import com.base.utils.threadpool.AddApiTask;
 import com.base.utils.xmlutils.SamplePaseXml;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Document;
-import org.dom4j.DocumentException;
-import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 
 import java.util.*;
@@ -22,7 +20,7 @@ import java.util.*;
  */
 public class GetMyMessageAPI {
     public static List<Element> getMessages(String xml) throws Exception {
-        Document document= DocumentHelper.parseText(xml);
+        Document document= SamplePaseXml.formatStr2Doc(xml);
         Element root= document.getRootElement();
         Element messages= root.element("Messages");
         Iterator iterator=messages.elementIterator("Message");
@@ -127,8 +125,8 @@ public class GetMyMessageAPI {
         }
         return null;
     }
-    public static String getText(String xml) throws DocumentException {
-        Document document= DocumentHelper.parseText(xml);
+    public static String getText(String xml) throws Exception {
+        Document document= SamplePaseXml.formatStr2Doc(xml);
         Element root= document.getRootElement();
         Element messages= root.element("Messages");
         Iterator iterator=messages.elementIterator("Message");

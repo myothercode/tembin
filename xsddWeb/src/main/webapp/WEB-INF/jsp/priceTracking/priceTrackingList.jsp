@@ -17,80 +17,60 @@
         }
     </style>
     <script type="text/javascript">
-        function query(){
-            var qeuryContent=$("#qeuryContent").val();
-            var url=path+"/priceTracking/ajax/priceTrackingApi.do?qeuryContent="+qeuryContent;
+        var priceTracking;
+        $(document).ready(function(){
+            var url=path+"/priceTracking/ajax/priceTrackingQueryList.do?";
             $("#priceTrackingListTable").initTable({
                 url:url,
                 columnData:[
                  /*   {title:"",name:"ch",width:"2%",align:"top",format:makeOption5},*/
                     {title:"",name:"ch",width:"1%",align:"top",format:makeOption1},
-                    {title:"物品号",name:"itemid",width:"5%",align:"left"},
+                    {title:"图片",name:"picture",width:"5%",align:"left",format:makeOption5},
+                    {title:"物品号",name:"itemid",width:"5%",align:"left",format:makeOption4},
                     {title:"标题",name:"title",width:"50%",align:"left"},
-                    {title:"最大数量",name:"bidcount",width:"5%",align:"left"},
                     {title:"卖家",name:"sellerusername",width:"5%",align:"left"},
-                    {title:"价格",name:"currentprice",width:"5%",align:"left"},
-                    {title:"单位",name:"currencyid",width:"5%",align:"left"},
-                    {title:"开始时间",name:"starttime",width:"8%",align:"left"},
-                    {title:"结束时间",name:"endtime",width:"8%",align:"left"}
+                    {title:"价格",name:"currentprice",width:"5%",align:"left",format:makeOption2},
+                    {title:"运输费",name:"shippingServiceCost",width:"5%",align:"left",format:makeOption3}
                 ],
                 selectDataNow:false,
                 isrowClick:false,
-                showIndex:false,
-                sysParm: {"jsonBean.pageNum": 1, "jsonBean.pageCount": 100}
+                showIndex:false
             });
             refreshTable();
-        }
+         });
         function refreshTable(){
             $("#priceTrackingListTable").selectDataAfterSetParm({"bedDetailVO.deptId":"", "isTrue":0});
         }
         function makeOption1(json){
-            var htm="<div><input type='hidden'id='itemid' value='"+json.itemid+"'>"+
-                    "<input type='hidden'id='title' value='"+json.title+"'>"+
-                    "<input type='hidden'id='sellerusername' value='"+json.sellerusername+"'>"+
-                    "<input type='hidden'id='currentprice' value='"+json.currentprice+"'>"+
-                    "<input type='hidden'id='currencyid' value='"+json.currencyid+"'>"+
-                    "<input type='hidden'id='bidcount' value='"+json.bidcount+"'>"+
-                    "<input type='hidden'id='starttime' value='"+json.starttime+"'>"+
-                    "<input type='hidden'id='endtime' value='"+json.endtime+"'>"+
-                    "<input type='checkbox' id='checkbox' name='checkbox'/></div>";
+            var htm="<input type='checkbox' value='"+json.id+"' id='checkbox' name='checkbox'/>";
             return htm;
         }
-        function submitCommit(){
-            var inputs=$("input[type=checkbox]:checked");
-            if(inputs.length>0){
-                for(var i=0;i<inputs.length;i++){
-                    var div=$(inputs[i]).parent();
-                    var itemid=$(div).find("input[id=itemid]").val();
-                    var sellerusername=$(div).find("input[id=sellerusername]").val();
-                    var currentprice=$(div).find("input[id=currentprice]").val();
-                    var currencyid=$(div).find("input[id=currencyid]").val();
-                    var title=$(div).find("input[id=title]").val();
-                    var bidcount=$(div).find("input[id=bidcount]").val();
-                    var starttime=$(div).find("input[id=starttime]").val();
-                    var endtime=$(div).find("input[id=endtime]").val();
-                    var qeuryContent=$("#qeuryContent").val();
-                    var url=path+"/priceTracking/ajax/savepriceTracking.do?itemid="+itemid+"&sellerusername="+sellerusername+"&currentprice="+currentprice+"&currencyid="+currencyid+"&title="+title+"&queryTitle="+qeuryContent+"&bidcount="+bidcount+"&starttime="+starttime+"&endtime="+endtime;
-                    var data=$("#addRemarkForm").serialize();
-                    $().invoke(url,null,
-                            [function(m,r){
-                                if(i==(inputs.length-1)){
-                                    alert(r);
-                                }
-                                Base.token;
-                            },
-                                function(m,r){
-                                    alert(r);
-                                    Base.token();
-                                }]
-                    );
-                }
-
-            }else{
-                alert("请选择至少一个选项进行保存");
-            }
+        function makeOption2(json){
+            return json.currentprice+json.currencyid;
         }
-        var priceTracking;
+        function makeOption3(json){
+            return json.shippingservicecost+json.shippingcurrencyid;
+        }
+        function makeOption4(json){
+            return "<a href='javascript:void(0);' onclick='lianjieEbay('"+json.itemid+"')'></a>";
+        }
+        function makeOption5(json){
+            return "<img src='"+json.pictureurl+".jpg' style='width: 50px;height:50px;' />"
+        }
+        function lianjieEbay(itemid){
+            window.open(serviceItemUrl+itemid+"");
+        }
+        function searchCompetitors(){
+            var url=path+"/priceTracking/searchCompetitors.do?";
+            priceTracking=openMyDialog({title: '竞争对手',
+                content: 'url:'+url,
+                icon: 'succeed',
+                width:1000,
+                height:700,
+                lock:true
+            });
+        }
+
         function setPrice(){
             var url=path+"/priceTracking/setPrice.do?";
             priceTracking=openMyDialog({title: '自定义价格',
@@ -107,7 +87,9 @@
                 content: 'url:'+url,
                 icon: 'succeed',
                 width:600,
-                lock:true
+                height:400,
+                lock:true,
+                zIndex:1000
             });
         }
         function assignItem(){
@@ -147,10 +129,11 @@
         <input id="qeuryContent" name="conteny" type="text" class="key_1"><input onclick="query();" name="newbut" type="button" class="key_2"></div>
 </div>
     <div class="newds">
-        <div class="newsj_left">
-        </div><div>
-        <div id="newtipi">
-        </div></div>
+        <div class="newsj_left" style="margin-left: 9px;">
+            <span class="newusa_ici_del_in"><input type="checkbox" name="checkbox" id="checkbox" onclick="Allchecked(this);"></span>
+            <span class="newusa_ici_del" onclick="searchCompetitors();">搜索竞争对手</span>
+            <span class="newusa_ici_del" onclick="autoSetPrice();;">自动调价</span>
+        </div>
     </div>
 </div>
 <!--综合结束 -->
@@ -167,11 +150,11 @@
 <div class="modal-body">
 
 </div></div></div></div></div></div>
-    <div class="modal-footer" style="text-align: right">
+  <%--  <div class="modal-footer" style="text-align: right">
         <button type="button" class="net_put_1" data-dismiss="modal" onclick="assignItem();">指定跟踪</button>
-        <button type="button" class="net_put_1" data-dismiss="modal" onclick="setPrice();">自定调价</button>
-        <button type="button" class="net_put_1" data-dismiss="modal" onclick="autoSetPrice();">自动调价</button>
+       &lt;%&ndash; <button type="button" class="net_put_1" data-dismiss="modal" onclick="setPrice();">自定调价</button>&ndash;%&gt;
+        &lt;%&ndash;<button type="button" class="net_put_1" data-dismiss="modal" onclick="autoSetPrice();">自动调价</button>&ndash;%&gt;
          <button type="button" class="net_put" onclick="submitCommit();">保存</button>
-    </div>
+    </div>--%>
 </body>
 </html>

@@ -275,20 +275,21 @@ function makeOption4(json){
     var htm="";
     if(json.flagNotAllComplete){
         htm=htm+"<img src=\""+imgurl1+"money_no.png\" title=\"未结清\" >";
-    }else{
-        if(json.status=='Incomplete'){
-            htm="<img title=\"未付款\" src=\""+imgurl1+"money.gif \" onmousemove='showInformation();'>"/*"<img src=\""+imgurl1+"money.gif\">"*/;
-            /*"<img onmousemove='showInformation();'>"*/
-        }
-        if(json.status=='Complete'){
+        return htm;
+    }
+    if(json.status=='Incomplete'){
+        htm="<img title=\"未付款\" src=\""+imgurl1+"money.gif \" onmousemove='showInformation();'>"/*"<img src=\""+imgurl1+"money.gif\">"*/;
+        /*"<img onmousemove='showInformation();'>"*/
+        return htm;
+    }
+    if(json.status=='Complete'){
+        if(json.feedbackMessage&&json.feedbackMessage!=""){
+            htm="<img title=\"签收\" src=\""+imgurl1+"a4.png\" >"
+        }else if(json.shipmenttrackingnumbe!=""&&json.shippingcarrierused!=""){
+            htm="<img title=\"发货\" src=\""+imgurl1+"a2.png\" >"
+        }else{
             htm="<img title=\"已付款\" src=\""+imgurl1+"a1.png\" >";
         }
-    }
-    if(json.shipmenttrackingnumbe!=""&&json.shippingcarrierused!=""){
-        htm="<img title=\"发货\" src=\""+imgurl1+"a2.png\" >"
-    }
-    if(json.feedbackMessage&&json.feedbackMessage!=""){
-        htm="<img title=\"签收\" src=\""+imgurl1+"a4.png\" >"
     }
     return htm;
 }

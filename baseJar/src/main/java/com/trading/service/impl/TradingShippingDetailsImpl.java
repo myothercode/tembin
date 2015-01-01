@@ -191,7 +191,7 @@ public class TradingShippingDetailsImpl implements com.trading.service.ITradingS
     }
 
     @Override
-    public ShippingDetails toXmlPojo(Long id) throws Exception {
+    public ShippingDetails toXmlPojo(Long id,Long docId) throws Exception {
         ShippingDetails sd = new ShippingDetails();
         TradingShippingdetails tsd = this.selectById(id);
         if(tsd==null)
@@ -207,8 +207,8 @@ public class TradingShippingDetailsImpl implements com.trading.service.ITradingS
             sd.setExcludeShipToLocation(listr);
         }
         //ConvertPOJOUtil.convert(sd.getInsuranceDetails(),tsd);
-        sd.setInternationalShippingServiceOption(this.iTradingInternationalShippingServiceOption.toXmlPojo(tsd.getId(),tsd));
-        sd.setShippingServiceOptions(this.iTradingShippingServiceOptions.toXmlPojo(tsd.getId(),tsd));
+        sd.setInternationalShippingServiceOption(this.iTradingInternationalShippingServiceOption.toXmlPojo(tsd.getId(),tsd,docId));
+        sd.setShippingServiceOptions(this.iTradingShippingServiceOptions.toXmlPojo(tsd.getId(),tsd,docId));
         //System.out.println(PojoXmlUtil.pojoToXml(sd));
         return sd;
     }

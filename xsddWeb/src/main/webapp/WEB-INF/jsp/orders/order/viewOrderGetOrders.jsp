@@ -235,7 +235,6 @@
                 var url=path+"/order/ajax/paypalAmount.do?orderId="+paypal;
                 $().invoke(url,null,
                         [function(m,r){
-                            console.debug(r);
                             var spans=document.getElementsByName("price");
                             var spans1=document.getElementsByName("totalPrice");
                             var spans2=document.getElementsByName("price1");
@@ -263,19 +262,26 @@
                             }
                             for(var i=0;i<spans.length;i++){
                                 if(spans[i].innerHTML!=""){
-                                   var price10=parseInt(spans[i].innerHTML);
-                                   var price11=parseInt(spans1[i].innerHTML);
-                                   var price12=price11-price10;
-                                   spans2[i].innerHTML=price12+" USD";
-                                   spans[i].innerHTML=spans[i].innerHTML;
+                                    if(spans[i].innerHTML!="账号未验证"){
+                                        var price10=parseInt(spans[i].innerHTML);
+                                        var price11=parseInt(spans1[i].innerHTML);
+                                        var price12=price11-price10;
+                                        spans2[i].innerHTML=price12+" USD";
+                                        spans[i].innerHTML=spans[i].innerHTML;
+                                    }
                                 }else{
                                     spans2[i].innerHTML=spans1[i].innerHTML+" USD";
                                 }
                             }
                             for(var i=0;i<spans.length;i++){
-                                if(spans[i].innerHTML==""){
-                                    $(spans[i]).attr("style","color:red;");
-                                    spans[i].innerHTML="获取paypal费用失败";
+                                if(spans[i].innerHTML==""||spans[i].innerHTML=="账号未验证"){
+                                    if(spans[i].innerHTML==""){
+                                        $(spans[i]).attr("style","color:red;");
+                                        spans[i].innerHTML="获取paypal费用失败";
+                                    }else{
+                                        $(spans[i]).attr("style","color:red;");
+                                        spans[i].innerHTML="paypal账号未验证";
+                                    }
                                 }else{
                                     spans[i].innerHTML=spans[i].innerHTML+" USD";
                                 }
@@ -436,7 +442,11 @@
                     </span>
                 <span class="voknet"></span>
                 <table width="100%" border="0">
-                    <tbody><tr>
+                    <tbody>
+                    <tr>
+                        <td><strong>卖家邮件:</strong>${orders[status.index].selleremail}</td>
+                    </tr>
+                    <tr>
                         <td><strong>备注</strong><br>
                             ${orders[status.index].title}</td>
                     </tr>

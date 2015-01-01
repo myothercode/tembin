@@ -39,7 +39,7 @@
                     {title:"SKU",name:"sku",width:"20%",align:"left"},
                     {title:"数量",name:"quantity",width:"20%",align:"left",format:makeOption2},
                     {title:"状态",name:"status",width:"20%",align:"left"},
-                  /*  {title:"操作",name:"status",width:"2%",align:"center",format:makeOption3}*/
+                    {title:"操作",name:"status",width:"2%",align:"center",format:makeOption3}
                 ],
                 selectDataNow:false,
                 isrowClick:false,
@@ -77,12 +77,19 @@
         }
         function makeOption3(json){
             var hs="";
-            hs+="<li style=\"height:25px;\" onclick=editSiHaiYou("+json.id+") doaction=\"readed\" >编辑</li>";
+            hs+="<li style=\"height:25px;\" onclick=editSiHaiYou('"+json.sku+"') doaction=\"readed\" >编辑</li>";
             var pp={"liString":hs};
             return getULSelect(pp);
         }
-        function editSiHaiYou(id){
-            alert(234);
+        function editSiHaiYou(sku){
+            var url=path + "/inventorySale/editSiHaiYou.do?sku="+sku;
+            inventorySale=openMyDialog({title: '编辑',
+                content: 'url:'+url,
+                icon: 'succeed',
+                width:650,
+                lock:true,
+                zIndex:1000
+            });
         }
         function makeOption2(json){
             if(json.quantity&&json.quantity>0){

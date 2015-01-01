@@ -34,7 +34,7 @@ public class MenuController extends BaseAction {
         return;
     }
 
-    /**获取当前登录人菜单*/
+    /**获取系统所有菜单，除去系统设置*/
     @RequestMapping("getAllMenuList.do")
     @ResponseBody
     public void getAllMenuList(@ModelAttribute( "initSomeParmMap" )ModelMap modelMap,

@@ -395,4 +395,15 @@ public class PublicItemInformationImpl implements com.publicd.service.IPublicIte
         List<PublicItemInformation> list=PublicItemInformationMapper.selectByExample(example);
         return list;
     }
+
+    /**
+     *
+     * @param map
+     * @param page
+     * @return
+     */
+    @Override
+    public List<ItemInformationQuery> selectItemInformationByOrgId(Map map, Page page) {
+        return ItemInformationMapper.selectItemInformationByOrgId(map,page);
+    }
 }

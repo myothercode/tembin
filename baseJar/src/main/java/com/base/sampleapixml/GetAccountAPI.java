@@ -17,7 +17,7 @@ import java.util.List;
 public class GetAccountAPI {
     public static List<TradingOrderGetAccount> parseXMLAndSave(String res) throws Exception {
         List<TradingOrderGetAccount> list=new ArrayList<TradingOrderGetAccount>();
-        Document document= DocumentHelper.parseText(res);
+        Document document= SamplePaseXml.formatStr2Doc(res);
         Element root=document.getRootElement();
         Element AccountEntries=root.element("AccountEntries");
         if(AccountEntries!=null){

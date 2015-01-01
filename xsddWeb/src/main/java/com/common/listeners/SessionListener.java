@@ -26,7 +26,7 @@ public class SessionListener implements HttpSessionListener {
         /**销毁session的时候，将缓存数据也清除掉*/
         String loginKey=(String) httpSessionEvent.getSession().getAttribute(SessionCacheSupport.USERLOGINID);
         if (StringUtils.isNotEmpty(loginKey)){
-            SessionCacheSupport.remove(loginKey);
+            SessionCacheSupport.removeCa(loginKey, httpSessionEvent.getSession().getId());
         }
         SystemLog systemLog=new SystemLog();
         systemLog.setCreatedate(new Date());

@@ -32,4 +32,5 @@ public interface IPublicItemInformation {
 
     List<PublicItemInformation> selectItemInformationByTypeIsNull();
 
+    List<ItemInformationQuery> selectItemInformationByOrgId(Map map, Page page);
 }

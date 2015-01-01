@@ -9,6 +9,9 @@ function queryPaypalList(){
             {title:"paypal帐号",name:"paypalAccount",width:"8%",align:"left"},
             {title:"email",name:"email",width:"8%",align:"left"},
             {title:"状态",name:"op",width:"8%",align:"left",format:makePaypalStatus},
+            {title:"是否验证",name:"op",width:"8%",align:"left",format:function(json){
+                return (json.sfCheck==1)?"是":"否";
+            }},
             {title:"操作",name:"op1",width:"8%",align:"left",format:makeOptionPaypal}
         ],
         selectDataNow:false,
@@ -36,8 +39,14 @@ function makeOptionPaypal(json){
     var stopButton="<span onclick=operationPaypal(0,'"+json.id+"') class='newusa_ici'><b style=\"color:#FF6060;font-weight: normal;\">停用</b>帐号</span>";
     var startButton="<span onclick=operationPaypal(1,'"+json.id+"') class='newusa_ici'><b style=\"color:#93B937;font-weight: normal;\">启用</b>帐号</span>";
 
+    var yanzheng="<span onclick=operationPaypal(2,'"+json.id+"') class='newusa_ici'><b style=\"color:#93B937;font-weight: normal;\">验证</b>帐号</span>";
+
     if(json.status==1 || json.status=='1'){
-        return stopButton;
+        if(json.sfCheck!=1){
+            return stopButton+yanzheng;
+        }else{
+            return stopButton;
+        }
     }else if(json.status==0 || json.status=='0'){
         return startButton;
     }
@@ -58,6 +67,10 @@ function operationPaypal(bs,id){
 
     var data={"paypalId":id,"stat":bs};
     var url=path+"/paypal/operationPayPalAccount.do";
+    if(bs=='2'){
+        data={"id":id};
+        url=path+"/paypal/getPaypalYanZheng.do";
+    }
     $().invoke(
         url,
         data,
@@ -83,7 +96,7 @@ function opAddPaypalPage(){
         id : "dig" + (new Date()).getTime(),
         content:"url:"+url,
         width : 600,
-        height : 300,
+        height : 600,
         max:false,
         min:false,
         lock : true

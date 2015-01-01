@@ -13,6 +13,7 @@ import com.base.userinfo.service.SystemUserManagerService;
 import com.base.utils.annotations.AvoidDuplicateSubmission;
 import com.base.utils.cache.DataDictionarySupport;
 import com.base.utils.cache.SessionCacheSupport;
+import com.base.utils.common.EncryptionUtil;
 import com.base.utils.imageManage.service.ImageService;
 import com.common.base.utils.ajax.AjaxSupport;
 import com.common.base.web.BaseAction;
@@ -908,7 +909,9 @@ public class ItemInformationController extends BaseAction {
         String informationid = request.getParameter("informationid");
         SessionVO c= SessionCacheSupport.getSessionVO();
         List<PublicItemPictureaddrAndAttr> lippa = this.iPublicItemPictureaddrAndAttr.selectPictureaddrAndAttrByInformationId(Long.parseLong(informationid),"picture",c.getId());
-
+        for(PublicItemPictureaddrAndAttr ppaa:lippa){
+            ppaa.setUuid(EncryptionUtil.md5Encrypt(ppaa.getAttrvalue()));
+        }
         AjaxSupport.sendSuccessText("",lippa);
     }
 }

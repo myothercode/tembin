@@ -17,7 +17,7 @@ import java.util.List;
 
 /**
  * Created by Administrtor on 2014/8/29.
- * 在线商品每晚执行，定时任务
+ * 每次一次订单task列表，定时任务
  */
 public class SynchronizeGetOrdersTaskRun extends BaseScheduledClass implements Scheduledable {
     static Logger logger = Logger.getLogger(SynchronizeGetOrdersTaskRun.class);

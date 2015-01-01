@@ -16,4 +16,5 @@ public interface ItemInformationMapper {
 
     List<ItemInformationQuery> selectItemInformationByType(Map map, Page page);
 
+    List<ItemInformationQuery> selectItemInformationByOrgId(Map map, Page page);
 }

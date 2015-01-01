@@ -13,8 +13,11 @@ import java.util.Map;
 public interface PayPalService {
     PaypalVO getPaypalBalance(Long paypalId) throws Exception;
 
+    /**修改paypal帐号为已验证*/
+    void setPayPalSFCheck(Long paypalId, String sfCheck);
+
     /**获取交易的交易费和杂费*/
-    PaypalVO getTransactionDetails(Map map) throws Exception;
+    Map getTransactionDetails(Map map) throws Exception;
 
     /**获取paypal账户列表*/
     List<UsercontrollerPaypalAccount> queryPayPalList(Map map, Page page);
@@ -27,7 +30,9 @@ public interface PayPalService {
     /**新增一跳paypal记录*/
     void addPayPalAccount(Map map);
     /**paypal退全款:根据paypal交易号*/
-    String refundTransactionFull(Map map) throws Exception;
+    Map<String, String> refundTransactionFull(Map map) throws Exception;
     /**paypal退半款:根据paypal交易号*/
-    String refundTransactionPartial(Map map) throws Exception;
+    Map<String, String> refundTransactionPartial(Map map) throws Exception;
+
+    List<UsercontrollerPaypalAccount> selectByOrgId();
 }

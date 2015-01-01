@@ -10,7 +10,7 @@
     <select id="queryAllPermission" resultType="com.base.domains.PermissionVO" parameterType="map" >
         select p.permission_id permissionID,p.permission_value permissionURL,p.permission_name permissionName ,
         p.permission_level permissionLevel,p.permission_parent_id parentID,p.menu_class menuClass
-        from usercontroller_permission p WHERE p.permission_id not in(8)
+        from usercontroller_permission p WHERE p.permission_id not in(8,15)
         ORDER BY p.permission_level ,p.permission_id
     </select>
 

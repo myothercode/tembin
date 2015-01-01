@@ -17,7 +17,7 @@ import java.util.List;
 
 /**
  * Created by Administrtor on 2014/8/29.
- * 在线商品每晚执行，定时任务
+ * 每天一次消息message Task列表
  */
 public class SynchronizeGetMessagesTaskRun extends BaseScheduledClass implements Scheduledable {
     static Logger logger = Logger.getLogger(SynchronizeGetMessagesTaskRun.class);

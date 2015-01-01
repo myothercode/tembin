@@ -48,7 +48,7 @@ public class SynchronizeUserListingPicUrlImpl implements ThreadPoolBaseInterFace
         try {
             ebpAck = SamplePaseXml.getVFromXmlString(ebpRes, "Ack");
             if ("Success".equalsIgnoreCase(ebpAck) || "Warning".equalsIgnoreCase(ebpAck)) {
-                Document document= DocumentHelper.parseText(ebpRes);
+                Document document= SamplePaseXml.formatStr2Doc(ebpRes);
                 Element rootElt = document.getRootElement();
                 Element picelt = rootElt.element("SiteHostedPictureDetails");
                 String fullUrl = picelt.elementText("FullURL");

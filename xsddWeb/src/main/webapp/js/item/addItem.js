@@ -377,6 +377,10 @@ function selectTimer(obj){
 }
 /**保存并提交*/
 function saveData(objs,name) {
+    if($("#sku").val()==null||$("#sku").val()==""){
+        alert("未输入SKU");
+        return;
+    }
     if($("input[type='radio'][name='buyerId']:checked").val()==null||$("input[type='radio'][name='buyerId']:checked").val()==""){
         alert("买家要求未选择");
         return ;
@@ -496,7 +500,13 @@ function saveData(objs,name) {
         },
             function (m, r) {
                 Base.token();
-                alert(r)
+                var json = eval("(" + r + ")");
+                if(json.isFlag=="1"){
+                    $("#id").val(json.tradingItemId);
+                    alert(json.message)
+                }else{
+                    alert(r);
+                }
                 $(objs).attr("disabled",false);
                 //document.location = path+"/itemManager.do";
             }],{isConverPage:true}

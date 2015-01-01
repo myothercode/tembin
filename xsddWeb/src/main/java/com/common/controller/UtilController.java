@@ -552,6 +552,8 @@ i++;
                 /*modelMap.put("ebayAccount", uea.getEbayAccount());*/
                 TradingProgress tps = this.iKeyMoveProgress.selectById(kmpq.getProgressId());
                 kmpq.setStartDate(DateUtils.secondsBetween(tps.getStartDate(), tps.getEndDate())+"");
+                kmpq.setStartDateStr(DateUtils.formatDateTime(tps.getStartDate()));
+                kmpq.setSiteName(DataDictionarySupport.getTradingDataDictionaryByID(Long.parseLong(kmpq.getSiteId())).getName());
                 /*modelMap.put("startDate", DateUtils.secondsBetween(tps.getStartDate(), tps.getEndDate()));*/
             }
         }

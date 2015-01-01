@@ -18,7 +18,7 @@ import java.util.*;
 public class GetOrdersAPI {
 
     public static Map<String,Object> parseXMLAndSave(String res) throws Exception {
-        Document document= DocumentHelper.parseText(res);
+        Document document= SamplePaseXml.formatStr2Doc(res);
         Element root=document.getRootElement();
         Element orderArray=root.element("OrderArray");
         String totalPage=SamplePaseXml.getSpecifyElementText(root,"PaginationResult","TotalNumberOfPages");

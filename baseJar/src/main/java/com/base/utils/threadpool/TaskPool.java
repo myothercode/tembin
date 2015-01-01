@@ -2,11 +2,16 @@ package com.base.utils.threadpool;
 
 import com.base.database.trading.model.TradingOrderGetOrders;
 import com.base.utils.applicationcontext.ApplicationContextUtil;
+import com.base.utils.common.DateUtils;
 import com.base.utils.exception.MyUncaughtExceptionHandler;
+import com.base.utils.scheduleabout.MainTask;
 import com.base.utils.scheduleother.domain.SCBaseVO;
+import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.util.concurrent.ListenableFuture;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -17,6 +22,7 @@ import java.util.concurrent.*;
  * 线程池
  */
 public class TaskPool {
+    static Logger logger = Logger.getLogger(TaskPool.class);
     /**刊登任务
     public static final String LISTINGITEM_TASK="listingitem_task";
 
@@ -80,12 +86,43 @@ public class TaskPool {
         boolean b = false;
         for (int i = 0; i < threads.length; i++) {
             Thread thread = threads[i];
-            if (thread.getName().equals(tname) && thread.isAlive()) {
-                b = true;
+            if (thread!=null && tname.equals(thread.getName()) && thread.isAlive()) {
+                String x=thread.getState().toString();//指定线程的状态
+                if("RUNNABLE".equalsIgnoreCase(x)){
+                    b = true;
+                }else if("WAITING".equalsIgnoreCase(x)){
+                    try {
+                        thread.interrupt();
+                        thread.stop(new RuntimeException("===hh=="));
+                    } catch (Exception e) {
+                        //logger.error("线程强制停止!");
+                    }
+                    b=false;
+                }
+                else {
+                    String nam= StringUtils.replaceOnce(tname,"thread_","");
+                    Date lastTime= MainTask.taskRunTime.get(nam);
+                    if(lastTime!=null){
+                        int c= DateUtils.minuteBetween(lastTime, new Date());
+                        if(c<30){
+                            try {
+                                thread.stop(new RuntimeException("===hh=="));
+                            } catch (Exception e) {
+                                logger.error("线程超时强制停止!");
+                            }
+                        }
+                    }
+
+                }
+
+
             }
         }
         return b;
     }
+
+
+
 
 }
 

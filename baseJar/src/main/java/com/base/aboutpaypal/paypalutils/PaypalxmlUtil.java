@@ -2,10 +2,10 @@ package com.base.aboutpaypal.paypalutils;
 
 import com.base.aboutpaypal.domain.PaypalVO;
 import com.base.database.trading.model.UsercontrollerPaypalAccount;
+import com.base.utils.xmlutils.SamplePaseXml;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.dom4j.Document;
-import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 
 /**
@@ -22,11 +22,13 @@ String xml="<soapenv:Envelope  xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/e
         "        <ebl:Username>"+uspa.getApiUserName()+"</ebl:Username>\n" +
         "        <ebl:Password>"+uspa.getApiPassword()+"</ebl:Password>\n" +
         "        <ebl:Signature>"+uspa.getApiSignature()+"</ebl:Signature>\n" +
+        "        <ebl:Subject>"+uspa.getEmail()+"</ebl:Subject>\n" +
         "      </ebl:Credentials>\n" +
-       /* "      <ebl:Credentials>\n" +
-        "        <ebl:Username>caixu23_api1.gmail.com</ebl:Username>\n" +
-        "        <ebl:Password>1403687298</ebl:Password>\n" +
-        "        <ebl:Signature>AFcWxV21C7fd0v3bYYYRCpSSRl31ApdkglpEIkJRC2nCSqYF.9ncdnXs</ebl:Signature>\n" +
+
+/*        "      <ebl:Credentials>\n" +
+        "        <ebl:Username>payment_api1.tembin.com</ebl:Username>\n" +
+        "        <ebl:Password>PM8MXQ27DKPUCZH3</ebl:Password>\n" +
+        "        <ebl:Signature></ebl:Signature>\n" +
         "      </ebl:Credentials>\n" +*/
         "    </ns:RequesterCredentials>\n" +
         "  </soapenv:Header>\n" +
@@ -46,9 +48,16 @@ String xml="<soapenv:Envelope  xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/e
     /**解析paypal余额返回的xml*/
     public static PaypalVO getBalance(String xml) throws Exception {
         Element element=getSpecElement(xml,"Body","GetBalanceResponse","Balance");
+        Element ack=getSpecElement(xml,"Body","GetBalanceResponse","Ack");
         PaypalVO paypalVO=new PaypalVO();
-        paypalVO.setBalance(element.getTextTrim());
-        paypalVO.setUnitName(element.attributeValue("currencyID"));
+        if(ack!=null){paypalVO.setAck(ack.getTextTrim());}
+        if ( "Success".equalsIgnoreCase(paypalVO.getAck()) ){
+            paypalVO.setBalance(element.getTextTrim());
+            paypalVO.setUnitName(element.attributeValue("currencyID"));
+        }else {
+            logger.error("获取paypal余额失败"+xml);
+        }
+
         return paypalVO;
     }
 
@@ -61,18 +70,20 @@ String xml="<soapenv:Envelope  xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/e
                 "        <ebl:Username>"+uspa.getApiUserName()+"</ebl:Username>\n" +
                 "        <ebl:Password>"+uspa.getApiPassword()+"</ebl:Password>\n" +
                 "        <ebl:Signature>"+uspa.getApiSignature()+"</ebl:Signature>\n" +
+                "        <ebl:Subject>"+uspa.getEmail()+"</ebl:Subject>\n" +
                 "      </ebl:Credentials>\n" +
-                /*"      <ebl:Credentials>\n" +
-                "        <ebl:Username>caixu23_api1.gmail.com</ebl:Username>\n" +
-                "        <ebl:Password>1403687298</ebl:Password>\n" +
-                "        <ebl:Signature>AFcWxV21C7fd0v3bYYYRCpSSRl31ApdkglpEIkJRC2nCSqYF.9ncdnXs</ebl:Signature>\n" +
+           /*     "      <ebl:Credentials>\n" +
+                "        <ebl:Username>payment_api1.tembin.com</ebl:Username>\n" +
+                "        <ebl:Password>PM8MXQ27DKPUCZH3</ebl:Password>\n" +
+                "        <ebl:Signature>AFcWxV21C7fd0v3bYYYRCpSSRl31AK2RZxSioHeU5VTvyufB3.eLT7r6</ebl:Signature>\n" +
+                "        <ebl:Subject>chinatown288-1@hotmail.com</ebl:Subject>\n" +
                 "      </ebl:Credentials>\n" +*/
                 "    </ns:RequesterCredentials>\n" +
                 "  </soapenv:Header>\n" +
                 "  <soapenv:Body>\n" +
                 "    <ns:GetTransactionDetailsReq>\n" +
                 "      <ns:GetTransactionDetailsRequest>\n" +
-                "        <ns:TransactionID>"+paypalVO.getTransactionID()+"</ns:TransactionID>\n" +
+                "        <ns:TransactionID>9TL975193F6782705</ns:TransactionID>\n" +
                 "        <ebl:Version>94.0</ebl:Version>\n" +
                 "      </ns:GetTransactionDetailsRequest>\n" +
                 "    </ns:GetTransactionDetailsReq>\n" +
@@ -102,6 +113,10 @@ String xml="<soapenv:Envelope  xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/e
 
             paypalVO.setTaxAmount(payelement.element("TaxAmount").getTextTrim());
             paypalVO.setTaxAmountUnit(payelement.element("TaxAmount").attributeValue("currencyID"));
+        }else{
+            Element message1=getSpecElement(resXML,"Body","GetTransactionDetailsResponse","Errors","LongMessage");
+            String message=message1.getTextTrim();
+            logger.error("paypal费用失败:"+message);
         }
         return paypalVO;
     }
@@ -109,7 +124,7 @@ String xml="<soapenv:Envelope  xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/e
 
     /**获取指定的节点(指定获取单个的节点)*/
     public static Element getSpecElement(String xml,String... nodes) throws Exception {
-        Document document= DocumentHelper.parseText(xml);
+        Document document= SamplePaseXml.formatStr2Doc(xml);
         Element rootElt = document.getRootElement();
         Element element=null;
 
@@ -131,6 +146,7 @@ String xml="<soapenv:Envelope  xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/e
                 "        <ebl:Username>"+uspa.getApiUserName()+"</ebl:Username>\n" +
                 "        <ebl:Password>"+uspa.getApiPassword()+"</ebl:Password>\n" +
                 "        <ebl:Signature>"+uspa.getApiSignature()+"</ebl:Signature>\n" +
+                "        <ebl:Subject>"+uspa.getEmail()+"</ebl:Subject>\n" +
                 "      </ebl:Credentials>\n" +
                 "    </ns:RequesterCredentials>\n" +
                 "  </soapenv:Header>\n" +
@@ -156,6 +172,7 @@ String xml="<soapenv:Envelope  xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/e
                 "        <ebl:Username>"+uspa.getApiUserName()+"</ebl:Username>\n" +
                 "        <ebl:Password>"+uspa.getApiPassword()+"</ebl:Password>\n" +
                 "        <ebl:Signature>"+uspa.getApiSignature()+"</ebl:Signature>\n" +
+                "        <ebl:Subject>"+uspa.getEmail()+"</ebl:Subject>\n" +
                 "      </ebl:Credentials>\n" +
                 "    </ns:RequesterCredentials>\n" +
                 "  </soapenv:Header>\n" +

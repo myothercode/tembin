@@ -3,6 +3,12 @@ package com.base.xmlpojo.trading.addproduct;
 import com.base.utils.xmlutils.PojoXmlUtil;
 import com.base.xmlpojo.trading.addproduct.attrclass.*;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.ProtocolException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -579,8 +585,52 @@ public class TextXml {
         System.out.println(url.substring(url.lastIndexOf("_")+1,url.lastIndexOf(".")));
         System.out.println(url.substring(0,url.lastIndexOf("_")+1));
         System.out.println(url.substring(url.lastIndexOf(".")));*/
+/*
         Random r = new Random();
         System.out.println(r.nextInt(10));
+*/
+
+        URL url = null;
+        try {
+            url = new URL("http://i1280.photobucket.com/albums/a492/searchfred/All_pic/ZBQ854/164911_zps80c111b0.jpg");
+            url = new URL("http://i1280.photobucket.com/albums/a492/searchfred/All_pic/ZBQ854/64924_zps22bac23c.jpg");
+            url = new URL("http://i1280.photobucket.com/albums/a492/searchfred/All_pic/ZBQ854/1_zps9a690266.jpg");
+            url = new URL("http://i1280.photobucket.com/albums/a492/searchfred/All_pic/ZBQ854/_DSC0356_zps256323ee.jpg");
+            url = new URL("http://i1280.photobucket.com/albums/a492/searchfred/All_pic/ZBQ854/_DSC0319_zps5cfbe2ba.jpg");
+            url = new URL("http://i1280.photobucket.com/albums/a492/searchfred/All_pic/ZBQ854/_DSC0316_zps2f4b6260.jpg");
+            url = new URL("http://i1280.photobucket.com/albums/a492/searchfred/All_pic/ZBQ854/_DSC0313_zps7374c874.jpg");
+            url = new URL("http://i1280.photobucket.com/albums/a492/searchfred/All_pic/ZBQ854/_DSC0310_zps4b06b7cf.jpg");
+            System.out.println("Bbbbbbbbbbbbbbbbbbbbb");
+            url = new URL("http://i1280.photobucket.com/albums/a492/searchfred/All_pic/ZBQ854/_DSC0309_zps0e223539.jpg");
+            url = new URL("http://i1280.photobucket.com/albums/a492/searchfred/All_pic/ZBQ854/_DSC0308_zpse93f31a8.jpg");
+            url = new URL("http://i1280.photobucket.com/albums/a492/searchfred/All_pic/ZBQ854/_DSC0357_zpsdb59093e.jpg");
+            url = new URL("http://i1280.photobucket.com/albums/a492/searchfred/All_pic/ZBQ854/_DSC0353_zpsab957dd1.jpg");
+            System.out.println("aaaaaaaaaaaaaaaaaaaaa");
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        }
+        //打开链接
+        HttpURLConnection conn = null;
+        try {
+            conn = (HttpURLConnection) url.openConnection();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        //设置请求方式为"GET"
+        try {
+            conn.setRequestMethod("GET");
+        } catch (ProtocolException e) {
+            e.printStackTrace();
+        }
+        //超时响应时间为5秒
+        conn.setConnectTimeout(5 * 1000);
+        //通过输入流获取图片数据
+        InputStream inStream = null;
+        try{
+            inStream = conn.getInputStream();
+        }catch(Exception e){
+            e.printStackTrace();
+        }
     }
 
     /**

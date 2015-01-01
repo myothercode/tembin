@@ -48,7 +48,7 @@ function addDvi(){
     if(n%2 ==0){
         className="divl_buju_right";
     }
-    var div="<div id="+id+" class="+className+" style=\"width: 250px;height:160px\">1</div>";
+    var div="<div id="+id+" class="+className+" style=\"width: 270px;height:160px\">1</div>";
     $('#mainDiv').append(div);
     return id;
 }

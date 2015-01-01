@@ -16,6 +16,7 @@ import com.base.userinfo.service.impl.SystemUserManagerServiceImpl;
 import com.base.utils.annotations.AvoidDuplicateSubmission;
 import com.base.utils.cache.DataDictionarySupport;
 import com.base.utils.cache.SessionCacheSupport;
+import com.base.utils.common.ConvertPOJOUtil;
 import com.base.utils.common.ObjectUtils;
 import com.base.utils.xmlutils.PojoXmlUtil;
 import com.base.xmlpojo.trading.addproduct.CalculatedShippingRate;
@@ -25,6 +26,7 @@ import com.base.xmlpojo.trading.addproduct.ShippingServiceOptions;
 import com.common.base.utils.ajax.AjaxSupport;
 import com.common.base.web.BaseAction;
 import com.trading.service.*;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -62,6 +64,12 @@ public class ShippingDetailsController extends BaseAction{
     private IUsercontrollerEbayAccount iUsercontrollerEbayAccount;
     @Autowired
     private SystemUserManagerService systemUserManagerService;
+    @Autowired
+    private ITradingShippingServiceOptionsDoc iTradingShippingServiceOptionsDoc;
+    @Autowired
+    private ITradingInternationalShippingServiceOptionDoc iTradingInternationalShippingServiceOptionDoc;
+    @Autowired
+    private ITradingItem iTradingItem;
 
     /**
      * 查询数据并展示
@@ -71,7 +79,8 @@ public class ShippingDetailsController extends BaseAction{
      */
     @RequestMapping("/ajax/loadShippingDetailsList.do")
     @ResponseBody
-    public void loadShippingDetailsList(HttpServletRequest request,ModelMap modelMap,CommonParmVO commonParmVO){
+    public void loadShippingDetailsList(HttpServletRequest request,ModelMap modelMap,CommonParmVO commonParmVO) throws Exception {
+        String docId = request.getParameter("docId");
         SessionVO c= SessionCacheSupport.getSessionVO();
         Map m = new HashMap();
         if(systemUserManagerService.isAdminRole()){
@@ -87,31 +96,78 @@ public class ShippingDetailsController extends BaseAction{
         }
         String checkFlag = request.getParameter("checkFlag");
         m.put("checkFlag",checkFlag);
+        TradingItem tradingItem= null;
+        if(StringUtils.isNotEmpty(docId)){
+            tradingItem=this.iTradingItem.selectById(Long.parseLong(docId));
+        }
         /**分页组装*/
         PageJsonBean jsonBean=commonParmVO.getJsonBean();
         Page page=jsonBean.toPage();
         List<ShippingdetailsQuery> lisq = this.iTradingShippingDetails.selectByShippingdetailsQuery(m,page);
+        List<TradingShippingserviceoptionsDoc> litsd = null;
+        List<TradingInternationalshippingserviceoptionDoc> liinter = null;
+        if(StringUtils.isNotEmpty(docId)) {
+            litsd = this.iTradingShippingServiceOptionsDoc.slectByParentIdDocId(Long.parseLong(docId));
+            liinter = this.iTradingInternationalShippingServiceOptionDoc.selectByParentIdDocId(Long.parseLong(docId));
+        }
         for(ShippingdetailsQuery sq:lisq){
-            List<TradingShippingserviceoptions> lits = this.iTradingShippingServiceOptions.selectByParentId(sq.getId());
-            for(TradingShippingserviceoptions ts: lits){
-                if(ts.getShippingservice()!=null){
-                    TradingDataDictionary tdds = DataDictionarySupport.getTradingDataDictionaryByID(Long.parseLong(ts.getShippingservice()));
-                    if(tdds!=null) {
-                        ts.setShippingservice(tdds.getName());
+            if(StringUtils.isNotEmpty(docId)&&sq.getId().equals(tradingItem.getShippingDeailsId())&&(litsd.size()>0||liinter.size()>0)){
+                //国内运输选项
+                List<TradingShippingserviceoptions> lits = new ArrayList<TradingShippingserviceoptions>();
+                for(TradingShippingserviceoptionsDoc tsd:litsd){
+                    TradingShippingserviceoptions ts = new TradingShippingserviceoptions();
+                    if(tsd.getShippingservice()!=null){
+                        TradingDataDictionary tdds = DataDictionarySupport.getTradingDataDictionaryByID(Long.parseLong(tsd.getShippingservice()));
+                        if(tdds!=null){
+                            ts.setOptionId(Long.parseLong(tsd.getShippingservice()));
+                            tsd.setShippingservice(tdds.getName());
+                        }
+                    }
+                    ConvertPOJOUtil.convert(ts,tsd);
+                    ts.setId(tsd.getSourceId());
+                    lits.add(ts);
+                }
+                sq.setLits(lits);
+                //国际运输
+                List<TradingInternationalshippingserviceoption> liin = new ArrayList<TradingInternationalshippingserviceoption>();
+                for(TradingInternationalshippingserviceoptionDoc inter:liinter){
+                    TradingInternationalshippingserviceoption ins = new TradingInternationalshippingserviceoption();
+                    if(inter.getShippingservice()!=null){
+                        TradingDataDictionary tdds = DataDictionarySupport.getTradingDataDictionaryByID(Long.parseLong(inter.getShippingservice()));
+                        if(tdds!=null){
+                            ins.setOptionId(Long.parseLong(inter.getShippingservice()));
+                            inter.setShippingservice(tdds.getName());
+                        }
+                    }
+                    ConvertPOJOUtil.convert(ins,inter);
+                    ins.setId(inter.getSourceId());
+                    liin.add(ins);
+                }
+                sq.setLiti(liin);
+            }else{
+                List<TradingShippingserviceoptions> lits = this.iTradingShippingServiceOptions.selectByParentId(sq.getId());
+                for (TradingShippingserviceoptions ts : lits) {
+                    if (ts.getShippingservice() != null) {
+                        TradingDataDictionary tdds = DataDictionarySupport.getTradingDataDictionaryByID(Long.parseLong(ts.getShippingservice()));
+                        if (tdds != null) {
+                            ts.setOptionId(Long.parseLong(ts.getShippingservice()));
+                            ts.setShippingservice(tdds.getName());
+                        }
                     }
                 }
-            }
-            sq.setLits(lits);
-            List<TradingInternationalshippingserviceoption> liin = this.iTradingInternationalShippingServiceOption.selectByParentid(sq.getId());
-            for(TradingInternationalshippingserviceoption in: liin){
-                if(in.getShippingservice()!=null){
-                    TradingDataDictionary tdds = DataDictionarySupport.getTradingDataDictionaryByID(Long.parseLong(in.getShippingservice()));
-                    if(tdds!=null) {
-                        in.setShippingservice(tdds.getName());
+                sq.setLits(lits);
+                List<TradingInternationalshippingserviceoption> liin = this.iTradingInternationalShippingServiceOption.selectByParentid(sq.getId());
+                for (TradingInternationalshippingserviceoption in : liin) {
+                    if (in.getShippingservice() != null) {
+                        TradingDataDictionary tdds = DataDictionarySupport.getTradingDataDictionaryByID(Long.parseLong(in.getShippingservice()));
+                        if (tdds != null) {
+                            in.setOptionId(Long.parseLong(in.getShippingservice()));
+                            in.setShippingservice(tdds.getName());
+                        }
                     }
                 }
+                sq.setLiti(liin);
             }
-            sq.setLiti(liin);
         }
         jsonBean.setList(lisq);
         jsonBean.setTotal((int)page.getTotalCount());

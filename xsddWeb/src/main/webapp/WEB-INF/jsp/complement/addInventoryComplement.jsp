@@ -15,6 +15,7 @@
           <c:url value="/css/basecss/conter.css"/> type="text/css" rel="stylesheet"/>
     <link rel="stylesheet" type="text/css" href="<c:url value ="/js/select2/select2.css" />"/>
     <script type="text/javascript" src=<c:url value ="/js/select2/select2.min.js" /> ></script>
+    <script type="text/javascript" src=<c:url value ="/js/select2/mySelect2.js" /> ></script>
     <title></title>
     <script>
         var api = frameElement.api, W = api.opener;
@@ -65,43 +66,42 @@
         function winCloseSetEbay(){
             W.inventorycomplement.close();
         }
+        function selectQuery(query){
+            var content = query.term;
+            var data = {results: []};
+            if (content && content != "") {
+                var url = path + "/inventory/ajax/loadInventorySkuList.do";
+                $().delayInvoke(url, {"content":content},
+                        [function (m, r) {
+                            for (var i = 0; i < r.length; i++) {
+                                preload_data[i] = { id: r[i].sku, text: r[i].sku, text1: r[i].sku};
+                            }
+                            $.each(preload_data, function () {
+                                if (query.term.length == 0 || this.text.toUpperCase().indexOf(query.term.toUpperCase()) >= 0) {
+                                    data.results.push({id: this.id, text: this.text });
+                                }
+                            });
+                            query.callback(data);
+                            preload_data = new Array();
+                        },
+                            function (m, r) {
+                                alert(r);
+                            }]
+                );
+            } else {
+                var data = {results: []};
+                $.each(preload_data, function () {
+                    if (query.term.length == 0 || this.text.toUpperCase().indexOf(query.term.toUpperCase()) >= 0) {
+                        data.results.push({id: this.id, text: this.text });
+                    }
+                });
+                query.callback(data);
+            }
+        }
         //初始化选择框
         function initSelectMore(){
-            $('.multiSelect').select2({
-                multiple: true,
-                query: function (query) {
-                    var content = query.term;
-                    var data = {results: []};
-                    if (content && content != "") {
-                        var url = path + "/inventory/ajax/loadInventorySkuList.do";
-                        $().delayInvoke(url, {"content":content},
-                                [function (m, r) {
-                                    for (var i = 0; i < r.length; i++) {
-                                        preload_data[i] = { id: r[i].id, text: r[i].sku, text1: r[i].sku};
-                                    }
-                                    $.each(preload_data, function () {
-                                        if (query.term.length == 0 || this.text.toUpperCase().indexOf(query.term.toUpperCase()) >= 0) {
-                                            data.results.push({id: this.id, text: this.text });
-                                        }
-                                    });
-                                    query.callback(data);
-                                    preload_data = new Array();
-                                },
-                                    function (m, r) {
-                                        alert(r);
-                                    }]
-                        );
-                    } else {
-                        var data = {results: []};
-                        $.each(preload_data, function () {
-                            if (query.term.length == 0 || this.text.toUpperCase().indexOf(query.term.toUpperCase()) >= 0) {
-                                data.results.push({id: this.id, text: this.text });
-                            }
-                        });
-                        query.callback(data);
-                    }
-                }
-            });
+            mySelect2I([{url:path+"/inventory/ajax/loadInventorySkuList.do",
+                data:{currInputName:"content"},bs:".multiSelect",multiple:true,fun:selectQuery,maping:{id:"sku",text:"sku"}}]);
         }
     </script>
     <style type="text/css">

@@ -182,7 +182,7 @@ public class MainTask {
     }
 
     /**每天凌晨执行一次的任务比如userInfoServiceMapper.initUseNum todo*/
-    @Scheduled(cron="0 45 3 * * ?")
+    @Scheduled(cron="0 31 3 * * ?")
     //@Scheduled(cron="0/10 * *  * * ?")
     private void doItEveryDay() throws Exception{
         if (isStartTimerTask==null) {

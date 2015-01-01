@@ -1,5 +1,6 @@
 package com.iteminformation.controller;
 
+import com.base.database.publicd.model.PublicItemInformation;
 import com.base.database.publicd.model.PublicUserConfig;
 import com.base.domains.CommonParmVO;
 import com.base.domains.SessionVO;
@@ -109,4 +110,42 @@ public class ItemInformationTypeController extends BaseAction {
         DataDictionarySupport.removePublicUserConfig(type.getUserId());
         AjaxSupport.sendSuccessText("", "操作成功!");
     }
+
+
+    /**
+     * 查询当然用户所在部门，所创建的商品
+     * @param commonParmVO
+     * @param request
+     * @throws Exception
+     */
+    @RequestMapping("/ajax/loadOrgIdItemInformationList.do")
+    @ResponseBody
+    public void loadOrgIdItemInformationList(CommonParmVO commonParmVO,HttpServletRequest request) throws Exception {
+        Map m = new HashMap();
+        String content = request.getParameter("content");
+        SessionVO c= SessionCacheSupport.getSessionVO();
+        m.put("userId",c.getId());
+        m.put("content",content);
+        Page page = new Page();
+        page.setPageSize(10);
+        page.setCurrentPage(1);
+        page.setTotalCount(100);
+        List<ItemInformationQuery> list=iPublicItemInformation.selectItemInformationByOrgId(m, page);
+        AjaxSupport.sendSuccessText("", list);
+    }
+
+    /**
+     * 查询商品详情
+     * @param commonParmVO
+     * @param request
+     * @throws Exception
+     */
+    @RequestMapping("/ajax/loadItemInformationMessage.do")
+    @ResponseBody
+    public void loadItemInformationMessage(CommonParmVO commonParmVO,HttpServletRequest request) throws Exception {
+        String id = request.getParameter("id");
+        PublicItemInformation information=iPublicItemInformation.selectItemInformationByid(Long.valueOf(id));
+        AjaxSupport.sendSuccessText("", information);
+    }
+
 }

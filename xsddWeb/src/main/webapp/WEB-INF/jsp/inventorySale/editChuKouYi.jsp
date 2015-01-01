@@ -55,8 +55,8 @@
             <td><input type="text" disabled class="form-controlsd"  value="${inventory.sku}"/></td>
         </tr>
         <tr>
-            <td>实际库存:</td>
-            <td><input type="text" class="form-controlsd" disabled   value="${inventory.stock}"/></td>
+            <td>可用库存:</td>
+            <td><input type="text" class="form-controlsd" disabled   value="${inventory.availStock}"/></td>
         </tr>
         <tr>
             <td>库存预警值:</td>

@@ -10,6 +10,7 @@ import com.base.xmlpojo.trading.addproduct.attrclass.ShippingServiceAdditionalCo
 import com.base.xmlpojo.trading.addproduct.attrclass.ShippingServiceCost;
 import com.trading.service.ITradingAttrMores;
 import com.trading.service.ITradingDataDictionary;
+import com.trading.service.ITradingInternationalShippingServiceOptionDoc;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,6 +30,8 @@ public class TradingInternationalShippingServiceOptionImpl implements com.tradin
     private ITradingAttrMores iTradingAttrMores;
     @Autowired
     private ITradingDataDictionary iTradingDataDictionary;
+    @Autowired
+    private ITradingInternationalShippingServiceOptionDoc iTradingInternationalShippingServiceOptionDoc;
     @Override
     public void saveInternationalShippingServiceOption(TradingInternationalshippingserviceoption pojo) throws Exception {
         if(pojo.getId()==null) {
@@ -66,29 +69,46 @@ public class TradingInternationalShippingServiceOptionImpl implements com.tradin
         this.tradingInternationalshippingserviceoptionMapper.deleteByExample(tie);
     }
     @Override
-    public List<InternationalShippingServiceOption> toXmlPojo(Long id,TradingShippingdetails tradingShippingdetails) throws Exception {
-
-        TradingInternationalshippingserviceoptionExample tie = new TradingInternationalshippingserviceoptionExample();
-        tie.createCriteria().andParentIdEqualTo(id);
-        List<TradingInternationalshippingserviceoption> litis = this.tradingInternationalshippingserviceoptionMapper.selectByExample(tie);
-        if(litis==null||litis.size()==0)
-            return null;
-        List<InternationalShippingServiceOption>  liisso = new ArrayList();
+    public List<InternationalShippingServiceOption> toXmlPojo(Long id,TradingShippingdetails tradingShippingdetails,Long docId) throws Exception {
+        List<InternationalShippingServiceOption> liisso = new ArrayList();
+        List<TradingInternationalshippingserviceoptionDoc> lidoc = this.iTradingInternationalShippingServiceOptionDoc.selectByParentIdDocId(docId);
         TradingDataDictionary tdd = this.iTradingDataDictionary.selectDictionaryByID(Long.parseLong(tradingShippingdetails.getSite()));
-        for(int i=0;i<litis.size();i++){
-            TradingInternationalshippingserviceoption ti = litis.get(i);
-            InternationalShippingServiceOption isso = new InternationalShippingServiceOption();
-            ConvertPOJOUtil.convert(isso,ti);
-            isso.setShippingService(DataDictionarySupport.getTradingDataDictionaryByID(Long.parseLong(isso.getShippingService())).getValue());
-            isso.setShippingServiceCost(new ShippingServiceCost(tdd.getValue1(),ti.getShippingservicecost()));
-            isso.setShippingServiceAdditionalCost(new ShippingServiceAdditionalCost(tdd.getValue1(), ti.getShippingserviceadditionalcost()));
-            List<TradingAttrMores> litam = this.iTradingAttrMores.selectByParnetid(ti.getId(),"ShipToLocation");
-            List<String> listr = new ArrayList();
-            for(TradingAttrMores tam:litam){
-                listr.add(tam.getValue());
+        if(lidoc==null||lidoc.size()==0) {
+            TradingInternationalshippingserviceoptionExample tie = new TradingInternationalshippingserviceoptionExample();
+            tie.createCriteria().andParentIdEqualTo(id);
+            List<TradingInternationalshippingserviceoption> litis = this.tradingInternationalshippingserviceoptionMapper.selectByExample(tie);
+            if (litis == null || litis.size() == 0)
+                return null;
+            for (int i = 0; i < litis.size(); i++) {
+                TradingInternationalshippingserviceoption ti = litis.get(i);
+                InternationalShippingServiceOption isso = new InternationalShippingServiceOption();
+                ConvertPOJOUtil.convert(isso, ti);
+                isso.setShippingService(DataDictionarySupport.getTradingDataDictionaryByID(Long.parseLong(isso.getShippingService())).getValue());
+                isso.setShippingServiceCost(new ShippingServiceCost(tdd.getValue1(), ti.getShippingservicecost()));
+                isso.setShippingServiceAdditionalCost(new ShippingServiceAdditionalCost(tdd.getValue1(), ti.getShippingserviceadditionalcost()));
+                List<TradingAttrMores> litam = this.iTradingAttrMores.selectByParnetid(ti.getId(), "ShipToLocation");
+                List<String> listr = new ArrayList();
+                for (TradingAttrMores tam : litam) {
+                    listr.add(tam.getValue());
+                }
+                isso.setShipToLocation(listr);
+                liisso.add(isso);
             }
-            isso.setShipToLocation(listr);
-            liisso.add(isso);
+        }else{
+            for(TradingInternationalshippingserviceoptionDoc tid : lidoc){
+                InternationalShippingServiceOption isso = new InternationalShippingServiceOption();
+                ConvertPOJOUtil.convert(isso, tid);
+                isso.setShippingService(DataDictionarySupport.getTradingDataDictionaryByID(Long.parseLong(isso.getShippingService())).getValue());
+                isso.setShippingServiceCost(new ShippingServiceCost(tdd.getValue1(), tid.getShippingservicecost()));
+                isso.setShippingServiceAdditionalCost(new ShippingServiceAdditionalCost(tdd.getValue1(), tid.getShippingserviceadditionalcost()));
+                List<TradingAttrMores> litam = this.iTradingAttrMores.selectByParnetid(tid.getSourceId(), "ShipToLocation");
+                List<String> listr = new ArrayList();
+                for (TradingAttrMores tam : litam) {
+                    listr.add(tam.getValue());
+                }
+                isso.setShipToLocation(listr);
+                liisso.add(isso);
+            }
         }
         return liisso;
     }

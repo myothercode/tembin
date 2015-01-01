@@ -6,6 +6,7 @@ import com.base.database.trading.model.UsercontrollerPaypalAccount;
 import com.base.domains.CommonParmVO;
 import com.base.mybatis.page.Page;
 import com.base.mybatis.page.PageJsonBean;
+import com.base.utils.exception.Asserts;
 import com.common.base.utils.ajax.AjaxSupport;
 import com.common.base.web.BaseAction;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,12 +44,27 @@ public class PaypalController extends BaseAction {
     }
 
 
-    @RequestMapping("getPaypalBalance")
+    @RequestMapping("getPaypalBalance.do")
     @ResponseBody
     /**获取paypal余额*/
     public void getPaypalBalance(CommonParmVO commonParmVO) throws Exception {
         PaypalVO acc = payPalService.getPaypalBalance(commonParmVO.getId());
         AjaxSupport.sendSuccessText("",acc);
+        return;
+    }
+
+    @RequestMapping("getPaypalYanZheng.do")
+    @ResponseBody
+    /**获取余额，用来验证是否授权*/
+    public void getPaypalYanZheng(CommonParmVO commonParmVO) throws Exception {
+        Asserts.assertTrue(commonParmVO.getId()!=null,"id不能为空!");
+        PaypalVO acc = payPalService.getPaypalBalance(commonParmVO.getId());
+        String r="验证失败";
+        if ("Success".equalsIgnoreCase(acc.getAck())){
+            r="验证成功！";
+            payPalService.setPayPalSFCheck(commonParmVO.getId(),"1");
+        }
+        AjaxSupport.sendSuccessText("",r);
         return;
     }
 
@@ -59,7 +75,7 @@ public class PaypalController extends BaseAction {
         Map map =new HashMap();
         map.put("paypalId",commonParmVO.getId());
         map.put("transactionID",commonParmVO.getStrV1());
-        PaypalVO acc = payPalService.getTransactionDetails(map);
+        PaypalVO acc = (PaypalVO) payPalService.getTransactionDetails(map).get("paypal");
         AjaxSupport.sendSuccessText("",acc);
         return;
     }

@@ -3,6 +3,7 @@ package com.base.sampleapixml;
 import com.base.database.trading.model.TradingOrderGetSellerTransactions;
 import com.base.utils.common.DateUtils;
 import com.base.utils.xmlutils.SamplePaseXml;
+import org.apache.commons.lang.StringUtils;
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
@@ -17,7 +18,7 @@ import java.util.List;
 public class GetSellerTransactionsAPI {
     public static List<TradingOrderGetSellerTransactions> parseXMLAndSave(String res) throws Exception {
         List<TradingOrderGetSellerTransactions> list=new ArrayList<TradingOrderGetSellerTransactions>();
-        Document document= DocumentHelper.parseText(res);
+        Document document= SamplePaseXml.formatStr2Doc(res);
         Element root=document.getRootElement();
         Element TransactionArray=root.element("TransactionArray");
         if(TransactionArray!=null){
@@ -69,5 +70,15 @@ public class GetSellerTransactionsAPI {
             }
         }
         return list;
+    }
+    public static Integer parseTotalPage(String res) throws Exception {
+        Document document= SamplePaseXml.formatStr2Doc(res);
+        Element root=document.getRootElement();
+        String totalPage=SamplePaseXml.getSpecifyElementText(root,"PaginationResult","TotalNumberOfPages");
+        Integer total=null;
+        if(StringUtils.isNotBlank(totalPage)){
+            total=Integer.valueOf(totalPage);
+        }
+        return total;
     }
 }

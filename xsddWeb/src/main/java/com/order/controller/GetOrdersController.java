@@ -98,6 +98,8 @@ public class GetOrdersController extends BaseAction {
     private ITradingOrderVariationSpecifics iTradingOrderVariationSpecifics;*/
     @Value("${EBAY.API.URL}")
     private String apiUrl;
+    @Value("${SERVICE_ITEM_URL}")
+    private String SERVICE_ITEM_URL;
    /* SystemLogUtils
     log.setEventname();
     log.setOperuser();
@@ -533,7 +535,7 @@ public class GetOrdersController extends BaseAction {
                     list.setPaypalPaymentTime(transaction.getPaymenttime());
                     list.setExternalTransactionID(transaction.getExternaltransactionid());
                 }
-                String url="http://www.ebay.com/itm/"+list.getItemid();
+                String url=SERVICE_ITEM_URL+list.getItemid();
                 list.setItemUrl(url);
                 if("notAllComplete".equals(status)){
                     list.setFlagNotAllComplete(true);
@@ -576,29 +578,38 @@ public class GetOrdersController extends BaseAction {
             for(TradingOrderGetOrders order:orderses){
                 List<TradingOrderGetSellerTransactions> transactionses=iTradingOrderGetSellerTransactions.selectTradingOrderGetSellerTransactionsByTransactionId(order.getTransactionid());
                 if(transactionses!=null&&transactionses.size()>0){
-                    UsercontrollerEbayAccount u= iUsercontrollerEbayAccount.selectByEbayAccount(order.getSelleruserid());
-                    Map map3 =new HashMap();
-                    map3.put("paypalId",u.getPaypalAccountId());
-                    if(StringUtils.isNotBlank(transactionses.get(0).getExternaltransactionid())){
-                        map3.put("transactionID", transactionses.get(0).getExternaltransactionid());
-                        PaypalVO acc=null;
-                        String palpayPrice="";
-                        try {
-                            acc = payPalService.getTransactionDetails(map3);
-                            if("Failure".equals(acc.getAck())){
-                                logger.error("获取paypal费用失败paypalAmount.do");
+                    String palpayPrice=transactionses.get(0).getPaypalprice();
+                    if(!StringUtils.isNotBlank(palpayPrice)){
+                        UsercontrollerEbayAccount u= iUsercontrollerEbayAccount.selectByEbayAccount(order.getSelleruserid());
+                        Map map3 =new HashMap();
+                        map3.put("paypalId",u.getPaypalAccountId());
+                        if(StringUtils.isNotBlank(transactionses.get(0).getExternaltransactionid())){
+                            map3.put("transactionID", transactionses.get(0).getExternaltransactionid());
+                            map3.put("paypalEmail",order.getSelleremail());
+                            PaypalVO acc=null;
+                            try {
+                                Map map = payPalService.getTransactionDetails(map3);
+                                acc= (PaypalVO) map.get("paypal");
+                                if(acc==null){
+                                    logger.error("paypal账号未验证");
+                                    palpayPrice="账号未验证";
+                                }else if("Failure".equals(acc.getAck())){
+                                    UsercontrollerPaypalAccount account= (UsercontrollerPaypalAccount) map.get("account");
+                                    logger.error("获取paypal费用失败paypalAmount.do,账号:"+account.getPaypalAccount());
+                                    transactionses.get(0).setPaypalprice("");
+                                }else{
+                                    transactionses.get(0).setPaypalprice(acc.getFeeAmount());
+                                    iTradingOrderGetSellerTransactions.saveOrderGetSellerTransactions(transactionses.get(0));
+                                    palpayPrice=acc.getFeeAmount();
+                                }
+                            }catch(Exception e){
+                                logger.error("paypalAmount.do获取paypal费用失败",e);
                                 transactionses.get(0).setPaypalprice("");
-                            }else{
-                                transactionses.get(0).setPaypalprice(acc.getFeeAmount());
-                                iTradingOrderGetSellerTransactions.saveOrderGetSellerTransactions(transactionses.get(0));
-                                palpayPrice=acc.getFeeAmount();
                             }
-                        }catch(Exception e){
-                            logger.error("paypalAmount.do获取paypal费用失败",e);
-                            transactionses.get(0).setPaypalprice("");
+
                         }
-                        palpayAmounts.add(palpayPrice);
                     }
+                    palpayAmounts.add(palpayPrice);
                 }
 
             }
@@ -850,7 +861,7 @@ public class GetOrdersController extends BaseAction {
             AjaxSupport.sendFailText("fail", "只能选择一个选项");
             return;
         }
-        String flag="";
+        Map<String,String> map1=new HashMap<String, String>();
         List<TradingOrderGetOrders> orderses=iTradingOrderGetOrders.selectOrderGetOrdersByTransactionId(transactionid,selleruserid);
         if(orderses!=null&&orderses.size()>0){
             if("Complete".equals(orderses.get(0).getStatus())){
@@ -860,19 +871,19 @@ public class GetOrdersController extends BaseAction {
                 if(lists!=null&&lists.size()>0){
                     if(StringUtils.isNotBlank(fullRefund)){
                         map.put("transactionID",lists.get(0).getExternaltransactionid());
-                        map.put("paypalId",u.getId());
-                        flag=payPalService.refundTransactionFull(map);
+                        map.put("paypalId",u.getPaypalAccountId());
+                        map1=payPalService.refundTransactionFull(map);
                     }
                     if(StringUtils.isNotBlank(partialRefund)){
                         map.put("transactionID",lists.get(0).getExternaltransactionid());
-                        map.put("paypalId",u.getId());
+                        map.put("paypalId",u.getPaypalAccountId());
                         if(StringUtils.isNotBlank(amout)){
                             map.put("money",amout);
                         }else{
                             AjaxSupport.sendFailText("fail", "请填写金额");
                             return;
                         }
-                        flag=payPalService.refundTransactionPartial(map);
+                        map1=payPalService.refundTransactionPartial(map);
                     }
                 }else{
                     AjaxSupport.sendFailText("fail", "PayPal交易号没找到");
@@ -885,92 +896,28 @@ public class GetOrdersController extends BaseAction {
             AjaxSupport.sendFailText("fail", "没找到该订单,请核实");
             return;
         }
-        if("Success".equals(flag)){
+        if(map1==null){
+            systemLog.setEventdesc("退款操作失败");
+            SystemLogUtils.saveLog(systemLog);
+            AjaxSupport.sendFailText("fail", "退款失败,请稍后重试!");
+        }else if(map1.get("flag")!=null&&"Success".equals(map1.get("flag"))){
             systemLog.setEventdesc("退款操作成功");
             SystemLogUtils.saveLog(systemLog);
             AjaxSupport.sendSuccessText("message", "退款成功!");
+        }else if(map1.get("flag")!=null&&"Unverified".equals(map1.get("flag"))){
+            systemLog.setEventdesc("paypal账号未验证");
+            SystemLogUtils.saveLog(systemLog);
+            AjaxSupport.sendFailText("fail", "退款失败,请稍后重试!");
+        }else if(map1.get("flag")!=null&&"Failure".equals(map1.get("flag"))){
+            systemLog.setEventdesc("退款操作失败");
+            SystemLogUtils.saveLog(systemLog);
+            AjaxSupport.sendFailText("fail", map1.get("message"));
         }else{
             systemLog.setEventdesc("退款操作失败");
             SystemLogUtils.saveLog(systemLog);
             AjaxSupport.sendFailText("fail", "退款失败,请稍后重试!");
         }
 
-        /*SessionVO sessionVO= SessionCacheSupport.getSessionVO();
-        SystemLog systemLog=new SystemLog();
-        systemLog.setEventname(SystemLogUtils.ORDER_OPERATE_RECORD);
-        systemLog.setOperuser(sessionVO.getUserName());
-        List<TradingGetUserCases> caseses=iTradingGetUserCases.selectGetUserCasesByTransactionId(transactionid,selleruserid);
-        List<TradingOrderGetOrders> orders=iTradingOrderGetOrders.selectOrderGetOrdersByTransactionId(transactionid,selleruserid);
-        if(StringUtils.isNotBlank(fullRefund)&&StringUtils.isNotBlank(partialRefund)){
-            AjaxSupport.sendFailText("fail","请选择一个");
-            return;
-        }
-        if(caseses==null||caseses.size()==0){
-            AjaxSupport.sendFailText("fail","该订单无纠纷");
-            return;
-        }
-        if(orders==null||orders.size()==0){
-            AjaxSupport.sendFailText("fail","该订单无效,请核实订单");
-            return;
-        }
-        if("Active".equals(orders.get(0).getOrderstatus())){
-            AjaxSupport.sendFailText("fail","该订单未付款");
-            return;
-        }
-        UsercontrollerDevAccountExtend d=new UsercontrollerDevAccountExtend();
-        List<UsercontrollerEbayAccountExtend> dList= userInfoService.getEbayAccountForCurrUser(new HashMap(),Page.newAOnePage());
-        String token=null;
-        for(UsercontrollerEbayAccountExtend list:dList){
-            if(StringUtils.isNotBlank(selleruserid)&&selleruserid.equals(list.getEbayName())){
-                token=list.getEbayToken();
-            }
-        }
-       *//* String token="AgAAAA**AQAAAA**aAAAAA**CLSRUQ**nY+sHZ2PrBmdj6wVnY+sEZ2PrA2dj6AFlYCjDJGCqA+dj6x9nY+seQ**FdYBAA**AAMAAA**w2sMbwlQ7TBHWxj9EsVedHQRI3+lonY9MDfiyayQbnFkjEanjL/yMCpS/D2B9xHRzRx+ppxWZkRPgeAKJvNotPLLrVTuEzOl5M7pi6Tw8+pzcmIEsOh7HQO78JlyFlvLc/ruE6/hG0E/HO1UX76YBwxp00N9f1NNUpo5u36D/TYsx5O2jXFTKkCOHwz6RW9vtN6TU39aLm+JQme2+NfFFXnbX8MHzoUiX7Sty0R88ZpX5wLp8ZdgXCEc5zZDQziYB1MSXF9hsmby5wKbxFF+OvW/zKADThk1gprgAgnEOucyoao+cUMHopLlYgMbjnLzdCXP5F9z+fkYTnKF6AEl5eHBpcKQGbPzswnKebRoBVw+bI2I1C/iq+PvBUyndFAexjrvlDQbEKr6qb6AWRVTTfkW2ce6a0ixRuCTq35zEpWpfAqkSKo+X23d/Q4V8R30rDXotOWDZL6o408cMO+UQ17uVA2arA1JNkYfc/AZ0T0z7ze5o/yp93jJPlDgi05Ut4fpCAMZw3X85GxrTlbEtawWgoyUbmMuv4f6QHZLZAerOaJA8DRJkzkzjJJ025bp1HvAECOc4ggdv0cofu4q96shssgNYYZJUPM+q4+0fnGK0pxQTNY9SV6vSaVCVoTZJo6vefW7OiHX2/eLoPKFuUfsKXXEv9OY71gD1xzYg/rpCMAqCTq1dKqqyT1R5fxANnoRX7vwkq+7jkCj2fAfKTnHi9mSuBFsilKLmnsqqWy3IGShMgdxiQwBEk6IWi9C";
-        *//*
-        d.setSoaSecurityToken(token);
-        d.setHeaderType("DisputeApiHeader");
-        if(caseses!=null&&caseses.size()>0){
-            String caseId=caseses.get(0).getCaseid();
-            String caseType=caseses.get(0).getCasetype();
-            String xml="";
-            //issueFullRefund退全款
-            if(fullRefund!=null){
-                d.setSoaOperationName("issueFullRefund");
-                xml=BindAccountAPI.issueFullRefund(token,caseId,caseType,"");
-            }
-            //issuePartialRefund退半款
-            if(partialRefund!=null){
-                d.setSoaOperationName("issuePartialRefund");
-                xml=BindAccountAPI.issuePartialRefund(token,caseId,caseType,"",amout);
-            }
-            AddApiTask addApiTask = new AddApiTask();
-            Map<String, String> resEbpMap = addApiTask.exec(d, xml, "https://svcs.ebay.com/services/resolution/ResolutionCaseManagementService/v1");
-            String r1 = resEbpMap.get("stat");
-            String res = resEbpMap.get("message");
-            if ("fail".equalsIgnoreCase(r1)) {
-                systemLog.setEventdesc("退款操作失败:调用API失败");
-                SystemLogUtils.saveLog(systemLog);
-                AjaxSupport.sendFailText("fail", res);
-                return;
-            }
-            String ack = SamplePaseXml.getVFromXmlString(res, "ack");
-            if ("Success".equalsIgnoreCase(ack)) {
-                TradingGetUserCases cases=caseses.get(0);
-                cases.setHandled(1);
-                iTradingGetUserCases.saveGetUserCases(cases);
-                systemLog.setEventdesc("退款操作成功");
-                SystemLogUtils.saveLog(systemLog);
-                AjaxSupport.sendSuccessText("message", "退款成功!");
-            }else{
-                String errors = SamplePaseXml.getVFromXmlString(res, "Errors");
-                logger.error("退款失败!" + errors);
-                systemLog.setEventdesc("退款操作失败:调用API失败");
-                SystemLogUtils.saveLog(systemLog);
-                AjaxSupport.sendFailText("fail", "退款失败！请稍后重试");
-            }
-        }else{
-            AjaxSupport.sendFailText("fail","纠纷不存在");
-        }*/
     }
     /*
      *修改订单状态

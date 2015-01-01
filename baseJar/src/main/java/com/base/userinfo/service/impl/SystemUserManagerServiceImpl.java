@@ -75,7 +75,7 @@ public class SystemUserManagerServiceImpl implements SystemUserManagerService {
         UsercontrollerUser u=userMapper.selectByPrimaryKey(uid);
 
         Asserts.assertTrue(u.getUserId()!=curruser&&!u.getUserId().equals(curruser),"管理员帐号不能被停用或者不能停用当前登录的账户");
-        Asserts.assertTrue((u.getUserParentId()==curruser||u.getUserParentId().equals(curruser)),"当前帐号不是管理员帐号不能进行修改操作");
+        Asserts.assertTrue((u.getUserParentId()==null || u.getUserParentId()==curruser||u.getUserParentId().equals(curruser)),"当前帐号不是管理员帐号不能进行修改操作");
 
         /*UsercontrollerUserExample userExample=new UsercontrollerUserExample();
         userExample.createCriteria().andUserIdEqualTo(curruser);*/
@@ -192,6 +192,7 @@ public class SystemUserManagerServiceImpl implements SystemUserManagerService {
 
         Asserts.assertTrue(user1.getUserOrgId().longValue()==sessionVO.getOrgId(),"没有权限修改");
         Asserts.assertTrue(pdRole(1L,sessionVO.getRoleVOList()),"不是管理员角色！");
+        Asserts.assertTrue(sessionVO.getParentId()==0L,"只能由最顶层帐号来做编辑操作!");
 
         UsercontrollerUser user=new UsercontrollerUser();
         user.setUserName(addSubUserVO.getName());

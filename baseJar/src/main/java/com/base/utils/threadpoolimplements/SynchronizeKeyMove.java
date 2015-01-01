@@ -124,7 +124,7 @@ public class SynchronizeKeyMove implements ThreadPoolBaseInterFace {
 
             }
         } catch (Exception e) {
-            logger.error("解析xml出错,请稍后到ebay网站确认结果188"+ebpRes,e);
+            logger.error("解析xml出错,请稍后到ebay网站确认结果188,一键搬家！",e);
             return;
         }
     }

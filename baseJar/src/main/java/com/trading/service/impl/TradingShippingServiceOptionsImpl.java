@@ -10,6 +10,7 @@ import com.base.xmlpojo.trading.addproduct.attrclass.ShippingServiceAdditionalCo
 import com.base.xmlpojo.trading.addproduct.attrclass.ShippingServiceCost;
 import com.base.xmlpojo.trading.addproduct.attrclass.ShippingSurcharge;
 import com.trading.service.ITradingDataDictionary;
+import com.trading.service.ITradingShippingServiceOptionsDoc;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,6 +28,8 @@ public class TradingShippingServiceOptionsImpl implements com.trading.service.IT
     private TradingShippingserviceoptionsMapper tsm;
     @Autowired
     private ITradingDataDictionary iTradingDataDictionary;
+    @Autowired
+    private ITradingShippingServiceOptionsDoc iTradingShippingServiceOptionsDoc;
     @Override
     public void saveShippingServiceOptions(TradingShippingserviceoptions pojo) throws Exception {
         if(pojo.getId()==null) {
@@ -77,21 +80,36 @@ public class TradingShippingServiceOptionsImpl implements com.trading.service.IT
     }
 
     @Override
-    public List<ShippingServiceOptions> toXmlPojo(Long id,TradingShippingdetails tradingShippingdetails) throws Exception {
+    public List<ShippingServiceOptions> toXmlPojo(Long id,TradingShippingdetails tradingShippingdetails,Long docId) throws Exception {
         List<ShippingServiceOptions> lisso = new ArrayList();
-        TradingShippingserviceoptionsExample tse = new TradingShippingserviceoptionsExample();
-        tse.createCriteria().andParentIdEqualTo(id);
-        List<TradingShippingserviceoptions> litsso = this.tsm.selectByExample(tse);
+        List<TradingShippingserviceoptionsDoc> lidoc = this.iTradingShippingServiceOptionsDoc.slectByParentIdDocId(docId);
         TradingDataDictionary tdd = this.iTradingDataDictionary.selectDictionaryByID(Long.parseLong(tradingShippingdetails.getSite()));
-        if(litsso!=null&& litsso.size()>0){
-            for(TradingShippingserviceoptions tsso : litsso){
+        if(lidoc==null||lidoc.size()==0){
+            TradingShippingserviceoptionsExample tse = new TradingShippingserviceoptionsExample();
+            tse.createCriteria().andParentIdEqualTo(id);
+            List<TradingShippingserviceoptions> litsso = this.tsm.selectByExample(tse);
+            if(litsso!=null&& litsso.size()>0){
+                for(TradingShippingserviceoptions tsso : litsso){
+                    ShippingServiceOptions sso = new ShippingServiceOptions();
+                    ConvertPOJOUtil.convert(sso,tsso);
+                    sso.setShippingService(DataDictionarySupport.getTradingDataDictionaryByID(Long.parseLong(sso.getShippingService())).getValue());
+                    sso.setShippingServiceCost(new ShippingServiceCost(tdd.getValue1(),tsso.getShippingservicecost()));
+                    sso.setShippingServiceAdditionalCost(new ShippingServiceAdditionalCost(tdd.getValue1(),tsso.getShippingserviceadditionalcost()));
+                    if(tsso.getShippingsurcharge()!=null&&tsso.getShippingsurcharge()!=0){
+                        sso.setShippingSurcharge(new ShippingSurcharge(tdd.getValue1(),tsso.getShippingsurcharge()));
+                    }
+                    lisso.add(sso);
+                }
+            }
+        }else{
+            for(TradingShippingserviceoptionsDoc doc:lidoc){
                 ShippingServiceOptions sso = new ShippingServiceOptions();
-                ConvertPOJOUtil.convert(sso,tsso);
+                ConvertPOJOUtil.convert(sso,doc);
                 sso.setShippingService(DataDictionarySupport.getTradingDataDictionaryByID(Long.parseLong(sso.getShippingService())).getValue());
-                sso.setShippingServiceCost(new ShippingServiceCost(tdd.getValue1(),tsso.getShippingservicecost()));
-                sso.setShippingServiceAdditionalCost(new ShippingServiceAdditionalCost(tdd.getValue1(),tsso.getShippingserviceadditionalcost()));
-                if(tsso.getShippingsurcharge()!=null&&tsso.getShippingsurcharge()!=0){
-                    sso.setShippingSurcharge(new ShippingSurcharge(tdd.getValue1(),tsso.getShippingsurcharge()));
+                sso.setShippingServiceCost(new ShippingServiceCost(tdd.getValue1(),doc.getShippingservicecost()));
+                sso.setShippingServiceAdditionalCost(new ShippingServiceAdditionalCost(tdd.getValue1(),doc.getShippingserviceadditionalcost()));
+                if(doc.getShippingsurcharge()!=null&&doc.getShippingsurcharge()!=0){
+                    sso.setShippingSurcharge(new ShippingSurcharge(tdd.getValue1(),doc.getShippingsurcharge()));
                 }
                 lisso.add(sso);
             }

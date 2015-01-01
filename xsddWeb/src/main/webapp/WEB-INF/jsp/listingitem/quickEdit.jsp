@@ -41,9 +41,10 @@
 <form id="quireData">
     <input type="hidden" name="listingType" value="${listingType}">
     <div id="itemTable" class="Contentbox">
+        <br>
         <table width="100%">
-            <tr>
-                <td bgcolor="#F7F7F7" height="30">图片</td>
+            <tr style="height: 38px;">
+                <td bgcolor="#F7F7F7" height="30" align="center">图片</td>
                 <td bgcolor="#F7F7F7" height="30">物品ID/SKU</td>
                 <td bgcolor="#F7F7F7" height="30">ebay账户</td>
                 <td bgcolor="#F7F7F7" height="30">标题/子标题</td>
@@ -72,18 +73,18 @@
                     <td>
                             ${tld.itemId}<br>
                         <c:if test="${listingType!='2'}">
-                            <input type="text" name="sku_${idx.index}" size="6" value="${tld.sku}">
+                            <input type="text" style='width:100px;height:27px;margin-top: 5px;margin-bottom: 5px;' class='form-control' name="sku_${idx.index}" size="6" value="${tld.sku}">
                         </c:if>
                     </td>
                     <td>${tld.ebayAccount}</td>
                     <td>
-                        <input type="text" name="title_${idx.index}" value="${tld.title}" size="40">
-                        <br><input type="text" name="subtitle_${idx.index}" value="${tld.subtitle}"  size="40">
+                        <input type="text" class="form-control" style="height:27px;margin-top: 5px;margin-bottom: 5px;" name="title_${idx.index}" value="${tld.title}" size="40">
+                        <br><input type="text"  class="form-control" style="height:27px;margin-top: 5px;margin-bottom: 5px;" name="subtitle_${idx.index}" value="${tld.subtitle}"  size="40">
                     </td>
                     <c:if test="${listingType=='Chinese'}">
-                        <td><input type="text" name="buyitnowprice_${idx.index}" value="${tld.buyitnowprice}" size="2">USD</td>
-                        <td><input type="text" name="price_${idx.index}" value="${tld.price}" size="2">USD</td>
-                        <td><input type="text" name="reserveprice_${idx.index}" value="${tld.reserveprice}" size="2">USD</td>
+                        <td><input type="text" name="buyitnowprice_${idx.index}" value="${tld.buyitnowprice}" size="2"><span style="line-height: 27px;">${tld.listingduration}</span></td>
+                        <td><input type="text" name="price_${idx.index}" value="${tld.price}" size="2"><span style="line-height: 27px;">${tld.listingduration}</span></td>
+                        <td><input type="text" name="reserveprice_${idx.index}" value="${tld.reserveprice}" size="2"><span style="line-height: 27px;">${tld.listingduration}</span></td>
                         <td>
                             <select>
                                 <option>单独物品</option>
@@ -96,8 +97,8 @@
 
                     </c:if>
                     <c:if test="${listingType=='FixedPriceItem'}">
-                        <td><input type="text" value="${tld.price}" name="price_${idx.index}" size="2">USD</td>
-                        <td bgcolor="#F7F7F7" height="30"><input type="text" name="quantity_${idx.index}" value="${tld.quantity}" size="2"></td>
+                        <td><input type="text" value="${tld.price}"  class='newinputt' name="price_${idx.index}" size="2"><span style="line-height: 27px;">${tld.listingduration}</span></td>
+                        <td height="30"><input type="text"  class='newinputt' name="quantity_${idx.index}" value="${tld.quantity}" size="2"></td>
                     </c:if>
                 </tr>
             </c:forEach>
@@ -107,8 +108,8 @@
 <div>
     <div class="control-group" style="text-align: right;">
         <div class="controls">
-            <button class="btn btn-success" onclick="submit();">确定</button>
-            <button class="btn btn-success" onclick="closeWin();">关闭</button>
+            <button class="net_put" onclick="submit();">确定</button>
+            <button class="net_put_1" onclick="closeWin();">关闭</button>
         </div>
     </div>
 </div>

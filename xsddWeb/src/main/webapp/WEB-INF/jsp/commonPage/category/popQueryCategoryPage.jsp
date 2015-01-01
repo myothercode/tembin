@@ -14,6 +14,11 @@
     <script>
         var title = '${title}';
     </script>
+    <style type="text/css">
+        body {
+            background-color: #ffffff;
+        }
+    </style>
 </head>
 <body>
 <div style="height: 32px;"></div>
@@ -28,8 +33,8 @@
 <div id="rese1">
 
 </div>
-<div  style="text-align: left;padding-top: 50px;padding-right: 10px;width: 160px;">
-    <input style="text-align: left;padding-left: 5px;" type="button" value="确定" onclick="que()">
+<div style="text-align: right;margin-top: 10px;">
+    <button type="button" class="net_put" onclick="que()">确定</button>
 </div>
 </body>
 </html>

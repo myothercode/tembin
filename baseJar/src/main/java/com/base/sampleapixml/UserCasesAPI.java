@@ -16,7 +16,7 @@ public class UserCasesAPI {
     public static Map<String,Object> parseXMLAndSave(String res) throws Exception {
         Map<String,Object> map=new HashMap<String, Object>();
         List<TradingGetUserCases> list=new ArrayList<TradingGetUserCases>();
-        Document document= DocumentHelper.parseText(res);
+        Document document= SamplePaseXml.formatStr2Doc(res);
         Element root=document.getRootElement();
         Element cases=root.element("cases");
         if(cases!=null){

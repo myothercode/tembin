@@ -232,7 +232,7 @@ function loadShippingDeails(){
         return;
     }
     $("#shippingDeails").initTable({
-        url: path + "/ajax/loadShippingDetailsList.do?checkFlag=0",
+        url: path + "/ajax/loadShippingDetailsList.do?checkFlag=0&docId="+docId,
         columnData: [
             {title: "选项", name: "option1", width: "8%", align: "left", format: returnShippingDeails},
             {title:"名称",name:"shippingName",width:"8%",align:"left"},
@@ -1118,4 +1118,115 @@ function setTemplate(obj){
 
 function clearAllPic(obj){
     $(obj).parent().parent().parent().find("li").remove();
+}
+
+
+function querySelect(query){
+    var preload_data = Array();
+    var content = query.term;
+    var data = {results: []};
+    if (content && content != "") {
+        var url = path + "/informationType/ajax/loadOrgIdItemInformationList.do";
+        $().delayInvoke(url, {"content":content},
+            [function (m, r) {
+                for (var i = 0; i < r.length; i++) {
+                    preload_data[i] = { id: r[i].id, text: r[i].sku, text1: r[i].sku};
+                }
+                if(preload_data.length==0){
+                    preload_data[0] = { id: null, text: content, text1: content};
+                }
+                $.each(preload_data, function () {
+                    if (query.term.length == 0 || this.text.toUpperCase().indexOf(query.term.toUpperCase()) >= 0) {
+                        data.results.push({id: this.id, text: this.text });
+                    }
+                });
+                query.callback(data);
+                preload_data = new Array();
+            },
+                function (m, r) {
+                    alert(r);
+                }]
+        );
+    } else {
+        var data = {results: []};
+        $.each(preload_data, function () {
+            if (query.term.length == 0 || this.text.toUpperCase().indexOf(query.term.toUpperCase()) >= 0) {
+                data.results.push({id: this.id, text: this.text });
+            }
+        });
+        query.callback(data);
+    }
+}
+//初始化选择框
+function initSelectMore(){
+    var preload_data = new Array();
+    mySelect2I([{url:path+"/informationType/ajax/loadOrgIdItemInformationList.do",
+        data:{currInputName:"content"},bs:".multiSelect",multiple:false,fun:querySelect,maping:{id:"sku",text:"sku"}}]);
+    $('.multiSelect').on("change", function(e) {
+        var sku = e.added.text;
+        var id = e.added.id;
+        _sku = sku;
+        $("#sku").val(sku);
+        isShowPicLink();
+        //加载商品图片
+        var ss = new Array() ;
+        var ahref = $("#showPics").find("a");
+        var j=0;
+        for(var i = 0;i<ahref.length;i++){
+            if(ahref[i].id!=null&&ahref[i].id!=""){
+                ss[j]=ahref[i].id.substr(ahref[i].id.indexOf("_")+1,ahref[i].id.length);
+                j++;
+            }
+        }
+
+        if(id==null){
+            $("#itemName").val("");
+            $("#Title").val("");
+            $("#PrimaryCategory").val("");
+            $("#PrimaryCategoryshow").text("");
+            $("#PrimaryCategoryshow").hide();
+            for(var js = 0;js<ss.length;js++){
+                $("#picture_"+ss[js]).html("");
+            }
+            $("#picNumber").text("0");
+            return ;
+        }
+        //加载商品详情到范本编辑界面
+        var url = path + "/informationType/ajax/loadItemInformationMessage.do";
+        $().delayInvoke(url, {"id":id},
+            [function (m, r) {
+                if($("#itemName").val()==""){
+                    $("#itemName").val(r.name);
+                }
+                $("#Title").val(r.name);
+                $("#PrimaryCategory").val(r.typeId);
+                addTypeAttr();
+            },
+                function (m, r) {
+                    alert(r);
+                }]
+        );
+        var urll = path+"/information/ajax/getPicList.do?informationid="+id;
+        $().invoke(
+            urll,
+            {},
+            [function (m, r) {
+                for(var js = 0;js<ss.length;js++){
+                    var str = '';
+                    for(var i =0;i< r.length;i++){
+                        str += '<li><div style="position:relative"><input type="hidden" name="pic_mackid" value="'+r[i].uuid+'"/><input type="hidden" name="PictureDetails_'+ ss[js]+'.PictureURL" value="' + r[i].attrvalue + '">' +
+                            '<img src=' + r[i].attrvalue + ' height="80px" width="80px" />' +
+                            '<div style="text-align: right;background-color: dimgrey;"><img src="'+path+'/img/newpic_ico.png" onclick="removeThis(this)"></div></div>';
+                        str += "</li>";
+                    }
+                    $("#picture_"+ss[js]).html(str);
+                }
+                $("#picNumber").text(countChoosePic());
+            },
+                function (m, r) {
+                    alert(r);
+                }]
+        );
+
+    });
 }

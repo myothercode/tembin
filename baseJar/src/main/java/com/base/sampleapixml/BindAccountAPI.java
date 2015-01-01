@@ -157,7 +157,7 @@ public class BindAccountAPI {
                 "</AddMemberMessageAAQToPartnerRequest>​";
         return xml;
     }
-    public static  String GetSellerTransactions(String token){
+    public static  String GetSellerTransactions(String token,String page,String startime,String endtime){
         String xml="​<?xml version=\"1.0\" encoding=\"utf-8\"?>" +
                 "<GetSellerTransactionsRequest xmlns=\"urn:ebay:apis:eBLBaseComponents\">" +
                 "<RequesterCredentials>" +
@@ -165,15 +165,17 @@ public class BindAccountAPI {
                 "</RequesterCredentials>" +
                 "<Pagination>" +
                 "<EntriesPerPage>100</EntriesPerPage>" +
-                "<PageNumber>1</PageNumber>" +
+                "<PageNumber>"+page+"</PageNumber>" +
                 "</Pagination>" +
-                "<IncludeFinalValueFee>true</IncludeFinalValueFee>" +
+              /*  "<IncludeFinalValueFee>true</IncludeFinalValueFee>" +
                 "<IncludeContainingOrder>true</IncludeContainingOrder>" +
-                "<Platform>eBay</Platform>" +
-                "<NumberOfDays>7</NumberOfDays>" +
-                "<InventoryTrackingMethod>ItemID</InventoryTrackingMethod>" +
-                "<IncludeCodiceFiscale>true</IncludeCodiceFiscale>" +
+                "<Platform>eBay</Platform>" +*/
+               /* "<NumberOfDays>7</NumberOfDays>" +*/
+               /* "<InventoryTrackingMethod>ItemID</InventoryTrackingMethod>" +
+                "<IncludeCodiceFiscale>true</IncludeCodiceFiscale>" +*/
                 "<DetailLevel>ReturnAll</DetailLevel>" +
+/*                "<ModTimeFrom>"+startime+"</ModTimeFrom>" +
+                "<ModTimeTo>"+endtime+"</ModTimeTo>"+*/
                 "<Version>883</Version>" +
                 "</GetSellerTransactionsRequest>";
         return xml;

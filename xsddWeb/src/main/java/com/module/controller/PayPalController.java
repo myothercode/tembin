@@ -112,12 +112,7 @@ public class PayPalController extends BaseAction{
         modelMap.put("siteList",lidata);
         SessionVO c= SessionCacheSupport.getSessionVO();
 
-        Map map =new HashMap();
-        map.put("userId",c.getId());
-        PageJsonBean jsonBean=new PageJsonBean();
-        jsonBean.setPageCount(1000);
-        jsonBean.setPageNum(1);
-        List<UsercontrollerPaypalAccount> paypalAccounts = payPalService.queryPayPalList(map, jsonBean.toPage());
+        List<UsercontrollerPaypalAccount> paypalAccounts = payPalService.selectByOrgId();
         modelMap.put("paypalList",paypalAccounts);
 
         return forword("module/paypal/addPayPal",modelMap);
@@ -137,12 +132,7 @@ public class PayPalController extends BaseAction{
         List<TradingDataDictionary> lidata = DataDictionarySupport.getTradingDataDictionaryByType(DataDictionarySupport.DATA_DICT_SITE);
         modelMap.put("siteList",lidata);
 
-        Map map =new HashMap();
-        map.put("userId",c.getId());
-        PageJsonBean jsonBean=new PageJsonBean();
-        jsonBean.setPageCount(1000);
-        jsonBean.setPageNum(1);
-        List<UsercontrollerPaypalAccount> paypalAccounts = payPalService.queryPayPalList(map, jsonBean.toPage());
+        List<UsercontrollerPaypalAccount> paypalAccounts = payPalService.selectByOrgId();
         modelMap.put("paypalList",paypalAccounts);
 
         Map m = new HashMap();

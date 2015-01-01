@@ -20,6 +20,7 @@ import com.base.utils.cache.SessionCacheSupport;
 import com.base.utils.common.*;
 import com.base.utils.exception.Asserts;
 import com.base.utils.ftpabout.FtpUploadFile;
+import com.base.utils.xmlutils.SamplePaseXml;
 import com.base.xmlpojo.trading.addproduct.*;
 import com.base.xmlpojo.trading.addproduct.attrclass.MadeForOutletComparisonPrice;
 import com.base.xmlpojo.trading.addproduct.attrclass.MinimumAdvertisedPrice;
@@ -31,16 +32,9 @@ import com.publicd.service.*;
 import com.trading.service.*;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.cookie.DateParseException;
 import org.apache.log4j.Logger;
 import org.dom4j.Document;
-import org.dom4j.DocumentException;
-import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -48,13 +42,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpServletRequest;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
-import java.net.URI;
 import java.net.URL;
-import java.net.UnknownHostException;
 import java.util.*;
 
 /**
@@ -152,6 +142,10 @@ public class TradingItemImpl implements com.trading.service.ITradingItem {
     private ITradingDataDictionary iTradingDataDictionary;
     @Autowired
     private TradingTempTypeKeyMapper tradingTempTypeKeyMapper;
+    @Autowired
+    private ITradingShippingServiceOptionsDoc iTradingShippingServiceOptionsDoc;
+    @Autowired
+    private ITradingInternationalShippingServiceOptionDoc iTradingInternationalShippingServiceOptionDoc;
 
 
     @Override
@@ -247,6 +241,74 @@ public class TradingItemImpl implements com.trading.service.ITradingItem {
                 tradingItem.setAssessSetview(ta.getSetview());
             }
             this.saveTradingItem(tradingItem);
+
+            //处理运输选项，
+            //国内运输
+            String [] ShippingServiceCost = request.getParameterValues(tradingItem.getShippingDeailsId()+".ShippingServiceCost.value");
+            String [] ShippingServiceAdditionalCost = request.getParameterValues(tradingItem.getShippingDeailsId()+".ShippingServiceAdditionalCost.value");
+            String [] ShippingSurcharge = request.getParameterValues(tradingItem.getShippingDeailsId()+".ShippingSurcharge.value");
+            String [] shippingservice = request.getParameterValues(tradingItem.getShippingDeailsId()+".shippingservice");
+            String [] sourceId = request.getParameterValues(tradingItem.getShippingDeailsId()+".sourceId");
+            List<TradingShippingserviceoptions> litsd = this.iTradingShippingServiceOptions.selectByParentId(tradingItem.getShippingDeailsId());
+            String shippingName = "";
+            List<TradingShippingserviceoptionsDoc> litsds = new ArrayList<TradingShippingserviceoptionsDoc>();
+            for(int n=0;n<litsd.size();n++){
+                TradingShippingserviceoptions tsd = litsd.get(n);
+                TradingShippingserviceoptionsDoc tsds = new TradingShippingserviceoptionsDoc();
+                ConvertPOJOUtil.convert(tsds,tsd);
+                if(tsds.getShippingservice()==null){
+                    continue;
+                }
+                shippingName = DataDictionarySupport.getTradingDataDictionaryByID(Long.parseLong(tsds.getShippingservice())).getName();
+                if(shippingservice[n].equals(tsds.getShippingservice())){
+                    tsds.setShippingservicecost(Double.parseDouble(ShippingServiceCost[n]));
+                    tsds.setShippingserviceadditionalcost(Double.parseDouble(ShippingServiceAdditionalCost[n]));
+                    tsds.setShippingsurcharge(Double.parseDouble(ShippingSurcharge[n]));
+                    tsds.setSourceId(Long.parseLong(sourceId[n]));
+                }
+                tsds.setParentId(tradingItem.getShippingDeailsId());
+                tsds.setParentUuid(tradingItem.getUuid());
+                tsds.setDocId(tradingItem.getId());
+                tsds.setCreateUser(c.getId());
+                tsds.setCreateTime(new Date());
+                litsds.add(tsds);
+            }
+            //选删除记录信息，再保存
+            this.iTradingShippingServiceOptionsDoc.delTradingShippingserviceoptionsDoc(tradingItem.getId());
+            if(litsds!=null&&litsds.size()>0) {
+                this.iTradingShippingServiceOptionsDoc.saveTradingShippingserviceoptionsDoc(litsds);
+            }
+            //国际运输
+            String [] intershippingservice = request.getParameterValues(tradingItem.getShippingDeailsId()+".intershippingservice");
+            String [] interShippingServiceCost = request.getParameterValues(tradingItem.getShippingDeailsId()+".interShippingServiceCost.value");
+            String [] interShippingServiceAdditionalCost = request.getParameterValues(tradingItem.getShippingDeailsId()+".interShippingServiceAdditionalCost.value");
+            String [] intersourceId = request.getParameterValues(tradingItem.getShippingDeailsId()+".intersourceId");
+            List<TradingInternationalshippingserviceoptionDoc> liidoc = new ArrayList<TradingInternationalshippingserviceoptionDoc>();
+            List<TradingInternationalshippingserviceoption> litio = this.iTradingInternationalShippingServiceOption.selectByParentid(tradingItem.getShippingDeailsId());
+            for(int n=0;n<litio.size();n++){
+                TradingInternationalshippingserviceoption tio = litio.get(n);
+                TradingInternationalshippingserviceoptionDoc tidoc = new TradingInternationalshippingserviceoptionDoc();
+                ConvertPOJOUtil.convert(tidoc,tio);
+                if(tidoc.getShippingservice()==null){
+                    continue;
+                }
+                shippingName = DataDictionarySupport.getTradingDataDictionaryByID(Long.parseLong(tidoc.getShippingservice())).getName();
+                if(intershippingservice[n].equals(tidoc.getShippingservice())){
+                    tidoc.setShippingservicecost(Double.parseDouble(interShippingServiceCost[n]));
+                    tidoc.setShippingserviceadditionalcost(Double.parseDouble(interShippingServiceAdditionalCost[n]));
+                    tidoc.setSourceId(Long.parseLong(intersourceId[n]));
+                }
+                tidoc.setParentId(tradingItem.getShippingDeailsId());
+                tidoc.setParentUuid(tradingItem.getUuid());
+                tidoc.setDocId(tradingItem.getId());
+                tidoc.setCreateUser(c.getId());
+                tidoc.setCreateTime(new Date());
+                liidoc.add(tidoc);
+            }
+            this.iTradingInternationalShippingServiceOptionDoc.delTradingInternationalshippingserviceoptionDoc(tradingItem.getId());
+            if(liidoc!=null&&liidoc.size()>0){
+                this.iTradingInternationalShippingServiceOptionDoc.saveTradingInternationalshippingserviceoptionDoc(liidoc);
+            }
             //处理模板中上传的图片
            /* if(tradingItem.getTemplateId()!=null){*///用户选择了模板，才会处理模板图片信息
                 String [] tempicUrls = request.getParameterValues("blankimg");//界面中添加的模板图片
@@ -570,7 +632,7 @@ public class TradingItemImpl implements com.trading.service.ITradingItem {
         }
         //运输详情
         if(tshipping!=null) {
-            ShippingDetails sd = this.iTradingShippingDetails.toXmlPojo(tradingItem.getShippingDeailsId());
+            ShippingDetails sd = this.iTradingShippingDetails.toXmlPojo(tradingItem.getShippingDeailsId(),tradingItem.getId());
             item.setShippingDetails(sd);
             if(tshipping.getDispatchtimemax()!=null&&tshipping.getDispatchtimemax()!=0) {
                 item.setDispatchTimeMax(tshipping.getDispatchtimemax().intValue());
@@ -1123,7 +1185,14 @@ public class TradingItemImpl implements com.trading.service.ITradingItem {
                                         } else {
                                             picUrl = picUrl;
                                         }
-                                        URL url = new URL(picUrl);
+
+                                        URL url = null;
+                                        try {
+                                            url = new URL(picUrl);
+                                        }catch(Exception e){
+                                            logger.error("读取商品描述中的图片信息出错！url:"+picUrl);
+                                            continue;
+                                        }
                                         //打开链接
                                         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
                                         //设置请求方式为"GET"
@@ -1510,7 +1579,7 @@ public class TradingItemImpl implements com.trading.service.ITradingItem {
                                 this.publicItemPictureaddrAndAttrMapper.updateByPrimaryKeySelective(pi);
                             }
                         }catch(Exception e){
-                            logger.error("",e);
+                            logger.error(tradingItem.getSku()+":::::",e);
                             continue;
                         }
                     }
@@ -1764,25 +1833,39 @@ public class TradingItemImpl implements com.trading.service.ITradingItem {
                     if (shippingDetails.getShippingType() != null) {
                         cri.andShippingtypeEqualTo(shippingDetails.getShippingType());
                     }
-                    if (shippingDetails.getShippingServiceOptions() != null && shippingDetails.getShippingServiceOptions().size() > 0) {
-                        cri.andCountTypeEqualTo(shippingDetails.getShippingServiceOptions().size() + "");
-                    }
-                    if (shippingDetails.getInternationalShippingServiceOption() != null && shippingDetails.getInternationalShippingServiceOption().size() > 0) {
-                        cri.andInterCountTypeEqualTo(shippingDetails.getInternationalShippingServiceOption().size() + "");
+                    if ("Calculated".equals(shippingDetails.getShippingType())) {
+                        cri.andCountTypeEqualTo("1");
+                        cri.andInterCountTypeEqualTo("1");
+                    }else {
+                        cri.andCountTypeEqualTo("0");
+                        cri.andInterCountTypeEqualTo("0");
                     }
                     List<TradingShippingdetails> lits = this.tradingShippingdetailsMapper.selectByExample(tse);
                     if (lits == null || lits.size() == 0) {
                         TradingShippingdetails tradingShippingdetails = new TradingShippingdetails();
-
                         ConvertPOJOUtil.convert(tradingShippingdetails, shippingDetails);
                         tradingShippingdetails.setCreateUser(kml.getUserId());
                         tradingShippingdetails.setEbayAccount(tradingItem.getEbayAccount());
                         tradingShippingdetails.setSite(tradingItem.getSite());
-                        if(shippingDetails.getShippingServiceOptions()!=null) {
-                            tradingShippingdetails.setCountType(shippingDetails.getShippingServiceOptions().size() + "");
+                        if("Calculated".equals(shippingDetails.getShippingType())) {
+                            tradingShippingdetails.setCountType("1");
+                            tradingShippingdetails.setInterCountType("1");
+                        }else{
+                            tradingShippingdetails.setCountType("0");
+                            tradingShippingdetails.setInterCountType("0");
                         }
-                        if(shippingDetails.getInternationalShippingServiceOption()!=null) {
-                            tradingShippingdetails.setInterCountType(shippingDetails.getInternationalShippingServiceOption().size() + "");
+                        if(shippingDetails.getCalculatedShippingRate()!=null){
+                            CalculatedShippingRate csr = shippingDetails.getCalculatedShippingRate();
+                            tradingShippingdetails.setWeightmajor(csr.getWeightMajor());
+                            tradingShippingdetails.setWeightminor(csr.getWeightMinor());
+                            tradingShippingdetails.setPackagedepth(csr.getPackageDepth());
+                            tradingShippingdetails.setPackagelength(csr.getPackageLength());
+                            tradingShippingdetails.setPackagewidth(csr.getPackageWidth());
+                            tradingShippingdetails.setOriginatingpostalcode(csr.getOriginatingPostalCode());
+                            tradingShippingdetails.setPackaginghandlingcosts(csr.getPackagingHandlingCosts()==null?null:csr.getPackagingHandlingCosts().getValue());
+                            tradingShippingdetails.setShippingpackage(csr.getShippingPackage());
+                            tradingShippingdetails.setShippingirregular(csr.getShippingIrregular()?"1":"0");
+
                         }
 
                         this.iTradingShippingDetails.saveShippingDetails(tradingShippingdetails);
@@ -2136,7 +2219,7 @@ public class TradingItemImpl implements com.trading.service.ITradingItem {
         }
         //运输详情
         if(tshipping!=null) {
-            ShippingDetails sd = this.iTradingShippingDetails.toXmlPojo(tradingItem.getShippingDeailsId());
+            ShippingDetails sd = this.iTradingShippingDetails.toXmlPojo(tradingItem.getShippingDeailsId(),tradingItem.getId());
             item.setShippingDetails(sd);
             if(tshipping.getDispatchtimemax()!=null&&tshipping.getDispatchtimemax()!=0) {
                 item.setDispatchTimeMax(tshipping.getDispatchtimemax().intValue());
@@ -2364,7 +2447,7 @@ public class TradingItemImpl implements com.trading.service.ITradingItem {
         List<TradingListingSuccess> litls = this.iTradingListingSuccess.selectByItemid(itemId);
         Document document= null;
         try {
-            document = DocumentHelper.parseText(xml);
+            document = SamplePaseXml.formatStr2Doc(xml);
         } catch (Exception e) {
             logger.error(xml+":",e);
         }

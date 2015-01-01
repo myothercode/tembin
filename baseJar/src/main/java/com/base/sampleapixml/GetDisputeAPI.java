@@ -18,7 +18,7 @@ public class GetDisputeAPI {
         Map<String,Object> map=new HashMap<String, Object>();
         TradingGetDispute dispute=new TradingGetDispute();
         List<TradingGetDisputeMessage> messageList=new ArrayList<TradingGetDisputeMessage>();
-        Document document= DocumentHelper.parseText(res);
+        Document document= SamplePaseXml.formatStr2Doc(res);
         Element root=document.getRootElement();
         Element Dispute=root.element("Dispute");
         dispute.setDisputeid(SamplePaseXml.getSpecifyElementText(Dispute,"DisputeID"));

@@ -444,7 +444,14 @@ public class SynchronizeGetOrderImpl implements ThreadPoolBaseInterFace {
                             //----------------
                             //同步外部交易
                             d.setApiCallName("GetSellerTransactions");
-                            String sellerxml = BindAccountAPI.GetSellerTransactions(token);//获取接受消息
+                            Date date=new Date();
+                            Date date2= DateUtils.addDays(date, 1);
+                            Date date1=DateUtils.subDays(date2, 7);
+                            Date end2= com.base.utils.common.DateUtils.turnToDateEnd(date2);
+                            Date start2=com.base.utils.common.DateUtils.turnToDateStart(date1);
+                            String start3= DateUtils.DateToString(start2);
+                            String end3=DateUtils.DateToString(end2);
+                            String sellerxml = BindAccountAPI.GetSellerTransactions(token,"1",start3,end3);//获取接受消息
                             Map<String, String> resSellerMap = addApiTask.exec(d, sellerxml, apiUrl);
                             //Map<String, String> resSellerMap = addApiTask.exec(d, sellerxml, "https://api.ebay.com/ws/api.dll");
                             //------------------------

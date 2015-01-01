@@ -1,24 +1,18 @@
 package com.item.controller;
 
 import com.base.aboutpaypal.service.PayPalService;
-import com.base.database.publicd.mapper.PublicDataDictMapper;
-import com.base.database.publicd.mapper.PublicUserConfigMapper;
 import com.base.database.publicd.model.PublicDataDict;
-import com.base.database.publicd.model.PublicDataDictExample;
 import com.base.database.publicd.model.PublicUserConfig;
-import com.base.database.trading.mapper.TradingAttrMoresMapper;
 import com.base.database.trading.model.*;
 import com.base.domains.CommonParmVO;
 import com.base.domains.SessionVO;
 import com.base.domains.querypojos.ItemQuery;
-import com.base.domains.querypojos.PaypalQuery;
 import com.base.domains.querypojos.VariationQuery;
 import com.base.domains.userinfo.UsercontrollerDevAccountExtend;
 import com.base.domains.userinfo.UsercontrollerEbayAccountExtend;
 import com.base.mybatis.page.Page;
 import com.base.mybatis.page.PageJsonBean;
 import com.base.sampleapixml.APINameStatic;
-import com.base.sampleapixml.BindAccountAPI;
 import com.base.userinfo.service.SystemUserManagerService;
 import com.base.userinfo.service.UserInfoService;
 import com.base.utils.annotations.AvoidDuplicateSubmission;
@@ -27,12 +21,9 @@ import com.base.utils.cache.DataDictionarySupport;
 import com.base.utils.cache.SessionCacheSupport;
 import com.base.utils.common.*;
 import com.base.utils.exception.Asserts;
-import com.base.utils.ftpabout.FtpUploadFile;
 import com.base.utils.imageManage.service.ImageService;
 import com.base.utils.threadpool.AddApiTask;
-import com.base.utils.threadpool.ApiCallable;
 import com.base.utils.threadpool.TaskMessageVO;
-import com.base.utils.threadpool.TaskPool;
 import com.base.utils.xmlutils.PojoXmlUtil;
 import com.base.utils.xmlutils.SamplePaseXml;
 import com.base.xmlpojo.trading.addproduct.*;
@@ -50,18 +41,12 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.http.impl.cookie.DateParseException;
 import org.apache.log4j.Logger;
 import org.dom4j.Document;
-import org.dom4j.DocumentException;
-import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
-import org.jsoup.select.Elements;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
-import org.springframework.stereotype.Service;
 import org.springframework.ui.ModelMap;
-import org.springframework.util.concurrent.ListenableFutureCallback;
-import org.springframework.util.concurrent.ListenableFutureTask;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -69,11 +54,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.InputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.*;
-import java.util.concurrent.TimeUnit;
 
 /**
  * Created by Administrtor on 2014/8/2.
@@ -705,7 +686,7 @@ public class ItemController extends BaseAction{
         try {
             String ack = SamplePaseXml.getVFromXmlString(res, "Ack");
             if ("Success".equalsIgnoreCase(ack) || "Warning".equalsIgnoreCase(ack)) {
-                Document document= DocumentHelper.parseText(res);
+                Document document= SamplePaseXml.formatStr2Doc(res);
                 Element rootElt = document.getRootElement();
                 Element picelt = rootElt.element("SiteHostedPictureDetails");
                 String baseUrl = picelt.elementText("BaseURL");
@@ -765,7 +746,7 @@ public class ItemController extends BaseAction{
             }
             //运输详情
             if(tshipping!=null) {
-                ShippingDetails sd = this.iTradingShippingDetails.toXmlPojo(tradingItem.getShippingDeailsId());
+                ShippingDetails sd = this.iTradingShippingDetails.toXmlPojo(tradingItem.getShippingDeailsId(),tradingItem.getId());
                 item.setShippingDetails(sd);
                 if(tshipping.getDispatchtimemax()!=null&&tshipping.getDispatchtimemax()!=0) {
                     item.setDispatchTimeMax(tshipping.getDispatchtimemax().intValue());
@@ -784,9 +765,11 @@ public class ItemController extends BaseAction{
                     for(int i=0;i<content.size();i++){
                         org.jsoup.nodes.Element el = content.get(i);
                         url = el.attr("src");
-                        if(url.indexOf("blank.jpg")>0&&j<=tempicUrls.length){
+                        if(url.indexOf("blank.jpg")>0&&j<tempicUrls.length){
                             el.attr("src",tempicUrls[j]);
                             j++;
+                        }else{
+                            el.remove();
                         }
                     }
                     template=doc.html();
@@ -1131,6 +1114,7 @@ public class ItemController extends BaseAction{
                         if ("fail".equalsIgnoreCase(r1)) {
                             logger.error("数据已保存，但刊登失败！由于返回报文不全，无法得到更详细的信息！");
                             AjaxSupport.sendFailText("fail", "数据已保存，但刊登失败！");
+                            AjaxSupport.sendFailText("fail", "{\"isFlag\":\"1\",\"message\":\"数据已保存，但刊登失败！\",\"tradingItemId\":\""+tradingItem.getId()+"\"}");
                             return;
                         }
                         String ack = SamplePaseXml.getVFromXmlString(res, "Ack");
@@ -1145,7 +1129,7 @@ public class ItemController extends BaseAction{
                             AjaxSupport.sendSuccessText("message", "商品SKU为："+tradingItem.getSku()+"，名称为：<a target=_blank style='color:blue' href='"+service_item_url+itemId+"'>"+tradingItem.getItemName()+"<a>，刊登成功！");
                         } else {
                             //String errors = SamplePaseXml.getVFromXmlString(res, "Errors");
-                            Document document= DocumentHelper.parseText(res);
+                            Document document= SamplePaseXml.formatStr2Doc(res);
                             Element rootElt = document.getRootElement();
                             Iterator<Element> e =  rootElt.elementIterator("Errors");
                             String errors = "";
@@ -1156,7 +1140,7 @@ public class ItemController extends BaseAction{
                                 }
                             }
                             logger.error("刊登失败："+errors);
-                            AjaxSupport.sendFailText("fail", "数据已保存，但刊登失败！"+errors);
+                            AjaxSupport.sendFailText("fail", "{\"isFlag\":\"1\",\"message\":\"数据已保存，但刊登失败！"+errors+"\",\"tradingItemId\":\""+tradingItem.getId()+"\"}");
                         }
                     }
                 }
@@ -1195,7 +1179,7 @@ public class ItemController extends BaseAction{
         }
         //运输详情
         if(tshipping!=null) {
-            ShippingDetails sd = this.iTradingShippingDetails.toXmlPojo(tradingItem.getShippingDeailsId());
+            ShippingDetails sd = this.iTradingShippingDetails.toXmlPojo(tradingItem.getShippingDeailsId(),tradingItem.getId());
             item.setShippingDetails(sd);
             if(tshipping.getDispatchtimemax()!=null&&tshipping.getDispatchtimemax()!=0) {
                 item.setDispatchTimeMax(tshipping.getDispatchtimemax().intValue());
@@ -1485,7 +1469,7 @@ public class ItemController extends BaseAction{
         }
         //运输详情
         if(tshipping!=null) {
-            ShippingDetails sd = this.iTradingShippingDetails.toXmlPojo(tradingItem.getShippingDeailsId());
+            ShippingDetails sd = this.iTradingShippingDetails.toXmlPojo(tradingItem.getShippingDeailsId(),tradingItem.getId());
             item.setShippingDetails(sd);
             if(tshipping.getDispatchtimemax()!=null&&tshipping.getDispatchtimemax()!=0) {
                 item.setDispatchTimeMax(tshipping.getDispatchtimemax().intValue());
@@ -1753,7 +1737,7 @@ public class ItemController extends BaseAction{
         }
         //运输详情
         if(tshipping!=null) {
-            ShippingDetails sd = this.iTradingShippingDetails.toXmlPojo(tradingItem.getShippingDeailsId());
+            ShippingDetails sd = this.iTradingShippingDetails.toXmlPojo(tradingItem.getShippingDeailsId(),tradingItem.getId());
             item.setShippingDetails(sd);
             if(tshipping.getDispatchtimemax()!=null&&tshipping.getDispatchtimemax()!=0) {
                 item.setDispatchTimeMax(tshipping.getDispatchtimemax().intValue());
@@ -1976,7 +1960,7 @@ public class ItemController extends BaseAction{
             tradingItem.setIsFlag("Success");
             //this.iTradingItem.saveTradingItem(tradingItem);
             modelMap.put("tradingItem",tradingItem);*/
-            Document document= DocumentHelper.parseText(res);
+            Document document= SamplePaseXml.formatStr2Doc(res);
             Element rootElt = document.getRootElement();
             Element recommend = rootElt.element("Fees");
             Iterator<Element> iter = recommend.elementIterator("Fee");
@@ -2075,7 +2059,7 @@ public class ItemController extends BaseAction{
                 this.iTradingListingData.saveTradingListingDataByTradingItem(tradingItem,res);
                 successmessage.add("商品SKU为："+tradingItem.getSku()+"，名称为：<a target=_blank style='color:blue' href='"+service_item_url+itemId+"'>"+tradingItem.getItemName()+"<a>，刊登成功！");
             }else{
-                Document document= DocumentHelper.parseText(res);
+                Document document= SamplePaseXml.formatStr2Doc(res);
                 Element rootElt = document.getRootElement();
                 Element tl = rootElt.element("Errors");
                 String longMessage = tl.elementText("LongMessage");
@@ -2610,7 +2594,7 @@ public class ItemController extends BaseAction{
                     this.saveAmend(litla, "1");
                 }else{
                     this.saveAmend(litla,"0");
-                    Document document= DocumentHelper.parseText(returnString);
+                    Document document= SamplePaseXml.formatStr2Doc(returnString);
                     Element rootElt = document.getRootElement();
                     Element tl = rootElt.element("Errors");
                     String longMessage = tl.elementText("LongMessage");

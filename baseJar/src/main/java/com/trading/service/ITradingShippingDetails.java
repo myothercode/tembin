@@ -28,5 +28,5 @@ public interface ITradingShippingDetails {
 
     void saveAllData(TradingShippingdetails tradingShippingdetails, ShippingDetails shippingDetails, String noLocations) throws Exception;
 
-    ShippingDetails toXmlPojo(Long id) throws Exception;
+    ShippingDetails toXmlPojo(Long id,Long docId) throws Exception;
 }

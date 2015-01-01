@@ -23,6 +23,6 @@ select user_id,site_id,task_flag,paypal_id,progress_id,count(1) tj_number from k
         and user_id = #{userId}
         group by user_id,site_id,task_flag,paypal_id,progress_id
 ) aa group by aa.user_id,aa.site_id,aa.paypal_id,aa.progress_id,aa.task_flag
-) bb group by bb.user_id,bb.site_id,bb.paypal_id,bb.progress_id
+) bb group by bb.user_id,bb.site_id,bb.paypal_id,bb.progress_id order by bb.progress_id DESC
     </select>
 </mapper>

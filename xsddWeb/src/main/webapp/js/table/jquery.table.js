@@ -228,9 +228,9 @@
 				table.attr("class", "tab_ZY");
 				table.append(
 					$("<tr></tr>")
-						.append($("<td></td>").attr("colspan",leftTrSize).attr("width","50%").attr("height", 200).attr("align","right")
-								.append($("<img src='" + path + "/js/table/100.png'>")))
-						.append($("<td></td>").attr("colspan",rightTrSize).attr("width","50%").attr("align", "left").attr("style","font-size:20px;")
+						.append($("<td></td>").attr("colspan",leftTrSize).attr("width","50%").attr("height", 34).attr("align","right")
+								.append())
+						.append($("<td></td>").attr("colspan",rightTrSize).attr("width","50%").attr("align", "left").attr("style","font-size:12px;")
 							.html(option.showDataNullMsgContext))
 				);
 			}

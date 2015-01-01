@@ -864,6 +864,76 @@ public class UsercontrollerPaypalAccountExample {
             addCriterion("api_Signature not between", value1, value2, "apiSignature");
             return (Criteria) this;
         }
+
+        public Criteria andSfCheckIsNull() {
+            addCriterion("sf_check is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andSfCheckIsNotNull() {
+            addCriterion("sf_check is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andSfCheckEqualTo(String value) {
+            addCriterion("sf_check =", value, "sfCheck");
+            return (Criteria) this;
+        }
+
+        public Criteria andSfCheckNotEqualTo(String value) {
+            addCriterion("sf_check <>", value, "sfCheck");
+            return (Criteria) this;
+        }
+
+        public Criteria andSfCheckGreaterThan(String value) {
+            addCriterion("sf_check >", value, "sfCheck");
+            return (Criteria) this;
+        }
+
+        public Criteria andSfCheckGreaterThanOrEqualTo(String value) {
+            addCriterion("sf_check >=", value, "sfCheck");
+            return (Criteria) this;
+        }
+
+        public Criteria andSfCheckLessThan(String value) {
+            addCriterion("sf_check <", value, "sfCheck");
+            return (Criteria) this;
+        }
+
+        public Criteria andSfCheckLessThanOrEqualTo(String value) {
+            addCriterion("sf_check <=", value, "sfCheck");
+            return (Criteria) this;
+        }
+
+        public Criteria andSfCheckLike(String value) {
+            addCriterion("sf_check like", value, "sfCheck");
+            return (Criteria) this;
+        }
+
+        public Criteria andSfCheckNotLike(String value) {
+            addCriterion("sf_check not like", value, "sfCheck");
+            return (Criteria) this;
+        }
+
+        public Criteria andSfCheckIn(List<String> values) {
+            addCriterion("sf_check in", values, "sfCheck");
+            return (Criteria) this;
+        }
+
+        public Criteria andSfCheckNotIn(List<String> values) {
+            addCriterion("sf_check not in", values, "sfCheck");
+            return (Criteria) this;
+        }
+
+        public Criteria andSfCheckBetween(String value1, String value2) {
+            addCriterion("sf_check between", value1, value2, "sfCheck");
+            return (Criteria) this;
+        }
+
+        public Criteria andSfCheckNotBetween(String value1, String value2) {
+            addCriterion("sf_check not between", value1, value2, "sfCheck");
+            return (Criteria) this;
+        }
     }
 
     /**

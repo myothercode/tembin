@@ -12,4 +12,6 @@ public interface ITradingListingReport {
     void save(TradingListingReport tradingListingReport);
 
     List<TradingListingReport> selectByNowDate(String dataType,String userId) throws DateParseException;
+
+    void initListingReport(long userId);
 }

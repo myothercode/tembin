@@ -10,7 +10,10 @@ import com.base.domains.querypojos.FeedBackReportQuery;
 import com.base.mybatis.page.Page;
 import com.base.utils.cache.SessionCacheSupport;
 import com.base.utils.common.DateUtils;
+import com.base.utils.common.EncryptionUtil;
 import com.base.utils.common.ObjectUtils;
+import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,7 +26,7 @@ import java.util.*;
 @Service
 @Transactional(rollbackFor = Exception.class)
 public class TradingFeedBackDetailImpl implements com.trading.service.ITradingFeedBackDetail {
-
+    static Logger logger = Logger.getLogger(TradingFeedBackDetailImpl.class);
     @Autowired
     private TradingFeedBackDetailMapper tradingFeedBackDetailMapper;
     @Autowired
@@ -33,12 +36,29 @@ public class TradingFeedBackDetailImpl implements com.trading.service.ITradingFe
     @Override
     public void saveFeedBackDetail(List<TradingFeedBackDetail> lifb) throws Exception {
         for(TradingFeedBackDetail tfbd : lifb){
+            try {
            /* ObjectUtils.toInitPojoForInsert(lifb);*/
-            if(tfbd.getId()==null){
-                ObjectUtils.toInitPojoForInsert(tfbd);
-                this.tradingFeedBackDetailMapper.insertSelective(tfbd);
-            }else{
-                this.tradingFeedBackDetailMapper.updateByPrimaryKeySelective(tfbd);
+                if (tfbd.getId() == null) {
+                    ObjectUtils.toInitPojoForInsert(tfbd);
+                    tfbd.setItemtitle(StringEscapeUtils.escapeHtml(tfbd.getItemtitle()));
+                    this.tradingFeedBackDetailMapper.insertSelective(tfbd);
+                } else {
+                    tfbd.setItemtitle(StringEscapeUtils.escapeHtml(tfbd.getItemtitle()));
+                    this.tradingFeedBackDetailMapper.updateByPrimaryKeySelective(tfbd);
+                }
+            }catch(Exception e){
+                try{
+                    if (tfbd.getId() == null) {
+                        ObjectUtils.toInitPojoForInsert(tfbd);
+                        tfbd.setItemtitle(StringEscapeUtils.escapeHtml(tfbd.getItemtitle()));
+                        this.tradingFeedBackDetailMapper.insertSelective(tfbd);
+                    } else {
+                        tfbd.setItemtitle(StringEscapeUtils.escapeHtml(tfbd.getItemtitle()));
+                        this.tradingFeedBackDetailMapper.updateByPrimaryKeySelective(tfbd);
+                    }
+                }catch(Exception es){
+                    logger.error("保存买家给商家的评价出错："+es.getMessage());
+                }
             }
 
         }

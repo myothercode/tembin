@@ -8,17 +8,14 @@ import com.base.database.trading.model.*;
 import com.base.domains.querypojos.ListingDataAmendQuery;
 import com.base.domains.querypojos.ListingDataQuery;
 import com.base.mybatis.page.Page;
-import com.base.userinfo.service.SystemUserManagerService;
 import com.base.utils.cache.DataDictionarySupport;
 import com.base.utils.common.DateUtils;
-import com.thoughtworks.xstream.mapper.Mapper;
+import com.base.utils.xmlutils.SamplePaseXml;
 import com.trading.service.ITradingVariation;
 import com.trading.service.ITradingVariations;
 import com.trading.service.IUsercontrollerEbayAccount;
 import org.apache.log4j.Logger;
 import org.dom4j.Document;
-import org.dom4j.DocumentException;
-import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -110,7 +107,7 @@ public class TradingListingDataImpl implements com.trading.service.ITradingListi
     public void saveTradingListingDataByTradingItem(TradingItem tradingItem,String res){
         Document document= null;
         try {
-            document = DocumentHelper.parseText(res);
+            document = SamplePaseXml.formatStr2Doc(res);
         } catch (Exception e) {
             logger.error(res+":",e);
         }

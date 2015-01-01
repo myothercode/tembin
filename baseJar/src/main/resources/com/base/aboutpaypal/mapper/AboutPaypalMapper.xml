@@ -3,7 +3,7 @@
 <mapper namespace="com.base.aboutpaypal.mapper.AboutPaypalMapper" >
 
 <select id="queryPayPalsByUserId" parameterType="map" resultType="com.base.database.trading.model.UsercontrollerPaypalAccount">
-    select p.id,p.paypal_account payPalAccount,p.`status`,p.email from usercontroller_paypal_account p
+    select p.id,p.paypal_account payPalAccount,p.`status`,p.email,p.sf_Check sfCheck from usercontroller_paypal_account p
     where p.create_user = #{userId}
     ORDER BY p.id
 </select>

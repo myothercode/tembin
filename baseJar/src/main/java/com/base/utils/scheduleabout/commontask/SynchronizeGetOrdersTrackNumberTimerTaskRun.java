@@ -20,7 +20,7 @@ import java.util.List;
 
 /**
  * Created by Administrtor on 2014/8/29.
- * 在线商品每晚执行，定时任务 //两分钟
+ * 获取跟踪状态，定时任务 //两分钟
  */
 public class SynchronizeGetOrdersTrackNumberTimerTaskRun extends BaseScheduledClass implements Scheduledable {
     static Logger logger = Logger.getLogger(SynchronizeGetOrdersTrackNumberTimerTaskRun.class);
@@ -39,7 +39,7 @@ public class SynchronizeGetOrdersTrackNumberTimerTaskRun extends BaseScheduledCl
                                     order.setTrackstatus(json.get("Status")+"");
                                     trackFlag=true;
                                     TaskPool.togos.put(order);
-                                    iTradingOrderGetOrdersNoTransaction.saveOrderGetOrders(order);
+                                    //iTradingOrderGetOrdersNoTransaction.saveOrderGetOrders(order);
                                 }
                             }
                         }
@@ -119,6 +119,6 @@ public class SynchronizeGetOrdersTrackNumberTimerTaskRun extends BaseScheduledCl
         }else{
             return 2;
         }*/
-        return 10;
+        return 30;
     }
 }

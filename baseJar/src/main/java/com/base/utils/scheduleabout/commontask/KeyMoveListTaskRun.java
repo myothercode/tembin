@@ -83,7 +83,7 @@ public class KeyMoveListTaskRun extends BaseScheduledClass implements Scheduleda
                     if ("Success".equals(ack)) {//ＡＰＩ成功请求，保存数据
                         //获取分类名称
                         Item item = new Item();
-                        Document document= DocumentHelper.parseText(res);
+                        Document document= SamplePaseXml.formatStr2Doc(res);
                         Element rootElt = document.getRootElement();
                         Element element = rootElt.element("Item");
                         String categoryName = element.element("PrimaryCategory").elementText("CategoryName");
