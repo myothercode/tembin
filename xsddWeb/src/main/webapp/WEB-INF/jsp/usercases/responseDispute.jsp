@@ -191,7 +191,7 @@
            $("#sendMessageForm").validationEngine();
        });
         function queryTrack(){
-            var url=path+"/userCases/queryTrack.do?trackNum=${order.shipmenttrackingnumber}";
+            var url=path+"/userCases/queryTrack.do?trackNum=${order.shipmenttrackingnumber}&transactionId=${order.transactionid}&seller=${order.selleruserid}";
             $().invoke(url,null,
                     [function(m,r){
                         /*W.CaseDetails.close();*/

@@ -17,6 +17,7 @@ import com.base.utils.scheduleabout.Scheduledable;
 import com.base.utils.threadpool.AddApiTask;
 import com.base.utils.xmlutils.SamplePaseXml;
 import com.trading.service.ITradingItem;
+import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
@@ -99,7 +100,7 @@ public class TimeListingItemTaskRunAble extends BaseScheduledClass implements Sc
                 devInfo.setApiSiteid(withBLOBs.getStateId());
                 devInfo.setApiCallName(withBLOBs.getApiMethod());
                 AddApiTask addApiTask = new AddApiTask();
-                Map<String, String> resMap = addApiTask.exec2(devInfo, withBLOBs.getTimerMessage(), commV.apiUrl);
+                Map<String, String> resMap = addApiTask.exec2(devInfo, StringEscapeUtils.escapeXml(withBLOBs.getTimerMessage()), commV.apiUrl);
                 String r1 = resMap.get("stat");
                 String res = resMap.get("message");
                 if ("fail".equalsIgnoreCase(r1)) {

@@ -63,7 +63,13 @@
         <if test="selectType!=null and selectType=='docname'">
             and doc.item_name like CONCAT(CONCAT('%', #{selectValue, jdbcType=VARCHAR}),'%')
         </if>
-        <if test="selectType!=null and selectType!='docname'">
+        <if test="selectType!=null and selectType=='sku'">
+            and tion.sku like CONCAT(CONCAT('%', #{selectValue, jdbcType=VARCHAR}),'%')
+        </if>
+        <if test="selectType!=null and selectType=='title'">
+            and tion.title like CONCAT(CONCAT('%', #{selectValue, jdbcType=VARCHAR}),'%')
+        </if>
+        <if test="selectType!=null and selectType!='docname' and selectType!='sku' and selectType!='title'">
             and tion.${selectType}  = #{selectValue}
         </if>
         order by ${descStr} ${desStr}
@@ -71,7 +77,7 @@
     <select id="selectListDateByExample" resultMap="BaseResultMap" parameterType="map">
         select listing.* from trading_listing_data listing where 1=1
         <if test="content!=null">
-           and listing.item_id like "%"#{content}"%"
+           and listing.sku like "%"#{content}"%"
        </if>
        <if test="userId!=null">
            and listing.create_user= #{userId}

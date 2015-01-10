@@ -728,7 +728,7 @@ public class GetOrdersController extends BaseAction {
         messages.addAll(messageList);
         addMessages.addAll(addmessageList);
         for(TradingMessageGetmymessage message:messages){
-            TradingOrderAddMemberMessageAAQToPartner partner=new TradingOrderAddMemberMessageAAQToPartner();
+            /*TradingOrderAddMemberMessageAAQToPartner partner=new TradingOrderAddMemberMessageAAQToPartner();
             partner.setSender(message.getSender());
             partner.setSubject(message.getSubject());
             partner.setRecipientid(message.getRecipientuserid());
@@ -739,7 +739,53 @@ public class GetOrdersController extends BaseAction {
                 String[] text2=text1[1].split("<br/><br>");
                 partner.setBody(text2[0]);
             }
-            addMessages.add(partner);
+            addMessages.add(partner);*/
+            String text=message.getTextHtml();
+            if(!"eBay".equals(message.getSender())){
+                if(StringUtils.isNotBlank(text)){
+                    String text4="";
+                    String text5="";
+                    String[] text1=text.split("<table border=\"0\" cellpadding=\"2\" cellspacing=\"3\" width=\"100%\"><tr><td>");
+                    List<TradingOrderAddMemberMessageAAQToPartner> addMessages3=new ArrayList<TradingOrderAddMemberMessageAAQToPartner>();
+                    for(int i=1;i<text1.length;i++){
+                        TradingOrderAddMemberMessageAAQToPartner partner=new TradingOrderAddMemberMessageAAQToPartner();
+                        TradingOrderAddMemberMessageAAQToPartner partner1=new TradingOrderAddMemberMessageAAQToPartner();
+                        partner.setSender(message.getSender());
+                        partner.setSubject(message.getSubject());
+                        partner.setRecipientid(message.getRecipientuserid());
+                        partner.setCreateTime(message.getReceivedate());
+                        partner.setItemid(message.getItemid());
+                        partner1.setSender(message.getRecipientuserid());
+                        partner1.setSubject(message.getSubject());
+                        partner1.setRecipientid(message.getSender());
+                        partner1.setCreateTime(message.getReceivedate());
+                        partner1.setItemid(message.getItemid());
+                        String[] text2=text1[i].split("<div style=\"font-weight:bold; font-size:10pt; font-family:arial, sans-serif; color:#000\">- "+message.getSender());
+                        if(text2[0].contains(message.getRecipientuserid())){
+                            String text3=text2[0];
+                            if(!text3.contains("- "+message.getRecipientuserid())){
+                                text4=text3+"<br/>";
+                                partner.setBody(text4);
+                                addMessages3.add(partner);
+                            }
+                        }
+                        String[] text6=text1[i].split("<div style=\"font-weight:bold; font-size:10pt; font-family:arial, sans-serif; color:#000\">- "+message.getRecipientuserid());
+                        if(text6[0].contains(message.getSender())){
+                            String text7=text6[0];
+                            if(!text7.contains("- "+message.getSender())){
+                                text5=text7+"<br/>";
+                                partner1.setBody(text5);
+                                addMessages3.add(partner1);
+                            }
+                        }
+                    }
+                    Object[] addMessages3s=addMessages3.toArray();
+                    for(int i=addMessages3s.length-1;i>=0;i--){
+                        TradingOrderAddMemberMessageAAQToPartner messageAAQToPartner= (TradingOrderAddMemberMessageAAQToPartner) addMessages3s[i];
+                        addMessages.add(messageAAQToPartner);
+                    }
+                }
+            }
         }
         Object[] addMessages1=addMessages.toArray();
         for(int i=0;i<addMessages1.length;i++){
@@ -901,7 +947,13 @@ public class GetOrdersController extends BaseAction {
             SystemLogUtils.saveLog(systemLog);
             AjaxSupport.sendFailText("fail", "退款失败,请稍后重试!");
         }else if(map1.get("flag")!=null&&"Success".equals(map1.get("flag"))){
-            systemLog.setEventdesc("退款操作成功");
+            String hua=orderses.get(0).getSelleremail()+"退款操作成功,退款金额:";
+            if(StringUtils.isNotBlank(amout)){
+                hua+=amout+"USD";
+            }else{
+                hua+=orderses.get(0).getAmountpaid()+"USD";
+            }
+            systemLog.setEventdesc(hua);
             SystemLogUtils.saveLog(systemLog);
             AjaxSupport.sendSuccessText("message", "退款成功!");
         }else if(map1.get("flag")!=null&&"Unverified".equals(map1.get("flag"))){

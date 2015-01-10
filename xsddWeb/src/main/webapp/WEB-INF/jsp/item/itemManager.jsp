@@ -245,12 +245,13 @@
             return html;
         }
         function getDuration(json){
+
             var html="";
             if(json.itemId!=null&&json.itemId!="") {
                 if(json.listingduration.indexOf("Days_")!=-1){
-                    html = "<a target='_blank' href='" + serviceItemUrl + json.itemId + "'>" + json.listingduration.substr(json.listingduration.indexOf("_")+1,json.listingduration.length) + "</a>"
+                    html = "<a target='_blank' href='" + getSiteUrl("2",json.site) + json.itemId + "'>" + json.listingduration.substr(json.listingduration.indexOf("_")+1,json.listingduration.length) + "</a>"
                 }else{
-                    html = "<a target='_blank' href='" + serviceItemUrl + json.itemId + "'>" + json.listingduration + "</a>"
+                    html = "<a target='_blank' href='" + getSiteUrl("2",json.site) + json.itemId + "'>" + json.listingduration + "</a>"
                 }
             }else{
                 if(json.listingduration.indexOf("Days_")!=-1){
@@ -363,7 +364,7 @@
         function itemName(json){
             var htm="<span style='color:#5F93D7;word-break:break-all;'><a style='line-height: 19px;' onclick='editItem("+json.id+")' href='javascript:void(0)'>"+json.itemName+"</a></span></br><span style='color:#8BB51B;'>"+json.sku+"</span>";
             if(json.itemId!=null&&json.itemId!=""){
-                htm="<span style='color:#5F93D7;word-break:break-all;'><a style='line-height: 19px;' onclick='editItem("+json.id+")' href='javascript:void(0)'>"+json.itemName+"<a></span></br><a target='_blank' href='"+serviceItemUrl+json.itemId+"'><span style='color:#8BB51B;'>"+json.sku+"</span></a>";
+                htm="<span style='color:#5F93D7;word-break:break-all;'><a style='line-height: 19px;' onclick='editItem("+json.id+")' href='javascript:void(0)'>"+json.itemName+"<a></span></br><a target='_blank' href='"+getSiteUrl("2",json.site)+json.itemId+"'><span style='color:#8BB51B;'>"+json.sku+"</span></a>";
             }
             var remark = "";
             if(json.remark!=null&&json.remark!=""){

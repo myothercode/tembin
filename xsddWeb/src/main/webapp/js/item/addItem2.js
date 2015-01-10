@@ -30,7 +30,7 @@ var loadModelFunctions={
 };
 /**编辑器的工具栏*/
 var ueditorToolBar={
-    toolbars:[['source','FullScreen',  'Undo', 'Redo','Bold','fontfamily', 'fontsize','cleardoc','|',
+    toolbars:[['source','FullScreen',  'Undo', 'Redo','|','link','unlink','strikethrough','forecolor','Bold','fontfamily', 'fontsize','|','cleardoc','|',
         'justifyleft', 'justifycenter', 'justifyright', 'justifyjustify', '|',
         'inserttable', 'deletetable', 'insertparagraphbeforetable', 'insertrow', 'deleterow', 'insertcol', 'deletecol', 'mergecells', 'mergeright', 'mergedown', 'splittocells', 'splittorows',
         'splittocols','|','insertimage','imagenone', 'imageleft', 'imageright', 'imagecenter', '|','horizontal','drafts','preview','|'
@@ -71,6 +71,8 @@ function loadDataBuyer(){
         ],
         selectDataNow: false,
         showIndex: false,
+        sysParm: {"jsonBean.pageNum": 1, "jsonBean.pageCount": 1000},
+        onlyFirstPage:false,
         afterLoadTable:function(){
             if (url.indexOf("addItem.do") != -1||url.indexOf("information/editItem.do") != -1) {
                 var buyerId = getLocalStorage("buyerId");
@@ -78,6 +80,8 @@ function loadDataBuyer(){
             }else{
                 $("input[name='buyerId'][value='" + buyid + "']").attr("checked", "checked");
             }
+            $(".page_newlist").css("visibility","hidden");
+            $(".maage_page").css("visibility","hidden");
         },isrowClick: true,
         rowClickMethod: function (obj,o){
             $("input[type='radio'][name='buyerId']").attr("checked", false);
@@ -107,6 +111,8 @@ function loadDiscountPriceInfo(){
         ],
         selectDataNow: false,
         showIndex: false,
+        sysParm: {"jsonBean.pageNum": 1, "jsonBean.pageCount": 1000},
+        onlyFirstPage:false,
         afterLoadTable:function(){
             if (url.indexOf("addItem.do") != -1||url.indexOf("information/editItem.do") != -1) {
                 var discountpriceinfoId1 = getLocalStorage("discountpriceinfoId");
@@ -114,6 +120,8 @@ function loadDiscountPriceInfo(){
             }else{
                 $("input[name='discountpriceinfoId'][value='" + discountpriceinfoId + "']").attr("checked", "checked");
             }
+            $(".page_newlist").css("visibility","hidden");
+            $(".maage_page").css("visibility","hidden");
         },isrowClick: true,
         rowClickMethod: function (obj,o){
             $("input[type='radio'][name='discountpriceinfoId']").attr("checked", false);
@@ -140,7 +148,9 @@ var loadItemLocationV=false;
              {title:"操作",name:"option1",width:"8%",align:"left",format:makeOption1address}
          ],
          selectDataNow: false,
-         showIndex: false,
+         showIndex: true,
+         sysParm: {"jsonBean.pageNum": 1, "jsonBean.pageCount": 1000},
+         onlyFirstPage:false,
          afterLoadTable:function(){
              if (url.indexOf("addItem.do") != -1||url.indexOf("information/editItem.do") != -1) {
                  var itemLocationId1 = getLocalStorage("itemLocationId");
@@ -148,6 +158,8 @@ var loadItemLocationV=false;
              }else{
                  $("input[name='itemLocationId'][value='" + itemLocationId + "']").attr("checked", "checked");
              }
+             $(".page_newlist").css("visibility","hidden");
+             $(".maage_page").css("visibility","hidden");
          },isrowClick: true,
          rowClickMethod: function (obj,o){
              $("input[type='radio'][name='itemLocationId']").attr("checked", false);
@@ -174,6 +186,8 @@ function loadPayOption(){
         ],
         selectDataNow: false,
         showIndex: false,
+        sysParm: {"jsonBean.pageNum": 1, "jsonBean.pageCount": 1000},
+        onlyFirstPage:false,
         afterLoadTable:function(){
             if (url.indexOf("addItem.do") != -1||url.indexOf("information/editItem.do") != -1) {
                 var payId1 = getLocalStorage("payId");
@@ -181,6 +195,8 @@ function loadPayOption(){
             }else{
                 $("input[name='payId'][value='" + payid + "']").attr("checked", "checked");
             }
+            $(".page_newlist").css("visibility","hidden");
+            $(".maage_page").css("visibility","hidden");
         },isrowClick: true,
         rowClickMethod: function (obj,o){
             $("input[type='radio'][name='payId']").attr("checked", false);
@@ -208,6 +224,8 @@ if(loadReturnpolicyV==true){return;}
         ],
         selectDataNow: false,
         showIndex: false,
+        sysParm: {"jsonBean.pageNum": 1, "jsonBean.pageCount": 1000},
+        onlyFirstPage:false,
         afterLoadTable:function(){
             if (url.indexOf("addItem.do") != -1||url.indexOf("information/editItem.do") != -1) {
                 var returnpolicyId1 = getLocalStorage("returnpolicyId");
@@ -215,6 +233,8 @@ if(loadReturnpolicyV==true){return;}
             }else{
                 $("input[name='returnpolicyId'][value='" + returnpolicyId + "']").attr("checked", "checked");
             }
+            $(".page_newlist").css("visibility","hidden");
+            $(".maage_page").css("visibility","hidden");
         },isrowClick: true,
         rowClickMethod: function (obj,o){
             $("input[type='radio'][name='returnpolicyId']").attr("checked", false);
@@ -244,6 +264,8 @@ function loadShippingDeails(){
         ],
         selectDataNow: false,
         showIndex: false,
+        sysParm: {"jsonBean.pageNum": 1, "jsonBean.pageCount": 1000},
+        onlyFirstPage:false,
         afterLoadTable:function(){
             if (url.indexOf("addItem.do") != -1||url.indexOf("information/editItem.do") != -1) {
                 var shippingDeailsId1 = getLocalStorage("shippingDeailsId");
@@ -251,6 +273,8 @@ function loadShippingDeails(){
             }else{
                 $("input[name='shippingDeailsId'][value='" + shippingDeailsId + "']").attr("checked", "checked");
             }
+            $(".page_newlist").css("visibility","hidden");
+            $(".maage_page").css("visibility","hidden");
         },
         isrowClick: true,
         rowClickMethod: function (obj,o){
@@ -277,6 +301,8 @@ function loaddescriptiondetails(){
         ],
         selectDataNow: false,
         showIndex: false,
+        sysParm: {"jsonBean.pageNum": 1, "jsonBean.pageCount": 1000},
+        onlyFirstPage:false,
         afterLoadTable:function(){
             if (url.indexOf("addItem.do") != -1||url.indexOf("information/editItem.do") != -1) {
                 var sellerItemInfoId1 = getLocalStorage("sellerItemInfoId");
@@ -284,6 +310,8 @@ function loaddescriptiondetails(){
             }else{
                 $("input[name='sellerItemInfoId'][value='" + sellerItemInfoId + "']").attr("checked", "checked");
             }
+            $(".page_newlist").css("visibility","hidden");
+            $(".maage_page").css("visibility","hidden");
         },isrowClick: true,
         rowClickMethod: function (obj,o){
             $("input[type='radio'][name='sellerItemInfoId']").attr("checked", false);
@@ -497,6 +525,7 @@ function changeRadio(th) {
             }
         });
     }
+    PrimaryCategoryShowFlag();
 }
 //点击添回SKU输入项
 function addInputSKU(obj) {
@@ -890,6 +919,8 @@ function addPictrueUrl(urls) {
         var str = '';
         var urlss= '';
         var isabc = false;
+        var picArrays = new Array();
+        var js = 0;
         for (var i = 0; i < urls.length; i++) {
             var imgsrc = urls[i].src.replace("http@", "http:");
             var idDuff=generateMixedRandom(5);
@@ -900,15 +931,27 @@ function addPictrueUrl(urls) {
             str += "</li>";
             urlss+=imgsrc+",";
             $("<img/>").attr({"src": imgsrc,"id":"_imgtemp"+idDuff}).load(function() {
-                if(this.width<1000 || this.height<1000){
+                if((this.width>=500&&this.width<1000) || (this.height>=500&&this.height<1000)){
                     var targgetImgIndex=subRight(this.id,5)//strGetNum(this.id);
                     $("#imgtemp"+targgetImgIndex).wrap("<div style=\"border: solid red 1px;width: 80px;\"></div>");
                     afterTipFunction("imgtemp"+targgetImgIndex,"图像大小小于1000像素，可能会影响展示效果",true);
+                }else if(this.width<500 || this.height<500){
+                    var targgetImgIndex=subRight(this.id,5)
+                    picArrays[js] = targgetImgIndex;
+                    js++;
                 }
              $("#"+this.id).remove();
             });
         }
         var addhtml = $("#picture"+sss.substr(sss.indexOf("_"),sss.length)).append(str);
+        setTimeout(function(){
+            for(var n=0;n<picArrays.length;n++){
+                //alert(picArrays[n]);
+                $("#imgtemp"+picArrays[n]).parent().parent().remove();
+            }
+        },1000);
+
+
         str = "";
         var url=path+"/ajax/saveListingPicUrl.do?urls="+urlss+"&siteid="+siteid+"&ebayid="+ebayid;
         $().invoke(url,{},
@@ -931,8 +974,12 @@ function addPictrueUrl(urls) {
     } else {//多属性图片
         var str = '';
         var urlss= '';
-        if($('#picturemore_' + sss).parent().find("[name*='VariationSpecificValue_']").length==0){
-            $('#picturemore_' + sss).append("<input type='hidden' name='VariationSpecificValue_" + sss + "' value='" + sss + "'>");
+        if($('#picturemore_' + sss).find("[name*='VariationSpecificValue_']").length==0){
+            var selectvalue = $('#picturemore_' + sss).parent().parent().find("div :eq(0)").text();
+            $('#picturemore_' + sss).append("<input type='hidden' name='VariationSpecificValue_" + sss + "' value='" + selectvalue.substr(selectvalue.indexOf(":")+1) + "'>");
+        }else{
+            var selectvalue = $('#picturemore_' + sss).parent().parent().find("div :eq(0)").text();
+            $("input[name='VariationSpecificValue_"+sss+"']").val(selectvalue.substr(selectvalue.indexOf(":")+1));
         }
         for (var i = 0; i < urls.length; i++) {
             str+="<li><div style='position:relative'><input type='hidden' name='pic_mackid_more'/><input type='hidden' name='" + sss + "' value='" + urls[i].src.replace("http@", "http:") + "'><img src='" + chuLiPotoUrl(urls[i].src.replace("http@", "http:")) + "' height='80' width='78' /><div style='text-align: right;background-color: dimgrey;'><img src='"+path+"/img/newpic_ico.png' onclick='removeThis(this)'></div></div></li>";
@@ -996,6 +1043,7 @@ function getCategoryName(categoryId,siteId){
 }
 //当输入分类，
 function addTypeAttr() {
+
     $('#typeAttrs').html('');
     if(jQuery("#PrimaryCategory").validationEngine("validate"))
     {
@@ -1007,6 +1055,7 @@ function addTypeAttr() {
     var site = $("select[name='site']").find("option:selected").val();
     getCategoryName(values,site);
     $("#PrimaryCategoryshow").show();
+    PrimaryCategoryShowFlag();
 }
 var CategoryType;
 function selectType() {
@@ -1230,3 +1279,4 @@ function initSelectMore(){
 
     });
 }
+

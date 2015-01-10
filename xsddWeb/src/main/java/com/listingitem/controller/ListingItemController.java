@@ -1347,15 +1347,17 @@ public class ListingItemController extends BaseAction {
                     }
 
                 }else if(str.equals("Quantity")){//改数量
-                    tla.setAmendType("Quantity");
-                    tla.setContent("将数量从" + tld.getQuantity() + "修改为" + item.getQuantity());
-                    ite.setQuantity(item.getQuantity());
-                    tld.setQuantity(item.getQuantity().longValue());
-                    Item ites = new Item();
-                    ites.setItemID(item.getItemID());
-                    ites.setQuantity(item.getQuantity());
-                    rir.setItem(ites);
-                    tla.setCosxml("<?xml version=\"1.0\" encoding=\"utf-8\"?>"+PojoXmlUtil.pojoToXml(rir));
+                    if(!item.getListingType().equals("2")) {
+                        tla.setAmendType("Quantity");
+                        tla.setContent("将数量从" + tld.getQuantity() + "修改为" + item.getQuantity());
+                        ite.setQuantity(item.getQuantity());
+                        tld.setQuantity(item.getQuantity().longValue());
+                        Item ites = new Item();
+                        ites.setItemID(item.getItemID());
+                        ites.setQuantity(item.getQuantity());
+                        rir.setItem(ites);
+                        tla.setCosxml("<?xml version=\"1.0\" encoding=\"utf-8\"?>" + PojoXmlUtil.pojoToXml(rir));
+                    }
                 }else if(str.equals("PictureDetails")){//改图片
                     tla.setAmendType("PictureDetails");
                     tla.setContent("图片修改");

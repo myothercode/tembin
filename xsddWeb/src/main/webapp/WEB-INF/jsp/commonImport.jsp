@@ -146,6 +146,7 @@ if(bbs_){
                 });
     }
 
+
     /**清除本地缓存*/
     function cleanLocalStorageFunction() {
         try {
@@ -170,5 +171,6 @@ if(bbs_){
             return localStorage.getItem("tiancheng_jscacheVersion");
         }
         cleanLocalStorageFunction();
+
 
 </script>

@@ -76,8 +76,8 @@ public class TaskPool {
 
 
 
-
-
+    /**用于判断线程是否还在运行的时候，判断是否超时*/
+    public static Map<String, Date> threadRunTime = new HashMap<String, Date>();
     /**判断指定名字的线程是否还在运行*/
     public static boolean threadIsAliveByName(String tname){
         int n = Thread.activeCount();
@@ -89,35 +89,59 @@ public class TaskPool {
             if (thread!=null && tname.equals(thread.getName()) && thread.isAlive()) {
                 String x=thread.getState().toString();//指定线程的状态
                 if("RUNNABLE".equalsIgnoreCase(x)){
-                    b = true;
-                }else if("WAITING".equalsIgnoreCase(x)){
-                    try {
-                        thread.interrupt();
-                        thread.stop(new RuntimeException("===hh=="));
-                    } catch (Exception e) {
-                        //logger.error("线程强制停止!");
+                    return true;
+                }else if ("BLOCKED".equalsIgnoreCase(x)){
+                    logger.error(tname+"线程阻塞！=========");
+                    return true;
+                }else if("TIMED_WAITING".equalsIgnoreCase(x)){
+                    logger.error(tname+"线程定时等待！=========");
+                    return true;
+                }
+                else if("WAITING".equalsIgnoreCase(x)){
+                    logger.error(tname+"线程处于waiting状态"+"当前状态为"+x);
+                    /**检查该任务是否在执行记录的Map中*/
+                   Date d = threadRunTime.get(tname);
+                    if(d!=null){
+                        int c= DateUtils.minuteBetween(d,new Date());
+                        if(c>360){
+                            logger.error(tname+"线程处于waiting状态"+"已经超过规定时间，强制终止");
+                            threadRunTime.remove(tname);
+                            thread.stop(new RuntimeException("==oooooo=="));
+                            return true;
+                        }else {
+                            logger.error(tname+"线程处于waiting状态"+"时间还未超过120分钟");
+                            return true;
+                        }
                     }
-                    b=false;
+                    threadRunTime.remove(tname);
+                    logger.error(tname+"线程处于waiting状态"+"但是已经执行完毕！强制终止");
+                    thread.stop(new RuntimeException("==oooooo=="));
+                    return true;
                 }
                 else {
-                    String nam= StringUtils.replaceOnce(tname,"thread_","");
+                    b=false;
+                    logger.error(tname+"另起线程....."+"当前状态为"+x);
+                    /*String nam= StringUtils.replaceOnce(tname,"thread_","");
                     Date lastTime= MainTask.taskRunTime.get(nam);
                     if(lastTime!=null){
                         int c= DateUtils.minuteBetween(lastTime, new Date());
                         if(c<30){
                             try {
-                                thread.stop(new RuntimeException("===hh=="));
+                                thread.stop(new RuntimeException(tname+"===线程超时强制停止!=="));
                             } catch (Exception e) {
                                 logger.error("线程超时强制停止!");
                             }
                         }
-                    }
+                    }*/
 
                 }
 
 
             }
         }
+
+
+        threadRunTime.put(tname,new Date());
         return b;
     }
 

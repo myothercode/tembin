@@ -43,6 +43,7 @@
     <result column="paymentAmount" jdbcType="VARCHAR" property="paymentamount" />
     <result column="referenceID" jdbcType="VARCHAR" property="referenceid" />
     <result column="paypalPrice" jdbcType="VARCHAR" property="paypalprice" />
+    <result column="updateTime" jdbcType="TIMESTAMP" property="updatetime" />
     <result column="create_user" jdbcType="BIGINT" property="createUser" />
     <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
     <result column="uuid" jdbcType="VARCHAR" property="uuid" />
@@ -125,7 +126,7 @@
     transactionID, externalTransactionID, externalTransactionTime, feeOrCreditAmount, 
     paymentOrRefundAmount, externalTransactionStatus, paidTime, orderID, orderStatus, 
     cancelStatus, paymentStatus, payer, payee, paymentTime, paymentAmount, referenceID, 
-    paypalPrice, create_user, create_time, uuid
+    paypalPrice, updateTime, create_user, create_time, uuid
   </sql>
   <select id="selectByExample" parameterType="com.base.database.trading.model.TradingOrderGetSellerTransactionsExample" resultMap="BaseResultMap">
     <!--
@@ -192,8 +193,8 @@
       orderID, orderStatus, cancelStatus, 
       paymentStatus, payer, payee, 
       paymentTime, paymentAmount, referenceID, 
-      paypalPrice, create_user, create_time, 
-      uuid)
+      paypalPrice, updateTime, create_user, 
+      create_time, uuid)
     values (#{id,jdbcType=BIGINT}, #{amountpaid,jdbcType=VARCHAR}, #{adjustmentamount,jdbcType=VARCHAR}, 
       #{convertedadjustmentamount,jdbcType=VARCHAR}, #{convertedamountpaid,jdbcType=VARCHAR}, 
       #{convertedtransactionprice,jdbcType=VARCHAR}, #{createddate,jdbcType=TIMESTAMP}, 
@@ -208,8 +209,8 @@
       #{orderid,jdbcType=VARCHAR}, #{orderstatus,jdbcType=VARCHAR}, #{cancelstatus,jdbcType=VARCHAR}, 
       #{paymentstatus,jdbcType=VARCHAR}, #{payer,jdbcType=VARCHAR}, #{payee,jdbcType=VARCHAR}, 
       #{paymenttime,jdbcType=TIMESTAMP}, #{paymentamount,jdbcType=VARCHAR}, #{referenceid,jdbcType=VARCHAR}, 
-      #{paypalprice,jdbcType=VARCHAR}, #{createUser,jdbcType=BIGINT}, #{createTime,jdbcType=TIMESTAMP}, 
-      #{uuid,jdbcType=VARCHAR})
+      #{paypalprice,jdbcType=VARCHAR}, #{updatetime,jdbcType=TIMESTAMP}, #{createUser,jdbcType=BIGINT}, 
+      #{createTime,jdbcType=TIMESTAMP}, #{uuid,jdbcType=VARCHAR})
   </insert>
   <insert id="insertSelective" parameterType="com.base.database.trading.model.TradingOrderGetSellerTransactions">
     <!--
@@ -328,6 +329,9 @@
       </if>
       <if test="paypalprice != null">
         paypalPrice,
+      </if>
+      <if test="updatetime != null">
+        updateTime,
       </if>
       <if test="createUser != null">
         create_user,
@@ -450,6 +454,9 @@
       </if>
       <if test="paypalprice != null">
         #{paypalprice,jdbcType=VARCHAR},
+      </if>
+      <if test="updatetime != null">
+        #{updatetime,jdbcType=TIMESTAMP},
       </if>
       <if test="createUser != null">
         #{createUser,jdbcType=BIGINT},
@@ -590,6 +597,9 @@
       <if test="record.paypalprice != null">
         paypalPrice = #{record.paypalprice,jdbcType=VARCHAR},
       </if>
+      <if test="record.updatetime != null">
+        updateTime = #{record.updatetime,jdbcType=TIMESTAMP},
+      </if>
       <if test="record.createUser != null">
         create_user = #{record.createUser,jdbcType=BIGINT},
       </if>
@@ -647,6 +657,7 @@
       paymentAmount = #{record.paymentamount,jdbcType=VARCHAR},
       referenceID = #{record.referenceid,jdbcType=VARCHAR},
       paypalPrice = #{record.paypalprice,jdbcType=VARCHAR},
+      updateTime = #{record.updatetime,jdbcType=TIMESTAMP},
       create_user = #{record.createUser,jdbcType=BIGINT},
       create_time = #{record.createTime,jdbcType=TIMESTAMP},
       uuid = #{record.uuid,jdbcType=VARCHAR}
@@ -769,6 +780,9 @@
       <if test="paypalprice != null">
         paypalPrice = #{paypalprice,jdbcType=VARCHAR},
       </if>
+      <if test="updatetime != null">
+        updateTime = #{updatetime,jdbcType=TIMESTAMP},
+      </if>
       <if test="createUser != null">
         create_user = #{createUser,jdbcType=BIGINT},
       </if>
@@ -823,6 +837,7 @@
       paymentAmount = #{paymentamount,jdbcType=VARCHAR},
       referenceID = #{referenceid,jdbcType=VARCHAR},
       paypalPrice = #{paypalprice,jdbcType=VARCHAR},
+      updateTime = #{updatetime,jdbcType=TIMESTAMP},
       create_user = #{createUser,jdbcType=BIGINT},
       create_time = #{createTime,jdbcType=TIMESTAMP},
       uuid = #{uuid,jdbcType=VARCHAR}

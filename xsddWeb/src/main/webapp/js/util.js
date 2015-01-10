@@ -630,8 +630,65 @@ String.prototype.endWith=function(str){
 	return reg.test(this);
 };
 
-
-
+/**
+ * 得到站点URl
+ * @param dataType
+ * @param site
+ * @returns {*}
+ */
+function getSiteUrl(dataType,site){
+    if(localStorage.getItem("siteUrlStr")==null||localStorage.getItem("siteUrlStr")==""){
+        var url = path + "/ajax/getSiteUrl.do";
+        $().delayInvoke(url, {},
+            [function (m, r) {
+                localStorage.setItem("siteUrlStr", r.siteUrlStr);
+                localStorage.setItem("siteStrList_local", r.siteListStr);
+                var siteUrlStr = localStorage.getItem("siteUrlStr");
+                var siteListStr = localStorage.getItem("siteStrList_local");
+                var jsonUrlStr = eval("(" + siteUrlStr + ")");
+                var jsonSiteList = eval("(" + siteListStr + ")");
+                if(dataType=="1"){
+                    return jsonUrlStr["URL"+site];
+                }else if(dataType=="2"){
+                    for(var i=0;i<jsonSiteList.length;i++){
+                        if(site==jsonSiteList[i].id){
+                            return jsonUrlStr["URL"+jsonSiteList[i].name1];
+                        }
+                    }
+                }else if(dataType=="3"){
+                    for(var i=0;i<jsonSiteList.length;i++){
+                        if(site==jsonSiteList[i].value){
+                            return jsonUrlStr["URL"+jsonSiteList[i].name1];
+                        }
+                    }
+                }
+            },
+                function (m, r) {
+                    alert(r);
+                }]
+        );
+    }else{
+        var siteUrlStr = localStorage.getItem("siteUrlStr");
+        var siteListStr = localStorage.getItem("siteStrList_local");
+        var jsonUrlStr = eval("(" + siteUrlStr + ")");
+        var jsonSiteList = eval("(" + siteListStr + ")");
+        if(dataType=="1"){
+            return jsonUrlStr["URL"+site];
+        }else if(dataType=="2"){
+            for(var i=0;i<jsonSiteList.length;i++){
+                if(site==jsonSiteList[i].id){
+                    return jsonUrlStr["URL"+jsonSiteList[i].name1];
+                }
+            }
+        }else if(dataType=="3"){
+            for(var i=0;i<jsonSiteList.length;i++){
+                if(site==jsonSiteList[i].value){
+                    return jsonUrlStr["URL"+jsonSiteList[i].name1];
+                }
+            }
+        }
+    }
+}
 
 
 

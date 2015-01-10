@@ -68,7 +68,7 @@ public class MainTask {
     public static final String SYNCHRONIZE_GET_ORDERS_SELLER_TRANSACTION_TIMER="synchronize_get_orders_seller_transaction_timer";//定时外部交易根据订单订单商品每两分钟
     public static final String PRICE_TRACKING_BY_ITEMID="price_tracking_by_itemid";//定时价格跟踪商品
     public static final String SYNCHRONIZE_GET_ORDERS_TRACK_NUMBER_TIMER="synchronize_get_orders_track_number_timer";//定时价获取91track状态
-
+    public static final String PRICE_TRACKING_AUTO_PRICING="price_tracking_auto_pricing"; //定时价格跟踪自动调价
     /**
      * 记录任务上次运行的时间
      */
@@ -104,7 +104,8 @@ public class MainTask {
         doList.add(SYNCHRONIZE_GET_ORDERS_SELLER_TRANSACTION_TIMER);
         doList.add(SYNCHRONIZE_GET_ORDERS_TRACK_NUMBER_TIMER);
         doList.add(PRICE_TRACKING_BY_ITEMID);
-      //  doList.add("Test_Test_test");
+        doList.add(PRICE_TRACKING_AUTO_PRICING);
+        doList.add("Test_Test_test");
         if (isStartTimerTask==null) {
             isStartTimerTask = ApplicationContextUtil.getBean(CommAutowiredClass.class);
         }

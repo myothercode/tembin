@@ -84,7 +84,7 @@ if(url.indexOf("?")==-1){
         var self = this;
 
         if(config.isConverPage){
-            $.blockUI({ message: '<h1><img src="/xsddWeb/img/busy.gif" /> Just a moment...</h1>' });
+            $.blockUI({ message: '<h1><img src="/xsddWeb/img/busy.gif" /></h1>' });
         }
 
         $.ajax({

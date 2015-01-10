@@ -1,5 +1,6 @@
 package com.item.controller;
 
+import com.alibaba.fastjson.JSON;
 import com.base.aboutpaypal.service.PayPalService;
 import com.base.database.publicd.model.PublicDataDict;
 import com.base.database.publicd.model.PublicUserConfig;
@@ -348,7 +349,7 @@ public class ItemController extends BaseAction{
             TradingVariations tvs = this.iTradingVariations.selectByParentId(ti.getId());
             if (tvs != null) {
                 Map m = new HashMap();
-                m.put("userid", c.getId());
+                //m.put("userid", c.getId());
                 m.put("parentid", tvs.getId());
                 List<VariationQuery> liv = this.iTradingVariation.selectByParentId(m);
                 if (liv != null && liv.size() > 0) {
@@ -477,7 +478,7 @@ public class ItemController extends BaseAction{
      * @param tradingItem
      * @param request
      */
-    public void getEbayPicUrl(Item item,TradingItem tradingItem,HttpServletRequest request) throws InterruptedException {
+    public void getEbayPicUrl(Item item,TradingItem tradingItem,HttpServletRequest request,String ebayAccountId) throws InterruptedException {
         //转换图片地址
         PictureDetails picd = item.getPictureDetails();
         String [] picUrl = request.getParameterValues("pic_mackid");
@@ -486,6 +487,55 @@ public class ItemController extends BaseAction{
             List<String> lipicurl = picd.getPictureURL();
             List<String> liebaypic = new ArrayList();
             for (int i = 0; i < picUrl.length; i++) {
+                List<TradingListingpicUrl> litam = this.iTradingListingPicUrl.selectByMackId(picUrl[i]);
+                if(litam!=null&&litam.size()>0){
+                    TradingListingpicUrl tam = litam.get(0);
+                    String url = tam.getUrl();
+                    String picName = url.substring(url.lastIndexOf("/")+1,url.lastIndexOf("."));
+                    if(tam.getEbayurl()==null&&tam.getCheckFlag().equals("0")){
+                        Thread.sleep(5000L);
+                        Asserts.assertTrue(picUrl[i]!=null&&!"".equals(picUrl[i]),"图片上传失败，请从新选择图片上传");
+                        List<TradingListingpicUrl> litamss = this.iTradingListingPicUrl.selectByMackId(picUrl[i]);
+                        tam = litamss.get(0);
+                        if(tam.getCheckFlag().equals("1")){
+                            liebaypic.add(tam.getEbayurl());
+                        }else{
+                            try {
+                                tam = this.iTradingListingPicUrl.uploadPic(tradingItem,tam.getUrl(),picName,tam);
+                                if(tam.getEbayurl()==null&&tam.getCheckFlag().equals("2")){
+                                    Asserts.assertTrue(false,"图片上传失败，请从新选择图片上传");
+                                }else{
+                                    liebaypic.add(tam.getEbayurl());
+                                }
+                            } catch (Exception e) {
+                                logger.error(url+"图片上传失败！",e);
+                                Asserts.assertTrue(false, "图片上传失败，请从新选择图片上传");
+                            }
+                        }
+                    }else if(tam.getEbayurl()==null&&tam.getCheckFlag().equals("2")){
+                        try {
+                            tam = this.iTradingListingPicUrl.uploadPic(tradingItem,tam.getUrl(),picName,tam);
+                            if(tam.getEbayurl()==null&&tam.getCheckFlag().equals("2")){
+                                Asserts.assertTrue(false,"图片上传失败，请从新选择图片上传");
+                            }else{
+                                liebaypic.add(tam.getEbayurl());
+                            }
+                        } catch (Exception e) {
+                            logger.error(url+"",e);
+                            Asserts.assertTrue(false, "图片上传失败，请从新选择图片上传");
+                        }
+                    }else if(tam.getCheckFlag().equals("1")){
+                        liebaypic.add(tam.getEbayurl());
+                    }
+                }
+            }
+            picd.setPictureURL(liebaypic);
+            item.setPictureDetails(picd);
+        }else{
+            List<String> liebaypic = new ArrayList();
+            String [] picurl = request.getParameterValues("PictureDetails_"+ebayAccountId+".PictureURL");
+            picd = new PictureDetails();
+            for(int i=0;i<picurl.length;i++){
                 List<TradingListingpicUrl> litam = this.iTradingListingPicUrl.selectByMackId(picUrl[i]);
                 if(litam!=null&&litam.size()>0){
                     TradingListingpicUrl tam = litam.get(0);
@@ -552,7 +602,11 @@ public class ItemController extends BaseAction{
                             List<TradingListingpicUrl> liplu = this.iTradingListingPicUrl.selectByMackId(tam.getAttr1());
                             if(liplu!=null&&liplu.size()>0){
                                 TradingListingpicUrl plu = liplu.get(0);
-                                listr.add(plu.getEbayurl());
+                                if(plu.getEbayurl()==null){
+                                    listr.add(tam.getValue());
+                                }else {
+                                    listr.add(plu.getEbayurl());
+                                }
                             }else {
                                 listr.add(tam.getValue());
                             }
@@ -716,11 +770,20 @@ public class ItemController extends BaseAction{
         String mouth = request.getParameter("dataMouth");
         if("save".equals(mouth)||"othersave".equals(mouth)){//保存范本、另存为新范本
             //保存商品信息到数据库中
-            this.iTradingItem.saveItem(item,tradingItem);
+            try {
+                this.iTradingItem.saveItem(item, tradingItem);
+            }catch(Exception e){
+                AjaxSupport.sendFailText("fail","保存数据失败！原因："+e.getMessage());
+            }
             AjaxSupport.sendSuccessText("message", "操作成功！");
         }else if("all".equals(mouth)||"Backgrounder".equals(mouth)||"timeSave".equals(mouth)){//立即刊登、后台刊登、定时刊登
             //保存商品信息到数据库中
-            Map itemMap = this.iTradingItem.saveItem(item,tradingItem);
+            Map itemMap = null;
+            try{
+                itemMap = this.iTradingItem.saveItem(item,tradingItem);
+            }catch(Exception e){
+                AjaxSupport.sendFailText("fail","保存数据失败！原因："+e.getMessage());
+            }
             TradingPaypal tpay = this.iTradingPayPal.selectById(tradingItem.getPayId());
             TradingItemAddress tadd = this.iTradingItemAddress.selectById(tradingItem.getItemLocationId());
             TradingShippingdetails tshipping = this.iTradingShippingDetails.selectById(tradingItem.getShippingDeailsId());
@@ -942,6 +1005,7 @@ public class ItemController extends BaseAction{
             String xml="";
             //当选择多账号时刊登
             String [] paypals = request.getParameterValues("ebayAccounts");
+
             if("timeSave".equals(mouth)){//定时刊登
                 for (String paypal : paypals) {
                     item.setTitle(request.getParameter("Title_"+paypal));
@@ -970,13 +1034,17 @@ public class ItemController extends BaseAction{
                         }
                         item.setPictureDetails(pd);
                     }
-                    getEbayPicUrl(item,tradingItem,request);
+                    getEbayPicUrl(item,tradingItem,request,paypal);
                     //getEbayPicUrl(item,tradingItem,paypal);
                     UsercontrollerEbayAccount ua = this.iUsercontrollerEbayAccount.selectById(Long.parseLong(paypal));
                     //PublicUserConfig pUserConfig = DataDictionarySupport.getPublicUserConfigByID(ua.getPaypalAccountId());
                     //如果配置ＥＢＡＹ账号时，选择强制使用paypal账号则用该账号
                     //item.setPayPalEmailAddress(pUserConfig.getConfigValue());
                     //定时刊登时，需要获取保存到数据库中的ＩＤ
+                    if(tradingItem.getListingtype().equals("2")){
+                        item.setStartPrice(null);
+                        item.setQuantity(null);
+                    }
                     if (item.getListingType().equals("Chinese")) {
                         AddItemRequest addItem = new AddItemRequest();
                         addItem.setXmlns("urn:ebay:apis:eBLBaseComponents");
@@ -1048,13 +1116,17 @@ public class ItemController extends BaseAction{
                         }
                         item.setPictureDetails(pd);
                     }
-                    getEbayPicUrl(item,tradingItem,request);
+                    getEbayPicUrl(item,tradingItem,request,paypal);
                     //getEbayPicUrl(item,tradingItem,paypal);
                     UsercontrollerEbayAccount ua = this.iUsercontrollerEbayAccount.selectById(Long.parseLong(paypal));
                     //PublicUserConfig pUserConfig = DataDictionarySupport.getPublicUserConfigByID(ua.getPaypalAccountId());
                     //如果配置ＥＢＡＹ账号时，选择强制使用paypal账号则用该账号
                     //item.setPayPalEmailAddress(pUserConfig.getConfigValue());
                     //定时刊登时，需要获取保存到数据库中的ＩＤ
+                    if(tradingItem.getListingtype().equals("2")){
+                        item.setStartPrice(null);
+                        item.setQuantity(null);
+                    }
                     if (item.getListingType().equals("Chinese")) {
                         AddItemRequest addItem = new AddItemRequest();
                         addItem.setXmlns("urn:ebay:apis:eBLBaseComponents");
@@ -1113,7 +1185,7 @@ public class ItemController extends BaseAction{
                         String res = resMap.get("message");
                         if ("fail".equalsIgnoreCase(r1)) {
                             logger.error("数据已保存，但刊登失败！由于返回报文不全，无法得到更详细的信息！");
-                            AjaxSupport.sendFailText("fail", "数据已保存，但刊登失败！");
+                            //AjaxSupport.sendFailText("fail", "数据已保存，但刊登失败！");
                             AjaxSupport.sendFailText("fail", "{\"isFlag\":\"1\",\"message\":\"数据已保存，但刊登失败！\",\"tradingItemId\":\""+tradingItem.getId()+"\"}");
                             return;
                         }
@@ -1355,7 +1427,7 @@ public class ItemController extends BaseAction{
                 Asserts.assertTrue(false,"该商品未成功刊登，不能进行修改！");
             }
             item.setItemID(tradingItem1.getItemId());
-            getEbayPicUrl(item,tradingItem,request);
+            getEbayPicUrl(item,tradingItem,request,paypal);
             //getEbayPicUrl(item,tradingItem,paypal);
             UsercontrollerEbayAccount ua = this.iUsercontrollerEbayAccount.selectById(Long.parseLong(paypal));
             //PublicUserConfig pUserConfig = DataDictionarySupport.getPublicUserConfigByID(ua.getPaypalAccountId());
@@ -1371,6 +1443,10 @@ public class ItemController extends BaseAction{
             rc.seteBayAuthToken(ua.getEbayToken());
             rir.setRequesterCredentials(rc);
             String xml = "";
+            if(tradingItem1.getListingtype().equals("2")){
+                item.setStartPrice(null);
+                item.setQuantity(null);
+            }
             rir.setItem(item);
             xml = PojoXmlUtil.pojoToXml(rir);
             xml = "<?xml version=\"1.0\" encoding=\"utf-8\"?>"+xml;
@@ -1629,7 +1705,7 @@ public class ItemController extends BaseAction{
             }
             item.setPictureDetails(pd);
         }
-        getEbayPicUrl(item,tradingItem,request);
+        getEbayPicUrl(item,tradingItem,request,paypal);
         //getEbayPicUrl(item,tradingItem,paypal);
         UsercontrollerEbayAccount ua = this.iUsercontrollerEbayAccount.selectById(Long.valueOf(autowiredClass.sandboxEbayID));
         //PublicUserConfig pUserConfig = DataDictionarySupport.getPublicUserConfigByID(ua.getPaypalAccountId());
@@ -1897,7 +1973,7 @@ public class ItemController extends BaseAction{
             }
             item.setPictureDetails(pd);
         }
-        getEbayPicUrl(item,tradingItem,request);
+        getEbayPicUrl(item,tradingItem,request,paypal);
         //getEbayPicUrl(item,tradingItem,paypal);
         UsercontrollerEbayAccount ua = this.iUsercontrollerEbayAccount.selectById(Long.parseLong(autowiredClass.sandboxEbayID));
         //PublicUserConfig pUserConfig = DataDictionarySupport.getPublicUserConfigByID(ua.getPaypalAccountId());
@@ -2760,5 +2836,15 @@ public class ItemController extends BaseAction{
             lim.add(m);
         }
         AjaxSupport.sendSuccessText("message", lim);
+    }
+
+    @RequestMapping("/ajax/getSiteUrl.do")
+    @ResponseBody
+    public void getSiteUrl(HttpServletRequest request,HttpServletResponse response,ModelMap modelMap) throws Exception {
+        CommAutowiredClass commAutowiredClass= (CommAutowiredClass) ApplicationContextUtil.getBean(CommAutowiredClass.class);
+        List<TradingDataDictionary> litdd = DataDictionarySupport.getTradingDataDictionaryByType("site");
+        modelMap.put("siteListStr", JSON.toJSONString(litdd));
+        modelMap.put("siteUrlStr",commAutowiredClass.serviceItemUrls);
+        AjaxSupport.sendSuccessText("message", modelMap);
     }
 }

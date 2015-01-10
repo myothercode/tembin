@@ -19,18 +19,16 @@
     <script type="text/javascript">
         var priceTracking;
         $(document).ready(function(){
-            var url=path+"/priceTracking/ajax/priceTrackingQueryList.do?";
+            var url=path+"/priceTracking/ajax/priceTrackingQueryList1.do?";
             $("#priceTrackingListTable").initTable({
                 url:url,
                 columnData:[
                  /*   {title:"",name:"ch",width:"2%",align:"top",format:makeOption5},*/
-                    {title:"",name:"ch",width:"1%",align:"top",format:makeOption1},
-                    {title:"图片",name:"picture",width:"5%",align:"left",format:makeOption5},
-                    {title:"物品号",name:"itemid",width:"5%",align:"left",format:makeOption4},
-                    {title:"标题",name:"title",width:"50%",align:"left"},
-                    {title:"卖家",name:"sellerusername",width:"5%",align:"left"},
-                    {title:"价格",name:"currentprice",width:"5%",align:"left",format:makeOption2},
-                    {title:"运输费",name:"shippingServiceCost",width:"5%",align:"left",format:makeOption3}
+                    {title:"SKU",name:"sku",width:"5%",align:"center"},
+                    {title:"竞争对手数量",name:"competitorsTotal",width:"20%",align:"center"},
+                    {title:"规则",name:"increaseOrDecrease",width:"20%",align:"center",format:makeOption2},
+                    {title:"现在价格",name:"newprice",width:"5%",align:"left"},
+                    {title:"操作&nbsp;&nbsp;&nbsp;",name:"option1",width:"2%",align:"center",format:makeOption3}
                 ],
                 selectDataNow:false,
                 isrowClick:false,
@@ -46,19 +44,57 @@
             return htm;
         }
         function makeOption2(json){
-            return json.currentprice+json.currencyid;
+            var price="价格";
+            if(json.ruleType=="priceLowerType"){
+                price+="低于竞争对手,";
+            }else{
+                price+="高于竞争对手,";
+            }
+            if(json.increaseOrDecrease=="-"){
+                price+="降价";
+            }else{
+                price+="提价";
+            }
+            price+=json.inputValue+json.sign;
+            return price;
         }
         function makeOption3(json){
-            return json.shippingservicecost+json.shippingcurrencyid;
+            var hs="";
+            hs+="<li style=\"height:25px;\" onclick=viewPricingRecord("+json.id+"); doaction=\"readed\" >调价记录</li>";
+            hs+="<li style=\"height:25px;\" onclick=deleteAutoPricing("+json.id+"); doaction=\"look\" >删除</li>";
+            var pp={"liString":hs};
+            return getULSelect(pp);
         }
-        function makeOption4(json){
-            return "<a href='javascript:void(0);' onclick='lianjieEbay('"+json.itemid+"')'></a>";
+        function viewPricingRecord(id){
+            var url=path+"/priceTracking/viewPricingRecord.do?autoPricingId="+id;
+            priceTracking=openMyDialog({title: '查看调价记录',
+                content: 'url:'+url,
+                icon: 'succeed',
+                width:1000,
+                height:600,
+                lock:true
+            });
         }
-        function makeOption5(json){
-            return "<img src='"+json.pictureurl+".jpg' style='width: 50px;height:50px;' />"
+        function deleteAutoPricing(id){
+            var url=path+"/priceTracking/ajax/deleteAutoPricing.do?id="+id;
+            $().invoke(url,null,
+                    [function(m,r){
+                        alert(r);
+                        refreshTable();
+                        Base.token;
+                    },
+                        function(m,r){
+                            alert(r);
+                            Base.token();
+                        }]
+            );
         }
         function lianjieEbay(itemid){
             window.open(serviceItemUrl+itemid+"");
+        }
+        function query(){
+            var qeuryContent=$("#qeuryContent").val();
+            $("#priceTrackingListTable").selectDataAfterSetParm({"bedDetailVO.deptId":"", "isTrue":0,"qeuryContent":qeuryContent});
         }
         function searchCompetitors(){
             var url=path+"/priceTracking/searchCompetitors.do?";
@@ -94,7 +130,7 @@
         }
         function assignItem(){
             var url=path+"/priceTracking/assignItem.do?";
-            priceTracking=openMyDialog({title: '自动调价',
+            priceTracking=openMyDialog({title: '指定物品码',
                 content: 'url:'+url,
                 icon: 'succeed',
                 width:500,
@@ -121,7 +157,7 @@
             <span id="sleBG">
 <span id="sleHid">
 <select id="selectName" name="type" class="select">
-    <option selected="selected" value="title">标题</option>
+    <option selected="selected" value="title">SKU</option>
 </select>
 </span>
 </span>
@@ -129,10 +165,11 @@
         <input id="qeuryContent" name="conteny" type="text" class="key_1"><input onclick="query();" name="newbut" type="button" class="key_2"></div>
 </div>
     <div class="newds">
-        <div class="newsj_left" style="margin-left: 9px;">
-            <span class="newusa_ici_del_in"><input type="checkbox" name="checkbox" id="checkbox" onclick="Allchecked(this);"></span>
-            <span class="newusa_ici_del" onclick="searchCompetitors();">搜索竞争对手</span>
-            <span class="newusa_ici_del" onclick="autoSetPrice();;">自动调价</span>
+        <div class="newsj_left" style="position: absolute;top: 95px;right: 100px;z-index: 10000;">
+                <img src="<c:url value ="/img/adds.png" />" onclick="autoSetPrice();">
+            <%--<span class="newusa_ici_del_in"><input type="checkbox" name="checkbox" id="checkbox" onclick="Allchecked(this);"></span>--%>
+           <%-- <span class="newusa_ici_del" onclick="searchCompetitors();">搜索竞争对手</span>
+            <span class="newusa_ici_del" onclick="autoSetPrice();;">自动调价</span>--%>
         </div>
     </div>
 </div>

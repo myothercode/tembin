@@ -488,52 +488,52 @@ public class TradingAddItemExample {
             return (Criteria) this;
         }
 
-        public Criteria andReservepriceEqualTo(Long value) {
+        public Criteria andReservepriceEqualTo(Double value) {
             addCriterion("ReservePrice =", value, "reserveprice");
             return (Criteria) this;
         }
 
-        public Criteria andReservepriceNotEqualTo(Long value) {
+        public Criteria andReservepriceNotEqualTo(Double value) {
             addCriterion("ReservePrice <>", value, "reserveprice");
             return (Criteria) this;
         }
 
-        public Criteria andReservepriceGreaterThan(Long value) {
+        public Criteria andReservepriceGreaterThan(Double value) {
             addCriterion("ReservePrice >", value, "reserveprice");
             return (Criteria) this;
         }
 
-        public Criteria andReservepriceGreaterThanOrEqualTo(Long value) {
+        public Criteria andReservepriceGreaterThanOrEqualTo(Double value) {
             addCriterion("ReservePrice >=", value, "reserveprice");
             return (Criteria) this;
         }
 
-        public Criteria andReservepriceLessThan(Long value) {
+        public Criteria andReservepriceLessThan(Double value) {
             addCriterion("ReservePrice <", value, "reserveprice");
             return (Criteria) this;
         }
 
-        public Criteria andReservepriceLessThanOrEqualTo(Long value) {
+        public Criteria andReservepriceLessThanOrEqualTo(Double value) {
             addCriterion("ReservePrice <=", value, "reserveprice");
             return (Criteria) this;
         }
 
-        public Criteria andReservepriceIn(List<Long> values) {
+        public Criteria andReservepriceIn(List<Double> values) {
             addCriterion("ReservePrice in", values, "reserveprice");
             return (Criteria) this;
         }
 
-        public Criteria andReservepriceNotIn(List<Long> values) {
+        public Criteria andReservepriceNotIn(List<Double> values) {
             addCriterion("ReservePrice not in", values, "reserveprice");
             return (Criteria) this;
         }
 
-        public Criteria andReservepriceBetween(Long value1, Long value2) {
+        public Criteria andReservepriceBetween(Double value1, Double value2) {
             addCriterion("ReservePrice between", value1, value2, "reserveprice");
             return (Criteria) this;
         }
 
-        public Criteria andReservepriceNotBetween(Long value1, Long value2) {
+        public Criteria andReservepriceNotBetween(Double value1, Double value2) {
             addCriterion("ReservePrice not between", value1, value2, "reserveprice");
             return (Criteria) this;
         }
@@ -548,52 +548,52 @@ public class TradingAddItemExample {
             return (Criteria) this;
         }
 
-        public Criteria andBuyitnowpriceEqualTo(Long value) {
+        public Criteria andBuyitnowpriceEqualTo(Double value) {
             addCriterion("BuyItNowPrice =", value, "buyitnowprice");
             return (Criteria) this;
         }
 
-        public Criteria andBuyitnowpriceNotEqualTo(Long value) {
+        public Criteria andBuyitnowpriceNotEqualTo(Double value) {
             addCriterion("BuyItNowPrice <>", value, "buyitnowprice");
             return (Criteria) this;
         }
 
-        public Criteria andBuyitnowpriceGreaterThan(Long value) {
+        public Criteria andBuyitnowpriceGreaterThan(Double value) {
             addCriterion("BuyItNowPrice >", value, "buyitnowprice");
             return (Criteria) this;
         }
 
-        public Criteria andBuyitnowpriceGreaterThanOrEqualTo(Long value) {
+        public Criteria andBuyitnowpriceGreaterThanOrEqualTo(Double value) {
             addCriterion("BuyItNowPrice >=", value, "buyitnowprice");
             return (Criteria) this;
         }
 
-        public Criteria andBuyitnowpriceLessThan(Long value) {
+        public Criteria andBuyitnowpriceLessThan(Double value) {
             addCriterion("BuyItNowPrice <", value, "buyitnowprice");
             return (Criteria) this;
         }
 
-        public Criteria andBuyitnowpriceLessThanOrEqualTo(Long value) {
+        public Criteria andBuyitnowpriceLessThanOrEqualTo(Double value) {
             addCriterion("BuyItNowPrice <=", value, "buyitnowprice");
             return (Criteria) this;
         }
 
-        public Criteria andBuyitnowpriceIn(List<Long> values) {
+        public Criteria andBuyitnowpriceIn(List<Double> values) {
             addCriterion("BuyItNowPrice in", values, "buyitnowprice");
             return (Criteria) this;
         }
 
-        public Criteria andBuyitnowpriceNotIn(List<Long> values) {
+        public Criteria andBuyitnowpriceNotIn(List<Double> values) {
             addCriterion("BuyItNowPrice not in", values, "buyitnowprice");
             return (Criteria) this;
         }
 
-        public Criteria andBuyitnowpriceBetween(Long value1, Long value2) {
+        public Criteria andBuyitnowpriceBetween(Double value1, Double value2) {
             addCriterion("BuyItNowPrice between", value1, value2, "buyitnowprice");
             return (Criteria) this;
         }
 
-        public Criteria andBuyitnowpriceNotBetween(Long value1, Long value2) {
+        public Criteria andBuyitnowpriceNotBetween(Double value1, Double value2) {
             addCriterion("BuyItNowPrice not between", value1, value2, "buyitnowprice");
             return (Criteria) this;
         }

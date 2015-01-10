@@ -18,14 +18,34 @@
             $("#templateInitTableListTable").initTable({
                 url:path + "/ajax/loadTemplateInitTableList.do?",
                 columnData:[
-                    {title:"模板名字",name:"templateName",width:"8%",align:"left"},
-                    {title:"模板预览",name:"templateViewUrl",width:"8%",align:"left",format:makeImgUrl},
-                    {title:"级别",name:"level",width:"8%",align:"left",format:makeOption2},
-                    {title:"操作",name:"option1",width:"8%",align:"left",format:makeOption1}
+                    {title:"",name:"option1",width:"8%",align:"left",format:makeOption1}
                 ],
                 selectDataNow:false,
                 isrowClick:false,
-                showIndex:true
+                showIndex:true,
+                afterLoadTable:function(){
+                    $("#afterTable").show();
+                    $("#afterTable").html("");
+                    $("#templateInitTableListTable").find("table").hide();
+                    var data = $("#templateInitTableListTable").data("option").allData;
+                    if(data.length>0){
+                        var html = "<table border='0' width='100%' align='left' cellspacing='0'>";
+                        for(var i=0;i<data.length;i++){
+                            if(i%5==0){
+                                html+="<tr>";
+                            }
+                            var str = "<a href='javascript:void(0)' style='padding-top: 30px;color:blue;'  onclick=viewTemplateInitTable('"+data[i].id+"')>查看</a>";
+                            if(data[i].tLevel==1) {
+                                str+="&nbsp;&nbsp;&nbsp;&nbsp;<a href='javascript:void(0)' onclick=editTemplateInitTable('"+data[i].id+"')>编辑</a>";
+                            }
+                            html+="<td width='20%' height='340px'>" +
+                                    "<div style='width: 190px;'><div style='height: 275px;'><img src='"+imageUrlPrefix+data[i].templateViewUrl+"' width='184' height='270' class='newad_pic'></div>" +
+                                    "<div style='text-align: center;padding: 5px;'>"+str+"</div><div></td>";
+                        }
+                        html+="</table>";
+                        $("#afterTable").append(html);
+                    }
+                }
             });
             refreshTable();
             getTemplateType();
@@ -92,6 +112,7 @@
 
 
         function refreshTable(p){
+            $("#afterTable").hide();
             if(p==null){p={}}
             $("#templateInitTableListTable").selectDataAfterSetParm(p);
         }
@@ -115,7 +136,15 @@
             }
         }
     </script>
-
+    <style type="text/css">
+        .newad_pic{
+            float: left;
+            padding: 10px;
+            border: 1px solid #D9E4EA;
+            border-radius: 10px;
+            padding-bottom:25PX;
+        }
+    </style>
 </head>
 <body>
 <div class="new_all">
@@ -128,11 +157,11 @@
             <li class="select2-search-choice1">
                 <div onclick="queryBuP('all',this)">全部</div>
             </li>
-
         </ul>
     </div>
 
     <div id="cent">
+        <div id="afterTable"></div>
         <div id="templateInitTableListTable"></div>
     </div>
 </div>

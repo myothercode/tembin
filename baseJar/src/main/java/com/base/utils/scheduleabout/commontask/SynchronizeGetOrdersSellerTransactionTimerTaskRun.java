@@ -11,6 +11,7 @@ import com.trading.service.ITradingOrderGetOrders;
 import com.trading.service.ITradingOrderGetOrdersNoTransaction;
 import org.apache.log4j.Logger;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -42,6 +43,8 @@ public class SynchronizeGetOrdersSellerTransactionTimerTaskRun extends BaseSched
             logger.error(getScheduledType()+"===之前的任务还未完成继续等待下一个循环===");
             return;
         }
+        logger.error(getScheduledType()+"===任务开始===");
+
         Thread.currentThread().setName("thread_" + getScheduledType());
 
         ITradingOrderGetOrders iTradingOrderGetOrders=(ITradingOrderGetOrders) ApplicationContextUtil.getBean(ITradingOrderGetOrders.class);
@@ -50,7 +53,8 @@ public class SynchronizeGetOrdersSellerTransactionTimerTaskRun extends BaseSched
             orders=filterLimitList(orders);
         }
         synchronizeOrderSellerTrasaction(orders);
-
+        TaskPool.threadRunTime.remove("thread_" + getScheduledType());
+        logger.error(getScheduledType()+"===任务结束===");
 
     }
 

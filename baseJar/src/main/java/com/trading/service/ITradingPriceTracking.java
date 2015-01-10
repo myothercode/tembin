@@ -16,4 +16,5 @@ public interface ITradingPriceTracking {
     List<TradingPriceTracking> selectPriceTrackingByItemId(String itemId);
     List<PriceTrackingQuery> selectPriceTrackingList(Map map,Page page);
     List<TradingPriceTracking> selectPriceTracking();
+    TradingPriceTracking selectPriceTrackingById(Long id);
 }

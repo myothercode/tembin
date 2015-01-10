@@ -72,18 +72,18 @@ String xml="<soapenv:Envelope  xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/e
                 "        <ebl:Signature>"+uspa.getApiSignature()+"</ebl:Signature>\n" +
                 "        <ebl:Subject>"+uspa.getEmail()+"</ebl:Subject>\n" +
                 "      </ebl:Credentials>\n" +
-           /*     "      <ebl:Credentials>\n" +
+              /*  "      <ebl:Credentials>\n" +
                 "        <ebl:Username>payment_api1.tembin.com</ebl:Username>\n" +
                 "        <ebl:Password>PM8MXQ27DKPUCZH3</ebl:Password>\n" +
                 "        <ebl:Signature>AFcWxV21C7fd0v3bYYYRCpSSRl31AK2RZxSioHeU5VTvyufB3.eLT7r6</ebl:Signature>\n" +
-                "        <ebl:Subject>chinatown288-1@hotmail.com</ebl:Subject>\n" +
+                "        <ebl:Subject>zhangqf315@gmail.com</ebl:Subject>\n" +
                 "      </ebl:Credentials>\n" +*/
                 "    </ns:RequesterCredentials>\n" +
                 "  </soapenv:Header>\n" +
                 "  <soapenv:Body>\n" +
                 "    <ns:GetTransactionDetailsReq>\n" +
                 "      <ns:GetTransactionDetailsRequest>\n" +
-                "        <ns:TransactionID>9TL975193F6782705</ns:TransactionID>\n" +
+                "        <ns:TransactionID>"+paypalVO.getTransactionID()+"</ns:TransactionID>\n" +
                 "        <ebl:Version>94.0</ebl:Version>\n" +
                 "      </ns:GetTransactionDetailsRequest>\n" +
                 "    </ns:GetTransactionDetailsReq>\n" +
@@ -94,7 +94,7 @@ String xml="<soapenv:Envelope  xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/e
     }
 
 /**获取paypal交易的各项费用*/
-    public static PaypalVO getTranDetail(String resXML) throws Exception {
+    public static PaypalVO getTranDetail(String resXML,UsercontrollerPaypalAccount uspa) throws Exception {
         PaypalVO paypalVO=new PaypalVO();
         Element ackelement=getSpecElement(resXML,"Body","GetTransactionDetailsResponse","Ack");
         paypalVO.setAck(ackelement.getTextTrim());
@@ -116,7 +116,7 @@ String xml="<soapenv:Envelope  xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/e
         }else{
             Element message1=getSpecElement(resXML,"Body","GetTransactionDetailsResponse","Errors","LongMessage");
             String message=message1.getTextTrim();
-            logger.error("paypal费用失败:"+message);
+            logger.error("paypal费用失败:"+message+"paypal账号:"+uspa.getEmail()+"res:"+resXML);
         }
         return paypalVO;
     }

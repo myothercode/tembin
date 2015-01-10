@@ -106,7 +106,7 @@
     });*/
     var preload_data=new Array();
 
-    $(document).ready(function () {
+   /* $(document).ready(function () {
         var inps=$("#add3").find("input");
         for(var i=0;i<inps.length;i++){
             var sku=$(inps[i]).attr("name1");
@@ -155,17 +155,76 @@
                     });
                     query.callback(data);
                 }
-
-
-
             }
         });
-        $('.multiSelect').select2('data', preload_data)
-    });
-    function addItemConten1(obj){
-        var value=obj.value;
-        var values=value.split(",");
+        $('.multiSelect').select2('data', preload_data);
+    });*/
+    //------------------
+    $(document).ready(function () {
 
+        mySelect2I([{url:path+"/orderItem/ajax/loadOrdersList.do",
+            data:{currInputName:"content"},bs:".multiSelect",multiple:true,fun:querySelect,maping:{id:"id",text:"sku"}}]);
+        var inps=$("#add3").find("input");
+        for(var i=0;i<inps.length;i++){
+            var sku=$(inps[i]).attr("name1");
+            var id1=$(inps[i]).attr("name2");
+            preload_data[i]={ id: id1, text: sku,text1: sku};
+        }
+        $('.multiSelect').select2('data', preload_data);
+        addItemConten1(null,$("#worker").val());
+    });
+    function querySelect(query){
+
+        var content = query.term;
+        var data = {results: []};
+        if (content && content != "") {
+            var url = path+"/orderItem/ajax/loadOrdersList.do";
+            $().delayInvoke(url, {"content":content},
+                    [function(m,r){
+                        for(var i=0;i< r.length;i++){
+                            preload_data[i]={ id: r[i].id, text: r[i].sku,text1: r[i].sku};
+                        }
+                        var div=document.getElementById("add");
+                        div.innerHTML="";
+                        $.each(preload_data, function () {
+
+                            if (query.term.length == 0 || this.text.toUpperCase().indexOf(query.term.toUpperCase()) >= 0) {
+                                data.results.push({id: this.id, text: this.text });
+                                var input="<input type='hidden' name2='"+this.id+"' name1='"+this.text1+"'>";
+                                $(div).append(input);
+                            }
+                        });
+                        query.callback(data);
+                        preload_data=new Array();
+                        Base.token;
+                    },
+                        function(m,r){
+                            alert(r);
+                            Base.token();
+                        }]
+            );
+        } else {
+            var div=document.getElementById("add");
+            var data = {results: []};
+            $.each(preload_data, function () {
+                if (query.term.length == 0 || this.text.toUpperCase().indexOf(query.term.toUpperCase()) >= 0) {
+                    data.results.push({id: this.id, text: this.text });
+                    var input="<input type='hidden' name2='"+this.id+"' name1='"+this.text1+"'>";
+                    $(div).append(input);
+                }
+            });
+            query.callback(data);
+        }
+    }
+    //---------------------
+    function addItemConten1(obj,val123){
+        var value="";
+        if(obj){
+            value=obj.value;
+       }else{
+            value=val123;
+        }
+        var values=value.split(",");
         var add=document.getElementById("add");
         var add1=document.getElementById("add1");
         var selectItemHiddeng="";
@@ -173,8 +232,7 @@
         for(var i=0;i<values.length;i++){
             var addv=$(add).find("input[name2="+values[i]+"]");
             var addv1=$(add1).find("input[name2="+values[i]+"]");
-            console.debug(addv);
-            console.debug(addv1);
+
             if(addv1.length==0){
                $(add1).append(addv[0]);
             }
@@ -200,3 +258,4 @@
 </script>
 </body>
 </html>
+

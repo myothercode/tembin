@@ -22,6 +22,7 @@ import com.sitemessage.service.SiteMessageService;
 import com.sitemessage.service.SiteMessageStatic;
 import com.task.service.ITaskGetMessages;
 import com.trading.service.ITradingMessageGetmymessage;
+import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.dom4j.Element;
@@ -138,7 +139,7 @@ public class SynchronizeGetMessagesTimerTaskRun extends BaseScheduledClass imple
 
                         parms.put("userInfoService",userInfoService);
                         String content=GetMyMessageAPI.getContent(parms);
-                        ms.setTextHtml(content);
+                        ms.setTextHtml(StringEscapeUtils.escapeXml(content));
                         List<TradingMessageGetmymessage> getmymessages=iTradingMessageGetmymessage.selectMessageGetmymessageByMessageId(ms.getMessageid());
                         if(getmymessages.size()>0){
                             ms.setId(getmymessages.get(0).getId());

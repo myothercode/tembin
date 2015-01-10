@@ -40,7 +40,7 @@ import java.util.*;
 
 /**
  * Created by Administrtor on 2014/8/29.
- * 在线商品每2分钟执行，定时任务
+ * 自动补数，定时任务
  */
 public class AutoComplementTimerTaskRun extends BaseScheduledClass implements Scheduledable {
     static Logger logger = Logger.getLogger(AutoComplementTimerTaskRun.class);

@@ -95,4 +95,9 @@ public class TradingPriceTrackingImpl implements com.trading.service.ITradingPri
         return list;
     }
 
+    @Override
+    public TradingPriceTracking selectPriceTrackingById(Long id) {
+        return tradingPriceTrackingMapper.selectByPrimaryKey(id);
+    }
+
 }

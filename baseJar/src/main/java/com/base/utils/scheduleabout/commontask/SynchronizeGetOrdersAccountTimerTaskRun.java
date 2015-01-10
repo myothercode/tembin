@@ -55,13 +55,13 @@ public class SynchronizeGetOrdersAccountTimerTaskRun extends BaseScheduledClass 
         }
         Thread.currentThread().setName("thread_" + getScheduledType());
 
-
         ITradingOrderGetOrders iTradingOrderGetOrders=(ITradingOrderGetOrders) ApplicationContextUtil.getBean(ITradingOrderGetOrders.class);
         List<TradingOrderGetOrders> orders=iTradingOrderGetOrders.selectOrderGetOrdersByAccountFlag();
         if(orders.size()>20){
             orders=filterLimitList(orders);
         }
         synchronizeOrderAcoount(orders);
+        TaskPool.threadRunTime.remove("thread_" + getScheduledType());
     }
 
     /**只从集合记录取多少条*/
@@ -94,6 +94,6 @@ public class SynchronizeGetOrdersAccountTimerTaskRun extends BaseScheduledClass 
         }else{
             return 2;
         }*/
-        return 30;
+        return 40;
     }
 }

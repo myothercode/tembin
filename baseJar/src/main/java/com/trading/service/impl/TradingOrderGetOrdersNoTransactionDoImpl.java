@@ -30,7 +30,7 @@ public class TradingOrderGetOrdersNoTransactionDoImpl {
 
 
     public void saveOrderGetOrders(TradingOrderGetOrders OrderGetOrders1) throws Exception {
-        if(bbs==1){return;}
+        if(bbs==1){logger.error("saveOrderGetOrders正在执行，等待....");return;}
         bbs=1;
         //logger.error("TradingOrderGetOrdersNoTransactionImpl被调用！"+TaskPool.togosBS[0]+":数量"+TaskPool.togos.size());
         while (!TaskPool.togos.isEmpty()) {
@@ -47,7 +47,6 @@ public class TradingOrderGetOrdersNoTransactionDoImpl {
                 tradingOrderGetOrdersMapper.updateByPrimaryKeySelective(oo);
             }
         } catch (Exception e) {
-            bbs=0;
             logger.error("写入TradingOrderGetOrders报错:",e);
             continue;
         }

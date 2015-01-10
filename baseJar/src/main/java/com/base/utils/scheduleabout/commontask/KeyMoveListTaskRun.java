@@ -20,6 +20,7 @@ import com.base.utils.scheduleabout.BaseScheduledClass;
 import com.base.utils.scheduleabout.MainTask;
 import com.base.utils.scheduleabout.Scheduledable;
 import com.base.utils.threadpool.AddApiTask;
+import com.base.utils.threadpool.TaskPool;
 import com.base.utils.xmlutils.SamplePaseXml;
 import com.base.xmlpojo.trading.addproduct.Item;
 import com.keymove.service.IKeyMoveProgress;
@@ -41,9 +42,19 @@ public class KeyMoveListTaskRun extends BaseScheduledClass implements Scheduleda
     @Override
     public void run() {
 
-        String isRunging = TempStoreDataSupport.pullData("task_"+getScheduledType());
+        /*String isRunging = TempStoreDataSupport.pullData("task_"+getScheduledType());
         if(StringUtils.isNotEmpty(isRunging)){return;}
-        TempStoreDataSupport.pushData("task_" + getScheduledType(), "x");
+        TempStoreDataSupport.pushData("task_" + getScheduledType(), "x");*/
+
+        Boolean b= TaskPool.threadIsAliveByName("thread_" + getScheduledType());
+        if(b){
+            logger.error(getScheduledType()+"===之前的任务还未完成继续等待下一个循环===");
+            return;
+        }
+        logger.error(getScheduledType()+"===任务开始===");
+        Thread.currentThread().setName("thread_" + getScheduledType());
+
+
         KeyMoveListMapper keyMapper = (KeyMoveListMapper) ApplicationContextUtil.getBean(KeyMoveListMapper.class);
         IKeyMoveProgress iKeyMoveProgress = (IKeyMoveProgress) ApplicationContextUtil.getBean(IKeyMoveProgress.class);
         UserInfoService userInfoService = (UserInfoService) ApplicationContextUtil.getBean(UserInfoService.class);
@@ -130,7 +141,8 @@ public class KeyMoveListTaskRun extends BaseScheduledClass implements Scheduleda
                 keyMapper.updateByPrimaryKeySelective(kml);
             }
         }
-        TempStoreDataSupport.removeData("task_"+getScheduledType());
+        TaskPool.threadRunTime.remove("thread_" + getScheduledType());
+        logger.error(getScheduledType() + "===任务结束===");
     }
 
     /**只从集合记录取多少条*/

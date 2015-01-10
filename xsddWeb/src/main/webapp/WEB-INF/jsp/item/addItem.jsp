@@ -299,9 +299,10 @@
         </c:forEach>*/
 
         <c:forEach items="${lipics}" var="pics">
-        $("#picturemore_${pics.tamname}").append("<input type='hidden' name='VariationSpecificValue_${pics.tamname}' value='${pics.tamname}'>");
+        var selectvalue = '${pics.tamname}';
+        $("#picturemore_"+replaceTSFH(selectvalue.replace(" ","_").replace(".","").replace("+",""))).append("<input type='hidden' name='VariationSpecificValue_"+replaceTSFH(selectvalue.replace(" ","_").replace(".","").replace("+",""))+"' value='${pics.tamname}'>");
         <c:forEach items="${pics.litam}" var="pi">
-        $("#picturemore_${pics.tamname}").append("<li><div style='position:relative'><input type='hidden' name='pic_mackid_more' value='${pi.attr1}'/><input type='hidden' name='${pics.tamname}' value='${pi.value}'><img src="+chuLiPotoUrl('${pi.value}')+" height='80' width='78' /> <div style='text-align: right;background-color: dimgrey;'><img src='"+path+"/img/newpic_ico.png' onclick='removeThis(this)'></div></div></li>");
+        $("#picturemore_"+replaceTSFH(selectvalue.replace(" ","_").replace(".","").replace("+",""))).append("<li><div style='position:relative'><input type='hidden' name='pic_mackid_more' value='${pi.attr1}'/><input type='hidden' name='"+replaceTSFH(selectvalue.replace(" ","_").replace(".","").replace("+",""))+"' value='${pi.value}'><img src="+chuLiPotoUrl('${pi.value}')+" height='80' width='78' /> <div style='text-align: right;background-color: dimgrey;'><img src='"+path+"/img/newpic_ico.png' onclick='removeThis(this)'></div></div></li>");
         </c:forEach>
         </c:forEach>
 
@@ -582,7 +583,8 @@
     <h1>
         商品图片
         <span style="font-weight: 100;padding-left: 30px;">
-            已选择图片：<span id="picNumber"></span>张｜最多12张图片
+            已选择图片：<span id="picNumber">0</span>张｜最多12张图片&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <span style="padding-left: 300px;color: darkorange;">上传图片像素小于500会自动删除！</span>
         </span>
     </h1>
 
@@ -614,7 +616,11 @@
             </div>
         </li>
     </div>
-    <h1>自定义物品属性</h1>
+    <h1>自定义物品属性
+        <span style="font-weight: 100;padding-left: 30px;">
+            <span id="PrimaryCategoryShowFlag" style="display: none;color: red;">此分类不支持多属性刊登!</span>
+        </span>
+    </h1>
     <li style="height: 100%;">
         <dt>&nbsp;</dt>
         <div>

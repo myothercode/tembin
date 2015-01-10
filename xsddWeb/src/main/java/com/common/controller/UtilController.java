@@ -18,12 +18,14 @@ import com.base.domains.SessionVO;
 import com.base.domains.querypojos.KeyMoveProgressQuery;
 import com.base.domains.userinfo.UsercontrollerDevAccountExtend;
 import com.base.domains.userinfo.UsercontrollerEbayAccountExtend;
+import com.base.domains.userinfo.UsercontrollerUserExtend;
 import com.base.mybatis.page.Page;
 import com.base.mybatis.page.PageJsonBean;
 import com.base.sampleapixml.APINameStatic;
 import com.base.userinfo.service.SystemUserManagerService;
 import com.base.userinfo.service.UserInfoService;
 import com.base.userinfo.service.impl.UserInfoServiceImpl;
+import com.base.utils.applicationcontext.ApplicationContextUtil;
 import com.base.utils.cache.DataDictionarySupport;
 import com.base.utils.cache.SessionCacheSupport;
 import com.base.utils.common.DateUtils;
@@ -242,19 +244,21 @@ public class UtilController extends BaseAction{
     @RequestMapping("/ajax/getReseCategoryMenu.do")
     @ResponseBody
     public void getReseCategoryMenu(ModelMap modelMap,String title,String siteid,CommonParmVO commonParmVO) throws Exception {
+        SessionVO c= SessionCacheSupport.getSessionVO();
         TradingDataDictionary tdd = DataDictionarySupport.getTradingDataDictionaryByID(Long.parseLong(siteid));
         UsercontrollerDevAccountExtend d = userInfoService.getDevByOrder(new HashMap());
-        SessionVO c= SessionCacheSupport.getSessionVO();
-        Page page  = new Page();
-        page.setPageSize(10);
-        page.setCurrentPage(1);
-        page.setTotalCount(10);
-        List<UsercontrollerEbayAccountExtend> liuea = this.userInfoService.getEbayAccountForCurrUser(new HashMap(), page);
-        String token="";
-        if(liuea!=null){
-            UsercontrollerEbayAccountExtend uea = liuea.get(0);
-            token = this.userInfoService.getTokenByEbayID(uea.getId());
+        List<UsercontrollerUserExtend> liuue = systemUserManagerService.queryAllUsersByOrgID("yes");
+        long userid = 0;
+        if(liuue!=null&&liuue.size()>0){
+            userid = liuue.get(0).getUserId();
+        }else{
+            userid = c.getId();
         }
+        UsercontrollerUserExtend uue = liuue.get(0);
+        List<UsercontrollerEbayAccount> liuea = this.iUsercontrollerEbayAccount.selectUsercontrollerEbayAccountByUserId(userid);
+        Asserts.assertTrue(liuea!=null&&liuea.size()!=0,"用户还未绑定EBAY账号！");
+
+        String token=this.userInfoService.getTokenByEbayID(liuea.get(0).getId());
         String xml = this.getCosXml(token,title);
         //String xml = this.getCosXml("AgAAAA**AQAAAA**aAAAAA**kRx8VA**nY+sHZ2PrBmdj6wVnY+sEZ2PrA2dj6AGloWiAZCCogSdj6x9nY+seQ**blACAA**AAMAAA**d0Px77QqgOj2GHC7XDNXkRKusIUT1y5uPdXz87hiC9ghsh75Q6hQb3BRbKwkJsFz3BlORq7L8lEiHsqBnFzd65yK1MJ/CQMsY165Q+4Rw664b0dP3vnPzjeN3cfKOkDwwoLqFGrMclvrrpntfSDBcO/r1QaC+CUB0GD6UiuhdyhBIPd1gb+z0KmYCTwpFENyHDzRtiTcT5qCt5eYfYzsve2e6O1c+NsTyBgJzUD1v78aIluxKhoC+huF9Uxscm2DU4mOr0JYONHJCs3dN18fKLp0Dc3hSvmPSIaxPmjcvlVfWuVPtw6KwXvxw8U8PGUdfACzb9ZIBiUEEhFHU6xv73egj2hkN/ZTJr7yu3l+qvDJFHLlgBMoprseFc0tmDi/hbRUILxuOy8TOpGri71DoQBzwuQxxrG5GMJ77NFLOLYxsH6/gpA/7+vFT1X5CUsIv+BYZyY7g3RLZWYem3Gqv9T+sVNC/DEhxmdO1Yx49rAwHcUw3aeXTrKpa1xCNkgHg4Feheu5V6Pu9lb5DQUC9YidqELrLEvos6yoiH31myqAmI72Gt4i7SBjwS8k5O+7xjxhDrKpg0IFwCdQk4PEByoBnud/dDNyCZkZdCqTkb36aqmgdnTANz9M7DtcQTH/Lf6h+Suj3RVSeFfDZcJJDax7Ie5qwte+oHJ6yTuBZ2dt4hMmKZIZwn26Ei+DUfCPhx6nEqcAOf6Sbxf8RxkWJ2pLcIvbifrditHIuyGjOf4yMoIHOcSp6FsVbmkMleBG",title);
         d.setApiSiteid(tdd.getName1());
@@ -279,6 +283,25 @@ public class UtilController extends BaseAction{
         jsonBean.setTotal(litr.size());
         jsonBean.setList(litr);
         AjaxSupport.sendSuccessText("", jsonBean);
+    }
+
+    /**商品目录选择页面初始化*/
+    @RequestMapping("category/checkSelectCategoryVariationed.do")
+    @ResponseBody
+    public void checkSelectCategoryVariationed(@ModelAttribute( "initSomeParmMap" )ModelMap modelMap,HttpServletRequest request){
+        String siteId = request.getParameter("siteId");
+        String categoryId =request.getParameter("categoryId");
+/*        Map m = new HashMap();
+        m.put("itemType","category");
+        m.put("siteId",siteId);
+        m.put("itemId",categoryId);*/
+        ITradingDataDictionary dictionary = (ITradingDataDictionary) ApplicationContextUtil.getBean(ITradingDataDictionary.class);
+        List<PublicDataDict> lipdd = dictionary.selectByDicExample(categoryId,siteId);
+        if(lipdd!=null&&lipdd.size()>0){
+            AjaxSupport.sendSuccessText("",lipdd.get(0));
+        }else{
+            AjaxSupport.sendSuccessText("",null);
+        }
     }
 
     /**

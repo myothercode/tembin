@@ -23,10 +23,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by Administrtor on 2014/10/17.
@@ -178,8 +175,8 @@ public class ScheduleGetTimerOrdersImpl implements IScheduleGetTimerOrders {
                             ds.setApiCallName(APINameStatic.GetOrders);
                             map.put("page", i + "");
                             xml = BindAccountAPI.getGetOrders(map);
-                            //resMap = addApiTask.exec2(ds, xml,apiUrl);
-                            resMap = addApiTask.exec2(ds, xml, "https://api.ebay.com/ws/api.dll");
+                            resMap = addApiTask.exec2(ds, xml,apiUrl);
+                            //resMap = addApiTask.exec2(ds, xml, "https://api.ebay.com/ws/api.dll");
                    /* resMap = addApiTask.exec2(d, xml, "https://api.ebay.com/ws/api.dll");*/
                             r1 = resMap.get("stat");
                             res = resMap.get("message");
@@ -611,6 +608,7 @@ public class ScheduleGetTimerOrdersImpl implements IScheduleGetTimerOrders {
                     order.setShippingdetailsId(shippingDetails.getId());
                     item.setCreateUser(order.getCreateUser());
                     item.setSku(order.getSku());
+                    item.setUpdatetime(new Date());
                     iTradingOrderGetItem.saveOrderGetItem(item);
                     order.setItemflag(1);
                     TaskPool.togos.put(order);
@@ -738,6 +736,7 @@ public class ScheduleGetTimerOrdersImpl implements IScheduleGetTimerOrders {
                             }
                         }
                         acc.setCreateUser(order.getCreateUser());
+                        acc.setUpdatetime(new Date());
                         iTradingOrderGetAccount.saveOrderGetAccount(acc);
                         order.setAccountflag(1);
                         TaskPool.togos.put(order);
@@ -759,16 +758,15 @@ public class ScheduleGetTimerOrdersImpl implements IScheduleGetTimerOrders {
         UsercontrollerDevAccountExtend d = new UsercontrollerDevAccountExtend();//开发者帐号id
         d.setApiSiteid("0");
         //真实环境
-      /*  UsercontrollerDevAccountExtend d=new UsercontrollerDevAccountExtend();
+    /*    UsercontrollerDevAccountExtend d=new UsercontrollerDevAccountExtend();
         d.setApiDevName("5d70d647-b1e2-4c7c-a034-b343d58ca425");
         d.setApiAppName("sandpoin-23af-4f47-a304-242ffed6ff5b");
         d.setApiCertName("165cae7e-4264-4244-adff-e11c3aea204e");
         d.setApiCompatibilityLevel("883");
         d.setApiSiteid("0");*/
-        String seller="";
+        Map<String,String> ackFlagMap=new HashMap<String, String>();
         for(TradingOrderGetOrders order:orders) {
-            if(!seller.equals(order.getSelleruserid())){
-                seller=order.getSelleruserid();
+            if(ackFlagMap.get(order.getSelleruserid())==null||(ackFlagMap.get(order.getSelleruserid())!=null&&!"Success".equals(ackFlagMap.get(order.getSelleruserid())))){
                 d.setApiCallName("GetSellerTransactions");
                 UsercontrollerEbayAccount ebay = iUsercontrollerEbayAccount.selectByEbayAccount(order.getSelleruserid());
                 if (ebay != null && StringUtils.isNotBlank(ebay.getEbayToken())) {
@@ -797,6 +795,7 @@ public class ScheduleGetTimerOrdersImpl implements IScheduleGetTimerOrders {
                         logger.error("ScheduleGetTimerOrdersImpl第1062"+sellerRes,e);
                         sellerAck="";
                     }
+                    ackFlagMap.put(order.getSelleruserid(),sellerAck);
                     if ("Success".equalsIgnoreCase(sellerAck)) {
                         Integer total=GetSellerTransactionsAPI.parseTotalPage(sellerRes);
                         for(int i=0;i<total;i++){
@@ -815,6 +814,7 @@ public class ScheduleGetTimerOrdersImpl implements IScheduleGetTimerOrders {
                                 logger.error("ScheduleGetTimerOrdersImpl第805"+sellerRes,e);
                                 sellerAck="";
                             }
+                            ackFlagMap.put(order.getSelleruserid(),sellerAck);
                             if ("Success".equalsIgnoreCase(sellerAck)) {
                                 List<TradingOrderGetSellerTransactions> lists = GetSellerTransactionsAPI.parseXMLAndSave(sellerRes);
                                 for (TradingOrderGetSellerTransactions list : lists) {
@@ -823,6 +823,7 @@ public class ScheduleGetTimerOrdersImpl implements IScheduleGetTimerOrders {
                                         list.setId(transactionseList.get(0).getId());
                                     }
                                     list.setCreateUser(order.getCreateUser());
+                                    list.setUpdatetime(new Date());
                                     iTradingOrderGetSellerTransactions.saveOrderGetSellerTransactions(list);
                                     order.setSellertrasactionflag(1);
                                     TaskPool.togos.put(order);

@@ -83,13 +83,17 @@ public class PayPalServiceImpl implements PayPalService {
     /**获取交易的交易费和杂费*/
     public Map getTransactionDetails(Map map) throws Exception {
         Map map1=new HashMap();
-        Long paypalId= (Long) map.get("paypalId");
+       /* Long paypalId= (Long) map.get("paypalId");*/
         String transactionID= (String) map.get("transactionID");
         String email= (String) map.get("paypalEmail");
         PaypalVO paypalVO=new PaypalVO();
         paypalVO.setTransactionID(transactionID);
+        UsercontrollerPaypalAccountExample example=new UsercontrollerPaypalAccountExample();
+        UsercontrollerPaypalAccountExample.Criteria cr=example.createCriteria();
+        cr.andPaypalAccountEqualTo(email);
+        List<UsercontrollerPaypalAccount> paypalAccounts=usercontrollerPaypalAccountMapper.selectByExample(example);
 
-        UsercontrollerPaypalAccount uspa = getADevSin(paypalId);
+        UsercontrollerPaypalAccount uspa = getADevSin(paypalAccounts.get(0).getId());
         if(uspa==null){
             return null;
         }
@@ -98,8 +102,10 @@ public class PayPalServiceImpl implements PayPalService {
         /*UsercontrollerPaypalAccount uspa=new UsercontrollerPaypalAccount();
         PaypalVO paypalVO=new PaypalVO();
         paypalVO.setTransactionID("4RJ37607494399203");*/
+
+      /*  String res = HttpClientUtil.post(h,"https://api-3t.paypal.com/2.0", PaypalxmlUtil.getTransactionDetailsXML(uspa,paypalVO));*/
         String res = HttpClientUtil.post(h,PAYAPL_API_URL, PaypalxmlUtil.getTransactionDetailsXML(uspa,paypalVO));
-        PaypalVO paypalVO1=PaypalxmlUtil.getTranDetail(res);
+        PaypalVO paypalVO1=PaypalxmlUtil.getTranDetail(res,uspa);
         map1.put("paypal",paypalVO1);
         map1.put("res",res);
         map1.put("account",uspa);

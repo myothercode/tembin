@@ -446,7 +446,6 @@ function saveData(objs,name) {
         });
         $("input[type='hidden'][name='VariationSpecificValue_"+pciValue.keys[i].replace(" ","_").replace(".","").replace("+","")+"']").prop("name","Variations.Pictures.VariationSpecificPictureSet["+i+"].VariationSpecificValue");
     }
-
     var nameList = $("input[type='hidden'][name='name']").each(function(i,d){
         var name_= $(d).prop("name");
         var t="ItemSpecifics.NameValueList["+i+"].";
@@ -485,7 +484,7 @@ function saveData(objs,name) {
         data,
         [function (m, r) {
             //oldAlert(r);
-            //Base.token();
+            Base.token();
             alert(r);
             $(objs).attr("disabled",false);
             if(url.indexOf("information/editItem.do")>0){
@@ -499,14 +498,21 @@ function saveData(objs,name) {
 
         },
             function (m, r) {
-                Base.token();
-                var json = eval("(" + r + ")");
-                if(json.isFlag=="1"){
-                    $("#id").val(json.tradingItemId);
-                    alert(json.message)
-                }else{
-                    alert(r);
+                alert(r);
+                var json ;
+                try{
+                    json = eval("(" + r + ")");
+                    if(json.isFlag=="1"){
+                        $("#id").val(json.tradingItemId);
+                        //alert(json.message)
+                    }else{
+                        //alert(r);
+                    }
+                }catch (e){
+
                 }
+
+                Base.token();
                 $(objs).attr("disabled",false);
                 //document.location = path+"/itemManager.do";
             }],{isConverPage:true}
@@ -812,6 +818,33 @@ function loadEditor(ebayAccount,jsonstr){
             $().image_editor.show("apicUrls"); //上传图片的按钮id
         }
     });
+}
+function PrimaryCategoryShowFlag(){
+    var CategoryId = $("#PrimaryCategory").val();
+    var listingTypes = $("select[name='listingType']").val();
+    var siteID=$(document.getElementsByName("site")).eq(0).val();
+    if(listingTypes=="2"&&CategoryId!=""&&siteID!=""){
+        var data = {"siteId":siteID,"categoryId":CategoryId};
+        var urll = path+"/category/checkSelectCategoryVariationed.do";
+        $().invoke(
+            urll,
+            data,
+            [function (m, r) {
+                if(r!=null&&r.variationsenabled=="false"){
+                    $("#twoAttr").hide();
+                    $("#PrimaryCategoryShowFlag").show();
+                }else{
+                    $("#twoAttr").show();
+                    $("#PrimaryCategoryShowFlag").hide();
+                }
+            },
+                function (m, r) {
+                    alert(r)
+                }]
+        );
+    }else{
+        $("#PrimaryCategoryShowFlag").hide();
+    }
 }
 
 

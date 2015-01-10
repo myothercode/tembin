@@ -43,6 +43,10 @@ public class ListingItemDataTaskRun extends BaseScheduledClass implements Schedu
     static Logger logger = Logger.getLogger(ListingItemDataTaskRun.class);
     @Override
     public void run() {
+        String isRunging = TempStoreDataSupport.pullData("task_"+getScheduledType());
+        if(StringUtils.isNotEmpty(isRunging)){return;}
+        TempStoreDataSupport.pushData("task_" + getScheduledType(), "x");
+
         IListingDataTask iListingDataTask = (IListingDataTask) ApplicationContextUtil.getBean(IListingDataTask.class);
         ITradingItem iTradingItem = (ITradingItem) ApplicationContextUtil.getBean(ITradingItem.class);
         List<TradingDataDictionary> litdd = DataDictionarySupport.getTradingDataDictionaryByType("site");
@@ -96,6 +100,7 @@ public class ListingItemDataTaskRun extends BaseScheduledClass implements Schedu
                 }
             }*/
         }
+        TempStoreDataSupport.removeData("task_"+getScheduledType());
     }
 
     /**只从集合记录取多少条*/

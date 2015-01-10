@@ -263,9 +263,9 @@
                             for(var i=0;i<spans.length;i++){
                                 if(spans[i].innerHTML!=""){
                                     if(spans[i].innerHTML!="账号未验证"){
-                                        var price10=parseInt(spans[i].innerHTML);
-                                        var price11=parseInt(spans1[i].innerHTML);
-                                        var price12=price11-price10;
+                                        var price10=parseFloat(spans[i].innerHTML);
+                                        var price11=parseFloat(spans1[i].innerHTML);
+                                        var price12=(price11-price10).toFixed(2);
                                         spans2[i].innerHTML=price12+" USD";
                                         spans[i].innerHTML=spans[i].innerHTML;
                                     }

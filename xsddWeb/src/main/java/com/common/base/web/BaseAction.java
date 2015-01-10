@@ -25,7 +25,7 @@ public class BaseAction {
     public ModelMap initSomeParm(){
         ModelMap map=new ModelMap();
         map.put("nowDateTime",new Date());
-        map.put("jscacheVersion","6");
+        map.put("jscacheVersion","8");
         try {
             ImageService imageService= (ImageService) ApplicationContextUtil.getBean(ImageService.class);
             CommAutowiredClass commAutowiredClass= (CommAutowiredClass) ApplicationContextUtil.getBean(CommAutowiredClass.class);

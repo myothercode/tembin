@@ -42,6 +42,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpServletRequest;
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -186,7 +187,6 @@ public class TradingItemImpl implements com.trading.service.ITradingItem {
     @Override
     public Map saveItem(Item item, TradingItemWithBLOBs tradingItem1) throws Exception {
         //保存商品信息到数据库中
-
         if(item.getVariations()!=null){
             Pictures pt = new Pictures();
             pt.setVariationSpecificName(item.getVariations().getVariationSpecificsSet().getNameValueList().get(0).getName());
@@ -363,9 +363,9 @@ public class TradingItemImpl implements com.trading.service.ITradingItem {
                 tai.setListingflag(request.getParameter("ListingFlag"));
                 tai.setListingduration(request.getParameter("ListingDuration"));
                 tai.setListingscale(Long.parseLong(request.getParameter("ListingScale")==null?"0":request.getParameter("ListingScale")));
-                tai.setBuyitnowprice(Long.parseLong(request.getParameter("BuyItNowPrice")==null?"0":request.getParameter("BuyItNowPrice")));
+                tai.setBuyitnowprice(Double.parseDouble(request.getParameter("BuyItNowPrice")==null?"0":request.getParameter("BuyItNowPrice")));
                 tai.setPrivatelisting(request.getParameter("PrivateListing"));
-                tai.setReserveprice(Long.parseLong(request.getParameter("ReservePrice")==null?"0":request.getParameter("ReservePrice")));
+                tai.setReserveprice(Double.parseDouble(request.getParameter("ReservePrice")==null?"0":request.getParameter("ReservePrice")));
                 tai.setSecondflag(request.getParameter("SecondFlag"));
                 this.iTradingAddItem.saveAddItem(tai);
 
@@ -572,10 +572,12 @@ public class TradingItemImpl implements com.trading.service.ITradingItem {
 
                 this.iTradingPublicLevelAttr.deleteByParentID(null,tpla.getId());
                 for(NameValueList nvl : linv){
-                    TradingPublicLevelAttr tpl = this.iTradingPublicLevelAttr.toDAOPojo(nvl.getName(),nvl.getValue().get(0).toString());
-                    tpl.setParentUuid(tpla.getUuid());
-                    tpl.setParentId(tpla.getId());
-                    this.iTradingPublicLevelAttr.savePublicLevelAttr(tpl);
+                    if(nvl.getValue()!=null&&nvl.getValue().size()>0) {
+                        TradingPublicLevelAttr tpl = this.iTradingPublicLevelAttr.toDAOPojo(nvl.getName(), nvl.getValue().get(0).toString());
+                        tpl.setParentUuid(tpla.getUuid());
+                        tpl.setParentId(tpla.getId());
+                        this.iTradingPublicLevelAttr.savePublicLevelAttr(tpl);
+                    }
                 }
             }else{
                 List<TradingPublicLevelAttr> litpla = this.iTradingPublicLevelAttr.selectByParentId("ItemSpecifics",tradingItem.getId());
@@ -1199,6 +1201,7 @@ public class TradingItemImpl implements com.trading.service.ITradingItem {
                                         conn.setRequestMethod("GET");
                                         //超时响应时间为5秒
                                         conn.setConnectTimeout(5 * 1000);
+                                        conn.setReadTimeout(5 * 1000);
                                         //通过输入流获取图片数据
                                         InputStream inStream = null;
                                         try{
@@ -1212,6 +1215,7 @@ public class TradingItemImpl implements com.trading.service.ITradingItem {
                                         try {
                                             fileName = FtpUploadFile.ftpUploadFile(inStream, uu.getUserLoginId() + "/" + tradingItem.getSku().toLowerCase(), stuff);
                                         }catch(Exception e){
+                                            inStream.close();
                                             logger.error(url+"",e);
                                             continue;
                                         }
@@ -1336,9 +1340,9 @@ public class TradingItemImpl implements com.trading.service.ITradingItem {
                     tai.setListingflag(item.getPrivateListing()==true?"1":"0");
                     tai.setListingduration(item.getListingDuration());
                     //tai.setListingscale(Long.parseLong(request.getParameter("ListingScale")==null?"0":request.getParameter("ListingScale")));
-                    tai.setBuyitnowprice(Long.parseLong(item.getBuyItNowPrice()+""));
+                    tai.setBuyitnowprice(Double.parseDouble(item.getBuyItNowPrice()==null?"0.0":item.getBuyItNowPrice()+""));
                     tai.setPrivatelisting(item.getPrivateListing()==true?"1":"0");
-                    tai.setReserveprice(Long.parseLong(item.getReservePrice()+""));
+                    tai.setReserveprice(Double.parseDouble(item.getReservePrice()==null?"0.0":item.getReservePrice()+""));
                     //tai.setSecondflag(request.getParameter("SecondFlag"));
                     this.iTradingAddItem.saveAddItem(tai);
                 }
@@ -1392,7 +1396,8 @@ public class TradingItemImpl implements com.trading.service.ITradingItem {
                         tpla.setParentUuid(tvtion.getUuid());
                         this.iTradingPublicLevelAttr.savePublicLevelAttr(tpla);
 
-                        List<NameValueList> linvls = item.getVariations().getVariationSpecificsSet().getNameValueList();
+                        List<NameValueList> linvls = vtion.getVariationSpecifics().get(0).getNameValueList();
+                        //item.getVariations().getVariationSpecificsSet().getNameValueList();
                         this.iTradingPublicLevelAttr.deleteByParentID(null, tpla.getId());
                         if (linvls != null && linvls.size() > 0) {
                             for (NameValueList vs : linvls) {
@@ -1485,7 +1490,13 @@ public class TradingItemImpl implements com.trading.service.ITradingItem {
                                     }else{
                                         targetUrl = str;
                                     }
-                                    String fileNameTons = this.unFtpPoto(targetUrl,uu.getUserLoginId(),(tradingItem.getSku()==null?"null":tradingItem.getSku().toLowerCase()));
+                                    String fileNameTons = "";
+                                    try{
+                                        fileNameTons = this.unFtpPoto(targetUrl,uu.getUserLoginId(),(tradingItem.getSku()==null?"null":tradingItem.getSku().toLowerCase()));
+                                    }catch(Exception e){
+                                        logger.error("图片上传失败！");
+                                        continue;
+                                    }
                                     String fileUrl = "";
                                     if(StringUtils.isNotEmpty(fileNameTons)){
                                         fileUrl = image_url_prefix + uu.getUserLoginId() + "/" + (tradingItem.getSku()==null?"null":tradingItem.getSku().toLowerCase()) + "/" + fileNameTons;
@@ -1497,6 +1508,17 @@ public class TradingItemImpl implements com.trading.service.ITradingItem {
                                     tams.setParentUuid(tplas.getUuid());
                                     tams.setAttr1(EncryptionUtil.md5Encrypt(str));
                                     this.iTradingAttrMores.saveAttrMores(tams);
+                                    //处理ebay服务器上的图片
+                                    TradingListingpicUrl tlu = new TradingListingpicUrl();
+                                    tlu.setEbayurl(str+"?set_id=8800005007");
+                                    tlu.setUrl(fileUrl);
+                                    tlu.setCreateDate(new Date());
+                                    tlu.setCheckFlag("0");
+                                    tlu.setMackId(EncryptionUtil.md5Encrypt(fileUrl));
+                                    //tlu.setEndDate(c.getTime());
+                                    tlu.setEbayAccountId(DataDictionarySupport.getTradingDataDictionaryByID(Long.parseLong(item.getSite())).getName1());
+                                    tlu.setSiteId(item.getSite());
+                                    this.iTradingListingPicUrl.saveListingPicUrl(tlu);
                                 }
                             }
                         }
@@ -1518,7 +1540,12 @@ public class TradingItemImpl implements com.trading.service.ITradingItem {
                         if(targetUrl.indexOf("?")>0||targetUrl.indexOf("?")>0){
                             targetUrl = targetUrl.substring(0,targetUrl.indexOf("?"));
                         }
-                        String fileNameTons = this.unFtpPoto(targetUrl,uu.getUserLoginId(),(tradingItem.getSku()==null?"null":tradingItem.getSku().toLowerCase()));
+                        String fileNameTons = "";
+                        try{
+                            fileNameTons = this.unFtpPoto(targetUrl,uu.getUserLoginId(),(tradingItem.getSku()==null?"null":tradingItem.getSku().toLowerCase()));
+                        }catch(Exception e){
+                            logger.error("图片上传失败！");
+                        }
                         if(StringUtils.isNotEmpty(fileNameTons)){
                             tpicd.setGalleryurl(image_url_prefix + uu.getUserLoginId() + "/" + (tradingItem.getSku()==null?"null":tradingItem.getSku().toLowerCase()) + "/" + fileNameTons);
                         }else{
@@ -1526,7 +1553,12 @@ public class TradingItemImpl implements com.trading.service.ITradingItem {
                         }
                     }else{
                         String targetUrl = item_list_icon_url+tradingItem.getItemId()+".jpg";
-                        String fileNameTons = this.unFtpPoto(targetUrl,uu.getUserLoginId(),(tradingItem.getSku()==null?"null":tradingItem.getSku().toLowerCase()));
+                        String fileNameTons = "";
+                        try{
+                            fileNameTons = this.unFtpPoto(targetUrl,uu.getUserLoginId(),(tradingItem.getSku()==null?"null":tradingItem.getSku().toLowerCase()));
+                        }catch(Exception e){
+                            logger.error("图片上传失败！");
+                        }
                         if(StringUtils.isNotEmpty(fileNameTons)){
                             tpicd.setGalleryurl(image_url_prefix + uu.getUserLoginId() + "/" + (tradingItem.getSku()==null?"null":tradingItem.getSku().toLowerCase()) + "/" + fileNameTons);
                         }else{
@@ -1534,7 +1566,7 @@ public class TradingItemImpl implements com.trading.service.ITradingItem {
                         }
                     }
                     this.iTradingPictureDetails.savePictureDetails(tpicd);
-                    this.iTradingAttrMores.deleteByParentId("PictureURL", tpicd.getId());
+                    //this.iTradingAttrMores.deleteByParentId("PictureURL", tpicd.getId());
 
                     for (int i = 0; i < picurl.size(); i++) {
                         try {
@@ -1552,10 +1584,18 @@ public class TradingItemImpl implements com.trading.service.ITradingItem {
                             conn.setRequestMethod("GET");
                             //超时响应时间为5秒
                             conn.setConnectTimeout(5 * 1000);
+                            conn.setReadTimeout(5 * 1000);
                             //通过输入流获取图片数据
                             InputStream inStream = conn.getInputStream();
+
                             String stuff = MyStringUtil.getExtension(potourl, "");
-                            String fileName = FtpUploadFile.ftpUploadFile(inStream, uu.getUserLoginId() + "/" + (tradingItem.getSku()==null?"null":tradingItem.getSku().toLowerCase()), stuff);
+                            String fileName = "";
+                            try{
+                                fileName = FtpUploadFile.ftpUploadFile(inStream, uu.getUserLoginId() + "/" + (tradingItem.getSku()==null?"null":tradingItem.getSku().toLowerCase()), stuff);
+                            }catch(Exception e){
+                                logger.error("图片上传失败！");
+                                continue;
+                            }
                             inStream.close();
                             String picUrls = "";
                             if(fileName==null){
@@ -1578,6 +1618,18 @@ public class TradingItemImpl implements com.trading.service.ITradingItem {
                                 pi.setAttrvalue(picUrls);
                                 this.publicItemPictureaddrAndAttrMapper.updateByPrimaryKeySelective(pi);
                             }
+                            //处理ebay服务器上的图片
+                            TradingListingpicUrl tlu = new TradingListingpicUrl();
+                            tlu.setEbayurl(picurl.get(i)+"?set_id=8800005007");
+                            tlu.setUrl(picUrls);
+                            tlu.setCreateDate(new Date());
+                            tlu.setCheckFlag("0");
+                            tlu.setMackId(EncryptionUtil.md5Encrypt(picUrls));
+                            //tlu.setEndDate(c.getTime());
+                            tlu.setEbayAccountId(DataDictionarySupport.getTradingDataDictionaryByID(Long.parseLong(item.getSite())).getName1());
+                            tlu.setSiteId(item.getSite());
+                            this.iTradingListingPicUrl.saveListingPicUrl(tlu);
+
                         }catch(Exception e){
                             logger.error(tradingItem.getSku()+":::::",e);
                             continue;
@@ -1955,6 +2007,8 @@ public class TradingItemImpl implements com.trading.service.ITradingItem {
         }
    // }
 
+
+
     /**
      * 下载图片到图片服务器
      * @param targeturl
@@ -1963,7 +2017,7 @@ public class TradingItemImpl implements com.trading.service.ITradingItem {
      * @return
      */
     private String unFtpPoto(String targeturl,String loginid,String sku){
-
+        InputStream inStream = null;
         try {
             URL url = new URL(targeturl);
             //打开链接
@@ -1972,14 +2026,22 @@ public class TradingItemImpl implements com.trading.service.ITradingItem {
             conn.setRequestMethod("GET");
             //超时响应时间为5秒
             conn.setConnectTimeout(5 * 1000);
+            conn.setReadTimeout(5 * 1000);
             //通过输入流获取图片数据
-            InputStream inStream = conn.getInputStream();
+            inStream = conn.getInputStream();
 
             String stuff = MyStringUtil.getExtension(targeturl, "");
             String fileName = FtpUploadFile.ftpUploadFile(inStream, loginid + "/" + sku, stuff);
             inStream.close();
             return fileName;
         }catch(Exception e){
+            try {
+                if(inStream!=null) {
+                    inStream.close();
+                }
+            } catch (IOException e1) {
+                e1.printStackTrace();
+            }
             logger.error("::",e);
             return null;
         }
@@ -2029,7 +2091,7 @@ public class TradingItemImpl implements com.trading.service.ITradingItem {
             tradingItem.setEbayAccount(ebayaccount);
             tradingItem.setItemId(null);
             tradingItem.setIsFlag(null);
-
+            tradingItem.setItemName(tradingItem.getItemName()+"_Copy");
             this.saveTradingItem(tradingItem);
 
             if(tradvars!=null){

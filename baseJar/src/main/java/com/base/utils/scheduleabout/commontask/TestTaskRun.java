@@ -9,6 +9,7 @@ import com.base.utils.cache.TempStoreDataSupport;
 import com.base.utils.httpclient.HttpClientUtil;
 import com.base.utils.scheduleabout.BaseScheduledClass;
 import com.base.utils.scheduleabout.Scheduledable;
+import com.base.utils.threadpool.TaskPool;
 import com.base.utils.xmlutils.SamplePaseXml;
 import com.test.service.Test1Service;
 import com.test.service.TestService;
@@ -17,10 +18,7 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.message.BasicHeader;
 import org.apache.log4j.Logger;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by Administrator on 2014/12/23.
@@ -36,11 +34,25 @@ public class TestTaskRun extends BaseScheduledClass implements Scheduledable {
 
     @Override
     public Integer crTimeMinu() {
-        return 2;
+        return 1;
     }
 
     @Override
     public void run() {
+        Boolean b= TaskPool.threadIsAliveByName("thread_" + getScheduledType());
+        if(b){
+            logger.error(getScheduledType()+"===之前的任务还未完成继续等待下一个循环===");
+            return;
+        }
+        logger.error(getScheduledType()+"===任务开始===");
+        TaskPool.threadRunTime.put("thread_" + getScheduledType(), new Date());
+        Thread.currentThread().setName("thread_" + getScheduledType());
+
+
+        //TaskPool.threadRunTime.remove("thread_" + getScheduledType());
+        logger.error(getScheduledType()+"===任务结束===");
+        if(1==1){return;}
+
         String isRunging = TempStoreDataSupport.pullData("task_" + getScheduledType());
         if(StringUtils.isNotEmpty(isRunging)){return;}
         TempStoreDataSupport.pushData("task_"+getScheduledType(),"x");

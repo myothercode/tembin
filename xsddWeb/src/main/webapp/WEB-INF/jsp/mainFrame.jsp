@@ -105,7 +105,7 @@
     </div>
     <ul class="nav navbar-nav pull-right hidden-xs">
         <li class="hidden-xs hidden-sm">
-            <input class="search" type="text" value="SKU/内容" style="color: #808080" onkeydown="queryOrder(this);" onfocus="cleanContent(this);" onblur="addContent(this);"/>
+           <%-- <input class="search" type="text" value="SKU/内容" style="color: #808080" onkeydown="queryOrder(this);" onfocus="cleanContent(this);" onblur="addContent(this);"/>--%>
             <%--<div class="vsearch">
                 <input id="content6" style="background:#000000; padding: 2px 6px;top: 9px;border-radius: 2px;position: relative;height: 27px; " name="" type="text" class="key_1"><input style="background:#000000;padding: 2px 6px;top: 9px;border-radius: 2px;position: relative;height: 27px; " name="newbut" type="button" class="key_2"></div>
            --%><%-- <input type="text" style="padding: 2px 6px;top: 9px;border-radius: 2px;position: relative;height: 27px; ">--%>

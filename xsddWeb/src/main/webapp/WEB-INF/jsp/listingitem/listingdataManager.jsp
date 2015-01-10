@@ -528,12 +528,12 @@
         function getTitle(json){
             var html="";
             if(json.title.length>70){
-                html = "<span style='word-break:break-all;' title='"+json.title+"'><a target='_blank' href='"+serviceItemUrl+json.itemId+"'>"+json.title.substr(0,70)+".....</a></span>";
+                html = "<span style='word-break:break-all;' title='"+json.title+"'><a target='_blank' href='"+getSiteUrl("3",json.site)+json.itemId+"'>"+json.title.substr(0,70)+".....</a></span>";
             }else{
                 if(json.title.length>20){
-                    html = "<span style='word-break:break-all;' title='"+json.title+"'><a target='_blank' href='"+serviceItemUrl+json.itemId+"'>"+json.title+"</a></span>";
+                    html = "<span style='word-break:break-all;' title='"+json.title+"'><a target='_blank' href='"+getSiteUrl("3",json.site)+json.itemId+"'>"+json.title+"</a></span>";
                 }else{
-                    html = "<span style='word-break:break-all;' title='"+json.title+"'><a target='_blank' href='"+serviceItemUrl+json.itemId+"'>"+json.title+"</a></span>";
+                    html = "<span style='word-break:break-all;' title='"+json.title+"'><a target='_blank' href='"+getSiteUrl("3",json.site)+json.itemId+"'>"+json.title+"</a></span>";
                 }
             }
             html+="</br><span style='color: #7B7B7B;'>物品号："+json.itemId+"</span>";
@@ -556,13 +556,16 @@
                 html+="&nbsp;&nbsp;<a target='_blank' href='" + path + "/editItem.do?id=" + json.docId + "&source=listingManager' title='" + json.docTitle + "'><span>" + json.docTitle.substr(0, 6) + "...</span></a>";
             }
             if(json.sku!=null&&json.sku!="") {
-                html += "</br>&nbsp;&nbsp;<a target='_blank' href='"+serviceItemUrl+json.itemId+"'><span style='color:#8BB51B;'>"+json.sku+"</span></a>";
+                html += "</br>&nbsp;&nbsp;<a target='_blank' href='"+getSiteUrl("3",json.site)+json.itemId+"'><span style='color:#8BB51B;'>"+json.sku+"</span></a>";
             }
             return html
         }
         var descStatic
+        var orderClu = "";
+        var orderFlag = "";
         function orderList(obj){
             var des = "";
+            orderFlag
             if($(obj).attr("val")=="0"){//默认状态为降序，之前为升序
                 $(obj).attr("val","1");
                 des="desc";
@@ -572,6 +575,8 @@
             }
             descStatic=$(obj).attr("val");
             var desc = $(obj).attr("colu");
+            orderClu = desc;
+            orderFlag = $(obj).attr("val");
             onloadTable(loadurl+"&descStr="+desc+"&desStr="+des);
             $("#itemListingTable").find("span[colu='"+desc+"']").attr("val",descStatic);
 
@@ -588,14 +593,19 @@
                     {title:"<span onclick='orderList(this)' style='cursor: pointer;' colu='site' val='0'>站点</span>",name:"site",width:"2%",align:"left",format:getSiteImg},
                     {title:"<span onclick='orderList(this)' style='cursor: pointer;' colu='listing_type' val='0'>刊登类型</span>",name:"listingType",width:"4%",align:"center",format:listingType},
                     {title:"价格",name:"price",width:"6%",align:"center",format:getPriceHtml},
-                    {title:"数量/<span onclick='orderList(this)' style='cursor: pointer;' colu='QuantitySold' val='0'>已售</span>",name:"Option1",width:"6%",align:"center",format:tjCount},
+                    {title:"<span onclick='orderList(this)' style='cursor: pointer;' colu='Quantity' val='0'>数量</span>/<span onclick='orderList(this)' style='cursor: pointer;' colu='QuantitySold' val='0'>已售</span>",name:"Option1",width:"6%",align:"center",format:tjCount},
                     {title:"<span onclick='orderList(this)' style='cursor: pointer;' colu='ListingDuration' val='0'>刊登天数</span>",name:"listingduration",width:"4%",align:"center",format:getDuration},
                     {title:"<span onclick='orderList(this)' style='cursor: pointer;' colu='EndTime' val='0'>结束时间</span>",name:"endtime",width:"4%",align:"left",format:getendTime},
                     {title:"&nbsp;&nbsp;&nbsp;&nbsp;操作",name:"Option1",width:"4%",align:"left",format:makeOption1}
                 ],
                 selectDataNow:false,
                 isrowClick:false,
-                showIndex:false
+                showIndex:false,
+                afterLoadTable:function(){
+                    if(orderClu!=""){
+                        $("#itemListingTable").find("span[colu='"+orderClu+"']").attr("val",orderFlag);
+                    }
+                }
             });
             refreshTable();
         }

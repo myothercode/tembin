@@ -47,6 +47,7 @@
     <result column="buyerGuaranteePrice" jdbcType="DOUBLE" property="buyerguaranteeprice" />
     <result column="orderReturnPolicy_id" jdbcType="BIGINT" property="orderreturnpolicyId" />
     <result column="PaymentAllowedSite" jdbcType="VARCHAR" property="paymentallowedsite" />
+    <result column="updateTime" jdbcType="TIMESTAMP" property="updatetime" />
     <result column="create_user" jdbcType="BIGINT" property="createUser" />
     <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
     <result column="uuid" jdbcType="VARCHAR" property="uuid" />
@@ -128,7 +129,7 @@
     shippingDetails_id, shipToLocations, site, startPrice, storeCategoryID, storeCategory2ID, 
     storeURL, timeLeft, title, hitCount, locationDefaulted, getItFast, postalCode, pictureDetails_id, 
     dispatchTimeMax, proxyItem, buyerGuaranteePrice, orderReturnPolicy_id, PaymentAllowedSite, 
-    create_user, create_time, uuid
+    updateTime, create_user, create_time, uuid
   </sql>
   <select id="selectByExample" parameterType="com.base.database.trading.model.TradingOrderGetItemExample" resultMap="BaseResultMap">
     <!--
@@ -195,8 +196,8 @@
       getItFast, postalCode, pictureDetails_id, 
       dispatchTimeMax, proxyItem, buyerGuaranteePrice, 
       orderReturnPolicy_id, PaymentAllowedSite, 
-      create_user, create_time, uuid
-      )
+      updateTime, create_user, create_time, 
+      uuid)
     values (#{id,jdbcType=BIGINT}, #{autopay,jdbcType=VARCHAR}, #{buyerprotection,jdbcType=VARCHAR}, 
       #{buyitnowprice,jdbcType=DOUBLE}, #{country,jdbcType=VARCHAR}, #{currency,jdbcType=VARCHAR}, 
       #{gifticon,jdbcType=INTEGER}, #{hitcounter,jdbcType=VARCHAR}, #{sku,jdbcType=VARCHAR}, 
@@ -211,8 +212,8 @@
       #{getitfast,jdbcType=VARCHAR}, #{postalcode,jdbcType=VARCHAR}, #{picturedetailsId,jdbcType=BIGINT}, 
       #{dispatchtimemax,jdbcType=INTEGER}, #{proxyitem,jdbcType=VARCHAR}, #{buyerguaranteeprice,jdbcType=DOUBLE}, 
       #{orderreturnpolicyId,jdbcType=BIGINT}, #{paymentallowedsite,jdbcType=VARCHAR}, 
-      #{createUser,jdbcType=BIGINT}, #{createTime,jdbcType=TIMESTAMP}, #{uuid,jdbcType=VARCHAR}
-      )
+      #{updatetime,jdbcType=TIMESTAMP}, #{createUser,jdbcType=BIGINT}, #{createTime,jdbcType=TIMESTAMP}, 
+      #{uuid,jdbcType=VARCHAR})
       <selectKey resultType="long" keyProperty="id" order="AFTER">
           SELECT LAST_INSERT_ID()
       </selectKey>
@@ -347,6 +348,9 @@
       <if test="paymentallowedsite != null">
         PaymentAllowedSite,
       </if>
+      <if test="updatetime != null">
+        updateTime,
+      </if>
       <if test="createUser != null">
         create_user,
       </if>
@@ -480,6 +484,9 @@
       </if>
       <if test="paymentallowedsite != null">
         #{paymentallowedsite,jdbcType=VARCHAR},
+      </if>
+      <if test="updatetime != null">
+        #{updatetime,jdbcType=TIMESTAMP},
       </if>
       <if test="createUser != null">
         #{createUser,jdbcType=BIGINT},
@@ -635,6 +642,9 @@
       <if test="record.paymentallowedsite != null">
         PaymentAllowedSite = #{record.paymentallowedsite,jdbcType=VARCHAR},
       </if>
+      <if test="record.updatetime != null">
+        updateTime = #{record.updatetime,jdbcType=TIMESTAMP},
+      </if>
       <if test="record.createUser != null">
         create_user = #{record.createUser,jdbcType=BIGINT},
       </if>
@@ -696,6 +706,7 @@
       buyerGuaranteePrice = #{record.buyerguaranteeprice,jdbcType=DOUBLE},
       orderReturnPolicy_id = #{record.orderreturnpolicyId,jdbcType=BIGINT},
       PaymentAllowedSite = #{record.paymentallowedsite,jdbcType=VARCHAR},
+      updateTime = #{record.updatetime,jdbcType=TIMESTAMP},
       create_user = #{record.createUser,jdbcType=BIGINT},
       create_time = #{record.createTime,jdbcType=TIMESTAMP},
       uuid = #{record.uuid,jdbcType=VARCHAR}
@@ -830,6 +841,9 @@
       <if test="paymentallowedsite != null">
         PaymentAllowedSite = #{paymentallowedsite,jdbcType=VARCHAR},
       </if>
+      <if test="updatetime != null">
+        updateTime = #{updatetime,jdbcType=TIMESTAMP},
+      </if>
       <if test="createUser != null">
         create_user = #{createUser,jdbcType=BIGINT},
       </if>
@@ -888,6 +902,7 @@
       buyerGuaranteePrice = #{buyerguaranteeprice,jdbcType=DOUBLE},
       orderReturnPolicy_id = #{orderreturnpolicyId,jdbcType=BIGINT},
       PaymentAllowedSite = #{paymentallowedsite,jdbcType=VARCHAR},
+      updateTime = #{updatetime,jdbcType=TIMESTAMP},
       create_user = #{createUser,jdbcType=BIGINT},
       create_time = #{createTime,jdbcType=TIMESTAMP},
       uuid = #{uuid,jdbcType=VARCHAR}

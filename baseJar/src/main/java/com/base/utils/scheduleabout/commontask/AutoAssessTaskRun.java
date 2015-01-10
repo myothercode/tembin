@@ -38,7 +38,7 @@ import java.util.Map;
 
 /**
  * Created by Administrtor on 2014/8/29.
- * 一键搬家任务
+ * 卖家发给买家的评价定时
  */
 public class AutoAssessTaskRun extends BaseScheduledClass implements Scheduledable {
     static Logger logger = Logger.getLogger(AutoAssessTaskRun.class);

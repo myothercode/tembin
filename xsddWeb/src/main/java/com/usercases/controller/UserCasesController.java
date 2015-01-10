@@ -1,6 +1,5 @@
 package com.usercases.controller;
 
-import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.base.database.trading.model.*;
 import com.base.domains.CommonParmVO;
@@ -15,6 +14,7 @@ import com.base.userinfo.service.UserInfoService;
 import com.base.utils.annotations.AvoidDuplicateSubmission;
 import com.base.utils.cache.SessionCacheSupport;
 import com.base.utils.common.DateUtils;
+import com.base.utils.thirdpart.OrderQueryTrack;
 import com.base.utils.threadpool.AddApiTask;
 import com.base.utils.threadpool.TaskMessageVO;
 import com.base.utils.xmlutils.SamplePaseXml;
@@ -23,10 +23,6 @@ import com.common.base.web.BaseAction;
 import com.sitemessage.service.SiteMessageStatic;
 import com.trading.service.*;
 import org.apache.commons.lang.StringUtils;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -39,10 +35,6 @@ import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.net.URI;
-import java.net.URLEncoder;
 import java.util.*;
 
 /**
@@ -925,13 +917,31 @@ public class UserCasesController extends BaseAction{
     @RequestMapping("/queryTrack.do")
     @ResponseBody
     public void queryTrack(CommonParmVO commonParmVO,HttpServletRequest request) throws Exception {
-        request.setCharacterEncoding("UTF-8");
+        /*OrderQueryTrack.queryTrack(orderses);*/
+        String transactionId=request.getParameter("transactionId");
+        String seller=request.getParameter("seller");
+        List<TradingOrderGetOrders> orderses=iTradingOrderGetOrders.selectOrderGetOrdersByTransactionId(transactionId,seller);
+        if(orderses!=null&&orderses.size()>0){
+            List<JSONObject> list=OrderQueryTrack.queryTrack1(orderses);
+            if(list!=null&&list.size()>0){
+                JSONObject json = list.get(0);
+                json.getString("Status");
+                AjaxSupport.sendSuccessText("message", json);
+            }else{
+                AjaxSupport.sendFailText("fail","调用API出错,请稍后再试!");
+            }
+
+        }else{
+            AjaxSupport.sendFailText("fail","没找到对应的订单,请核查");
+        }
+
+        /*request.setCharacterEncoding("UTF-8");
         BufferedReader in = null;
         String content = null;
-        String trackNum=request.getParameter("trackNum");
+
         String token=(URLEncoder.encode("RXYaxblwfBeNY+2zFVDbCYTz91r+VNWmyMTgXE4v16gCffJam2FcsPUpiau6F8Yk"));
         String url="http://api.91track.com/track?culture=zh-CN&numbers="+trackNum+"&token="+token;
-        /*String url="http://api.91track.com/track?culture=en&numbers="+"RD275816257CN"+"&token="+token;*/
+        *//*String url="http://api.91track.com/track?culture=en&numbers="+"RD275816257CN"+"&token="+token;*//*
         HttpClient client=new DefaultHttpClient();
         HttpGet get=new HttpGet();
         get.setURI(new URI(url));
@@ -948,10 +958,10 @@ public class UserCasesController extends BaseAction{
         in.close();
         content = sb.toString();
         String[] arr=content.split(",");
-        String content1="{"+arr[1]+"}";
-       /* String content1="{\"age\":66,\"name\":\"老张头\"}";*/
+        String content1="{"+arr[1]+"}";*/
+       /* String content1="{\"age\":66,\"name\":\"老张头\"}";
         JSONObject json = JSON.parseObject(content1);
         json.getString("Status");
-        AjaxSupport.sendSuccessText("message", json);
+        AjaxSupport.sendSuccessText("message", json);*/
     }
 }
