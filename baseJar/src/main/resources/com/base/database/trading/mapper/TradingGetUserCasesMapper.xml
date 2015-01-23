@@ -21,6 +21,9 @@
     <result column="creationDate" jdbcType="TIMESTAMP" property="creationdate" />
     <result column="lastModifiedDate" jdbcType="TIMESTAMP" property="lastmodifieddate" />
     <result column="handled" jdbcType="INTEGER" property="handled" />
+    <result column="caseContent" jdbcType="VARCHAR" property="casecontent" />
+    <result column="comments" jdbcType="LONGVARCHAR" property="comments" />
+    <result column="solveCateTime" jdbcType="TIMESTAMP" property="solvecatetime" />
     <result column="create_user" jdbcType="BIGINT" property="createUser" />
     <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
     <result column="uuid" jdbcType="VARCHAR" property="uuid" />
@@ -99,7 +102,7 @@
     -->
     id, caseId, caseType, buyerId, sellerId, status, itemId, itemTitle, transactionId, 
     caseQuantity, caseAmount, respondByDate, creationDate, lastModifiedDate, handled, 
-    create_user, create_time, uuid, updateTime
+    caseContent, comments, solveCateTime, create_user, create_time, uuid, updateTime
   </sql>
   <select id="selectByExample" parameterType="com.base.database.trading.model.TradingGetUserCasesExample" resultMap="BaseResultMap">
     <!--
@@ -157,6 +160,7 @@
       itemId, itemTitle, transactionId, 
       caseQuantity, caseAmount, respondByDate, 
       creationDate, lastModifiedDate, handled, 
+      caseContent, comments, solveCateTime, 
       create_user, create_time, uuid, 
       updateTime)
     values (#{id,jdbcType=BIGINT}, #{caseid,jdbcType=VARCHAR}, #{casetype,jdbcType=VARCHAR}, 
@@ -164,6 +168,7 @@
       #{itemid,jdbcType=VARCHAR}, #{itemtitle,jdbcType=VARCHAR}, #{transactionid,jdbcType=VARCHAR}, 
       #{casequantity,jdbcType=VARCHAR}, #{caseamount,jdbcType=VARCHAR}, #{respondbydate,jdbcType=TIMESTAMP}, 
       #{creationdate,jdbcType=TIMESTAMP}, #{lastmodifieddate,jdbcType=TIMESTAMP}, #{handled,jdbcType=INTEGER}, 
+      #{casecontent,jdbcType=VARCHAR}, #{comments,jdbcType=LONGVARCHAR}, #{solvecatetime,jdbcType=TIMESTAMP},
       #{createUser,jdbcType=BIGINT}, #{createTime,jdbcType=TIMESTAMP}, #{uuid,jdbcType=VARCHAR}, 
       #{updatetime,jdbcType=TIMESTAMP})
   </insert>
@@ -218,6 +223,15 @@
       </if>
       <if test="handled != null">
         handled,
+      </if>
+      <if test="casecontent != null">
+        caseContent,
+      </if>
+      <if test="comments != null">
+        comments,
+      </if>
+      <if test="solvecatetime != null">
+        solveCateTime,
       </if>
       <if test="createUser != null">
         create_user,
@@ -277,6 +291,15 @@
       </if>
       <if test="handled != null">
         #{handled,jdbcType=INTEGER},
+      </if>
+      <if test="casecontent != null">
+        #{casecontent,jdbcType=VARCHAR},
+      </if>
+      <if test="comments != null">
+        #{comments,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="solvecatetime != null">
+        #{solvecatetime,jdbcType=TIMESTAMP},
       </if>
       <if test="createUser != null">
         #{createUser,jdbcType=BIGINT},
@@ -354,6 +377,15 @@
       <if test="record.handled != null">
         handled = #{record.handled,jdbcType=INTEGER},
       </if>
+      <if test="record.casecontent != null">
+        caseContent = #{record.casecontent,jdbcType=VARCHAR},
+      </if>
+      <if test="record.comments != null">
+        comments = #{record.comments,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="record.solvecatetime != null">
+        solveCateTime = #{record.solvecatetime,jdbcType=TIMESTAMP},
+      </if>
       <if test="record.createUser != null">
         create_user = #{record.createUser,jdbcType=BIGINT},
       </if>
@@ -392,6 +424,9 @@
       creationDate = #{record.creationdate,jdbcType=TIMESTAMP},
       lastModifiedDate = #{record.lastmodifieddate,jdbcType=TIMESTAMP},
       handled = #{record.handled,jdbcType=INTEGER},
+      caseContent = #{record.casecontent,jdbcType=VARCHAR},
+      comments = #{record.comments,jdbcType=LONGVARCHAR},
+      solveCateTime = #{record.solvecatetime,jdbcType=TIMESTAMP},
       create_user = #{record.createUser,jdbcType=BIGINT},
       create_time = #{record.createTime,jdbcType=TIMESTAMP},
       uuid = #{record.uuid,jdbcType=VARCHAR},
@@ -449,6 +484,15 @@
       <if test="handled != null">
         handled = #{handled,jdbcType=INTEGER},
       </if>
+      <if test="casecontent != null">
+        caseContent = #{casecontent,jdbcType=VARCHAR},
+      </if>
+      <if test="comments != null">
+        comments = #{comments,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="solvecatetime != null">
+        solveCateTime = #{solvecatetime,jdbcType=TIMESTAMP},
+      </if>
       <if test="createUser != null">
         create_user = #{createUser,jdbcType=BIGINT},
       </if>
@@ -484,6 +528,9 @@
       creationDate = #{creationdate,jdbcType=TIMESTAMP},
       lastModifiedDate = #{lastmodifieddate,jdbcType=TIMESTAMP},
       handled = #{handled,jdbcType=INTEGER},
+      caseContent = #{casecontent,jdbcType=VARCHAR},
+      comments = #{comments,jdbcType=LONGVARCHAR},
+      solveCateTime = #{solvecatetime,jdbcType=TIMESTAMP},
       create_user = #{createUser,jdbcType=BIGINT},
       create_time = #{createTime,jdbcType=TIMESTAMP},
       uuid = #{uuid,jdbcType=VARCHAR},

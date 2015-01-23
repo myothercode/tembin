@@ -19,39 +19,14 @@
   </resultMap>
 
     <select id="selectMessageTemplateList" resultMap="BaseResultMap" parameterType="map">
-        select template.* from trading_message_template template  where 1=1
+        select template.id,template.name,template.caseType,template.autoType,template.messageType,template.status from trading_message_template template  where 1=1
         <if test="id!=null">
             and template.id = #{id}
         </if>
         <if test="status!=null">
             and template.status = #{status}
         </if>
-        <!--<if test="starttime!=null">
-            and template.create_time >= #{starttime}
-        </if>
-        <if test="endtime!=null">
-            and template.create_time &lt; #{endtime}
-        </if>
-        <if test="type!=null">
-            <if test="type=='caseType'">
-                and template.caseType=1
-            </if>
-            <if test="type=='autoType'">
-                and template.autoType=1
-            </if>
-            <if test="type=='messageType'">
-                and template.messageType=1
-            </if>
-        </if>
-        <if test="itemType!=null">
-            <if test="itemType==1">
-                and template.name like "%"#{content2}"%"
-            </if>
-            <if test="itemType==2">
-                and template.content like "%"#{content2}"%"
-            </if>
 
-        </if>-->
         <if test="type!=null">
             <if test="type=='caseType'">
                 and template.caseType=1
@@ -63,8 +38,11 @@
                 and template.messageType=1
             </if>
         </if>
-        <if test="userId!=null">
-            and template.create_user =#{userId}
+        <if test="orgUsers!=null">
+            and template.create_user in
+            <foreach collection="orgUsers" item="user" index="index" open="(" separator="," close=")">
+                #{user.userId}
+            </foreach>
         </if>
         <if test="orderby!=null">
             <if test="orderby=='asc'">

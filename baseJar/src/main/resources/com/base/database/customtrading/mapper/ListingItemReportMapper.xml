@@ -35,7 +35,7 @@
             and lid.QuantitySold>0
         </if>
         <if test="userid!=null">
-            and lid.ebay_account in (select ebay_account from usercontroller_ebay_account where user_id=#{userid})
+            and lid.ebay_account in (select ee.ebay_account from usercontroller_user_ebay ue,usercontroller_ebay_account ee where ue.ebay_id=ee.id and ue.user_id=#{userid})
         </if>
     </select>
 
@@ -64,7 +64,7 @@
             and lid.QuantitySold>0
         </if>
         <if test="userid!=null">
-            and lid.ebay_account in (select ebay_account from usercontroller_ebay_account where user_id=#{userid})
+            and lid.ebay_account in (select ee.ebay_account from usercontroller_user_ebay ue,usercontroller_ebay_account ee where ue.ebay_id=ee.id and ue.user_id=#{userid})
         </if>
     </select>
 
@@ -93,7 +93,7 @@
             and lid.QuantitySold>0
         </if>
         <if test="userid!=null">
-            and lid.ebay_account in (select ebay_account from usercontroller_ebay_account where user_id=#{userid})
+            and lid.ebay_account in (select ee.ebay_account from usercontroller_user_ebay ue,usercontroller_ebay_account ee where ue.ebay_id=ee.id and ue.user_id=#{userid})
         </if>
     </select>
 </mapper>

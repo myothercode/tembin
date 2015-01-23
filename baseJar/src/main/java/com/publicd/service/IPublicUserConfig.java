@@ -19,5 +19,9 @@ public interface IPublicUserConfig {
 
    PublicUserConfig selectUserConfigByItemTypeName(String configType,String name);
 
+    List<PublicUserConfig> selectUserConfigByItemTypeListUser(String configType, List<Long> liuser);
+
+    List<PublicUserConfig> selectUserConfigByItemTypeList(String configType);
+
  /*   List<PublicUserConfig> selectUserConfigByRemark();*/
 }

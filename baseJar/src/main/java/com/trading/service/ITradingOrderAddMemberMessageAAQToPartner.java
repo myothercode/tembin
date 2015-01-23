@@ -18,4 +18,5 @@ public interface ITradingOrderAddMemberMessageAAQToPartner {
     void deleteTradingOrderAddMemberMessageAAQToPartner(Long id);
     List<TradingOrderAddMemberMessageAAQToPartner> selectTradingOrderAddMemberMessageAAQToPartnerByItemIdAndSender(String itemid,Integer type,String sender,String recipient);
     List<TradingOrderAddMemberMessageAAQToPartner> selectTradingOrderAddMemberMessageAAQToPartnerByTypeAndReplied(Integer type,String replied,Long Userid);
+    List<TradingOrderAddMemberMessageAAQToPartner> selectTradingOrderAddMemberMessageAAQToPartnerByMessageID(String messageID,Integer type);
 }

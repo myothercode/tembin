@@ -81,6 +81,7 @@ public class TradingMessageGetmymessageImpl implements com.trading.service.ITrad
             ebayNames.add(d.getEbayName());
         }
         cr.andReadEqualTo(read);
+        cr.andFolderidEqualTo("0");
         if(ebayNames.size()>0){
             cr.andRecipientuseridIn(ebayNames);
         }else{
@@ -91,10 +92,11 @@ public class TradingMessageGetmymessageImpl implements com.trading.service.ITrad
     }
 
     @Override
-    public List<TradingMessageGetmymessage> selectMessageGetmymessageByMessageId(String messageId) {
+    public List<TradingMessageGetmymessage> selectMessageGetmymessageByMessageId(String messageId,String sender) {
         TradingMessageGetmymessageExample example=new TradingMessageGetmymessageExample();
         TradingMessageGetmymessageExample.Criteria cr=example.createCriteria();
         cr.andMessageidEqualTo(messageId);
+        cr.andSenderEqualTo(sender);
         List<TradingMessageGetmymessage> list=TradingMessageGetmymessageMapper.selectByExampleWithBLOBs(example);
         return list;
     }
@@ -106,6 +108,7 @@ public class TradingMessageGetmymessageImpl implements com.trading.service.ITrad
         cr.andItemidEqualTo(itemid);
         cr.andSenderEqualTo(sender);
         cr.andRecipientuseridEqualTo(recipient);
+        cr.andFolderidEqualTo("0");
         List<TradingMessageGetmymessage> list=TradingMessageGetmymessageMapper.selectByExampleWithBLOBs(example);
         return list;
     }
@@ -126,6 +129,28 @@ public class TradingMessageGetmymessageImpl implements com.trading.service.ITrad
         cr.andCreateUserEqualTo(userId);
         cr.andRepliedEqualTo("false");
         List<TradingMessageGetmymessage> list=TradingMessageGetmymessageMapper.selectByExample(example);
+        return list;
+    }
+
+    @Override
+    public List<MessageGetmymessageQuery> selectByMessageGetmymessageNoReadCount() {
+        Map map=new HashMap();
+        Page page=new Page();
+        page.setCurrentPage(1);
+        page.setPageSize(10);
+        return MessageGetmymessageMapper.selectByMessageGetmymessageNoReadCount(map,page);
+    }
+
+    @Override
+    public List<MessageGetmymessageQuery> selectMessageGetmymessageByItemIdAndSenderFolderIDIsZoneOrOne(String itemid, String sender, String sendToname) {
+        Map map=new HashMap();
+        Page page=new Page();
+        page.setCurrentPage(1);
+        page.setPageSize(10);
+        map.put("itemid",itemid);
+        map.put("sender",sender);
+        map.put("sendtoname",sendToname);
+        List<MessageGetmymessageQuery> list=MessageGetmymessageMapper.selectMessageGetmymessageByItemIdAndSenderFolderIDIsZoneOrOne(map,page);
         return list;
     }
 }

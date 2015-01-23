@@ -20,6 +20,7 @@ import com.base.utils.cache.SessionCacheSupport;
 import com.base.utils.common.*;
 import com.base.utils.exception.Asserts;
 import com.base.utils.ftpabout.FtpUploadFile;
+import com.base.utils.itemdescription.IItemDescription;
 import com.base.utils.xmlutils.SamplePaseXml;
 import com.base.xmlpojo.trading.addproduct.*;
 import com.base.xmlpojo.trading.addproduct.attrclass.MadeForOutletComparisonPrice;
@@ -47,6 +48,7 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.*;
+import java.util.jar.Attributes;
 
 /**
  * 商品信息
@@ -147,6 +149,8 @@ public class TradingItemImpl implements com.trading.service.ITradingItem {
     private ITradingShippingServiceOptionsDoc iTradingShippingServiceOptionsDoc;
     @Autowired
     private ITradingInternationalShippingServiceOptionDoc iTradingInternationalShippingServiceOptionDoc;
+    @Autowired
+    private IItemDescription iItemDescription;
 
 
     @Override
@@ -953,6 +957,25 @@ public class TradingItemImpl implements com.trading.service.ITradingItem {
             pds.setPictureURL(listr);
             item.setPictureDetails(pds);
         }
+        //自定义属性
+        List<TradingPublicLevelAttr> litpla = this.iTradingPublicLevelAttr.selectByParentId("ItemSpecifics",tradingItem.getId());
+        if(litpla!=null&&litpla.size()>0){
+            ItemSpecifics is = new ItemSpecifics();
+            List<NameValueList> linv = new ArrayList();
+            for(TradingPublicLevelAttr tpa : litpla){
+                List<TradingPublicLevelAttr> pla = this.iTradingPublicLevelAttr.selectByParentId(null,tpa.getId());
+                for(TradingPublicLevelAttr cpa:pla){
+                    NameValueList nv = new NameValueList();
+                    nv.setName(cpa.getName());
+                    List<String> listr = new ArrayList<String>();
+                    listr.add(cpa.getValue());
+                    nv.setValue(listr);
+                    linv.add(nv);
+                }
+            }
+            is.setNameValueList(linv);
+            item.setItemSpecifics(is);
+        }
         item.setListingType(item.getListingType().equals("2")?"FixedPriceItem":item.getListingType());
         item.setUUID(null);
         return item;
@@ -988,13 +1011,14 @@ public class TradingItemImpl implements com.trading.service.ITradingItem {
     public void updateTradingItem(Item item, TradingItemWithBLOBs tradingItem) throws Exception {
         HttpServletRequest request = RequestResponseContext.getRequest();
         String [] selectType = request.getParameterValues("selectType");
+        String listingType = request.getParameter("listingType");
         SessionVO c= SessionCacheSupport.getSessionVO();
         tradingItem = new TradingItemWithBLOBs();
         TradingItem tradingItem1=this.selectByItemId(item.getItemID());
         for(String str : selectType){
-            if(str.equals("StartPrice")){//改价格
+            if(str.equals("StartPrice")&&item.getStartPrice()!=null){//改价格
                 tradingItem.setStartprice(item.getStartPrice().getValue());
-            }else if(str.equals("Quantity")){//改数量
+            }else if(str.equals("Quantity")&&item.getQuantity()!=null){//改数量
                 tradingItem.setQuantity(item.getQuantity().longValue());
             }else if(str.equals("PictureDetails")){//改图片
                 PictureDetails picd = item.getPictureDetails();
@@ -1170,7 +1194,8 @@ public class TradingItemImpl implements com.trading.service.ITradingItem {
                 this.tradingItemMapper.updateByPrimaryKeySelective(tradingItem);
                 //处理商品描述信息
                 String des = tradingItem.getDescription();
-                org.jsoup.nodes.Document doc = org.jsoup.Jsoup.parse(des);
+                this.iItemDescription.getPaDescription(des,tradingItem,item);
+                /*org.jsoup.nodes.Document doc = org.jsoup.Jsoup.parse(des);
                 org.jsoup.select.Elements content = doc.getElementsByAttributeValue("class", "Pa_Box");
                 if(content!=null&&content.size()>0) {
                     for (int i = 0; i < content.size(); i++) {
@@ -1248,7 +1273,7 @@ public class TradingItemImpl implements com.trading.service.ITradingItem {
                         }
                     }
                 }
-
+*/
 
                 /**保存产品信息开始**/
                 PublicItemInformation itemInformation = null;
@@ -1311,19 +1336,12 @@ public class TradingItemImpl implements com.trading.service.ITradingItem {
                     this.iPublicItemInformation.saveItemInformation(itemInformation);
                     //图片信息
                     PictureDetails picds = item.getPictureDetails();
-                    if (picds != null) {
+                    /*if (picds != null) {
                         List<String> picurl = picds.getPictureURL();
                         for (int i = 0; i < picurl.size(); i++) {
-                            PublicItemPictureaddrAndAttr ppaa = new PublicItemPictureaddrAndAttr();
-                            ppaa.setCreateTime(new Date());
-                            ppaa.setCreateUser(kml.getUserId());
-                            ppaa.setAttrtype("picture");
-                            ppaa.setAttrname("picture");
-                            ppaa.setAttrvalue(picurl.get(i));
-                            ppaa.setIteminformationId(itemInformation.getId());
-                            this.iPublicItemPictureaddrAndAttr.saveItemPictureaddrAndAttr(ppaa);
+
                         }
-                    }
+                    }*/
                 }
                 /**保存产品信息结束**/
 
@@ -1343,6 +1361,9 @@ public class TradingItemImpl implements com.trading.service.ITradingItem {
                     tai.setBuyitnowprice(Double.parseDouble(item.getBuyItNowPrice()==null?"0.0":item.getBuyItNowPrice()+""));
                     tai.setPrivatelisting(item.getPrivateListing()==true?"1":"0");
                     tai.setReserveprice(Double.parseDouble(item.getReservePrice()==null?"0.0":item.getReservePrice()+""));
+                    tai.setCreateUser(kml.getUserId());
+                    tai.setCreateTime(new Date());
+                    tai.setUuid(UUIDUtil.getUUID());
                     //tai.setSecondflag(request.getParameter("SecondFlag"));
                     this.iTradingAddItem.saveAddItem(tai);
                 }
@@ -1513,7 +1534,7 @@ public class TradingItemImpl implements com.trading.service.ITradingItem {
                                     tlu.setEbayurl(str+"?set_id=8800005007");
                                     tlu.setUrl(fileUrl);
                                     tlu.setCreateDate(new Date());
-                                    tlu.setCheckFlag("0");
+                                    tlu.setCheckFlag("1");
                                     tlu.setMackId(EncryptionUtil.md5Encrypt(fileUrl));
                                     //tlu.setEndDate(c.getTime());
                                     tlu.setEbayAccountId(DataDictionarySupport.getTradingDataDictionaryByID(Long.parseLong(item.getSite())).getName1());
@@ -1623,19 +1644,31 @@ public class TradingItemImpl implements com.trading.service.ITradingItem {
                             tlu.setEbayurl(picurl.get(i)+"?set_id=8800005007");
                             tlu.setUrl(picUrls);
                             tlu.setCreateDate(new Date());
-                            tlu.setCheckFlag("0");
+                            tlu.setCheckFlag("1");
                             tlu.setMackId(EncryptionUtil.md5Encrypt(picUrls));
                             //tlu.setEndDate(c.getTime());
                             tlu.setEbayAccountId(DataDictionarySupport.getTradingDataDictionaryByID(Long.parseLong(item.getSite())).getName1());
                             tlu.setSiteId(item.getSite());
                             this.iTradingListingPicUrl.saveListingPicUrl(tlu);
-
+                            PublicItemInformation itemInformationssss = this.iPublicItemInformation.selectItemInformationBySKU(tradingItem.getSku());
+                            if(itemInformationssss!=null) {
+                                List<PublicItemPictureaddrAndAttr> lipip = this.iPublicItemPictureaddrAndAttr.selectPictureaddrAndAttrByInformationId(itemInformationssss.getId(),"picture");
+                                if(lipip==null||(lipip!=null&&lipip.size()<picurl.size())){
+                                    PublicItemPictureaddrAndAttr ppaa = new PublicItemPictureaddrAndAttr();
+                                    ppaa.setCreateTime(new Date());
+                                    ppaa.setCreateUser(kml.getUserId());
+                                    ppaa.setAttrtype("picture");
+                                    ppaa.setAttrname("picture");
+                                    ppaa.setAttrvalue(picUrls);
+                                    ppaa.setIteminformationId(itemInformationssss.getId());
+                                    this.iPublicItemPictureaddrAndAttr.saveItemPictureaddrAndAttr(ppaa);
+                                }
+                            }
                         }catch(Exception e){
                             logger.error(tradingItem.getSku()+":::::",e);
                             continue;
                         }
                     }
-
                 }
 
                 //保存属性值

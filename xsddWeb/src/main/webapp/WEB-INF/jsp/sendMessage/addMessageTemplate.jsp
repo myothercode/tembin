@@ -155,6 +155,13 @@
                     </select>
                 </div>
             </div><br/>
+            <label  class="newdt control-label" style="margin-top:9px;">主题</label>
+            <div class="col-lg-10">
+                <div class="newselect" style="margin-top:9px;width: 750px;">
+                    <input name="subject" class="form-controlsd validate[required]" type="text" value="${template.subject}">
+                </div>
+            </div>
+            <br/>
             <label  class="newdt control-label" style="margin-top:9px;">模板内容</label>
             <div class="col-lg-10">
                 <div class="newselect" style="margin-top:9px;width: 750px;">

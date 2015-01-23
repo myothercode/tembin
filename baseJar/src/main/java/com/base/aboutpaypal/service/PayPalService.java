@@ -2,6 +2,7 @@ package com.base.aboutpaypal.service;
 
 import com.base.aboutpaypal.domain.PaypalVO;
 import com.base.database.trading.model.UsercontrollerPaypalAccount;
+import com.base.domains.querypojos.BaseTjReportQuery;
 import com.base.mybatis.page.Page;
 
 import java.util.List;
@@ -21,6 +22,10 @@ public interface PayPalService {
 
     /**获取paypal账户列表*/
     List<UsercontrollerPaypalAccount> queryPayPalList(Map map, Page page);
+
+    List<UsercontrollerPaypalAccount> queryPayPalsByUserIdReport(Map map, Page page);
+
+    List<BaseTjReportQuery> selectPayPalReportList(String type);
 
     UsercontrollerPaypalAccount selectById(Long id);
 

@@ -2,6 +2,7 @@ package com.base.utils.scheduleabout.commontask;
 
 import com.base.database.task.model.ListingDataTask;
 import com.base.database.task.model.TaskComplement;
+import com.base.database.task.model.TaskGetOrders;
 import com.base.database.task.model.TradingTaskXml;
 import com.base.database.trading.mapper.TradingListingDataMapper;
 import com.base.database.trading.model.TradingAutoComplement;
@@ -15,11 +16,14 @@ import com.base.utils.applicationcontext.ApplicationContextUtil;
 import com.base.utils.cache.TempStoreDataSupport;
 import com.base.utils.common.CommAutowiredClass;
 import com.base.utils.common.DateUtils;
+import com.base.utils.common.MyStringUtil;
 import com.base.utils.common.SystemLogUtils;
 import com.base.utils.scheduleabout.BaseScheduledClass;
 import com.base.utils.scheduleabout.MainTask;
+import com.base.utils.scheduleabout.MainTaskStaticParam;
 import com.base.utils.scheduleabout.Scheduledable;
 import com.base.utils.threadpool.AddApiTask;
+import com.base.utils.threadpool.TaskPool;
 import com.base.utils.xmlutils.SamplePaseXml;
 import com.complement.service.ITradingAutoComplement;
 import com.task.service.IListingDataTask;
@@ -31,13 +35,11 @@ import org.apache.log4j.Logger;
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
+import org.joda.time.DateTime;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by Administrtor on 2014/8/29.
@@ -57,8 +59,8 @@ public class ListingItemDataTimerTaskRun extends BaseScheduledClass implements S
                 "\t<EntriesPerPage>100</EntriesPerPage>\n" +
                 "\t<PageNumber>"+pageNumber+"</PageNumber>\n" +
                 "</Pagination>\n" +
-                "<StartTimeFrom>"+startTime+"</StartTimeFrom>\n" +
-                "<StartTimeTo>"+endTime+"</StartTimeTo>\n" +
+                "<EndTimeFrom>"+startTime+"</EndTimeFrom>\n" +
+                "<EndTimeTo>"+endTime+"</EndTimeTo>\n" +
                 "<UserID>"+ebayName+"</UserID>\n" +
                 "<IncludeVariations>true</IncludeVariations><IncludeWatchCount>true</IncludeWatchCount>\n" +
                 "<DetailLevel>ReturnAll</DetailLevel>\n" +
@@ -79,13 +81,12 @@ public class ListingItemDataTimerTaskRun extends BaseScheduledClass implements S
         Date beginDate = new Date();
         Calendar date = Calendar.getInstance();
         date.setTime(beginDate);
-        date.set(Calendar.DATE, date.get(Calendar.DATE) - 119);
-        String startTo="";
-        String startFrom="";
+        date.set(Calendar.DATE, date.get(Calendar.DATE) + 119);
+        String endTo="";
+        String endFrom="";
         try {
-            Date endDate = dft.parse(dft.format(date.getTime()));
-            startTo = DateUtils.DateToString(new Date());
-            startFrom = DateUtils.DateToString(endDate);
+            endTo = DateUtils.DateToString(DateUtils.nowDateAddDay(100));
+            endFrom = DateUtils.DateToString(DateUtils.nowDateMinusDay(18));
         } catch (Exception e) {
             logger.error("ListItemDataTimerTask:",e);
         }
@@ -94,7 +95,7 @@ public class ListingItemDataTimerTaskRun extends BaseScheduledClass implements S
         UsercontrollerDevAccountExtend d = new UsercontrollerDevAccountExtend();
         d.setApiCallName(APINameStatic.ListingItemList);
         d.setApiSiteid(siteid);
-        String colStr = this.getCosXml(ebayAccount, startFrom, startTo, 1, token);
+        String colStr = this.getCosXml(ebayAccount, endFrom, endTo, 1, token);
         String res="";
         try {
             Map<String, String> resMap= addApiTask.exec2(d, colStr, commPars.apiUrl);
@@ -108,7 +109,7 @@ public class ListingItemDataTimerTaskRun extends BaseScheduledClass implements S
                 String totalCount = totalElt.elementText("TotalNumberOfEntries");
                 String page = totalElt.elementText("TotalNumberOfPages");
                 for(int i=1;i<=Integer.parseInt(page);i++) {
-                    String colXml = this.getCosXml(ebayAccount, startFrom, startTo, i, token);
+                    String colXml = this.getCosXml(ebayAccount, endFrom, endTo, i, token);
                     Map<String, String> resMapxml = addApiTask.exec2(d, colXml, commPars.apiUrl);
                     String returnstr = resMapxml.get("message");
                     System.out.println(returnstr);
@@ -169,22 +170,62 @@ public class ListingItemDataTimerTaskRun extends BaseScheduledClass implements S
     }
     @Override
     public void run() {
-        String isRunging = TempStoreDataSupport.pullData("task_"+getScheduledType());
-        if(StringUtils.isNotEmpty(isRunging)){return;}
-        TempStoreDataSupport.pushData("task_" + getScheduledType(), "x");
         IListingDataTask iListingDataTask = (IListingDataTask) ApplicationContextUtil.getBean(IListingDataTask.class);
-        List<ListingDataTask> lildt = iListingDataTask.selectByTimerTaskflag();
-        if(lildt.size()>2){
-            lildt =filterLimitList(lildt);
+        List<ListingDataTask> lildt= null;
+        if (MainTaskStaticParam.CATCH_LISTINGDATA_QUEUE.isEmpty()){
+            lildt = iListingDataTask.selectByTimerTaskflag();
+            if (lildt==null || lildt.isEmpty()){return;}
         }
+
+        if(MainTaskStaticParam.CATCH_LISTINGDATA_QUEUE.isEmpty()){
+            for (ListingDataTask t : lildt){
+                try {
+                    Boolean b= TaskPool.threadIsAliveByName("thread_" + getScheduledType() + "_" + t.getId());
+                    if (b){
+                        //logger.error(getScheduledType()+t.getId()+"===之前的帐号任务还未结束不放入===");
+                        continue;
+                    }
+                    MainTaskStaticParam.CATCH_LISTINGDATA_QUEUE.put(t);
+                } catch (Exception e) {logger.error("放入ListingData队列出错",e);continue;}
+            }
+        }
+
         String taskFlag="";
-        for(ListingDataTask ldt:lildt){
+        ListingDataTask o = null;
+        try {
+            Iterator<ListingDataTask> iterator=MainTaskStaticParam.CATCH_LISTINGDATA_QUEUE.iterator();
+            while (iterator.hasNext()){
+                ListingDataTask oo=MainTaskStaticParam.CATCH_LISTINGDATA_QUEUE.take();
+                if (oo==null){continue;}
+                Boolean b= TaskPool.threadIsAliveByName("thread_" + getScheduledType() + "_" + oo.getId());
+                if (b){
+                    //logger.error(getScheduledType()+oo.getId()+"===之前的帐号任务还未结束取下一个===");
+                    continue;
+                }
+                o=oo;
+                break;
+            }
+        } catch (Exception e) {
+
+        }
+        if(o==null){
+            return;
+        }
+        //logger.error(getScheduledType() +o.getId() + "===任务开始===");
+        Thread.currentThread().setName("thread_" + getScheduledType()+"_"+o.getId());
+        taskFlag = this.saveListingData(o.getEbayaccount(),o.getUserid(),o.getToken(),o.getSite());
+        o.setTaskFlag(taskFlag);
+        o.setCreateDate(new Date());
+        iListingDataTask.saveListDataTask(o);
+        TaskPool.threadRunTime.remove("thread_" + getScheduledType()+"_"+o.getId());
+        Thread.currentThread().setName("thread_" + getScheduledType()+"_"+o.getId()+ MyStringUtil.getRandomStringAndNum(5));
+        //logger.error(getScheduledType()+o.getId() + "===任务结束===");
+        /*for(ListingDataTask ldt:lildt){
             taskFlag = this.saveListingData(ldt.getEbayaccount(),ldt.getUserid(),ldt.getToken(),ldt.getSite());
             ldt.setTaskFlag(taskFlag);
             ldt.setCreateDate(new Date());
             iListingDataTask.saveListDataTask(ldt);
-        }
-        TempStoreDataSupport.removeData("task_"+getScheduledType());
+        }*/
     }
 
     /**只从集合记录取多少条*/
@@ -210,6 +251,16 @@ public class ListingItemDataTimerTaskRun extends BaseScheduledClass implements S
 
     @Override
     public Integer crTimeMinu() {
-        return 10;
+        return 2;
+    }
+
+    @Override
+    public void setMark(String x) {
+
+    }
+
+    @Override
+    public String getMark() {
+        return null;
     }
 }

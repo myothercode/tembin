@@ -30,9 +30,9 @@ public interface ITradingOrderGetOrders {
 
     void downloadOrders(List<TradingOrderGetOrders> list,String outputFile,ServletOutputStream outputStream) throws Exception;
 
-    List<TradingOrderGetOrders> selectOrderGetOrdersBySendPaidMessage();
+    List<OrderGetOrdersQuery> selectOrderGetOrdersBySendPaidMessage();
 
-    List<TradingOrderGetOrders> selectOrderGetOrdersBySendShipMessage();
+    List<OrderGetOrdersQuery> selectOrderGetOrdersBySendShipMessage();
 
     List<TradingOrderGetOrders> selectOrderGetOrdersByeBayAccountAndTime(String ebay,Date start,Date end);
 
@@ -40,12 +40,13 @@ public interface ITradingOrderGetOrders {
 
     void deleteOrderGetOrders(Long id) throws Exception;
 
-    List<TradingOrderGetOrders> selectOrderGetOrdersByItemFlag();
+    List<OrderGetOrdersQuery> selectOrderGetOrdersByItemFlag();
 
-    List<TradingOrderGetOrders> selectOrderGetOrdersByAccountFlag();
+    List<OrderGetOrdersQuery> selectOrderGetOrdersByAccountFlag();
 
     List<TradingOrderGetOrders> selectOrderGetOrdersBySellerTrasactionFlag();
 
     List<TradingOrderGetOrders> selectOrderGetOrdersByTrackNumber();
 
+    List<TradingOrderGetOrders> selectOrderGetOrdersByCreatedDateAndEbayAcount(Date date,String ebayName);
 }

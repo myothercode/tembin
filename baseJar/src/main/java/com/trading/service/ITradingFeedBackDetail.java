@@ -1,6 +1,7 @@
 package com.trading.service;
 
 import com.base.database.trading.model.TradingFeedBackDetail;
+import com.base.domains.querypojos.FeedBackQuery;
 import com.base.domains.querypojos.FeedBackReportQuery;
 import com.base.mybatis.page.Page;
 
@@ -13,9 +14,9 @@ import java.util.Map;
 public interface ITradingFeedBackDetail {
     void saveFeedBackDetail(List<TradingFeedBackDetail> lifb) throws Exception;
 
-    TradingFeedBackDetail selectFeedBackDetailByTransactionId(String transactionId);
+    TradingFeedBackDetail selectFeedBackDetailByTransactionId(String transactionId,String role);
 
-    List<TradingFeedBackDetail> selectFeedBackDetailByAutoMessageFlag(List<String> types);
+    List<FeedBackQuery> selectFeedBackDetailByAutoMessageFlag(List<String> types);
 
     int selectByCount(Map m);
 

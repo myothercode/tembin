@@ -32,6 +32,9 @@
             setTimeout(function(){//预加载一些资源
                 preLoadReSource();
             },500);
+            /*setInterval(function(){
+                setWandH();
+            },5000);*/
         });
         /**设置主页地址*/
         function setIndexUrl(){

@@ -2,8 +2,9 @@ package com.base.database.task.mapper;
 
 import com.base.database.task.model.TaskFeedBack;
 import com.base.database.task.model.TaskFeedBackExample;
-import java.util.List;
 import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
 
 public interface TaskFeedBackMapper {
     /**
@@ -117,4 +118,6 @@ public interface TaskFeedBackMapper {
      * @mbggenerated
      */
     int updateByPrimaryKey(TaskFeedBack record);
+
+
 }

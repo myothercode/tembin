@@ -679,13 +679,41 @@ public class DateUtils {
         return i;
     }
 
-    /**两个日期之间相差多少分钟date2-date1*/
+    /**两个日期之间相差多少秒date2-date1*/
     public static int secondsBetween(Date date1,Date date2){
         int i= Seconds.secondsBetween(new DateTime(date1), new DateTime(date2)).getSeconds();
         return i;
     }
 
+    /**
+     * 当前时间减去天数
+     * @param days
+     * @return
+     */
+    public static Date nowDateMinusDay(int days){
+        return new DateTime().minusDays(days).toDate();
+    }
+
+    /**
+     * 当前时间加上天数
+     * @param days
+     * @return
+     */
+    public static Date nowDateAddDay(int days){
+        return new DateTime().plusDays(days).toDate();
+    }
+
+
+	/**
+	 * dateTime = dateTime.plusDays(1) // 增加天
+	 .plusYears(1)// 增加年
+	 .plusMonths(1)// 增加月
+	 .plusWeeks(1)// 增加星期
+	 .minusMillis(1)// 减分钟
+	 .minusHours(1)// 减小时
+	 .minusSeconds(1);// 减秒数
+	 * */
     public static void main(String[] args) {
-        System.out.println(minuteBetween(str2Date("2014-11-18 15:3:00"), new Date()));
+        System.out.println(new DateTime().minusDays(19));
     }
 }

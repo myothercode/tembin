@@ -2,6 +2,7 @@ package com.trading.service;
 
 import com.base.database.trading.model.TradingGetUserCases;
 import com.base.domains.querypojos.UserCasesQuery;
+import com.base.domains.userinfo.UsercontrollerUserExtend;
 import com.base.mybatis.page.Page;
 
 import java.util.List;

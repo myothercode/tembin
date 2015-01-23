@@ -209,7 +209,6 @@ function initLoadImage(){
                     //var lq=$(div1).find("a[id=d_clip_button]");
                 }
                 $("#addPictureId").append(div);
-
             }
             var addPictureId=document.getElementById("addPictureId");
             var div=$(addPictureId).find("div[id=vspic]");

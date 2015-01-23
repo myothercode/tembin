@@ -79,9 +79,9 @@
   </resultMap>
     <select id="selectByItemList" resultMap="BaseResultMap" parameterType="map">
         select items.*,ebayaccount.ebay_name ebayaccountname from (
-        select item.*,dic.`name` site_name,dic.imgurl site_img,pic.GalleryURL galleryURL,dic.value1 currencyId,litime.timer defaultTimer,act.ebay_account ebay_name from trading_item item
+        select item.id,item.is_flag,item.item_id,item.remark,item.listingtype,item.listing_way,item.item_name,item.site,item.sku,item.ListingDuration,dic.`name` site_name,dic.imgurl site_img,pic.GalleryURL galleryURL,dic.value1 currencyId,litime.timer defaultTimer,act.ebay_account ebay_name,act.id ebay_id  from trading_item item
         left join trading_data_dictionary dic on item.Site=dic.id
-        left join trading_picturedetails pic on item.id=pic.parent_id
+        inner join trading_picturedetails pic on item.id=pic.parent_id
         left join usercontroller_ebay_account act on item.ebay_account=act.id
         left join trading_timer_listing litime on litime.item=item.id
         where 1=1 and item.check_flag='0'
@@ -119,9 +119,9 @@
         <if test="selectType!=null">
             and item.${selectType} like CONCAT(CONCAT('%', #{selectValue, jdbcType=VARCHAR}),'%')
         </if>
-        ) items, (select acc.* from usercontroller_ebay_account acc,
+        ) items left join (select acc.id,acc.ebay_name from usercontroller_ebay_account acc,
         usercontroller_user_ebay dev where acc.id=dev.ebay_id and dev.user_id=#{userid}
-        ) ebayaccount where items.ebay_name=ebayaccount.ebay_account
+        ) ebayaccount on  items.ebay_id=ebayaccount.id
         order by ${descStr} ${desStr}
     </select>
 

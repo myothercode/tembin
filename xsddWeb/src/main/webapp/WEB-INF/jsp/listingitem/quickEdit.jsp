@@ -27,7 +27,7 @@
             $().invoke(url,data,
                     [function(m,r){
                         alert(r);
-                        W.refreshTable();
+                        W.reshTable();
                         W.quickEdits.close();
                     },
                         function(m,r){

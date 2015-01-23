@@ -40,6 +40,7 @@ public class SynchronizeGetMessagesTaskRun extends BaseScheduledClass implements
                 TaskGetMessages.setSavetime(date);
                 TaskGetMessages.setUserid(ebay.getUserId());
                 TaskGetMessages.setEbayid(ebay.getId());
+                TaskGetMessages.setEbayname(ebay.getEbayName());
                 iTaskGetMessages.saveListTaskGetMessages(TaskGetMessages);
             }
         }catch (Exception e){
@@ -68,6 +69,16 @@ public class SynchronizeGetMessagesTaskRun extends BaseScheduledClass implements
 
     @Override
     public Integer crTimeMinu() {
+        return null;
+    }
+
+    @Override
+    public void setMark(String x) {
+
+    }
+
+    @Override
+    public String getMark() {
         return null;
     }
 }

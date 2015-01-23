@@ -30,6 +30,7 @@ public class TradingTimerListingImpl implements com.trading.service.ITradingTime
         }else{
             tradingTimerListing.setId(ttlw.getId());
             tradingTimerListing.setCheckFlag("0");
+            tradingTimerListing.setTimerFlag("0");
             this.tradingTimerListingMapper.updateByPrimaryKeyWithBLOBs(tradingTimerListing);
         }
     }

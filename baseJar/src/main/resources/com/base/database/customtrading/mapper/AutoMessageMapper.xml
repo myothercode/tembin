@@ -25,11 +25,12 @@
       <result column="internationalService" jdbcType="VARCHAR" property="internationalService" />
       <result column="exceptCountry" jdbcType="VARCHAR" property="exceptCountry" />
       <result column="allOrder" jdbcType="VARCHAR" property="allOrder" />
+      <result column="comment" jdbcType="VARCHAR" property="comment" />
 
   </resultMap>
 
     <select id="selectAutoMessageList" resultMap="BaseResultMap" parameterType="map">
-        select autoMessage.*,item.value item,country.value country,amount.value amount,service.value service,internationalService.value internationalService,allOrder.value allOrder,exceptCountry.value exceptCountry from trading_auto_message autoMessage
+        select autoMessage.id,autoMessage.subject,autoMessage.type,autoMessage.startUse,autoMessage.comment,item.value item,country.value country,amount.value amount,service.value service,internationalService.value internationalService,allOrder.value allOrder,exceptCountry.value exceptCountry from trading_auto_message autoMessage
         left join trading_auto_message_attr item on (autoMessage.id=item.autoMessage_id and item.type="orderItem")
         left join trading_auto_message_attr country on (autoMessage.id=country.autoMessage_id and country.type="country")
         left join trading_auto_message_attr amount on (autoMessage.id=amount.autoMessage_id and amount.type="amount")
@@ -41,8 +42,11 @@
         <if test="id!=null">
             and autoMessage.id = #{id}
         </if>
-        <if test="userId!=null">
-            and autoMessage.create_user =#{userId}
+        <if test="orgUsers!=null">
+            and autoMessage.create_user in
+            <foreach collection="orgUsers" item="user" index="index" open="(" separator="," close=")">
+                #{user.userId}
+            </foreach>
         </if>
         <if test="status!=null">
             <if test="status==1">
@@ -55,11 +59,11 @@
         group by autoMessage.id
     </select>
     <select id="selectInternationalShippingServiceList" resultMap="BaseResultMap" parameterType="map">
-        select dic.id id,dic.value subject from trading_data_dictionary dic where 1=1
+        select dic.id id,dic.name subject from trading_data_dictionary dic where 1=1
         and dic.type ="International transport"
     </select>
     <select id="selectShippingServiceOptionList" resultMap="BaseResultMap" parameterType="map">
-        select dic.id id,dic.value subject from trading_data_dictionary dic where 1=1
+        select dic.id id,dic.name subject from trading_data_dictionary dic where 1=1
         and dic.type ="domestic transportation"
         <if test="siteId!=null">
             and dic.parent_id = #{siteId}

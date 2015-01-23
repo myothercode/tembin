@@ -11,4 +11,6 @@ public interface IAutoAssessDetail {
     void saveAutoAssessDetail(AutoAssessDetailWithBLOBs autoAssessDetail);
 
     List<AutoAssessDetailWithBLOBs> selectByList(Long sourceId, String dataType,String isFlag);
+
+    List<AutoAssessDetailWithBLOBs> selectByListIsFlag(String isFlag);
 }

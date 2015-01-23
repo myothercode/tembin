@@ -6,8 +6,10 @@ import com.base.database.trading.model.OrderAutoAssess;
 import com.base.database.trading.model.TradingAssessViewSet;
 import com.base.domains.SessionVO;
 import com.base.domains.querypojos.PaypalQuery;
+import com.base.domains.userinfo.UsercontrollerUserExtend;
 import com.base.mybatis.page.Page;
 import com.base.mybatis.page.PageJsonBean;
+import com.base.userinfo.service.SystemUserManagerService;
 import com.base.utils.cache.DataDictionarySupport;
 import com.base.utils.cache.SessionCacheSupport;
 import com.common.base.utils.ajax.AjaxSupport;
@@ -21,10 +23,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -38,7 +42,8 @@ public class AssessController extends BaseAction{
     private IOrderAutoAssess iOrderAutoAssess;
     @Autowired
     private ITradingAssessViewSet iTradingAssessViewSet;
-
+    @Autowired
+    private SystemUserManagerService systemUserManagerService;
     @Autowired
     private IPublicUserConfig iPublicUserConfig;
 
@@ -52,8 +57,9 @@ public class AssessController extends BaseAction{
     @RequestMapping("/assess/assessManager.do")
     public ModelAndView assessManager(HttpServletRequest request,HttpServletResponse response,ModelMap modelMap) throws DateParseException {
         SessionVO c= SessionCacheSupport.getSessionVO();
-        DataDictionarySupport.removePublicUserConfig(c.getId());
-        List<PublicUserConfig> liconfig = DataDictionarySupport.getPublicUserConfigByType("autoAssessType", c.getId());
+        List<Long> liuser = new ArrayList<Long>();
+        liuser.add(c.getOrgId());
+        List<PublicUserConfig> liconfig = this.iPublicUserConfig.selectUserConfigByItemTypeListUser("autoAssessType", liuser);
         if(liconfig!=null&&liconfig.size()>0){
             modelMap.put("userConfig",liconfig.get(0));
         }
@@ -70,6 +76,7 @@ public class AssessController extends BaseAction{
      * @throws Exception
      */
     @RequestMapping("/ajax/addAssessContent.do")
+    @ResponseBody
     public void addAssessContent(HttpServletRequest request,HttpServletResponse response,ModelMap modelMap) throws Exception {
         SessionVO c= SessionCacheSupport.getSessionVO();
         String content = request.getParameter("content");
@@ -96,6 +103,7 @@ public class AssessController extends BaseAction{
      * @throws Exception
      */
     @RequestMapping("/ajax/loadAssessList.do")
+    @ResponseBody
     public void loadAssessList(HttpServletRequest request,HttpServletResponse response,ModelMap modelMap) throws Exception {
         SessionVO c= SessionCacheSupport.getSessionVO();
         List<OrderAutoAssess> lioa = this.iOrderAutoAssess.selectAssessList(c.getId());
@@ -115,6 +123,7 @@ public class AssessController extends BaseAction{
      * @throws Exception
      */
     @RequestMapping("/ajax/savePublicUserConfig.do")
+    @ResponseBody
     public void savePublicUserConfig(HttpServletRequest request,HttpServletResponse response,ModelMap modelMap) throws Exception {
         SessionVO c= SessionCacheSupport.getSessionVO();
         String configValue = request.getParameter("configValue");
@@ -122,9 +131,9 @@ public class AssessController extends BaseAction{
         puc.setConfigName(configValue);
         puc.setConfigValue(configValue);
         puc.setCreateDate(new Date());
-        puc.setUserId(c.getId());
+        puc.setUserId(c.getOrgId());
         puc.setConfigType("autoAssessType");
-        List<PublicUserConfig> liconfig = DataDictionarySupport.getPublicUserConfigByType("autoAssessType", c.getId());
+        List<PublicUserConfig> liconfig = DataDictionarySupport.getPublicUserConfigByType("autoAssessType", c.getOrgId());
         if(liconfig!=null&&liconfig.size()>0){
             puc.setId(liconfig.get(0).getId());
         }
@@ -139,6 +148,7 @@ public class AssessController extends BaseAction{
      * @throws Exception
      */
     @RequestMapping("/ajax/delAssessContent.do")
+    @ResponseBody
     public void delAssessContent(HttpServletRequest request,HttpServletResponse response,ModelMap modelMap) throws Exception {
         String id = request.getParameter("id");
         this.iOrderAutoAssess.deltelAccessConent(Long.parseLong(id));
@@ -154,6 +164,7 @@ public class AssessController extends BaseAction{
      * @throws Exception
      */
     @RequestMapping("/ajax/saveAssessViewSet.do")
+    @ResponseBody
     public void saveAssessViewSet(HttpServletRequest request,HttpServletResponse response,ModelMap modelMap) throws Exception {
         SessionVO c= SessionCacheSupport.getSessionVO();
         String appRange = request.getParameter("appRange").equals("undefined")?"":request.getParameter("appRange");

@@ -34,28 +34,25 @@
     <select id="selectByMessageGetmymessageList" resultMap="BaseResultMap" parameterType="map">
         select MessageGetmymessage.* from trading_message_getmymessage MessageGetmymessage
         /*left join usercontroller_ebay_account ebay on MessageGetmymessage.ebay_account_id=ebay.ebay_name*/ where 1=1
+         and MessageGetmymessage.folderID = "0"
         <if test="id!=null">
             and MessageGetmymessage.id = #{id}
         </if>
     </select>
     <select id="selectMessageGetmymessageByGroupList" resultMap="BaseResultMap" parameterType="map">
-        select MessageGetmymessage.*,item.sku sku,count(*) countNum from trading_message_getmymessage MessageGetmymessage
+        select MessageGetmymessage.id,MessageGetmymessage.sendToName,MessageGetmymessage.messageID,MessageGetmymessage.subject,MessageGetmymessage.read,MessageGetmymessage.sender,MessageGetmymessage.recipientUserID,MessageGetmymessage.receiveDate,item.sku sku,count(*) countNum from trading_message_getmymessage MessageGetmymessage
         left join trading_order_get_item item on MessageGetmymessage.itemID=item.itemID
-        <if test="amount!=null">
-         <!--   <if test="amount=='yes'">
-                left join (select trading_order_get_orders.itemID itemid1,trading_order_get_orders.buyerUserID buyer1,trading_order_get_orders.sellerUserID seller1
-                from trading_order_get_orders) order1 on MessageGetmymessage.itemID=order1.itemid1
-            </if>-->
-        <!--    <if test="amount=='no'">
-                left join (select trading_order_get_orders.itemID itemid1,trading_order_get_orders.buyerUserID buyer1,trading_order_get_orders.sellerUserID seller1
-                from trading_order_get_orders) order1 on MessageGetmymessage.itemID!=order1.itemid1
-            </if>-->
-        </if>
         where 1=1
+        <if test="folderID!=null">
+            <if test="folderID==0">
+                and MessageGetmymessage.folderID = "0"
+            </if>
+            <if test="folderID==1">
+                and MessageGetmymessage.folderID = "1"
+            </if>
+        </if>
         <if test="amount!=null">
             <if test="amount=='yes'">
-               /* and MessageGetmymessage.sender=order1.buyer1 and MessageGetmymessage.recipientUserID=order1.seller1 and MessageGetmymessage.itemID=order1.itemid1*/
-                /*and MessageGetmymessage.itemID  in (select trading_order_get_orders.itemID from trading_order_get_orders)*/
                 and MessageGetmymessage.itemID in (select message.itemID from trading_message_getmymessage message
                 left join trading_order_get_item item1 on message.itemID=item1.itemID
                 left join trading_order_get_orders order3 on message.itemID=order3.itemID where message.sender=order3.buyerUserID
@@ -89,22 +86,25 @@
             </if>
         </if>
         <if test="type!=null">
-            <if test="type==1">
-                and MessageGetmymessage.sender like "%"#{content}"%"
+            <if test="content!=null">
+                <if test="type==1">
+                    and MessageGetmymessage.sender like "%"#{content}"%"
+                </if>
+                <if test="type==2">
+                    and MessageGetmymessage.subject like "%"#{content}"%"
+                </if>
+                <if test="type==3">
+                    and item.sku like "%"#{content}"%"
+                </if>
             </if>
-            <if test="type==2">
-                and MessageGetmymessage.subject like "%"#{content}"%"
-            </if>
-            <if test="type==3">
-                and item.sku like "%"#{content}"%"
-            </if>
+
         </if>
-        <if test="ebays!=null">
-            and MessageGetmymessage.ebay_account_id in
+    <!--    <if test="ebays!=null">
+            and MessageGetmymessage.recipientUserID in
             <foreach collection="ebays" item="ebay" index="index" open="(" separator="," close=")">
-                #{ebay.id}
+                #{ebay.ebayName}
             </foreach>
-        </if>
+        </if>-->
         <if test="status!=null">
             <if test="status=='readed'">
                 and MessageGetmymessage.read="true"
@@ -113,7 +113,7 @@
                 and MessageGetmymessage.read="false"
             </if>
         </if>
-        group by MessageGetmymessage.messageID
+        group by MessageGetmymessage.sender,MessageGetmymessage.itemID
         <if test="read!=null">
             order by MessageGetmymessage.receiveDate
         </if>
@@ -128,5 +128,23 @@
             and MessageGetmymessage.messageID = #{messageID}
         </if>
         order by MessageGetmymessage.receiveDate
+    </select>
+    <select id="selectByMessageGetmymessageNoReadCount" resultMap="BaseResultMap" parameterType="map">
+        select count(1) countNum from trading_message_getmymessage MessageGetmymessage where 1=1
+        and MessageGetmymessage.read = "false" and MessageGetmymessage.folderID = "0"
+    </select>
+    <select id="selectMessageGetmymessageByItemIdAndSenderFolderIDIsZoneOrOne" resultMap="BaseResultMap" parameterType="map">
+        select MessageGetmymessage.* from trading_message_getmymessage MessageGetmymessage
+         where 1=1
+        <if test="itemid!=null">
+            and MessageGetmymessage.itemID=#{itemid}
+        </if>
+        <if test="sender!=null">
+                and MessageGetmymessage.sender =#{sender}
+        </if>
+        <if test="sendtoname!=null">
+            and MessageGetmymessage.sendToName=#{sendtoname}
+        </if>
+        order by MessageGetmymessage.receiveDate desc
     </select>
 </mapper>

@@ -34,10 +34,18 @@ function mySelect2I(ps){
                 }
 
                 var fdata = {results: []};
+                var select2Url=targ["url"];
+                if(select2Url==null || select2Url==''){
+                    fdata.results.push({id: '', text: content });
+                    query.callback(fdata);
+                    return;
+                }
+
                 if(content&&content!=""){
-                    $().delayInvoke(targ["url"],
+                    $().delayInvoke(select2Url,
                         jsonv,
                         function(m,r){
+                            fdata.results.push({id: '', text: content });
                         for(var ii in r){
                             var t=targ["maping"]["text"];
                             var text11=r[ii][t];

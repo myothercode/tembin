@@ -289,7 +289,7 @@ public class SamplePaseXml {
                 Element ele = elvar.next();
                 Variation var = new Variation();
                 var.setSKU(ele.elementText("SKU"));
-                var.setQuantity(Integer.parseInt(ele.elementText("Quantity")));
+                var.setQuantity(Integer.parseInt(ele.elementText("Quantity"))-Integer.parseInt(ele.element("SellingStatus").elementText("QuantitySold")));
                 var.setStartPrice(new StartPrice(ele.attributeValue("currencyID"), Double.parseDouble(ele.elementText("StartPrice"))));
                 Element elvs = ele.element("VariationSpecifics");
                 Iterator<Element> elnvl = elvs.elementIterator("NameValueList");
@@ -421,7 +421,7 @@ public class SamplePaseXml {
             }else{
                 item.setShippingPrice(0.00);
             }
-            item.setQuantity(Long.parseLong(element.elementText("Quantity")));
+            item.setQuantity(Long.parseLong(element.elementText("Quantity"))-Long.parseLong(element.element("SellingStatus").elementText("QuantitySold")));
             item.setQuantitysold(Long.parseLong(element.element("SellingStatus").elementText("QuantitySold")));
             Element elflag = element.element("SellingStatus").element("ListingStatus");
             if(elflag!=null){

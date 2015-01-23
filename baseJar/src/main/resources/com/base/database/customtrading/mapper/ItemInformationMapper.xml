@@ -22,14 +22,15 @@
         <result column="pictureUrl" property="pictureUrl" jdbcType="BIGINT" />
         <result column="create_user" property="createUser" jdbcType="BIGINT" />
         <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+        <result column="typeFlag" jdbcType="INTEGER" property="typeflag" />
         <result column="uuid" property="uuid" jdbcType="VARCHAR" />
     </resultMap>
 
     <select id="selectItemInformation" resultMap="BaseResultMap" parameterType="map">
-        select itemInformation.*,dic.config_name typeName1,attr.attrValue pictureUrl,dic1.config_name remark
+        select itemInformation.id,itemInformation.name,itemInformation.sku,dic.config_name typeName1,attr.attrValue pictureUrl,dic1.config_name remark
         from public_item_information itemInformation
         left join public_user_config dic on itemInformation.type_id=dic.id
-        left join public_item_pictureaddr_and_attr attr1 on attr1.attrType="remark" and itemInformation.id=attr1.itemInformation_id
+        left join (select attr11.remark_id,attr11.itemInformation_id from public_item_pictureaddr_and_attr attr11 where attr11.attrType="remark") attr1 on itemInformation.id=attr1.itemInformation_id
         left join public_user_config dic1 on attr1.remark_id=dic1.id
         left join public_item_pictureaddr_and_attr attr on itemInformation.id=attr.itemInformation_id
         where 1=1
@@ -116,5 +117,10 @@
         <if test="content!=null">
           and mation.sku like "%"#{content}"%"
         </if>
+    </select>
+
+    <select id="selectItemInformationByTypeIsNull" resultMap="BaseResultMap" parameterType="map">
+        select itemInformation.* from public_item_information itemInformation where 1=1
+        and itemInformation.typeFlag =0
     </select>
 </mapper>

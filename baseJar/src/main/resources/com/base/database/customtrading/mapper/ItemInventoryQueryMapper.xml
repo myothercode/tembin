@@ -78,6 +78,9 @@
             <if test="id!=null">
                 and inventory.id = #{id}
             </if>
+    <!--        <if test="userId!=null">
+                and inventory.create_user =#{userId}
+            </if>-->
             <if test="content!=null">
                 and inventory.data_source = #{content}
             </if>
@@ -87,6 +90,9 @@
             <if test="id!=null">
                 and inventory.id = #{id}
             </if>
+         <!--   <if test="userId!=null">
+                and inventory.create_user =#{userId}
+            </if>-->
         group by inventory.sku,inventory.Status
     </select>
 </mapper>

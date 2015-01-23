@@ -4,6 +4,7 @@ import com.base.database.trading.model.TradingMessageTemplate;
 import com.base.domains.CommonParmVO;
 import com.base.domains.SessionVO;
 import com.base.domains.querypojos.MessageTemplateQuery;
+import com.base.domains.userinfo.UsercontrollerUserExtend;
 import com.base.mybatis.page.Page;
 import com.base.mybatis.page.PageJsonBean;
 import com.base.userinfo.service.SystemUserManagerService;
@@ -63,8 +64,9 @@ public class SendMessageController extends BaseAction{
         }
         SessionVO sessionVO= SessionCacheSupport.getSessionVO();
         List<MessageTemplateQuery> lists=new ArrayList<MessageTemplateQuery>();
+        List<UsercontrollerUserExtend> orgUsers=systemUserManagerService.queryAllUsersByOrgID("yes");
         m.put("status",status);
-        m.put("userId",sessionVO.getId());
+        m.put("orgUsers",orgUsers);
         m.put("orderby",orderby);
         m.put("type",type);
         lists= iTradingMessageTemplate.selectMessageTemplateList(m, page);
@@ -92,6 +94,7 @@ public class SendMessageController extends BaseAction{
         String caseType=request.getParameter("caseType");
         String autoType=request.getParameter("autoType");
         String messageType=request.getParameter("messageType");
+        String subject=request.getParameter("subject");
         if(!StringUtils.isNotBlank(name)&&!StringUtils.isNotBlank(content)){
             AjaxSupport.sendFailText("fail","模板名称或者模板内容不能为空!");
             return;
@@ -101,6 +104,9 @@ public class SendMessageController extends BaseAction{
             template.setId(Long.valueOf(id));
         }else{
             template.setStatus(1);
+        }
+        if(StringUtils.isNotBlank(subject)){
+            template.setSubject(subject);
         }
         if(StringUtils.isNotBlank(name)){
             template.setName(name);

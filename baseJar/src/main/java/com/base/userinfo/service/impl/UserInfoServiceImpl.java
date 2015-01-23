@@ -126,13 +126,16 @@ public class UserInfoServiceImpl implements com.base.userinfo.service.UserInfoSe
     }
 
     @Override
-    /**查询当前系统账户绑定了哪些ebay账户*/
+    /**查询当前系统账户绑定了哪些ebay账户，并不是管理了哪些ebay帐号，请用queryACurrAllEbay*/
     public List<UsercontrollerEbayAccountExtend> getEbayAccountForCurrUser(Map map1,Page page){
         SessionVO sessionVO = SessionCacheSupport.getSessionVO();
         Map map =new HashMap();
         map.put("userID",sessionVO.getId());
         map.put("resultNum","all");
         List<UsercontrollerEbayAccountExtend> ebayAccounts=userInfoServiceMapper.queryAllEbayAccountForUser(map,page);
+        for (UsercontrollerEbayAccountExtend ebayAccountExtend : ebayAccounts){
+            ebayAccountExtend.setEbayToken("");
+        }
         return ebayAccounts;
     }
 

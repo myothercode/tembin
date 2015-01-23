@@ -9,7 +9,7 @@ import java.util.List;
  * Created by Administrtor on 2014/12/8.
  */
 public interface IKeyMoveProgress {
-    List<KeyMoveProgressQuery> selectByUserId(long userId);
+    List<KeyMoveProgressQuery> selectByUserId(List<String> listr);
 
     void saveProgress(TradingProgress tradingProgress);
 

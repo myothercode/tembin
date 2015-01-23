@@ -21,13 +21,9 @@
     <script type="text/javascript">
         var api = frameElement.api, W = api.opener;
         function submitForm1(){
-            var boxs=$("input[scope=checkbox]");
-            var d=[];
+            var boxs=$("input[scope=checkbox]:checked");
+         /*   var d=[];
             var j=0
-            console.debug(boxs);
-            /* for(var i=0;i<box.length;i++){
-                 if(box[i].attr(""))
-             }*/
             for(var i=0;i<boxs.length;i++){
                 var box=boxs[i];
                if(box.checked){
@@ -35,13 +31,30 @@
                    j++;
                }
             }
-            batchPost(d);
-            /*console.debug($(box[0]).attr("spellcheck"));*/
-            /*var d=[{"url":path+"/apiGetMyMessagesRequest.do","id":"1","ebayId":"6"}
-                *//*{"callBackFunction":xxx,"url":path+"/apiGetMyMessagesRequest","tt":"x2"},
-                {"callBackFunction":xxx,"url":path+"/apiGetMyMessagesRequest","tt":"v3"}*//*
-            ];
             batchPost(d);*/
+            /*----------------------------------*/
+            var ebayIds="";
+            for(var i=0;i<boxs.length;i++){
+                if(i==(boxs.length-1)){
+                    ebayIds+=boxs[i].value;
+                }else{
+                    ebayIds+=boxs[i].value+",";
+                }
+            }
+            var url=path+"/message/apiGetMyMessagesRequest.do?ebayIds="+ebayIds;
+            $().invoke(url,null,
+                    [function(m,r){
+                        alert(r);
+                        W.MessageGetmymessage.close();
+                        Base.token();
+                    },
+                        function(m,r){
+                            alert(r);
+                            Base.token();
+                        }]
+            );
+            /*----------------------------------*/
+
         }
 
         function xxx(opt){
@@ -51,6 +64,19 @@
         }
         function closedialog(){
             W.MessageGetmymessage.close();
+        }
+        function selectAllcheckBox(obj){
+            if(obj.checked){
+                var inputs=$(document).find("input[name=checkbox][scope=checkbox]");
+                for(var i=0;i<inputs.length;i++){
+                    inputs[i].checked=true;
+                }
+            }else{
+                var inputs=$(document).find("input[name=checkbox][scope=checkbox]");
+                for(var i=0;i<inputs.length;i++){
+                    inputs[i].checked=false;
+                }
+            }
         }
     </script>
     
@@ -91,16 +117,20 @@
     <form class="form-horizontal" role="form" id="ebayForm">
         <table width="100%" border="0" style="margin-left:20px;">
             <tbody>
+            <tr>
+                <td width="20%" height="28"><input type="checkbox" name="checkbox" scope="allCheckbox" onchange="selectAllcheckBox(this);" > 全选</td>
+                <td width="80%" height="28" align="left">上次同步时间</td>
+            </tr>
             <c:forEach items="${ebays}" var="ebay" varStatus="status" begin="0">
                 <c:if test="${status.index==0}">
                     <tr>
-                        <td width="8%" rowspan="4">&nbsp;</td>
-                        <td width="92%" height="28"><input type="checkbox" name="checkbox" scope="checkbox" value="${ebay.id}" > ${ebay.ebayName}</td>
+                        <td width="20%" height="28"><input type="checkbox" name="checkbox" scope="checkbox" value="${ebay.id}" > ${ebay.ebayName}</td>
+                        <td width="80%" height="28"><c:if test="${ebayDates[status.index]!=null}">(${ebayDates[status.index]})</c:if></td>
                     </tr>
                 </c:if>
                 <c:if test="${status.index!=0}">
                     <tr>
-                        <td width="92%" height="28"><input type="checkbox" name="checkbox" scope="checkbox" value="${ebay.id}" > ${ebay.ebayName}</td>
+                        <td width="20%" height="28"><input type="checkbox" name="checkbox" scope="checkbox" value="${ebay.id}" > ${ebay.ebayName}</td><td width="80%" height="28"><c:if test="${ebayDates[status.index]!=null}">(${ebayDates[status.index]})</c:if></td>
                     </tr>
                 </c:if>
 

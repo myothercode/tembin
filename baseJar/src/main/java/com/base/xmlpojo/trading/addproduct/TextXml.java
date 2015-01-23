@@ -2,6 +2,7 @@ package com.base.xmlpojo.trading.addproduct;
 
 import com.base.utils.xmlutils.PojoXmlUtil;
 import com.base.xmlpojo.trading.addproduct.attrclass.*;
+import org.joda.time.DateTime;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -9,9 +10,7 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.ProtocolException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 /**
  * Created by Administrtor on 2014/7/16.
@@ -590,7 +589,7 @@ public class TextXml {
         System.out.println(r.nextInt(10));
 */
 
-        URL url = null;
+        /*URL url = null;
         try {
             url = new URL("http://i1280.photobucket.com/albums/a492/searchfred/All_pic/ZBQ854/164911_zps80c111b0.jpg");
             url = new URL("http://i1280.photobucket.com/albums/a492/searchfred/All_pic/ZBQ854/64924_zps22bac23c.jpg");
@@ -630,7 +629,9 @@ public class TextXml {
             inStream = conn.getInputStream();
         }catch(Exception e){
             e.printStackTrace();
-        }
+        }*/
+        System.out.println(new DateTime().minusMinutes(10).toDate());
+
     }
 
     /**

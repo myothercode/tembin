@@ -46,9 +46,9 @@ public class SynchronizeFeedBackTaskRun extends BaseScheduledClass implements Sc
         ueame.createCriteria().andEbayStatusEqualTo("1");
         List<UsercontrollerEbayAccount> liue = ueam.selectByExampleWithBLOBs(ueame);
         Date date=new Date();
-        saveTaskFeedBack(liue,date,"Positive");
-        saveTaskFeedBack(liue,date,"Neutral");
-        saveTaskFeedBack(liue,date,"Negative");
+        saveTaskFeedBack(liue,date,"FeedbackReceivedAsSeller");
+        saveTaskFeedBack(liue,date,"FeedbackLeft");
+        //saveTaskFeedBack(liue,date,"Negative");
     }
     public SynchronizeFeedBackTaskRun(){
 
@@ -61,6 +61,16 @@ public class SynchronizeFeedBackTaskRun extends BaseScheduledClass implements Sc
 
     @Override
     public Integer crTimeMinu() {
+        return null;
+    }
+
+    @Override
+    public void setMark(String x) {
+
+    }
+
+    @Override
+    public String getMark() {
         return null;
     }
 }

@@ -2,6 +2,7 @@ package com.indexPage.controller;
 
 import com.base.database.trading.model.TradingGetUserCases;
 import com.base.database.trading.model.TradingMessageGetmymessage;
+import com.base.database.trading.model.TradingOrderGetOrders;
 import com.base.domains.SessionVO;
 import com.base.domains.querypojos.hicharts.HchartsIndexVO;
 import com.base.domains.querypojos.hicharts.PieVo;
@@ -26,6 +27,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
+import java.math.RoundingMode;
+import java.text.DecimalFormat;
 import java.util.*;
 
 /**
@@ -49,7 +52,7 @@ public class IndexMainController extends BaseAction{
     public ModelAndView indexInit(@ModelAttribute( "initSomeParmMap" )ModelMap modelMap){
         SessionVO sessionVO= SessionCacheSupport.getSessionVO();
         Map map=new HashMap();
-        List<UsercontrollerEbayAccountExtend> ebays= systemUserManagerService.queryACurrAllEbay(map);
+        List<UsercontrollerEbayAccountExtend> ebays= systemUserManagerService.queryCurrAllEbay(map);
         List<TradingMessageGetmymessage> ebayMessages=iTradingMessageGetmymessage.selectMessageGetmymessageByReplied(sessionVO.getId());
         List<TradingGetUserCases> caseMessages=iTradingGetUserCases.selectGetUserCasesByHandled(sessionVO.getId());
         modelMap.put("ebayMessages",ebayMessages.size());
@@ -77,7 +80,7 @@ public class IndexMainController extends BaseAction{
             start=com.base.utils.common.DateUtils.turnToDateStart(DateUtils.addDays(end, -14));
         }
         Map map=new HashMap();
-        List<UsercontrollerEbayAccountExtend> ebays= systemUserManagerService.queryACurrAllEbay(map);
+        List<UsercontrollerEbayAccountExtend> ebays= systemUserManagerService.queryCurrAllEbay(map);
         List<PieVo> pieVos=new ArrayList<PieVo>();
         for(UsercontrollerEbayAccountExtend ebay:ebays){
             int count=iTradingOrderGetOrders.selectOrderGetOrdersByeBayAccountAndTime(ebay.getEbayName(),start,end).size();
@@ -130,8 +133,12 @@ public class IndexMainController extends BaseAction{
         }
         /*String xAxis="['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun','Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']";*/
         String xAxis="";
+        //单量
         List<HchartsIndexVO> hchartsIndexVOs=new ArrayList<HchartsIndexVO>();
         HchartsIndexVO h1=new HchartsIndexVO();
+        //金额
+        HchartsIndexVO hchartsIndexVO=new HchartsIndexVO();
+        List<Double> l12 = new ArrayList<Double>();
         h1.setName(" ");
         List<Double> l1 = new ArrayList<Double>();
         Date date1=new Date();
@@ -158,8 +165,24 @@ public class IndexMainController extends BaseAction{
                 Date date3=DateUtils.addMonths(date,i+1);
                 Date start=DateUtils.addMonths(date, i);
                 Date end=com.base.utils.common.DateUtils.turnToDateEnd(DateUtils.addDays(date3, -1));
-                int count=iTradingOrderGetOrders.selectOrderGetOrdersByeBayAccountAndTime(amount,start,end).size();
+                List<TradingOrderGetOrders> list=iTradingOrderGetOrders.selectOrderGetOrdersByeBayAccountAndTime(amount,start,end);
+                int count=list.size();
+                Double money=0.0;
+                for(TradingOrderGetOrders order:list){
+                    String money1=order.getAmountpaid();
+                    Double money2=0.0;
+                    if(StringUtils.isNotBlank(money1)){
+                        money2=Double.valueOf(money1);
+                    }
+                    money=money+money2;
+                }
+                DecimalFormat formater = new DecimalFormat();
+                formater.setMaximumFractionDigits(2);
+                formater.setGroupingSize(0);
+                formater.setRoundingMode(RoundingMode.FLOOR);
+                money= Double.valueOf(formater.format(money));
                 l1.add(Double.parseDouble(count+""));
+                l12.add(money);
                 if(i==12){
                     xAxis+="'"+map.get(start.getMonth()+1)+"']";
                 }else if(i==1){
@@ -177,7 +200,23 @@ public class IndexMainController extends BaseAction{
             for(int i=0;i<15;i++){
                 Date start=DateUtils.addDays(date,i);
                 Date end=DateUtils.addDays(date1,i);
-                int count=iTradingOrderGetOrders.selectOrderGetOrdersByeBayAccountAndTime(amount,start,end).size();
+                List<TradingOrderGetOrders> list=iTradingOrderGetOrders.selectOrderGetOrdersByeBayAccountAndTime(amount, start, end);
+                int count=list.size();
+                Double money=0.0;
+                for(TradingOrderGetOrders order:list){
+                    String money1=order.getAmountpaid();
+                    Double money2=0.0;
+                    if(StringUtils.isNotBlank(money1)){
+                        money2=Double.valueOf(money1);
+                    }
+                    money=money+money2;
+                }
+                DecimalFormat formater = new DecimalFormat();
+                formater.setMaximumFractionDigits(2);
+                formater.setGroupingSize(0);
+                formater.setRoundingMode(RoundingMode.FLOOR);
+                money= Double.valueOf(formater.format(money));
+                l12.add(money);
                 l1.add(Double.parseDouble(count+""));
                 int month=start.getMonth()+1;
                 int day= com.base.utils.common.DateUtils.getDayOfMonth(start);
@@ -196,7 +235,23 @@ public class IndexMainController extends BaseAction{
             for(int i=0;i<30;i++){
                 Date start=DateUtils.addDays(date,i);
                 Date end=DateUtils.addDays(date1,i);
-                int count=iTradingOrderGetOrders.selectOrderGetOrdersByeBayAccountAndTime(amount,start,end).size();
+                List<TradingOrderGetOrders> list=iTradingOrderGetOrders.selectOrderGetOrdersByeBayAccountAndTime(amount, start, end);
+                int count=list.size();
+                Double money=0.0;
+                for(TradingOrderGetOrders order:list){
+                    String money1=order.getAmountpaid();
+                    Double money2=0.0;
+                    if(StringUtils.isNotBlank(money1)){
+                        money2=Double.valueOf(money1);
+                    }
+                    money=money+money2;
+                }
+                DecimalFormat formater = new DecimalFormat();
+                formater.setMaximumFractionDigits(2);
+                formater.setGroupingSize(0);
+                formater.setRoundingMode(RoundingMode.FLOOR);
+                money= Double.valueOf(formater.format(money));
+                l12.add(money);
                 l1.add(Double.parseDouble(count+""));
                 int month=start.getMonth()+1;
                 int day= com.base.utils.common.DateUtils.getDayOfMonth(start);
@@ -210,7 +265,14 @@ public class IndexMainController extends BaseAction{
             }
         }
         h1.setData(l1);
+        h1.setName("单量");
         hchartsIndexVOs.add(h1);
+        hchartsIndexVO.setName("金额");
+        hchartsIndexVO.setData(l12);
+        hchartsIndexVOs.add(hchartsIndexVO);
+
+
+
         AjaxSupport.sendSuccessText(xAxis,hchartsIndexVOs);
     }
 }

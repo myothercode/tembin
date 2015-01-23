@@ -42,7 +42,7 @@
         }
         function  refreshTable(){
             var param={};
-            param={"commentType":$("input[type='hidden'][name='commentType']").val(),"selecttype":$("select[name='selecttype']").val(),"selectvalue":$("input[type='text'][name='selectvalue']").val()};
+            param={"commentAmount":$("input[type='hidden'][name='commentAmount']").val(),"commentType":$("input[type='hidden'][name='commentType']").val(),"selecttype":$("select[name='selecttype']").val(),"selectvalue":$("input[type='text'][name='selectvalue']").val()};
             $("#clientAssessTable").selectDataAfterSetParm(param);
         }
         function getTitle(json){
@@ -53,10 +53,29 @@
         }
 
         function selectListType(obj){
+            var div=$(obj).parent();
+            var as=$(div).find("a");
+            for(var i=0;i<as.length;i++){
+                var span=$(as[i]).find("span");
+                $(span[0]).attr("class","newusa_ici_1");
+            }
+            var span1=$(obj).find("span");
+            $(span1[0]).attr("class","newusa_ici");
             $("input[name='commentType']").val($(obj).attr("value"));
             refreshTable();
         }
-
+        function selectAmount1(obj){
+            var div=$(obj).parent();
+            var as=$(div).find("a");
+            for(var i=0;i<as.length;i++){
+                var span=$(as[i]).find("span");
+                $(span[0]).attr("class","newusa_ici_1");
+            }
+            var span1=$(obj).find("span");
+            $(span1[0]).attr("class","newusa_ici");
+            $("input[name='commentAmount']").val($(obj).attr("value"));
+            refreshTable();
+        }
     </script>
 </head>
 <body>
@@ -70,6 +89,7 @@
 
         <form id="clientAssess">
         <input type="hidden" name="commentType">
+        <input type="hidden" name="commentAmount">
         <div class=Contentbox id="Contentbox">
             <div class="new_usa" style="margin-top:20px;">
                 <li class="new_usa_list">
@@ -82,6 +102,15 @@
                             class="newusa_ici_1">中评</span></a>
                     <a href="javascript:void(0)" onclick="selectListType(this)" value="Negative"><span
                             class="newusa_ici_1">差评</span></a>
+                </li>
+                <li class="new_usa_list">
+                    <span class="newusa_i">选择账号：</span>
+                    <a href="javascript:void(0)" onclick="selectAmount1(this)" value=""><span
+                            class="newusa_ici">全部</span></a>
+                    <c:forEach items="${ebays}" var="ebay">
+                        <a href="javascript:void(0)" onclick="selectAmount1(this)" value="${ebay.ebayName}"><span
+                                class="newusa_ici_1">${ebay.ebayNameCode}</span></a>
+                    </c:forEach>
                 </li>
                 <div class="newsearch">
                     <span class="newusa_i">搜索内容：</span>

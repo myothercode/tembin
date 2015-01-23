@@ -48,7 +48,7 @@ public class TaskFeedBackImpl implements com.task.service.ITaskFeedBack {
         int year=Integer.valueOf(date3.substring(24));
         int month=date.getMonth();
         int day=Integer.valueOf(date3.substring(8, 10));
-        Date date1= DateUtils.buildDateTime(year, month, day, 16, 0, 0);
+        Date date1= DateUtils.buildDateTime(year, month, day, 3, 0, 0);
         Date date2= org.apache.commons.lang.time.DateUtils.addDays(date1,-1);
         if(date.before(date1)){
             c.andSavetimeBetween(date2,date1);
@@ -56,6 +56,7 @@ public class TaskFeedBackImpl implements com.task.service.ITaskFeedBack {
             Date date4= org.apache.commons.lang.time.DateUtils.addDays(date1,1);
             c.andSavetimeBetween(date1,date4);
         }
+        tde.setOrderByClause("tokenFlag");
         return this.taskFeedBackMapper.selectByExampleWithBLOBs(tde);
     }
 }

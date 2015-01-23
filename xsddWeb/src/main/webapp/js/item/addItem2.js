@@ -6,12 +6,11 @@
 
 /**如果是编辑页面初始化几个模块选项*/
 function initModel(){
-    loadPayOption();
+    /*loadPayOption();*/
     loadDataBuyer();
     loadDiscountPriceInfo();
     loadItemLocation();
     loadReturnpolicy();
-    loadShippingDeails();
     loaddescriptiondetails();
     setTimeout(function(){
         myDescription.setHeight(500);
@@ -23,9 +22,9 @@ var loadModelFunctions={
     "buyer":loadDataBuyer,
     "discountpriceinfo":loadDiscountPriceInfo,
     "itemLocation":loadItemLocation,
-    "pay":loadPayOption,
-    "returnpolicy":loadReturnpolicy,
-    "shippingDeails":loadShippingDeails,
+    /*"pay":loadPayOption,*/
+    "returnpolicy":loadReturnpolicy,/*
+    "shippingDeails":loadShippingDeails,*/
     "descriptiondetails":loaddescriptiondetails
 };
 /**编辑器的工具栏*/
@@ -171,11 +170,9 @@ var loadItemLocationV=false;
  }
 
 //付款选项
-var loadPayOptionV=false;
-function loadPayOption(){
-    if(loadPayOptionV==true){return;}
+function loadPayOption(paypalId){
     $("#pay").initTable({
-        url: path + "/ajax/loadPayPalList.do?checkFlag=0",
+        url: path + "/ajax/loadPayPalList.do?checkFlag=0"+paypalId,
         columnData: [
             {title: "选项", name: "option1", width: "8%", align: "left", format: returnPay},
             {title:"名称",name:"payName",width:"8%",align:"left"},
@@ -204,8 +201,6 @@ function loadPayOption(){
         }
     });
     refreshTablepaypal();
-    loadPayOptionV=true;
-
 }
 
 //退货选项
@@ -247,12 +242,9 @@ if(loadReturnpolicyV==true){return;}
 
 /**运输选项*/
 var loadShippingDeailsV=false;
-function loadShippingDeails(){
-    if(loadShippingDeailsV==true){
-        return;
-    }
+function loadShippingDeails(ebayAcc){
     $("#shippingDeails").initTable({
-        url: path + "/ajax/loadShippingDetailsList.do?checkFlag=0&docId="+docId,
+        url: path + "/ajax/loadShippingDetailsList.do?checkFlag=0&docId="+docId+ebayAcc,
         columnData: [
             {title: "选项", name: "option1", width: "8%", align: "left", format: returnShippingDeails},
             {title:"名称",name:"shippingName",width:"8%",align:"left"},
@@ -284,7 +276,6 @@ function loadShippingDeails(){
         }
     });
     refreshTableShipping();
-    loadShippingDeailsV=true;
 }
 
 /**卖家描述*/
@@ -964,6 +955,11 @@ function addPictrueUrl(urls) {
                             $(d).val(tlu.mackId);
                         }
                     });
+                    $(addhtml).find("input[type='hidden'][name='pic_mackid']").each(function(i,d){
+                        if($(d).val()==""||$(d).val()==null){
+                            $(d).parent().parent().remove();
+                        }
+                    });
                 }
             },
                 function(m,r){
@@ -1103,7 +1099,7 @@ function setTabs(obj) {
     var name = $(obj).attr("name");
     $(obj).addClass("new_ic_1");
     $("#" + name).show();
-    if(name!="priceMessage"){
+    if(name!="priceMessage"&&name!="shippingDeails"&&name!="pay"){
         loadModelFunctions[name]();
     }
 }
@@ -1271,6 +1267,7 @@ function initSelectMore(){
                     $("#picture_"+ss[js]).html(str);
                 }
                 $("#picNumber").text(countChoosePic());
+                initDraug();
             },
                 function (m, r) {
                     alert(r);

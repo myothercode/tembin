@@ -109,16 +109,21 @@ public class SystemUserManagerServiceImpl implements SystemUserManagerService {
     }
 
     @Override
-    /**查询账户被分配了哪些ebay账户*/
+    /**查询账户被分配了哪些ebay账户,需要token的话map中放入needToken*/
     public List<UsercontrollerEbayAccountExtend> queryCurrAllEbay(Map map){
         if(!map.containsKey("userID") && !map.containsKey("AllEbay")){
             SessionVO sessionVO=SessionCacheSupport.getSessionVO();
             map.put("userID",sessionVO.getId());
         }
         List<UsercontrollerEbayAccountExtend> ebays = userInfoServiceMapper.queryEbayAccountForUser(map);
-        for (UsercontrollerEbayAccountExtend ebayAccountExtend : ebays){
-            ebayAccountExtend.setEbayToken("");
+        if(map!=null && map.containsKey("needToken")){
+
+        }else {
+            for (UsercontrollerEbayAccountExtend ebayAccountExtend : ebays){
+                ebayAccountExtend.setEbayToken("");
+            }
         }
+
         return ebays;
     }
     @Override

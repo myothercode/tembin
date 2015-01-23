@@ -527,7 +527,8 @@ function generateMixedRandom(n) {
 
 /**一个查看页面的遮罩层*/
 function converDiv_(){
-	var div="<div id=\"pop1\" style=\"left: 0px; top: 0px; width: 100%; height: 100%; overflow: hidden; opacity:0.1;filter:  alpha(opacity=0); position: fixed; z-index: 999; zoom: 1; background-image: none; background-attachment: scroll; background-repeat: repeat; background-position-x: 0%; background-position-y: 0%; background-color: #fff\" ></div>";
+	var div="<div id=\"pop1\" style='text-align:center;align-content:center;left: 0px; top: 0px; width: 100%; height: 100%; overflow: hidden; opacity:0.6;filter:  alpha(opacity=0); position: fixed; z-index: 999; zoom: 1; background-image: none; background-attachment: scroll; background-repeat: repeat; background-position-x: 0%; background-position-y: 0%; background-color: #666666' >" +
+        "<img src='"+path+"/img/longLoading.gif' style='padding-top: 20%;'/></div>";
 	$('body').append(div);
 }
 

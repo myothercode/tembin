@@ -20,7 +20,7 @@ public interface ITradingListingSuccess {
 
     List<ListingItemReportQuery> selectListingItemReportFee(long userid,String type, String flag, String soldflag);
 
-    List<ListingItemReportQuery> selectListingItemSales(String type, String flag, String soldflag);
+    List<ListingItemReportQuery> selectListingItemSales(String type, String flag, String soldflag,String userId);
 
     List<TradingListingReport> selectItemReportList(Map m);
 

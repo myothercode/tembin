@@ -10,8 +10,10 @@ import com.base.domains.querypojos.ListingDataQuery;
 import com.base.domains.querypojos.PriceTrackingAutoPricingQuery;
 import com.base.domains.querypojos.PriceTrackingAutoPricingRecordQuery;
 import com.base.domains.querypojos.PriceTrackingQuery;
+import com.base.domains.userinfo.UsercontrollerUserExtend;
 import com.base.mybatis.page.Page;
 import com.base.mybatis.page.PageJsonBean;
+import com.base.userinfo.service.SystemUserManagerService;
 import com.base.utils.cache.SessionCacheSupport;
 import com.base.utils.common.DateUtils;
 import com.common.base.utils.ajax.AjaxSupport;
@@ -58,6 +60,8 @@ public class PriceTrackingController extends BaseAction{
 
     @Autowired
     private ITradingPriceTrackingAutoPricingRecord iTradingPriceTrackingAutoPricingRecord;
+    @Autowired
+    private SystemUserManagerService systemUserManagerService;
 
     @RequestMapping("/priceTrackingList.do")
     public ModelAndView queryOrdersList(HttpServletRequest request,HttpServletResponse response,ModelMap modelMap){
@@ -201,7 +205,18 @@ public class PriceTrackingController extends BaseAction{
             qeuryContent=null;
         }
         SessionVO sessionVO= SessionCacheSupport.getSessionVO();
-        map.put("userId",sessionVO.getId());
+        List<UsercontrollerUserExtend> orgUsers=systemUserManagerService.queryAllUsersByOrgID("yes");
+        Boolean flag=false;
+        for(UsercontrollerUserExtend orgUser:orgUsers){
+            if(orgUser.getUserId()==sessionVO.getId()&&orgUser.getUserParentId()==null){
+               flag=true;
+            }
+        }
+        if(flag){
+            map.put("orgUsers",orgUsers);
+        }else{
+            map.put("userId",sessionVO.getId());
+        }
         map.put("qeuryContent",qeuryContent);
         List<PriceTrackingQuery> priceTrackings=iTradingPriceTracking.selectPriceTrackingList(map,page);
         jsonBean.setList(priceTrackings);
@@ -225,7 +240,18 @@ public class PriceTrackingController extends BaseAction{
             autoPricingId=null;
         }
         SessionVO sessionVO= SessionCacheSupport.getSessionVO();
-        map.put("userId",sessionVO.getId());
+        List<UsercontrollerUserExtend> orgUsers=systemUserManagerService.queryAllUsersByOrgID("yes");
+        Boolean flag=false;
+        for(UsercontrollerUserExtend orgUser:orgUsers){
+            if(orgUser.getUserId()==sessionVO.getId()&&orgUser.getUserParentId()==null){
+                flag=true;
+            }
+        }
+        if(flag){
+            map.put("orgUsers",orgUsers);
+        }else{
+            map.put("userId",sessionVO.getId());
+        }
         map.put("autoPricingId",autoPricingId);
         List<PriceTrackingAutoPricingRecordQuery> priceTrackings=iTradingPriceTrackingAutoPricingRecord.selectPriceTrackingAutoPricingRecordList(map,page);
         jsonBean.setList(priceTrackings);
@@ -243,7 +269,18 @@ public class PriceTrackingController extends BaseAction{
             qeuryContent=null;
         }
         SessionVO sessionVO= SessionCacheSupport.getSessionVO();
-        map.put("userId",sessionVO.getId());
+        List<UsercontrollerUserExtend> orgUsers=systemUserManagerService.queryAllUsersByOrgID("yes");
+        Boolean flag=false;
+        for(UsercontrollerUserExtend orgUser:orgUsers){
+            if(orgUser.getUserId()==sessionVO.getId()&&orgUser.getUserParentId()==null){
+                flag=true;
+            }
+        }
+        if(flag){
+            map.put("orgUsers",orgUsers);
+        }else{
+            map.put("userId",sessionVO.getId());
+        }
         map.put("qeuryContent",qeuryContent);
         List<PriceTrackingAutoPricingQuery> priceTrackings= iTradingPriceTrackingAutoPricing.selectPriceTrackingAutoPricingList(map,page);
         for(PriceTrackingAutoPricingQuery query:priceTrackings){
@@ -275,7 +312,18 @@ public class PriceTrackingController extends BaseAction{
         SessionVO sessionVO= SessionCacheSupport.getSessionVO();
         Map map=new HashMap();
         map.put("content",content);
-        map.put("userId",sessionVO.getId());
+        List<UsercontrollerUserExtend> orgUsers=systemUserManagerService.queryAllUsersByOrgID("yes");
+        Boolean flag=false;
+        for(UsercontrollerUserExtend orgUser:orgUsers){
+            if(orgUser.getUserId()==sessionVO.getId()&&orgUser.getUserParentId()==null){
+                flag=true;
+            }
+        }
+        if(flag){
+            map.put("orgUsers",orgUsers);
+        }else{
+            map.put("userId",sessionVO.getId());
+        }
         Page page=new Page();
         page.setPageSize(10);
         page.setCurrentPage(1);

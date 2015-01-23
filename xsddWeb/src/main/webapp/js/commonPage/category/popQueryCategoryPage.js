@@ -161,6 +161,7 @@ function que(){
                 var rr= $.parseJSON(r)
                 W.document.getElementById("PrimaryCategory").value=_finalSelectedVal;
                 W.document.getElementById("PrimaryCategoryshow").innerHTML= rr.pathstr;
+                W.addTypeAttr(W.document.getElementById("PrimaryCategory"));
                 W.CategoryType.close();
             },
                 function(m,r){
@@ -170,6 +171,7 @@ function que(){
     }else{
         W.document.getElementById("PrimaryCategory").value=_finalSelectedVal;
         W.document.getElementById("PrimaryCategoryshow").innerHTML=$("#menuPath").text();
+        W.addTypeAttr(W.document.getElementById("PrimaryCategory"));
         W.CategoryType.close();
     }
 }

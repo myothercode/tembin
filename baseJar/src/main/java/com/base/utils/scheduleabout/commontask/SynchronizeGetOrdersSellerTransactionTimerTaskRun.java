@@ -1,17 +1,17 @@
 package com.base.utils.scheduleabout.commontask;
 
+import com.base.database.task.model.TaskGetOrdersSellerTransaction;
 import com.base.database.trading.model.TradingOrderGetOrders;
 import com.base.utils.applicationcontext.ApplicationContextUtil;
+import com.base.utils.common.MyStringUtil;
 import com.base.utils.scheduleabout.BaseScheduledClass;
 import com.base.utils.scheduleabout.MainTask;
 import com.base.utils.scheduleabout.Scheduledable;
 import com.base.utils.threadpool.TaskPool;
 import com.task.service.IScheduleGetTimerOrders;
-import com.trading.service.ITradingOrderGetOrders;
-import com.trading.service.ITradingOrderGetOrdersNoTransaction;
+import com.task.service.ITaskGetOrdersSellerTransaction;
 import org.apache.log4j.Logger;
 
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -21,15 +21,12 @@ import java.util.List;
 public class SynchronizeGetOrdersSellerTransactionTimerTaskRun extends BaseScheduledClass implements Scheduledable {
     static Logger logger = Logger.getLogger(SynchronizeGetOrdersSellerTransactionTimerTaskRun.class);
 
-    public void synchronizeOrderSellerTrasaction(List<TradingOrderGetOrders> orders){
+    public void synchronizeOrderSellerTrasaction(TaskGetOrdersSellerTransaction sellerTransaction){
         IScheduleGetTimerOrders iScheduleGetTimerOrders=(IScheduleGetTimerOrders) ApplicationContextUtil.getBean(IScheduleGetTimerOrders.class);
-        ITradingOrderGetOrdersNoTransaction iTradingOrderGetOrdersNoTransaction=(ITradingOrderGetOrdersNoTransaction) ApplicationContextUtil.getBean(ITradingOrderGetOrdersNoTransaction.class);
-        if(orders!=null&&orders.size()>0){
-            try{
-                iScheduleGetTimerOrders.synchronizeOrderSellerTrasaction(orders);
-            }catch (Exception e){
-                logger.error("定时同步订单外部交易失败task:",e);
-            }
+        try{
+            iScheduleGetTimerOrders.synchronizeOrderSellerTrasaction(sellerTransaction);
+        }catch (Exception e){
+            logger.error("定时同步订单外部交易失败task:",e);
         }
     }
     @Override
@@ -43,18 +40,16 @@ public class SynchronizeGetOrdersSellerTransactionTimerTaskRun extends BaseSched
             logger.error(getScheduledType()+"===之前的任务还未完成继续等待下一个循环===");
             return;
         }
-        logger.error(getScheduledType()+"===任务开始===");
-
         Thread.currentThread().setName("thread_" + getScheduledType());
 
-        ITradingOrderGetOrders iTradingOrderGetOrders=(ITradingOrderGetOrders) ApplicationContextUtil.getBean(ITradingOrderGetOrders.class);
-        List<TradingOrderGetOrders> orders=iTradingOrderGetOrders.selectOrderGetOrdersBySellerTrasactionFlag();
-        if(orders.size()>20){
-            orders=filterLimitList(orders);
+        ITaskGetOrdersSellerTransaction iTaskGetOrdersSellerTransaction = (ITaskGetOrdersSellerTransaction) ApplicationContextUtil.getBean(ITaskGetOrdersSellerTransaction.class);
+        List<TaskGetOrdersSellerTransaction> sellerTransactionses=iTaskGetOrdersSellerTransaction.selectTaskGetOrdersSellerTransactionByFlagIsFalseOrderBysaveTime();
+        if(sellerTransactionses!=null&&sellerTransactionses.size()>0){
+            TaskGetOrdersSellerTransaction sellerTransaction=sellerTransactionses.get(0);
+            synchronizeOrderSellerTrasaction(sellerTransaction);
         }
-        synchronizeOrderSellerTrasaction(orders);
         TaskPool.threadRunTime.remove("thread_" + getScheduledType());
-        logger.error(getScheduledType()+"===任务结束===");
+        Thread.currentThread().setName("thread_" + getScheduledType()+ MyStringUtil.getRandomStringAndNum(5));
 
     }
 
@@ -88,6 +83,16 @@ public class SynchronizeGetOrdersSellerTransactionTimerTaskRun extends BaseSched
         }else{
             return 2;
         }*/
-        return 20;
+        return 5;
+    }
+
+    @Override
+    public void setMark(String x) {
+
+    }
+
+    @Override
+    public String getMark() {
+        return null;
     }
 }

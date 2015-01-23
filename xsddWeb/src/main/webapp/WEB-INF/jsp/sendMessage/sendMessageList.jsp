@@ -23,7 +23,7 @@
                 url:path + "/sendMessage/ajax/loadSendMessageList.do?status=1",
                 columnData:[
                     {title:"模板名称",name:"name",width:"8%",align:"center"},
-                    {title:"<a href=\"javascript:void(0)\" onclick=\"orderBy(this,'asc');\">消息类型</a>",name:"content",width:"8%",align:"center",format:makeOption4},
+                    {title:"<a href=\"javascript:void(0)\" onclick=\"orderBy(this,'asc');\"><font style='color: #0000ff'>消息类型</font></a>",name:"content",width:"8%",align:"center",format:makeOption4},
                     {title:"状态",name:"status",width:"8%",align:"center",format:makeOption2},
                     {title:"&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;操作",name:"countNum",width:"8%",align:"left",format:makeOption1}
                 ],
@@ -38,7 +38,7 @@
                 url:url,
                 columnData:[
                     {title:"模板名称",name:"name",width:"8%",align:"center"},
-                    {title:"<a href=\"javascript:void(0)\" onclick=\"orderBy(this,'asc');\">消息类型</a>",name:"content",width:"8%",align:"center",format:makeOption4},
+                    {title:"<a href=\"javascript:void(0)\" onclick=\"orderBy(this,'asc');\"><font style='color: #0000ff'>消息类型</font></a>",name:"content",width:"8%",align:"center",format:makeOption4},
                     {title:"状态",name:"status",width:"8%",align:"center",format:makeOption2},
                     {title:"操作",name:"countNum",width:"8%",align:"left",format:makeOption1}
                 ],
@@ -52,10 +52,10 @@
             var htm="";
             if(orderby=="asc"){
                /* htm="&nbsp;<a href=\"javascript:void(0)\" onclick=\"orderBy(this,'desc');\"><img src=\"<c:url value ="/img/desc.png" />\"/></a>";*/
-                htm="<a href=\"javascript:void(0)\" onclick=\"orderBy(this,'desc');\">消息类型</a>";
+                htm="<a href=\"javascript:void(0)\" onclick=\"orderBy(this,'desc');\"><font style='color: #0000ff'>消息类型</font></a>";
             }
             if(orderby=="desc"){
-                 htm="<a href=\"javascript:void(0)\" onclick=\"orderBy(this,'asc');\">消息类型</a>";
+                 htm="<a href=\"javascript:void(0)\" onclick=\"orderBy(this,'asc');\"><font style='color: #0000ff'>消息类型</font></a>";
             }
             var status=0;
             var checkbox=document.getElementById("checkboxStatus");
@@ -173,7 +173,7 @@
                 content: 'url:'+url,
                 icon: 'succeed',
                 width:850,
-                height:500,
+                height:520,
                 lock:true
             });
         }
@@ -183,7 +183,7 @@
                 content: 'url:'+url,
                 icon: 'succeed',
                 width:850,
-                height:500,
+                height:520,
                 lock:true
             });
         }
@@ -198,7 +198,7 @@
                 url:url,
                 columnData:[
                     {title:"模板名称",name:"name",width:"8%",align:"center"},
-                    {title:"<a href=\"javascript:void(0)\" onclick=\"orderBy(this,'asc');\">消息类型</a>",name:"content",width:"8%",align:"center",format:makeOption4},
+                    {title:"<a href=\"javascript:void(0)\" onclick=\"orderBy(this,'asc');\"><font style='color: #0000ff'>消息类型</font></a>",name:"content",width:"8%",align:"center",format:makeOption4},
                     {title:"状态",name:"status",width:"8%",align:"center",format:makeOption2},
                     {title:"&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;操作",name:"countNum",width:"8%",align:"left",format:makeOption1}
                 ],

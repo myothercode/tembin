@@ -124,6 +124,16 @@ public class ListingItemDataTaskRun extends BaseScheduledClass implements Schedu
 
     @Override
     public Integer crTimeMinu() {
-        return 10;
+        return 2;
+    }
+
+    @Override
+    public void setMark(String x) {
+
+    }
+
+    @Override
+    public String getMark() {
+        return null;
     }
 }

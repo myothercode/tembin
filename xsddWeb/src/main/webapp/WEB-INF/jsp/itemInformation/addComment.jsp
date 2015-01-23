@@ -74,29 +74,5 @@
     <button type="button" class="net_put" onclick="submitCommit();">保存</button>
     <button type="button" class="net_put_1" data-dismiss="modal" onclick="closedialog();">关闭</button>
 </div>
-<%--<div class="modal-content">
-    <div class="modal-header">
-        <h4 class="modal-title" style="color:#2E98EE">添加备注</h4>
-    </div>
-    <div class="modal-body">
-        <form class="form-horizontal" role="form" id="remarkForm">
-            <input type="hidden" name="id" value="${information.id}">
-            <table width="100%" border="0" style="margin-left:40px;">
-                <tbody><tr>
-                    <td width="16%" height="28" align="right">备注信息：</td>
-                    <td width="41%" height="28"><div class="newselect" style="margin-top:9px;">
-                        <input name="comment" class="form-controlsd validate[required]" type="text" value="${information.comment}">
-                    </div></td>
-                    <td width="43%" height="28">&lt;%&ndash;<button type="button" class="net_put">保存</button><button type="button" class="net_put_1" data-dismiss="modal">关闭</button>&ndash;%&gt;</td>
-                </tr>
-                <tr>
-                    <td width="16%" height="28" align="right"></td>
-                    <td width="41%" height="28" align="right"><br/><button type="button" class="net_put" onclick="submitCommit();">保存</button><button type="button" class="net_put_1" data-dismiss="modal" onclick="closedialog();">关闭</button></td>
-                    <td width="43%" height="28"></td>
-                </tr>
-                </tbody></table>
-
-        </form></div><!-- /.modal-content -->
-</div>--%>
 </body>
 </html>

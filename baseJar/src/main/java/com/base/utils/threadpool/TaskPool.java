@@ -91,6 +91,19 @@ public class TaskPool {
                 if("RUNNABLE".equalsIgnoreCase(x)){
                     return true;
                 }else if ("BLOCKED".equalsIgnoreCase(x)){
+                    Date d = threadRunTime.get(tname);
+                    if(d!=null){
+                        int c= DateUtils.minuteBetween(d,new Date());
+                        if(c>180){
+                            logger.error(tname+"线程处于BLOCKED状态"+"已经超过规定时间，强制终止");
+                            threadRunTime.remove(tname);
+                            thread.stop(new RuntimeException("==oooooo=="));
+                            return true;
+                        }else {
+                            logger.error(tname+"线程处于BLOCKED状态"+"时间还未超过180分钟");
+                            return true;
+                        }
+                    }
                     logger.error(tname+"线程阻塞！=========");
                     return true;
                 }else if("TIMED_WAITING".equalsIgnoreCase(x)){
@@ -103,13 +116,13 @@ public class TaskPool {
                    Date d = threadRunTime.get(tname);
                     if(d!=null){
                         int c= DateUtils.minuteBetween(d,new Date());
-                        if(c>360){
+                        if(c>180){
                             logger.error(tname+"线程处于waiting状态"+"已经超过规定时间，强制终止");
                             threadRunTime.remove(tname);
                             thread.stop(new RuntimeException("==oooooo=="));
                             return true;
                         }else {
-                            logger.error(tname+"线程处于waiting状态"+"时间还未超过120分钟");
+                            logger.error(tname+"线程处于waiting状态"+"时间还未超过180分钟");
                             return true;
                         }
                     }
@@ -121,30 +134,29 @@ public class TaskPool {
                 else {
                     b=false;
                     logger.error(tname+"另起线程....."+"当前状态为"+x);
-                    /*String nam= StringUtils.replaceOnce(tname,"thread_","");
-                    Date lastTime= MainTask.taskRunTime.get(nam);
-                    if(lastTime!=null){
-                        int c= DateUtils.minuteBetween(lastTime, new Date());
-                        if(c<30){
-                            try {
-                                thread.stop(new RuntimeException(tname+"===线程超时强制停止!=="));
-                            } catch (Exception e) {
-                                logger.error("线程超时强制停止!");
-                            }
-                        }
-                    }*/
-
                 }
 
 
             }
         }
-
-
         threadRunTime.put(tname,new Date());
         return b;
     }
 
+    /**统计指定名称的线程有几个*/
+    public static int countThreadNumByName(String tn){
+        int n = Thread.activeCount();
+        Thread[] threads = new Thread[n];
+        Thread.enumerate(threads);
+        int nn=0;
+        for (int i = 0; i < threads.length; i++) {
+            Thread thread = threads[i];
+            if (thread != null && tn.startsWith(thread.getName())) {
+                nn++;
+            }
+        }
+        return nn;
+    }
 
 
 

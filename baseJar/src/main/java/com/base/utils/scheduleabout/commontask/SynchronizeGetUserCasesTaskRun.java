@@ -39,6 +39,7 @@ public class SynchronizeGetUserCasesTaskRun extends BaseScheduledClass implement
                 TaskGetUserCases.setEndtime(end);
                 TaskGetUserCases.setSavetime(date);
                 TaskGetUserCases.setUserid(ebay.getUserId());
+                TaskGetUserCases.setEbayname(ebay.getEbayName());
                 iTaskGetUserCases.saveListTaskGetUserCases(TaskGetUserCases);
             }
         }catch (Exception e){
@@ -67,6 +68,16 @@ public class SynchronizeGetUserCasesTaskRun extends BaseScheduledClass implement
 
     @Override
     public Integer crTimeMinu() {
+        return null;
+    }
+
+    @Override
+    public void setMark(String x) {
+
+    }
+
+    @Override
+    public String getMark() {
         return null;
     }
 }

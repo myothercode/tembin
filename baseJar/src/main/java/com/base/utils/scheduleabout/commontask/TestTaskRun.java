@@ -3,12 +3,14 @@ package com.base.utils.scheduleabout.commontask;
 import com.base.database.publicd.mapper.PublicDataDictMapper;
 import com.base.database.publicd.model.PublicDataDict;
 import com.base.database.trading.model.TradingDataDictionary;
+import com.base.domains.userinfo.UsercontrollerDevAccountExtend;
 import com.base.sampleapixml.APINameStatic;
 import com.base.utils.applicationcontext.ApplicationContextUtil;
 import com.base.utils.cache.TempStoreDataSupport;
 import com.base.utils.httpclient.HttpClientUtil;
 import com.base.utils.scheduleabout.BaseScheduledClass;
 import com.base.utils.scheduleabout.Scheduledable;
+import com.base.utils.threadpool.AddApiTask;
 import com.base.utils.threadpool.TaskPool;
 import com.base.utils.xmlutils.SamplePaseXml;
 import com.test.service.Test1Service;
@@ -17,6 +19,9 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.http.client.HttpClient;
 import org.apache.http.message.BasicHeader;
 import org.apache.log4j.Logger;
+import org.dom4j.Document;
+import org.dom4j.Element;
+import sun.applet.Main;
 
 import java.util.*;
 
@@ -26,6 +31,17 @@ import java.util.*;
 public class TestTaskRun extends BaseScheduledClass implements Scheduledable {
     static Logger logger = Logger.getLogger(TestTaskRun.class);
 
+    String mark="";
+
+    @Override
+    public void setMark(String x) {
+        this.mark=x;
+    }
+
+    @Override
+    public String getMark() {
+        return this.mark;
+    }
 
     @Override
     public String getScheduledType() {
@@ -39,18 +55,12 @@ public class TestTaskRun extends BaseScheduledClass implements Scheduledable {
 
     @Override
     public void run() {
-        Boolean b= TaskPool.threadIsAliveByName("thread_" + getScheduledType());
-        if(b){
-            logger.error(getScheduledType()+"===之前的任务还未完成继续等待下一个循环===");
-            return;
-        }
-        logger.error(getScheduledType()+"===任务开始===");
-        TaskPool.threadRunTime.put("thread_" + getScheduledType(), new Date());
-        Thread.currentThread().setName("thread_" + getScheduledType());
+        System.out.println("====="+this.mark);
 
 
-        //TaskPool.threadRunTime.remove("thread_" + getScheduledType());
-        logger.error(getScheduledType()+"===任务结束===");
+
+
+
         if(1==1){return;}
 
         String isRunging = TempStoreDataSupport.pullData("task_" + getScheduledType());
@@ -115,4 +125,76 @@ public class TestTaskRun extends BaseScheduledClass implements Scheduledable {
         }
     }
 
+    private static String getxml(String pagenumber){
+        String xml = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n" +
+                "<GetSellerListRequest xmlns=\"urn:ebay:apis:eBLBaseComponents\">\n" +
+                "<RequesterCredentials>\n" +
+                "<eBayAuthToken>AgAAAA**AQAAAA**aAAAAA**kRx8VA**nY+sHZ2PrBmdj6wVnY+sEZ2PrA2dj6AGloWiAZCCogSdj6x9nY+seQ**blACAA**AAMAAA**d0Px77QqgOj2GHC7XDNXkRKusIUT1y5uPdXz87hiC9ghsh75Q6hQb3BRbKwkJsFz3BlORq7L8lEiHsqBnFzd65yK1MJ/CQMsY165Q+4Rw664b0dP3vnPzjeN3cfKOkDwwoLqFGrMclvrrpntfSDBcO/r1QaC+CUB0GD6UiuhdyhBIPd1gb+z0KmYCTwpFENyHDzRtiTcT5qCt5eYfYzsve2e6O1c+NsTyBgJzUD1v78aIluxKhoC+huF9Uxscm2DU4mOr0JYONHJCs3dN18fKLp0Dc3hSvmPSIaxPmjcvlVfWuVPtw6KwXvxw8U8PGUdfACzb9ZIBiUEEhFHU6xv73egj2hkN/ZTJr7yu3l+qvDJFHLlgBMoprseFc0tmDi/hbRUILxuOy8TOpGri71DoQBzwuQxxrG5GMJ77NFLOLYxsH6/gpA/7+vFT1X5CUsIv+BYZyY7g3RLZWYem3Gqv9T+sVNC/DEhxmdO1Yx49rAwHcUw3aeXTrKpa1xCNkgHg4Feheu5V6Pu9lb5DQUC9YidqELrLEvos6yoiH31myqAmI72Gt4i7SBjwS8k5O+7xjxhDrKpg0IFwCdQk4PEByoBnud/dDNyCZkZdCqTkb36aqmgdnTANz9M7DtcQTH/Lf6h+Suj3RVSeFfDZcJJDax7Ie5qwte+oHJ6yTuBZ2dt4hMmKZIZwn26Ei+DUfCPhx6nEqcAOf6Sbxf8RxkWJ2pLcIvbifrditHIuyGjOf4yMoIHOcSp6FsVbmkMleBG</eBayAuthToken>\n" +
+                "</RequesterCredentials>\n" +
+                "<Pagination ComplexType=\"PaginationType\">\n" +
+                "<EntriesPerPage>100</EntriesPerPage>\n" +
+                "<PageNumber>"+pagenumber+"</PageNumber>\n" +
+                "</Pagination>\n" +
+                "<UserID>shopjoy999</UserID>\n" +
+                "<EndTimeFrom>2015-01-02T07:45:39.000Z</EndTimeFrom>\n" +
+                "<EndTimeTo>2015-04-30T07:45:39.000Z</EndTimeTo>\n" +
+                "<IncludeWatchCount>true</IncludeWatchCount>\n" +
+                "<IncludeVariations>true</IncludeVariations>\n" +
+                "<DetailLevel>ReturnAll</DetailLevel>\n" +
+                "<Version>903</Version>\n" +
+                "</GetSellerListRequest>";
+        return xml;
+    }
+
+
+
+    public static String postServer(String xml){
+        List<BasicHeader> headers = new ArrayList<BasicHeader>();
+        headers.add(new BasicHeader("X-EBAY-API-COMPATIBILITY-LEVEL","903"));
+        headers.add(new BasicHeader("X-EBAY-API-DEV-NAME", "bbafa7e7-2f98-4783-9c34-f403faeb007f"));
+        headers.add(new BasicHeader("X-EBAY-API-APP-NAME","chengdul-6dfe-4b1b-905c-41b1bd716d72"));
+        headers.add(new BasicHeader("X-EBAY-API-CERT-NAME","41bd760a-48ab-489b-87b1-f5d33a7044a6"));
+        headers.add(new BasicHeader("X-EBAY-API-SITEID","0"));
+        headers.add(new BasicHeader("X-EBAY-API-CALL-NAME", "GetMemberMessages"));
+        HttpClient httpClient= HttpClientUtil.getHttpsClient();
+        try {
+            String res= HttpClientUtil.post(httpClient, "https://api.ebay.com/ws/api.dll", xml, "UTF-8", headers);
+            return res;
+        } catch (Exception e) {
+            logger.error("===================",e);
+            return "";
+        }
+    }
+    public static void main(String[] args){
+        String xml = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n" +
+                "<GetMemberMessagesRequest xmlns=\"urn:ebay:apis:eBLBaseComponents\">\n" +
+                "<RequesterCredentials>\n" +
+                "<eBayAuthToken>AgAAAA**AQAAAA**aAAAAA**5NOXVA**nY+sHZ2PrBmdj6wVnY+sEZ2PrA2dj6AFlIWnC5iEpAidj6x9nY+seQ**blACAA**AAMAAA**CZ8RElUP/IGF0VLNusPZTJy+mEX+76qobIHfTxZYNWZXJM9zozal/wnl7E2R3DxGy0yCHOoGTActbZXK+S3w8ba6IjYmo8yK3x09WZKyTiHVIg+ya3z1O4tG5K3YUkI4sSknxMSgm8BQj7Pnt6Yf8RjZBVIYODOHGKEgZt0iEEhFojTGFkQ/aIf+49xkZ4rs2c4JIpob3varAZE57izIHRreIcn0txHbrAPV4lim7DpZkuWvcIgsd7x3W1j3Zwd1xRHxJ7CkMLOilWOPrkkgWGp5ATfCxcxmvHsg5DYoTrMH+CdvZgnj3RUJ+v8gnjweiVYhqgX9SVkWtXY0EmTbfw1wvDWvHxo7TRwDOg8k3xQGlehmn1EuOiV92uNo5eeTsYLgrctY4lh3vENdpAKAqgCro4wWXe+Wog+wBwfFDcs3o92UN+YSl6EaO4hrIex8RuEsUHP16jiiLlI0cvpFn94OKrLGK9lPofL5iXn+7u1xlEKMSrkSXJkrVQOgh0FdvjEhjQPBKV+OatrXlCXP6ym1McGA21k1ivpOHDpXau857xS/rJdtZ56/kzEKayCJ08cOxgc2XjotKx0VmdqjKDxGuiAhkCn6EipNy04V/hT6sjeuab1lnwt/TQAzq2jk52JcKd6+A+Vzql2QsQGGnEMUTPE4Y+RW/G6z4gQSDWpZeRqF7MtmFhJKE8u4tf1C0aUnWeaXLDGyxFqhPO8I3Nt3YEr4yphZVUEqnnBtmJa0QyLSKfrvAZkvt4X8qvNO</eBayAuthToken>\n" +
+                "</RequesterCredentials>\n" +
+                "<MailMessageType EnumType=\"MessageTypeCodeType\">All</MailMessageType>\n" +
+                "</GetMemberMessagesRequest>";
+        try {
+            System.out.println(postServer(xml));
+            /*Map<String, String> resMap = addApiTask.exec2(d, xml, "https://api.ebay.com/ws/api.dll");
+            res = resMap.get("message");
+            saveXml = res;
+            String ack = SamplePaseXml.getVFromXmlString(res, "Ack");
+            if (ack.equals("Success")) {
+                Document document = SamplePaseXml.formatStr2Doc(res);
+                Element rootElt = document.getRootElement();
+                Element totalElt = rootElt.element("PaginationResult");
+                String totalCount = totalElt.elementText("TotalNumberOfEntries");
+                String page = totalElt.elementText("TotalNumberOfPages");
+                for (int i = 1; i <= Integer.parseInt(page); i++) {
+                    String colXml = getxml(i + "");
+                    Map<String, String> resMapxml = addApiTask.exec2(d, colXml, "https://api.ebay.com/ws/api.dll");
+                    String returnstr = resMapxml.get("message");
+                    System.out.println(i+">>>>>>>>>>"+returnstr);
+                }
+            }*/
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
+    }
 }

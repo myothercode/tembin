@@ -19,6 +19,7 @@ public class StringFilter implements Filter {
     private static List<String> excludePaths=new ArrayList<String>();//不进行拦截的url
     static {
         excludePaths.add("http://www.tembin.com");
+        excludePaths.add("http://task.tembin.com");
         excludePaths.add("http://tembin.com");
         excludePaths.add("http://localhost");
         excludePaths.add("http://192.168");
@@ -39,13 +40,33 @@ public class StringFilter implements Filter {
         HttpServletResponse response = (HttpServletResponse) servletResponse;
         String requestUrl = request.getRequestURI();
         String rhost=request.getRemoteHost();
+
+
+        String referer=request.getHeader("Referer");
+        if(referer!=null && referer.indexOf("?")>-1){
+            referer = referer.replaceAll("\\?.*","");
+        }
+        if(referer!=null && referer.indexOf("?")>-1){
+            referer=StringUtils.split(referer,"?")[0];
+        }
+        String headerAccept=request.getHeader("Accept");
+
+        if(referer!=null && referer.endsWith(requestUrl)
+                && headerAccept!=null && headerAccept.indexOf("text/html")==-1
+                ){
+            return;
+        }
+
         if((requestUrl!=null && !requestUrl.endsWith(".do") ) || rhost.startsWith("127.0.0.1")){//如果不是以do结尾的请求，直接放行
             filterChain.doFilter(request, response);
             return;
         }
+        if("image/webp,*/*;q=0.8".equalsIgnoreCase(headerAccept)){
+            return;
+        }
 
         //String host = request.getRemoteHost();
-        String referer=request.getHeader("Referer");
+        //String referer=request.getHeader("Referer");
 
         if(referer==null || !excludeUrl(referer) ){//如果Referer属性没有在可允许范围内，那么返回登陆框
             response.sendRedirect(request.getContextPath()+"/login.jsp");

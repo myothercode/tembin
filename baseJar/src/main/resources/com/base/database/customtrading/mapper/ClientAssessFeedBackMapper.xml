@@ -28,6 +28,9 @@
         <if test="commentType!=null">
            and feed.CommentType=#{commentType}
         </if>
+        <if test="commentAmount!=null">
+            and feed.ebay_account=#{commentAmount}
+        </if>
         <if test="selecttype!=null">
             and feed.${selecttype} like CONCAT(CONCAT('%', #{selectvalue, jdbcType=VARCHAR}),'%')
         </if>

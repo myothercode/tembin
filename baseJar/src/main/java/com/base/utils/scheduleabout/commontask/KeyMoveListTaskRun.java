@@ -15,6 +15,7 @@ import com.base.utils.cache.DataDictionarySupport;
 import com.base.utils.cache.TempStoreDataSupport;
 import com.base.utils.common.CommAutowiredClass;
 import com.base.utils.common.DateUtils;
+import com.base.utils.common.MyStringUtil;
 import com.base.utils.common.SystemLogUtils;
 import com.base.utils.scheduleabout.BaseScheduledClass;
 import com.base.utils.scheduleabout.MainTask;
@@ -45,7 +46,6 @@ public class KeyMoveListTaskRun extends BaseScheduledClass implements Scheduleda
         /*String isRunging = TempStoreDataSupport.pullData("task_"+getScheduledType());
         if(StringUtils.isNotEmpty(isRunging)){return;}
         TempStoreDataSupport.pushData("task_" + getScheduledType(), "x");*/
-
         Boolean b= TaskPool.threadIsAliveByName("thread_" + getScheduledType());
         if(b){
             logger.error(getScheduledType()+"===之前的任务还未完成继续等待下一个循环===");
@@ -53,7 +53,6 @@ public class KeyMoveListTaskRun extends BaseScheduledClass implements Scheduleda
         }
         logger.error(getScheduledType()+"===任务开始===");
         Thread.currentThread().setName("thread_" + getScheduledType());
-
 
         KeyMoveListMapper keyMapper = (KeyMoveListMapper) ApplicationContextUtil.getBean(KeyMoveListMapper.class);
         IKeyMoveProgress iKeyMoveProgress = (IKeyMoveProgress) ApplicationContextUtil.getBean(IKeyMoveProgress.class);
@@ -142,6 +141,7 @@ public class KeyMoveListTaskRun extends BaseScheduledClass implements Scheduleda
             }
         }
         TaskPool.threadRunTime.remove("thread_" + getScheduledType());
+        Thread.currentThread().setName("thread_" + getScheduledType()+ MyStringUtil.getRandomStringAndNum(5));
         logger.error(getScheduledType() + "===任务结束===");
     }
 
@@ -165,6 +165,16 @@ public class KeyMoveListTaskRun extends BaseScheduledClass implements Scheduleda
 
     @Override
     public Integer crTimeMinu() {
+        return 5;
+    }
+
+    @Override
+    public void setMark(String x) {
+
+    }
+
+    @Override
+    public String getMark() {
         return null;
     }
 }

@@ -525,6 +525,76 @@ public class TradingOrderAddMemberMessageAAQToPartnerExample {
             return (Criteria) this;
         }
 
+        public Criteria andMessageidIsNull() {
+            addCriterion("messageID is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andMessageidIsNotNull() {
+            addCriterion("messageID is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andMessageidEqualTo(String value) {
+            addCriterion("messageID =", value, "messageid");
+            return (Criteria) this;
+        }
+
+        public Criteria andMessageidNotEqualTo(String value) {
+            addCriterion("messageID <>", value, "messageid");
+            return (Criteria) this;
+        }
+
+        public Criteria andMessageidGreaterThan(String value) {
+            addCriterion("messageID >", value, "messageid");
+            return (Criteria) this;
+        }
+
+        public Criteria andMessageidGreaterThanOrEqualTo(String value) {
+            addCriterion("messageID >=", value, "messageid");
+            return (Criteria) this;
+        }
+
+        public Criteria andMessageidLessThan(String value) {
+            addCriterion("messageID <", value, "messageid");
+            return (Criteria) this;
+        }
+
+        public Criteria andMessageidLessThanOrEqualTo(String value) {
+            addCriterion("messageID <=", value, "messageid");
+            return (Criteria) this;
+        }
+
+        public Criteria andMessageidLike(String value) {
+            addCriterion("messageID like", value, "messageid");
+            return (Criteria) this;
+        }
+
+        public Criteria andMessageidNotLike(String value) {
+            addCriterion("messageID not like", value, "messageid");
+            return (Criteria) this;
+        }
+
+        public Criteria andMessageidIn(List<String> values) {
+            addCriterion("messageID in", values, "messageid");
+            return (Criteria) this;
+        }
+
+        public Criteria andMessageidNotIn(List<String> values) {
+            addCriterion("messageID not in", values, "messageid");
+            return (Criteria) this;
+        }
+
+        public Criteria andMessageidBetween(String value1, String value2) {
+            addCriterion("messageID between", value1, value2, "messageid");
+            return (Criteria) this;
+        }
+
+        public Criteria andMessageidNotBetween(String value1, String value2) {
+            addCriterion("messageID not between", value1, value2, "messageid");
+            return (Criteria) this;
+        }
+
         public Criteria andItemidIsNull() {
             addCriterion("itemid is null");
             return (Criteria) this;

@@ -14,4 +14,6 @@ public interface ITaskGetUserCases {
     List<TaskGetUserCases> selectTaskGetUserCasesByflagAndSaveTime(Integer flag, Date saveTime);
 
     List<TaskGetUserCases> selectTaskGetUserCasesByFlagIsFalseOrderBysaveTime();
+
+    List<TaskGetUserCases> selectTaskGetMessagesByFlagIsFalseOrderByLastSycTimeAndEbayName(String ebayName);
 }

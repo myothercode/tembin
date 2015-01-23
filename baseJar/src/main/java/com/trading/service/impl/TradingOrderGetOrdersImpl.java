@@ -231,25 +231,39 @@ public class TradingOrderGetOrdersImpl implements com.trading.service.ITradingOr
     }
 
     @Override
-    public List<TradingOrderGetOrders> selectOrderGetOrdersBySendPaidMessage() {
-        TradingOrderGetOrdersExample example=new TradingOrderGetOrdersExample();
+    public List<OrderGetOrdersQuery> selectOrderGetOrdersBySendPaidMessage() {
+        /*TradingOrderGetOrdersExample example=new TradingOrderGetOrdersExample();
         TradingOrderGetOrdersExample.Criteria cr=example.createCriteria();
         cr.andPaypalflagIsNotNull();
         cr.andShippedflagIsNull();
         cr.andSendmessagetimeLessThan(new Date());
+        cr.andAutomessageIdNotEqualTo(0L);
         List<TradingOrderGetOrders> list=tradingOrderGetOrdersMapper.selectByExample(example);
-        return list;
+        return list;*/
+        Map map=new HashMap();
+        map.put("sendMessageTime",new Date());
+        Page page=new Page();
+        page.setCurrentPage(1);
+        page.setPageSize(10);
+        return orderGetOrdersMapper.selectOrderGetOrdersBySendPaidMessage(map, page);
     }
 
     @Override
-    public List<TradingOrderGetOrders> selectOrderGetOrdersBySendShipMessage() {
-        TradingOrderGetOrdersExample example=new TradingOrderGetOrdersExample();
+    public List<OrderGetOrdersQuery> selectOrderGetOrdersBySendShipMessage() {
+        /*TradingOrderGetOrdersExample example=new TradingOrderGetOrdersExample();
         TradingOrderGetOrdersExample.Criteria cr=example.createCriteria();
         cr.andPaypalflagIsNull();
         cr.andShippedflagIsNotNull();
+        cr.andAutomessageIdNotEqualTo(0L);
         cr.andSendmessagetimeLessThan(new Date());
         List<TradingOrderGetOrders> list=tradingOrderGetOrdersMapper.selectByExample(example);
-        return list;
+        return list;*/
+        Map map=new HashMap();
+        map.put("sendMessageTime",new Date());
+        Page page=new Page();
+        page.setCurrentPage(1);
+        page.setPageSize(10);
+        return orderGetOrdersMapper.selectOrderGetOrdersBySendShipMessage(map, page);
     }
 
     @Override
@@ -295,21 +309,21 @@ public class TradingOrderGetOrdersImpl implements com.trading.service.ITradingOr
     }
 
     @Override
-    public List<TradingOrderGetOrders> selectOrderGetOrdersByItemFlag() {
-        TradingOrderGetOrdersExample example=new TradingOrderGetOrdersExample();
-        TradingOrderGetOrdersExample.Criteria cr=example.createCriteria();
-        cr.andItemflagEqualTo(0);
-        List<TradingOrderGetOrders> list=tradingOrderGetOrdersMapper.selectByExample(example);
-        return list;
+    public List<OrderGetOrdersQuery> selectOrderGetOrdersByItemFlag() {
+        Map map=new HashMap();
+        Page page=new Page();
+        page.setCurrentPage(1);
+        page.setPageSize(20);
+        return orderGetOrdersMapper.selectOrderGetOrdersByAccountFlag(map,page);
     }
 
     @Override
-    public List<TradingOrderGetOrders> selectOrderGetOrdersByAccountFlag() {
-        TradingOrderGetOrdersExample example=new TradingOrderGetOrdersExample();
-        TradingOrderGetOrdersExample.Criteria cr=example.createCriteria();
-        cr.andAccountflagEqualTo(0);
-        List<TradingOrderGetOrders> list=tradingOrderGetOrdersMapper.selectByExample(example);
-        return list;
+    public List<OrderGetOrdersQuery> selectOrderGetOrdersByAccountFlag() {
+        Map map=new HashMap();
+        Page page=new Page();
+        page.setCurrentPage(1);
+        page.setPageSize(20);
+        return orderGetOrdersMapper.selectOrderGetOrdersByAccountFlag(map,page);
     }
 
     @Override
@@ -327,6 +341,16 @@ public class TradingOrderGetOrdersImpl implements com.trading.service.ITradingOr
         TradingOrderGetOrdersExample.Criteria cr=example.createCriteria();
         cr.andShipmenttrackingnumberIsNotNull();
         cr.andTrackstatusNotEqualTo("4");
+        List<TradingOrderGetOrders> list=tradingOrderGetOrdersMapper.selectByExample(example);
+        return list;
+    }
+
+    @Override
+    public List<TradingOrderGetOrders> selectOrderGetOrdersByCreatedDateAndEbayAcount(Date date,String ebayName) {
+        TradingOrderGetOrdersExample example=new TradingOrderGetOrdersExample();
+        TradingOrderGetOrdersExample.Criteria cr=example.createCriteria();
+        cr.andLastmodifiedtimeLessThan(date);
+        cr.andSelleruseridEqualTo(ebayName);
         List<TradingOrderGetOrders> list=tradingOrderGetOrdersMapper.selectByExample(example);
         return list;
     }

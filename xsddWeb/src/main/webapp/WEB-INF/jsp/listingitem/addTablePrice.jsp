@@ -41,7 +41,7 @@
                     //Base.token();
                     alert(r);
                     $(objs).attr("disabled",false);
-                    W.refreshTable();
+                    W.reshTable();
                     W.addTablePrice.close();
                 },
                     function (m, r) {

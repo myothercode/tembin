@@ -47,8 +47,10 @@ public class MainTask {
     public static final String LISTING_SCHEDULE="listSchedule";//定时刊登任务
     public static final String KEY_MOVE_LIST_TASK="keyMoveListTask";//一键搬家任务
     public static final String AUTO_ASSESS="autoAssess";//自动发送评价
+    public static final String CHECK_AUTO_ASSESS="checkAutoAssess";//检查需要自动发送评价
     public static final String LISTING_DATA="tradingListData";//在线数据同步每晚12点执行 同步在线商品
     public static final String LISTING_REPORT="listingReport";//首页统计每晚12点执行，统计昨天，上周，上月数据
+    public static final String LISTING_TIMER_REPORT="listingTimerReport";//每两分钟执行一次统计，以提高首页查询速度
     public static final String LISTING_TIMER_TASK_DATA="tradingListtimertask";//在线数据同步每两分钟执行 同步在线商品
     public static final String SET_DEV_ZERO="setDevZero";//将开发帐号的调用次数清零
     public static final String AUTO_MESSAGE="autoMessage";//定时发送自动消息
@@ -69,6 +71,7 @@ public class MainTask {
     public static final String PRICE_TRACKING_BY_ITEMID="price_tracking_by_itemid";//定时价格跟踪商品
     public static final String SYNCHRONIZE_GET_ORDERS_TRACK_NUMBER_TIMER="synchronize_get_orders_track_number_timer";//定时价获取91track状态
     public static final String PRICE_TRACKING_AUTO_PRICING="price_tracking_auto_pricing"; //定时价格跟踪自动调价
+    public static final String SYNCHRONIZE_GET_ORDERS_SELLER_TRANSACTION="synchronize_get_orders_seller_transaction"; //每天一次定时同步外部交易任务
     /**
      * 记录任务上次运行的时间
      */
@@ -83,29 +86,7 @@ public class MainTask {
         }
 
         //定义一组该类型任务需要执行的任务类型
-        List<String> doList=new ArrayList<String>();
-       // doList.add(SET_DEV_ZERO); //排除掉归零任务
-
-        doList.add(LISTING_SCHEDULE);
-        doList.add(KEY_MOVE_LIST_TASK);
-        doList.add(LISTING_DATA);
-        doList.add(LISTING_TIMER_TASK_DATA);
-        doList.add(AUTO_MESSAGE);
-        doList.add(AUTO_ASSESS);
-        doList.add(FEEDBACK_AUTOM_ESSAGE);
-        doList.add(SYNCHRONIZE_GET_TIMER_ORDERS);
-        doList.add(SYNCHRONIZE_FEED_BACK_TIMER);
-        doList.add(SYNCHRONIZE_GET_MESSAGES_TIMER);
-        doList.add(SYNCHRONIZE_GET_USER_CASES_TIMER);
-        doList.add(ITEM_INFORMATION_TYPE);
-        doList.add(AUTO_COMPLEMENT);
-        doList.add(SYNCHRONIZE_GET_ORDERS_ITEM_TIMER);
-        doList.add(SYNCHRONIZE_GET_ORDERS_ACCOUNT_TIMER);
-        doList.add(SYNCHRONIZE_GET_ORDERS_SELLER_TRANSACTION_TIMER);
-        doList.add(SYNCHRONIZE_GET_ORDERS_TRACK_NUMBER_TIMER);
-        doList.add(PRICE_TRACKING_BY_ITEMID);
-        doList.add(PRICE_TRACKING_AUTO_PRICING);
-        doList.add("Test_Test_test");
+        List<String> doList=MainTaskStaticParam.doList;
         if (isStartTimerTask==null) {
             isStartTimerTask = ApplicationContextUtil.getBean(CommAutowiredClass.class);
         }
@@ -146,6 +127,7 @@ public class MainTask {
             for (Scheduledable s : scheduledableList){
                 if(taskList !=null && taskList.contains(s.getScheduledType())){
                     Integer ii=s.crTimeMinu();
+                    if(ii==null||ii==-1||ii==0){ii=2;}
                     if(ii!=null && ii !=-1){
                         Date lastTime=taskRunTime.get(s.getScheduledType());//上一次执行的时间
                         if(lastTime!=null){
@@ -155,7 +137,22 @@ public class MainTask {
                             }
                         }
                     }
-                    TaskPool.scheduledThreadPoolTaskExecutor.execute(s);
+
+                    Integer ci=MainTaskStaticParam.SOME_MULIT_TASK.get(s.getScheduledType());
+                    if (ci!=null && ci>1){
+                        for (int iii=0;iii<ci;iii++){
+                            try {
+                                Scheduledable ss1=s.getClass().newInstance();
+                                ss1.setMark(String.valueOf(iii));
+                                TaskPool.scheduledThreadPoolTaskExecutor.execute(ss1);
+                            } catch (Exception e) {
+                                logger.error(s.getScheduledType() + "新建实例失败!", e);
+                            }
+                            //try {Thread.sleep(50L);} catch (Exception e) {logger.error(e);}
+                        }
+                    }else {
+                        TaskPool.scheduledThreadPoolTaskExecutor.execute(s);
+                    }
                     taskRunTime.put(s.getScheduledType(),new Date());
                 }
             }
@@ -198,6 +195,7 @@ public class MainTask {
         doList.add(LISTING_REPORT);
         doList.add(SYNCHRONIZE_GET_MESSAGES);
         doList.add(SYNCHRONIZE_GET_USER_CASES);
+        doList.add(SYNCHRONIZE_GET_ORDERS_SELLER_TRANSACTION);
         List<String> taskList=new ArrayList<String>();
         if("false".equalsIgnoreCase(isStartTimerTask.isStartTimerTask)){
             return;

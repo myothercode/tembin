@@ -2,6 +2,7 @@ package com.base.utils.scheduleabout.commontask;
 
 import com.base.database.sitemessage.model.PublicSitemessage;
 import com.base.database.trading.model.*;
+import com.base.domains.querypojos.FeedBackQuery;
 import com.base.domains.userinfo.UsercontrollerDevAccountExtend;
 import com.base.sampleapixml.APINameStatic;
 import com.base.sampleapixml.BindAccountAPI;
@@ -124,21 +125,41 @@ public class FeedBackAutoMessageTaskRun extends BaseScheduledClass implements Sc
                 ITradingOrderGetOrders iTradingOrderGetOrders=(ITradingOrderGetOrders)ApplicationContextUtil.getBean(ITradingOrderGetOrders.class);
                 List<TradingOrderGetOrders> orders=iTradingOrderGetOrders.selectOrderGetOrdersByBuyerAndItemid(feedBackDetail.getItemid(), feedBackDetail.getCommentinguser());
                 String body=templates.get(0).getContent();
-                body=body.replace("{Buyer_eBay_ID}",feedBackDetail.getCommentinguser());
-                body=body.replace("{eBay_Item#}",feedBackDetail.getItemid());
-                body=body.replace("{eBay_Item_Title}",feedBackDetail.getItemtitle());
-                body=body.replace("{Received_Amount}",feedBackDetail.getItemprice()+"");
+                if(StringUtils.isNotBlank(feedBackDetail.getCommentinguser())){
+                    body=body.replace("{Buyer_eBay_ID}",feedBackDetail.getCommentinguser());
+                }
+                if(StringUtils.isNotBlank(feedBackDetail.getItemid())){
+                    body=body.replace("{eBay_Item#}",feedBackDetail.getItemid());
+                }
+                if(StringUtils.isNotBlank(feedBackDetail.getItemtitle())){
+                    body=body.replace("{eBay_Item_Title}",feedBackDetail.getItemtitle());
+                }
+                if(feedBackDetail.getItemprice()!=null){
+                    body=body.replace("{Received_Amount}",feedBackDetail.getItemprice()+"");
+                }
                 body=body.replace("{Today}",new Date()+"");
                 if(orders!=null&&orders.size()>0){
                     TradingOrderGetOrders order=orders.get(0);
-                    body=body.replace("{Payment_Date}",order.getPaidtime()+"");
-                    body=body.replace("{Purchase_Quantity}",order.getQuantitypurchased());
-                    body=body.replace("{Seller_eBay_ID}",order.getSelleruserid());
-                    body=body.replace("{Carrier}",order.getShippingcarrierused());
-                    body=body.replace("{Seller_Email}",order.getSelleremail());
-                    body=body.replace("{Track_Code}",order.getShipmenttrackingnumber());
+                    if(order.getPaidtime()!=null){
+                        body=body.replace("{Payment_Date}",order.getPaidtime()+"");
+                    }
+                    if(StringUtils.isNotBlank(order.getQuantitypurchased())){
+                        body=body.replace("{Purchase_Quantity}",order.getQuantitypurchased());
+                    }
+                    if(StringUtils.isNotBlank(order.getSelleruserid())){
+                        body=body.replace("{Seller_eBay_ID}",order.getSelleruserid());
+                    }
+                    if(StringUtils.isNotBlank(order.getShippingcarrierused())){
+                        body=body.replace("{Carrier}",order.getShippingcarrierused());
+                    }
+                    if(StringUtils.isNotBlank(order.getSelleremail())){
+                        body=body.replace("{Seller_Email}",order.getSelleremail());
+                    }
+                    if(StringUtils.isNotBlank(order.getShipmenttrackingnumber())){
+                        body=body.replace("{Track_Code}",order.getShipmenttrackingnumber());
+                    }
                 }
-                String subject=templates.get(0).getName();
+                String subject=templates.get(0).getSubject();
                 //--测试环境
                 d.setApiCallName(APINameStatic.AddMemberMessageAAQToPartner);
                 //--真实环境
@@ -201,9 +222,10 @@ public class FeedBackAutoMessageTaskRun extends BaseScheduledClass implements Sc
         types.add("Negative");
         types.add("Neutral");
         types.add("Positive");
-        List<TradingFeedBackDetail> details=iTradingFeedBackDetail.selectFeedBackDetailByAutoMessageFlag(types);
-        if(details.size()>20){
-            details=filterLimitList(details);
+        List<FeedBackQuery> details1=iTradingFeedBackDetail.selectFeedBackDetailByAutoMessageFlag(types);
+       List<TradingFeedBackDetail> details=new ArrayList<TradingFeedBackDetail>();
+       if(details1!=null&&details1.size()>0){
+           details.addAll(details1);
         }
         try{
             sendAutoMessage(details);
@@ -235,6 +257,16 @@ public class FeedBackAutoMessageTaskRun extends BaseScheduledClass implements Sc
 
     @Override
     public Integer crTimeMinu() {
+        return null;
+    }
+
+    @Override
+    public void setMark(String x) {
+
+    }
+
+    @Override
+    public String getMark() {
         return null;
     }
 }

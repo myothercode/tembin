@@ -21,6 +21,7 @@ import javax.servlet.ServletOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -388,12 +389,17 @@ public class PublicItemInformationImpl implements com.publicd.service.IPublicIte
         }
     }
     @Override
-    public List<PublicItemInformation> selectItemInformationByTypeIsNull() {
-        PublicItemInformationExample example=new PublicItemInformationExample();
+    public List<ItemInformationQuery> selectItemInformationByTypeIsNull() {
+       /* PublicItemInformationExample example=new PublicItemInformationExample();
         PublicItemInformationExample.Criteria cr=example.createCriteria();
         cr.andTypeflagEqualTo(0);
         List<PublicItemInformation> list=PublicItemInformationMapper.selectByExample(example);
-        return list;
+        return list;*/
+        Map map=new HashMap();
+        Page page=new Page();
+        page.setCurrentPage(1);
+        page.setPageSize(20);
+        return ItemInformationMapper.selectItemInformationByTypeIsNull(map,page);
     }
 
     /**

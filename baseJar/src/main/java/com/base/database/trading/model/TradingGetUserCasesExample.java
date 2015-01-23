@@ -1195,6 +1195,206 @@ public class TradingGetUserCasesExample {
             return (Criteria) this;
         }
 
+        public Criteria andCasecontentIsNull() {
+            addCriterion("caseContent is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andCasecontentIsNotNull() {
+            addCriterion("caseContent is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andCasecontentEqualTo(String value) {
+            addCriterion("caseContent =", value, "casecontent");
+            return (Criteria) this;
+        }
+
+        public Criteria andCasecontentNotEqualTo(String value) {
+            addCriterion("caseContent <>", value, "casecontent");
+            return (Criteria) this;
+        }
+
+        public Criteria andCasecontentGreaterThan(String value) {
+            addCriterion("caseContent >", value, "casecontent");
+            return (Criteria) this;
+        }
+
+        public Criteria andCasecontentGreaterThanOrEqualTo(String value) {
+            addCriterion("caseContent >=", value, "casecontent");
+            return (Criteria) this;
+        }
+
+        public Criteria andCasecontentLessThan(String value) {
+            addCriterion("caseContent <", value, "casecontent");
+            return (Criteria) this;
+        }
+
+        public Criteria andCasecontentLessThanOrEqualTo(String value) {
+            addCriterion("caseContent <=", value, "casecontent");
+            return (Criteria) this;
+        }
+
+        public Criteria andCasecontentLike(String value) {
+            addCriterion("caseContent like", value, "casecontent");
+            return (Criteria) this;
+        }
+
+        public Criteria andCasecontentNotLike(String value) {
+            addCriterion("caseContent not like", value, "casecontent");
+            return (Criteria) this;
+        }
+
+        public Criteria andCasecontentIn(List<String> values) {
+            addCriterion("caseContent in", values, "casecontent");
+            return (Criteria) this;
+        }
+
+        public Criteria andCasecontentNotIn(List<String> values) {
+            addCriterion("caseContent not in", values, "casecontent");
+            return (Criteria) this;
+        }
+
+        public Criteria andCasecontentBetween(String value1, String value2) {
+            addCriterion("caseContent between", value1, value2, "casecontent");
+            return (Criteria) this;
+        }
+
+        public Criteria andCasecontentNotBetween(String value1, String value2) {
+            addCriterion("caseContent not between", value1, value2, "casecontent");
+            return (Criteria) this;
+        }
+
+        public Criteria andCommentsIsNull() {
+            addCriterion("comments is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andCommentsIsNotNull() {
+            addCriterion("comments is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andCommentsEqualTo(String value) {
+            addCriterion("comments =", value, "comments");
+            return (Criteria) this;
+        }
+
+        public Criteria andCommentsNotEqualTo(String value) {
+            addCriterion("comments <>", value, "comments");
+            return (Criteria) this;
+        }
+
+        public Criteria andCommentsGreaterThan(String value) {
+            addCriterion("comments >", value, "comments");
+            return (Criteria) this;
+        }
+
+        public Criteria andCommentsGreaterThanOrEqualTo(String value) {
+            addCriterion("comments >=", value, "comments");
+            return (Criteria) this;
+        }
+
+        public Criteria andCommentsLessThan(String value) {
+            addCriterion("comments <", value, "comments");
+            return (Criteria) this;
+        }
+
+        public Criteria andCommentsLessThanOrEqualTo(String value) {
+            addCriterion("comments <=", value, "comments");
+            return (Criteria) this;
+        }
+
+        public Criteria andCommentsLike(String value) {
+            addCriterion("comments like", value, "comments");
+            return (Criteria) this;
+        }
+
+        public Criteria andCommentsNotLike(String value) {
+            addCriterion("comments not like", value, "comments");
+            return (Criteria) this;
+        }
+
+        public Criteria andCommentsIn(List<String> values) {
+            addCriterion("comments in", values, "comments");
+            return (Criteria) this;
+        }
+
+        public Criteria andCommentsNotIn(List<String> values) {
+            addCriterion("comments not in", values, "comments");
+            return (Criteria) this;
+        }
+
+        public Criteria andCommentsBetween(String value1, String value2) {
+            addCriterion("comments between", value1, value2, "comments");
+            return (Criteria) this;
+        }
+
+        public Criteria andCommentsNotBetween(String value1, String value2) {
+            addCriterion("comments not between", value1, value2, "comments");
+            return (Criteria) this;
+        }
+
+        public Criteria andSolvecatetimeIsNull() {
+            addCriterion("solveCateTime is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andSolvecatetimeIsNotNull() {
+            addCriterion("solveCateTime is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andSolvecatetimeEqualTo(Date value) {
+            addCriterion("solveCateTime =", value, "solvecatetime");
+            return (Criteria) this;
+        }
+
+        public Criteria andSolvecatetimeNotEqualTo(Date value) {
+            addCriterion("solveCateTime <>", value, "solvecatetime");
+            return (Criteria) this;
+        }
+
+        public Criteria andSolvecatetimeGreaterThan(Date value) {
+            addCriterion("solveCateTime >", value, "solvecatetime");
+            return (Criteria) this;
+        }
+
+        public Criteria andSolvecatetimeGreaterThanOrEqualTo(Date value) {
+            addCriterion("solveCateTime >=", value, "solvecatetime");
+            return (Criteria) this;
+        }
+
+        public Criteria andSolvecatetimeLessThan(Date value) {
+            addCriterion("solveCateTime <", value, "solvecatetime");
+            return (Criteria) this;
+        }
+
+        public Criteria andSolvecatetimeLessThanOrEqualTo(Date value) {
+            addCriterion("solveCateTime <=", value, "solvecatetime");
+            return (Criteria) this;
+        }
+
+        public Criteria andSolvecatetimeIn(List<Date> values) {
+            addCriterion("solveCateTime in", values, "solvecatetime");
+            return (Criteria) this;
+        }
+
+        public Criteria andSolvecatetimeNotIn(List<Date> values) {
+            addCriterion("solveCateTime not in", values, "solvecatetime");
+            return (Criteria) this;
+        }
+
+        public Criteria andSolvecatetimeBetween(Date value1, Date value2) {
+            addCriterion("solveCateTime between", value1, value2, "solvecatetime");
+            return (Criteria) this;
+        }
+
+        public Criteria andSolvecatetimeNotBetween(Date value1, Date value2) {
+            addCriterion("solveCateTime not between", value1, value2, "solvecatetime");
+            return (Criteria) this;
+        }
+
         public Criteria andCreateUserIsNull() {
             addCriterion("create_user is null");
             return (Criteria) this;

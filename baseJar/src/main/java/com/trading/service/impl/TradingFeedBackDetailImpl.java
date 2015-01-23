@@ -6,6 +6,7 @@ import com.base.database.trading.mapper.TradingFeedBackDetailMapper;
 import com.base.database.trading.model.TradingFeedBackDetail;
 import com.base.database.trading.model.TradingFeedBackDetailExample;
 import com.base.domains.SessionVO;
+import com.base.domains.querypojos.FeedBackQuery;
 import com.base.domains.querypojos.FeedBackReportQuery;
 import com.base.mybatis.page.Page;
 import com.base.utils.cache.SessionCacheSupport;
@@ -65,23 +66,32 @@ public class TradingFeedBackDetailImpl implements com.trading.service.ITradingFe
     }
 
     @Override
-    public TradingFeedBackDetail selectFeedBackDetailByTransactionId(String transactionId) {
+    public TradingFeedBackDetail selectFeedBackDetailByTransactionId(String transactionId,String role) {
         TradingFeedBackDetailExample example=new TradingFeedBackDetailExample();
         TradingFeedBackDetailExample.Criteria cr=example.createCriteria();
         cr.andTransactionidEqualTo(transactionId);
-        List<TradingFeedBackDetail> list=tradingFeedBackDetailMapper.selectByExample(example);
+        cr.andRoleEqualTo(role);
+        List<TradingFeedBackDetail> list=tradingFeedBackDetailMapper.selectByExampleWithBLOBs(example);
         return list!=null&&list.size()>0?list.get(0):null;
     }
 
     @Override
-    public List<TradingFeedBackDetail> selectFeedBackDetailByAutoMessageFlag(List<String> types) {
-        TradingFeedBackDetailExample example=new TradingFeedBackDetailExample();
+    public List<FeedBackQuery> selectFeedBackDetailByAutoMessageFlag(List<String> types) {
+       /* TradingFeedBackDetailExample example=new TradingFeedBackDetailExample();
         TradingFeedBackDetailExample.Criteria cr=example.createCriteria();
         cr.andAutomessageflagIsNull();
         cr.andCommenttypeIn(types);
         cr.andSenttimeLessThan(new Date());
+        cr.andRoleEqualTo("Seller");
         List<TradingFeedBackDetail> list=tradingFeedBackDetailMapper.selectByExample(example);
-        return list;
+        return list;*/
+        Map map=new HashMap();
+        map.put("types",types);
+        map.put("sentTime",new Date());
+        Page page=new Page();
+        page.setCurrentPage(1);
+        page.setPageSize(20);
+        return feedBackReportMapper.selectFeedBackDetailByAutoMessageFlag(map,page);
     }
 
     @Override

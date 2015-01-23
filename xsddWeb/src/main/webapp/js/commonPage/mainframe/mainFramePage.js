@@ -43,9 +43,13 @@ function addMenuLevel1(json){
 
 /**添加二级菜单*/
 function addMenuLevel2(json){
-    var h="<li><a name='menu2' target='contentMain' " +
-        "onclick='addArrow(this)' href="+json.permissionURL+">"+json.permissionName+"</a></li>";
     var parID="menu_1_"+json['parentID'];
+    var nowID="menu_2_"+json['permissionID'];
+    var nowIDNum=$("#"+parID+" .submenu").find("#"+nowID).length;
+   if(nowIDNum>0 || document.getElementById(nowID)!=null){return;}
+    var h="<li id='"+nowID+"'><a name='menu2' target='contentMain' " +
+        "onclick='addArrow(this)' href="+json.permissionURL+">"+json.permissionName+"</a></li>";
+
     $("#"+parID+" .submenu").append(h);
 }
 

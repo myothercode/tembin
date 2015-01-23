@@ -1,8 +1,9 @@
 package com.base.utils.scheduleabout.commontask;
 
 import com.base.database.trading.model.TradingOrderGetOrders;
+import com.base.domains.querypojos.OrderGetOrdersQuery;
 import com.base.utils.applicationcontext.ApplicationContextUtil;
-import com.base.utils.cache.TempStoreDataSupport;
+import com.base.utils.common.MyStringUtil;
 import com.base.utils.scheduleabout.BaseScheduledClass;
 import com.base.utils.scheduleabout.MainTask;
 import com.base.utils.scheduleabout.Scheduledable;
@@ -10,9 +11,9 @@ import com.base.utils.threadpool.TaskPool;
 import com.task.service.IScheduleGetTimerOrders;
 import com.trading.service.ITradingOrderGetOrders;
 import com.trading.service.ITradingOrderGetOrdersNoTransaction;
-import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -39,16 +40,28 @@ public class SynchronizeGetOrdersItemTimerTaskRun extends BaseScheduledClass imp
         if(i>30){
             return;
         }
-        String isRunging = TempStoreDataSupport.pullData("task_"+getScheduledType());
+        /*String isRunging = TempStoreDataSupport.pullData("task_"+getScheduledType());
         if(StringUtils.isNotEmpty(isRunging)){return;}
-        TempStoreDataSupport.pushData("task_" + getScheduledType(), "x");
+        TempStoreDataSupport.pushData("task_" + getScheduledType(), "x");*/
+        Boolean b= TaskPool.threadIsAliveByName("thread_" + getScheduledType());
+        if(b){
+            logger.error(getScheduledType()+"===之前的任务还未完成继续等待下一个循环===");
+            return;
+        }
+        //logger.error(getScheduledType()+"===任务开始===");
+        Thread.currentThread().setName("thread_" + getScheduledType());
+
         ITradingOrderGetOrders iTradingOrderGetOrders=(ITradingOrderGetOrders) ApplicationContextUtil.getBean(ITradingOrderGetOrders.class);
-        List<TradingOrderGetOrders> orders=iTradingOrderGetOrders.selectOrderGetOrdersByItemFlag();
-        if(orders.size()>20){
-            orders=filterLimitList(orders);
+        List<OrderGetOrdersQuery> orders1=iTradingOrderGetOrders.selectOrderGetOrdersByItemFlag();
+        List<TradingOrderGetOrders> orders=new ArrayList<TradingOrderGetOrders>();
+        if(orders1!=null&&orders1.size()>0){
+            orders.addAll(orders1);
         }
         synchronizeOrderItems(orders);
-        TempStoreDataSupport.removeData("task_" + getScheduledType());
+        //TempStoreDataSupport.removeData("task_" + getScheduledType());
+        TaskPool.threadRunTime.remove("thread_" + getScheduledType());
+        Thread.currentThread().setName("thread_" + getScheduledType()+ MyStringUtil.getRandomStringAndNum(5));
+        //logger.error(getScheduledType() + "===任务结束===");
     }
 
     /**只从集合记录取多少条*/
@@ -82,5 +95,15 @@ public class SynchronizeGetOrdersItemTimerTaskRun extends BaseScheduledClass imp
             return 2;
         }*/
         return 30;
+    }
+
+    @Override
+    public void setMark(String x) {
+
+    }
+
+    @Override
+    public String getMark() {
+        return null;
     }
 }

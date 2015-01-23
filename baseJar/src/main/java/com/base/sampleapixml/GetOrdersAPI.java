@@ -7,7 +7,6 @@ import com.base.utils.common.DateUtils;
 import com.base.utils.xmlutils.SamplePaseXml;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.dom4j.Document;
-import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 
 import java.util.*;
@@ -58,6 +57,7 @@ public class GetOrdersAPI {
                     getorder.setPaidtime(PaidTime);
                     getorder.setShippedtime(ShippedTime);
                     getorder.setAmountpaid(SamplePaseXml.getSpecifyElementText(order,"AmountPaid"));
+                    getorder.setCancelstatus(SamplePaseXml.getSpecifyElementText(order,"CancelStatus"));
                     //-------------------获取第二层的---------------------------
                     getorder.setEbaypaymentstatus(SamplePaseXml.getSpecifyElementText(order,"CheckoutStatus","eBayPaymentStatus"));
                     getorder.setPaymentmethod(SamplePaseXml.getSpecifyElementText(order,"CheckoutStatus","PaymentMethod"));

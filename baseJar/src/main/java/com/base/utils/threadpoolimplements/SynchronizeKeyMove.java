@@ -66,10 +66,10 @@ public class SynchronizeKeyMove implements ThreadPoolBaseInterFace {
             Date beginDate = new Date();
             Calendar date = Calendar.getInstance();
             date.setTime(beginDate);
-            date.set(Calendar.DATE, date.get(Calendar.DATE) - 119);
+            date.set(Calendar.DATE, date.get(Calendar.DATE) + 119);
             Date endDate = dft.parse(dft.format(date.getTime()));
-            String  startTo = DateUtils.DateToString(new Date());
-            String startFrom = DateUtils.DateToString(endDate);
+            String  startTo = DateUtils.DateToString(DateUtils.nowDateAddDay(100));
+            String startFrom = DateUtils.DateToString(DateUtils.nowDateMinusDay(18));
 
             AddApiTask addApiTask = new AddApiTask();
             UsercontrollerDevAccountExtend d = new UsercontrollerDevAccountExtend();
@@ -139,8 +139,8 @@ public class SynchronizeKeyMove implements ThreadPoolBaseInterFace {
                 "\t<EntriesPerPage>100</EntriesPerPage>\n" +
                 "\t<PageNumber>"+page+"</PageNumber>\n" +
                 "</Pagination>\n" +
-                "<StartTimeFrom>"+satartfrom+"</StartTimeFrom>\n" +
-                "<StartTimeTo>"+startto+"</StartTimeTo>\n" +
+                "<EndTimeFrom>"+satartfrom+"</EndTimeFrom>\n" +
+                "<EndTimeTo>"+startto+"</EndTimeTo>\n" +
                 "<UserID>"+ebayneam+"</UserID>\n" +
                 "<GranularityLevel>Coarse</GranularityLevel>\n" +
                 "<DetailLevel>ItemReturnDescription</DetailLevel>\n" +

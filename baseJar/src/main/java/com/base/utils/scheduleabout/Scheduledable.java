@@ -10,4 +10,8 @@ public interface Scheduledable extends Runnable {
 
     /**执行任务的时间间隔 单位是分钟*/
     public Integer crTimeMinu();
+
+    /**有时需要从外部传入一些参数*/
+    public void setMark(String x);
+    public String getMark();
 }

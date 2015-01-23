@@ -5,6 +5,7 @@ import com.base.domains.SessionVO;
 import com.base.domains.querypojos.OrderItemQuery;
 import com.base.domains.userinfo.UsercontrollerEbayAccountExtend;
 import com.base.mybatis.page.Page;
+import com.base.userinfo.service.SystemUserManagerService;
 import com.base.userinfo.service.UserInfoService;
 import com.base.utils.annotations.AvoidDuplicateSubmission;
 import com.base.utils.cache.SessionCacheSupport;
@@ -41,7 +42,8 @@ public class GetOrderItemController extends BaseAction {
     private ITradingOrderGetItem iTradingOrderGetItem;
     @Value("${EBAY.API.URL}")
     private String apiUrl;
-
+    @Autowired
+    private SystemUserManagerService systemUserManagerService;
     @RequestMapping("/orderItemList.do")
      public ModelAndView OrdersList(HttpServletRequest request,HttpServletResponse response,ModelMap modelMap){
         return forword("/orders/orderItem/orderItemList",modelMap);
@@ -56,7 +58,8 @@ public class GetOrderItemController extends BaseAction {
         }
         Map m = new HashMap();
         /**分页组装*/
-        List<UsercontrollerEbayAccountExtend> ebays=userInfoService.getEbayAccountForCurrUser(new HashMap(),Page.newAOnePage());
+        Map map1 = new HashMap();
+        List<UsercontrollerEbayAccountExtend> ebays=systemUserManagerService.queryCurrAllEbay(map1);
         SessionVO sessionVO= SessionCacheSupport.getSessionVO();
         Map map=new HashMap();
         map.put("ebays",ebays);
@@ -76,7 +79,8 @@ public class GetOrderItemController extends BaseAction {
     @AvoidDuplicateSubmission(needSaveToken = true)
     @ResponseBody
     public ModelAndView GetOrder(@ModelAttribute( "initSomeParmMap" )ModelMap modelMap){
-        List<UsercontrollerEbayAccountExtend> ebays = userInfoService.getEbayAccountForCurrUser(new HashMap(),Page.newAOnePage());
+        Map map=new HashMap();
+        List<UsercontrollerEbayAccountExtend> ebays = systemUserManagerService.queryCurrAllEbay(map);
         modelMap.put("ebays",ebays);
         return forword("orders/orderItem/synOrderItem",modelMap);
     }

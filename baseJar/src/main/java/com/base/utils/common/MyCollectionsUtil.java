@@ -9,6 +9,7 @@ public class MyCollectionsUtil {
 
     /**list去重，利用Set*/
     public static<T> List<T> listUnique(List<T> list){
+        if (list==null){return list;}
         Set<T> set=new LinkedHashSet<T>();
         for (T t:list){
             set.add(t);

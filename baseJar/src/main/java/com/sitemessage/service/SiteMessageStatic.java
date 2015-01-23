@@ -18,6 +18,7 @@ public class SiteMessageStatic {
         messageMap.put("synchronize_user_case_dispute_type","同步一般纠纷");
         messageMap.put("synchronize_user_case_ebp_type","同步EBP纠纷");
         messageMap.put("synchronize_get_order_type","同步订单");
+        messageMap.put("synchronize_get_order_by_orderids_type","根据订单号同步订单");
         messageMap.put("syn_message_listing_data_type","同步在线商品");
         messageMap.put("auto_message_task_run","定时发送付款或发货后的自动消息");
         messageMap.put("feed_back_auto_message_task_run","定时发送获取评价后的自动消息");
@@ -82,11 +83,18 @@ public class SiteMessageStatic {
 
     /**同步EBP纠纷类型*/
     public static final String SYNCHRONIZE_USER_CASE_EBP_TYPE="synchronize_user_case_ebp_type";
+
     /**同步订单bean类型*/
     public static final String SYNCHRONIZE_GET_ORDER_BEAN="synchronize_get_order_bean";
 
+    /**同步订单bean类型*/
+    public static final String SYNCHRONIZE_GET_ORDER_BY_ORDERIDS_BEAN="synchronize_get_order_by_orderids_bean";
+
     /**同步订单类型*/
     public static final String SYNCHRONIZE_GET_ORDER_TYPE="synchronize_get_order_type";
+
+    /**根据订单号同步订单类型*/
+    public static final String SYNCHRONIZE_GET_ORDER_BY_ORDERIDS_TYPE="synchronize_get_order_by_orderids_type";
 
     /**定时发送付款或发货后的自动消息*/
     public static final String AUTO_MESSAGE_TASK_RUN="auto_message_task_run";

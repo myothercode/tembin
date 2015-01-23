@@ -1,6 +1,7 @@
 package com.task.service;
 
 import com.base.database.task.model.TaskGetOrders;
+import com.base.database.task.model.TaskGetOrdersSellerTransaction;
 import com.base.database.trading.model.TradingOrderGetOrders;
 
 import java.util.List;
@@ -16,5 +17,5 @@ public interface IScheduleGetTimerOrders {
 
     void synchronizeOrderAccount(List<TradingOrderGetOrders> orders) throws Exception;
 
-    void synchronizeOrderSellerTrasaction(List<TradingOrderGetOrders> orders) throws Exception;
+    void synchronizeOrderSellerTrasaction(TaskGetOrdersSellerTransaction sellerTransaction) throws Exception;
 }

@@ -125,6 +125,17 @@
                 $("#allOrder").val("");
             }
         }
+        function addAllEbay(){
+            var country=$("input[type=checkbox][name=allEbay]");
+            if(country[0].checked){
+                var htm="<div id='selectAllEbay'>所有账户:<font style=\"color: #0000ff\">所有的账户</font><br/></div>"
+                $("#addMarket").append($(htm));
+            }else{
+                $("#selectAllEbay").remove();
+                $("#allEbay").val("");
+            }
+        }
+
         function addItem(){
             var item=$("input[type=checkbox][name=item]");
             if(item[0].checked){
@@ -161,6 +172,7 @@
             }
             var checkboxs=$("#regulation").find("input[type=checkbox]:checked");
             var allOrder1=$("#regulation").find("input[type=checkbox][name=allOrder]:checked");
+            var allEbay1=$("#regulation").find("input[type=checkbox][name=allEbay]:checked");
             if(checkboxs.length==0){
                 alert("选择规则至少选择一个");
                 return;
@@ -170,13 +182,17 @@
             var amounts=$("#amounts").val();
             var service=$("#service").val();
             var exceptCountryIds=$("#exceptCountryIds").val();
-            if(!countryIds&&!orderItems&&!amounts&&!service&&!exceptCountryIds&&allOrder1.length==0){
+            if(!countryIds&&!orderItems&&!amounts&&!service&&!exceptCountryIds&&allOrder1.length==0&&allEbay1.length==0){
                 alert("选择规则至少一个有效值");
                 return;
             }
             var selectAllOrder=document.getElementById("selectAllOrder");
+            var selectAllEbay=document.getElementById("selectAllEbay");
             if(selectAllOrder){
                 $("#allOrder").val("true");
+            }
+            if(selectAllEbay){
+                $("#allEbay").val("true");
             }
             var url=path+"/autoMessage/ajax/saveAutoMessage.do?";
             var date=$("#autoMessageForm").serialize();
@@ -212,6 +228,7 @@
         <input type="hidden" name="service" id="service" value="${serviceIds}"/>
         <input type="hidden" name="exceptCountryIds" id="exceptCountryIds" value="${exceptCountryIds}"/>
         <input type="hidden" name="allOrder" id="allOrder"/>
+        <input type="hidden" name="allEbay" id="allEbay"/>
         <input type="hidden" name="starUse value="${autoMessage.startuse}">
         <div>
             <br/><br/><br/>
@@ -328,7 +345,7 @@
             </div>
         </div>--%>
         <div style="padding: 10px;">
-            <div style="width: 560px;height:300px;border: 1px #acd0f0 solid;float: left">
+            <div style="width: 560px;height:320px;border: 1px #acd0f0 solid;float: left">
                 <div class="new_tab">
                     <div class="new_tab_left"></div>
                     <div class="new_tab_right"></div>
@@ -398,6 +415,9 @@
                     <c:if test="${order!=null}">
                         <div id='selectAllOrder'>所有订单:<font style="color: #0000ff">所有的订单</font><br/></div>
                     </c:if>
+                    <c:if test="${allEbay!=null}">
+                        <div id='selectAllEbay'>所有账户:<font style="color: #0000ff">所有的账户</font><br/></div>
+                    </c:if>
                     <c:if test="${exceptCountrys[0]!=null}">
                         <div id='selectExceptCountry'>订单目的地:<a id='selectExceptCountrys' href='javascript:void(0)' onclick='selectExceptCountrys();'>
                             <c:forEach items="${exceptCountrys}" var="item" varStatus="status">
@@ -412,7 +432,7 @@
                     </c:if>
                 </div>
             </div>
-            <div style="width: 350px;height:300px;border: 1px #acd0f0 solid;float: right">
+            <div style="width: 350px;height:320px;border: 1px #acd0f0 solid;float: right">
                 <div class="new_tab">
                     <div class="new_tab_left"></div>
                     <div class="new_tab_right"></div>
@@ -448,6 +468,12 @@
                     </c:if>
                     <c:if test="${exceptCountrys[0]==null}">
                         <input type="checkbox" name="exceptCountry" onclick="addExceptCountry();">&nbsp;订单目的地为指定国家之外<br/><br/>
+                    </c:if>
+                    <c:if test="${allEbay!=null}">
+                        <input type="checkbox" checked name="allEbay" onclick="addAllEbay();">&nbsp;所有账户<br/><br/>
+                    </c:if>
+                    <c:if test="${allEbay==null}">
+                        <input type="checkbox" name="allEbay" onclick="addAllEbay();">&nbsp;所有账户<br/><br/>
                     </c:if>
                     <c:if test="${order!=null}">
                         <input type="checkbox" checked name="allOrder" onclick="addAllOrder();">&nbsp;所有订单<br/><br/>

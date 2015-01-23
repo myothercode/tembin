@@ -30,6 +30,12 @@
         <if test="userId!=null">
             and tracking.create_user =#{userId}
         </if>
+        <if test="orgUsers!=null">
+            and tracking.create_user in
+            <foreach collection="orgUsers" item="orgUser" index="index" open="(" separator="," close=")">
+                #{orgUser.userId}
+            </foreach>
+        </if>
         <if test="qeuryContent!=null">
            and tracking.queryTitle =#{qeuryContent}
         </if>

@@ -7,6 +7,7 @@ import com.base.domains.CommonParmVO;
 import com.base.domains.SessionVO;
 import com.base.domains.querypojos.AutoMessageQuery;
 import com.base.domains.userinfo.UsercontrollerEbayAccountExtend;
+import com.base.domains.userinfo.UsercontrollerUserExtend;
 import com.base.mybatis.page.Page;
 import com.base.mybatis.page.PageJsonBean;
 import com.base.userinfo.service.SystemUserManagerService;
@@ -64,23 +65,29 @@ public class AutoMessageController extends BaseAction {
         if(!StringUtils.isNotBlank(status)){
             status=null;
         }
-        m.put("userId",sessionVO.getId());
+        List<UsercontrollerUserExtend> orgUsers=systemUserManagerService.queryAllUsersByOrgID("yes");
         m.put("status",status);
+        m.put("orgUsers",orgUsers);
         List<AutoMessageQuery> lists=iTradingAutoMessage.selectAutoMessageList(m,page);
         if(lists!=null&&lists.size()>0){
            for(AutoMessageQuery auto:lists){
                String country="";
                String amount="";
                List<TradingAutoMessageAttr> countrys=iTradingAutoMessageAttr.selectAutoMessageListByautoMessageId(auto.getId(),"country");
-               List<TradingAutoMessageAttr> amounts=iTradingAutoMessageAttr.selectAutoMessageListByautoMessageId(auto.getId(),"amount");
+
+               List<TradingAutoMessageAttr> allEbay=iTradingAutoMessageAttr.selectAutoMessageListByautoMessageId(auto.getId(),"allEbay");
                for(TradingAutoMessageAttr attr:countrys){
                    country+=attr.getValue()+" ";
                }
-               for(TradingAutoMessageAttr attr:amounts){
-                   amount+=attr.getValue()+" ";
-               }
                auto.setCountry(country);
-               auto.setAmount(amount);
+               if(allEbay!=null&&allEbay.size()>0){
+                   auto.setAmount("所有账户");
+               }else{
+                   List<TradingAutoMessageAttr> amounts=iTradingAutoMessageAttr.selectAutoMessageListByautoMessageId(auto.getId(),"amount");
+                   for(TradingAutoMessageAttr attr:amounts){
+                       amount+=attr.getValue()+" ";
+                   }
+               }
            }
         }
         jsonBean.setList(lists);
@@ -124,6 +131,7 @@ public class AutoMessageController extends BaseAction {
         List<TradingAutoMessageAttr> services=null;
         List<TradingAutoMessageAttr> internationalServices=null;
         TradingAutoMessageAttr order=null;
+        TradingAutoMessageAttr allEbay=null;
         List<TradingAutoMessageAttr> exceptCountrys=null;
         if(StringUtils.isNotBlank(id)){
             List<TradingAutoMessage> messages=iTradingAutoMessage.selectAutoMessageById(Long.valueOf(id));
@@ -133,10 +141,14 @@ public class AutoMessageController extends BaseAction {
             amounts=iTradingAutoMessageAttr.selectAutoMessageListByautoMessageId(autoMessage.getId(),"amount");
             services=iTradingAutoMessageAttr.selectAutoMessageListByautoMessageId(autoMessage.getId(),"service");
             List<TradingAutoMessageAttr> orders=iTradingAutoMessageAttr.selectAutoMessageListByautoMessageId(autoMessage.getId(),"allOrder");
+            List<TradingAutoMessageAttr> allEbays=iTradingAutoMessageAttr.selectAutoMessageListByautoMessageId(autoMessage.getId(),"allEbay");
             exceptCountrys=iTradingAutoMessageAttr.selectAutoMessageListByautoMessageId(autoMessage.getId(),"exceptCountry");
             internationalServices=iTradingAutoMessageAttr.selectAutoMessageListByautoMessageId(autoMessage.getId(),"internationalService");
             if(orders!=null&&orders.size()>0){
                 order=orders.get(0);
+            }
+            if(allEbays!=null&&allEbays.size()>0){
+                allEbay=allEbays.get(0);
             }
         }
         String orderItemIds="";
@@ -182,6 +194,7 @@ public class AutoMessageController extends BaseAction {
         modelMap.put("services",services);
         modelMap.put("internationalServices",internationalServices);
         modelMap.put("order",order);
+        modelMap.put("allEbay",allEbay);
         modelMap.put("exceptCountrys",exceptCountrys);
         modelMap.put("autoMessage",autoMessage);
         modelMap.put("orderItemIds",orderItemIds);
@@ -259,7 +272,7 @@ public class AutoMessageController extends BaseAction {
     @RequestMapping("/selectAmounts.do")
     public ModelAndView selectAmounts(HttpServletRequest request,HttpServletResponse response,ModelMap modelMap){
         Map m=new HashMap();
-        List<UsercontrollerEbayAccountExtend> ebays=systemUserManagerService.queryACurrAllEbay(m);
+        List<UsercontrollerEbayAccountExtend> ebays=systemUserManagerService.queryCurrAllEbay(m);
         modelMap.put("ebays",ebays);
         return forword("autoMessage/selectAmounts",modelMap);
     }
@@ -562,6 +575,7 @@ public class AutoMessageController extends BaseAction {
         String service=request.getParameter("service");
         String exceptCountryIds=request.getParameter("exceptCountryIds");
         String allOrder=request.getParameter("allOrder");
+        String allEbay=request.getParameter("allEbay");
         String starUse=request.getParameter("starUse");
         TradingAutoMessage message=new TradingAutoMessage();
         if(StringUtils.isNotBlank(id)){
@@ -708,7 +722,18 @@ public class AutoMessageController extends BaseAction {
             m.setValue("所有订单");
             iTradingAutoMessageAttr.saveAutoMessageAttr(m);
         }
-        AjaxSupport.sendSuccessText("", "保存成功,请确保启用的自动消息的每个类型只有一个");
+        List<TradingAutoMessageAttr> allEbays=iTradingAutoMessageAttr.selectAutoMessageListByautoMessageId(message.getId(),"allEbay");
+        for(TradingAutoMessageAttr order:orders){
+            iTradingAutoMessageAttr.deleteAutoMessageAttr(order);
+        }
+        if("true".equals(allEbay)){
+            TradingAutoMessageAttr m=new TradingAutoMessageAttr();
+            m.setAutomessageId(message.getId());
+            m.setType("allEbay");
+            m.setValue("所有账户");
+            iTradingAutoMessageAttr.saveAutoMessageAttr(m);
+        }
+        AjaxSupport.sendSuccessText("", "保存成功!");
     }
     //启用或者禁用自动消息
     @RequestMapping("/ajax/startUsing.do")
@@ -731,7 +756,7 @@ public class AutoMessageController extends BaseAction {
             return;
         }
         if("1".equals(status)){
-            AjaxSupport.sendSuccessText("", "启用成功,请确保启用的自动消息的每个类型只有一个");
+            AjaxSupport.sendSuccessText("", "启用成功");
         }else{
             AjaxSupport.sendSuccessText("", "禁用成功");
         }

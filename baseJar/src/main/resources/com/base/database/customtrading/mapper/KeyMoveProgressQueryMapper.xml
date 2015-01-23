@@ -20,7 +20,10 @@ MAX(CASE WHEN aa.task_flag IS NOT NULL AND aa.task_flag=1 THEN tj_number ELSE '0
 MAX(CASE WHEN aa.task_flag IS NOT NULL AND aa.task_flag=2 THEN tj_number ELSE '0' END) errorcount
  from (
 select user_id,site_id,task_flag,paypal_id,progress_id,count(1) tj_number from key_move_list where 1=1
-        and user_id = #{userId}
+        <if test="ebayList!=null">
+            and paypal_id in
+            <foreach item="ue" index="index" collection="ebayList" open="(" separator="," close=")">#{ue,jdbcType=VARCHAR}</foreach>
+        </if>
         group by user_id,site_id,task_flag,paypal_id,progress_id
 ) aa group by aa.user_id,aa.site_id,aa.paypal_id,aa.progress_id,aa.task_flag
 ) bb group by bb.user_id,bb.site_id,bb.paypal_id,bb.progress_id order by bb.progress_id DESC

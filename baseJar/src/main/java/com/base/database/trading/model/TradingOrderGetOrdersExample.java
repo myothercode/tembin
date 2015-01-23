@@ -4225,6 +4225,76 @@ public class TradingOrderGetOrdersExample {
             return (Criteria) this;
         }
 
+        public Criteria andCancelstatusIsNull() {
+            addCriterion("cancelStatus is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andCancelstatusIsNotNull() {
+            addCriterion("cancelStatus is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andCancelstatusEqualTo(String value) {
+            addCriterion("cancelStatus =", value, "cancelstatus");
+            return (Criteria) this;
+        }
+
+        public Criteria andCancelstatusNotEqualTo(String value) {
+            addCriterion("cancelStatus <>", value, "cancelstatus");
+            return (Criteria) this;
+        }
+
+        public Criteria andCancelstatusGreaterThan(String value) {
+            addCriterion("cancelStatus >", value, "cancelstatus");
+            return (Criteria) this;
+        }
+
+        public Criteria andCancelstatusGreaterThanOrEqualTo(String value) {
+            addCriterion("cancelStatus >=", value, "cancelstatus");
+            return (Criteria) this;
+        }
+
+        public Criteria andCancelstatusLessThan(String value) {
+            addCriterion("cancelStatus <", value, "cancelstatus");
+            return (Criteria) this;
+        }
+
+        public Criteria andCancelstatusLessThanOrEqualTo(String value) {
+            addCriterion("cancelStatus <=", value, "cancelstatus");
+            return (Criteria) this;
+        }
+
+        public Criteria andCancelstatusLike(String value) {
+            addCriterion("cancelStatus like", value, "cancelstatus");
+            return (Criteria) this;
+        }
+
+        public Criteria andCancelstatusNotLike(String value) {
+            addCriterion("cancelStatus not like", value, "cancelstatus");
+            return (Criteria) this;
+        }
+
+        public Criteria andCancelstatusIn(List<String> values) {
+            addCriterion("cancelStatus in", values, "cancelstatus");
+            return (Criteria) this;
+        }
+
+        public Criteria andCancelstatusNotIn(List<String> values) {
+            addCriterion("cancelStatus not in", values, "cancelstatus");
+            return (Criteria) this;
+        }
+
+        public Criteria andCancelstatusBetween(String value1, String value2) {
+            addCriterion("cancelStatus between", value1, value2, "cancelstatus");
+            return (Criteria) this;
+        }
+
+        public Criteria andCancelstatusNotBetween(String value1, String value2) {
+            addCriterion("cancelStatus not between", value1, value2, "cancelstatus");
+            return (Criteria) this;
+        }
+
         public Criteria andCreateUserIsNull() {
             addCriterion("create_user is null");
             return (Criteria) this;

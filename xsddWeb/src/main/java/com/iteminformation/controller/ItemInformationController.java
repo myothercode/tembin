@@ -73,7 +73,19 @@ public class ItemInformationController extends BaseAction {
     @RequestMapping("/itemInformationList.do")
     public ModelAndView itemInformationList(HttpServletRequest request,HttpServletResponse response,ModelMap modelMap){
         SessionVO sessionVO= SessionCacheSupport.getSessionVO();
+        Boolean adminFlag=systemUserManagerService.isAdminRole();
         List<PublicUserConfig> remarks=iPublicUserConfig.selectUserConfigByItemType("remark",sessionVO.getId());
+        if(adminFlag){
+            List<UsercontrollerUserExtend> orgUsers=systemUserManagerService.queryAllUsersByOrgID("yes");
+            for(UsercontrollerUserExtend user:orgUsers){
+                if(user.getUserId()!=sessionVO.getId()){
+                    List<PublicUserConfig> remarks1=iPublicUserConfig.selectUserConfigByItemType("remark", Long.valueOf(user.getUserId()));
+                    if(remarks1!=null&&remarks1.size()>0){
+                        remarks.addAll(remarks1);
+                    }
+                }
+            }
+        }
         modelMap.put("remarks",remarks);
         return forword("/itemInformation/itemInformation",modelMap);
     }
@@ -138,7 +150,7 @@ public class ItemInformationController extends BaseAction {
         List<ItemInformationQuery> lists=iPublicItemInformation.selectItemInformation(m,page);
         for(ItemInformationQuery query:lists){
             if(query.getRemark()!=null){
-                List<PublicItemPictureaddrAndAttr> remarks=iPublicItemPictureaddrAndAttr.selectPictureaddrAndAttrByInformationId(query.getId(),"remark",sessionVO.getId());
+                List<PublicItemPictureaddrAndAttr> remarks=iPublicItemPictureaddrAndAttr.selectPictureaddrAndAttrByInformationId(query.getId(),"remark");
                 String remark1="";
                 for(PublicItemPictureaddrAndAttr attr:remarks){
                     PublicUserConfig config=iPublicUserConfig.selectUserConfigById(attr.getRemarkId());
@@ -258,7 +270,7 @@ public class ItemInformationController extends BaseAction {
             }
         }*/
         List<TradingAttrMores> lipic=new ArrayList<TradingAttrMores>();
-        List<PublicItemPictureaddrAndAttr> pictures=iPublicItemPictureaddrAndAttr.selectPictureaddrAndAttrByInformationId(information.getId(),"picture",c.getId());
+        List<PublicItemPictureaddrAndAttr> pictures=iPublicItemPictureaddrAndAttr.selectPictureaddrAndAttrByInformationId(information.getId(),"picture");
         for(PublicItemPictureaddrAndAttr picture:pictures){
             TradingAttrMores detail=new TradingAttrMores();
             detail.setAttr1(null);
@@ -269,7 +281,7 @@ public class ItemInformationController extends BaseAction {
 
 
         List<TradingPublicLevelAttr> lipa =new ArrayList<TradingPublicLevelAttr>();
-        List<PublicItemPictureaddrAndAttr> attrs=iPublicItemPictureaddrAndAttr.selectPictureaddrAndAttrByInformationId(information.getId(),"attr",c.getId());
+        List<PublicItemPictureaddrAndAttr> attrs=iPublicItemPictureaddrAndAttr.selectPictureaddrAndAttrByInformationId(information.getId(),"attr");
         for(PublicItemPictureaddrAndAttr attr:attrs){
             TradingPublicLevelAttr levelAttr=new TradingPublicLevelAttr();
             levelAttr.setName(attr.getAttrname());
@@ -389,7 +401,7 @@ public class ItemInformationController extends BaseAction {
 
             PublicItemInformation itemInformation=iPublicItemInformation.selectItemInformationByid(Long.valueOf(id1));
             informations.add(itemInformation);
-            pictures=iPublicItemPictureaddrAndAttr.selectPictureaddrAndAttrByInformationId(itemInformation.getId(),"picture",c.getId());
+            pictures=iPublicItemPictureaddrAndAttr.selectPictureaddrAndAttrByInformationId(itemInformation.getId(),"picture");
         }
         m.put("infs",informations);
         m.put("pic",pictures);
@@ -426,10 +438,10 @@ public class ItemInformationController extends BaseAction {
             }
             SessionVO c= SessionCacheSupport.getSessionVO();
 
-            pictures=iPublicItemPictureaddrAndAttr.selectPictureaddrAndAttrByInformationId(itemInformation.getId(),"picture",c.getId());
-            attrs=iPublicItemPictureaddrAndAttr.selectPictureaddrAndAttrByInformationId(itemInformation.getId(),"attr",c.getId());
+            pictures=iPublicItemPictureaddrAndAttr.selectPictureaddrAndAttrByInformationId(itemInformation.getId(),"picture");
+            attrs=iPublicItemPictureaddrAndAttr.selectPictureaddrAndAttrByInformationId(itemInformation.getId(),"attr");
             if(itemInformation!=null){
-                List<PublicItemPictureaddrAndAttr> andAttrs=iPublicItemPictureaddrAndAttr.selectPictureaddrAndAttrByInformationId(itemInformation.getId(),"remark",sessionVO.getId());
+                List<PublicItemPictureaddrAndAttr> andAttrs=iPublicItemPictureaddrAndAttr.selectPictureaddrAndAttrByInformationId(itemInformation.getId(),"remark");
                 for(PublicItemPictureaddrAndAttr andAttr:andAttrs){
                     PublicUserConfig publicUserConfig=iPublicUserConfig.selectUserConfigById(andAttr.getRemarkId());
                     if(publicUserConfig!=null){
@@ -508,9 +520,9 @@ public class ItemInformationController extends BaseAction {
                    iPublicItemCustom.deleteItemCustom(itemInformation.getCustomId());
                }
                SessionVO sessionVO=SessionCacheSupport.getSessionVO();
-               List<PublicItemPictureaddrAndAttr> andAttrs=iPublicItemPictureaddrAndAttr.selectPictureaddrAndAttrByInformationId(itemInformation.getId(),"remark",sessionVO.getId());
+               List<PublicItemPictureaddrAndAttr> andAttrs=iPublicItemPictureaddrAndAttr.selectPictureaddrAndAttrByInformationId(itemInformation.getId(),"remark");
                for(PublicItemPictureaddrAndAttr andAttr:andAttrs){
-                   List<PublicItemPictureaddrAndAttr> list1=iPublicItemPictureaddrAndAttr.selectPictureaddrAndAttrByRemarkIdAndNotInformationId(andAttr.getRemarkId(),itemInformation.getId(),"remark",sessionVO.getId());
+                   List<PublicItemPictureaddrAndAttr> list1=iPublicItemPictureaddrAndAttr.selectPictureaddrAndAttrByRemarkIdAndNotInformationId(andAttr.getRemarkId(),itemInformation.getId(),"remark");
                    if(list1.size()==0||list1==null){
                        PublicUserConfig config=new PublicUserConfig();
                        config.setId(andAttr.getRemarkId());
@@ -618,9 +630,9 @@ public class ItemInformationController extends BaseAction {
         }
         SessionVO sessionVO=SessionCacheSupport.getSessionVO();
         for(Long id:list){
-            List<PublicItemPictureaddrAndAttr> andAttrs=iPublicItemPictureaddrAndAttr.selectPictureaddrAndAttrByInformationId(id,"remark",sessionVO.getId());
+            List<PublicItemPictureaddrAndAttr> andAttrs=iPublicItemPictureaddrAndAttr.selectPictureaddrAndAttrByInformationId(id,"remark");
             for(PublicItemPictureaddrAndAttr andAttr:andAttrs){
-                List<PublicItemPictureaddrAndAttr> list1=iPublicItemPictureaddrAndAttr.selectPictureaddrAndAttrByRemarkIdAndNotInformationId(andAttr.getRemarkId(),id,"remark",sessionVO.getId());
+                List<PublicItemPictureaddrAndAttr> list1=iPublicItemPictureaddrAndAttr.selectPictureaddrAndAttrByRemarkIdAndNotInformationId(andAttr.getRemarkId(),id,"remark");
                 if(list1.size()==0||list1==null){
                     PublicUserConfig config=new PublicUserConfig();
                     config.setId(andAttr.getRemarkId());
@@ -824,8 +836,8 @@ public class ItemInformationController extends BaseAction {
 
         iPublicItemInformation.saveItemInformation(itemInformation);
         SessionVO c= SessionCacheSupport.getSessionVO();
-        List<PublicItemPictureaddrAndAttr> pictureaddrAnds=iPublicItemPictureaddrAndAttr.selectPictureaddrAndAttrByInformationId(itemInformation.getId(),"picture",c.getId()) ;
-        List<PublicItemPictureaddrAndAttr> AndAttrs=iPublicItemPictureaddrAndAttr.selectPictureaddrAndAttrByInformationId(itemInformation.getId(),"attr",c.getId()) ;
+        List<PublicItemPictureaddrAndAttr> pictureaddrAnds=iPublicItemPictureaddrAndAttr.selectPictureaddrAndAttrByInformationId(itemInformation.getId(),"picture") ;
+        List<PublicItemPictureaddrAndAttr> AndAttrs=iPublicItemPictureaddrAndAttr.selectPictureaddrAndAttrByInformationId(itemInformation.getId(),"attr") ;
         for(PublicItemPictureaddrAndAttr p:pictureaddrAnds){
             iPublicItemPictureaddrAndAttr.deletePublicItemPictureaddrAndAttr(p);
         }
@@ -853,9 +865,9 @@ public class ItemInformationController extends BaseAction {
         SessionVO sessionVO=SessionCacheSupport.getSessionVO();
         if(StringUtils.isNotBlank(remark)){
             String[] remarks=remark.split(",");
-            List<PublicItemPictureaddrAndAttr> andAttrs=iPublicItemPictureaddrAndAttr.selectPictureaddrAndAttrByInformationId(itemInformation.getId(),"remark",sessionVO.getId());
+            List<PublicItemPictureaddrAndAttr> andAttrs=iPublicItemPictureaddrAndAttr.selectPictureaddrAndAttrByInformationId(itemInformation.getId(),"remark");
             for(PublicItemPictureaddrAndAttr andAttr:andAttrs){
-                List<PublicItemPictureaddrAndAttr> list1=iPublicItemPictureaddrAndAttr.selectPictureaddrAndAttrByRemarkIdAndNotInformationId(andAttr.getRemarkId(),itemInformation.getId(),"remark",sessionVO.getId());
+                List<PublicItemPictureaddrAndAttr> list1=iPublicItemPictureaddrAndAttr.selectPictureaddrAndAttrByRemarkIdAndNotInformationId(andAttr.getRemarkId(),itemInformation.getId(),"remark");
                 if(list1.size()==0||list1==null){
                     PublicUserConfig config=new PublicUserConfig();
                     config.setId(andAttr.getRemarkId());
@@ -880,9 +892,9 @@ public class ItemInformationController extends BaseAction {
             itemInformation.setRemarkId(1l);
             iPublicItemInformation.saveItemInformation(itemInformation);
         }else{
-            List<PublicItemPictureaddrAndAttr> andAttrs=iPublicItemPictureaddrAndAttr.selectPictureaddrAndAttrByInformationId(itemInformation.getId(),"remark",sessionVO.getId());
+            List<PublicItemPictureaddrAndAttr> andAttrs=iPublicItemPictureaddrAndAttr.selectPictureaddrAndAttrByInformationId(itemInformation.getId(),"remark");
             for(PublicItemPictureaddrAndAttr andAttr:andAttrs){
-                List<PublicItemPictureaddrAndAttr> list1=iPublicItemPictureaddrAndAttr.selectPictureaddrAndAttrByRemarkIdAndNotInformationId(andAttr.getRemarkId(),itemInformation.getId(),"remark",sessionVO.getId());
+                List<PublicItemPictureaddrAndAttr> list1=iPublicItemPictureaddrAndAttr.selectPictureaddrAndAttrByRemarkIdAndNotInformationId(andAttr.getRemarkId(),itemInformation.getId(),"remark");
                 if(list1.size()==0||list1==null){
                     PublicUserConfig config=new PublicUserConfig();
                     config.setId(andAttr.getRemarkId());
@@ -908,7 +920,7 @@ public class ItemInformationController extends BaseAction {
     public void getPicList(ModelMap modelMap,HttpServletRequest request){
         String informationid = request.getParameter("informationid");
         SessionVO c= SessionCacheSupport.getSessionVO();
-        List<PublicItemPictureaddrAndAttr> lippa = this.iPublicItemPictureaddrAndAttr.selectPictureaddrAndAttrByInformationId(Long.parseLong(informationid),"picture",c.getId());
+        List<PublicItemPictureaddrAndAttr> lippa = this.iPublicItemPictureaddrAndAttr.selectPictureaddrAndAttrByInformationId(Long.parseLong(informationid),"picture");
         for(PublicItemPictureaddrAndAttr ppaa:lippa){
             ppaa.setUuid(EncryptionUtil.md5Encrypt(ppaa.getAttrvalue()));
         }

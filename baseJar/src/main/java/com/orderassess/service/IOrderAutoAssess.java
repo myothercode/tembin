@@ -1,6 +1,7 @@
 package com.orderassess.service;
 
 import com.base.database.trading.model.OrderAutoAssess;
+import com.base.domains.userinfo.UsercontrollerUserExtend;
 
 import java.util.List;
 
@@ -16,5 +17,5 @@ public interface IOrderAutoAssess {
 
     List<OrderAutoAssess> selectAssessList(Long userid);
 
-    OrderAutoAssess selectRandomContent(Long userid);
+    OrderAutoAssess selectRandomContent(List<UsercontrollerUserExtend> liuue);
 }

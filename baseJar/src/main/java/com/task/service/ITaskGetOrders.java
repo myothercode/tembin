@@ -14,4 +14,8 @@ public interface ITaskGetOrders {
     List<TaskGetOrders> selectTaskGetOrdersByflagAndSaveTime(Integer flag, Date saveTime);
 
     List<TaskGetOrders> selectTaskGetOrdersByFlagIsFalseOrderBysaveTime();
+
+    List<TaskGetOrders> selectTaskGetOrdersByNewUserFlagIsFalseOrderBysaveTime();
+
+    List<TaskGetOrders> selectTaskGetMessagesByFlagIsFalseOrderByLastSycTimeAndEbayName(String ebayName);
 }

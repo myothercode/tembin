@@ -36,23 +36,21 @@ public class PublicItemPictureaddrAndAttrImpl implements com.publicd.service.IPu
     }
 
     @Override
-    public List<PublicItemPictureaddrAndAttr> selectPictureaddrAndAttrByInformationId(Long id,String type,Long userid) {
+    public List<PublicItemPictureaddrAndAttr> selectPictureaddrAndAttrByInformationId(Long id,String type) {
         PublicItemPictureaddrAndAttrExample example=new PublicItemPictureaddrAndAttrExample();
         PublicItemPictureaddrAndAttrExample.Criteria cr=example.createCriteria();
         cr.andIteminformationIdEqualTo(id);
         cr.andAttrtypeEqualTo(type);
-        cr.andCreateUserEqualTo(userid);
         List<PublicItemPictureaddrAndAttr> list=PublicItemPictureaddrAndAttrMapper.selectByExample(example);
         return list;
     }
 
     @Override
-    public List<PublicItemPictureaddrAndAttr> selectPictureaddrAndAttrByremarkId(Long remarkId, String type, Long userid) {
+    public List<PublicItemPictureaddrAndAttr> selectPictureaddrAndAttrByremarkId(Long remarkId, String type) {
         PublicItemPictureaddrAndAttrExample example=new PublicItemPictureaddrAndAttrExample();
         PublicItemPictureaddrAndAttrExample.Criteria cr=example.createCriteria();
         cr.andRemarkIdEqualTo(remarkId);
         cr.andAttrtypeEqualTo(type);
-        cr.andCreateUserEqualTo(userid);
         List<PublicItemPictureaddrAndAttr> list=PublicItemPictureaddrAndAttrMapper.selectByExample(example);
         return list;
     }
@@ -67,13 +65,12 @@ public class PublicItemPictureaddrAndAttrImpl implements com.publicd.service.IPu
     }
 
     @Override
-    public List<PublicItemPictureaddrAndAttr> selectPictureaddrAndAttrByRemarkIdAndNotInformationId(Long RemarkId, Long InformationId, String type, Long userid) {
+    public List<PublicItemPictureaddrAndAttr> selectPictureaddrAndAttrByRemarkIdAndNotInformationId(Long RemarkId, Long InformationId, String type) {
         PublicItemPictureaddrAndAttrExample example=new PublicItemPictureaddrAndAttrExample();
         PublicItemPictureaddrAndAttrExample.Criteria cr=example.createCriteria();
         cr.andRemarkIdEqualTo(RemarkId);
         cr.andIteminformationIdNotEqualTo(InformationId);
         cr.andAttrtypeEqualTo(type);
-        cr.andCreateUserEqualTo(userid);
         List<PublicItemPictureaddrAndAttr> list=PublicItemPictureaddrAndAttrMapper.selectByExample(example);
         return list;
     }

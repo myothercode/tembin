@@ -33,7 +33,7 @@
         <result column="docId" property="docId" jdbcType="VARCHAR" />
     </resultMap>
     <select id="selectByExample" resultMap="BaseResultMap" parameterType="map">
-        select tion.*,dic.value1 currencyId,dic.name siteName,doc.item_name docTitle,doc.id docId from trading_listing_data tion inner join (select acc.* from usercontroller_ebay_account acc,usercontroller_user_ebay dev where acc.id=dev.ebay_id and dev.user_id=#{userid}
+        select tion.id,tion.item_id,tion.listing_type,tion.site,tion.title,tion.remark,tion.sku,tion.ebay_account,tion.price,tion.shipping_price,tion.Quantity,tion.QuantitySold,tion.ListingDuration,tion.EndTime,tion.StartTime,dic.value1 currencyId,dic.name siteName,doc.item_name docTitle,doc.id docId from trading_listing_data tion inner join (select acc.* from usercontroller_ebay_account acc,usercontroller_user_ebay dev where acc.id=dev.ebay_id and dev.user_id=#{userid}
         ) ebayaccount on tion.ebay_account=ebayaccount.ebay_account left join (select tra.* from trading_data_dictionary tra where tra.type='site') dic on tion.site=dic.value left join trading_item doc on tion.item_id=doc.item_id
         where 1=1 and tion.is_flag='0'
         <if test="folderid==null">
@@ -82,5 +82,11 @@
        <if test="userId!=null">
            and listing.create_user= #{userId}
        </if>
+        <if test="orgUsers!=null">
+            and listing.create_user in
+            <foreach collection="orgUsers" item="orgUser" index="index" open="(" separator="," close=")">
+                #{orgUser.userId}
+            </foreach>
+        </if>
     </select>
 </mapper>

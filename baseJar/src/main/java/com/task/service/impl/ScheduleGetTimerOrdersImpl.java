@@ -3,6 +3,7 @@ package com.task.service.impl;
 import com.base.aboutpaypal.service.PayPalService;
 import com.base.database.sitemessage.model.PublicSitemessage;
 import com.base.database.task.model.TaskGetOrders;
+import com.base.database.task.model.TaskGetOrdersSellerTransaction;
 import com.base.database.trading.model.*;
 import com.base.domains.userinfo.UsercontrollerDevAccountExtend;
 import com.base.sampleapixml.*;
@@ -15,6 +16,7 @@ import com.sitemessage.service.SiteMessageService;
 import com.sitemessage.service.SiteMessageStatic;
 import com.task.service.IScheduleGetTimerOrders;
 import com.task.service.ITaskGetOrders;
+import com.task.service.ITaskGetOrdersSellerTransaction;
 import com.trading.service.*;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -23,7 +25,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.*;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Created by Administrtor on 2014/10/17.
@@ -86,15 +91,13 @@ public class ScheduleGetTimerOrdersImpl implements IScheduleGetTimerOrders {
     private ITradingAutoMessageAttr iTradingAutoMessageAttr;
     @Autowired
     private ITradingOrderGetOrdersNoTransaction iTradingOrderGetOrdersNoTransaction;
+    @Autowired
+    private ITaskGetOrdersSellerTransaction iTaskGetOrdersSellerTransaction;
 
     @Override
     public void synchronizeOrders(List<TaskGetOrders> taskGetOrders) throws Exception {
         /*CommAutowiredClass commPars = (CommAutowiredClass) ApplicationContextUtil.getBean(CommAutowiredClass.class);*/
             for(TaskGetOrders taskGetOrder:taskGetOrders){
-                Integer flag1=taskGetOrder.getTokenflag();
-                flag1=flag1+1;
-                taskGetOrder.setTokenflag(flag1);
-                iTaskGetOrders.saveListTaskGetOrders(taskGetOrder);
                 //测试
                 UsercontrollerDevAccountExtend d = new UsercontrollerDevAccountExtend();//开发者帐号id
                 d.setApiSiteid("0");
@@ -113,20 +116,27 @@ public class ScheduleGetTimerOrdersImpl implements IScheduleGetTimerOrders {
                 map.put("fromTime", taskGetOrder.getFromtime());
                 map.put("toTime", taskGetOrder.getTotime());
                 map.put("page","1");
-                String xml = BindAccountAPI.getGetOrders(map);
+                String xml ="";
+                if(taskGetOrder.getNewuserflag()==null){
+                    xml=BindAccountAPI.getGetOrders(map);
+                }else{
+                    xml=BindAccountAPI.getGetOrdersNewUser(map);
+                }
                 AddApiTask addApiTask = new AddApiTask();
                 Map<String, String> resMap = addApiTask.exec2(d, xml,apiUrl);
                 //Map<String, String> resMap = addApiTask.exec2(d, xml,"https://api.ebay.com/ws/api.dll");
                 String r1 = resMap.get("stat");
                 String res = resMap.get("message");
+
                 if ("fail".equalsIgnoreCase(r1)) {
-                    logger.error("定时同步订单调用API失败:"+res+"\n\nXML:"+xml);
+                    String LongError=SamplePaseXml.getWarningInformation(res);
+                    logger.error("定时同步订单调用API失败:"+LongError);
                 }
                 String ack="";
                 try{
                     ack = SamplePaseXml.getVFromXmlString(res, "Ack");
                 }catch (Exception e){
-                    logger.error("ScheduleGetTimerOrdersImpl第149"+res,e);
+                    logger.error("ScheduleGetTimerOrdersImpl第149",e);
                     ack="";
                 }
                 if ("Success".equalsIgnoreCase(ack)||"Warning".equalsIgnoreCase(ack)) {
@@ -135,14 +145,14 @@ public class ScheduleGetTimerOrdersImpl implements IScheduleGetTimerOrders {
                         try{
                             errors = SamplePaseXml.getVFromXmlString(res, "Errors");
                         }catch (Exception e){
-                            logger.error("ScheduleGetTimerOrdersImpl第158"+res,e);
+                            logger.error("ScheduleGetTimerOrdersImpl第158",e);
                             errors="";
                         }
                         if(!StringUtils.isNotBlank(errors)){
                             try{
                                 errors =  SamplePaseXml.getWarningInformation(res);
                             }catch (Exception e){
-                                logger.error("ScheduleGetTimerOrdersImpl第165"+res,e);
+                                logger.error("ScheduleGetTimerOrdersImpl第165",e);
                                 errors="解析res出错2";
                             }
                         }
@@ -174,20 +184,25 @@ public class ScheduleGetTimerOrdersImpl implements IScheduleGetTimerOrders {
                             ds.setApiSiteid("0");
                             ds.setApiCallName(APINameStatic.GetOrders);
                             map.put("page", i + "");
-                            xml = BindAccountAPI.getGetOrders(map);
+                            if(taskGetOrder.getNewuserflag()==null){
+                                xml = BindAccountAPI.getGetOrders(map);
+                            }else{
+                                xml = BindAccountAPI.getGetOrdersNewUser(map);
+                            }
                             resMap = addApiTask.exec2(ds, xml,apiUrl);
                             //resMap = addApiTask.exec2(ds, xml, "https://api.ebay.com/ws/api.dll");
                    /* resMap = addApiTask.exec2(d, xml, "https://api.ebay.com/ws/api.dll");*/
                             r1 = resMap.get("stat");
                             res = resMap.get("message");
                             if ("fail".equalsIgnoreCase(r1)) {
-                                logger.error("循环中的定时同步订单调用API失败:"+res+"\n\nXML:"+xml);
+                                String LongError=SamplePaseXml.getWarningInformation(res);
+                                logger.error("循环中的定时同步订单调用API失败:"+LongError);
                             }
                             ack="";
                             try{
                                 ack = SamplePaseXml.getVFromXmlString(res, "Ack");
                             }catch (Exception e){
-                                logger.error("ScheduleGetTimerOrdersImpl第215"+res,e);
+                                logger.error("ScheduleGetTimerOrdersImpl第215",e);
                                 ack="";
                             }
                             if (!"Success".equalsIgnoreCase(ack)&&!"Warning".equalsIgnoreCase(ack)) {
@@ -195,14 +210,14 @@ public class ScheduleGetTimerOrdersImpl implements IScheduleGetTimerOrders {
                                 try{
                                     errors = SamplePaseXml.getVFromXmlString(res, "Errors");
                                 }catch (Exception e){
-                                    logger.error("ScheduleGetTimerOrdersImpl第223"+res,e);
+                                    logger.error("ScheduleGetTimerOrdersImpl第223",e);
                                     errors="";
                                 }
                                 if(!StringUtils.isNotBlank(errors)){
                                     try{
                                         errors =  SamplePaseXml.getWarningInformation(res);
                                     }catch (Exception e){
-                                        logger.error(""+res,e);
+                                        logger.error("ScheduleGetTimerOrdersImpl第211",e);
                                         errors="解析res出错";
                                     }
                                 }
@@ -213,14 +228,14 @@ public class ScheduleGetTimerOrdersImpl implements IScheduleGetTimerOrders {
                                 try{
                                     errors = SamplePaseXml.getVFromXmlString(res, "Errors");
                                 }catch (Exception e){
-                                    logger.error("ScheduleGetTimerOrdersImpl第253"+res,e);
+                                    logger.error("ScheduleGetTimerOrdersImpl第253",e);
                                     errors="";
                                 }
                                 if(!StringUtils.isNotBlank(errors)){
                                     try{
                                         errors =  SamplePaseXml.getWarningInformation(res);
                                     }catch (Exception e){
-                                        logger.error("ScheduleGetTimerOrdersImpl第260"+res,e);
+                                        logger.error("ScheduleGetTimerOrdersImpl第260",e);
                                         errors="解析res出错1";
                                     }
                                 }
@@ -371,8 +386,19 @@ public class ScheduleGetTimerOrdersImpl implements IScheduleGetTimerOrders {
                         }
                     }
                 }else {
-                    logger.error("Order获取apisessionid失败!" + res);
+                    String LongError=SamplePaseXml.getWarningInformation(res);
+                    logger.error("Order获取apisessionid失败!"+LongError);
                 }
+                if(taskGetOrder.getNewuserflag()==null){
+                    Integer flag1=taskGetOrder.getTokenflag();
+                    flag1=flag1+1;
+                    taskGetOrder.setTokenflag(flag1);
+                    iTaskGetOrders.saveListTaskGetOrders(taskGetOrder);
+                }else{
+                    taskGetOrder.setNewuserflag(1);
+                    iTaskGetOrders.saveListTaskGetOrders(taskGetOrder);
+                }
+
             }
     }
     private Date sendAutoMessageTime(TradingAutoMessage partner,TradingOrderGetOrders order){
@@ -393,7 +419,8 @@ public class ScheduleGetTimerOrdersImpl implements IScheduleGetTimerOrders {
                 if (partner.getStartuse() == 1) {
                     Boolean autoFlag = false;
                     List<TradingAutoMessageAttr> allOrders = iTradingAutoMessageAttr.selectAutoMessageListByautoMessageId(partner.getId(), "allOrder");
-                    if (allOrders != null && allOrders.size() > 0) {
+                    List<TradingAutoMessageAttr> allEbays = iTradingAutoMessageAttr.selectAutoMessageListByautoMessageId(partner.getId(), "allEbay");
+                    if ((allOrders != null && allOrders.size() > 0)||(allEbays!=null&&allEbays.size()>0)) {
                         autoFlag = true;
                     } else {
                         Boolean orderItemFlag = false;
@@ -520,13 +547,14 @@ public class ScheduleGetTimerOrdersImpl implements IScheduleGetTimerOrders {
                 String itemr1 = itemresmap.get("stat");
                 String itemres = itemresmap.get("message");
                 if ("fail".equalsIgnoreCase(itemr1)) {
-                    logger.error("定时同步订单商品调用API失败:" + itemres + "\n\norderId:" + order.getOrderid());
+                    String LongError=SamplePaseXml.getWarningInformation(itemres);
+                    logger.error("定时同步订单商品调用API失败:" +LongError);
                 }
                 String itemack = "";
                 try {
                     itemack = SamplePaseXml.getVFromXmlString(itemres, "Ack");
                 } catch (Exception e) {
-                    logger.error("ScheduleGetTimerOrdersImpl第769" + itemres, e);
+                    logger.error("ScheduleGetTimerOrdersImpl第769", e);
                     itemack = "";
                 }
                 if ("Success".equalsIgnoreCase(itemack)) {
@@ -610,8 +638,6 @@ public class ScheduleGetTimerOrdersImpl implements IScheduleGetTimerOrders {
                     item.setSku(order.getSku());
                     item.setUpdatetime(new Date());
                     iTradingOrderGetItem.saveOrderGetItem(item);
-                    order.setItemflag(1);
-                    TaskPool.togos.put(order);
                     List<TradingOrderItemSpecifics> specificItemList = (List<TradingOrderItemSpecifics>) items.get(GetOrderItemAPI.ITEM_SPECIFICS);
                     List<TradingOrderItemSpecifics> Itemspecifics = iTradingOrderItemSpecifics.selectOrderItemSpecificsByItemId(item.getId());
                     if (Itemspecifics != null && Itemspecifics.size() > 0) {
@@ -662,9 +688,12 @@ public class ScheduleGetTimerOrdersImpl implements IScheduleGetTimerOrders {
                     }
 
                 } else {
-                    logger.error("Order定时同步商品获取apisessionid失败!" + itemres + "\n\norderId:" + order.getOrderid());
+                    String LongError=SamplePaseXml.getWarningInformation(itemres);
+                    logger.error("Order定时同步商品获取apisessionid失败!" +LongError);
                 }
             }
+            order.setItemflag(1);
+            TaskPool.togos.put(order);
         }
         if("0".equals(TaskPool.togosBS[0])){
             iTradingOrderGetOrdersNoTransaction.saveOrderGetOrders(null);
@@ -715,13 +744,14 @@ public class ScheduleGetTimerOrdersImpl implements IScheduleGetTimerOrders {
                 String accountr1 = accountresmap.get("stat");
                 String accountres = accountresmap.get("message");
                 if ("fail".equalsIgnoreCase(accountr1)) {
-                    logger.error("定时同步订单Account调用API失败:"+accountres+"\n\nXML:"+accountxml);
+                    String LongError=SamplePaseXml.getWarningInformation(accountres);
+                    logger.error("定时同步订单Account调用API失败:"+LongError);
                 }
                 String accountack="";
                 try{
                     accountack = SamplePaseXml.getVFromXmlString(accountres, "Ack");
                 }catch (Exception e){
-                    logger.error("ScheduleGetTimerOrdersImpl第981"+accountres,e);
+                    logger.error("ScheduleGetTimerOrdersImpl第981",e);
                     accountack="";
                 }
                 if ("Success".equalsIgnoreCase(accountack)) {
@@ -738,14 +768,15 @@ public class ScheduleGetTimerOrdersImpl implements IScheduleGetTimerOrders {
                         acc.setCreateUser(order.getCreateUser());
                         acc.setUpdatetime(new Date());
                         iTradingOrderGetAccount.saveOrderGetAccount(acc);
-                        order.setAccountflag(1);
-                        TaskPool.togos.put(order);
                         //iTradingOrderGetOrdersNoTransaction.saveOrderGetOrders(order);
                     }
                 } else {
-                    logger.error("Order定时同步account获取apisessionid失败!" + accountres+"\n\nXML"+accountxml);
+                    String LongError=SamplePaseXml.getWarningInformation(accountres);
+                    logger.error("Order定时同步account获取apisessionid失败!" +LongError);
                 }
             }
+            order.setAccountflag(1);
+            TaskPool.togos.put(order);
         }
         if("0".equals(TaskPool.togosBS[0])){
             iTradingOrderGetOrdersNoTransaction.saveOrderGetOrders(null);
@@ -753,18 +784,88 @@ public class ScheduleGetTimerOrdersImpl implements IScheduleGetTimerOrders {
     }
 
     @Override
-    public void synchronizeOrderSellerTrasaction(List<TradingOrderGetOrders> orders) throws Exception {
+    public void synchronizeOrderSellerTrasaction(TaskGetOrdersSellerTransaction sellerTransaction) throws Exception {
         //测试环境
         UsercontrollerDevAccountExtend d = new UsercontrollerDevAccountExtend();//开发者帐号id
         d.setApiSiteid("0");
         //真实环境
-    /*    UsercontrollerDevAccountExtend d=new UsercontrollerDevAccountExtend();
+     /*   UsercontrollerDevAccountExtend d=new UsercontrollerDevAccountExtend();
         d.setApiDevName("5d70d647-b1e2-4c7c-a034-b343d58ca425");
         d.setApiAppName("sandpoin-23af-4f47-a304-242ffed6ff5b");
         d.setApiCertName("165cae7e-4264-4244-adff-e11c3aea204e");
         d.setApiCompatibilityLevel("883");
         d.setApiSiteid("0");*/
-        Map<String,String> ackFlagMap=new HashMap<String, String>();
+        //-----------修改后-----------------
+        d.setApiCallName("GetSellerTransactions");
+        AddApiTask addApiTask = new AddApiTask();
+        String token=sellerTransaction.getToken();
+        Date date=new Date();
+        Date date2= DateUtils.addDays(date, 1);
+        Date date1=DateUtils.subDays(date2, 7);
+        Date end1= com.base.utils.common.DateUtils.turnToDateEnd(date2);
+        Date start1=com.base.utils.common.DateUtils.turnToDateStart(date1);
+        String start= DateUtils.DateToString(start1);
+        String end=DateUtils.DateToString(end1);
+        String sellerxml = BindAccountAPI.GetSellerTransactions(token,"1",start,end);//获取接受消息
+        Map<String, String> resSellerMap = addApiTask.exec2(d, sellerxml, apiUrl);
+        //Map<String, String> resSellerMap = addApiTask.exec2(d, sellerxml, "https://api.ebay.com/ws/api.dll");
+        //------------------------
+        String sellerR1 = resSellerMap.get("stat");
+        String sellerRes = resSellerMap.get("message");
+        if ("fail".equalsIgnoreCase(sellerR1)) {
+            String LongError=SamplePaseXml.getWarningInformation(sellerRes);
+            logger.error("定时同步订单外部交易的API失败:"+LongError);
+        }
+        String sellerAck="";
+        try{
+            sellerAck = SamplePaseXml.getVFromXmlString(sellerRes, "Ack");
+        }catch (Exception e){
+            logger.error("ScheduleGetTimerOrdersImpl第1062",e);
+            sellerAck="";
+        }
+        if ("Success".equalsIgnoreCase(sellerAck)) {
+            Integer total=GetSellerTransactionsAPI.parseTotalPage(sellerRes);
+            for(int i=0;i<total;i++){
+                sellerxml= BindAccountAPI.GetSellerTransactions(token,(i+1)+"",start,end);//获取接受消息
+                resSellerMap = addApiTask.exec2(d, sellerxml, apiUrl);
+                //resSellerMap = addApiTask.exec2(d, sellerxml, "https://api.ebay.com/ws/api.dll");
+                sellerR1 = resSellerMap.get("stat");
+                sellerRes = resSellerMap.get("message");
+                if ("fail".equalsIgnoreCase(sellerR1)) {
+                    String LongError=SamplePaseXml.getWarningInformation(sellerRes);
+                    logger.error("定时同步订单外部交易的API失败799:"+LongError);
+                }
+                sellerAck="";
+                try{
+                    sellerAck = SamplePaseXml.getVFromXmlString(sellerRes, "Ack");
+                }catch (Exception e){
+                    logger.error("ScheduleGetTimerOrdersImpl第805",e);
+                    sellerAck="";
+                }
+                if ("Success".equalsIgnoreCase(sellerAck)) {
+                    List<TradingOrderGetSellerTransactions> lists = GetSellerTransactionsAPI.parseXMLAndSave(sellerRes);
+                    for (TradingOrderGetSellerTransactions list : lists) {
+                        List<TradingOrderGetSellerTransactions> transactionseList = iTradingOrderGetSellerTransactions.selectTradingOrderGetSellerTransactionsByTransactionId(list.getTransactionid());
+                        if (transactionseList != null && transactionseList.size() > 0) {
+                            list.setId(transactionseList.get(0).getId());
+                        }
+                        list.setCreateUser(sellerTransaction.getUserid());
+                        list.setUpdatetime(new Date());
+                        iTradingOrderGetSellerTransactions.saveOrderGetSellerTransactions(list);
+
+                    }
+                }
+            }
+            Integer flag=sellerTransaction.getTokenflag();
+            flag=flag+1;
+            sellerTransaction.setTokenflag(flag);
+            iTaskGetOrdersSellerTransaction.saveTaskGetOrdersSellerTransaction(sellerTransaction);
+        } else {
+            String LongError=SamplePaseXml.getWarningInformation(sellerRes);
+            logger.error("Order定时同步外部交易获取apisessionid失败!" +LongError);
+        }
+        //--------修改前---------------
+        /*Map<String,String> ackFlagMap=new HashMap<String, String>();
         for(TradingOrderGetOrders order:orders) {
             if(ackFlagMap.get(order.getSelleruserid())==null||(ackFlagMap.get(order.getSelleruserid())!=null&&!"Success".equals(ackFlagMap.get(order.getSelleruserid())))){
                 d.setApiCallName("GetSellerTransactions");
@@ -841,7 +942,7 @@ public class ScheduleGetTimerOrdersImpl implements IScheduleGetTimerOrders {
         }
         if("0".equals(TaskPool.togosBS[0])){
             iTradingOrderGetOrdersNoTransaction.saveOrderGetOrders(null);
-        }
+        }*/
     }
 
 }

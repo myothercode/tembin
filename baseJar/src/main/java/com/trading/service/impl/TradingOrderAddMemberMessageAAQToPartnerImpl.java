@@ -90,4 +90,14 @@ public class TradingOrderAddMemberMessageAAQToPartnerImpl implements com.trading
         List<TradingOrderAddMemberMessageAAQToPartner> list=tradingOrderAddMemberMessageAAQToPartnerMapper.selectByExample(example);
         return list;
     }
+
+    @Override
+    public List<TradingOrderAddMemberMessageAAQToPartner> selectTradingOrderAddMemberMessageAAQToPartnerByMessageID(String messageID, Integer type) {
+        TradingOrderAddMemberMessageAAQToPartnerExample example=new TradingOrderAddMemberMessageAAQToPartnerExample();
+        TradingOrderAddMemberMessageAAQToPartnerExample.Criteria cr=example.createCriteria();
+        cr.andMessageidEqualTo(messageID);
+        cr.andMessagetypeEqualTo(type);
+        List<TradingOrderAddMemberMessageAAQToPartner> list=tradingOrderAddMemberMessageAAQToPartnerMapper.selectByExample(example);
+        return list;
+    }
 }

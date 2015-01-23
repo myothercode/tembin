@@ -2,6 +2,7 @@ package com.base.utils.scheduleabout.commontask;
 
 import com.base.database.sitemessage.model.PublicSitemessage;
 import com.base.database.trading.model.*;
+import com.base.domains.querypojos.OrderGetOrdersQuery;
 import com.base.domains.userinfo.UsercontrollerDevAccountExtend;
 import com.base.sampleapixml.APINameStatic;
 import com.base.sampleapixml.BindAccountAPI;
@@ -21,10 +22,7 @@ import com.trading.service.*;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by Administrtor on 2014/8/29.
@@ -188,18 +186,38 @@ public class AutoMessageTaskRun extends BaseScheduledClass implements Scheduleda
                 List<TradingMessageTemplate> templates=iTradingMessageTemplate.selectMessageTemplatebyId(autoMessage.get(0).getMessagetemplateId());
                 CommAutowiredClass commPars = (CommAutowiredClass) ApplicationContextUtil.getBean(CommAutowiredClass.class);//获取注入的参数
                 String body=templates.get(0).getContent();
-                body=body.replace("{Buyer_eBay_ID}",order.getBuyeruserid());
-                body=body.replace("{Carrier}",order.getShippingcarrierused());
-                body=body.replace("{eBay_Item#}",order.getItemid());
-                body=body.replace("{eBay_Item_Title}",order.getTitle());
-                body=body.replace("{Payment_Date}",order.getPaidtime()+"");
-                body=body.replace("{Purchase_Quantity}",order.getQuantitypurchased());
-                body=body.replace("{Received_Amount}",order.getAmountpaid());
-                body=body.replace("{Seller_eBay_ID}",order.getSelleruserid());
-                body=body.replace("{Seller_Email}",order.getSelleremail());
+                if(StringUtils.isNotBlank(order.getBuyeruserid())){
+                    body=body.replace("{Buyer_eBay_ID}",order.getBuyeruserid());
+                }
+                if(StringUtils.isNotBlank(order.getShippingcarrierused())){
+                    body=body.replace("{Carrier}",order.getShippingcarrierused());
+                }
+                if(StringUtils.isNotBlank(order.getItemid())){
+                    body=body.replace("{eBay_Item#}",order.getItemid());
+                }
+                if(StringUtils.isNotBlank(order.getTitle())){
+                    body=body.replace("{eBay_Item_Title}",order.getTitle());
+                }
+                if(order.getPaidtime()!=null){
+                    body=body.replace("{Payment_Date}",order.getPaidtime()+"");
+                }
+                if(StringUtils.isNotBlank(order.getQuantitypurchased())){
+                    body=body.replace("{Purchase_Quantity}",order.getQuantitypurchased());
+                }
+                if(StringUtils.isNotBlank(order.getAmountpaid())){
+                    body=body.replace("{Received_Amount}",order.getAmountpaid());
+                }
+                if(StringUtils.isNotBlank(order.getSelleruserid())){
+                    body=body.replace("{Seller_eBay_ID}",order.getSelleruserid());
+                }
+                if(StringUtils.isNotBlank(order.getSelleremail())){
+                    body=body.replace("{Seller_Email}",order.getSelleremail());
+                }
                 body=body.replace("{Today}",new Date()+"");
-                body=body.replace("{Track_Code}",order.getShipmenttrackingnumber());
-                String subject=templates.get(0).getName();
+                if(StringUtils.isNotBlank(order.getShipmenttrackingnumber())){
+                    body=body.replace("{Track_Code}",order.getShipmenttrackingnumber());
+                }
+                String subject=templates.get(0).getSubject();
                 //--测试环境
                 d.setApiCallName(APINameStatic.AddMemberMessageAAQToPartner);
                 //--真实环境
@@ -258,13 +276,15 @@ public class AutoMessageTaskRun extends BaseScheduledClass implements Scheduleda
         if(StringUtils.isNotEmpty(isRunging)){return;}
         TempStoreDataSupport.pushData("task_" + getScheduledType(), "x");
         ITradingOrderGetOrders iTradingOrderGetOrders=(ITradingOrderGetOrders) ApplicationContextUtil.getBean(ITradingOrderGetOrders.class);
-        List<TradingOrderGetOrders> paids= iTradingOrderGetOrders.selectOrderGetOrdersBySendPaidMessage();
-        List<TradingOrderGetOrders> ships= iTradingOrderGetOrders.selectOrderGetOrdersBySendShipMessage();
-        if(paids.size()>10){
-            paids=filterLimitList(paids);
+        List<OrderGetOrdersQuery> paids1= iTradingOrderGetOrders.selectOrderGetOrdersBySendPaidMessage();
+        List<TradingOrderGetOrders> paids=new ArrayList<TradingOrderGetOrders>();
+        List<OrderGetOrdersQuery> ships1= iTradingOrderGetOrders.selectOrderGetOrdersBySendShipMessage();
+        List<TradingOrderGetOrders> ships=new ArrayList<TradingOrderGetOrders>();
+        if(paids1!=null&&paids1.size()>0){
+            paids.addAll(paids1);
         }
-        if(ships.size()>10){
-            ships=filterLimitList(ships);
+        if(ships1!=null&&ships1.size()>0){
+            ships.addAll(ships1);
         }
         try{
             sendAutoMessage(paids);
@@ -297,6 +317,16 @@ public class AutoMessageTaskRun extends BaseScheduledClass implements Scheduleda
 
     @Override
     public Integer crTimeMinu() {
+        return null;
+    }
+
+    @Override
+    public void setMark(String x) {
+
+    }
+
+    @Override
+    public String getMark() {
         return null;
     }
 }

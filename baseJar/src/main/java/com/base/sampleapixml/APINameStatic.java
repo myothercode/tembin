@@ -91,5 +91,9 @@ public class APINameStatic {
      * 商品相似目录列表
      */
     public static final  String GetSuggestedCategories="GetSuggestedCategories";
+    /**
+     * 根据订单号同步订单
+     */
+    public static final  String GetOrderTransactions="GetOrderTransactions";
 }
 

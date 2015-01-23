@@ -11,6 +11,7 @@
       <result column="subject" jdbcType="VARCHAR" property="subject" />
       <result column="sender" jdbcType="VARCHAR" property="sender" />
       <result column="body" jdbcType="LONGVARCHAR" property="body" />
+      <result column="messageID" jdbcType="VARCHAR" property="messageid" />
       <result column="itemid" jdbcType="VARCHAR" property="itemid" />
       <result column="recipientID" jdbcType="VARCHAR" property="recipientid" />
       <result column="messageflag" jdbcType="INTEGER" property="messageflag" />
@@ -24,7 +25,7 @@
   </resultMap>
 
     <select id="selectByAddMemberMessageAAQToPartnerList" resultMap="BaseResultMap" parameterType="map">
-        select AddMemberMessageAAQToPartner.*,item.sku sku,count(*) countNum from trading_order_addmembermessageaaqtopartner AddMemberMessageAAQToPartner
+        select AddMemberMessageAAQToPartner.id,AddMemberMessageAAQToPartner.messageID,AddMemberMessageAAQToPartner.subject,AddMemberMessageAAQToPartner.sender,AddMemberMessageAAQToPartner.recipientID,AddMemberMessageAAQToPartner.itemid,AddMemberMessageAAQToPartner.transactionId,AddMemberMessageAAQToPartner.create_time,item.sku sku,count(*) countNum from trading_order_addmembermessageaaqtopartner AddMemberMessageAAQToPartner
         left join trading_order_get_item item on AddMemberMessageAAQToPartner.itemid=item.itemID where 1=1
         <if test="id!=null">
             and AddMemberMessageAAQToPartner.id = #{id}
@@ -68,12 +69,12 @@
                 and item.sku like "%"#{content}"%"
             </if>
         </if>
-        <if test="ebays!=null">
+   <!--     <if test="ebays!=null">
             and AddMemberMessageAAQToPartner.sender in
             <foreach collection="ebays" item="ebay" index="index" open="(" separator="," close=")">
                 #{ebay.ebayName}
             </foreach>
-        </if>
+        </if>-->
         group by AddMemberMessageAAQToPartner.messagetype,AddMemberMessageAAQToPartner.transactionId,AddMemberMessageAAQToPartner.sender
     </select>
 </mapper>

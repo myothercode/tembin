@@ -377,6 +377,7 @@ function selectTimer(obj){
 }
 /**保存并提交*/
 function saveData(objs,name) {
+
     if($("#sku").val()==null||$("#sku").val()==""){
         alert("未输入SKU");
         return;
@@ -484,7 +485,7 @@ function saveData(objs,name) {
         data,
         [function (m, r) {
             //oldAlert(r);
-            Base.token();
+
             alert(r);
             $(objs).attr("disabled",false);
             if(url.indexOf("information/editItem.do")>0){
@@ -495,7 +496,7 @@ function saveData(objs,name) {
             }else{
                 document.location = path+"/itemManager.do";
             }
-
+            Base.token();
         },
             function (m, r) {
                 alert(r);
@@ -667,10 +668,33 @@ function selectAccount(obj){
         alert("多属性不允许多账号刊登！");
         $(obj).prop("checked",false);
     }
+    var ebayAcc = "";
+    $("input[type='checkbox'][name='ebayAccounts']:checked").each(function(i,d){
+        ebayAcc+="&ebayId="+$(d).val();
+    });
+    loadShippingDeails(ebayAcc);
+    getPayIdStr(ebayAcc);
     $("#showPics").text("");
     isShowPicLink();
     initTitle();
     initPrice();
+}
+function getPayIdStr(ebayAcc){
+    var urll = path+"/ajax/getPaypalIdStr.do?1=1"+ebayAcc;
+    $().invoke(
+        urll,
+        {},
+        [function (m, r) {
+            var paypalId = "";
+            for(var i=0;i< r.length;i++){
+                paypalId+="&paypalId="+r[i];
+            }
+            loadPayOption(paypalId);
+        },
+            function (m, r) {
+                alert(r)
+            }]
+    );
 }
 function getSiteImg(json){
     var html='<img title="'+json.siteName+'" src="'+path+json.siteImg+'"/>';

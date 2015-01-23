@@ -25,12 +25,9 @@ public class PublicUserConfigImpl implements com.publicd.service.IPublicUserConf
     @Override
     public void saveUserConfig(PublicUserConfig UserConfig) throws Exception {
         if(UserConfig.getId()==null){
-            PropertyUtils.setSimpleProperty(UserConfig, "userId", SessionCacheSupport.getSessionVO().getId());
             publicUserConfigMapper.insert(UserConfig);
         }else{
             PublicUserConfig t=publicUserConfigMapper.selectByPrimaryKey(UserConfig.getId());
-            Asserts.assertTrue(t != null && t.getUserId() != null, "没有找到记录或者记录创建者为空");
-            ObjectUtils.valiUpdate(t.getUserId(),PublicUserConfigMapper.class,UserConfig.getId());
             publicUserConfigMapper.updateByPrimaryKeySelective(UserConfig);
         }
     }
@@ -81,4 +78,23 @@ public class PublicUserConfigImpl implements com.publicd.service.IPublicUserConf
     }*/
 
 
+    @Override
+    public List<PublicUserConfig> selectUserConfigByItemTypeListUser(String configType,List<Long> liuser) {
+        PublicUserConfigExample example=new PublicUserConfigExample();
+        PublicUserConfigExample.Criteria cr=example.createCriteria();
+        cr.andConfigTypeEqualTo(configType);
+        cr.andUserIdIn(liuser);
+        List<PublicUserConfig> list=publicUserConfigMapper.selectByExample(example);
+        return list;
+    }
+
+
+    @Override
+    public List<PublicUserConfig> selectUserConfigByItemTypeList(String configType) {
+        PublicUserConfigExample example=new PublicUserConfigExample();
+        PublicUserConfigExample.Criteria cr=example.createCriteria();
+        cr.andConfigTypeEqualTo(configType);
+        List<PublicUserConfig> list=publicUserConfigMapper.selectByExample(example);
+        return list;
+    }
 }

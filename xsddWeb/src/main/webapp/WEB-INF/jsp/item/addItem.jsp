@@ -154,6 +154,7 @@
         }
 
         var ebayaccount = '${item.ebayAccount}';
+
         $("select[name='ebayAccount']").find("option[value='" + ebayaccount + "']").attr("selected", true);
         var ConditionID = '${item.conditionid}';
         $("select[name='ConditionID']").find("option[value='" + ConditionID + "']").attr("selected", true);
@@ -343,6 +344,16 @@
 
         initSelectMore();
         $("#select2-chosen-1").text(_sku);
+
+        if(ebayaccount!=''){
+            var ebayAcc="&ebayId="+ebayaccount;
+            loadShippingDeails(ebayAcc);
+            getPayIdStr(ebayAcc);
+        }else{
+            var ebayAcc="&ebayId="+$("input[type='checkbox'][name='ebayAccounts']:checked").val();
+            loadShippingDeails(ebayAcc);
+            getPayIdStr(ebayAcc);
+        }
     });
 </script>
 <style type="text/css">

@@ -30,7 +30,7 @@ public interface IPublicItemInformation {
 
     void importItemInformation(File file,String fileName) throws Exception;
 
-    List<PublicItemInformation> selectItemInformationByTypeIsNull();
+    List<ItemInformationQuery> selectItemInformationByTypeIsNull();
 
     List<ItemInformationQuery> selectItemInformationByOrgId(Map map, Page page);
 }

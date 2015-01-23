@@ -4,7 +4,9 @@ import com.alibaba.fastjson.JSON;
 import com.base.aboutpaypal.service.PayPalService;
 import com.base.database.publicd.model.PublicDataDict;
 import com.base.database.publicd.model.PublicUserConfig;
+import com.base.database.task.model.TradingTaskXml;
 import com.base.database.trading.model.*;
+import com.base.database.userinfo.model.SystemLog;
 import com.base.domains.CommonParmVO;
 import com.base.domains.SessionVO;
 import com.base.domains.querypojos.ItemQuery;
@@ -36,6 +38,7 @@ import com.common.base.utils.ajax.AjaxSupport;
 import com.common.base.web.BaseAction;
 import com.sitemessage.service.SiteMessageService;
 import com.sitemessage.service.SiteMessageStatic;
+import com.task.service.ITradingTaskXml;
 import com.trading.service.*;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
@@ -129,6 +132,10 @@ public class ItemController extends BaseAction{
     private String service_item_url;
     @Autowired
     private CommAutowiredClass autowiredClass;
+    @Autowired
+    private ITradingTaskXml iTradingTaskXml;
+
+
 
     private int selectNumber=0;
     /**
@@ -243,6 +250,12 @@ public class ItemController extends BaseAction{
         PageJsonBean jsonBean=commonParmVO.getJsonBean();
         Page page=jsonBean.toPage();
         List<ItemQuery> itemli = this.iTradingItem.selectByItemList(m,page);
+        for(ItemQuery iq:itemli){
+            SystemLog sl = SystemLogUtils.selectSystemLogByUserId("ListingItemTimer",iq.getId()+"");
+            if(sl!=null){
+                iq.setSl(sl);
+            }
+        }
         jsonBean.setList(itemli);
         jsonBean.setTotal((int)page.getTotalCount());
         AjaxSupport.sendSuccessText("",jsonBean);
@@ -838,14 +851,18 @@ public class ItemController extends BaseAction{
                     template=doc.html();
                 }else{
                     org.jsoup.nodes.Document doc = org.jsoup.Jsoup.parse(template);
-                    org.jsoup.select.Elements content = doc.getElementsByAttributeValue("name", "blankimg");
-                    String url = "";
-                    int j=0;
-                    for(int i=0;i<content.size();i++){
-                        org.jsoup.nodes.Element el = content.get(i);
-                        el.remove();
+                    if(doc!=null) {
+                        org.jsoup.select.Elements content = doc.getElementsByAttributeValue("name", "blankimg");
+                        String url = "";
+                        int j = 0;
+                        for (int i = 0; i < content.size(); i++) {
+                            org.jsoup.nodes.Element el = content.get(i);
+                            el.remove();
+                        }
+                        template = doc.html();
+                    }else{
+                        Asserts.assertTrue(false,"未选择模板！");
                     }
-                    template=doc.html();
                 }
 
                 template = template.replace("{ProductDetail}",tradingItem.getDescription());
@@ -993,9 +1010,12 @@ public class ItemController extends BaseAction{
 
                 List<NameValueList>  linvl= item.getVariations().getVariationSpecificsSet().getNameValueList();
                 for(NameValueList nvlst : linvl){
+                    try{
                     List<String> listr = nvlst.getValue();
                     listr = MyCollectionsUtil.listUnique(listr);
-                    nvlst.setValue(listr);
+                    nvlst.setValue(listr);}catch(Exception e){
+                        Asserts.assertTrue(false,"多属性中，属性值为空！");
+                    }
                 }
                 item.getVariations().getVariationSpecificsSet().setNameValueList(linvl);
             }
@@ -1059,6 +1079,7 @@ public class ItemController extends BaseAction{
                     } else {
                         if("2".equals(tradingItem.getListingtype())){
                             item.setStartPrice(null);
+                            item.setQuantity(null);
                         }
                         AddFixedPriceItemRequest addItem = new AddFixedPriceItemRequest();
                         addItem.setXmlns("urn:ebay:apis:eBLBaseComponents");
@@ -1201,6 +1222,11 @@ public class ItemController extends BaseAction{
                             AjaxSupport.sendSuccessText("message", "商品SKU为："+tradingItem.getSku()+"，名称为：<a target=_blank style='color:blue' href='"+service_item_url+itemId+"'>"+tradingItem.getItemName()+"<a>，刊登成功！");
                         } else {
                             //String errors = SamplePaseXml.getVFromXmlString(res, "Errors");
+                            TradingTaskXml ttx = new TradingTaskXml();
+                            ttx.setCreateDate(new Date());
+                            ttx.setTaskType("addItem");
+                            ttx.setXmlContent(xml);
+                            iTradingTaskXml.saveTradingTaskXml(ttx);
                             Document document= SamplePaseXml.formatStr2Doc(res);
                             Element rootElt = document.getRootElement();
                             Iterator<Element> e =  rootElt.elementIterator("Errors");
@@ -2101,6 +2127,11 @@ public class ItemController extends BaseAction{
                 xml = PojoXmlUtil.pojoToXml(addItem);
                 xml = "<?xml version=\"1.0\" encoding=\"utf-8\"?>" + xml;
             }
+            TradingTaskXml ttx = new TradingTaskXml();
+            ttx.setCreateDate(new Date());
+            ttx.setTaskType("addItemList");
+            ttx.setXmlContent(xml);
+            iTradingTaskXml.saveTradingTaskXml(ttx);
             System.out.println(xml);
 
             UsercontrollerDevAccountExtend d = new UsercontrollerDevAccountExtend();
@@ -2846,5 +2877,18 @@ public class ItemController extends BaseAction{
         modelMap.put("siteListStr", JSON.toJSONString(litdd));
         modelMap.put("siteUrlStr",commAutowiredClass.serviceItemUrls);
         AjaxSupport.sendSuccessText("message", modelMap);
+    }
+    @RequestMapping("/ajax/getPaypalIdStr.do")
+    @ResponseBody
+    public void getPaypalIdStr(HttpServletRequest request,HttpServletResponse response,ModelMap modelMap) throws Exception {
+        String [] ebayId = request.getParameterValues("ebayId");
+        List<String> listr = new ArrayList<String>();
+        if(ebayId!=null){
+            for(String str:ebayId){
+                UsercontrollerEbayAccount uea = this.iUsercontrollerEbayAccount.selectById(Long.parseLong(str));
+                listr.add(uea.getPaypalAccountId()+"");
+            }
+        }
+        AjaxSupport.sendSuccessText("message", listr);
     }
 }

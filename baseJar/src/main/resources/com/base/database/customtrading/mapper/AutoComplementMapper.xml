@@ -17,7 +17,7 @@
         <result column="ebay_account" jdbcType="VARCHAR" property="ebayAccount" />
     </resultMap>
     <select id="selectAutoComplementList" resultMap="BaseResultMap" parameterType="map">
-        select * from trading_auto_complement where create_user=${userId}
+        select id,auto_type,sku_key,check_flag,create_user,create_date,complement_desc,ebay_id,ebay_account from trading_auto_complement where create_user=${userId}
     </select>
 
 </mapper>

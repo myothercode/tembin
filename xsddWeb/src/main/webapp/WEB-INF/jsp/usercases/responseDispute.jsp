@@ -364,8 +364,9 @@
 </tr>
 <tr>
     <td width="772" valign="top"><div class="listbox_new jq_new">
-        <c:if test="${reasonFlag=='true'}">
         <c:if test="${cases.handled=='0'}">
+        <c:if test="${reasonFlag=='true'}">
+
         <h4 style=""><span>+</span>
             <table width="90%" border="0"><tbody>
             <tr>
@@ -481,13 +482,7 @@
             </form>
         </div>
         </c:if>
-        <c:if test="${cases.handled=='1'}">
-            <span style="margin-left: 100px;">
-                  this case has been handled!
-            </span>
-        </c:if>
-        </c:if>
-        <c:if test="${contentFlag=='true'}">
+
         <h4><span>+</span>
             <table width="90%" border="0"><tbody><tr>
                 <td><strong>Issue a full refund</strong></td></tr></tbody></table>
@@ -498,21 +493,33 @@
                 <input type="hidden" name="transactionId" value="${cases.transactionid}"/>
             <table width="100%" border="0">
             <tbody><tr>
-                <td height="32" align="left">
-                    <input name="fullRefund" type="checkbox" value="1"> Issue a full refund
-                    <input name="partialRefund" type="checkbox" value="2">
-                    Issue a partial refund
-                </td>
+                <c:if test="${contentFlag=='true'}">
+                    <td height="32" align="left">
+                        <input name="fullRefund" type="checkbox" value="1"> Issue a full refund
+                        <input name="partialRefund" type="checkbox" value="2">
+                        Issue a partial refund
+                    </td>
+                </c:if>
+                <c:if test="${reasonFlag=='true'}">
+                    <td><input name="fullRefund" type="hidden" value="1"></td>
+                </c:if>
             </tr>
             <tr>
+            <c:if test="${contentFlag=='true'}">
                 <td height="32" align="left"><input type="text" name="amout" class="form-controlsd" > 填写退款金额</td>
+            </c:if>
+            <c:if test="${reasonFlag=='true'}">
+                <td height="32" align="left"><strong style="color: #000000">Refund amount $${cases.caseamount}</strong></td>
+            </c:if>
             </tr>
-            <tr>
-                <td height="32" align="left">You agree to issue your customer a $17.56 refund , which is the purchase price plus original shipping. After the buyer receives the buyer receives the refund, the case will be closed</td>
-            </tr>
-            <tr>
-                <td height="32" align="left" style="color:#5F93D7">The buyer must receive your refund by sep 05,2014.</td>
-            </tr>
+            <c:if test="${contentFlag=='true'}">
+                <tr>
+                    <td height="32" align="left">You agree to issue your customer a ${cases.caseamount} refund , which is the purchase price plus original shipping. After the buyer receives the buyer receives the refund, the case will be closed</td>
+                </tr>
+                <tr>
+                    <td height="32" align="left" style="color:#5F93D7">The buyer must receive your refund by sep <fmt:formatDate value="${cases.respondbydate}" pattern="yyyy-MM-dd"/>.</td>
+                </tr>
+            </c:if>
             <tr>
                 <td height="32" align="left">
                     <span class="voknet"></span>
@@ -557,10 +564,55 @@
             </tbody></table>
             </form>
         </div>
+        <c:if test="${receiveFlag=='true'}">
+        <h4><span>+</span>
+            <table width="90%" border="0"><tbody><tr>
+                <td><strong>Ask us to step in and help</strong></td></tr></tbody></table>
+        </h4>
+        <div class="box" style="display: none;">
+            <table width="100%" border="0">
+                <tbody> <tr>
+                    <td height="32" align="left">
+                        <label for="textarea"></label>
+                        <textarea name="textarea" id="textarea4" cols="100%" rows="5" class="newco validate[required]"><%--Additional comments:(optional)--%></textarea>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+        </c:if>
+        </c:if>
+        <c:if test="${cases.handled=='1'}">
+            <table  style="margin-left: 50px;">
+                <tr >
+                    <td  colspan="2"><strong>Here's what happened</strong></td>
+                </tr>
+                <tr>
+                    <td valign="top" style="width: 150px;">${creationtime}:</td>
+                    <td valign="top">You ${cases.casecontent}</td>
+                </tr>
+                <tr>
+                    <td valign="top">Comments:</td>
+                    <td valign="top">${cases.comments}</td>
+                </tr>
+                <tr>
+                    <td colspan="2"><hr/></td>
+                </tr>
+                <tr>
+                    <td>${solvecatetime}:</td>
+                    <td>${reason}</td>
+                </tr>
+                <tr>
+                    <td>Buyer requested:</td>
+                    <td>The item</td>
+                </tr>
+                <tr>
+                    <td>Comments:</td>
+                    <td>${information}</td>
+                </tr>
+            </table>
         </c:if>
     </div>
-
-
     </td>
 </tr>
 <tr>
@@ -571,47 +623,8 @@
     </div> </td>
 </tr>
 </tbody></table>
-
 </div>
-
-
-<%--<script src="../../js/jquery-latest.js"></script>
-<script src="../../js/bootstrap.min.js"></script>
-<script src="../../js/theme.js"></script>--%>
-
 </div>
-<%--<form id="responseForm">
-<div><b>Choose one of the following:</b></div>
-<div class="table-a">
-    <table border="0" cellpadding="0" cellspacing="0" style="width: 560px;" >
-        <tr><td><a href="javascript:viod(0)" onclick="verifyTrack();"><b>Verify tracking information</b>(Buyer's preference)</a></td></tr>
-        <tr id="verify"><td>
-            Please verify that this tracking information is correct and click Submit to continue.If it is incorrect,please re-enter your tracking number.<br/>
-            What is your tracking number?<br/>
-            <input type="text" name="number"/><br/>
-            Which carrier did you use?<br/>
-            <input type="text" name="carrier"/><br/>
-            [<a href="javascript:viod(0)">View your tracking information</a>]
-            <div class="table-a">
-                <table align="center"  border="0" cellpadding="0" cellspacing="0" style="width: 400px;" >
-                    <tr><td align="center" style="width: 200px;"><b>Traking #:</b></td><td>-</td></tr>
-                    <tr><td align="center"><b>Carrier:</b></td><td>-</td></tr>
-                    <tr><td align="center"><b>Status:</b></td><td>-</td></tr>
-                </table>
-            </div>
-        </td></tr>
-        <tr><td><a href="javascript:viod(0)" onclick="submit1();"><b>I shipped the item without tracking information</b></a></td></tr>
-        <tr><td><a href="javascript:viod(0)"><b>Issue a full refund</b></a></td></tr>
-        <tr><td><a href="javascript:viod(0)" onclick="sendMessage();"><b>Send a message</b></a>
-            <div id="senddispute">
-                &lt;%&ndash;<textarea name="sendmessage" style="width: 500px;height: 200px;"></textarea>&ndash;%&gt;
-            </div>
-        </td></tr>
-    </table>
-</div>
-</form>
-<input type="button" value="Submit" onclick="submit();"/> &nbsp;
-<input type="button" value="Cancel" onclick="dialogClose();"/>--%>
 
 </body>
 </html>

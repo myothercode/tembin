@@ -75,6 +75,14 @@ public class PayPalController extends BaseAction{
         Map m = new HashMap();
         String checkFlag = request.getParameter("checkFlag");
         m.put("checkFlag",checkFlag);
+        String [] paypalId = request.getParameterValues("paypalId");
+        if(paypalId!=null){
+            List<String> listr = new ArrayList();
+            for(String str:paypalId){
+                listr.add(str);
+            }
+            m.put("lipaypalId",listr);
+        }
         SessionVO c= SessionCacheSupport.getSessionVO();
         if(systemUserManagerService.isAdminRole()){
             List<UsercontrollerUserExtend> liuue = systemUserManagerService.queryAllUsersByOrgID("yes");

@@ -10,7 +10,9 @@ import com.base.mybatis.page.Page;
 import com.base.mybatis.page.PageJsonBean;
 import com.base.sampleapixml.APINameStatic;
 import com.base.sampleapixml.BindAccountAPI;
+import com.base.userinfo.service.SystemUserManagerService;
 import com.base.userinfo.service.UserInfoService;
+import com.base.userinfo.service.impl.SystemUserManagerServiceImpl;
 import com.base.utils.annotations.AvoidDuplicateSubmission;
 import com.base.utils.cache.SessionCacheSupport;
 import com.base.utils.common.DateUtils;
@@ -53,6 +55,8 @@ public class UserManageController extends BaseAction {
     private String tokenPageUrl;
     @Autowired
     private UserInfoService userInfoService;
+    @Autowired
+    private SystemUserManagerService userManagerService;
 
 
     /**绑定新增ebay帐号的弹出主页面*/
@@ -221,7 +225,9 @@ public class UserManageController extends BaseAction {
         Page page=jsonBean.toPage();
         //jsonBean.setPageCount(1000);
         //jsonBean.setPageNum(1);
-        List<UsercontrollerEbayAccountExtend> ebayAccountExtendList= userInfoService.getEbayAccountForCurrUser(new HashMap(),page);
+
+        List<UsercontrollerEbayAccountExtend> ebayAccountExtendList=userManagerService.queryCurrAllEbay(new HashMap());
+        //List<UsercontrollerEbayAccountExtend> ebayAccountExtendList= userInfoService.getEbayAccountForCurrUser(new HashMap(),page);
         for (UsercontrollerEbayAccountExtend u : ebayAccountExtendList){
             if(u==null){continue;}
             u.setEbayToken("");

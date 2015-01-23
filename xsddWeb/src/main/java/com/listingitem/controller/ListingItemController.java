@@ -11,6 +11,7 @@ import com.base.domains.querypojos.ListingDataQuery;
 import com.base.domains.querypojos.TablePriceQuery;
 import com.base.domains.userinfo.UsercontrollerDevAccountExtend;
 import com.base.domains.userinfo.UsercontrollerEbayAccountExtend;
+import com.base.domains.userinfo.UsercontrollerUserExtend;
 import com.base.mybatis.page.Page;
 import com.base.mybatis.page.PageJsonBean;
 import com.base.sampleapixml.APINameStatic;
@@ -33,6 +34,7 @@ import com.base.xmlpojo.trading.addproduct.attrclass.StartPrice;
 import com.common.base.utils.ajax.AjaxResponse;
 import com.common.base.utils.ajax.AjaxSupport;
 import com.common.base.web.BaseAction;
+import com.listingitem.controller.ResponseVO.TradingListingDataResponseVO;
 import com.sitemessage.service.SiteMessageService;
 import com.sitemessage.service.SiteMessageStatic;
 import com.task.service.IListingDataTask;
@@ -349,7 +351,7 @@ public class ListingItemController extends BaseAction {
     @ResponseBody
     public void runPrice(HttpServletRequest request,HttpServletResponse response,@ModelAttribute( "initSomeParmMap" )ModelMap modelMap) throws Exception {
         SessionVO c= SessionCacheSupport.getSessionVO();
-        List<UsercontrollerEbayAccount> ebay = this.iUsercontrollerEbayAccount.selectUsercontrollerEbayAccountByUserId(c.getId());
+        //List<UsercontrollerEbayAccount> ebay = this.iUsercontrollerEbayAccount.selectUsercontrollerEbayAccountByUserId(c.getId());
         String ebayAccount = request.getParameter("ebayAccount");
         String token = "";
         String currencyID = "";
@@ -375,16 +377,18 @@ public class ListingItemController extends BaseAction {
             List<TradingListingData> litld = this.iTradingListingData.selectByList(skus[i],ebayaccounts[i]);
             for(TradingListingData tld:litld){
                 //取得当前数据的token
-                for(UsercontrollerEbayAccount eb : ebay){
-                    if(eb.getEbayAccount()!=null&&tld.getEbayAccount().equals(eb.getEbayAccount())){
-                        token = this.iUsercontrollerEbayAccount.selectById(eb.getId()).getEbayToken();
-                        break;
-                    }else{
-                        if(tld.getEbayAccount().equals(eb.getEbayName())){
-                            token = this.iUsercontrollerEbayAccount.selectById(eb.getId()).getEbayToken();
+                Map m = new HashMap();
+                m.put("needToken",null);
+                List<UsercontrollerEbayAccountExtend> ebayList=systemUserManagerService.queryCurrAllEbay(m);
+                if(ebayList!=null&&ebayList.size()>0){
+                    for(UsercontrollerEbayAccountExtend ue:ebayList){
+                        if(tld.getEbayAccount().equals(ue.getEbayName())){
+                            token = ue.getEbayToken();
                             break;
                         }
                     }
+                }else{
+                    Asserts.assertTrue(false,"未绑定ebay账号！");
                 }
                 //取得站点，及货币ＩＤ
                 for(TradingDataDictionary tdd : lisite){
@@ -482,15 +486,16 @@ public class ListingItemController extends BaseAction {
     @ResponseBody
     public void myEbayAccount(HttpServletRequest request,ModelMap modelMap,CommonParmVO commonParmVO) throws Exception {
         SessionVO c= SessionCacheSupport.getSessionVO();
-        List<UsercontrollerEbayAccount> liuserebay = this.iUsercontrollerEbayAccount.selectUsercontrollerEbayAccountByUserId(c.getId());
+        List<UsercontrollerEbayAccountExtend> ebayList=systemUserManagerService.queryCurrAllEbay(new HashMap());
+        //List<UsercontrollerEbayAccount> liuserebay = this.iUsercontrollerEbayAccount.selectUsercontrollerEbayAccountByUserId(c.getId());
         List<Map> lim = new ArrayList<Map>();
-        for(UsercontrollerEbayAccount uea:liuserebay){
+        for(UsercontrollerEbayAccount uea:ebayList){
             Map mpar = new HashMap();
-            mpar.put("ebayAccount",uea.getEbayAccount());
+            mpar.put("ebayAccount",uea.getEbayName());
 
             Map m = new HashMap();
-            m.put("ebayAccount",uea.getEbayAccount());
-            m.put("ebayName",uea.getEbayAccount());
+            m.put("ebayAccount",uea.getEbayName());
+            m.put("ebayName",uea.getEbayName());
             ListingDataTask ldt = this.iTradingListingSuccess.selectByMaxCreateDate(mpar);
             if(ldt==null){
                 m.put("maxDate","暂时未同步！");
@@ -710,7 +715,6 @@ public class ListingItemController extends BaseAction {
     public void endItem(HttpServletRequest request,HttpServletResponse response,@ModelAttribute( "initSomeParmMap" )ModelMap modelMap) throws Exception {
         SessionVO c= SessionCacheSupport.getSessionVO();
         //List<PublicUserConfig> ebayList = DataDictionarySupport.getPublicUserConfigByType(DataDictionarySupport.PUBLIC_DATA_DICT_PAYPAL, c.getId());
-        List<UsercontrollerEbayAccount> ebay = this.iUsercontrollerEbayAccount.selectUsercontrollerEbayAccountByUserId(c.getId());
         String ebayAccount = request.getParameter("ebayAccount");
         String token = "";
         List<TradingDataDictionary> lisite = DataDictionarySupport.getTradingDataDictionaryByType("site");
@@ -731,17 +735,18 @@ public class ListingItemController extends BaseAction {
                 continue;
             }
             TradingListingData tld = this.iTradingListingData.selectByItemid(itemid);
-
-            for(UsercontrollerEbayAccount eb : ebay){
-                if(eb.getEbayAccount()!=null&&tld.getEbayAccount().equals(eb.getEbayAccount())){
-                    token = this.iUsercontrollerEbayAccount.selectById(eb.getId()).getEbayToken();
-                    break;
-                }else{
-                    if(tld.getEbayAccount().equals(eb.getEbayName())){
-                        token = this.iUsercontrollerEbayAccount.selectById(eb.getId()).getEbayToken();
+            Map m = new HashMap();
+            m.put("needToken",null);
+            List<UsercontrollerEbayAccountExtend> ebayList=systemUserManagerService.queryCurrAllEbay(m);
+            if(ebayList!=null&&ebayList.size()>0){
+                for(UsercontrollerEbayAccountExtend ue:ebayList){
+                    if(tld.getEbayAccount().equals(ue.getEbayName())){
+                        token = ue.getEbayToken();
                         break;
                     }
                 }
+            }else{
+                Asserts.assertTrue(false,"未绑定ebay账号！");
             }
 
             for(TradingDataDictionary tdd : lisite){
@@ -856,6 +861,7 @@ public class ListingItemController extends BaseAction {
         SessionVO c = SessionCacheSupport.getSessionVO();
         String [] ids =request.getParameterValues("ids");
         String listingType = request.getParameter("listingType");
+        String message="";
         for(int i=0;i<ids.length;i++){
             String price = request.getParameter("price_"+i);
             String quantity = request.getParameter("quantity_"+i);
@@ -892,7 +898,7 @@ public class ListingItemController extends BaseAction {
                 tld.setQuantity(Long.parseLong(quantity));
             }else if("FixedPriceItem".equals(listingType)){//固价
                 tla.setAmendType("Title");
-                tla.setContent("快速编辑：拍卖修改");
+                tla.setContent("快速编辑：固价修改");
                 item.setSKU(sku);
                 StartPrice sp = new StartPrice();
                 sp.setValue(Double.parseDouble(price));
@@ -915,12 +921,20 @@ public class ListingItemController extends BaseAction {
             RequesterCredentials rc = new RequesterCredentials();
             String ebayAccount = tld.getEbayAccount();
 
-            List<UsercontrollerEbayAccount> liuea = this.iUsercontrollerEbayAccount.selectUsercontrollerEbayAccountByUserId(c.getId());
+            //List<UsercontrollerEbayAccount> liuea = this.iUsercontrollerEbayAccount.selectUsercontrollerEbayAccountByUserId(c.getId());
             String token = "";
-            for(UsercontrollerEbayAccount uea:liuea){
-                if(ebayAccount.equals(uea.getEbayName())){
-                    token=this.iUsercontrollerEbayAccount.selectById(uea.getId()).getEbayToken();
+            Map m = new HashMap();
+            m.put("needToken",null);
+            List<UsercontrollerEbayAccountExtend> ebayList=systemUserManagerService.queryCurrAllEbay(m);
+            if(ebayList!=null&&ebayList.size()>0){
+                for(UsercontrollerEbayAccountExtend ue:ebayList){
+                    if(tld.getEbayAccount().equals(ue.getEbayName())){
+                        token = ue.getEbayToken();
+                        break;
+                    }
                 }
+            }else{
+                Asserts.assertTrue(false,"未绑定ebay账号！");
             }
             rc.seteBayAuthToken(token);
             rir.setRequesterCredentials(rc);
@@ -936,6 +950,7 @@ public class ListingItemController extends BaseAction {
                 tla.setIsFlag("1");
                 this.iTradingListingAmend.saveListingAmend(tla);
                 this.iTradingListingData.updateTradingListingData(tld);
+                message+="SKU："+tld.getSku()+"；物品号："+tld.getItemId()+"修改成功！\n";
             }else{
                 String resStr = "";
                 if(returnString!=null){
@@ -953,9 +968,10 @@ public class ListingItemController extends BaseAction {
                 if(longMessage==null){
                     longMessage = tl.elementText("ShortMessage");
                 }
+                message+="SKU："+tld.getSku()+"；物品号："+tld.getItemId()+"修改失败，原因如下："+longMessage+"\n";
             }
         }
-        AjaxSupport.sendSuccessText("message", "操作成功，请查看操作日志！");
+        AjaxSupport.sendSuccessText("message", message);
     }
 
 
@@ -1096,7 +1112,11 @@ public class ListingItemController extends BaseAction {
         String itemId = request.getParameter("itemId");
         String ids = request.getParameter("ids");
         TradingListingData tld = this.iTradingListingData.selectById(Long.parseLong(ids));
-        TradingListingData oldtld = this.iTradingListingData.selectById(Long.parseLong(ids));
+        TradingListingDataResponseVO oldtld = new TradingListingDataResponseVO(); //this.iTradingListingData.selectById(Long.parseLong(ids));
+        oldtld.setPrice(tld.getPrice());
+        oldtld.setQuantity(tld.getQuantity());
+
+
         Item item = new Item();
         item.setItemID(itemId);
         TradingListingAmendWithBLOBs tla = new TradingListingAmendWithBLOBs();
@@ -1128,12 +1148,20 @@ public class ListingItemController extends BaseAction {
         //rc.seteBayAuthToken("AgAAAA**AQAAAA**aAAAAA**W2xvUQ**nY+sHZ2PrBmdj6wVnY+sEZ2PrA2dj6AFlICkCpSGoA6dj6x9nY+seQ**GNABAA**AAMAAA**Vn4yBA7u+ZDMqwb6Sdip+KaomBablhv7dCVnFt5ksAUd7RjjA4ANJ4TQVoIAQ35NZQzalPoKaGzLBFhURJa2xpJPj/BMSb0ihuql4NDVCUOsPFoWMVPIwQdVQ6dZ29DL66dBcuiRgJsTakDttxgK02lfiBgiEP0YCruAhjIKFzZPSivuvkSqKn2HIFKjJq0VDlCvqaBgYkGm26ITKH9dQj/Ql9jK3BHeWA6GSZ+nR9HPIufHLdNpT4axILEd3Lg2X/d34+QoP46rGb4iwO64AzvOXcF//WE4MuJsTQ4d6qgw6DOajpDBL0PNq1n6HItAylImyPRzfvU8hw8neigieh3CtmjzjJ81bY/swlFQdPlV6zZVE99pegMT0DO9Fms5la8W3MSeoHgWdq4i7AR6GBjlh9W9x8z05I91wOx2wNJb0ETcbwl0YbWxs72K49FYF12CZbXQytfJZNLHi+X9/jFgf4TfdrJgagMhUqP9M6Of3R2POF/4+9j/y7s11M6aWw2oxsJ6VAZQKZXtZ5T6/UfP89VA7M1t68R6f6kVr5hoD5glQa2lIw6bIQR4tubYPTAhg5uPCjWifEwYJoV5VuwAk/WHKEvihNHrYGu3c1SMuJlHatLBx7vSNrFsPFWsmP6Z3I6bBRyjSY57KQwxM3SHJvvbYO8etfU+S1gCXuvFMarCCgxv8MhdDUhA/F6A3QE+KjW91xKz8BQ/UJKBS5kOJF13xqSh+j/zoH6EVmRDLvD0uAW7xsSAiMuwT5Kq");
         //测试
         String ebayAccount = tld.getEbayAccount();
-        List<UsercontrollerEbayAccount> liuea = this.iUsercontrollerEbayAccount.selectUsercontrollerEbayAccountByUserId(c.getId());
+        //List<UsercontrollerEbayAccount> liuea = this.iUsercontrollerEbayAccount.selectUsercontrollerEbayAccountByUserId(c.getId());
         String token = "";
-        for(UsercontrollerEbayAccount uea:liuea){
-            if(ebayAccount.equals(uea.getEbayName())){
-                token=this.iUsercontrollerEbayAccount.selectById(uea.getId()).getEbayToken();
+        Map m = new HashMap();
+        m.put("needToken",null);
+        List<UsercontrollerEbayAccountExtend>  liue = this.systemUserManagerService.queryCurrAllEbay(m);
+        if(liue!=null&&liue.size()>0){
+            for(UsercontrollerEbayAccountExtend ue:liue){
+                if(tld.getEbayAccount().equals(ue.getEbayName())){
+                    token = ue.getEbayToken();
+                    break;
+                }
             }
+        }else{
+            Asserts.assertTrue(false,"未绑定Ebay账号！");
         }
         rc.seteBayAuthToken(token);
         rir.setRequesterCredentials(rc);
@@ -1145,6 +1173,7 @@ public class ListingItemController extends BaseAction {
         String returnString = this.cosPostXml(xml,APINameStatic.ReviseItem);
         System.out.println(returnString);
         String ack = SamplePaseXml.getVFromXmlString(returnString,"Ack");
+
         if("Success".equalsIgnoreCase(ack)||"Warning".equalsIgnoreCase(ack)){
             tla.setIsFlag("1");
             this.iTradingListingAmend.saveListingAmend(tla);
@@ -1162,6 +1191,7 @@ public class ListingItemController extends BaseAction {
             }
 
             this.saveSystemLog(longMessage,"修改价格数量报错",SiteMessageStatic.LISTING_DATA_UPDATE);
+            oldtld.setErrMessage(longMessage);
             AjaxSupport.sendFailText("fail",oldtld);
         }
 
@@ -1220,36 +1250,7 @@ public class ListingItemController extends BaseAction {
         jsonBean.setTotal((int)page.getTotalCount());
         AjaxSupport.sendSuccessText("",jsonBean);
 
-        /**分页组装*//*
-        PageJsonBean jsonBean=commonParmVO.getJsonBean();
-        jsonBean.setPageCount(jsonBean.getPageCount());
-        jsonBean.setPageNum(jsonBean.getPageNum());
-
-
-        String colStr="<?xml version=\"1.0\" encoding=\"utf-8\"?>\n" +
-                "<GetSellerListRequest xmlns=\"urn:ebay:apis:eBLBaseComponents\">\n" +
-                "<RequesterCredentials>\n" +
-                "<eBayAuthToken>AgAAAA**AQAAAA**aAAAAA**vVcRVA**nY+sHZ2PrBmdj6wVnY+sEZ2PrA2dj6wFk4GhCpGGoA+dj6x9nY+seQ**cx0CAA**AAMAAA**Z2MB0OtmO4JsPFBZPcjclippjnZG4bwpcpXYRXDdc6wEppv5m/WiCvsjyTKWoVXCMxQl2se3U6Vn93oBL6zg8EcR3GCXCC3ZbTpEQ3lBX8avBrME9VHo0RcfcE7oLVtnBAuSffy3Dk5ICUNyU7g57/rHw8d5DnO3JeitpQcTLKAInt+sEZslri3wa4Mx0xgyFW5OF3w8mNK8ib8+57PTHcApnp8xRTAlIVuwW3F/fGbSFVReS07/MulzlFXBoW/ZPLq+L2aLFpn5s+IB5/gB0HoDo5uGzRnALmXxUz8BuwJMrUE29830W7xVSEaYSYsOcJyue6PjJKyZt0rXf8TNHusXCHX240dWllrjMVxS7pEHgKb/FKfd/79PH3rXTFmuexesXS6H1lRmHBBE1iknFwtzzS+UeN22Rd6W+hjSjuOHB33o2gMS5cOdVXHuHyOQ6VJU3bJL/eNDgyB+wz3HhZmz6sF+lmLIRKP82H1QXdlwdGdpVhAhyqnE4FH4qTgPBMxv6c4jRL5BRuyUZDLeJI1WXmaZ4pNMss+MiME7Qu+7bP7S2TZhmValbfW/FvqSrxR9LlHji7iQSsz2m56x5TLjOtkFWjRxmB6C1wzBVtzdILzbvmA/1+9RlMevalW6bg22irusiv7iuD/AnC9pZ0Sju2XK/7WpjVW4/lZyBmRbqHQJPbU/5MU3xrM8pTV8rZmPfQrRh2araaWGIBE5IW3gsTrETpRUQybXd/a107ee61GwXEUqVat1EfznFpIs</eBayAuthToken>\n" +
-                "</RequesterCredentials>\n" +
-                "<Pagination ComplexType=\"PaginationType\">\n" +
-                "\t<EntriesPerPage>"+jsonBean.getPageCount()+"</EntriesPerPage>\n" +
-                "\t<PageNumber>"+jsonBean.getPageNum()+"</PageNumber>\n" +
-                "</Pagination>\n" +
-                "<StartTimeFrom>2014-06-06T16:15:12.000Z</StartTimeFrom>\n" +
-                "<StartTimeTo>2014-09-10T18:15:12.000Z</StartTimeTo>\n" +
-                "<UserID>testuser_sandpoint</UserID>\n" +
-                "<GranularityLevel>Coarse</GranularityLevel>\n" +
-                "<DetailLevel>ItemReturnDescription</DetailLevel>\n" +
-                "</GetSellerListRequest>​";
-        String res = this.cosPostXml(colStr,APINameStatic.ListingItemList);
-        Document document= DocumentHelper.parseText(res);
-        Element rootElt = document.getRootElement();
-        Element totalElt = rootElt.element("PaginationResult");
-        String totalCount = totalElt.elementText("TotalNumberOfEntries");
-        jsonBean.setTotal(Integer.parseInt(totalCount));
-        List<Item> li = SamplePaseXml.getItemElememt(res);
-        jsonBean.setList(li);
-        AjaxSupport.sendSuccessText("", jsonBean);*/
+        /**注释从1-23之前的svn去找*/
     }
 
 
@@ -1302,12 +1303,20 @@ public class ListingItemController extends BaseAction {
             RequesterCredentials rc = new RequesterCredentials();
             String ebayAccount = tld.getEbayAccount();
             SessionVO c= SessionCacheSupport.getSessionVO();
-            List<UsercontrollerEbayAccount> liuea = this.iUsercontrollerEbayAccount.selectUsercontrollerEbayAccountByUserId(c.getId());
+            //List<UsercontrollerEbayAccount> liuea = this.iUsercontrollerEbayAccount.selectUsercontrollerEbayAccountByUserId(c.getId());
             String token = "";
-            for(UsercontrollerEbayAccount uea:liuea){
-                if(ebayAccount.equals(uea.getEbayName())){
-                    token=this.iUsercontrollerEbayAccount.selectById(uea.getId()).getEbayToken();
+            Map m = new HashMap();
+            m.put("needToken",null);
+            List<UsercontrollerEbayAccountExtend> ebayList=systemUserManagerService.queryCurrAllEbay(m);
+            if(ebayList!=null&&ebayList.size()>0){
+                for(UsercontrollerEbayAccountExtend ue:ebayList){
+                    if(tld.getEbayAccount().equals(ue.getEbayName())){
+                        token = ue.getEbayToken();
+                        break;
+                    }
                 }
+            }else{
+                Asserts.assertTrue(false,"未绑定ebay账号！");
             }
             rc.seteBayAuthToken(token);
             rir.setRequesterCredentials(rc);
@@ -1356,6 +1365,15 @@ public class ListingItemController extends BaseAction {
                         ites.setItemID(item.getItemID());
                         ites.setQuantity(item.getQuantity());
                         rir.setItem(ites);
+                        tla.setCosxml("<?xml version=\"1.0\" encoding=\"utf-8\"?>" + PojoXmlUtil.pojoToXml(rir));
+                    }else{
+                        ite.setVariations(item.getVariations());
+                        Item ites = new Item();
+                        ites.setItemID(item.getItemID());
+                        ites.setVariations(item.getVariations());
+                        rir.setItem(ites);
+                        tla.setAmendType("Quantity");
+                        tla.setContent("多属性数量调整");
                         tla.setCosxml("<?xml version=\"1.0\" encoding=\"utf-8\"?>" + PojoXmlUtil.pojoToXml(rir));
                     }
                 }else if(str.equals("PictureDetails")){//改图片
@@ -1575,8 +1593,8 @@ public class ListingItemController extends BaseAction {
                 "\t<EntriesPerPage>100</EntriesPerPage>\n" +
                 "\t<PageNumber>"+pageNumber+"</PageNumber>\n" +
                 "</Pagination>\n" +
-                "<StartTimeFrom>"+startTime+"</StartTimeFrom>\n" +
-                "<StartTimeTo>"+endTime+"</StartTimeTo>\n" +
+                "<EndTimeFrom>"+startTime+"</EndTimeFrom>\n" +
+                "<EndTimeTo>"+endTime+"</EndTimeTo>\n" +
                 "<UserID>"+ebayName+"</UserID>\n" +
                 "<IncludeVariations>true</IncludeVariations><IncludeWatchCount>true</IncludeWatchCount>\n" +
                 "<DetailLevel>ReturnAll</DetailLevel>\n" +
@@ -1600,13 +1618,13 @@ public class ListingItemController extends BaseAction {
         Date beginDate = new Date();
         Calendar date = Calendar.getInstance();
         date.setTime(beginDate);
-        date.set(Calendar.DATE, date.get(Calendar.DATE) - 119);
+        date.set(Calendar.DATE, date.get(Calendar.DATE) + 119);
         String startTo="";
         String startFrom="";
         
             Date endDate = dft.parse(dft.format(date.getTime()));
-            startTo = DateUtils.DateToString(new Date());
-            startFrom = DateUtils.DateToString(endDate);
+            startTo = DateUtils.DateToString(DateUtils.nowDateAddDay(100));
+            startFrom = DateUtils.DateToString(DateUtils.nowDateMinusDay(18));
 
         //站点列表
         AddApiTask addApiTask = new AddApiTask();

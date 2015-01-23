@@ -378,6 +378,9 @@
         }
         var api = frameElement.api, W = api.opener;
         function saveData(objs) {
+            if(!$("#form").validationEngine("validate")){
+                return;
+            }
             var moreTable  = $("table[name='moreTable']").each(function(i,d){
                 $(d).find("select,input").each(function(ii,dd){
                     var name_= $(dd).prop("name");
@@ -399,9 +402,6 @@
                  });
              });
 
-            if(!$("#form").validationEngine("validate")){
-                return;
-            }
             var data = $('#form').serialize();
             var urll = "/xsddWeb/saveShippingDetails.do";
             $(objs).attr("disabled",true);
@@ -416,7 +416,10 @@
                         W.refreshTableShipping();
                     },
                         function (m, r) {
+                            alert(r);
                             $(objs).attr("disabled",false);
+                            W.returnShipping.close();
+                            W.refreshTableShipping();
                         }]
             )
         }

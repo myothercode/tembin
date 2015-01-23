@@ -286,7 +286,16 @@
     </div><br/><br/><br/>
     <div class="new_usa">
 
-        <li class="new_usa_list"><span class="newusa_i" style="width: 75px;">选择账号：</span><a href="javascript:void(0)"><span scop="account" onclick="selectAccount(null,0);" class="newusa_ici">&nbsp;全部&nbsp;&nbsp;</span></a><a href="javascript:void(0)"><span scop="account" onclick="selectAccount('ebay',1);" class="newusa_ici_1">eBay账号&nbsp</span></a><a href="javascript:void(0)"><span scop="account" onclick="selectAccount(null,2);" class="newusa_ici_1">亚马逊账号</span></a><a href="javascript:void(0)"><span scop="account" onclick="selectAccount(null,3);" class="newusa_ici_1">亚马逊账号</span></a><a href="javascript:void(0)"><span scop="account" onclick="selectAccount(null,4);" class="newusa_ici_1">亚马逊账号</span></a><a href="javascript:void(0)"><span scop="account" onclick="selectAccount(null,5);" class="newusa_ici_1">亚马逊账号</span></a></li>
+        <li class="new_usa_list"><span class="newusa_i" style="width: 75px;">选择账号：</span>
+            <a href="javascript:void(0)"><span scop="account" onclick="selectAccount(null,0);" class="newusa_ici">&nbsp;全部&nbsp;&nbsp;</span></a>
+            <c:forEach items="${ebays}" var="ebay" begin="0" varStatus="status">
+                <a href="javascript:void(0)"><span scop="account" onclick="selectAccount('${ebay.ebayName}',${status.index+1});" class="newusa_ici_1">${ebay.ebayNameCode}</span></a>
+            </c:forEach>
+<%--            <a href="javascript:void(0)"><span scop="account" onclick="selectAccount('ebay',1);" class="newusa_ici_1">eBay账号&nbsp</span></a>
+            <a href="javascript:void(0)"><span scop="account" onclick="selectAccount(null,2);" class="newusa_ici_1">亚马逊账号</span></a>
+            <a href="javascript:void(0)"><span scop="account" onclick="selectAccount(null,3);" class="newusa_ici_1">亚马逊账号</span></a><a href="javascript:void(0)"><span scop="account" onclick="selectAccount(null,4);" class="newusa_ici_1">亚马逊账号</span></a>
+            <a href="javascript:void(0)"><span scop="account" onclick="selectAccount(null,5);" class="newusa_ici_1">亚马逊账号</span></a>--%>
+        </li>
         <li class="new_usa_list"><span class="newusa_i" style="width: 75px;">纠纷类型：</span><a href="javascript:void(0)"><span scop="type" onclick="selectType(null,0);" class="newusa_ici">&nbsp;全部&nbsp;&nbsp;</span></a><a href="javascript:void(0)"><span scop="type" onclick="selectType('BuyerHasNotPaid',1);" class="newusa_ici_1">未付款&nbsp;</span></a><a href="javascript:void(0)"><span scop="type" onclick="selectType('ItemNotReceived',2);" class="newusa_ici_1">未收到物品</span></a><a href="javascript:void(0)"><span scop="type" onclick="selectType('SignificantlyNotAsDescribed',3);" class="newusa_ici_1">描述不符&nbsp;</span></a></li>
         <li class="new_usa_list"><span class="newusa_i" style="width: 75px;">处理状态：</span><a href="javascript:void(0)"><span scop="status" onclick="selectStatus(null,0);" class="newusa_ici">&nbsp;全部&nbsp;&nbsp;</span></a><a href="javascript:void(0)"><span scop="status" onclick="selectStatus('1',1);" class="newusa_ici_1">已处理&nbsp;</span></a><a href="javascript:void(0)"><span scop="status" onclick="selectStatus('0',2);" class="newusa_ici_1">未处理&nbsp;</span></a></li>
         <div class="newsearch">

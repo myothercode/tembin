@@ -13,4 +13,26 @@
         WHERE ea.paypal_account_id=#{paypalId}
     </update>
 
+    <select id="queryPayPalsByUserIdReport" parameterType="map" resultType="com.base.database.trading.model.UsercontrollerPaypalAccount">
+        select pa.paypal_account payPalAccount,pa.id,pa.`status` from usercontroller_user_ebay us,
+          usercontroller_ebay_account eb,usercontroller_paypal_account pa
+          where us.ebay_id = eb.id and eb.paypal_account_id=pa.id and us.user_id=#{userId}
+          order by pa.id
+    </select>
+
+    <select id="selectPayPalReportList" resultType="com.base.domains.querypojos.BaseTjReportQuery" parameterType="map">
+        select eb.paypal_account_id returnType,sum(ord.amountPaid) tjNumber from trading_order_get_orders ord,usercontroller_ebay_account eb where ord.sellerUserID=eb.ebay_name
+
+        <if test="datetype==1||datetype==2">
+            and DATE_FORMAT(ord.paidTime, '%Y-%m-%d') = #{datestr}
+        </if>
+        <if test="datetype==3||datetype==4">
+            and DATE_FORMAT(ord.paidTime, '%Y-%m-%d') >= #{startDate} and  #{endDate}>=DATE_FORMAT(ord.paidTime, '%Y-%m-%d')
+        </if>
+        <if test="datetype==5||datetype==6">
+            and DATE_FORMAT(ord.paidTime, '%Y-%m') = #{datestr}
+        </if>
+        group by eb.paypal_account_id order by eb.paypal_account_id
+    </select>
+
 </mapper>

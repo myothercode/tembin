@@ -20,8 +20,8 @@
     <script type="text/javascript">
     var api = frameElement.api, W = api.opener;
     function submitForm1(){
-        var boxs=$("input[scope=checkbox]");
-        var d=[];
+        var boxs=$("input[scope=checkbox]:checked");
+     /*   var d=[];
         var j=0;
         for(var i=0;i<boxs.length;i++){
             var box=boxs[i];
@@ -30,7 +30,28 @@
                 j++;
             }
         }
-        batchPost(d);
+        batchPost(d);*/
+
+        var ebayIds="";
+        for(var i=0;i<boxs.length;i++){
+            if(i==(boxs.length-1)){
+                ebayIds+=boxs[i].value;
+            }else{
+                ebayIds+=boxs[i].value+",";
+            }
+        }
+        var url=path+"/order/apiGetOrdersRequest.do?ebayIds="+ebayIds;
+        $().invoke(url,null,
+                [function(m,r){
+                    alert(r);
+                    W.OrderGetOrders.close();
+                    Base.token();
+                },
+                    function(m,r){
+                        alert(r);
+                        Base.token();
+                    }]
+        );
     }
 
     function xxx(opt){
@@ -40,6 +61,19 @@
     }
     function closedialog(){
         W.OrderGetOrders.close();
+    }
+    function selectAllcheckBox(obj){
+        if(obj.checked){
+            var inputs=$(document).find("input[scope=checkbox]");
+            for(var i=0;i<inputs.length;i++){
+                inputs[i].checked=true;
+            }
+        }else{
+            var inputs=$(document).find("input[scope=checkbox]");
+            for(var i=0;i<inputs.length;i++){
+                inputs[i].checked=false;
+            }
+        }
     }
     </script>
 </head>
@@ -52,13 +86,15 @@
                 <td></td>
             </tr>
             <tr>
-                <td></td>
-                <td>
-                    <c:forEach items="${ebays}" var="ebay">
-                        <input type="checkbox" scope="checkbox" value="${ebay.id}"/>${ebay.ebayName}<br/>
-                    </c:forEach>
-                </td>
+                <td ><input type="checkbox" name="checkbox" scope="allCheckbox" onchange="selectAllcheckBox(this);" > 全选</td>
+                <td align="left">上次同步时间</td>
             </tr>
+            <c:forEach items="${ebays}" var="ebay" varStatus="status" begin="0">
+            <tr>
+                <td><input type="checkbox" scope="checkbox" value="${ebay.id}"/>${ebay.ebayName}<br/></td>
+                <td><c:if test="${ebayDates[status.index]!=null}">(${ebayDates[status.index]})</c:if></td>
+            </tr>
+            </c:forEach>
         </table>
     </form>
     <div class="modal-footer">

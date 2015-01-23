@@ -38,9 +38,26 @@
             $("#frameDown").attr("src",path + "/order/viewOrderAbstractDown.do?orderId=${orderId}");*/
             $("#frameBuyHistory").attr("src",path + "/order/viewOrderBuyHistory.do?orderId=${orderId}");
             var messageFlag="${messageFlag}";
-            if(messageFlag=='true'){
+        /*    if(messageFlag=='true'){
                 W.refreshTable();
+            }*/
+            var messageID="${messageID}";
+
+            if(messageID&&messageID!=""){
+                var sender="${message.sender}";
+                var url=path+"/message/ajax/updateReadStatus.do?messageid="+messageID+"&sender="+sender;
+                $().invoke(url,null,
+                        [function(m,r){
+                            var noReadCount=W.document.getElementById("noReadCount");
+                            noReadCount.innerHTML="未读("+r+")&nbsp;"
+                            Base.token;
+                        },
+                            function(m,r){
+                                Base.token();
+                            }]
+                );
             }
+
         });
         function dialogClose(){
             W.OrderGetOrders.close();
@@ -362,6 +379,13 @@
         </c:if>
         </td>
     </tr>
+    <c:if test="${message!=null}">
+        <c:if test="${message.comment!=null||message.comment!=''}">
+            <tr>
+                <td>备注:${message.comment}</td>
+            </tr>
+        </c:if>
+    </c:if>
     <tr>
         <td><div class="new_tab">
             <div class="new_tab_left"></div>
@@ -644,11 +668,11 @@
                     </p>
                 <c:forEach items="${addMessage1}" var="addMessage">
                     <c:if test="${addMessage.sender==sender}">
-                        <p class="user">${addMessage.recipientid}，您好！</p>
+                        <p class="user"></p>
                         <div class="user_co">
                             <div class="user_co_1"></div>
-                            <ul>Hi ${addMessage.recipientid}.: )<br/> ${addMessage.body}
-                                <span>发送于:<fmt:formatDate value="${addMessage.createTime}" pattern="yyyy-MM-dd HH:mm:ss"/></span>
+                            <ul><br/> ${addMessage.body}
+                                <span></span>
                             </ul>
                             <div class="user_co_2"></div>
                         </div>
@@ -659,16 +683,16 @@
                              s="${addMessage.sender}";
                              r1="${addMessage.recipientid}";
                         </script>
-                        <p class="admin">${addMessage.sender}</p>
+                        <p class="admin"></p>
 
                         <div class="admin_co">
                             <div class="admin_co_1"></div>
-                            <ul>Hi ${addMessage.recipientid}.: )<br/>${addMessage.body}
+                            <ul><br/>${addMessage.body}
                                 <c:if test="${addMessage.replied=='true'}">
-                                    <span>发送于:<fmt:formatDate value="${addMessage.createTime}" pattern="yyyy-MM-dd HH:mm:ss"/></span>
+                                    <span></span>
                                 </c:if>
                                 <c:if test="${addMessage.replied=='false'}">
-                                    <span style="color: red">发送失败于:<fmt:formatDate value="${addMessage.createTime}" pattern="yyyy-MM-dd HH:mm:ss"/>!</span>
+                                    <span style="color: red"></span>
                                 </c:if>
                             </ul>
                             <div class="admin_co_2"></div>
@@ -728,10 +752,10 @@
                     <input type="hidden" name="selleruserid1" value="${message.recipientuserid}">
                     <input type="hidden" name="subject" value="${addMessage1[0].subject}">
                     <c:if test="${flag=='true'}">
-                        <textarea name="body"  id="textarea" style="width:772px;" rows="5"  class="newco_one validate[required]"></textarea>
+                        <textarea name="body"  id="textarea" style="width:772px;color: #000000;" rows="5"  class="newco_one validate[required]"></textarea>
                     </c:if>
                     <c:if test="${flag=='false'}">
-                        <textarea name="body"  id="textarea" style="width:1125px;" rows="5"  class="newco_one1 validate[required]"></textarea>
+                        <textarea name="body"  id="textarea" style="width:1125px;color: #000000;" rows="5"   class="newco_one1 validate[required]"></textarea>
                     </c:if>
 
                 </form>

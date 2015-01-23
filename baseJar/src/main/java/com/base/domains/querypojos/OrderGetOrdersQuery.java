@@ -22,12 +22,42 @@ public class OrderGetOrdersQuery extends TradingOrderGetOrders{
 
     private String feedbackMessage;
 
+    private String role;
+
+    private String feedbackMessage1;
+
+    public String getRole1() {
+        return role1;
+    }
+
+    public void setRole1(String role1) {
+        this.role1 = role1;
+    }
+
+    public String getFeedbackMessage1() {
+        return feedbackMessage1;
+    }
+
+    public void setFeedbackMessage1(String feedbackMessage1) {
+        this.feedbackMessage1 = feedbackMessage1;
+    }
+
+    private String role1;
+
     public String getFeedbackMessage() {
         return feedbackMessage;
     }
 
     public void setFeedbackMessage(String feedbackMessage) {
         this.feedbackMessage = feedbackMessage;
+    }
+
+    public String getRole() {
+        return role;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
     }
 
     public String getImgUrl() {

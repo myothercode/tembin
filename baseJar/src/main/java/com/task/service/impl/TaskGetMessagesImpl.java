@@ -2,7 +2,6 @@ package com.task.service.impl;
 
 import com.base.database.task.mapper.TaskGetMessagesMapper;
 import com.base.database.task.model.TaskGetMessages;
-import com.base.database.task.model.TaskGetMessages;
 import com.base.database.task.model.TaskGetMessagesExample;
 import com.base.utils.common.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,7 +47,7 @@ public class TaskGetMessagesImpl implements com.task.service.ITaskGetMessages {
         int year=Integer.valueOf(date3.substring(24));
         int month=date.getMonth();
         int day=Integer.valueOf(date3.substring(8, 10));
-        Date date1= DateUtils.buildDateTime(year, month, day, 16, 0, 0);
+        Date date1= DateUtils.buildDateTime(year, month, day, 3, 0, 0);
         Date date2= org.apache.commons.lang.time.DateUtils.addDays(date1,-1);
         if(date.before(date1)){
             c.andSavetimeBetween(date2,date1);
@@ -56,6 +55,17 @@ public class TaskGetMessagesImpl implements com.task.service.ITaskGetMessages {
             Date date4= org.apache.commons.lang.time.DateUtils.addDays(date1,1);
             c.andSavetimeBetween(date1,date4);
         }
+        tde.setOrderByClause("tokenFlag");
         return this.taskGetMessagesMapper.selectByExampleWithBLOBs(tde);
+    }
+
+    @Override
+    public List<TaskGetMessages> selectTaskGetMessagesByFlagIsFalseOrderByLastSycTimeAndEbayName(String ebayName) {
+        TaskGetMessagesExample example=new TaskGetMessagesExample();
+        TaskGetMessagesExample.Criteria cr=example.createCriteria();
+        cr.andEbaynameEqualTo(ebayName);
+        cr.andLastsyctimeIsNotNull();
+        example.setOrderByClause("lastsyctime");
+        return this.taskGetMessagesMapper.selectByExample(example);
     }
 }

@@ -4,6 +4,7 @@ import com.base.database.trading.mapper.TradingItemMapper;
 import com.base.database.trading.mapper.TradingTimerListingMapper;
 import com.base.database.trading.model.*;
 import com.base.database.userinfo.mapper.UsercontrollerUserMapper;
+import com.base.database.userinfo.model.SystemLog;
 import com.base.database.userinfo.model.UsercontrollerUser;
 import com.base.domains.userinfo.UsercontrollerDevAccountExtend;
 import com.base.userinfo.service.UserInfoService;
@@ -11,6 +12,7 @@ import com.base.utils.applicationcontext.ApplicationContextUtil;
 import com.base.utils.cache.TempStoreDataSupport;
 import com.base.utils.common.CommAutowiredClass;
 import com.base.utils.common.ObjectUtils;
+import com.base.utils.common.SystemLogUtils;
 import com.base.utils.scheduleabout.BaseScheduledClass;
 import com.base.utils.scheduleabout.MainTask;
 import com.base.utils.scheduleabout.Scheduledable;
@@ -20,11 +22,10 @@ import com.trading.service.ITradingItem;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
+import org.dom4j.Document;
+import org.dom4j.Element;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by Administrtor on 2014/8/29.
@@ -100,7 +101,7 @@ public class TimeListingItemTaskRunAble extends BaseScheduledClass implements Sc
                 devInfo.setApiSiteid(withBLOBs.getStateId());
                 devInfo.setApiCallName(withBLOBs.getApiMethod());
                 AddApiTask addApiTask = new AddApiTask();
-                Map<String, String> resMap = addApiTask.exec2(devInfo, StringEscapeUtils.escapeXml(withBLOBs.getTimerMessage()), commV.apiUrl);
+                Map<String, String> resMap = addApiTask.exec2(devInfo, StringEscapeUtils.unescapeXml(withBLOBs.getTimerMessage()), commV.apiUrl);
                 String r1 = resMap.get("stat");
                 String res = resMap.get("message");
                 if ("fail".equalsIgnoreCase(r1)) {
@@ -121,14 +122,46 @@ public class TimeListingItemTaskRunAble extends BaseScheduledClass implements Sc
                     tradingItem.setIsFlag("Success");
                     iTradingItem.saveTradingItem(tradingItem);
                     iTradingItem.saveListingSuccess(res,itemId);
-                }
+                    //检查定时刊登是否有错误日志，如果有，删掉之前定时刊登的错误日志
+                    SystemLog sl = SystemLogUtils.selectSystemLogByUserId("ListingItemTimer",tradingItems.getId()+"");
+                    if(sl!=null){
+                        SystemLogUtils.deleteSystemLog(sl.getId());
+                    }
+                }else{
+                    Document document= SamplePaseXml.formatStr2Doc(res);
+                    Element rootElt = document.getRootElement();
+                    Iterator<Element> e =  rootElt.elementIterator("Errors");
+                    String errors = "";
+                    if(e!=null){
+                        while (e.hasNext()){
+                            Element es = e.next();
+                            errors+=es.elementText("LongMessage")+"/n";
+                        }
+                    }
+                    tradingItems.setListingWay("0");
+                    tradingItemMappers.updateByPrimaryKeySelective(tradingItems);
 
+                    SystemLog sl = SystemLogUtils.selectSystemLogByUserId("ListingItemTimer",tradingItems.getId()+"");
+                    if(sl==null) {
+                        sl = new SystemLog();
+                        sl.setCreatedate(new Date());
+                        sl.setOperuser(tradingItems.getId() + "");
+                        sl.setEventname("ListingItemTimer");
+                        sl.setEventdesc("定时刊登失败！原因：" + errors);
+                        SystemLogUtils.saveLog(sl);
+                    }else{
+                        sl.setCreatedate(new Date());
+                        sl.setEventdesc("定时刊登失败！原因：" + errors);
+                        SystemLogUtils.updateSystemLog(sl);
+                    }
+                }
             } catch (Exception e) {
                 logger.error(e.getMessage()+"定时刊登任务报错 id"+withBLOBs.getId(),e);
             }finally {
                 t.setId(withBLOBs.getId());
                 t.setRunEndTime(new Date());
                 timeMapper.updateByPrimaryKeySelective(t);
+                TempStoreDataSupport.removeData("task_"+getScheduledType());
             }
         }
         TempStoreDataSupport.removeData("task_"+getScheduledType());
@@ -156,6 +189,16 @@ public class TimeListingItemTaskRunAble extends BaseScheduledClass implements Sc
 
     @Override
     public Integer crTimeMinu() {
+        return null;
+    }
+
+    @Override
+    public void setMark(String x) {
+
+    }
+
+    @Override
+    public String getMark() {
         return null;
     }
 }

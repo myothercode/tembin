@@ -159,4 +159,14 @@ public class PriceTrackingByItemIdTaskRun extends BaseScheduledClass implements 
     public Integer crTimeMinu() {
         return 10;
     }
+
+    @Override
+    public void setMark(String x) {
+
+    }
+
+    @Override
+    public String getMark() {
+        return null;
+    }
 }

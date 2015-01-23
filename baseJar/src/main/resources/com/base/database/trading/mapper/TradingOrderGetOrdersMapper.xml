@@ -66,6 +66,7 @@
     <result column="sellerTrasactionFlag" jdbcType="INTEGER" property="sellertrasactionflag" />
     <result column="sendMessageTime" jdbcType="TIMESTAMP" property="sendmessagetime" />
     <result column="autoMessage_id" jdbcType="BIGINT" property="automessageId" />
+    <result column="cancelStatus" jdbcType="VARCHAR" property="cancelstatus" />
     <result column="create_user" jdbcType="BIGINT" property="createUser" />
     <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
     <result column="uuid" jdbcType="VARCHAR" property="uuid" />
@@ -151,8 +152,8 @@
     itemID, sKU, title, quantityPurchased, transactionID, sellingManagerSalesRecordNumber, 
     transactionPrice, paidTime, shippedTime, actualShippingCost, actualHandlingCost, 
     buyerUserID, comment, folder, sellerUserID, variationSKU, paypalFlag, shippedFlag, 
-    itemFlag, accountFlag, sellerTrasactionFlag, sendMessageTime, autoMessage_id, create_user, 
-    create_time, uuid, updateTime
+    itemFlag, accountFlag, sellerTrasactionFlag, sendMessageTime, autoMessage_id, cancelStatus, 
+    create_user, create_time, uuid, updateTime
   </sql>
   <select id="selectByExample" parameterType="com.base.database.trading.model.TradingOrderGetOrdersExample" resultMap="BaseResultMap">
     <!--
@@ -225,9 +226,9 @@
       comment, folder, sellerUserID, 
       variationSKU, paypalFlag, shippedFlag, 
       itemFlag, accountFlag, sellerTrasactionFlag, 
-      sendMessageTime, autoMessage_id, create_user, 
-      create_time, uuid, updateTime
-      )
+      sendMessageTime, autoMessage_id, cancelStatus, 
+      create_user, create_time, uuid, 
+      updateTime)
     values (#{id,jdbcType=BIGINT}, #{orderid,jdbcType=VARCHAR}, #{orderstatus,jdbcType=VARCHAR}, 
       #{adjustmentamount,jdbcType=VARCHAR}, #{amountsaved,jdbcType=VARCHAR}, #{amountpaid,jdbcType=VARCHAR}, 
       #{ebaypaymentstatus,jdbcType=VARCHAR}, #{lastmodifiedtime,jdbcType=TIMESTAMP}, 
@@ -248,9 +249,9 @@
       #{comment,jdbcType=VARCHAR}, #{folder,jdbcType=VARCHAR}, #{selleruserid,jdbcType=VARCHAR}, 
       #{variationsku,jdbcType=VARCHAR}, #{paypalflag,jdbcType=INTEGER}, #{shippedflag,jdbcType=INTEGER}, 
       #{itemflag,jdbcType=INTEGER}, #{accountflag,jdbcType=INTEGER}, #{sellertrasactionflag,jdbcType=INTEGER}, 
-      #{sendmessagetime,jdbcType=TIMESTAMP}, #{automessageId,jdbcType=BIGINT}, #{createUser,jdbcType=BIGINT}, 
-      #{createTime,jdbcType=TIMESTAMP}, #{uuid,jdbcType=VARCHAR}, #{updatetime,jdbcType=TIMESTAMP}
-      )
+      #{sendmessagetime,jdbcType=TIMESTAMP}, #{automessageId,jdbcType=BIGINT}, #{cancelstatus,jdbcType=VARCHAR}, 
+      #{createUser,jdbcType=BIGINT}, #{createTime,jdbcType=TIMESTAMP}, #{uuid,jdbcType=VARCHAR}, 
+      #{updatetime,jdbcType=TIMESTAMP})
   </insert>
   <insert id="insertSelective" parameterType="com.base.database.trading.model.TradingOrderGetOrders">
     <!--
@@ -439,6 +440,9 @@
       <if test="automessageId != null">
         autoMessage_id,
       </if>
+      <if test="cancelstatus != null">
+        cancelStatus,
+      </if>
       <if test="createUser != null">
         create_user,
       </if>
@@ -508,7 +512,7 @@
         #{street1,jdbcType=LONGVARCHAR},
       </if>
       <if test="street2 != null">
-        #{street2,jdbcType=LONGVARCHAR},
+        #{street2,jdbcType=VARCHAR},
       </if>
       <if test="cityname != null">
         #{cityname,jdbcType=VARCHAR},
@@ -633,6 +637,9 @@
       <if test="automessageId != null">
         #{automessageId,jdbcType=BIGINT},
       </if>
+      <if test="cancelstatus != null">
+        #{cancelstatus,jdbcType=VARCHAR},
+      </if>
       <if test="createUser != null">
         #{createUser,jdbcType=BIGINT},
       </if>
@@ -719,7 +726,7 @@
         street1 = #{record.street1,jdbcType=LONGVARCHAR},
       </if>
       <if test="record.street2 != null">
-        street2 = #{record.street2,jdbcType=LONGVARCHAR},
+        street2 = #{record.street2,jdbcType=VARCHAR},
       </if>
       <if test="record.cityname != null">
         cityName = #{record.cityname,jdbcType=VARCHAR},
@@ -844,6 +851,9 @@
       <if test="record.automessageId != null">
         autoMessage_id = #{record.automessageId,jdbcType=BIGINT},
       </if>
+      <if test="record.cancelstatus != null">
+        cancelStatus = #{record.cancelstatus,jdbcType=VARCHAR},
+      </if>
       <if test="record.createUser != null">
         create_user = #{record.createUser,jdbcType=BIGINT},
       </if>
@@ -927,6 +937,7 @@
       sellerTrasactionFlag = #{record.sellertrasactionflag,jdbcType=INTEGER},
       sendMessageTime = #{record.sendmessagetime,jdbcType=TIMESTAMP},
       autoMessage_id = #{record.automessageId,jdbcType=BIGINT},
+      cancelStatus = #{record.cancelstatus,jdbcType=VARCHAR},
       create_user = #{record.createUser,jdbcType=BIGINT},
       create_time = #{record.createTime,jdbcType=TIMESTAMP},
       uuid = #{record.uuid,jdbcType=VARCHAR},
@@ -1119,6 +1130,9 @@
       <if test="automessageId != null">
         autoMessage_id = #{automessageId,jdbcType=BIGINT},
       </if>
+      <if test="cancelstatus != null">
+        cancelStatus = #{cancelstatus,jdbcType=VARCHAR},
+      </if>
       <if test="createUser != null">
         create_user = #{createUser,jdbcType=BIGINT},
       </if>
@@ -1199,6 +1213,7 @@
       sellerTrasactionFlag = #{sellertrasactionflag,jdbcType=INTEGER},
       sendMessageTime = #{sendmessagetime,jdbcType=TIMESTAMP},
       autoMessage_id = #{automessageId,jdbcType=BIGINT},
+      cancelStatus = #{cancelstatus,jdbcType=VARCHAR},
       create_user = #{createUser,jdbcType=BIGINT},
       create_time = #{createTime,jdbcType=TIMESTAMP},
       uuid = #{uuid,jdbcType=VARCHAR},

@@ -27,6 +27,12 @@
         <if test="userId!=null">
             and record.create_user =#{userId}
         </if>
+        <if test="orgUsers!=null">
+            and record.create_user in
+            <foreach collection="orgUsers" item="orgUser" index="index" open="(" separator="," close=")">
+                #{orgUser.userId}
+            </foreach>
+        </if>
         <if test="autoPricingId!=null">
             and record.autoPricing_id = #{autoPricingId}
         </if>

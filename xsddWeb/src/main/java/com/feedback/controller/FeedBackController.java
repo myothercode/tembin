@@ -231,7 +231,7 @@ public class FeedBackController extends BaseAction {
         m.put("datestr", DateUtils.formatDate(new Date()));
         m.put("userid",c.getId());
         List<TradingListingReport> lim = this.iTradingListingSuccess.selectItemReportList(m);
-        //当天刊登
+        /*//当天刊登
         List<ListingItemReportQuery> dayListing = this.iTradingListingSuccess.selectListingItemReport(c.getId(),"1","1",null);
         //本周刊登
         List<ListingItemReportQuery> weekListing = this.iTradingListingSuccess.selectListingItemReport(c.getId(),"3","1",null);
@@ -348,7 +348,7 @@ public class FeedBackController extends BaseAction {
                 tlr.setMonth(monthListingEndFee.get(0).getTjNumber()==null?"0.00":monthListingEndFee.get(0).getTjNumber());
             }
 
-        }
+        }*/
         PageJsonBean jsonBean=commonParmVO.getJsonBean();
         Page page=jsonBean.toPage();
         page.setPageSize(1000);

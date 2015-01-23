@@ -106,6 +106,7 @@ function nextShows(obj){
         $(obj).text("确定");
         $("#previousShow").show();
     }else{
+        converDiv_();
         var moreTable  = $("table[name='moreTable']").each(function(i,d){
             $(d).find("select,input").each(function(ii,dd){
                 var name_= $(dd).prop("name");
@@ -136,8 +137,9 @@ function nextShows(obj){
                 data,
                 [function (m, r) {
                     alert(r);
+                    $("#pop1").remove();
                     $(obj).attr("disabled",false);
-                    W.refreshTable();
+                    W.reshTable();
                     W.editPage.close();
                 },
                     function (m, r) {

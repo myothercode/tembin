@@ -47,7 +47,7 @@ public class TaskGetUserCasesImpl implements com.task.service.ITaskGetUserCases 
         int year=Integer.valueOf(date3.substring(24));
         int month=date.getMonth();
         int day=Integer.valueOf(date3.substring(8, 10));
-        Date date1= DateUtils.buildDateTime(year, month, day, 16, 0, 0);
+        Date date1= DateUtils.buildDateTime(year, month, day, 3, 0, 0);
         Date date2= org.apache.commons.lang.time.DateUtils.addDays(date1,-1);
         if(date.before(date1)){
             c.andSavetimeBetween(date2,date1);
@@ -55,6 +55,17 @@ public class TaskGetUserCasesImpl implements com.task.service.ITaskGetUserCases 
             Date date4= org.apache.commons.lang.time.DateUtils.addDays(date1,1);
             c.andSavetimeBetween(date1,date4);
         }
+        tde.setOrderByClause("tokenFlag");
         return this.taskGetUserCasesMapper.selectByExampleWithBLOBs(tde);
+    }
+
+    @Override
+    public List<TaskGetUserCases> selectTaskGetMessagesByFlagIsFalseOrderByLastSycTimeAndEbayName(String ebayName) {
+        TaskGetUserCasesExample example=new TaskGetUserCasesExample();
+        TaskGetUserCasesExample.Criteria cr=example.createCriteria();
+        cr.andEbaynameEqualTo(ebayName);
+        cr.andLastsyctimeIsNotNull();
+        example.setOrderByClause("lastsyctime");
+        return this.taskGetUserCasesMapper.selectByExample(example);
     }
 }

@@ -82,6 +82,14 @@ public class ShippingDetailsController extends BaseAction{
     public void loadShippingDetailsList(HttpServletRequest request,ModelMap modelMap,CommonParmVO commonParmVO) throws Exception {
         String docId = request.getParameter("docId");
         SessionVO c= SessionCacheSupport.getSessionVO();
+        String [] ebayId = request.getParameterValues("ebayId");
+        List<String> liEbayid = new ArrayList<String>();
+        if(ebayId!=null){
+            for(String str:ebayId){
+                liEbayid.add(str);
+            }
+        }
+
         Map m = new HashMap();
         if(systemUserManagerService.isAdminRole()){
             List<UsercontrollerUserExtend> liuue = systemUserManagerService.queryAllUsersByOrgID("yes");
@@ -93,6 +101,9 @@ public class ShippingDetailsController extends BaseAction{
             m.put("liue",liue);
         }else{
             m.put("userid",c.getId());
+        }
+        if(liEbayid.size()>0){
+            m.put("ebayIdLi",liEbayid);
         }
         String checkFlag = request.getParameter("checkFlag");
         m.put("checkFlag",checkFlag);

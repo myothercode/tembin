@@ -10,4 +10,13 @@ public interface OrderGetOrdersMapper {
 
     List<OrderGetOrdersQuery> selectOrderGetOrdersByGroupList(Map map, Page page);
 
+    List<OrderGetOrdersQuery> selectOrderGetOrdersByAccountFlag(Map map,Page page);
+
+    List<OrderGetOrdersQuery> selectOrderGetOrdersByItemFlag(Map map,Page page);
+
+    List<OrderGetOrdersQuery> selectOrderGetOrdersBySendPaidMessage(Map map,Page page);
+
+    List<OrderGetOrdersQuery> selectOrderGetOrdersBySendShipMessage(Map map,Page page);
+
+
 }

@@ -54,10 +54,7 @@ public class ScheduleGetUserCasesTimerImpl implements IScheduleGetUserCasesTimer
     public void synchronizeUserCases(List<TaskGetUserCases> taskGetUserCaseses) throws Exception {
         /*CommAutowiredClass commPars = (CommAutowiredClass) ApplicationContextUtil.getBean(CommAutowiredClass.class);*/
             for(TaskGetUserCases taskGetUserCases:taskGetUserCaseses){
-                Integer flag=taskGetUserCases.getTokenflag();
-                flag=flag+1;
-                taskGetUserCases.setTokenflag(flag);
-                iTaskGetUserCases.saveListTaskGetUserCases(taskGetUserCases);
+
                 UsercontrollerDevAccountExtend d=new UsercontrollerDevAccountExtend();
                 d.setSoaOperationName("getUserCases");
                 String token=taskGetUserCases.getToken();
@@ -316,6 +313,10 @@ public class ScheduleGetUserCasesTimerImpl implements IScheduleGetUserCasesTimer
                 }else{
                     logger.error("定时同步纠纷API参数错误"+res+"\n\nXML:"+xml);
                 }
+                Integer flag=taskGetUserCases.getTokenflag();
+                flag=flag+1;
+                taskGetUserCases.setTokenflag(flag);
+                iTaskGetUserCases.saveListTaskGetUserCases(taskGetUserCases);
             }
     }
 }

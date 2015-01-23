@@ -14,4 +14,6 @@ public interface ITaskGetMessages {
     List<TaskGetMessages> selectTaskGetMessagesByflagAndSaveTime(Integer flag, Date saveTime);
 
     List<TaskGetMessages> selectTaskGetMessagesByFlagIsFalseOrderBysaveTime();
+
+    List<TaskGetMessages> selectTaskGetMessagesByFlagIsFalseOrderByLastSycTimeAndEbayName(String ebayName);
 }

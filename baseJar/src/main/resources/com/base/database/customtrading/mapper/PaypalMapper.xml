@@ -21,7 +21,7 @@
   </resultMap>
 
     <select id="selectByPayPalList" resultMap="BaseResultMap" parameterType="map">
-        select paypal.*,dic.name site_name,dic1.paypal_account paypal_name,dic.imgurl site_img from trading_paypal paypal
+        select paypal.id,paypal.pay_name,paypal.site,paypal.PaymentInstructions,paypal.create_user,paypal.create_time,paypal.check_flag,dic.name site_name,dic1.paypal_account paypal_name,dic.imgurl site_img from trading_paypal paypal
         left join trading_data_dictionary dic on paypal.site=dic.id
         left join usercontroller_paypal_account dic1 on paypal.paypal=dic1.id where 1=1
         <if test="id!=null">
@@ -37,6 +37,11 @@
             and paypal.create_user in
             <foreach item="ue" index="index" collection="liue" open="(" separator="," close=")">#{ue,jdbcType=VARCHAR}</foreach>
         </if>
+        <if test="lipaypalId!=null">
+            and paypal.paypal in
+            <foreach item="ues" index="index" collection="lipaypalId" open="(" separator="," close=")">#{ues,jdbcType=VARCHAR}</foreach>
+        </if>
+
         order by id desc
     </select>
 </mapper>

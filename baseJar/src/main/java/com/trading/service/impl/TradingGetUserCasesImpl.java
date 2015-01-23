@@ -69,7 +69,7 @@ public class TradingGetUserCasesImpl implements com.trading.service.ITradingGetU
     public List<TradingGetUserCases> selectGetUserCasesByHandled(Long userId) {
         TradingGetUserCasesExample example=new TradingGetUserCasesExample();
         TradingGetUserCasesExample.Criteria cr=example.createCriteria();
-        cr.andCasetypeLike("EBP_");
+        cr.andCasetypeLike("%EBP_%");
         cr.andHandledEqualTo(0);
         cr.andCreateUserEqualTo(userId);
         List<TradingGetUserCases> list=tradingGetUserCasesMapper.selectByExample(example);

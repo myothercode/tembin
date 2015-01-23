@@ -18,4 +18,8 @@ public interface MessageGetmymessageMapper {
     List<MessageGetmymessageQuery> selectMessageGetmymessageByGroupList (Map map, Page page);
 
     List<MessageGetmymessageQuery> selectMessageGetmymessageBySender (Map map);
+
+    List<MessageGetmymessageQuery> selectByMessageGetmymessageNoReadCount(Map map,Page page);
+
+    List<MessageGetmymessageQuery> selectMessageGetmymessageByItemIdAndSenderFolderIDIsZoneOrOne(Map map,Page page);
 }

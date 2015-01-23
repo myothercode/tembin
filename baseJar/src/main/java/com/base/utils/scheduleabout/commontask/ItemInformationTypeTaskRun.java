@@ -4,6 +4,7 @@ import com.base.database.publicd.model.PublicDataDict;
 import com.base.database.publicd.model.PublicItemInformation;
 import com.base.database.trading.model.TradingReseCategory;
 import com.base.database.userinfo.model.SystemLog;
+import com.base.domains.querypojos.ItemInformationQuery;
 import com.base.utils.applicationcontext.ApplicationContextUtil;
 import com.base.utils.cache.DataDictionarySupport;
 import com.base.utils.cache.TempStoreDataSupport;
@@ -108,9 +109,10 @@ public class ItemInformationTypeTaskRun extends BaseScheduledClass implements Sc
         String isRunging = TempStoreDataSupport.pullData("task_" + getScheduledType());
         if(StringUtils.isNotEmpty(isRunging)){return;}
         IPublicItemInformation iPublicItemInformation=(IPublicItemInformation) ApplicationContextUtil.getBean(IPublicItemInformation.class);
-        List<PublicItemInformation> informations=iPublicItemInformation.selectItemInformationByTypeIsNull();
-        if(informations.size()>20){
-            informations=filterLimitList(informations);
+        List<ItemInformationQuery> informations1=iPublicItemInformation.selectItemInformationByTypeIsNull();
+        List<PublicItemInformation> informations=new ArrayList<PublicItemInformation>();
+        if(informations1!=null&&informations1.size()>0){
+            informations.addAll(informations1);
         }
         syschronizeItemInformationType(informations);
         TempStoreDataSupport.removeData("task_" + getScheduledType());
@@ -133,6 +135,16 @@ public class ItemInformationTypeTaskRun extends BaseScheduledClass implements Sc
 
     @Override
     public Integer crTimeMinu() {
+        return null;
+    }
+
+    @Override
+    public void setMark(String x) {
+
+    }
+
+    @Override
+    public String getMark() {
         return null;
     }
 }

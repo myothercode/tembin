@@ -2,13 +2,16 @@ package com.base.utils.scheduleabout.commontask;
 
 import com.base.database.sitemessage.model.PublicSitemessage;
 import com.base.database.task.model.TaskFeedBack;
+import com.base.database.task.model.TaskGetUserCases;
 import com.base.database.trading.model.*;
 import com.base.domains.userinfo.UsercontrollerDevAccountExtend;
 import com.base.sampleapixml.APINameStatic;
 import com.base.utils.applicationcontext.ApplicationContextUtil;
 import com.base.utils.cache.TempStoreDataSupport;
+import com.base.utils.common.MyStringUtil;
 import com.base.utils.scheduleabout.BaseScheduledClass;
 import com.base.utils.scheduleabout.MainTask;
+import com.base.utils.scheduleabout.MainTaskStaticParam;
 import com.base.utils.scheduleabout.Scheduledable;
 import com.base.utils.threadpool.AddApiTask;
 import com.base.utils.threadpool.TaskMessageVO;
@@ -22,10 +25,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.dom4j.Element;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by Administrtor on 2014/8/29.
@@ -33,6 +33,7 @@ import java.util.Map;
  */
 public class SynchronizeFeedBackTimerTaskRun extends BaseScheduledClass implements Scheduledable {
     static Logger logger = Logger.getLogger(SynchronizeFeedBackTimerTaskRun.class);
+    String mark="";
 
     public void synchronizeFeedBack(List<TaskFeedBack> taskFeedBacks){
         SiteMessageService siteMessageService = (SiteMessageService) ApplicationContextUtil.getBean(SiteMessageService.class);
@@ -161,7 +162,7 @@ public class SynchronizeFeedBackTimerTaskRun extends BaseScheduledClass implemen
             }
         }catch (Exception e){
             logger.error("定时同步评价出错:"+e.getMessage());
-            TempStoreDataSupport.removeData("task_"+getScheduledType());
+            //TempStoreDataSupport.removeData("task_"+getScheduledType());
         }
 
     }
@@ -317,9 +318,8 @@ public class SynchronizeFeedBackTimerTaskRun extends BaseScheduledClass implemen
                 "  <eBayAuthToken>"+taskFeedBack.getToken()+"</eBayAuthToken>" +
                 "</RequesterCredentials>" +
                 "  <UserID>"+taskFeedBack.getEbayname()+"</UserID>" +
-                "  <CommentType>"+taskFeedBack.getCommenttype()+"</CommentType>" +
                 "  <DetailLevel>ReturnAll</DetailLevel>" +
-                "  <FeedbackType>FeedbackReceivedAsSeller</FeedbackType>" +
+                "  <FeedbackType>"+taskFeedBack.getCommenttype()+"</FeedbackType>" +
                 "  <Pagination>" +
                 "    <EntriesPerPage>100</EntriesPerPage>" +
                 "    <PageNumber>"+pageNumber+"</PageNumber>" +
@@ -344,14 +344,64 @@ public class SynchronizeFeedBackTimerTaskRun extends BaseScheduledClass implemen
             return;
         }
 
-        String isRunging = TempStoreDataSupport.pullData("task_"+getScheduledType());
+        /*String isRunging = TempStoreDataSupport.pullData("task_"+getScheduledType());
         if(StringUtils.isNotEmpty(isRunging)){return;}
-        TempStoreDataSupport.pushData("task_" + getScheduledType(), "x");
+        TempStoreDataSupport.pushData("task_" + getScheduledType(), "x");*/
+        List<TaskFeedBack> list=null;
+        if (MainTaskStaticParam.CATCH_FEEDBACK_QUEUE.isEmpty()) {
+            if (!"0".equalsIgnoreCase(this.mark)) {
+                return;
+            }
+            ITaskFeedBack iTaskFeedBack = (ITaskFeedBack) ApplicationContextUtil.getBean(ITaskFeedBack.class);
+            list=iTaskFeedBack.selectTaskFeedBackByFlagIsFalseOrderBysaveTime();
+            if (list==null || list.isEmpty()){return;}
 
-        ITaskFeedBack iTaskFeedBack = (ITaskFeedBack) ApplicationContextUtil.getBean(ITaskFeedBack.class);
+            if(MainTaskStaticParam.CATCH_FEEDBACK_QUEUE.isEmpty()){
+                for (TaskFeedBack t : list){
+                    try {
+                        if(MainTaskStaticParam.CATCH_FEEDBACK_QUEUE.contains(t)){continue;}
+                        MainTaskStaticParam.CATCH_FEEDBACK_QUEUE.put(t);
+                    } catch (Exception e) {logger.error("放入case队列出错",e);continue;}
+                }
+            }
+
+        }
+
+        TaskFeedBack o=null;
+        try {
+            Iterator<TaskFeedBack> iterator=MainTaskStaticParam.CATCH_FEEDBACK_QUEUE.iterator();
+            while (iterator.hasNext()){
+                if (MainTaskStaticParam.CATCH_FEEDBACK_QUEUE.isEmpty()){break;}
+                TaskFeedBack oo=MainTaskStaticParam.CATCH_FEEDBACK_QUEUE.take();
+                if (oo==null){continue;}
+
+                Boolean b= TaskPool.threadIsAliveByName("thread_" + getScheduledType()+"_"+oo.getId());
+                if (b){logger.error(getScheduledType()+oo.getId()+"===之前的帐号任务还未结束取下一个===");continue;}
+                o=oo;
+                break;
+            }
+        } catch (Exception e) {}
+
+        if(o==null){
+            return;
+        }
+        Thread.currentThread().setName("thread_" + getScheduledType() + "_" + o.getId());
+        List<TaskFeedBack> feedBacks1=new ArrayList<TaskFeedBack>();
+        feedBacks1.add(o);
+        synchronizeFeedBack(feedBacks1);
+        TaskPool.threadRunTime.remove("thread_" + getScheduledType()+"_"+o.getId());
+        Thread.currentThread().setName("_thread_" + getScheduledType()+"_"+o.getId()+ MyStringUtil.getRandomStringAndNum(5));
+
+
+
+        /*ITaskFeedBack iTaskFeedBack = (ITaskFeedBack) ApplicationContextUtil.getBean(ITaskFeedBack.class);
         List<TaskFeedBack> feedBacks=iTaskFeedBack.selectTaskFeedBackByFlagIsFalseOrderBysaveTime();
-        synchronizeFeedBack(feedBacks);
-        TempStoreDataSupport.removeData("task_"+getScheduledType());
+        if(feedBacks!=null&&feedBacks.size()>0){
+            List<TaskFeedBack> feedBacks1=new ArrayList<TaskFeedBack>();
+            feedBacks1.add(feedBacks.get(0));
+            synchronizeFeedBack(feedBacks1);
+        }*/
+        //TempStoreDataSupport.removeData("task_"+getScheduledType());
     }
 
     /**只从集合记录取多少条*/
@@ -377,6 +427,16 @@ public class SynchronizeFeedBackTimerTaskRun extends BaseScheduledClass implemen
 
     @Override
     public Integer crTimeMinu() {
-        return 30;
+        return MainTaskStaticParam.SOME_CRTIMEMINU.get(MainTask.SYNCHRONIZE_FEED_BACK_TIMER);
+    }
+
+    @Override
+    public void setMark(String x) {
+        this.mark=x;
+    }
+
+    @Override
+    public String getMark() {
+        return this.mark;
     }
 }

@@ -63,6 +63,26 @@ public class SystemLogUtils {
         }
     }
 
+    /**
+     * 更新systemLog
+     * @param systemLog
+     * @throws Exception
+     */
+    public static void updateSystemLog(SystemLog systemLog) throws Exception {
+        SystemLogMapper systemLogMapper = (SystemLogMapper) ApplicationContextUtil.getBean(SystemLogMapper.class);
+        systemLogMapper.updateByPrimaryKeySelective(systemLog);
+    }
+
+    /**
+     * 删除日志
+     * @param id
+     * @throws Exception
+     */
+    public static void deleteSystemLog(long id) throws Exception {
+        SystemLogMapper systemLogMapper = (SystemLogMapper) ApplicationContextUtil.getBean(SystemLogMapper.class);
+        systemLogMapper.deleteByPrimaryKey(id);
+    }
+
     /**获取ip*/
     public static String getIpAddr(HttpServletRequest request) throws Exception {
         String ip = request.getHeader("X-Forwarded-For");
@@ -110,6 +130,20 @@ public class SystemLogUtils {
         cr.andEventdescEqualTo(eventDesc);
         List<SystemLog> list=systemLogMapper.selectByExample(example);
         return list;
+    }
+
+    public static SystemLog selectSystemLogByUserId(String eventName,String userid){
+        SystemLogMapper systemLogMapper = (SystemLogMapper) ApplicationContextUtil.getBean(SystemLogMapper.class);
+        SystemLogExample example=new SystemLogExample();
+        SystemLogExample.Criteria cr=example.createCriteria();
+        cr.andEventnameEqualTo(eventName);
+        cr.andOperuserEqualTo(userid);
+        List<SystemLog> list=systemLogMapper.selectByExample(example);
+        if(list==null||list.size()==0){
+            return null;
+        }else{
+            return list.get(0);
+        }
     }
 
 }

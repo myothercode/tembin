@@ -10,10 +10,12 @@ import com.base.database.trading.mapper.UsercontrollerPaypalAccountMapper;
 import com.base.database.trading.model.*;
 import com.base.database.trading.model.UsercontrollerPaypalAccountExample;
 import com.base.domains.SessionVO;
+import com.base.domains.querypojos.BaseTjReportQuery;
 import com.base.domains.userinfo.UsercontrollerUserExtend;
 import com.base.mybatis.page.Page;
 import com.base.userinfo.service.SystemUserManagerService;
 import com.base.utils.cache.SessionCacheSupport;
+import com.base.utils.common.DateUtils;
 import com.base.utils.exception.Asserts;
 import com.base.utils.httpclient.HttpClientUtil;
 import org.apache.commons.lang.StringUtils;
@@ -23,6 +25,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 /**
@@ -120,6 +123,44 @@ public class PayPalServiceImpl implements PayPalService {
         map.put("userId",sessionVO.getId());
         List<UsercontrollerPaypalAccount> paypalAccounts = aboutPaypalMapper.queryPayPalsByUserId(map,page);
         return paypalAccounts;
+    }
+
+    @Override
+    public List<UsercontrollerPaypalAccount> queryPayPalsByUserIdReport(Map map, Page page){
+        SessionVO sessionVO = SessionCacheSupport.getSessionVO();
+        map.put("userId",sessionVO.getId());
+        List<UsercontrollerPaypalAccount> paypalAccounts = aboutPaypalMapper.queryPayPalsByUserIdReport(map, page);
+        return paypalAccounts;
+    }
+
+    @Override
+    public List<BaseTjReportQuery> selectPayPalReportList(String type){
+        SessionVO c= SessionCacheSupport.getSessionVO();
+        SimpleDateFormat sdfmonth = new SimpleDateFormat("yyyy-MM");
+        Map m = new HashMap();
+        m.put("datetype",type);
+        if("1".equals(type)){//当天反馈信息统计
+            m.put("datestr", DateUtils.formatDate(new Date()));
+        }else if("2".equals(type)){//昨天反馈信息统计
+            m.put("datestr", DateUtils.formatDate(DateUtils.turnToYesterday(new Date())));
+        }else if("3".equals(type)){//本周反馈信息统计
+            m.put("startDate", DateUtils.formatDate(DateUtils.turnToWeekStart(new Date())));
+            m.put("endDate",DateUtils.formatDate(DateUtils.turnToDateEnd(new Date())));
+        }else if("4".equals(type)){//上周反馈信息统计
+            Calendar date = Calendar.getInstance();
+            date.setTime(new Date());
+            date.set(Calendar.DATE, date.get(Calendar.DATE) - 7);
+            m.put("startDate", DateUtils.formatDate(DateUtils.turnToWeekStart(date.getTime())));
+            m.put("endDate",DateUtils.formatDate(DateUtils.turnToDateEnd(date.getTime())));
+        }else if("5".equals(type)){//本月反馈信息统计
+            m.put("datestr", sdfmonth.format(new Date()));
+        }else if("6".equals(type)){//上月反馈信息统计
+            Calendar date = Calendar.getInstance();
+            date.setTime(new Date());
+            date.set(Calendar.MONTH, date.get(Calendar.MONTH) - 1);
+            m.put("datestr", sdfmonth.format(date.getTime()));
+        }
+        return this.aboutPaypalMapper.selectPayPalReportList(m,Page.newAOnePage());
     }
 
     @Override

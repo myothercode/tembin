@@ -119,7 +119,7 @@ function doKnobs(xzb,r){
         },
         tooltip: {
             //pointFormat: '{series.name}: <b>{point.y:.1f}</b>'
-            valueSuffix: '单'
+            valueSuffix: ''//后缀
         },
         /*legend: {
             layout: 'vertical',
@@ -321,12 +321,12 @@ function queryPaypalList(){
         url:"/xsddWeb/paypal/queryPaypalList.do",
         columnData:[
             {title:"paypal帐号",name:"paypalAccount",width:"8%",align:"left"},
-            {title:"今天",name:"",width:"8%",align:"left"},
-            {title:"昨天",name:"",width:"8%",align:"left"},
-            {title:"本周",name:"",width:"8%",align:"left"},
-            {title:"上周",name:"",width:"8%",align:"left"},
-            {title:"本月",name:"",width:"8%",align:"left"},
-            {title:"上月",name:"",width:"8%",align:"left"},
+            {title:"今天",name:"day",width:"8%",align:"left"},
+            {title:"昨天",name:"yesterday",width:"8%",align:"left"},
+            {title:"本周",name:"week",width:"8%",align:"left"},
+            {title:"上周",name:"thatweek",width:"8%",align:"left"},
+            {title:"本月",name:"month",width:"8%",align:"left"},
+            {title:"上月",name:"thatmonth",width:"8%",align:"left"},
             {title:"状态",name:"op",width:"8%",align:"left",format:makePaypalStatus}
         ],
         selectDataNow:false,

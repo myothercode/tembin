@@ -9,12 +9,12 @@ function getOrderList1(){
             {title:"",name:"ch",width:"1%",align:"top",format:makeOption5},
             {title:"图片/交易号",name:"orderid",width:"10%",align:"left",format:makeOption2},
             {title:"买家/SKU/承运商/追踪号",name:"orderid",width:"20%",align:"left",format:makeOption3},
-            {title:"<a href=\"javascript:void(0)\" onclick=\"orderByTransactionPrice(this,'asc3');\">站点</a>",name:"itemSite",width:"3%",align:"left",format:makeOption20},
-            {title:"<a href=\"javascript:void(0)\" onclick=\"orderByTransactionPrice(this,'asc');\">售价</a>",name:"itemUrl",width:"6%",align:"left",format:makeOption6},
-            {title:"<a href=\"javascript:void(0)\" onclick=\"orderByTransactionPrice(this,'asc1');\">售出日期</a>",name:"createdtime",width:"5%",align:"left"},
+            {title:"<a href=\"javascript:void(0)\" onclick=\"orderByTransactionPrice(this,'asc3');\"><font style='color: #0000ff'>站点</font></a>",name:"itemSite",width:"3%",align:"left",format:makeOption20},
+            {title:"<a href=\"javascript:void(0)\" onclick=\"orderByTransactionPrice(this,'asc');\"><font style='color: #0000ff'>售价</font></a>",name:"itemUrl",width:"6%",align:"left",format:makeOption6},
+            {title:"<a href=\"javascript:void(0)\" onclick=\"orderByTransactionPrice(this,'desc1');\"><font style='color: #0000ff'>售出日期</font></a>",name:"createdtime",width:"5%",align:"left"},
             {title:"更新时间",name:"lastmodifiedtime",width:"5%",align:"left"},
-            {title:"<a href=\"javascript:void(0)\" onclick=\"orderByTransactionPrice(this,'asc2');\">数量</a>",name:"quantitypurchased",width:"3%",align:"center"},
-            {title:"<a href=\"javascript:void(0)\" onclick=\"orderByTransactionPrice(this,'asc4');\">EBAY账号</a>",name:"selleruserid",width:"8%",align:"left"},
+            {title:"<a href=\"javascript:void(0)\" onclick=\"orderByTransactionPrice(this,'asc2');\"><font style='color: #0000ff'>数量</font></a>",name:"quantitypurchased",width:"3%",align:"center"},
+            {title:"<a href=\"javascript:void(0)\" onclick=\"orderByTransactionPrice(this,'asc4');\"><font style='color: #0000ff'>EBAY账号</font></a>",name:"selleruserid",width:"8%",align:"left"},
             {title:"状态",name:"shipped",width:"3%",align:"left",format:makeOption4},
             {title:"操作&nbsp;&nbsp;&nbsp;&nbsp;",name:"option1",width:"8%",align:"center",format:makeOption1}
         ],
@@ -42,7 +42,10 @@ function orderByTransactionPrice(obj,orderby){
     if(i==4){
         url+="status=Complete&orderby="+orderby;
     }
-    if(i>4){
+    if(i==5){
+        url+="status=Cancelled&orderby="+orderby;
+    }
+    if(i>5){
         var folderId=$("#menu"+i).attr("name2");
         url+="folderId="+folderId+"&orderby="+orderby
     }
@@ -120,12 +123,12 @@ function orderByTransactionPrice(obj,orderby){
             {title:"",name:"ch",width:"2%",align:"top",format:makeOption5},
             {title:"图片/交易号",name:"orderid",width:"10%",align:"left",format:makeOption2},
             {title:"买家/SKU/承运商/追踪号",name:"orderid",width:"13%",align:"left",format:makeOption3},
-            {title:"<a href=\"javascript:void(0)\" onclick=\"orderByTransactionPrice(this,'"+orderby4+"');\">站点</a>",name:"itemSite",width:"8%",align:"left",format:makeOption20},
-            {title:"<a href=\"javascript:void(0)\" onclick=\"orderByTransactionPrice(this,'"+orderby1+"');\">售价</a>",name:"itemUrl",width:"8%",align:"left",format:makeOption6},
-            {title:"<a href=\"javascript:void(0)\" onclick=\"orderByTransactionPrice(this,'"+orderby2+"');\">售出日期</a>",name:"createdtime",width:"8%",align:"left"},
+            {title:"<a href=\"javascript:void(0)\" onclick=\"orderByTransactionPrice(this,'"+orderby4+"');\"><font style='color: #0000ff'>站点</font></a>",name:"itemSite",width:"8%",align:"left",format:makeOption20},
+            {title:"<a href=\"javascript:void(0)\" onclick=\"orderByTransactionPrice(this,'"+orderby1+"');\"><font style='color: #0000ff'>售价</font></a>",name:"itemUrl",width:"8%",align:"left",format:makeOption6},
+            {title:"<a href=\"javascript:void(0)\" onclick=\"orderByTransactionPrice(this,'"+orderby2+"');\"><font style='color: #0000ff'>售出日期</font></a>",name:"createdtime",width:"8%",align:"left"},
             {title:"更新时间",name:"lastmodifiedtime",width:"5%",align:"left"},
-            {title:"<a href=\"javascript:void(0)\" onclick=\"orderByTransactionPrice(this,'"+orderby3+"');\">数量</a>",name:"quantitypurchased",width:"8%",align:"center"},
-            {title:"<a href=\"javascript:void(0)\" onclick=\"orderByTransactionPrice(this,'"+orderby5+"');\">EBAY账号</a>",name:"selleruserid",width:"8%",align:"left"},
+            {title:"<a href=\"javascript:void(0)\" onclick=\"orderByTransactionPrice(this,'"+orderby3+"');\"><font style='color: #0000ff'>数量</font></a>",name:"quantitypurchased",width:"8%",align:"center"},
+            {title:"<a href=\"javascript:void(0)\" onclick=\"orderByTransactionPrice(this,'"+orderby5+"');\"><font style='color: #0000ff'>EBAY账号</font></a>",name:"selleruserid",width:"8%",align:"left"},
             {title:"状态",name:"shipped",width:"3%",align:"left",format:makeOption4},
             {title:"操作&nbsp;&nbsp;&nbsp;&nbsp;",name:"option1",width:"8%",align:"center",format:makeOption1}
         ],
@@ -146,6 +149,9 @@ function refreshTable3(){
 }
 function refreshTable4(){
     $("#OrderGetOrdersListTable4").selectDataAfterSetParm({"bedDetailVO.deptId":"", "isTrue":0});
+}
+function refreshTable15(){
+    $("#OrderGetOrdersListTable5").selectDataAfterSetParm({"bedDetailVO.deptId":"", "isTrue":0});
 }
 function refreshTable7(table){
     $(table).selectDataAfterSetParm({"bedDetailVO.deptId":"", "isTrue":0});
@@ -176,7 +182,7 @@ function selectOperation(orderid,transactionid,selleruserid,obj,id){
         modifyOrderStatus(transactionid,selleruserid);
     }
     if(value=="3"){
-        sendMessage(orderid);
+        sendMessage(transactionid,selleruserid);
     }
     if(value=="4"){
         issueRefund(transactionid,selleruserid);
@@ -219,8 +225,8 @@ function deleteOrder(id,obj){
             }]
     );
 }
-function sendMessage(orderid){
-    var url=path+'/order/initOrdersSendMessage.do?orderid='+orderid;
+function sendMessage(transactionid,selleruserid){
+    var url=path+'/order/initOrdersSendMessage.do?transactionid='+transactionid+'&selleruserid='+selleruserid;
     viewsendMessage=openMyDialog({title: '发送消息',
         content: 'url:'+url,
         icon: 'succeed',
@@ -265,6 +271,12 @@ function makeOption3(json){
     htm+="</span><span style=\"width:100%; float:left; color:#8BB51B\">"+json.sku+"</span>" +
         "<span style=\"width:100%; float:left\"><font style='color: #ff7e00'>" +con +
         "</span>";
+    if(json.feedbackMessage!=""){
+        htm+="<span style='width:100%; float:left'><font color='#5F93D7' style='margin-bottom: 100px;'>B：</font><span style='margin-bottom: 20px;'><img  src='"+path+"/img/f.png' width='14' height='14'></span><font style='color: #000000'>&nbsp;"+json.feedbackMessage+"</font></span>";
+    }
+    if(json.feedbackMessage1!=""){
+        htm+="<span style='width:100%; float:left'><font color='#5F93D7'>S：</font><span><img src='"+path+"/img/add.png' width='12' height='12'></span><font style='color: #000000'>&nbsp;"+json.feedbackMessage1+"</font></span>";
+    }
     if(json.comment&&json.comment!=""){
         htm+="<br/><span id='commentId' class=\"newdf\" style='border-radius: 3px;' title=\""+json.comment+"\">备注："+json.comment+"</span>";
     }
@@ -273,6 +285,10 @@ function makeOption3(json){
 function makeOption4(json){
     var imgurl1=path+"/img/";
     var htm="";
+    if(json.orderstatus=='Cancelled'||json.orderstatus=='CancelPending'){
+        htm=htm+"<img src=\""+imgurl1+"cancelled.png\" title=\""+json.cancelstatus+"\" >";
+        return htm;
+    }
     if(json.flagNotAllComplete){
         htm=htm+"<img src=\""+imgurl1+"money_no.png\" title=\"未结清\" >";
         return htm;
@@ -283,7 +299,7 @@ function makeOption4(json){
         return htm;
     }
     if(json.status=='Complete'){
-        if(json.feedbackMessage&&json.feedbackMessage!=""){
+        if(json.feedbackMessage!=""){
             htm="<img title=\"签收\" src=\""+imgurl1+"a4.png\" >"
         }else if(json.shipmenttrackingnumbe!=""&&json.shippingcarrierused!=""){
             htm="<img title=\"发货\" src=\""+imgurl1+"a2.png\" >"
@@ -318,12 +334,12 @@ function submitCommit(){
             {title:"",name:"ch",width:"1%",align:"top",format:makeOption5},
             {title:"图片/交易号",name:"orderid",width:"10%",align:"left",format:makeOption2},
             {title:"买家/SKU/承运商/追踪号",name:"orderid",width:"20%",align:"left",format:makeOption3},
-            {title:"<a href=\"javascript:void(0)\" onclick=\"orderByTransactionPrice(this,'asc3');\">站点</a>",name:"itemSite",width:"3%",align:"left",format:makeOption20},
-            {title:"<a href=\"javascript:void(0)\" onclick=\"orderByTransactionPrice(this,'asc');\">售价</a>",name:"itemUrl",width:"6%",align:"left",format:makeOption6},
-            {title:"<a href=\"javascript:void(0)\" onclick=\"orderByTransactionPrice(this,'asc1');\">售出日期</a>",name:"createdtime",width:"5%",align:"left"},
+            {title:"<a href=\"javascript:void(0)\" onclick=\"orderByTransactionPrice(this,'asc3');\"><font style='color: #0000ff'>站点</font></a>",name:"itemSite",width:"3%",align:"left",format:makeOption20},
+            {title:"<a href=\"javascript:void(0)\" onclick=\"orderByTransactionPrice(this,'asc');\"><font style='color: #0000ff'>售价</font></a>",name:"itemUrl",width:"6%",align:"left",format:makeOption6},
+            {title:"<a href=\"javascript:void(0)\" onclick=\"orderByTransactionPrice(this,'desc1');\"><font style='color: #0000ff'>售出日期</font></a>",name:"createdtime",width:"5%",align:"left"},
             {title:"更新时间",name:"lastmodifiedtime",width:"5%",align:"left"},
-            {title:"<a href=\"javascript:void(0)\" onclick=\"orderByTransactionPrice(this,'asc2');\">数量</a>",name:"quantitypurchased",width:"3%",align:"center"},
-            {title:"<a href=\"javascript:void(0)\" onclick=\"orderByTransactionPrice(this,'asc4');\">EBAY账号</a>",name:"selleruserid",width:"8%",align:"left"},
+            {title:"<a href=\"javascript:void(0)\" onclick=\"orderByTransactionPrice(this,'asc2');\"><font style='color: #0000ff'>数量</font></a>",name:"quantitypurchased",width:"3%",align:"center"},
+            {title:"<a href=\"javascript:void(0)\" onclick=\"orderByTransactionPrice(this,'asc4');\"><font style='color: #0000ff'>EBAY账号</font></a>",name:"selleruserid",width:"8%",align:"left"},
             {title:"状态",name:"shipped",width:"3%",align:"left",format:makeOption4},
             {title:"操作&nbsp;&nbsp;&nbsp;&nbsp;",name:"option1",width:"8%",align:"center",format:makeOption1}
         ],
@@ -352,6 +368,7 @@ function modifyOrderStatus(id,selleruserid){
         lock:true
     });
 }
+
 function getBindParm(){
     var url=path+"/order/GetOrder.do";
     OrderGetOrders=openMyDialog({title: '同步订单',
@@ -371,7 +388,8 @@ function query1(){
     var starttime=$("#starttime1").val();
     var endtime=$("#endtime1").val();
     var statusQ=$("#statusQ1").val();
-    refreshTable5(table,countryQ,typeQ,daysQ,itemType,content,null,starttime,endtime,statusQ);
+    var accountQ=$("#accountQ1").val();
+    refreshTable5(table,countryQ,typeQ,daysQ,itemType,content,null,starttime,endtime,statusQ,accountQ);
 }
 function query2(){
     var daysQ=$("#daysQ2").val();
@@ -384,7 +402,8 @@ function query2(){
     var starttime=$("#starttime2").val();
     var endtime=$("#endtime2").val();
     var statusQ=$("#statusQ2").val();
-    refreshTable5(table,countryQ,typeQ,daysQ,itemType,content,status,starttime,endtime,statusQ);
+    var accountQ=$("#accountQ2").val();
+    refreshTable5(table,countryQ,typeQ,daysQ,itemType,content,status,starttime,endtime,statusQ,accountQ);
 }
 function query3(){
     var daysQ=$("#daysQ3").val();
@@ -396,7 +415,8 @@ function query3(){
     var starttime=$("#starttime3").val();
     var endtime=$("#endtime3").val();
     var statusQ=$("#statusQ3").val();
-    refreshTable5(table,countryQ,typeQ,daysQ,itemType,content,"notAllComplete",starttime,endtime,statusQ);
+    var accountQ=$("#accountQ3").val();
+    refreshTable5(table,countryQ,typeQ,daysQ,itemType,content,"notAllComplete",starttime,endtime,statusQ,accountQ);
 }
 function query4(){
     var daysQ=$("#daysQ4").val();
@@ -409,21 +429,36 @@ function query4(){
     var starttime=$("#starttime4").val();
     var endtime=$("#endtime4").val();
     var statusQ=$("#statusQ4").val();
-    refreshTable5(table,countryQ,typeQ,daysQ,itemType,content,status,starttime,endtime,statusQ);
+    var accountQ=$("#accountQ4").val();
+    refreshTable5(table,countryQ,typeQ,daysQ,itemType,content,status,starttime,endtime,statusQ,accountQ);
 }
-function refreshTable5(table,countryQ,typeQ,daysQ,itemType,content,status,starttime,endtime,statusQ){
+function query5(){
+    var daysQ=$("#daysQ5").val();
+    var countryQ=$("#countryQ5").val();
+    var typeQ=$("#typeQ5").val();
+    var itemType=$("#itemType5").val();
+    var content=$("#content5").val();
+    var table="#OrderGetOrdersListTable5";
+    var status="Cancelled";
+    var starttime=$("#starttime5").val();
+    var endtime=$("#endtime5").val();
+    var statusQ=$("#statusQ5").val();
+    var accountQ=$("#accountQ5").val();
+    refreshTable5(table,countryQ,typeQ,daysQ,itemType,content,status,starttime,endtime,statusQ,accountQ);
+}
+function refreshTable5(table,countryQ,typeQ,daysQ,itemType,content,status,starttime,endtime,statusQ,accountQ){
     $(table).initTable({
         url:path + "/order/ajax/loadOrdersList.do?",
         columnData:[
             {title:"",name:"ch",width:"2%",align:"top",format:makeOption5},
             {title:"图片/交易号",name:"orderid",width:"10%",align:"left",format:makeOption2},
             {title:"买家/SKU/承运商/追踪号",name:"orderid",width:"20%",align:"left",format:makeOption3},
-            {title:"<a href=\"javascript:void(0)\" onclick=\"orderByTransactionPrice(this,'asc3');\">站点</a>",name:"itemSite",width:"3%",align:"left",format:makeOption20},
-            {title:"<a href=\"javascript:void(0)\" onclick=\"orderByTransactionPrice(this,'asc');\">售价</a>",name:"itemUrl",width:"6%",align:"left",format:makeOption6},
-            {title:"<a href=\"javascript:void(0)\" onclick=\"orderByTransactionPrice(this,'asc1');\">售出日期</a>",name:"createdtime",width:"5%",align:"left"},
+            {title:"<a href=\"javascript:void(0)\" onclick=\"orderByTransactionPrice(this,'asc3');\"><font style='color: #0000ff'>站点</font></a>",name:"itemSite",width:"3%",align:"left",format:makeOption20},
+            {title:"<a href=\"javascript:void(0)\" onclick=\"orderByTransactionPrice(this,'asc');\"><font style='color: #0000ff'>售价</font></a>",name:"itemUrl",width:"6%",align:"left",format:makeOption6},
+            {title:"<a href=\"javascript:void(0)\" onclick=\"orderByTransactionPrice(this,'desc1');\"><font style='color: #0000ff'>售出日期</font></a>",name:"createdtime",width:"5%",align:"left"},
             {title:"更新时间",name:"lastmodifiedtime",width:"5%",align:"left"},
-            {title:"<a href=\"javascript:void(0)\" onclick=\"orderByTransactionPrice(this,'asc2');\">数量</a>",name:"quantitypurchased",width:"3%",align:"center"},
-            {title:"<a href=\"javascript:void(0)\" onclick=\"orderByTransactionPrice(this,'asc4');\">EBAY账号</a>",name:"selleruserid",width:"8%",align:"left"},
+            {title:"<a href=\"javascript:void(0)\" onclick=\"orderByTransactionPrice(this,'asc2');\"><font style='color: #0000ff'>数量</font></a>",name:"quantitypurchased",width:"3%",align:"center"},
+            {title:"<a href=\"javascript:void(0)\" onclick=\"orderByTransactionPrice(this,'asc4');\"><font style='color: #0000ff'>EBAY账号</font></a>",name:"selleruserid",width:"8%",align:"left"},
             {title:"状态",name:"shipped",width:"3%",align:"left",format:makeOption4},
             {title:"操作&nbsp;&nbsp;&nbsp;&nbsp;",name:"option1",width:"8%",align:"center",format:makeOption1}
         ],
@@ -431,7 +466,7 @@ function refreshTable5(table,countryQ,typeQ,daysQ,itemType,content,status,startt
         isrowClick:false,
         showIndex:false
     });
-    $(table).selectDataAfterSetParm({"bedDetailVO.deptId":"", "isTrue":0,"countryQ":countryQ,"typeQ":typeQ,"daysQ":daysQ,"itemType":itemType,"content":content,"status":status,"starttime1":starttime,"endtime1":endtime,"statusQ":statusQ});
+    $(table).selectDataAfterSetParm({"bedDetailVO.deptId":"", "isTrue":0,"countryQ":countryQ,"typeQ":typeQ,"daysQ":daysQ,"itemType":itemType,"content":content,"status":status,"starttime1":starttime,"endtime1":endtime,"statusQ":statusQ,"accountQ":accountQ});
 }
 function queryTime(n,flag,day){
     var scop="span[scop=queryTime"+n+"]";
@@ -452,7 +487,7 @@ function queryTime(n,flag,day){
     if(flag!=6){
         document.getElementById("time"+n).innerHTML="";
         if(n==1){
-                query1();
+            query1();
         }
         if(n==2){
             query2();
@@ -463,8 +498,11 @@ function queryTime(n,flag,day){
         if(n==4){
             query4();
         }
+        if(n==5){
+            query5();
+        }
     }
-    if(n>4){
+    if(n>5){
         if(flag!=6) {
             document.getElementById("time"+n).innerHTML="";
             var table = $("#OrderGetOrdersListTable" + n);
@@ -477,7 +515,8 @@ function queryTime(n,flag,day){
             var starttime1 = $("#starttime" + n).val();
             var endtime1 = $("#endtime" + n).val();
             var statusQ = $("#statusQ" + n).val();
-            refreshTable6(table, countryQ, typeQ, daysQ, itemType, content, folderId, starttime1, endtime1, statusQ);
+            var accountQ=$("#accountQ"+n).val();
+            refreshTable6(table,countryQ,typeQ,daysQ,itemType,content,folderId,starttime1,endtime1,statusQ,accountQ);
         }
     }
 }
@@ -509,7 +548,10 @@ function queryStatus(n,flag,day){
     if(n==4){
         query4();
     }
-    if(n>4){
+    if(n==5){
+        query5();
+    }
+    if(n>5){
         var table=$("#OrderGetOrdersListTable"+n);
         var daysQ=$("#daysQ"+n).val();
         var countryQ=$("#countryQ"+n).val();
@@ -520,7 +562,8 @@ function queryStatus(n,flag,day){
         var starttime1=$("#starttime"+n).val();
         var endtime1=$("#endtime"+n).val();
         var statusQ=$("#statusQ"+n).val();
-        refreshTable6(table,countryQ,typeQ,daysQ,itemType,content,folderId,starttime1,endtime1,statusQ);
+        var accountQ=$("#accountQ"+n).val();
+        refreshTable6(table,countryQ,typeQ,daysQ,itemType,content,folderId,starttime1,endtime1,statusQ,accountQ);
     }
 }
 
@@ -550,7 +593,10 @@ function queryAttr(n,flag,day){
     if(n==4){
         query4();
     }
-    if(n>4){
+    if(n==5){
+        query5();
+    }
+    if(n>5){
         var table=$("#OrderGetOrdersListTable"+n);
         var daysQ=$("#daysQ"+n).val();
         var countryQ=$("#countryQ"+n).val();
@@ -561,7 +607,8 @@ function queryAttr(n,flag,day){
         var starttime1=$("#starttime"+n).val();
         var endtime1=$("#endtime"+n).val();
         var statusQ=$("#statusQ"+n).val();
-        refreshTable6(table,countryQ,typeQ,daysQ,itemType,content,folderId,starttime1,endtime1,statusQ);
+        var accountQ=$("#accountQ"+n).val();
+        refreshTable6(table,countryQ,typeQ,daysQ,itemType,content,folderId,starttime1,endtime1,statusQ,accountQ);
     }
 }
 function queryCountry(n,flag,day){
@@ -590,7 +637,10 @@ function queryCountry(n,flag,day){
     if(n==4){
         query4();
     }
-    if(n>4){
+    if(n==5){
+        query5();
+    }
+    if(n>5){
         var table=$("#OrderGetOrdersListTable"+n);
         var daysQ=$("#daysQ"+n).val();
         var countryQ=$("#countryQ"+n).val();
@@ -601,7 +651,48 @@ function queryCountry(n,flag,day){
         var starttime1=$("#starttime"+n).val();
         var endtime1=$("#endtime"+n).val();
         var statusQ=$("#statusQ"+n).val();
-        refreshTable6(table,countryQ,typeQ,daysQ,itemType,content,folderId,starttime1,endtime1,statusQ);
+        var accountQ=$("#accountQ"+n).val();
+        refreshTable6(table,countryQ,typeQ,daysQ,itemType,content,folderId,starttime1,endtime1,statusQ,accountQ);
+    }
+}
+function selectAccount1(n,flag,day){
+    var accounts=$("span[scop=account"+n+"]");
+    for(var i=0;i<accounts.length;i++){
+        if(i==(flag-1)){
+            $(accounts[i]).attr("class","newusa_ici");
+            $("#accountQ"+n).val(day);
+        }else{
+            $(accounts[i]).attr("class","newusa_ici_1");
+        }
+    }
+    if(n==1){
+        query1();
+    }
+    if(n==2){
+        query2();
+    }
+    if(n==3){
+        query3();
+    }
+    if(n==4){
+        query4();
+    }
+    if(n==5){
+        query5();
+    }
+    if(n>5){
+        var table=$("#OrderGetOrdersListTable"+n);
+        var daysQ=$("#daysQ"+n).val();
+        var countryQ=$("#countryQ"+n).val();
+        var typeQ=$("#typeQ"+n).val();
+        var itemType=$("#itemType"+n).val();
+        var content=$("#content"+n).val();
+        var folderId=$("#menu"+n).attr("name2");
+        var starttime1=$("#starttime"+n).val();
+        var endtime1=$("#endtime"+n).val();
+        var statusQ=$("#statusQ"+n).val();
+        var accountQ=$("#accountQ"+n).val();
+        refreshTable6(table,countryQ,typeQ,daysQ,itemType,content,folderId,starttime1,endtime1,statusQ,accountQ);
     }
 }
 function downloadOrders(n){
@@ -684,7 +775,16 @@ function moveFolder(i){
         alert("请选择需要移动的订单");
     }
 }
-
+function sycOneOrder(){
+    var url=path+"/order/sycOneOrder.do";
+    OrderGetOrders=openMyDialog({title: '同步单个订单',
+        content: 'url:'+url,
+        icon: 'succeed',
+        width:600,
+        height:200,
+        lock:true
+    });
+}
 function modifyOrderNums(i){
     var table="#OrderGetOrdersListTable"+i;
     var checkboxs=$(table).find("input[name=checkbox]:checked");
@@ -759,7 +859,7 @@ function addstartTimeAndEndTime(obj,i){
         +"<input value1='input"+i+"' style='border:0;background-color:#ffffff;float: left;color: #5F93D7;height: 26px;' value='确定' onclick='"+query+"' type='button'>";
         $(time).append(span);
     }
-    if(i>4){
+    if(i>5){
         var input=$("input[value1=input"+i+"]");
         $(input).removeAttr("onclick");
         $(input[0]).click(function(){
@@ -773,7 +873,8 @@ function addstartTimeAndEndTime(obj,i){
             var starttime1=$("#starttime"+(i)).val();
             var endtime1=$("#endtime"+(i)).val();
             var statusQ=$("#statusQ"+(i)).val();
-            refreshTable6(table,countryQ,typeQ,daysQ,itemType,content,folderId,starttime1,endtime1,statusQ);
+            var accountQ=$("#accountQ"+(i)).val();
+            refreshTable6(table,countryQ,typeQ,daysQ,itemType,content,folderId,starttime1,endtime1,statusQ,accountQ);
         });
     }
 }
@@ -784,7 +885,7 @@ function setTab1(name,cursel,n){
     for(var i=1;i<=n;i++){
         var na="#"+name+i;
         $(na).attr("onclick","setTab(\"menu\","+i+","+n+")");
-        if(i>4&&i==cursel){
+        if(i>5&&i==cursel){
             var Contentbox=document.getElementById("ContentboxDiv");
             /* var lastdiv=document.getElementById("con_menu_2").cloneNode();*/
             var lastdiv=$("#con_menu_4").clone();
@@ -795,6 +896,7 @@ function setTab1(name,cursel,n){
             var attrs=$(lastdiv).find("span[scop=queryAttr4]");
             var times=$(lastdiv).find("span[scop=queryTime4]");
             var statuses=$(lastdiv).find("span[scop=queryStatus4]");
+            var accounts=$(lastdiv).find("span[scop=account4]");
             var table=$(lastdiv).find("div[id=OrderGetOrdersListTable4]");
             var starttime=$(lastdiv).find("input[id=starttime4]");
             var endtime=$(lastdiv).find("input[id=endtime4]");
@@ -809,12 +911,12 @@ function setTab1(name,cursel,n){
                     {title:"",name:"ch",width:"2%",align:"top",format:makeOption5},
                     {title:"图片/交易号",name:"orderid",width:"10%",align:"left",format:makeOption2},
                     {title:"买家/SKU/承运商/追踪号",name:"orderid",width:"20%",align:"left",format:makeOption3},
-                    {title:"<a href=\"javascript:void(0)\" onclick=\"orderByTransactionPrice(this,'asc3');\">站点</a>",name:"itemSite",width:"3%",align:"left",format:makeOption20},
-                    {title:"<a href=\"javascript:void(0)\" onclick=\"orderByTransactionPrice(this,'asc');\">售价</a>",name:"itemUrl",width:"6%",align:"left",format:makeOption6},
-                    {title:"<a href=\"javascript:void(0)\" onclick=\"orderByTransactionPrice(this,'asc1');\">售出日期</a>",name:"createdtime",width:"5%",align:"left"},
+                    {title:"<a href=\"javascript:void(0)\" onclick=\"orderByTransactionPrice(this,'asc3');\"><font style='color: #0000ff'>站点</font></a>",name:"itemSite",width:"3%",align:"left",format:makeOption20},
+                    {title:"<a href=\"javascript:void(0)\" onclick=\"orderByTransactionPrice(this,'asc');\"><font style='color: #0000ff'>售价</font></a>",name:"itemUrl",width:"6%",align:"left",format:makeOption6},
+                    {title:"<a href=\"javascript:void(0)\" onclick=\"orderByTransactionPrice(this,'desc1');\"><font style='color: #0000ff'>售出日期</font></a>",name:"createdtime",width:"5%",align:"left"},
                     {title:"更新时间",name:"lastmodifiedtime",width:"5%",align:"left"},
-                    {title:"<a href=\"javascript:void(0)\" onclick=\"orderByTransactionPrice(this,'asc2');\">数量</a>",name:"quantitypurchased",width:"3%",align:"center"},
-                    {title:"<a href=\"javascript:void(0)\" onclick=\"orderByTransactionPrice(this,'asc4');\">EBAY账号</a>",name:"selleruserid",width:"8%",align:"left"},
+                    {title:"<a href=\"javascript:void(0)\" onclick=\"orderByTransactionPrice(this,'asc2');\"><font style='color: #0000ff'>数量</font></a>",name:"quantitypurchased",width:"3%",align:"center"},
+                    {title:"<a href=\"javascript:void(0)\" onclick=\"orderByTransactionPrice(this,'asc4');\"><font style='color: #0000ff'>EBAY账号</font></a>",name:"selleruserid",width:"8%",align:"left"},
                     {title:"状态",name:"shipped",width:"3%",align:"left",format:makeOption4},
                     {title:"操作&nbsp;&nbsp;&nbsp;&nbsp;",name:"option1",width:"8%",align:"center",format:makeOption1}
                 ],
@@ -840,6 +942,11 @@ function setTab1(name,cursel,n){
                 if(j==5){
                     $(Countrys[j-1]).attr("onclick","queryCountry("+i+","+j+",'AU');");
                 }
+            }
+            for(var j=1;j<=accounts.length;j++){
+                var ebayname=$(accounts[j-1]).attr("name1");
+                $(accounts[j-1]).attr("scop","account"+i);
+                $(accounts[j-1]).attr("onclick","selectAccount1("+i+","+j+",'"+ebayname+"');");
             }
             for(var j=1;j<=attrs.length;j++){
                 $(attrs[j-1]).attr("scop","queryAttr"+i);
@@ -911,7 +1018,7 @@ function setTab1(name,cursel,n){
             /* var itemType1=$("#itemType4");
              $(itemType1).attr("id","itemType"+i);
              var content1=$("#content4");
-             $(content1).attr("id","content"+i);*/
+             $(s).attr("id","content"+i);*/
             var itemType1=$(lastdiv).find("select[id=itemType4]");
             var content1=$(lastdiv).find("input[id=content4]");
             $(content1).attr("id","content"+i);
@@ -931,7 +1038,8 @@ function setTab1(name,cursel,n){
                 var starttime1=$("#starttime"+(i-1)).val();
                 var endtime1=$("#endtime"+(i-1)).val();
                 var statusQ=$("#statusQ"+(i-1)).val();
-                refreshTable6(table,countryQ,typeQ,daysQ,itemType,content,folderId,starttime1,endtime1,statusQ);
+                var accountQ=$("#accountQ"+(i-1)).val();
+                refreshTable6(table,countryQ,typeQ,daysQ,itemType,content,folderId,starttime1,endtime1,statusQ,accountQ);
             });
             download=$(lastdiv).find("span[id=downloadOrder4]");
             $(download).removeAttr("onclick");
@@ -965,19 +1073,19 @@ function setTab1(name,cursel,n){
      setTab(name,cursel,n);
      }*/
 }
-function refreshTable6(table,countryQ,typeQ,daysQ,itemType,content,folderId,starttime,endtime,statusQ){
+function refreshTable6(table,countryQ,typeQ,daysQ,itemType,content,folderId,starttime,endtime,statusQ,accountQ){
     $(table).initTable({
         url:path + "/order/ajax/loadOrdersList.do?",
         columnData:[
             {title:"",name:"ch",width:"2%",align:"top",format:makeOption5},
             {title:"图片/交易号",name:"orderid",width:"10%",align:"left",format:makeOption2},
             {title:"买家/SKU/承运商/追踪号",name:"orderid",width:"20%",align:"left",format:makeOption3},
-            {title:"<a href=\"javascript:void(0)\" onclick=\"orderByTransactionPrice(this,'asc3');\">站点</a>",name:"itemSite",width:"3%",align:"left",format:makeOption20},
-            {title:"<a href=\"javascript:void(0)\" onclick=\"orderByTransactionPrice(this,'asc');\">售价</a>",name:"itemUrl",width:"6%",align:"left",format:makeOption6},
-            {title:"<a href=\"javascript:void(0)\" onclick=\"orderByTransactionPrice(this,'asc1');\">售出日期</a>",name:"createdtime",width:"5%",align:"left"},
+            {title:"<a href=\"javascript:void(0)\" onclick=\"orderByTransactionPrice(this,'asc3');\"><font style='color: #0000ff'>站点</font></a>",name:"itemSite",width:"3%",align:"left",format:makeOption20},
+            {title:"<a href=\"javascript:void(0)\" onclick=\"orderByTransactionPrice(this,'asc');\"><font style='color: #0000ff'>售价</font></a>",name:"itemUrl",width:"6%",align:"left",format:makeOption6},
+            {title:"<a href=\"javascript:void(0)\" onclick=\"orderByTransactionPrice(this,'desc1');\"><font style='color: #0000ff'>售出日期</font></a>",name:"createdtime",width:"5%",align:"left"},
             {title:"更新时间",name:"lastmodifiedtime",width:"5%",align:"left"},
-            {title:"<a href=\"javascript:void(0)\" onclick=\"orderByTransactionPrice(this,'asc2');\">数量</a>",name:"quantitypurchased",width:"3%",align:"center"},
-            {title:"<a href=\"javascript:void(0)\" onclick=\"orderByTransactionPrice(this,'asc4');\">EBAY账号</a>",name:"selleruserid",width:"8%",align:"left"},
+            {title:"<a href=\"javascript:void(0)\" onclick=\"orderByTransactionPrice(this,'asc2');\"><font style='color: #0000ff'>数量</font></a>",name:"quantitypurchased",width:"3%",align:"center"},
+            {title:"<a href=\"javascript:void(0)\" onclick=\"orderByTransactionPrice(this,'asc4');\"><font style='color: #0000ff'>EBAY账号</font></a>",name:"selleruserid",width:"8%",align:"left"},
             {title:"状态",name:"shipped",width:"3%",align:"left",format:makeOption4},
             {title:"操作&nbsp;&nbsp;&nbsp;&nbsp;",name:"option1",width:"8%",align:"center",format:makeOption1}
         ],
@@ -985,11 +1093,11 @@ function refreshTable6(table,countryQ,typeQ,daysQ,itemType,content,folderId,star
         isrowClick:false,
         showIndex:false
     });
-    $(table).selectDataAfterSetParm({"bedDetailVO.deptId":"", "isTrue":0,"countryQ":countryQ,"typeQ":typeQ,"daysQ":daysQ,"itemType":itemType,"content":content,"folderId":folderId,"starttime1":starttime,"endtime1":endtime,"statusQ":statusQ});
+    $(table).selectDataAfterSetParm({"bedDetailVO.deptId":"", "isTrue":0,"countryQ":countryQ,"typeQ":typeQ,"daysQ":daysQ,"itemType":itemType,"content":content,"folderId":folderId,"starttime1":starttime,"endtime1":endtime,"statusQ":statusQ,"accountQ":accountQ});
 }
 //--------------------------------------------------------------------------
 function setTab(name,cursel,n){
-    if(cursel<5&&cursel>1){
+    if(cursel<6&&cursel>1){
         var url="/order/ajax/loadOrdersList.do?";
         if(cursel==2){
             url+="status=Incomplete";
@@ -1000,18 +1108,21 @@ function setTab(name,cursel,n){
         if(cursel==4){
             url+="status=Complete";
         }
+        if(cursel==5){
+            url+="status=Cancelled";
+        }
         $("#OrderGetOrdersListTable"+cursel).initTable({
             url:path + url,
             columnData:[
                 {title:"",name:"ch",width:"2%",align:"top",format:makeOption5},
                 {title:"图片/交易号",name:"orderid",width:"10%",align:"left",format:makeOption2},
                 {title:"买家/SKU/承运商/追踪号",name:"orderid",width:"20%",align:"left",format:makeOption3},
-                {title:"<a href=\"javascript:void(0)\" onclick=\"orderByTransactionPrice(this,'asc3');\">站点</a>",name:"itemSite",width:"3%",align:"left",format:makeOption20},
-                {title:"<a href=\"javascript:void(0)\" onclick=\"orderByTransactionPrice(this,'asc');\">售价</a>",name:"itemUrl",width:"6%",align:"left",format:makeOption6},
-                {title:"<a href=\"javascript:void(0)\" onclick=\"orderByTransactionPrice(this,'asc1');\">售出日期</a>",name:"createdtime",width:"5%",align:"left"},
+                {title:"<a href=\"javascript:void(0)\" onclick=\"orderByTransactionPrice(this,'asc3');\"><font style='color: #0000ff'>站点</font></a>",name:"itemSite",width:"3%",align:"left",format:makeOption20},
+                {title:"<a href=\"javascript:void(0)\" onclick=\"orderByTransactionPrice(this,'asc');\"><font style='color: #0000ff'>售价</font></a>",name:"itemUrl",width:"6%",align:"left",format:makeOption6},
+                {title:"<a href=\"javascript:void(0)\" onclick=\"orderByTransactionPrice(this,'desc1');\"><font style='color: #0000ff'>售出日期</font></a>",name:"createdtime",width:"5%",align:"left"},
                 {title:"更新时间",name:"lastmodifiedtime",width:"5%",align:"left"},
-                {title:"<a href=\"javascript:void(0)\" onclick=\"orderByTransactionPrice(this,'asc2');\">数量</a>",name:"quantitypurchased",width:"3%",align:"center"},
-                {title:"<a href=\"javascript:void(0)\" onclick=\"orderByTransactionPrice(this,'asc4');\">EBAY账号</a>",name:"selleruserid",width:"8%",align:"left"},
+                {title:"<a href=\"javascript:void(0)\" onclick=\"orderByTransactionPrice(this,'asc2');\"><font style='color: #0000ff'>数量</font></a>",name:"quantitypurchased",width:"3%",align:"center"},
+                {title:"<a href=\"javascript:void(0)\" onclick=\"orderByTransactionPrice(this,'asc4');\"><font style='color: #0000ff'>EBAY账号</font></a>",name:"selleruserid",width:"8%",align:"left"},
                 {title:"状态",name:"shipped",width:"3%",align:"left",format:makeOption4},
                 {title:"操作&nbsp;&nbsp;&nbsp;&nbsp;",name:"option1",width:"8%",align:"center",format:makeOption1}
             ],
@@ -1028,8 +1139,11 @@ function setTab(name,cursel,n){
         if(cursel==4){
             refreshTable4();
         }
+        if(cursel==5){
+            refreshTable15();
+        }
     }
-    if(cursel>4){
+    if(cursel>5){
         $("#OrderGetOrdersListTable"+cursel).selectDataAfterSetParm({"bedDetailVO.deptId":"", "isTrue":0});
     }
     for(i=1;i<=n;i++){

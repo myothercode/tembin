@@ -567,7 +567,13 @@ i++;
     @ResponseBody
     public void keyProgress(ModelMap modelMap, HttpServletRequest request) throws Exception {
         SessionVO c= SessionCacheSupport.getSessionVO();
-        List<KeyMoveProgressQuery> limp = this.iKeyMoveProgress.selectByUserId(c.getId());
+        List<UsercontrollerEbayAccountExtend> ebayList=systemUserManagerService.queryCurrAllEbay(new HashMap());
+        List<String> listr = new ArrayList<String>();
+        for(UsercontrollerEbayAccountExtend uee:ebayList){
+            listr.add(uee.getId()+"");
+        }
+        List<KeyMoveProgressQuery> limp = this.iKeyMoveProgress.selectByUserId(listr);
+
         if(limp!=null&&limp.size()>0){
             for(KeyMoveProgressQuery kmpq:limp) {
                 UsercontrollerEbayAccount uea = this.iUsercontrollerEbayAccount.selectById(Long.parseLong(kmpq.getPaypalId()));
@@ -593,10 +599,10 @@ i++;
         Date beginDate = new Date();
         Calendar date = Calendar.getInstance();
         date.setTime(beginDate);
-        date.set(Calendar.DATE, date.get(Calendar.DATE) - 119);
+        date.set(Calendar.DATE, date.get(Calendar.DATE) + 119);
         Date endDate = dft.parse(dft.format(date.getTime()));
-        String  startTo = DateUtils.DateToString(new Date());
-        String startFrom = DateUtils.DateToString(endDate);
+        String  startTo = DateUtils.DateToString(DateUtils.nowDateAddDay(100));
+        String startFrom = DateUtils.DateToString(DateUtils.nowDateMinusDay(18));
 
         String [] userId = request.getParameterValues("ebayAccounts");
         TradingDataDictionary sitedata = DataDictionarySupport.getTradingDataDictionaryByID(Long.parseLong(request.getParameter("site")));
@@ -679,8 +685,8 @@ i++;
                 "\t<EntriesPerPage>100</EntriesPerPage>\n" +
                 "\t<PageNumber>"+page+"</PageNumber>\n" +
                 "</Pagination>\n" +
-                "<StartTimeFrom>"+satartfrom+"</StartTimeFrom>\n" +
-                "<StartTimeTo>"+startto+"</StartTimeTo>\n" +
+                "<EndTimeFrom>"+satartfrom+"</EndTimeFrom>\n" +
+                "<EndTimeTo>"+startto+"</EndTimeTo>\n" +
                 "<UserID>"+ebayneam+"</UserID>\n" +
                 "<GranularityLevel>Coarse</GranularityLevel>\n" +
                 "<DetailLevel>ItemReturnDescription</DetailLevel>\n" +

@@ -65,6 +65,19 @@ public class BindAccountAPI {
                 "</GetMyMessagesRequest>​​";
         return xml;
     }
+    public static String getGetMyMessages1(Map map){
+        String xml="<?xml version=\"1.0\" encoding=\"utf-8\"?>" +
+                "<GetMyMessagesRequest xmlns=\"urn:ebay:apis:eBLBaseComponents\">" +
+                "<RequesterCredentials>" +
+                "<eBayAuthToken>"+map.get("token")+"</eBayAuthToken>" +
+                "</RequesterCredentials>" +
+                "<DetailLevel EnumType=\"DetailLevelCodeType\">"+map.get("detail")+"</DetailLevel>" +
+                "<StartTime>"+map.get("startTime")+"</StartTime>" +
+                "<EndTime>"+map.get("endTime")+"</EndTime>" +
+                "<FolderID>1</FolderID>" +
+                "</GetMyMessagesRequest>​​";
+        return xml;
+    }
     public static String getAddMemberMessageRTQ(TradingMessageAddmembermessage addmessage,String token){
         String xml="<?xml version=\"1.0\" encoding=\"utf-8\"?>" +
                 "<AddMemberMessageRTQRequest xmlns=\"urn:ebay:apis:eBLBaseComponents\">" +
@@ -98,6 +111,21 @@ public class BindAccountAPI {
                 "</GetMyMessagesRequest> ";
         return xml;
     }
+    public static String getGetMyMessagesByReturnHeader1(String messageID,String token){
+        String xml="<?xml version=\"1.0\" encoding=\"utf-8\"?> " +
+                "<GetMyMessagesRequest xmlns=\"urn:ebay:apis:eBLBaseComponents\"> " +
+                "<Version>467</Version> " +
+                "<DetailLevel>ReturnMessages</DetailLevel>" +
+                "<RequesterCredentials>" +
+                "<eBayAuthToken>"+token+"</eBayAuthToken>" +
+                "</RequesterCredentials>" +
+                "<MessageIDs>" +
+                "<MessageID>"+messageID+"</MessageID>" +
+                "</MessageIDs>" +
+                "<FolderID>1</FolderID>" +
+                "</GetMyMessagesRequest> ";
+        return xml;
+    }
     public static String getUserCases(Map map){
         String xml="<?xml version=\"1.0\" encoding=\"utf-8\"?>" +
                 "<getUserCasesRequest xmlns:ser=\"http://www.ebay.com/marketplace/resolution/v1/services\" xmlns:soap=\"http://www.w3.org/2003/05/soap-envelope\">" +
@@ -122,6 +150,37 @@ public class BindAccountAPI {
                 "  <ModTimeTo>"+map.get("toTime")+"</ModTimeTo>" +
              /*   "<CreateTimeFrom>"+map.get("fromTime")+"</CreateTimeFrom>" +
                 "<CreateTimeTo>"+map.get("toTime")+"</CreateTimeTo>"+*/
+                "  <OrderRole>Seller</OrderRole>" +
+                "<Pagination>" +
+                "<EntriesPerPage>100</EntriesPerPage>" +
+                "<PageNumber>"+map.get("page")+"</PageNumber>" +
+                "</Pagination>"+
+                "</GetOrdersRequest>";
+        return xml;
+    }
+    public static String getGetOrdersByOrderIds(String token,String[] orderids){
+        String xml="<?xml version=\"1.0\" encoding=\"utf-8\"?>" +
+                "<GetOrderTransactionsRequest xmlns=\"urn:ebay:apis:eBLBaseComponents\">" +
+                "  <RequesterCredentials>" +
+                "    <eBayAuthToken>"+token+"</eBayAuthToken>" +
+                "  </RequesterCredentials>" +
+                "  <OrderIDArray>";
+        for(String orderId:orderids){
+            xml+="<OrderID>"+orderId+"</OrderID>";
+        }
+        xml+= "  </OrderIDArray>" +
+                "</GetOrderTransactionsRequest>";
+        return xml;
+    }
+    //90天订单
+    public static String getGetOrdersNewUser(Map<String,String> map){
+        String xml="<?xml version=\"1.0\" encoding=\"utf-8\"?>" +
+                "<GetOrdersRequest xmlns=\"urn:ebay:apis:eBLBaseComponents\">" +
+                "  <RequesterCredentials>" +
+                "    <eBayAuthToken>"+map.get("token")+"</eBayAuthToken>" +
+                "  </RequesterCredentials>" +
+                "<CreateTimeFrom>"+map.get("fromTime")+"</CreateTimeFrom>" +
+                "<CreateTimeTo>"+map.get("toTime")+"</CreateTimeTo>"+
                 "  <OrderRole>Seller</OrderRole>" +
                 "<Pagination>" +
                 "<EntriesPerPage>100</EntriesPerPage>" +

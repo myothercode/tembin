@@ -188,4 +188,14 @@ public class AutoComplementTimerTaskRun extends BaseScheduledClass implements Sc
     public Integer crTimeMinu() {
         return 2;
     }
+
+    @Override
+    public void setMark(String x) {
+
+    }
+
+    @Override
+    public String getMark() {
+        return null;
+    }
 }

@@ -125,8 +125,7 @@ public class TradingListingSuccessImpl implements com.trading.service.ITradingLi
     }
 
     @Override
-    public List<ListingItemReportQuery> selectListingItemSales(String type,String flag,String soldflag){
-        SessionVO c= SessionCacheSupport.getSessionVO();
+    public List<ListingItemReportQuery> selectListingItemSales(String type,String flag,String soldflag,String userId){
         SimpleDateFormat sdfmonth = new SimpleDateFormat("yyyy-MM");
         Map m = new HashMap();
         m.put("datetype",type);
@@ -157,7 +156,7 @@ public class TradingListingSuccessImpl implements com.trading.service.ITradingLi
         if(soldflag!=null){
             m.put("soldflag",soldflag);
         }
-        m.put("userid",c.getId());
+        m.put("userid",userId);
         return this.listingItemReportMapper.selectListingItemSales(m);
     }
 

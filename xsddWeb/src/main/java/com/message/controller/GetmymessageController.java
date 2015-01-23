@@ -1,30 +1,28 @@
 package com.message.controller;
 
 import com.base.aboutpaypal.service.PayPalService;
+import com.base.database.task.model.TaskGetMessages;
 import com.base.database.trading.model.*;
 import com.base.domains.CommonParmVO;
-import com.base.domains.SessionVO;
 import com.base.domains.querypojos.MessageGetmymessageQuery;
 import com.base.domains.querypojos.TradingOrderAddMemberMessageAAQToPartnerQuery;
-import com.base.domains.userinfo.UsercontrollerDevAccountExtend;
 import com.base.domains.userinfo.UsercontrollerEbayAccountExtend;
 import com.base.mybatis.page.Page;
 import com.base.mybatis.page.PageJsonBean;
-import com.base.sampleapixml.APINameStatic;
-import com.base.sampleapixml.BindAccountAPI;
 import com.base.userinfo.service.SystemUserManagerService;
 import com.base.userinfo.service.UserInfoService;
 import com.base.utils.annotations.AvoidDuplicateSubmission;
-import com.base.utils.cache.SessionCacheSupport;
 import com.base.utils.common.DateUtils;
-import com.base.utils.threadpool.AddApiTask;
-import com.base.utils.threadpool.TaskMessageVO;
+import com.base.utils.htmlutil.HtmlUtil;
 import com.common.base.utils.ajax.AjaxSupport;
 import com.common.base.web.BaseAction;
-import com.sitemessage.service.SiteMessageStatic;
+import com.task.service.ITaskGetMessages;
 import com.trading.service.*;
+import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
@@ -72,6 +70,9 @@ public class GetmymessageController extends BaseAction{
     private IUsercontrollerEbayAccount iUsercontrollerEbayAccount;
     @Autowired
     private ITradingOrderSenderAddress iTradingOrderSenderAddress;
+    @Autowired
+    private ITaskGetMessages iTaskGetMessages;
+
     @Value("${EBAY.API.URL}")
     private String apiUrl;
     /**
@@ -83,7 +84,21 @@ public class GetmymessageController extends BaseAction{
      */
     @RequestMapping("/MessageGetmymessageList.do")
     public ModelAndView MessageGetmymessageList(HttpServletRequest request,HttpServletResponse response,ModelMap modelMap){
+        List<MessageGetmymessageQuery> list=iTradingMessageGetmymessage.selectByMessageGetmymessageNoReadCount();
+        if(list!=null&&list.size()>0){
+            modelMap.put("noReadNumber",list.get(0).getCountNum());
+        }
         return forword("MessageGetmymessage/MessageGetmymessageList",modelMap);
+    }
+    @RequestMapping("/addComment.do")
+    public ModelAndView addComment(HttpServletRequest request,HttpServletResponse response,ModelMap modelMap){
+       String id=request.getParameter("id");
+        if(StringUtils.isNotBlank(id)){
+            TradingMessageGetmymessage message=iTradingMessageGetmymessage.selectMessageGetmymessageById(Long.valueOf(id));
+            modelMap.put("message",message);
+        }
+
+        return forword("MessageGetmymessage/addComment",modelMap);
     }
     //获取未读消息ajax方法
     @RequestMapping("/noReadMessageGetmymessageList.do")
@@ -106,6 +121,23 @@ public class GetmymessageController extends BaseAction{
         AjaxSupport.sendSuccessText("",jsonBean);
 
     }
+
+    /**获取list数据的ajax方法*/
+    @RequestMapping("/ajax/saveComment.do")
+    @ResponseBody
+    public void saveComment(HttpServletRequest request,CommonParmVO commonParmVO) throws Exception {
+        String id=request.getParameter("id");
+        String comment=request.getParameter("comment");
+        if(StringUtils.isNotBlank(id)){
+            TradingMessageGetmymessage message=iTradingMessageGetmymessage.selectMessageGetmymessageById(Long.valueOf(id));
+            message.setComment(comment);
+            iTradingMessageGetmymessage.saveMessageGetmymessage(message);
+            AjaxSupport.sendSuccessText("","备注成功");
+        }else{
+            AjaxSupport.sendFailText("fail","备注失败");
+        }
+
+    }
     /**获取list数据的ajax方法*/
     @RequestMapping("/ajax/loadMessageAddmymessageList.do")
     @ResponseBody
@@ -120,9 +152,9 @@ public class GetmymessageController extends BaseAction{
         String endtime1=request.getParameter("endtime1");
         Date starttime=null;
         Date endtime=null;
-     /*   if(!StringUtils.isNotBlank(content)){
+        if(!StringUtils.isNotBlank(content)){
             content=null;
-        }*/
+        }
         if(!StringUtils.isNotBlank(type)){
             type=null;
         }
@@ -200,12 +232,38 @@ public class GetmymessageController extends BaseAction{
                 iTradingMessageGetmymessage.saveMessageGetmymessage(message);
             }
         }
+        List<MessageGetmymessageQuery> list=iTradingMessageGetmymessage.selectByMessageGetmymessageNoReadCount();
+        Long countNum=0L;
+        if(list!=null&&list.size()>0){
+            countNum=list.get(0).getCountNum();
+        }
+        Map<String,String> map=new HashMap<String, String>();
+        map.put("message","已标记为已读");
+        map.put("count",countNum+"");
         if("true".equals(value)){
-            AjaxSupport.sendSuccessText("", "已标记为已读");
+            AjaxSupport.sendSuccessText("", map);
         }else{
-            AjaxSupport.sendSuccessText("", "已标记为未读");
+            AjaxSupport.sendSuccessText("", map);
         }
 
+    }
+    /**获取list数据的ajax方法*/
+    @RequestMapping("/ajax/updateReadStatus.do")
+    @ResponseBody
+    public void updateReadStatus(HttpServletRequest request,CommonParmVO commonParmVO) throws Exception {
+        String messageid=request.getParameter("messageid");
+        String sender=request.getParameter("sender");
+        List<TradingMessageGetmymessage> messages=iTradingMessageGetmymessage.selectMessageGetmymessageByMessageId(messageid,sender);
+        for(TradingMessageGetmymessage message:messages){
+            message.setRead("true");
+            iTradingMessageGetmymessage.saveMessageGetmymessage(message);
+        }
+        List<MessageGetmymessageQuery> list=iTradingMessageGetmymessage.selectByMessageGetmymessageNoReadCount();
+        Long countNum=0L;
+        if(list!=null&&list.size()>0){
+            countNum=list.get(0).getCountNum();
+        }
+        AjaxSupport.sendSuccessText("",countNum);
     }
     /**获取list数据的ajax方法*/
     @RequestMapping("/ajax/loadMessageGetmymessageList.do")
@@ -220,6 +278,7 @@ public class GetmymessageController extends BaseAction{
         String starttime1=request.getParameter("starttime1");
         String endtime1=request.getParameter("endtime1");
         String messageFrom=request.getParameter("messageFrom");
+        String folderID=request.getParameter("folderID");
         Date starttime=null;
         Date endtime=null;
         if(!StringUtils.isNotBlank(messageFrom)){
@@ -233,6 +292,9 @@ public class GetmymessageController extends BaseAction{
         }*/
         if(!StringUtils.isNotBlank(type)){
             type=null;
+        }
+        if(!StringUtils.isNotBlank(folderID)){
+            folderID="0";
         }
         if(!StringUtils.isNotBlank(status)){
             status=null;
@@ -270,15 +332,16 @@ public class GetmymessageController extends BaseAction{
         Map map=new HashMap();
         List<UsercontrollerEbayAccountExtend> ebays=systemUserManagerService.queryCurrAllEbay(map);
         List<MessageGetmymessageQuery> lists=new ArrayList<MessageGetmymessageQuery>();
-        if(ebays.size()>0){
-            m.put("ebays",ebays);
-            m.put("amount",amount);
+            if(ebays.size()>0){
+                m.put("ebays",ebays);
+                m.put("amount",amount);
             m.put("status",status);
             m.put("starttime",starttime);
             m.put("endtime",endtime);
             m.put("messageFrom",messageFrom);
             m.put("type",type);
             m.put("content",content);
+            m.put("folderID",folderID);
             lists= this.iTradingMessageGetmymessage.selectMessageGetmymessageByGroupList(m,page);
         }
         jsonBean.setList(lists);
@@ -292,17 +355,118 @@ public class GetmymessageController extends BaseAction{
         String recipientid=request.getParameter("recipientid");
         String sender=request.getParameter("sender");
         String transactionid=request.getParameter("transactionid");
+        String messageid=request.getParameter("messageid");
         if(!StringUtils.isNotBlank(transactionid)){
             transactionid=null;
         }
+        if(!StringUtils.isNotBlank(messageid)){
+            messageid=null;
+        }
+        if(!StringUtils.isNotBlank(itemid)){
+            itemid=null;
+        }
         List<TradingOrderAddMemberMessageAAQToPartner> addMessages=new ArrayList<TradingOrderAddMemberMessageAAQToPartner>();
         List<TradingMessageGetmymessage> messages1=new ArrayList<TradingMessageGetmymessage>();
-        List<TradingMessageGetmymessage> messageList=iTradingMessageGetmymessage.selectMessageGetmymessageByItemIdAndSender(itemid,recipientid,sender);
-        List<TradingOrderAddMemberMessageAAQToPartner> addmessageList=iTradingOrderAddMemberMessageAAQToPartner.selectTradingOrderAddMemberMessageAAQToPartnerByItemIdAndSender(itemid,4,sender,recipientid);
-        messages1.addAll(messageList);
-        addMessages.addAll(addmessageList);
+        List<TradingMessageGetmymessage> messageList=new ArrayList<TradingMessageGetmymessage>();
+        List<TradingOrderAddMemberMessageAAQToPartner> addmessageList=new ArrayList<TradingOrderAddMemberMessageAAQToPartner>();
+        if(messageid!=null){
+            messageList=iTradingMessageGetmymessage.selectMessageGetmymessageByMessageId(messageid,sender);
+            addmessageList=iTradingOrderAddMemberMessageAAQToPartner.selectTradingOrderAddMemberMessageAAQToPartnerByMessageID(messageid, 4);
+            messages1.addAll(messageList);
+            addMessages.addAll(addmessageList);
+            if(messageList!=null&&messageList.size()>0) {
+                if ("eBay".equals(messageList.get(0).getSender())) {
+                    messages1.add(messageList.get(0));
+                } else {
+                    List<MessageGetmymessageQuery> messagequ = iTradingMessageGetmymessage.selectMessageGetmymessageByItemIdAndSenderFolderIDIsZoneOrOne(messageList.get(0).getItemid(), messageList.get(0).getSender(), messageList.get(0).getSendtoname());
+                    if (messagequ != null) {
+                        messages1.addAll(messagequ);
+                    }
+                }
+            }
+        }else if(itemid!=null){
+            messageList=iTradingMessageGetmymessage.selectMessageGetmymessageByItemIdAndSender(itemid,recipientid,sender);
+            addmessageList=iTradingOrderAddMemberMessageAAQToPartner.selectTradingOrderAddMemberMessageAAQToPartnerByItemIdAndSender(itemid,4,sender,recipientid);
+            messages1.addAll(messageList);
+            addMessages.addAll(addmessageList);
+            if(messageList!=null&&messageList.size()>0){
+                if("eBay".equals(messageList.get(0).getSender())){
+                    messages1.add(messageList.get(0));
+                }else{
+                    List<MessageGetmymessageQuery> messagequ = iTradingMessageGetmymessage.selectMessageGetmymessageByItemIdAndSenderFolderIDIsZoneOrOne(messageList.get(0).getItemid(), messageList.get(0).getSender(), messageList.get(0).getSendtoname());
+                    if (messagequ != null) {
+                        messages1.addAll(messagequ);
+                    }
+                }
+            }
+        }
+        int ii=0;
         for(TradingMessageGetmymessage message:messages1){
-            TradingOrderAddMemberMessageAAQToPartner partner=new TradingOrderAddMemberMessageAAQToPartner();
+            String text=message.getTextHtml();
+            if(StringUtils.isNotBlank(text)) {
+                text = StringEscapeUtils.unescapeHtml(text);
+                List<TradingOrderAddMemberMessageAAQToPartner> addMessages3 = new ArrayList<TradingOrderAddMemberMessageAAQToPartner>();
+                if (!"eBay".equals(message.getSender())) {
+                    List<String> bodys = HtmlUtil.getByerMessageFromXML(text);
+                    for (String body : bodys) {
+                        TradingOrderAddMemberMessageAAQToPartner partner=new TradingOrderAddMemberMessageAAQToPartner();
+                        TradingOrderAddMemberMessageAAQToPartner partner1=new TradingOrderAddMemberMessageAAQToPartner();
+                        if(ii%2==0){
+                            partner.setSender(message.getSender());
+                            partner.setSubject(message.getSubject());
+                            partner.setRecipientid(message.getSendtoname());
+                            partner.setCreateTime(message.getReceivedate());
+                            partner.setItemid(message.getItemid());
+                        }else{
+                            partner.setSender(message.getSendtoname());
+                            partner.setSubject(message.getSubject());
+                            partner.setRecipientid(message.getSender());
+                            partner.setCreateTime(message.getReceivedate());
+                            partner.setItemid(message.getItemid());
+                        }
+                        partner.setBody(body);
+                        addMessages3.add(partner);
+                    }
+                } else {
+                    org.jsoup.nodes.Document doc = org.jsoup.Jsoup.parse(text);
+                    Element div = doc.getElementById("SingleItemCTA");
+                    Boolean ebayFlag = false;
+                    if (div != null) {
+                        Elements font = div.getElementsByTag("font");
+                        if (font != null && font.size() > 0) {
+                            Elements divs = font.get(0).getElementsByTag("div");
+                            if (divs != null && divs.size() > 0) {
+                                String body = divs.get(0).html();
+                                TradingOrderAddMemberMessageAAQToPartner partner = new TradingOrderAddMemberMessageAAQToPartner();
+                                partner.setSender(message.getSender());
+                                partner.setSubject(message.getSubject());
+                                partner.setRecipientid(message.getRecipientuserid());
+                                partner.setCreateTime(message.getReceivedate());
+                                partner.setItemid(message.getItemid());
+                                partner.setBody(body);
+                                addMessages3.add(partner);
+                                ebayFlag = true;
+                            }
+                        }
+                    }
+                    if (!ebayFlag) {
+                        TradingOrderAddMemberMessageAAQToPartner partner = new TradingOrderAddMemberMessageAAQToPartner();
+                        partner.setSender(message.getSender());
+                        partner.setSubject(message.getSubject());
+                        partner.setRecipientid(message.getRecipientuserid());
+                        partner.setCreateTime(message.getReceivedate());
+                        partner.setItemid(message.getItemid());
+                        partner.setBody(message.getSubject());
+                        addMessages3.add(partner);
+                    }
+                }
+                Object[] addMessages3s = addMessages3.toArray();
+                for (int i = addMessages3s.length - 1; i >= 0; i--) {
+                    TradingOrderAddMemberMessageAAQToPartner messageAAQToPartner = (TradingOrderAddMemberMessageAAQToPartner) addMessages3s[i];
+                    addMessages.add(messageAAQToPartner);
+                }
+            }
+            /*TradingOrderAddMemberMessageAAQToPartner partner=new TradingOrderAddMemberMessageAAQToPartner();
             partner.setSender(message.getSender());
             partner.setSubject(message.getSubject());
             partner.setRecipientid(message.getRecipientuserid());
@@ -328,7 +492,8 @@ public class GetmymessageController extends BaseAction{
                         addMessages.add(partner);
                     }
                 }
-            }
+            }*/
+            ii++;
         }
         Object[] addMessages1=addMessages.toArray();
         for(int i=0;i<addMessages1.length;i++){
@@ -338,27 +503,32 @@ public class GetmymessageController extends BaseAction{
                 if(l1.getCreateTime().after(l2.getCreateTime())){
                     addMessages1[i]=l2;
                     addMessages1[j]=l1;
+                }else{
+                    addMessages1[i]=l1;
+                    addMessages1[j]=l2;
                 }
             }
         }
-
         List<TradingOrderGetOrders> lists=new ArrayList<TradingOrderGetOrders>();
         List<TradingOrderGetOrders> lists1=new ArrayList<TradingOrderGetOrders>();
+        if(StringUtils.isNotBlank(transactionid)){
+            lists=iTradingOrderGetOrders.selectOrderGetOrdersByTransactionId(transactionid,sender);
+        }
+
+        if(lists!=null&&lists.size()>0){
+            lists1=iTradingOrderGetOrders.selectOrderGetOrdersByTransactionId(lists.get(0).getTransactionid(),lists.get(0).getSelleruserid());
+        }
         if(messageList!=null&&messageList.size()>0){
             modelMap.put("message",messageList.get(0));
             modelMap.put("sender",messageList.get(0).getSender());
             modelMap.put("recipient",messageList.get(0).getRecipientuserid());
             modelMap.put("messageID",messageList.get(0).getMessageid());
             modelMap.put("parentMessageID",messageList.get(0).getExternalmessageid());
-        }
-        if(StringUtils.isNotBlank(transactionid)){
-            lists=iTradingOrderGetOrders.selectOrderGetOrdersByTransactionId(transactionid,sender);
         }else{
-            lists=iTradingOrderGetOrders.selectOrderGetOrdersByBuyerAndItemid(itemid,recipientid);
-        }
-
-        if(lists!=null&&lists.size()>0){
-            lists1=iTradingOrderGetOrders.selectOrderGetOrdersByTransactionId(lists.get(0).getTransactionid(),lists.get(0).getSelleruserid());
+            if(lists1!=null&&lists1.size()>0){
+                modelMap.put("sender",lists1.get(0).getSelleruserid());
+                modelMap.put("recipient",lists1.get(0).getBuyeruserid());
+            }
         }
         List<String> palpays=new ArrayList<String>();
         List<String> grossdetailamounts=new ArrayList<String>();
@@ -449,78 +619,99 @@ public class GetmymessageController extends BaseAction{
     @AvoidDuplicateSubmission(needSaveToken = true)
     public ModelAndView viewTemplateInitTable(HttpServletRequest request,HttpServletResponse response,@ModelAttribute( "initSomeParmMap" )ModelMap modelMap) throws Exception {
         String messageID=request.getParameter("messageID");
-        List<UsercontrollerEbayAccountExtend> ebays = userInfoService.getEbayAccountForCurrUser(new HashMap(),Page.newAOnePage());
+        Map map=new HashMap();
+        List<UsercontrollerEbayAccountExtend> ebays = systemUserManagerService.queryCurrAllEbay(map);
+        if(!StringUtils.isNotBlank(messageID)){
+            messageID="";
+        }
         Map m=new HashMap();
         m.put("messageID",messageID);
         m.put("ebays",ebays);
+
         List<MessageGetmymessageQuery> messages=iTradingMessageGetmymessage.selectMessageGetmymessageBySender(m);
-        for(TradingMessageGetmymessage messageGetmymessage:messages){
-            if("false".equals(messageGetmymessage.getRead())){
-                messageGetmymessage.setRead("true");
-                iTradingMessageGetmymessage.saveMessageGetmymessage(messageGetmymessage);
-            }
-        }
             List<TradingOrderAddMemberMessageAAQToPartner> addMessages=new ArrayList<TradingOrderAddMemberMessageAAQToPartner>();
             List<TradingMessageGetmymessage> messages1=new ArrayList<TradingMessageGetmymessage>();
-            List<TradingMessageGetmymessage> messageList=new ArrayList<TradingMessageGetmymessage>();
             List<TradingOrderAddMemberMessageAAQToPartner> addmessageList=new ArrayList<TradingOrderAddMemberMessageAAQToPartner>();
-            if(!"eBay".equals(messages.get(0).getSender())){
-                 messageList=iTradingMessageGetmymessage.selectMessageGetmymessageByItemIdAndSender(messages.get(0).getItemid(),messages.get(0).getSender(),messages.get(0).getRecipientuserid());
-                 addmessageList=iTradingOrderAddMemberMessageAAQToPartner.selectTradingOrderAddMemberMessageAAQToPartnerByItemIdAndSender(messages.get(0).getItemid(),4,messages.get(0).getRecipientuserid(),messages.get(0).getSender());
+            if(messages.size()>0&&!"eBay".equals(messages.get(0).getSender())){
+                addmessageList = iTradingOrderAddMemberMessageAAQToPartner.selectTradingOrderAddMemberMessageAAQToPartnerByMessageID(messages.get(0).getMessageid(), 4);
             }
-           /* messages1.addAll(messageList);
-            addMessages.addAll(addmessageList);*/
-            if(messages1.size()==0&&messages.size()>0){
-                messages1.add(messages.get(0));
+            addMessages.addAll(addmessageList);
+            if(messages!=null&&messages.size()>0){
+                if("eBay".equals(messages.get(0).getSender())){
+                    messages1.add(messages.get(0));
+                }else{
+                   List<MessageGetmymessageQuery> messagequ=iTradingMessageGetmymessage.selectMessageGetmymessageByItemIdAndSenderFolderIDIsZoneOrOne(messages.get(0).getItemid(),messages.get(0).getSender(),messages.get(0).getSendtoname());
+                    if(messagequ!=null&&messagequ.size()>0){
+                        messages1.addAll(messagequ);
+                    }
+                }
             }
+            Integer ii=0;
             for(TradingMessageGetmymessage message:messages1){
                 String text=message.getTextHtml();
-                if(!"eBay".equals(message.getSender())){
-                    if(StringUtils.isNotBlank(text)){
-                        String text4="";
-                        String text5="";
-                        String[] text1=text.split("<table border=\"0\" cellpadding=\"2\" cellspacing=\"3\" width=\"100%\"><tr><td>");
-                        List<TradingOrderAddMemberMessageAAQToPartner> addMessages3=new ArrayList<TradingOrderAddMemberMessageAAQToPartner>();
-                        for(int i=1;i<text1.length;i++){
+                if(StringUtils.isNotBlank(text)){
+                    text=StringEscapeUtils.unescapeHtml(text);
+                    List<TradingOrderAddMemberMessageAAQToPartner> addMessages3=new ArrayList<TradingOrderAddMemberMessageAAQToPartner>();
+                    if(!"eBay".equals(message.getSender())){
+                        List<String> bodys=HtmlUtil.getByerMessageFromXML(text);
+                        for(String body:bodys){
                             TradingOrderAddMemberMessageAAQToPartner partner=new TradingOrderAddMemberMessageAAQToPartner();
-                            TradingOrderAddMemberMessageAAQToPartner partner1=new TradingOrderAddMemberMessageAAQToPartner();
+                            if(ii%2==0){
+                                partner.setSender(message.getSender());
+                                partner.setSubject(message.getSubject());
+                                partner.setRecipientid(message.getSendtoname());
+                                partner.setCreateTime(message.getReceivedate());
+                                partner.setItemid(message.getItemid());
+                            }else{
+                                partner.setSender(message.getSendtoname());
+                                partner.setSubject(message.getSubject());
+                                partner.setRecipientid(message.getSender());
+                                partner.setCreateTime(message.getReceivedate());
+                                partner.setItemid(message.getItemid());
+                            }
+                            partner.setBody(body);
+                            addMessages3.add(partner);
+                        }
+                    }else{
+                        org.jsoup.nodes.Document doc = org.jsoup.Jsoup.parse(text);
+                        Element div=doc.getElementById("SingleItemCTA");
+                        Boolean ebayFlag=false;
+                        if(div!=null){
+                            Elements font=div.getElementsByTag("font");
+                            if(font!=null&&font.size()>0){
+                                Elements divs=font.get(0).getElementsByTag("div");
+                                if(divs!=null&&divs.size()>0){
+                                    String body=divs.get(0).html();
+                                    TradingOrderAddMemberMessageAAQToPartner partner=new TradingOrderAddMemberMessageAAQToPartner();
+                                    partner.setSender(message.getSender());
+                                    partner.setSubject(message.getSubject());
+                                    partner.setRecipientid(message.getRecipientuserid());
+                                    partner.setCreateTime(message.getReceivedate());
+                                    partner.setItemid(message.getItemid());
+                                    partner.setBody(body);
+                                    addMessages3.add(partner);
+                                    ebayFlag=true;
+                                }
+                            }
+                        }
+                        if(!ebayFlag){
+                            TradingOrderAddMemberMessageAAQToPartner partner=new TradingOrderAddMemberMessageAAQToPartner();
                             partner.setSender(message.getSender());
                             partner.setSubject(message.getSubject());
                             partner.setRecipientid(message.getRecipientuserid());
                             partner.setCreateTime(message.getReceivedate());
                             partner.setItemid(message.getItemid());
-                            partner1.setSender(message.getRecipientuserid());
-                            partner1.setSubject(message.getSubject());
-                            partner1.setRecipientid(message.getSender());
-                            partner1.setCreateTime(message.getReceivedate());
-                            partner1.setItemid(message.getItemid());
-                            String[] text2=text1[i].split("<div style=\"font-weight:bold; font-size:10pt; font-family:arial, sans-serif; color:#000\">- "+message.getSender());
-                            if(text2[0].contains(message.getRecipientuserid())){
-                                String text3=text2[0];
-                                if(!text3.contains("- "+message.getRecipientuserid())){
-                                    text4=text3+"<br/>";
-                                    partner.setBody(text4);
-                                    addMessages3.add(partner);
-                                }
-                            }
-                            String[] text6=text1[i].split("<div style=\"font-weight:bold; font-size:10pt; font-family:arial, sans-serif; color:#000\">- "+message.getRecipientuserid());
-                            if(text6[0].contains(message.getSender())){
-                                String text7=text6[0];
-                                if(!text7.contains("- "+message.getSender())){
-                                    text5=text7+"<br/>";
-                                    partner1.setBody(text5);
-                                    addMessages3.add(partner1);
-                                }
-                            }
-                        }
-                        Object[] addMessages3s=addMessages3.toArray();
-                        for(int i=addMessages3s.length-1;i>=0;i--){
-                            TradingOrderAddMemberMessageAAQToPartner messageAAQToPartner= (TradingOrderAddMemberMessageAAQToPartner) addMessages3s[i];
-                            addMessages.add(messageAAQToPartner);
+                            partner.setBody(message.getSubject());
+                            addMessages3.add(partner);
                         }
                     }
+                    Object[] addMessages3s=addMessages3.toArray();
+                    for(int i=addMessages3s.length-1;i>=0;i--){
+                        TradingOrderAddMemberMessageAAQToPartner messageAAQToPartner= (TradingOrderAddMemberMessageAAQToPartner) addMessages3s[i];
+                        addMessages.add(messageAAQToPartner);
+                    }
                 }
-
+                ii++;
             }
             Object[] addMessages1=addMessages.toArray();
             for(int i=0;i<addMessages1.length;i++){
@@ -539,9 +730,11 @@ public class GetmymessageController extends BaseAction{
             if(messages!=null&&messages.size()>0){
                 modelMap.put("message",messages.get(0));
                 modelMap.put("sender",messages.get(0).getSender());
-                modelMap.put("recipient",messages.get(0).getRecipientuserid());
+                modelMap.put("recipient",messages.get(0).getSendtoname());
                 if(!"eBay".equals(messages.get(0).getSender())){
-                    lists=iTradingOrderGetOrders.selectOrderGetOrdersByBuyerAndItemid(messages.get(0).getItemid(),messages.get(0).getSender());
+                    if(messages.get(0).getItemid()!=null){
+                        lists=iTradingOrderGetOrders.selectOrderGetOrdersByBuyerAndItemid(messages.get(0).getItemid(),messages.get(0).getSender());
+                    }
                 }
             }
             if(lists!=null&&lists.size()>0){
@@ -617,7 +810,9 @@ public class GetmymessageController extends BaseAction{
         modelMap.put("grossdetailamounts",grossdetailamounts);
         modelMap.put("pictures",pictures);
         modelMap.put("messageID",messageID);
-        modelMap.put("parentMessageID",messages.get(0).getExternalmessageid());
+        if(messages!=null&&messages.size()>0){
+            modelMap.put("parentMessageID",messages.get(0).getExternalmessageid());
+        }
         modelMap.put("messageFlag","true");
         modelMap.put("orderFlag","false");
         modelMap.put("accs",accs);
@@ -634,6 +829,7 @@ public class GetmymessageController extends BaseAction{
         List<MessageGetmymessageQuery> messages=iTradingMessageGetmymessage.selectMessageGetmymessageBySender(m);
         modelMap.put("message",messages.get(0));
         return forword("MessageGetmymessage/sendMessageGetmymessageList",modelMap);
+
     }
 
    /* @RequestMapping("/ajax/saveMessageGetmymessage.do")
@@ -685,7 +881,18 @@ public class GetmymessageController extends BaseAction{
     @ResponseBody
     public ModelAndView GetmymessageEbay(@ModelAttribute( "initSomeParmMap" )ModelMap modelMap){
       /*  Asserts.assertTrue(commonParmVO.getId() != null, "参数获取失败！");*/
-        List<UsercontrollerEbayAccountExtend> ebays = userInfoService.getEbayAccountForCurrUser(new HashMap(),Page.newAOnePage());
+        Map map=new HashMap();
+        List<UsercontrollerEbayAccountExtend> ebays = systemUserManagerService.queryCurrAllEbay(map);
+        List<Date> ebayDates=new ArrayList<Date>();
+        for(UsercontrollerEbayAccountExtend ebay:ebays){
+            List<TaskGetMessages> taskGetMessageses= iTaskGetMessages.selectTaskGetMessagesByFlagIsFalseOrderByLastSycTimeAndEbayName(ebay.getEbayName());
+            if(taskGetMessageses!=null&&taskGetMessageses.size()>0){
+                ebayDates.add(taskGetMessageses.get(0).getLastsyctime());
+            }else{
+                ebayDates.add(null);
+            }
+        }
+        modelMap.put("ebayDates",ebayDates);
         modelMap.put("ebays",ebays);
         return forword("MessageGetmymessage/GetmymessageEbay",modelMap);
     }
@@ -715,27 +922,68 @@ public class GetmymessageController extends BaseAction{
     @ResponseBody
     /**获取接受信息总数*/
     public void apiGetMyMessagesRequest(CommonParmVO commonParmVO,HttpServletRequest request) throws Exception {
-        String ebayId=request.getParameter("ebayId");
-        Long ebay=Long.valueOf(ebayId);
+        //修改后--------------------
+        String ebayIds=request.getParameter("ebayIds");
+        List<Long> ebays=new ArrayList<Long>();
+        if(StringUtils.isNotBlank(ebayIds)){
+            String[] ebayIds1=ebayIds.split(",");
+            for(String ebayId:ebayIds1){
+                ebays.add(Long.valueOf(ebayId));
+            }
+        }else{
+            AjaxSupport.sendFailText("fail","ebay账号不存在请核实!");
+            return;
+        }
+        List<TaskGetMessages> taskGetMessageses= iTaskGetMessages.selectTaskGetMessagesByFlagIsFalseOrderBysaveTime();
+        for(Long ebay:ebays){
+            if(taskGetMessageses!=null&&taskGetMessageses.size()>0){
+                String ebayName=taskGetMessageses.get(0).getEbayname();
+                UsercontrollerEbayAccount ebay1=userInfoService.getEbayAccountByEbayID(ebay);
+                if(!ebay1.getEbayName().equals(ebayName)){
+                    Integer flag=taskGetMessageses.get(0).getTokenflag();
+                    for(TaskGetMessages taskGetMessages:taskGetMessageses){
+                        Integer flag1=taskGetMessages.getTokenflag();
+                        if(flag1<=flag){
+                            flag=flag1;
+                        }
+                    }
+                    for(TaskGetMessages taskGetMessages:taskGetMessageses){
+                     /*   if(ebay==taskGetMessages.getEbayid()){*/
+                        if(ebay1.getEbayName().equals(taskGetMessages.getEbayname())){
+                            TaskGetMessages ta=new TaskGetMessages();
+                            ta=taskGetMessages;
+                            flag=flag-1;
+                            ta.setTokenflag(flag);
+                            ta.setLastsyctime(new Date());
+                            iTaskGetMessages.saveListTaskGetMessages(ta);
+                        }
+                    }
+                }
+            }
+        }
+
+        //修改前-----------------
+       /* //String ebayId=request.getParameter("ebayId");
+        //Long ebay=Long.valueOf(ebayId);
         //测试环境
         UsercontrollerDevAccountExtend d = new UsercontrollerDevAccountExtend();
         d.setApiSiteid("0");
         //真实环境
-    /*    UsercontrollerDevAccountExtend d=new UsercontrollerDevAccountExtend();
-        d.setApiDevName("5d70d647-b1e2-4c7c-a034-b343d58ca425");
-        d.setApiAppName("sandpoin-23af-4f47-a304-242ffed6ff5b");
-        d.setApiCertName("165cae7e-4264-4244-adff-e11c3aea204e");
-        d.setApiCompatibilityLevel("881");
-        d.setApiSiteid("0");*/
+    //    UsercontrollerDevAccountExtend d=new UsercontrollerDevAccountExtend();
+        //d.setApiDevName("5d70d647-b1e2-4c7c-a034-b343d58ca425");
+        //d.setApiAppName("sandpoin-23af-4f47-a304-242ffed6ff5b");
+        //d.setApiCertName("165cae7e-4264-4244-adff-e11c3aea204e");
+       // d.setApiCompatibilityLevel("881");
+       // d.setApiSiteid("0");
 
         Map map=new HashMap();
         d.setApiCallName(APINameStatic.GetMyMessages);
         request.getSession().setAttribute("dveId", d);
         Date startTime2= com.base.utils.common.DateUtils.subDays(new Date(),6);
         Date endTime= DateUtils.addDays(startTime2, 6);
-    /*    Date startTime2= com.base.utils.common.DateUtils.subDays(new Date(),120);
-        Date endTime= DateUtils.addDays(startTime2, 120);*/
-        /*MutualWithdrawalAgreementLate*/
+        //Date startTime2= com.base.utils.common.DateUtils.subDays(new Date(),120);
+        //Date endTime= DateUtils.addDays(startTime2, 120);
+        //MutualWithdrawalAgreementLate
 
 
         Date end1= com.base.utils.common.DateUtils.turnToDateEnd(endTime);
@@ -744,16 +992,16 @@ public class GetmymessageController extends BaseAction{
         //测试环境
         String token=userInfoService.getTokenByEbayID(ebay);
         //真实环境
-      /*  String token="AgAAAA**AQAAAA**aAAAAA**kRx8VA**nY+sHZ2PrBmdj6wVnY+sEZ2PrA2dj6AGloWiAZCCogSdj6x9nY+seQ**blACAA**AAMAAA**d0Px77QqgOj2GHC7XDNXkRKusIUT1y5uPdXz87hiC9ghsh75Q6hQb3BRbKwkJsFz3BlORq7L8lEiHsqBnFzd65yK1MJ/CQMsY165Q+4Rw664b0dP3vnPzjeN3cfKOkDwwoLqFGrMclvrrpntfSDBcO/r1QaC+CUB0GD6UiuhdyhBIPd1gb+z0KmYCTwpFENyHDzRtiTcT5qCt5eYfYzsve2e6O1c+NsTyBgJzUD1v78aIluxKhoC+huF9Uxscm2DU4mOr0JYONHJCs3dN18fKLp0Dc3hSvmPSIaxPmjcvlVfWuVPtw6KwXvxw8U8PGUdfACzb9ZIBiUEEhFHU6xv73egj2hkN/ZTJr7yu3l+qvDJFHLlgBMoprseFc0tmDi/hbRUILxuOy8TOpGri71DoQBzwuQxxrG5GMJ77NFLOLYxsH6/gpA/7+vFT1X5CUsIv+BYZyY7g3RLZWYem3Gqv9T+sVNC/DEhxmdO1Yx49rAwHcUw3aeXTrKpa1xCNkgHg4Feheu5V6Pu9lb5DQUC9YidqELrLEvos6yoiH31myqAmI72Gt4i7SBjwS8k5O+7xjxhDrKpg0IFwCdQk4PEByoBnud/dDNyCZkZdCqTkb36aqmgdnTANz9M7DtcQTH/Lf6h+Suj3RVSeFfDZcJJDax7Ie5qwte+oHJ6yTuBZ2dt4hMmKZIZwn26Ei+DUfCPhx6nEqcAOf6Sbxf8RxkWJ2pLcIvbifrditHIuyGjOf4yMoIHOcSp6FsVbmkMleBG";
-       */
+        //String token="AgAAAA**AQAAAA**aAAAAA**kRx8VA**nY+sHZ2PrBmdj6wVnY+sEZ2PrA2dj6AGloWiAZCCogSdj6x9nY+seQ**blACAA**AAMAAA**d0Px77QqgOj2GHC7XDNXkRKusIUT1y5uPdXz87hiC9ghsh75Q6hQb3BRbKwkJsFz3BlORq7L8lEiHsqBnFzd65yK1MJ/CQMsY165Q+4Rw664b0dP3vnPzjeN3cfKOkDwwoLqFGrMclvrrpntfSDBcO/r1QaC+CUB0GD6UiuhdyhBIPd1gb+z0KmYCTwpFENyHDzRtiTcT5qCt5eYfYzsve2e6O1c+NsTyBgJzUD1v78aIluxKhoC+huF9Uxscm2DU4mOr0JYONHJCs3dN18fKLp0Dc3hSvmPSIaxPmjcvlVfWuVPtw6KwXvxw8U8PGUdfACzb9ZIBiUEEhFHU6xv73egj2hkN/ZTJr7yu3l+qvDJFHLlgBMoprseFc0tmDi/hbRUILxuOy8TOpGri71DoQBzwuQxxrG5GMJ77NFLOLYxsH6/gpA/7+vFT1X5CUsIv+BYZyY7g3RLZWYem3Gqv9T+sVNC/DEhxmdO1Yx49rAwHcUw3aeXTrKpa1xCNkgHg4Feheu5V6Pu9lb5DQUC9YidqELrLEvos6yoiH31myqAmI72Gt4i7SBjwS8k5O+7xjxhDrKpg0IFwCdQk4PEByoBnud/dDNyCZkZdCqTkb36aqmgdnTANz9M7DtcQTH/Lf6h+Suj3RVSeFfDZcJJDax7Ie5qwte+oHJ6yTuBZ2dt4hMmKZIZwn26Ei+DUfCPhx6nEqcAOf6Sbxf8RxkWJ2pLcIvbifrditHIuyGjOf4yMoIHOcSp6FsVbmkMleBG";
+
         map.put("token", token);
         map.put("detail", "ReturnHeaders");
         map.put("startTime", start);
         map.put("endTime", end);
         String xml = BindAccountAPI.getGetMyMessages(map);//获取接受消息
         AddApiTask addApiTask = new AddApiTask();
-          /*Map<String, String> resMap = addApiTask.exec(d, xml, "https://api.ebay.com/ws/api.dll");*/
-        /*Map<String, String> resMap = addApiTask.exec(d, xml, apiUrl);*/
+        //Map<String, String> resMap = addApiTask.exec(d, xml, "https://api.ebay.com/ws/api.dll");
+        //Map<String, String> resMap = addApiTask.exec(d, xml, apiUrl);
         TaskMessageVO taskMessageVO=new TaskMessageVO();
         taskMessageVO.setMessageContext("接受的消息");
         taskMessageVO.setMessageTitle("获取接受消息的");
@@ -770,7 +1018,7 @@ public class GetmymessageController extends BaseAction{
         //测试环境
         addApiTask.execDelayReturn(d, xml, apiUrl, taskMessageVO);
         //真实环境
-       /* addApiTask.execDelayReturn(d, xml, "https://api.ebay.com/ws/api.dll", taskMessageVO);*/
+        //addApiTask.execDelayReturn(d, xml, "https://api.ebay.com/ws/api.dll", taskMessageVO);*/
         AjaxSupport.sendSuccessText("message", "操作成功！结果请稍后查看消息！");
     }
 }

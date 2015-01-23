@@ -61,14 +61,20 @@
       <result column="variationSKU" jdbcType="VARCHAR" property="variationsku" />
       <result column="paypalFlag" jdbcType="INTEGER" property="paypalflag" />
       <result column="shippedFlag" jdbcType="INTEGER" property="shippedflag" />
+      <result column="itemFlag" jdbcType="INTEGER" property="itemflag" />
+      <result column="accountFlag" jdbcType="INTEGER" property="accountflag" />
+      <result column="sellerTrasactionFlag" jdbcType="INTEGER" property="sellertrasactionflag" />
       <result column="sendMessageTime" jdbcType="TIMESTAMP" property="sendmessagetime" />
+      <result column="autoMessage_id" jdbcType="BIGINT" property="automessageId" />
+      <result column="cancelStatus" jdbcType="VARCHAR" property="cancelstatus" />
       <result column="create_user" jdbcType="BIGINT" property="createUser" />
       <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
       <result column="uuid" jdbcType="VARCHAR" property="uuid" />
+      <result column="updateTime" jdbcType="TIMESTAMP" property="updatetime" />
       <result column="countNum" property="countNum" jdbcType="BIGINT" />
   </resultMap>
     <select id="selectOrderGetOrdersByGroupList" resultMap="BaseResultMap" parameterType="map">
-        select OrderGetOrders.*,count(*) countNum,item.site from trading_order_get_orders OrderGetOrders
+        select OrderGetOrders.id,OrderGetOrders.cancelStatus,OrderGetOrders.orderStatus,OrderGetOrders.orderID,OrderGetOrders.itemID,OrderGetOrders.transactionID,OrderGetOrders.transactionPrice,OrderGetOrders.createdTime,OrderGetOrders.lastModifiedTime,OrderGetOrders.quantityPurchased,OrderGetOrders.sellerUserID,OrderGetOrders.status,OrderGetOrders.shipmentTrackingNumber,OrderGetOrders.shippingCarrierUsed,OrderGetOrders.buyerUserID,OrderGetOrders.buyerEmail,OrderGetOrders.title,OrderGetOrders.sKU,OrderGetOrders.comment,count(*) countNum,item.site from trading_order_get_orders OrderGetOrders
         left join trading_order_get_item item on OrderGetOrders.itemID=item.itemID
         <if test="typeQ!=null">
             left join trading_order_variation variation on item.id=variation.orderItem_id
@@ -77,38 +83,38 @@
         <if test="folderId!=null">
             and OrderGetOrders.folder=#{folderId}
         </if>
-        <!--<if test="userid!=null">
-            and OrderGetOrders.create_user=#{userid}
-        </if>-->
         <if test="itemType!=null">
-            <if test="itemType=='itemId'">
-                and OrderGetOrders.itemID like "%"#{content}"%"
+            <if test="content!=null">
+                <if test="itemType=='itemId'">
+                    and OrderGetOrders.itemID like "%"#{content}"%"
+                </if>
+                <if test="itemType=='sku'">
+                    and OrderGetOrders.sKU like "%"#{content}"%"
+                </if>
+                <if test="itemType=='title'">
+                    and OrderGetOrders.title like "%"#{content}"%"
+                </if>
+                <if test="itemType=='buyerId'">
+                    and OrderGetOrders.buyerUserID like "%"#{content}"%"
+                </if>
+                <if test="itemType=='trackNum'">
+                    and OrderGetOrders.shipmentTrackingNumber like "%"#{content}"%"
+                </if>
+                <if test="itemType=='person'">
+                    <if test="content!=null">
+                        and OrderGetOrders.name like "%"#{content}"%"
+                    </if>
+                </if>
+                <if test="itemType=='buyerEmail'">
+                    and OrderGetOrders.buyerEmail like "%"#{content}"%"
+                </if>
+                <if test="itemType=='comment'">
+                    and OrderGetOrders.comment like "%"#{content}"%"
+                </if>
+                <if test="itemType=='transaction'">
+                    and OrderGetOrders.transactionID like "%"#{content}"%"
+                </if>
             </if>
-            <if test="itemType=='sku'">
-                and OrderGetOrders.sKU like "%"#{content}"%"
-            </if>
-            <if test="itemType=='title'">
-                and OrderGetOrders.title like "%"#{content}"%"
-            </if>
-            <if test="itemType=='buyerId'">
-                and OrderGetOrders.buyerUserID like "%"#{content}"%"
-            </if>
-            <if test="itemType=='trackNum'">
-                and OrderGetOrders.shipmentTrackingNumber like "%"#{content}"%"
-            </if>
-            <if test="itemType=='person'">
-                and OrderGetOrders.name like "%"#{content}"%"
-            </if>
-            <if test="itemType=='buyerEmail'">
-                and OrderGetOrders.buyerEmail like "%"#{content}"%"
-            </if>
-            <if test="itemType=='comment'">
-                and OrderGetOrders.comment like "%"#{content}"%"
-            </if>
-            <if test="itemType=='transaction'">
-                and OrderGetOrders.transactionID like "%"#{content}"%"
-            </if>
-
         </if>
         <if test="framConten!=null">
             and (OrderGetOrders.title like "%"#{framConten}"%" or OrderGetOrders sKU "%"#{framConten}"%")
@@ -123,6 +129,9 @@
             <if test="typeQ=='multiattribute'">
                 and item.listingType="FixedPriceItem" and variation.orderItem_id is not  null
             </if>
+        </if>
+        <if test="accountQ!=null">
+            and OrderGetOrders.sellerUserID=#{accountQ}
         </if>
         <if test="statusQ1!=null">
             <if test="statusQ1==2">
@@ -142,6 +151,12 @@
             </if>
             <if test="status=='Incomplete'">
               and OrderGetOrders.status = "Incomplete"
+            </if>
+            <if test="status=='Complete'">
+                and OrderGetOrders.status = "Complete"
+            </if>
+            <if test="status=='Cancelled'">
+                and OrderGetOrders.orderStatus = "Cancelled"
             </if>
         </if>
         <if test="starttime!=null">
@@ -173,7 +188,7 @@
         </if>
         group by OrderGetOrders.orderID
         <if test="orderby==null">
-            order by OrderGetOrders.lastModifiedTime desc
+            order by OrderGetOrders.createdTime desc
         </if>
         <if test="orderby!=null">
             <if test="orderby=='asc'">
@@ -211,4 +226,30 @@
             </if>
         </if>
     </select>
+    <select id="selectOrderGetOrdersByAccountFlag" resultMap="BaseResultMap" parameterType="map">
+        select OrderGetOrders.* from trading_order_get_orders OrderGetOrders where 1=1
+        and OrderGetOrders.accountFlag = 0
+    </select>
+    <select id="selectOrderGetOrdersByItemFlag" resultMap="BaseResultMap" parameterType="map">
+        select OrderGetOrders.* from trading_order_get_orders OrderGetOrders where 1=1
+        and OrderGetOrders.itemFlag = 0
+    </select>
+    <select id="selectOrderGetOrdersBySendPaidMessage" resultMap="BaseResultMap" parameterType="map">
+        select OrderGetOrders.* from trading_order_get_orders OrderGetOrders where 1=1
+        and OrderGetOrders.paypalFlag is not null and OrderGetOrders.shippedFlag is null
+        and OrderGetOrders.autoMessage_id != 0
+        <if test="sendMessageTime!=null">
+            and OrderGetOrders.sendMessageTime &lt; #{sendMessageTime}
+        </if>
+    </select>
+    <select id="selectOrderGetOrdersBySendShipMessage" resultMap="BaseResultMap" parameterType="map">
+        select OrderGetOrders.* from trading_order_get_orders OrderGetOrders where 1=1
+        and OrderGetOrders.paypalFlag is null and OrderGetOrders.shippedFlag is not null
+        and OrderGetOrders.autoMessage_id != 0
+        <if test="sendMessageTime!=null">
+            and OrderGetOrders.sendMessageTime &lt; #{sendMessageTime}
+        </if>
+    </select>
+
+
 </mapper>

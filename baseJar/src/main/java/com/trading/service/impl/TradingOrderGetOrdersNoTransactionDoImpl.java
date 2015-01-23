@@ -6,6 +6,8 @@ import com.base.utils.common.ObjectUtils;
 import com.base.utils.exception.Asserts;
 import com.base.utils.threadpool.TaskPool;
 import com.trading.service.ITradingOrderGetOrdersNoTransaction;
+import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -36,6 +38,10 @@ public class TradingOrderGetOrdersNoTransactionDoImpl {
         while (!TaskPool.togos.isEmpty()) {
         try {
             TradingOrderGetOrders oo = TaskPool.togos.take();//获取记录
+            String title=oo.getTitle();
+            if(StringUtils.isNotBlank(title)){
+                title= StringEscapeUtils.escapeXml(title);
+            }
             oo.setUpdatetime(new Date());
             if (oo.getId() == null) {
                 ObjectUtils.toInitPojoForInsert(oo);

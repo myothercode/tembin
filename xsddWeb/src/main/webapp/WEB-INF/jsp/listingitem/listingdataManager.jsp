@@ -213,6 +213,10 @@
             var urls = loadurl;
             var selectType = $("select[name='selecttype']").find("option:selected").val();
             var selectValue = $("input[name='selectvalue']").val();
+            if(selectType==""){
+                alert("请选择查询类型！");
+                return;
+            }
             if(urls.indexOf(selectQuery)>0){
                 urls = urls.replace(selectQuery,"");
                 urls=urls+"&selectType="+selectType+"&selectValue="+selectValue;
@@ -298,7 +302,7 @@
                 titlestr="多属性";
             }else if(json.listingType=="Chinese"){
                 htm="bids.png";
-                titlestr="拍买";
+                titlestr="拍卖";
             }else if(json.listingType=="FixedPriceItem"){
                 htm="buyit.png";
                 titlestr="固价";
@@ -595,6 +599,7 @@
                     {title:"价格",name:"price",width:"6%",align:"center",format:getPriceHtml},
                     {title:"<span onclick='orderList(this)' style='cursor: pointer;' colu='Quantity' val='0'>数量</span>/<span onclick='orderList(this)' style='cursor: pointer;' colu='QuantitySold' val='0'>已售</span>",name:"Option1",width:"6%",align:"center",format:tjCount},
                     {title:"<span onclick='orderList(this)' style='cursor: pointer;' colu='ListingDuration' val='0'>刊登天数</span>",name:"listingduration",width:"4%",align:"center",format:getDuration},
+                    {title:"<span onclick='orderList(this)' style='cursor: pointer;' colu='StartTime' val='0'>刊登时间</span>",name:"StartTime",width:"4%",align:"left",format:getStartTime},
                     {title:"<span onclick='orderList(this)' style='cursor: pointer;' colu='EndTime' val='0'>结束时间</span>",name:"endtime",width:"4%",align:"left",format:getendTime},
                     {title:"&nbsp;&nbsp;&nbsp;&nbsp;操作",name:"Option1",width:"4%",align:"left",format:makeOption1}
                 ],
@@ -615,6 +620,11 @@
         function getendTime(json){
             html="";
             html = "<span style='color: #7B7B7B;'>"+json.endtime.replace(" ","</br>")+"</span>";
+            return html;
+        }
+        function getStartTime(json){
+            html="";
+            html = "<span style='color: #7B7B7B;'>"+json.starttime.replace(" ","</br>")+"</span>";
             return html;
         }
         function getDuration(json){
@@ -704,7 +714,8 @@
                                     $(obj).parent().find("span").text(r.quantity);
                                     $(obj).val(r.quantity)
                                 }
-                                $(obj).parent().find("img").prop("src",path+"/img/tips.png");
+                                var errm = r.errMessage;
+                                $(obj).parent().find("img").prop({"src":path+"/img/tips.png","title":errm});
                                 $(obj).parent().find("span").unblock();
                             }]
                 );
@@ -840,6 +851,10 @@
             }
             $("#itemListingTable").selectDataAfterSetParm(param);
         }
+
+        function reshTable(){
+            $("#itemListingTable").refresh();
+        }
         //在线编辑
         var editPage = "";
         function edit(itemid){
@@ -891,6 +906,9 @@
             }
             $(obj).val("");
         }
+    function selectAllEbayAccount(obj){
+        alert($(obj).parent().html());
+    }
         //同步
     function synListingData(){
         var url = path + "/ajax/myEbayAccount.do";
@@ -903,7 +921,7 @@
                     ten+="</div>";
                     openMyDialog({title: '选择EBAY账号',
                         content: ten,
-                        icon: 'succeed',
+                        icon: 'success.gif',
                         width: 400,
                         button: [
                             {
@@ -933,6 +951,7 @@
                                     }
                                 }
                             }
+
                         ]
                     });
                 },

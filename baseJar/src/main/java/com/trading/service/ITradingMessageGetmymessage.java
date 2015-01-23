@@ -25,11 +25,15 @@ public interface ITradingMessageGetmymessage {
 
     List<TradingMessageGetmymessage> selectMessageGetmymessageByNoRead(String read);
 
-    List<TradingMessageGetmymessage> selectMessageGetmymessageByMessageId(String messageID);
+    List<TradingMessageGetmymessage> selectMessageGetmymessageByMessageId(String messageID,String sender);
 
     List<TradingMessageGetmymessage> selectMessageGetmymessageByItemIdAndSender(String itemid,String sender,String recipient );
 
     TradingMessageGetmymessage selectMessageGetmymessageById(Long id);
 
     List<TradingMessageGetmymessage> selectMessageGetmymessageByReplied(Long userId);
+
+    List<MessageGetmymessageQuery> selectByMessageGetmymessageNoReadCount();
+
+    List<MessageGetmymessageQuery> selectMessageGetmymessageByItemIdAndSenderFolderIDIsZoneOrOne(String itemid,String sender,String recipient );
 }

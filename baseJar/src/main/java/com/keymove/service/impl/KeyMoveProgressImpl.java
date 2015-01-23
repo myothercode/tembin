@@ -25,9 +25,9 @@ public class KeyMoveProgressImpl implements com.keymove.service.IKeyMoveProgress
     private TradingProgressMapper tradingProgressMapper;
 
     @Override
-    public List<KeyMoveProgressQuery> selectByUserId(long userId){
+    public List<KeyMoveProgressQuery> selectByUserId(List<String> listr){
         Map m = new HashMap();
-        m.put("userId",userId);
+        m.put("ebayList",listr);
         return this.keyMoveProgressQueryMapper.selectKeyMoveProgressList(m);
     }
 

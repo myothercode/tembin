@@ -36,7 +36,6 @@ public class TradingDescriptionDetailsImpl implements com.trading.service.ITradi
         }else{
             TradingDescriptionDetailsWithBLOBs t=tradingDescriptionDetailsMapper.selectByPrimaryKey(pojo.getId());
             Asserts.assertTrue(t != null && t.getCreateUser() != null, "没有找到记录或者记录创建者为空");
-            ObjectUtils.valiUpdate(t.getCreateUser(),TradingDescriptionDetailsMapper.class,pojo.getId());
             if(pojo.getCheckFlag()==null) {
                 pojo.setCheckFlag(t.getCheckFlag());
             }

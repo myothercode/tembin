@@ -357,7 +357,7 @@
     $.fn.setCurrPageNumColor=function(){
         var option = this.data("option");
         var cur=option.sysParm["jsonBean.pageNum"];
-        $(".maage_page").find("li").each(function(i,d){
+		this.find(".maage_page").find("li").each(function(i,d){
 
             if(parseInt($(d).html()) ==cur){
                 $(d).addClass("page_cl");

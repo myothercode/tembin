@@ -315,6 +315,76 @@ public class TaskGetOrdersExample {
             return (Criteria) this;
         }
 
+        public Criteria andEbaynameIsNull() {
+            addCriterion("ebayName is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andEbaynameIsNotNull() {
+            addCriterion("ebayName is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andEbaynameEqualTo(String value) {
+            addCriterion("ebayName =", value, "ebayname");
+            return (Criteria) this;
+        }
+
+        public Criteria andEbaynameNotEqualTo(String value) {
+            addCriterion("ebayName <>", value, "ebayname");
+            return (Criteria) this;
+        }
+
+        public Criteria andEbaynameGreaterThan(String value) {
+            addCriterion("ebayName >", value, "ebayname");
+            return (Criteria) this;
+        }
+
+        public Criteria andEbaynameGreaterThanOrEqualTo(String value) {
+            addCriterion("ebayName >=", value, "ebayname");
+            return (Criteria) this;
+        }
+
+        public Criteria andEbaynameLessThan(String value) {
+            addCriterion("ebayName <", value, "ebayname");
+            return (Criteria) this;
+        }
+
+        public Criteria andEbaynameLessThanOrEqualTo(String value) {
+            addCriterion("ebayName <=", value, "ebayname");
+            return (Criteria) this;
+        }
+
+        public Criteria andEbaynameLike(String value) {
+            addCriterion("ebayName like", value, "ebayname");
+            return (Criteria) this;
+        }
+
+        public Criteria andEbaynameNotLike(String value) {
+            addCriterion("ebayName not like", value, "ebayname");
+            return (Criteria) this;
+        }
+
+        public Criteria andEbaynameIn(List<String> values) {
+            addCriterion("ebayName in", values, "ebayname");
+            return (Criteria) this;
+        }
+
+        public Criteria andEbaynameNotIn(List<String> values) {
+            addCriterion("ebayName not in", values, "ebayname");
+            return (Criteria) this;
+        }
+
+        public Criteria andEbaynameBetween(String value1, String value2) {
+            addCriterion("ebayName between", value1, value2, "ebayname");
+            return (Criteria) this;
+        }
+
+        public Criteria andEbaynameNotBetween(String value1, String value2) {
+            addCriterion("ebayName not between", value1, value2, "ebayname");
+            return (Criteria) this;
+        }
+
         public Criteria andFromtimeIsNull() {
             addCriterion("fromtime is null");
             return (Criteria) this;
@@ -515,6 +585,66 @@ public class TaskGetOrdersExample {
             return (Criteria) this;
         }
 
+        public Criteria andNewuserflagIsNull() {
+            addCriterion("newUserFlag is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andNewuserflagIsNotNull() {
+            addCriterion("newUserFlag is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andNewuserflagEqualTo(Integer value) {
+            addCriterion("newUserFlag =", value, "newuserflag");
+            return (Criteria) this;
+        }
+
+        public Criteria andNewuserflagNotEqualTo(Integer value) {
+            addCriterion("newUserFlag <>", value, "newuserflag");
+            return (Criteria) this;
+        }
+
+        public Criteria andNewuserflagGreaterThan(Integer value) {
+            addCriterion("newUserFlag >", value, "newuserflag");
+            return (Criteria) this;
+        }
+
+        public Criteria andNewuserflagGreaterThanOrEqualTo(Integer value) {
+            addCriterion("newUserFlag >=", value, "newuserflag");
+            return (Criteria) this;
+        }
+
+        public Criteria andNewuserflagLessThan(Integer value) {
+            addCriterion("newUserFlag <", value, "newuserflag");
+            return (Criteria) this;
+        }
+
+        public Criteria andNewuserflagLessThanOrEqualTo(Integer value) {
+            addCriterion("newUserFlag <=", value, "newuserflag");
+            return (Criteria) this;
+        }
+
+        public Criteria andNewuserflagIn(List<Integer> values) {
+            addCriterion("newUserFlag in", values, "newuserflag");
+            return (Criteria) this;
+        }
+
+        public Criteria andNewuserflagNotIn(List<Integer> values) {
+            addCriterion("newUserFlag not in", values, "newuserflag");
+            return (Criteria) this;
+        }
+
+        public Criteria andNewuserflagBetween(Integer value1, Integer value2) {
+            addCriterion("newUserFlag between", value1, value2, "newuserflag");
+            return (Criteria) this;
+        }
+
+        public Criteria andNewuserflagNotBetween(Integer value1, Integer value2) {
+            addCriterion("newUserFlag not between", value1, value2, "newuserflag");
+            return (Criteria) this;
+        }
+
         public Criteria andSavetimeIsNull() {
             addCriterion("savetime is null");
             return (Criteria) this;
@@ -572,6 +702,66 @@ public class TaskGetOrdersExample {
 
         public Criteria andSavetimeNotBetween(Date value1, Date value2) {
             addCriterion("savetime not between", value1, value2, "savetime");
+            return (Criteria) this;
+        }
+
+        public Criteria andLastsyctimeIsNull() {
+            addCriterion("lastsyctime is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andLastsyctimeIsNotNull() {
+            addCriterion("lastsyctime is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andLastsyctimeEqualTo(Date value) {
+            addCriterion("lastsyctime =", value, "lastsyctime");
+            return (Criteria) this;
+        }
+
+        public Criteria andLastsyctimeNotEqualTo(Date value) {
+            addCriterion("lastsyctime <>", value, "lastsyctime");
+            return (Criteria) this;
+        }
+
+        public Criteria andLastsyctimeGreaterThan(Date value) {
+            addCriterion("lastsyctime >", value, "lastsyctime");
+            return (Criteria) this;
+        }
+
+        public Criteria andLastsyctimeGreaterThanOrEqualTo(Date value) {
+            addCriterion("lastsyctime >=", value, "lastsyctime");
+            return (Criteria) this;
+        }
+
+        public Criteria andLastsyctimeLessThan(Date value) {
+            addCriterion("lastsyctime <", value, "lastsyctime");
+            return (Criteria) this;
+        }
+
+        public Criteria andLastsyctimeLessThanOrEqualTo(Date value) {
+            addCriterion("lastsyctime <=", value, "lastsyctime");
+            return (Criteria) this;
+        }
+
+        public Criteria andLastsyctimeIn(List<Date> values) {
+            addCriterion("lastsyctime in", values, "lastsyctime");
+            return (Criteria) this;
+        }
+
+        public Criteria andLastsyctimeNotIn(List<Date> values) {
+            addCriterion("lastsyctime not in", values, "lastsyctime");
+            return (Criteria) this;
+        }
+
+        public Criteria andLastsyctimeBetween(Date value1, Date value2) {
+            addCriterion("lastsyctime between", value1, value2, "lastsyctime");
+            return (Criteria) this;
+        }
+
+        public Criteria andLastsyctimeNotBetween(Date value1, Date value2) {
+            addCriterion("lastsyctime not between", value1, value2, "lastsyctime");
             return (Criteria) this;
         }
     }

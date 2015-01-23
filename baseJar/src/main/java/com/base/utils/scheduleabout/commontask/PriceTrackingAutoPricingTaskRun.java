@@ -332,4 +332,14 @@ public class PriceTrackingAutoPricingTaskRun extends BaseScheduledClass implemen
     public Integer crTimeMinu() {
         return null;
     }
+
+    @Override
+    public void setMark(String x) {
+
+    }
+
+    @Override
+    public String getMark() {
+        return null;
+    }
 }
