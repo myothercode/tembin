@@ -11,4 +11,6 @@ public interface ITaskComplement {
     void saveTaskComplement(TaskComplement taskComplement);
 
     List<TaskComplement> selectByList();
+
+    List<TaskComplement> selectByTaskComplement(String taskFlag);
 }

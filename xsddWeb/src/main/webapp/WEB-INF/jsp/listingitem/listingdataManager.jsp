@@ -212,7 +212,7 @@
         function selectData(){
             var urls = loadurl;
             var selectType = $("select[name='selecttype']").find("option:selected").val();
-            var selectValue = $("input[name='selectvalue']").val();
+            var selectValue = $("#_selectvalue").val();
             if(selectType==""){
                 alert("请选择查询类型！");
                 return;
@@ -240,7 +240,7 @@
                 urls = urls.replace(selectQuery,"");
             }
             $(obj).parent().find("select[name='selecttype']").val("");
-            $(obj).parent().find("input[name='selectvalue']").val("");
+            $(obj).parent().find("#_selectvalue").val("");
             loadurl = urls;
             if("updatelog"==nameFolder){
                 onloadTableamend(loadurl);
@@ -430,6 +430,7 @@
         //----------------------------------------
 
         $(document).ready(function(){
+            initSearchInput();
             var url=path+"/ajax/selfFolder.do?folderType=listingFolder";
             $().invoke(url,{},
                     [function(m,r){
@@ -457,7 +458,27 @@
             if(localStorage.getItem("siteListStr")!=null){
                 $("#li_countyselect").html(localStorage.getItem("siteListStr"));
             }
+
+
         });
+
+        /**初始化select2搜索框*/
+        function initSearchInput(bs){
+            var _url="";
+            var _map={};
+            if(bs=='sku'){
+                _url=path+"/informationType/ajax/loadOrgIdItemInformationList.do";
+                _map={id:"sku",text:"sku"};
+            }
+
+            mySelect2I([{url:_url,doitAfterSelect:selectData,
+                data:{currInputName:"content"},bs:"#_selectvalue",multiple:false,maping:_map}]);
+        }
+        function chageOldDom(obj){
+            initSearchInput($(obj).val());
+            $("input[id='_selectvalue']").val('');
+        }
+
 
         function toFolder(idStr){
             var url=path+"/ajax/selfFolder.do?folderType=listingFolder";
@@ -596,7 +617,7 @@
                     {title:"<span onclick='orderList(this)' style='cursor: pointer;' colu='ebay_account' val='0'>ebay账户</span>",name:"ebayAccount",width:"4%",align:"left",format:getEbayAccount},
                     {title:"<span onclick='orderList(this)' style='cursor: pointer;' colu='site' val='0'>站点</span>",name:"site",width:"2%",align:"left",format:getSiteImg},
                     {title:"<span onclick='orderList(this)' style='cursor: pointer;' colu='listing_type' val='0'>刊登类型</span>",name:"listingType",width:"4%",align:"center",format:listingType},
-                    {title:"价格",name:"price",width:"6%",align:"center",format:getPriceHtml},
+                    {title:"<span onclick='orderList(this)' style='cursor: pointer;' colu='price' val='0'>价格</span>",name:"price",width:"6%",align:"center",format:getPriceHtml},
                     {title:"<span onclick='orderList(this)' style='cursor: pointer;' colu='Quantity' val='0'>数量</span>/<span onclick='orderList(this)' style='cursor: pointer;' colu='QuantitySold' val='0'>已售</span>",name:"Option1",width:"6%",align:"center",format:tjCount},
                     {title:"<span onclick='orderList(this)' style='cursor: pointer;' colu='ListingDuration' val='0'>刊登天数</span>",name:"listingduration",width:"4%",align:"center",format:getDuration},
                     {title:"<span onclick='orderList(this)' style='cursor: pointer;' colu='StartTime' val='0'>刊登时间</span>",name:"StartTime",width:"4%",align:"left",format:getStartTime},
@@ -844,7 +865,7 @@
             });
         }
         function  refreshTable(){
-            var selectValue = $("input[type='text'][name='selectvalue']").val();
+            var selectValue = $("#_selectvalue").select2("data")!=null ? $("#_selectvalue").select2("data").text:"";
             var param={};
             if(selectValue!=null&&selectValue!=""){
                 param={"queryValue":selectValue};
@@ -862,7 +883,7 @@
                 content: 'url:/xsddWeb/editListingItem.do?itemid='+itemid,
                 icon: 'succeed',
                 width:800,
-                height:400
+                height:500
             });
         }
 
@@ -997,6 +1018,9 @@
         width: 74px;
     }
 </style>
+    <link rel="stylesheet" type="text/css" href="<c:url value ="/js/select2/select2.css" />"/>
+    <script type="text/javascript" src=<c:url value ="/js/select2/select2.min.js" /> ></script>
+    <script type="text/javascript" src=<c:url value ="/js/select2/mySelect2.js" /> ></script>
 </head>
 <body>
 <div class="new_all">
@@ -1047,7 +1071,35 @@
                         <a href="javascript:void(0)" onclick="selectAmendFlag(this)" value="0"><span class="newusa_ici_1">失败</span></a>
                     </li>
                 </div>
+
+
+
                 <div class="newsearch">
+                    <span class="newusa_i">搜索内容：</span>
+                    <a name="t_a" href="javascript:void(0)" onclick="selectAllData(this)" value="">
+                        <span class="newusa_ici">全部</span>
+                    </a>
+                    <span id="sleBG" style="width:82px;background-position: 67px 10px;">
+                    <span id="sleHid1" style="width: 80px;">
+                    <select name="selecttype" onchange="chageOldDom(this)" class="select" style="color: #737FA7;width: 80px;float: left">
+                        <option selected="selected" value="">选择类型</option>
+                        <option value="sku">SKU</option>
+                        <option value="title">物品标题</option>
+                        <option value="item_id">物品号</option>
+                        <option value="docname">范本名称</option>
+                    </select>
+                    </span>
+                    </span>
+
+                    <span>
+                        <input id="_selectvalue" name="selectvalue" type="text" style="width:200px;float: left"  multiple class="multiSelect">
+                        <input style="display: none" name="newbut" onclick="selectData()" type="button" class="key_2">
+                    </span>
+
+                </div>
+
+
+                <%--<div class="newsearch">
                     <span class="newusa_i">搜索内容：</span>
                     <a href="javascript:void(0)" onclick="selectAllData(this)" value=""><span class="newusa_ici">全部</span></a>
 <span id="sleBG" style="width:82px;background-position: 67px 10px;">
@@ -1064,7 +1116,13 @@
 
                     <div class="vsearch">
                         <input name="selectvalue" type="text" class="key_1" style="vtical-align:middle;line-height:100%;"><input name="newbut" onclick="selectData()" type="button" class="key_2"></div>
-                </div>
+                </div>--%>
+
+
+
+
+
+
                 <div class="newds">
                     <div class="newsj_left">
 

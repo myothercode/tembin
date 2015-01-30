@@ -19,7 +19,11 @@
                 return ;
             }
             $(W.document).find("input[type='hidden'][name='timerListing']").val(val);
-            W.saveData("timeSave","timeSave");
+            if(W.document.location.href.indexOf("editItem.do")>0){
+                W.saveData("timeSave","timeSave");
+            }else{
+                W.saveDatas("timeSave","timeSave");
+            }
             W.timerPage.close();
         }
     </script>

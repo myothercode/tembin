@@ -19,6 +19,7 @@
                     {title:"买家",name:"commentinguser",width:"6%",align:"center"},
                     {title:"评价内容",name:"commenttext",width:"40%",align:"left"},
                     {title:"评价类型",name:"commenttype",width:"6%",align:"center",format:getcommentType},
+                    {title:"EBAY账号",name:"ebayAccount",width:"6%",align:"center"},
                     {title:"商品",name:"itemtitle",width:"20%",align:"left",format:getTitle},
                     {title:"评价时间",name:"commenttime",width:"6%",align:"center",format:getDateStr}/*,
                     {title:"价格",name:"itemprice",width:"6%",align:"center"}*/

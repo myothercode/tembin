@@ -485,7 +485,7 @@ function saveData(objs,name) {
         data,
         [function (m, r) {
             //oldAlert(r);
-
+            Base.token();
             alert(r);
             $(objs).attr("disabled",false);
             if(url.indexOf("information/editItem.do")>0){
@@ -496,7 +496,6 @@ function saveData(objs,name) {
             }else{
                 document.location = path+"/itemManager.do";
             }
-            Base.token();
         },
             function (m, r) {
                 alert(r);
@@ -512,7 +511,6 @@ function saveData(objs,name) {
                 }catch (e){
 
                 }
-
                 Base.token();
                 $(objs).attr("disabled",false);
                 //document.location = path+"/itemManager.do";
@@ -525,8 +523,8 @@ function checkEbayFee(){
     if(!$("#form").validationEngine("validate")){
         return;
     }
-    if(($("#showPics").find("img").length+$("#picMore").find("img").length/2)>8){
-        alert("最多只能上传8张图片，上传图片已超过上传限制！");
+    if(countChoosePic()>11){
+        alert("最多只能上传12张图片，上传图片已超过上传限制！");
         return;
     }
     var pciValue = new Map();
@@ -607,8 +605,8 @@ function previewItem(){
     if(!$("#form").validationEngine("validate")){
         return;
     }
-    if(($("#showPics").find("img").length+$("#picMore").find("img").length/2)>8){
-        alert("最多只能上传8张图片，上传图片已超过上传限制！");
+    if(countChoosePic()>11){
+        alert("最多只能上传12张图片，上传图片已超过上传限制！");
         return;
     }
     var pciValue = new Map();
@@ -719,6 +717,7 @@ function isShowPicLink(){
             "<b class='new_button' style='margin: 10px;'><a href='javascript:void(0)' bsid='online' id='apicUrlsSKU_" + $(d).val() + "' onclick='selectPic(this)' style=''>选择SKU图片</a></b>" +
             "<b class='new_button' style='margin: 10px;'><a href='javascript:void(0)' bsid='remote' id='apicUrlsOther_" + $(d).val() + "' onclick='selectPic(this)' style=''>选择外部图片</a></b>" +
             "<b class='new_button' style='margin: 10px;'><a href='javascript:void(0)' id='apicUrlsclear_" + $(d).val() + "' onclick='clearAllPic(this)' style=''>清空所选图片</a></b>" +
+            "<b class='new_button' style='margin: 10px;'><a href='javascript:void(0)' id='apicUrlsCopy_" + $(d).val() + "' onclick='copyPic(this)' style=''>复制图片到描述</a></b>" +
             "</div> </div> ";
         $("#showPics").append(showStr);
         $().image_editor.init("picUrls_"+$(d).val()); //编辑器的实例id
@@ -870,5 +869,9 @@ function PrimaryCategoryShowFlag(){
         $("#PrimaryCategoryShowFlag").hide();
     }
 }
-
+function copyPic(obj){
+    $("input[name$='PictureURL']").each(function(i,d){
+        myDescription.execCommand('insertHtml',"<img name='itemImg' src=" + $(d).val() + " />&nbsp;" );
+    });
+}
 

@@ -40,7 +40,7 @@
         </if>
     </select>
     <select id="selectMessageGetmymessageByGroupList" resultMap="BaseResultMap" parameterType="map">
-        select MessageGetmymessage.id,MessageGetmymessage.sendToName,MessageGetmymessage.messageID,MessageGetmymessage.subject,MessageGetmymessage.read,MessageGetmymessage.sender,MessageGetmymessage.recipientUserID,MessageGetmymessage.receiveDate,item.sku sku,count(*) countNum from trading_message_getmymessage MessageGetmymessage
+        select MessageGetmymessage.id,MessageGetmymessage.replied,MessageGetmymessage.sendToName,MessageGetmymessage.messageID,MessageGetmymessage.subject,MessageGetmymessage.read,MessageGetmymessage.sender,MessageGetmymessage.recipientUserID,MessageGetmymessage.receiveDate,item.sku sku,count(*) countNum from trading_message_getmymessage MessageGetmymessage
         left join trading_order_get_item item on MessageGetmymessage.itemID=item.itemID
         where 1=1
         <if test="folderID!=null">
@@ -96,6 +96,9 @@
                 <if test="type==3">
                     and item.sku like "%"#{content}"%"
                 </if>
+                <if test="type==4">
+                    and MessageGetmymessage.sendToName like "%"#{content}"%"
+                </if>
             </if>
 
         </if>
@@ -113,7 +116,7 @@
                 and MessageGetmymessage.read="false"
             </if>
         </if>
-        group by MessageGetmymessage.sender,MessageGetmymessage.itemID
+        group by MessageGetmymessage.messageID
         <if test="read!=null">
             order by MessageGetmymessage.receiveDate
         </if>
@@ -130,8 +133,9 @@
         order by MessageGetmymessage.receiveDate
     </select>
     <select id="selectByMessageGetmymessageNoReadCount" resultMap="BaseResultMap" parameterType="map">
-        select count(1) countNum from trading_message_getmymessage MessageGetmymessage where 1=1
+        select MessageGetmymessage.*  from trading_message_getmymessage MessageGetmymessage where 1=1
         and MessageGetmymessage.read = "false" and MessageGetmymessage.folderID = "0"
+        group by MessageGetmymessage.messageID
     </select>
     <select id="selectMessageGetmymessageByItemIdAndSenderFolderIDIsZoneOrOne" resultMap="BaseResultMap" parameterType="map">
         select MessageGetmymessage.* from trading_message_getmymessage MessageGetmymessage

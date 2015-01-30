@@ -45,7 +45,7 @@ public class SynchronizeGetOrdersItemTimerTaskRun extends BaseScheduledClass imp
         TempStoreDataSupport.pushData("task_" + getScheduledType(), "x");*/
         Boolean b= TaskPool.threadIsAliveByName("thread_" + getScheduledType());
         if(b){
-            logger.error(getScheduledType()+"===之前的任务还未完成继续等待下一个循环===");
+            //logger.error(getScheduledType()+"===之前的任务还未完成继续等待下一个循环===");
             return;
         }
         //logger.error(getScheduledType()+"===任务开始===");

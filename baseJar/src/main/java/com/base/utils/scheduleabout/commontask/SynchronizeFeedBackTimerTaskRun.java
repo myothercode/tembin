@@ -2,12 +2,10 @@ package com.base.utils.scheduleabout.commontask;
 
 import com.base.database.sitemessage.model.PublicSitemessage;
 import com.base.database.task.model.TaskFeedBack;
-import com.base.database.task.model.TaskGetUserCases;
 import com.base.database.trading.model.*;
 import com.base.domains.userinfo.UsercontrollerDevAccountExtend;
 import com.base.sampleapixml.APINameStatic;
 import com.base.utils.applicationcontext.ApplicationContextUtil;
-import com.base.utils.cache.TempStoreDataSupport;
 import com.base.utils.common.MyStringUtil;
 import com.base.utils.scheduleabout.BaseScheduledClass;
 import com.base.utils.scheduleabout.MainTask;
@@ -136,7 +134,7 @@ public class SynchronizeFeedBackTimerTaskRun extends BaseScheduledClass implemen
                             if(addmessages.size()>0){
                                 feedBackDetail.setAutomessageflag(1);
                             }else{
-                                feedBackDetail.setAutomessageflag(null);
+                                feedBackDetail.setAutomessageflag(0);
                             }
                             TradingFeedBackDetail detail=iTradingFeedBackDetail.selectFeedBackDetailByBuyerAndFeedBackId(feedBackDetail.getCommentinguser(), feedBackDetail.getFeedbackid());
                             if(detail!=null){
@@ -181,8 +179,9 @@ public class SynchronizeFeedBackTimerTaskRun extends BaseScheduledClass implemen
             if (partner.getStartuse() == 1) {
                 Boolean autoFlag = false;
                 List<TradingAutoMessageAttr> allOrders = iTradingAutoMessageAttr.selectAutoMessageListByautoMessageId(partner.getId(), "allOrder");
+                List<TradingAutoMessageAttr> allEbays = iTradingAutoMessageAttr.selectAutoMessageListByautoMessageId(partner.getId(), "allEbay");
                 if(order!=null){
-                    if (allOrders != null && allOrders.size() > 0) {
+                    if (allOrders != null && allOrders.size() > 0||(allEbays!=null&&allEbays.size()>0)) {
                         autoFlag = true;
                     } else {
                         Boolean orderItemFlag = false;

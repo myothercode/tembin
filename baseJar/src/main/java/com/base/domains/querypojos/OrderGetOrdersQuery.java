@@ -26,6 +26,16 @@ public class OrderGetOrdersQuery extends TradingOrderGetOrders{
 
     private String feedbackMessage1;
 
+    private String totalAmount;
+
+    public String getTotalAmount() {
+        return totalAmount;
+    }
+
+    public void setTotalAmount(String totalAmount) {
+        this.totalAmount = totalAmount;
+    }
+
     public String getRole1() {
         return role1;
     }

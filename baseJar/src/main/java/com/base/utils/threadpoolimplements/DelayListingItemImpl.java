@@ -41,7 +41,7 @@ public class DelayListingItemImpl implements ThreadPoolBaseInterFace {
                 this.iTradingItem.saveListingSuccess(res,itemId);
                 TradingItemWithBLOBs itwb = this.iTradingItem.selectByItemId(itemId);
                 //更新在线商品表
-                this.iTradingListingData.saveTradingListingDataByTradingItem(itwb,res);
+                this.iTradingListingData.saveTradingListingDataByTradingItem(tradingItem,res);
             }
             else {return;}
         } catch (Exception e) {

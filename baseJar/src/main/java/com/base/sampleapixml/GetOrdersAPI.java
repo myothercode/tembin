@@ -33,93 +33,55 @@ public class GetOrdersAPI {
                 Element transactionArray=order.element("TransactionArray");
                 if(transactionArray!=null){
                     Iterator<Element> it=transactionArray.elementIterator("Transaction");
-                    TradingOrderGetOrders getorder=new TradingOrderGetOrders();
-                    //--------解析order下面第一层
-                    getorder.setSelleremail(SamplePaseXml.getSpecifyElementText(order,"SellerEmail"));
-                    getorder.setOrderid(SamplePaseXml.getSpecifyElementText(order, "OrderID"));
-                    getorder.setOrderstatus(SamplePaseXml.getSpecifyElementText(order,"OrderStatus"));
-                    getorder.setAdjustmentamount(SamplePaseXml.getSpecifyElementText(order, "AdjustmentAmount"));
-                    getorder.setAmountsaved(SamplePaseXml.getSpecifyElementText(order, "AmountSaved"));
-                    getorder.setCreatinguserrole(SamplePaseXml.getSpecifyElementText(order, "CreatingUserRole"));
-                    getorder.setPaymentmethods(SamplePaseXml.getSpecifyElementText(order, "PaymentMethods"));
-                    getorder.setSubtotal(SamplePaseXml.getSpecifyElementText(order, "Subtotal"));
-                    getorder.setTotal(SamplePaseXml.getSpecifyElementText(order, "Total"));
-                    getorder.setDigitaldelivery(SamplePaseXml.getSpecifyElementText(order, "DigitalDelivery"));
-                    getorder.setBuyeruserid(SamplePaseXml.getSpecifyElementText(order, "BuyerUserID"));
-                    getorder.setSelleruserid(SamplePaseXml.getSpecifyElementText(order, "SellerUserID"));
-                    String CreatedTime=SamplePaseXml.getSpecifyElementText(order,"CreatedTime");
-                    Date time=DateUtils.returnDate(CreatedTime);
-                    getorder.setCreatedtime(time);
-                    String paidtime=SamplePaseXml.getSpecifyElementText(order,"PaidTime");
-                    String shippedtime=SamplePaseXml.getSpecifyElementText(order,"ShippedTime");
-                    Date PaidTime=DateUtils.returnDate(paidtime);
-                    Date ShippedTime=DateUtils.returnDate(shippedtime);
-                    getorder.setPaidtime(PaidTime);
-                    getorder.setShippedtime(ShippedTime);
-                    getorder.setAmountpaid(SamplePaseXml.getSpecifyElementText(order,"AmountPaid"));
-                    getorder.setCancelstatus(SamplePaseXml.getSpecifyElementText(order,"CancelStatus"));
-                    //-------------------获取第二层的---------------------------
-                    getorder.setEbaypaymentstatus(SamplePaseXml.getSpecifyElementText(order,"CheckoutStatus","eBayPaymentStatus"));
-                    getorder.setPaymentmethod(SamplePaseXml.getSpecifyElementText(order,"CheckoutStatus","PaymentMethod"));
-                    getorder.setStatus(SamplePaseXml.getSpecifyElementText(order,"CheckoutStatus","Status"));
-                    getorder.setLastmodifiedtime(DateUtils.returnDate(SamplePaseXml.getSpecifyElementText(order,"CheckoutStatus","LastModifiedTime")));
-                    getorder.setSelectedshippingservice(SamplePaseXml.getSpecifyElementText(order,"ShippingServiceSelected","ShippingService"));
-                    String selectdShippingServiceCost=SamplePaseXml.getSpecifyElementText(order,"ShippingServiceSelected","ShippingServiceCost");
-                    if(selectdShippingServiceCost!=null){
-                        getorder.setSelectedshippingservicecost(Double.valueOf(selectdShippingServiceCost));
-                    }
-                   /* Element details=order.element("ShippingDetails");
-                    String percent=SamplePaseXml.getSpecifyElementText(details, "SalesTaxPercent");
-                    if(percent!=null){
-                        sd.setSalestaxpercent(Double.valueOf(percent));
-                    }
-                    sd.setSalestaxstate(SamplePaseXml.getSpecifyElementText(details, "SalesTaxState"));
-                    sd.setSalestaxamount(SamplePaseXml.getSpecifyElementText(details, "SalesTaxAmount"));
-                    String number=SamplePaseXml.getSpecifyElementText(details, "SellingManagerSalesRecordNumber");
-                    if(number!=null){
-                        sd.setSellingmanagersalesrecordnumber(Integer.valueOf(number));
-                    }
-                    sd.setGetitfast(SamplePaseXml.getSpecifyElementText(details, "GetItFast"));
-                    map.put(ShippingDetails,sd);*/
-                  /*  iTradingOrderShippingDetails.saveOrderShippingDetails(sd);*/
-                    /*Iterator options=details.elementIterator("ShippingServiceOptions");
-                    List<TradingOrderShippingServiceOptions> optionlist=new ArrayList<TradingOrderShippingServiceOptions>();
-                    while(options.hasNext()){
-                        Element option= (Element) options.next();
-                        TradingOrderShippingServiceOptions sso=new TradingOrderShippingServiceOptions();
-                        sso.setShippingservice(SamplePaseXml.getSpecifyElementText(option,"ShippingService"));
-                        String priority=SamplePaseXml.getSpecifyElementText(option, "ShippingServicePriority");
-                        if(priority!=null){
-                            sso.setShippingservicepriority(Integer.valueOf(priority));
-                        }
-                        sso.setExpeditedservice(SamplePaseXml.getSpecifyElementText(option,"ExpeditedService"));
-                        String max=SamplePaseXml.getSpecifyElementText(option, "ShippingTimeMax");
-                        String min=SamplePaseXml.getSpecifyElementText(option, "ShippingTimeMin");
-                        if(max!=null){
-                            sso.setShippingtimemax(Integer.valueOf(max));
-                        }
-                        if(min!=null){
-                            sso.setShippingtimemin(Integer.valueOf(min));
-                        }
-                       *//* sso.setShippingdetailsId(sd.getId());*//*
-                        optionlist.add(sso);
-                       *//* iTradingOrderShippingServiceOptions.saveOrderShippingServiceOptions(sso);*//*
-                    }*/
-                   /* map.put(OptionList,optionlist);*/
-                    /*getorder.setShippingdetailsId(sd.getId());*/
-                    getorder.setName(StringEscapeUtils.escapeXml(SamplePaseXml.getSpecifyElementText(order,"ShippingAddress","Name")));
-                    getorder.setStreet1(StringEscapeUtils.escapeXml(SamplePaseXml.getSpecifyElementText(order,"ShippingAddress","Street1")));
-                    getorder.setStreet2(StringEscapeUtils.escapeXml(SamplePaseXml.getSpecifyElementText(order,"ShippingAddress","Street2")));
-                    getorder.setCityname(StringEscapeUtils.escapeXml(SamplePaseXml.getSpecifyElementText(order,"ShippingAddress","CityName")) );
-                    getorder.setStateorprovince(StringEscapeUtils.escapeXml(SamplePaseXml.getSpecifyElementText(order,"ShippingAddress","StateOrProvince")));
-                    getorder.setCountry(StringEscapeUtils.escapeXml(SamplePaseXml.getSpecifyElementText(order,"ShippingAddress","Country")));
-                    getorder.setCountryname(StringEscapeUtils.escapeXml(SamplePaseXml.getSpecifyElementText(order,"ShippingAddress","CountryName")));
-                    getorder.setPhone(StringEscapeUtils.escapeXml(SamplePaseXml.getSpecifyElementText(order,"ShippingAddress","Phone")));
-                    getorder.setPostalcode(StringEscapeUtils.escapeXml(SamplePaseXml.getSpecifyElementText(order,"ShippingAddress","PostalCode")));
-                    getorder.setAddressid(StringEscapeUtils.escapeXml(SamplePaseXml.getSpecifyElementText(order,"ShippingAddress","AddressID")));
-                    getorder.setAddressowner(StringEscapeUtils.escapeXml(SamplePaseXml.getSpecifyElementText(order,"ShippingAddress","AddressOwner")));
-                    getorder.setExternaladdressid(StringEscapeUtils.escapeXml(SamplePaseXml.getSpecifyElementText(order,"ShippingAddress","ExternalAddressID")));
+
                     while(it.hasNext()){
+                        TradingOrderGetOrders getorder=new TradingOrderGetOrders();
+                        //--------解析order下面第一层
+                        getorder.setSelleremail(SamplePaseXml.getSpecifyElementText(order,"SellerEmail"));
+                        getorder.setOrderid(SamplePaseXml.getSpecifyElementText(order, "OrderID"));
+                        getorder.setOrderstatus(SamplePaseXml.getSpecifyElementText(order,"OrderStatus"));
+                        getorder.setAdjustmentamount(SamplePaseXml.getSpecifyElementText(order, "AdjustmentAmount"));
+                        getorder.setAmountsaved(SamplePaseXml.getSpecifyElementText(order, "AmountSaved"));
+                        getorder.setCreatinguserrole(SamplePaseXml.getSpecifyElementText(order, "CreatingUserRole"));
+                        getorder.setPaymentmethods(SamplePaseXml.getSpecifyElementText(order, "PaymentMethods"));
+                        getorder.setSubtotal(SamplePaseXml.getSpecifyElementText(order, "Subtotal"));
+                        getorder.setTotal(SamplePaseXml.getSpecifyElementText(order, "Total"));
+                        getorder.setDigitaldelivery(SamplePaseXml.getSpecifyElementText(order, "DigitalDelivery"));
+                        getorder.setBuyeruserid(SamplePaseXml.getSpecifyElementText(order, "BuyerUserID"));
+                        getorder.setSelleruserid(SamplePaseXml.getSpecifyElementText(order, "SellerUserID"));
+                        String CreatedTime=SamplePaseXml.getSpecifyElementText(order,"CreatedTime");
+                        Date time=DateUtils.returnDate(CreatedTime);
+                        getorder.setCreatedtime(time);
+                        String paidtime=SamplePaseXml.getSpecifyElementText(order,"PaidTime");
+                        String shippedtime=SamplePaseXml.getSpecifyElementText(order,"ShippedTime");
+                        Date PaidTime=DateUtils.returnDate(paidtime);
+                        Date ShippedTime=DateUtils.returnDate(shippedtime);
+                        getorder.setPaidtime(PaidTime);
+                        getorder.setShippedtime(ShippedTime);
+                        getorder.setAmountpaid(SamplePaseXml.getSpecifyElementText(order,"AmountPaid"));
+                        getorder.setCancelstatus(SamplePaseXml.getSpecifyElementText(order,"CancelStatus"));
+                        //-------------------获取第二层的---------------------------
+                        getorder.setEbaypaymentstatus(SamplePaseXml.getSpecifyElementText(order,"CheckoutStatus","eBayPaymentStatus"));
+                        getorder.setPaymentmethod(SamplePaseXml.getSpecifyElementText(order,"CheckoutStatus","PaymentMethod"));
+                        getorder.setStatus(SamplePaseXml.getSpecifyElementText(order,"CheckoutStatus","Status"));
+                        getorder.setLastmodifiedtime(DateUtils.returnDate(SamplePaseXml.getSpecifyElementText(order,"CheckoutStatus","LastModifiedTime")));
+                        getorder.setSelectedshippingservice(SamplePaseXml.getSpecifyElementText(order,"ShippingServiceSelected","ShippingService"));
+                        String selectdShippingServiceCost=SamplePaseXml.getSpecifyElementText(order,"ShippingServiceSelected","ShippingServiceCost");
+                        if(selectdShippingServiceCost!=null){
+                            getorder.setSelectedshippingservicecost(Double.valueOf(selectdShippingServiceCost));
+                        }
+                        getorder.setName(StringEscapeUtils.escapeXml(SamplePaseXml.getSpecifyElementText(order,"ShippingAddress","Name")));
+                        getorder.setStreet1(StringEscapeUtils.escapeXml(SamplePaseXml.getSpecifyElementText(order,"ShippingAddress","Street1")));
+                        getorder.setStreet2(StringEscapeUtils.escapeXml(SamplePaseXml.getSpecifyElementText(order,"ShippingAddress","Street2")));
+                        getorder.setCityname(StringEscapeUtils.escapeXml(SamplePaseXml.getSpecifyElementText(order,"ShippingAddress","CityName")) );
+                        getorder.setStateorprovince(StringEscapeUtils.escapeXml(SamplePaseXml.getSpecifyElementText(order,"ShippingAddress","StateOrProvince")));
+                        getorder.setCountry(StringEscapeUtils.escapeXml(SamplePaseXml.getSpecifyElementText(order,"ShippingAddress","Country")));
+                        getorder.setCountryname(StringEscapeUtils.escapeXml(SamplePaseXml.getSpecifyElementText(order,"ShippingAddress","CountryName")));
+                        getorder.setPhone(StringEscapeUtils.escapeXml(SamplePaseXml.getSpecifyElementText(order,"ShippingAddress","Phone")));
+                        getorder.setPostalcode(StringEscapeUtils.escapeXml(SamplePaseXml.getSpecifyElementText(order,"ShippingAddress","PostalCode")));
+                        getorder.setAddressid(StringEscapeUtils.escapeXml(SamplePaseXml.getSpecifyElementText(order,"ShippingAddress","AddressID")));
+                        getorder.setAddressowner(StringEscapeUtils.escapeXml(SamplePaseXml.getSpecifyElementText(order,"ShippingAddress","AddressOwner")));
+                        getorder.setExternaladdressid(StringEscapeUtils.escapeXml(SamplePaseXml.getSpecifyElementText(order,"ShippingAddress","ExternalAddressID")));
                         //-------------------解析order下面的transaction----------------------------------
                         Element transaction=it.next();
                         getorder.setQuantitypurchased(SamplePaseXml.getSpecifyElementText(transaction,"QuantityPurchased"));

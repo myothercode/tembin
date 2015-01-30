@@ -2,6 +2,7 @@ package com.base.utils.threadpoolimplements;
 
 import com.base.database.trading.model.*;
 import com.base.sampleapixml.GetOrdersAPI;
+import com.base.utils.cache.DataDictionarySupport;
 import com.base.utils.threadpool.TaskMessageVO;
 import com.base.utils.threadpool.TaskPool;
 import com.base.utils.xmlutils.SamplePaseXml;
@@ -72,7 +73,6 @@ public class SynchronizeGetOrderByOrderIdsImpl implements ThreadPoolBaseInterFac
                     //--------------自动发送消息-------------------------
                     List<TradingOrderAddMemberMessageAAQToPartner> addmessages = iTradingOrderAddMemberMessageAAQToPartner.selectTradingOrderAddMemberMessageAAQToPartnerByTransactionId(order.getTransactionid(), 2, order.getSelleruserid());
                     if (addmessages != null && addmessages.size() > 0) {
-                        order=autoMessageSet("标记已发货",taskMessageVO.getMessageTo(),order);
                         boolean flag = false;
                         String trackingnumber = order.getShipmenttrackingnumber();
                         for (TradingOrderAddMemberMessageAAQToPartner addmessage : addmessages) {
@@ -81,24 +81,24 @@ public class SynchronizeGetOrderByOrderIdsImpl implements ThreadPoolBaseInterFac
                             }
                         }
                         if (flag && StringUtils.isNotBlank(trackingnumber)) {
-                            order.setPaypalflag(null);
+                            order.setPaypalflag(0);
                             order.setShippedflag(1);
                         } else {
-                            order.setPaypalflag(1);
-                            order.setShippedflag(1);
+                            order.setPaypalflag(0);
+                            order.setShippedflag(0);
                         }
                     } else {
                         String trackingnumber = order.getShipmenttrackingnumber();
                         if ("Complete".equals(order.getStatus()) && !StringUtils.isNotBlank(trackingnumber) && "Completed".equals(order.getOrderstatus())) {
                             //付款后发送消息
-                            order=autoMessageSet("收到买家付款",taskMessageVO.getMessageTo(),order);
                             order.setPaypalflag(1);
-                            order.setShippedflag(null);
-                        }
-                        if (StringUtils.isNotBlank(trackingnumber)) {
-                            order=autoMessageSet("标记已发货",taskMessageVO.getMessageTo(),order);
-                            order.setPaypalflag(null);
+                            order.setShippedflag(0);
+                        }else if (StringUtils.isNotBlank(trackingnumber)) {
+                            order.setPaypalflag(0);
                             order.setShippedflag(1);
+                        }else{
+                            order.setPaypalflag(0);
+                            order.setShippedflag(0);
                         }
                     }
                     order.setTrackstatus("0");
@@ -123,96 +123,126 @@ public class SynchronizeGetOrderByOrderIdsImpl implements ThreadPoolBaseInterFac
                     order.setAutomessageId(0L);
                 }
                 if (partner.getStartuse() == 1) {
+                   /* logger.error("----------------------------判断符合自动消息条件的订单开始---------------------------------");*/
                     Boolean autoFlag = false;
-                    List<TradingAutoMessageAttr> allOrders = iTradingAutoMessageAttr.selectAutoMessageListByautoMessageId(partner.getId(), "allOrder");
-                    List<TradingAutoMessageAttr> allEbays = iTradingAutoMessageAttr.selectAutoMessageListByautoMessageId(partner.getId(), "allEbay");
-                    if ((allOrders != null && allOrders.size() > 0)||(allEbays!=null&&allEbays.size()>0)) {
-                        autoFlag = true;
+                    Boolean orderItemFlag = false;
+                    Boolean countryFlag = false;
+                    Boolean amountFlag = false;
+                    Boolean serviceFlag = false;
+                    Boolean internationalServiceFlag = false;
+                    Boolean exceptCountryFlag = false;
+                    List<TradingAutoMessageAttr> orderItemAttrs = iTradingAutoMessageAttr.selectAutoMessageListByautoMessageId(partner.getId(), "orderItem");
+                    List<TradingAutoMessageAttr> countryAttrs = iTradingAutoMessageAttr.selectAutoMessageListByautoMessageId(partner.getId(), "country");
+                    List<TradingAutoMessageAttr> amountAttrs = iTradingAutoMessageAttr.selectAutoMessageListByautoMessageId(partner.getId(), "amount");
+                    List<TradingAutoMessageAttr> serviceAttrs = iTradingAutoMessageAttr.selectAutoMessageListByautoMessageId(partner.getId(), "service");
+                    List<TradingAutoMessageAttr> internationalServiceAttrs = iTradingAutoMessageAttr.selectAutoMessageListByautoMessageId(partner.getId(), "internationalService");
+                    List<TradingAutoMessageAttr> exceptCountryAttrs = iTradingAutoMessageAttr.selectAutoMessageListByautoMessageId(partner.getId(), "exceptCountry");
+                    if (orderItemAttrs != null && orderItemAttrs.size() > 0) {
+                        for (TradingAutoMessageAttr orderItemAttr : orderItemAttrs) {
+                            String sku = order.getSku();
+                            if (orderItemAttr.getValue().contains(sku)) {
+                                orderItemFlag = true;
+                            }
+                        }
                     } else {
-                        Boolean orderItemFlag = false;
-                        Boolean countryFlag = false;
-                        Boolean amountFlag = false;
-                        Boolean serviceFlag = false;
-                        Boolean internationalServiceFlag = false;
-                        Boolean exceptCountryFlag = false;
-                        List<TradingAutoMessageAttr> orderItemAttrs = iTradingAutoMessageAttr.selectAutoMessageListByautoMessageId(partner.getId(), "orderItem");
-                        List<TradingAutoMessageAttr> countryAttrs = iTradingAutoMessageAttr.selectAutoMessageListByautoMessageId(partner.getId(), "country");
-                        List<TradingAutoMessageAttr> amountAttrs = iTradingAutoMessageAttr.selectAutoMessageListByautoMessageId(partner.getId(), "amount");
-                        List<TradingAutoMessageAttr> serviceAttrs = iTradingAutoMessageAttr.selectAutoMessageListByautoMessageId(partner.getId(), "service");
-                        List<TradingAutoMessageAttr> internationalServiceAttrs = iTradingAutoMessageAttr.selectAutoMessageListByautoMessageId(partner.getId(), "internationalService");
-                        List<TradingAutoMessageAttr> exceptCountryAttrs = iTradingAutoMessageAttr.selectAutoMessageListByautoMessageId(partner.getId(), "exceptCountry");
-                        if (orderItemAttrs != null && orderItemAttrs.size() > 0) {
-                            for (TradingAutoMessageAttr orderItemAttr : orderItemAttrs) {
-                                String sku = order.getSku();
-                                if (orderItemAttr.getValue().contains(sku)) {
-                                    orderItemFlag = true;
-                                }
+                        orderItemFlag = true;
+                    }
+                    if (countryAttrs != null && countryAttrs.size() > 0) {
+                        for (TradingAutoMessageAttr countryAttr : countryAttrs) {
+                            String country = order.getCountry();
+                            if (countryAttr.getValue().contains(country)) {
+                                countryFlag = true;
                             }
-                        } else {
-                            orderItemFlag = true;
                         }
-                        if (countryAttrs != null && countryAttrs.size() > 0) {
-                            for (TradingAutoMessageAttr countryAttr : countryAttrs) {
-                                String country = order.getCountry();
-                                if (countryAttr.getValue().contains(country)) {
-                                    countryFlag = true;
-                                }
+                    } else {
+                        countryFlag = true;
+                    }
+                    if (amountAttrs != null && amountAttrs.size() > 0) {
+                        for (TradingAutoMessageAttr amountAttr : amountAttrs) {
+                            String amount = order.getSelleruserid();
+                            if (amountAttr.getValue().contains(amount)) {
+                                amountFlag = true;
                             }
-                        } else {
-                            countryFlag = true;
                         }
-                        if (amountAttrs != null && amountAttrs.size() > 0) {
-                            for (TradingAutoMessageAttr amountAttr : amountAttrs) {
-                                String amount = order.getSelleruserid();
-                                if (amountAttr.getValue().contains(amount)) {
-                                    amountFlag = true;
+                    } else {
+                        amountFlag = true;
+                    }
+                    if (serviceAttrs != null && serviceAttrs.size() > 0) {
+                        for (TradingAutoMessageAttr serviceAttr : serviceAttrs) {
+                            TradingDataDictionary dataDict= DataDictionarySupport.getTradingDataDictionaryByID(serviceAttr.getDictionaryId());
+                            String service = order.getSelectedshippingservice();
+                            String dicService=dataDict.getName();
+                            if (dicService.equals(service)) {
+                                serviceFlag = true;
+                            }
+                        }
+                        if (internationalServiceAttrs != null && internationalServiceAttrs.size() > 0) {
+                            for (TradingAutoMessageAttr internationalServiceAttr : internationalServiceAttrs) {
+                                String internationalService = order.getSelectedshippingservice();
+                                TradingDataDictionary dataDict=DataDictionarySupport.getTradingDataDictionaryByID(internationalServiceAttr.getDictionaryId());
+                                String dicInternationalService=dataDict.getName();
+                                if (dicInternationalService.equals(internationalService)) {
+                                    internationalServiceFlag = true;
                                 }
                             }
                         } else {
-                            amountFlag = true;
+                            internationalServiceFlag = true;
+                        }
+                    } else if (internationalServiceAttrs != null && internationalServiceAttrs.size() > 0) {
+                        for (TradingAutoMessageAttr internationalServiceAttr : internationalServiceAttrs) {
+                            TradingDataDictionary dataDict=DataDictionarySupport.getTradingDataDictionaryByID(internationalServiceAttr.getDictionaryId());
+                            String dicInternationalService=dataDict.getName();
+                            String internationalService = order.getSelectedshippingservice();
+                            if (dicInternationalService.equals(internationalService)) {
+                                internationalServiceFlag = true;
+                            }
                         }
                         if (serviceAttrs != null && serviceAttrs.size() > 0) {
                             for (TradingAutoMessageAttr serviceAttr : serviceAttrs) {
                                 String service = order.getSelectedshippingservice();
-                                if (serviceAttr.getValue().contains(service)) {
+                                TradingDataDictionary dataDict=DataDictionarySupport.getTradingDataDictionaryByID(serviceAttr.getDictionaryId());
+                                String dicService=dataDict.getName();
+                                if (dicService.equals(service)) {
                                     serviceFlag = true;
                                 }
                             }
-                            if (internationalServiceAttrs != null && internationalServiceAttrs.size() > 0) {
-                                for (TradingAutoMessageAttr internationalServiceAttr : internationalServiceAttrs) {
-                                    String internationalService = order.getSelectedshippingservice();
-                                    if (internationalServiceAttr.getValue().contains(internationalService)) {
-                                        internationalServiceFlag = true;
-                                    }
-                                }
-                            } else {
-                                internationalServiceFlag = true;
-                            }
-                        } else if (internationalServiceAttrs != null && internationalServiceAttrs.size() > 0) {
-                            for (TradingAutoMessageAttr internationalServiceAttr : internationalServiceAttrs) {
-                                String internationalService = order.getSelectedshippingservice();
-                                if (internationalServiceAttr.getValue().contains(internationalService)) {
-                                    internationalServiceFlag = true;
-                                }
-                            }
+                        }else{
                             serviceFlag = true;
-                        } else {
-                            serviceFlag = true;
-                            internationalServiceFlag = true;
                         }
-                        if (exceptCountryAttrs != null && exceptCountryAttrs.size() > 0) {
-                            for (TradingAutoMessageAttr exceptCountryAttr : exceptCountryAttrs) {
-                                String country = order.getCountry();
-                                if (!exceptCountryAttr.getValue().contains(country)) {
-                                    exceptCountryFlag = true;
-                                }
+                    } else {
+                        serviceFlag = true;
+                        internationalServiceFlag = true;
+                    }
+                    if (exceptCountryAttrs != null && exceptCountryAttrs.size() > 0) {
+                        for (TradingAutoMessageAttr exceptCountryAttr : exceptCountryAttrs) {
+                            String country = order.getCountry();
+                            if (!exceptCountryAttr.getValue().contains(country)) {
+                                exceptCountryFlag = true;
                             }
-                        } else {
-                            exceptCountryFlag = true;
                         }
-                        if (exceptCountryFlag && internationalServiceFlag && serviceFlag && amountFlag && countryFlag && orderItemFlag) {
-                            autoFlag = true;
+                    } else {
+                        exceptCountryFlag = true;
+                    }
+                        /*if (!orderItemFlag){
+                            logger.error("订单号("+order.getOrderid()+")不符合自动消息id("+partner.getId()+")订单商品的设置");
                         }
+                        if (!countryFlag){
+                            logger.error("订单号("+order.getOrderid()+")不符合自动消息id("+partner.getId()+")订单目的地的设置");
+                        }
+                        if (!exceptCountryFlag){
+                            logger.error("订单号("+order.getOrderid()+")不符合自动消息id("+partner.getId()+")订单不包括目的地的设置");
+                        }
+                        if (!amountFlag){
+                            logger.error("订单号("+order.getOrderid()+")不符合自动消息id("+partner.getId()+")订单卖家账号的设置");
+                        }
+                        if (!serviceFlag){
+                            logger.error("订单号("+order.getOrderid()+")不符合自动消息id("+partner.getId()+")订单国内运输选项的设置");
+                        }
+                        if (!internationalServiceFlag){
+                            logger.error("订单号("+order.getOrderid()+")不符合自动消息id("+partner.getId()+")订单国际运输选项的设置");
+                        }*/
+                    if (exceptCountryFlag && internationalServiceFlag && serviceFlag && amountFlag && countryFlag && orderItemFlag) {
+                        autoFlag = true;
                     }
                     if (autoFlag) {
                         Date date2 = sendAutoMessageTime(partner, order);
@@ -222,6 +252,7 @@ public class SynchronizeGetOrderByOrderIdsImpl implements ThreadPoolBaseInterFac
                     }else{
                         order.setAutomessageId(0L);
                     }
+                    /*logger.error("----------------------------判断符合自动消息条件的订单结束---------------------------------");*/
                 }else{
                     order.setAutomessageId(0L);
                 }

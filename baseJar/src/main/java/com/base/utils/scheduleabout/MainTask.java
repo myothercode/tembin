@@ -47,6 +47,8 @@ public class MainTask {
     public static final String LISTING_SCHEDULE="listSchedule";//定时刊登任务
     public static final String KEY_MOVE_LIST_TASK="keyMoveListTask";//一键搬家任务
     public static final String AUTO_ASSESS="autoAssess";//自动发送评价
+    public static final String CHECK_SYNC_INVENTORY="checkSyncInventory";//检查需要同步库存的数据
+    public static final String SYNC_INVENTORY="syncInventory";//同步库存的定时任务
     public static final String CHECK_AUTO_ASSESS="checkAutoAssess";//检查需要自动发送评价
     public static final String LISTING_DATA="tradingListData";//在线数据同步每晚12点执行 同步在线商品
     public static final String LISTING_REPORT="listingReport";//首页统计每晚12点执行，统计昨天，上周，上月数据
@@ -72,6 +74,7 @@ public class MainTask {
     public static final String SYNCHRONIZE_GET_ORDERS_TRACK_NUMBER_TIMER="synchronize_get_orders_track_number_timer";//定时价获取91track状态
     public static final String PRICE_TRACKING_AUTO_PRICING="price_tracking_auto_pricing"; //定时价格跟踪自动调价
     public static final String SYNCHRONIZE_GET_ORDERS_SELLER_TRANSACTION="synchronize_get_orders_seller_transaction"; //每天一次定时同步外部交易任务
+    public static final String SYNCHRONIZE_SELECT_AUTO_MESSAGE_TASK_RUN="synchronize_select_auto_message_task_run";//通过订单表选取自动消息
     /**
      * 记录任务上次运行的时间
      */
@@ -236,8 +239,6 @@ public class MainTask {
         List<String> doList=new ArrayList<String>();
         doList.add(StaticParam.IMG_CHECK_SC);
         doList.add(StaticParam.IMG_CHECK_SC_TAKE);
-        doList.add(StaticParam.INVENTORY_CHECK_SC_TAKE);//获取库存任务
-
         List<String> taskList=new ArrayList<String>();
 
         List<String> taskListTe=Arrays.asList(StringUtils.split(isStartTimerTask.isStartTimerTask,","));

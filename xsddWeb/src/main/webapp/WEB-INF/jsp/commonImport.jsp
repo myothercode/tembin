@@ -32,16 +32,17 @@
 <link rel="stylesheet" type="text/css" href="<c:url value ="/js/jquery-ui/smoothness/jquery-ui.min.css" />"/>
 <link rel="stylesheet" type="text/css" href="<c:url value ="/js/jquery-easyui/themes/default/easyui.css" />"/>
 
-<script type="text/javascript" src=<c:url value ="/js/jquery/jquery-1.9.0.min.js" /> ></script>
+<script type="text/javascript" src=<c:url value ="/js/jquery/jquery-1.9.0.min.js" />${jsfileVersion} ></script>
 <script type="text/javascript" src=<c:url value ="/js/jquery/jquery-migrate-1.2.1.min.js" /> ></script>
 <script type="text/javascript" src=<c:url value ="/js/jquery/jquery.cookie.js" /> ></script>
-<script type="text/javascript" src=<c:url value ="/js/base.js" /> ></script>
-<script type="text/javascript" src=<c:url value ="/js/util.js" /> ></script>
+<script type="text/javascript" src=<c:url value ="/js/jquery-blockui/jquery.blockUI.min.js" /> ></script>
+<script type="text/javascript" src=<c:url value ="/js/base.js" />${jsfileVersion} ></script>
+<script type="text/javascript" src=<c:url value ="/js/util.js" />${jsfileVersion} ></script>
 <%--<script type="text/javascript" src=<c:url value ="/js/lhgdialog/lhgdialog.min.js" /> ></script>--%>
 <script type="text/javascript" src=<c:url value ="/js/lhgdialog/lhgdialog.js?skin=idialog" /> ></script>
 <script type="text/javascript" src=<c:url value ="/js/My97DatePicker/WdatePicker.js" /> ></script>
-<script type="text/javascript" src=<c:url value ="/js/jquery-blockui/jquery.blockUI.min.js" /> ></script>
-<script type="text/javascript" src=<c:url value ="/js/table/jquery.table.js" /> ></script>
+
+<script type="text/javascript" src=<c:url value ="/js/table/jquery.table.js" />${jsfileVersion} ></script>
 <script type="text/javascript" src=<c:url value ="/js/validation/jquery.validationEngine.js" /> ></script>
 <script type="text/javascript" src=<c:url value ="/js/validation/jquery.validationEngine-zh_CN.js" /> ></script>
 <script src="<c:url value ="/js/bootstrap.min.js"/>"></script>

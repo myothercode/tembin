@@ -12,7 +12,5 @@ public class StaticParam {
     public final static String IMG_CHECK_SC = "IMG_CHECK_SC";//图片检查任务
     public final static String IMG_CHECK_SC_TAKE = "IMG_CHECK_SC_TAKE";//图片检查任务，取出处理任务
 
-    public final static String INVENTORY_CHECK_SC_TAKE = "INVENTORY_CHECK_SC_TAKE";//获取库存数据
-
-
+    //public final static String INVENTORY_CHECK_SC_TAKE = "INVENTORY_CHECK_SC_TAKE";//获取库存数据
 }

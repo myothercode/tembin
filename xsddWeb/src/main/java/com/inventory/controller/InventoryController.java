@@ -1,15 +1,20 @@
 package com.inventory.controller;
 
+import com.base.database.inventory.model.UserInventorySet;
+import com.base.domains.SessionVO;
 import com.base.domains.querypojos.CommonParmVO;
 import com.base.domains.querypojos.ItemInventoryQuery;
 import com.base.mybatis.page.Page;
 import com.base.sampleapixml.BindAccountAPI;
 import com.base.userinfo.service.UserInfoService;
 import com.base.utils.annotations.AvoidDuplicateSubmission;
+import com.base.utils.cache.DataDictionarySupport;
+import com.base.utils.cache.SessionCacheSupport;
 import com.base.utils.httpclient.HttpClientUtil;
 import com.common.base.utils.ajax.AjaxSupport;
 import com.common.base.web.BaseAction;
 import com.inventory.service.IItemInventory;
+import com.inventory.service.IUserInventorySet;
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.client.HttpClient;
 import org.apache.http.message.BasicHeader;
@@ -37,6 +42,8 @@ public class InventoryController extends BaseAction {
     private UserInfoService userInfoService;
     @Autowired
     private IItemInventory iItemInventory;
+    @Autowired
+    private IUserInventorySet iUserInventorySet;
     @RequestMapping("/InventoryList.do")
     public ModelAndView MessageGetmymessageList(HttpServletRequest request,HttpServletResponse response,ModelMap modelMap){
         return forword("inventory/InventoryList",modelMap);
@@ -95,8 +102,21 @@ public class InventoryController extends BaseAction {
      */
     @RequestMapping("/ajax/getChuKouYiData.do")
     public void getChuKouYiData(HttpServletRequest request,HttpServletResponse response,ModelMap modelMap) throws Exception {
-        this.iItemInventory.getChuKouYiInventory();
+        SessionVO c= SessionCacheSupport.getSessionVO();
+        List<UserInventorySet> lius = this.iUserInventorySet.selectByOrgIdList(c.getOrgId());
+        try{
+            if(lius!=null){
+                for(UserInventorySet us:lius){
+                    if("出口易".equals(DataDictionarySupport.getTradingDataDictionaryByID(Long.parseLong(us.getDataType())).getName())) {
+                        this.iItemInventory.getChuKouYiInventory(us.getUserName(), us.getUserKey(), c.getOrgId() + "");
+                    }
+                }
+            }
+        }catch(Exception e){
+            AjaxSupport.sendFailText("fail","获取库存信息失败！");
+        }
         AjaxSupport.sendSuccessText("success", "获取成功");
+
     }
 
     /**
@@ -108,7 +128,19 @@ public class InventoryController extends BaseAction {
      */
     @RequestMapping("/ajax/getDeShiFangData.do")
     public void getDeShiFangData(HttpServletRequest request,HttpServletResponse response,ModelMap modelMap) throws Exception {
-        this.iItemInventory.getDeShiFangInventory();
+        SessionVO c= SessionCacheSupport.getSessionVO();
+        List<UserInventorySet> lius = this.iUserInventorySet.selectByOrgIdList(c.getOrgId());
+        try{
+            if(lius!=null){
+                for(UserInventorySet us:lius){
+                    if("第四方".equals(DataDictionarySupport.getTradingDataDictionaryByID(Long.parseLong(us.getDataType())).getName())) {
+                        this.iItemInventory.getDeShiFangInventory(us.getUserName(), us.getUserKey(), c.getOrgId() + "");
+                    }
+                }
+            }
+        }catch(Exception e){
+            AjaxSupport.sendFailText("fail","获取库存信息失败！");
+        }
         AjaxSupport.sendSuccessText("success", "获取成功");
     }
 
@@ -121,7 +153,19 @@ public class InventoryController extends BaseAction {
      */
     @RequestMapping("/ajax/getShiHaiYouData.do")
     public void getShiHaiYouData(HttpServletRequest request,HttpServletResponse response,ModelMap modelMap) throws Exception {
-        this.iItemInventory.getSiHaiYouInventory();
+        SessionVO c= SessionCacheSupport.getSessionVO();
+        List<UserInventorySet> lius = this.iUserInventorySet.selectByOrgIdList(c.getOrgId());
+        try{
+            if(lius!=null){
+                for(UserInventorySet us:lius){
+                    if("四海邮".equals(DataDictionarySupport.getTradingDataDictionaryByID(Long.parseLong(us.getDataType())).getName())) {
+                        this.iItemInventory.getSiHaiYouInventory(us.getUserName(), us.getUserKey(), c.getOrgId() + "");
+                    }
+                }
+            }
+        }catch(Exception e){
+            AjaxSupport.sendFailText("fail","获取库存信息失败！");
+        }
         AjaxSupport.sendSuccessText("success", "获取成功");
     }
 

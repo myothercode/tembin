@@ -1,5 +1,6 @@
 package com.base.utils.scheduleabout.commontask;
 
+import com.base.database.customtrading.mapper.KeyMoveProgressQueryMapper;
 import com.base.database.keymove.mapper.KeyMoveListMapper;
 import com.base.database.keymove.model.KeyMoveList;
 import com.base.database.keymove.model.KeyMoveListExample;
@@ -8,6 +9,7 @@ import com.base.database.trading.model.TradingItemWithBLOBs;
 import com.base.database.trading.model.TradingProgress;
 import com.base.database.userinfo.model.SystemLog;
 import com.base.domains.userinfo.UsercontrollerDevAccountExtend;
+import com.base.mybatis.page.Page;
 import com.base.sampleapixml.APINameStatic;
 import com.base.userinfo.service.UserInfoService;
 import com.base.utils.applicationcontext.ApplicationContextUtil;
@@ -48,22 +50,29 @@ public class KeyMoveListTaskRun extends BaseScheduledClass implements Scheduleda
         TempStoreDataSupport.pushData("task_" + getScheduledType(), "x");*/
         Boolean b= TaskPool.threadIsAliveByName("thread_" + getScheduledType());
         if(b){
-            logger.error(getScheduledType()+"===之前的任务还未完成继续等待下一个循环===");
+            //logger.error(getScheduledType()+"===之前的任务还未完成继续等待下一个循环===");
             return;
         }
-        logger.error(getScheduledType()+"===任务开始===");
+        //logger.error(getScheduledType()+"===任务开始===");
         Thread.currentThread().setName("thread_" + getScheduledType());
 
+        KeyMoveProgressQueryMapper keyMoveProgressQueryMapper = (KeyMoveProgressQueryMapper) ApplicationContextUtil.getBean(KeyMoveProgressQueryMapper.class);
         KeyMoveListMapper keyMapper = (KeyMoveListMapper) ApplicationContextUtil.getBean(KeyMoveListMapper.class);
         IKeyMoveProgress iKeyMoveProgress = (IKeyMoveProgress) ApplicationContextUtil.getBean(IKeyMoveProgress.class);
         UserInfoService userInfoService = (UserInfoService) ApplicationContextUtil.getBean(UserInfoService.class);
         ITradingItem iTradingItem = (ITradingItem) ApplicationContextUtil.getBean(ITradingItem.class);
-        KeyMoveListExample kmle = new KeyMoveListExample();
+        /*KeyMoveListExample kmle = new KeyMoveListExample();*/
         List<String> lis = new ArrayList<String>();
         lis.add("0");//未执行
         lis.add("3");//执行一次，且失败，
-        kmle.createCriteria().andTaskFlagIn(lis);
-        List<KeyMoveList> likml = keyMapper.selectByExampleWithBLOBs(kmle);
+        /*kmle.createCriteria().andTaskFlagIn(lis);
+        List<KeyMoveList> likml = keyMapper.selectByExampleWithBLOBs(kmle);*/
+        Map map = new HashMap();
+        map.put("taskFlagList",lis);
+        Page page = new Page();
+        page.setPageSize(20);
+        page.setCurrentPage(1);
+        List<KeyMoveList> likml = keyMoveProgressQueryMapper.selectByPageKeyMoveList(map,page);
         if(likml!=null&&likml.size()>0&&likml.size()>=20) {
             likml = filterLimitList(likml);//限制每次的执行条数
         }
@@ -142,7 +151,7 @@ public class KeyMoveListTaskRun extends BaseScheduledClass implements Scheduleda
         }
         TaskPool.threadRunTime.remove("thread_" + getScheduledType());
         Thread.currentThread().setName("thread_" + getScheduledType()+ MyStringUtil.getRandomStringAndNum(5));
-        logger.error(getScheduledType() + "===任务结束===");
+        //logger.error(getScheduledType() + "===任务结束===");
     }
 
     /**只从集合记录取多少条*/

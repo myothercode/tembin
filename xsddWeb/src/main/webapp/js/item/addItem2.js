@@ -944,28 +944,34 @@ function addPictrueUrl(urls) {
 
 
         str = "";
-        var url=path+"/ajax/saveListingPicUrl.do?urls="+urlss+"&siteid="+siteid+"&ebayid="+ebayid;
-        $().invoke(url,{},
-            [function(m,r){
-                for(var i =0;i< r.length;i++){
-                    var tlu = r[i];
-                    var len = $(addhtml).find("input[type='hidden'][name='pic_mackid']").length- r.length;
-                    $(addhtml).find("input[type='hidden'][name='pic_mackid']").each(function(j,d){
-                        if(($(d).val()==""||$(d).val()==null)&&(i+len)==j){
-                            $(d).val(tlu.mackId);
-                        }
-                    });
-                    $(addhtml).find("input[type='hidden'][name='pic_mackid']").each(function(i,d){
-                        if($(d).val()==""||$(d).val()==null){
-                            $(d).parent().parent().remove();
-                        }
-                    });
-                }
-            },
-                function(m,r){
-                    alert(r);
-                }]
-        );
+        setTimeout(function(){
+            var url=path+"/ajax/saveListingPicUrl.do?urls="+urlss+"&siteid="+siteid+"&ebayid="+ebayid;
+            $().invoke(url,{},
+                [function(m,r){
+                    for(var i =0;i< r.length;i++){
+                        var tlu = r[i];
+                        var len = $(addhtml).find("input[type='hidden'][name='pic_mackid']").length- r.length;
+                        $(addhtml).find("input[type='hidden'][name='pic_mackid']").each(function(j,d){
+                            if(($(d).val()==""||$(d).val()==null)&&(i+len)==j){
+                                $(d).val(tlu.mackId);
+                                if(tlu.mackId==""){
+                                    $(d).parent().parent().remove();
+                                }
+                            }
+                        });
+                        /*$(addhtml).find("input[type='hidden'][name='pic_mackid']").each(function(i,d){
+                            if($(d).val()==""||$(d).val()==null){
+                                $(d).parent().parent().remove();
+                            }
+                        });*/
+                    }
+                },
+                    function(m,r){
+                        alert(r);
+                    }]
+            );
+        },2000);
+
         $("#picNumber").text(countChoosePic());
     } else {//多属性图片
         var str = '';

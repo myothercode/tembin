@@ -124,6 +124,7 @@ public class GetOrdersController extends BaseAction {
     public ModelAndView OrdersList(HttpServletRequest request,HttpServletResponse response,@ModelAttribute( "initSomeParmMap" )ModelMap modelMap){
         List<PublicUserConfig> configs=new ArrayList<PublicUserConfig>();
         SessionVO sessionVO= SessionCacheSupport.getSessionVO();
+        String username=sessionVO.getUserName();
         List<PublicUserConfig> list=iPublicUserConfig.selectUserConfigByItemType("orderFolder",sessionVO.getId());
         for(PublicUserConfig config:list){
             String value=config.getConfigValue();
@@ -656,9 +657,10 @@ public class GetOrdersController extends BaseAction {
                                 }
                             }catch(Exception e){
                                 logger.error("paypalAmount.do获取paypal费用失败",e);
-                                transactionses.get(0).setPaypalprice("");
+                                if(StringUtils.isNotBlank(acc.getFeeAmount())){
+                                    palpayPrice=acc.getFeeAmount();
+                                }
                             }
-
                         }
                     }
                     palpayAmounts.add(palpayPrice);
@@ -804,6 +806,12 @@ public class GetOrdersController extends BaseAction {
             String text=message.getTextHtml();
             if(StringUtils.isNotBlank(text)) {
                 text = StringEscapeUtils.unescapeHtml(text);
+                if(StringUtils.isNotBlank(text)){
+                    text=text.replace("&lt;![CDATA["," ");
+                    text=text.replace("]]&gt;"," ");
+                    text=text.replace("<![CDATA[ "," ");
+                    text=text.replace("]]>"," ");
+                }
                 List<TradingOrderAddMemberMessageAAQToPartner> addMessages3 = new ArrayList<TradingOrderAddMemberMessageAAQToPartner>();
                 if (!"eBay".equals(message.getSender())) {
                     List<String> bodys = HtmlUtil.getByerMessageFromXML(text);
@@ -1568,63 +1576,73 @@ public class GetOrdersController extends BaseAction {
         }
         String r1 = resMap.get("stat");
         String res = resMap.get("message");
-        if ("fail".equalsIgnoreCase(r1)) {
-            TradingOrderAddMemberMessageAAQToPartner message1=new TradingOrderAddMemberMessageAAQToPartner();
-            message1.setBody(body);
-            message1.setItemid(itemid);
-            message1.setRecipientid(buyeruserid);
-            message1.setSubject(subject);
-            message1.setSender(sender);
-            message1.setMessagetype(4);
-            message1.setTransactionid(transactionid);
-            message1.setReplied("false");
-            message1.setMessageid(messageID);
-            message1.setFailereason(SamplePaseXml.getWarningInformation(res));
-            iTradingOrderAddMemberMessageAAQToPartner.saveOrderAddMemberMessageAAQToPartner(message1);
-            systemLog.setEventdesc("发送消息失败:调用API失败");
-            SystemLogUtils.saveLog(systemLog);
-            AjaxSupport.sendFailText("fail", res);
-            return;
-        }
-        String ack = SamplePaseXml.getVFromXmlString(res, "Ack");
-        if ("Success".equalsIgnoreCase(ack)) {
-            TradingOrderAddMemberMessageAAQToPartner message1=new TradingOrderAddMemberMessageAAQToPartner();
-            message1.setBody(body);
-            message1.setItemid(itemid);
-            message1.setRecipientid(buyeruserid);
-            message1.setSubject(subject);
-            message1.setSender(sender);
-            message1.setMessagetype(4);
-            message1.setTransactionid(transactionid);
-            message1.setReplied("true");
-            message1.setMessageid(messageID);
-            iTradingOrderAddMemberMessageAAQToPartner.saveOrderAddMemberMessageAAQToPartner(message1);
-            List<TradingMessageGetmymessage> messageGetmymessage=iTradingMessageGetmymessage.selectMessageGetmymessageByMessageId(messageID,buyeruserid);
-            if(messageGetmymessage!=null&&messageGetmymessage.size()>0){
-                TradingMessageGetmymessage messageGetmymessage1=messageGetmymessage.get(0);
-                messageGetmymessage1.setReplied("true");
-                iTradingMessageGetmymessage.saveMessageGetmymessage(messageGetmymessage1);
+        try{
+            if ("fail".equalsIgnoreCase(r1)) {
+                TradingOrderAddMemberMessageAAQToPartner message1=new TradingOrderAddMemberMessageAAQToPartner();
+                message1.setBody(body);
+                message1.setItemid(itemid);
+                message1.setRecipientid(buyeruserid);
+                message1.setSubject(subject);
+                message1.setSender(sender);
+                message1.setMessagetype(4);
+                message1.setTransactionid(transactionid);
+                message1.setReplied("false");
+                message1.setMessageid(messageID);
+                message1.setFailereason(SamplePaseXml.getWarningInformation(res));
+                iTradingOrderAddMemberMessageAAQToPartner.saveOrderAddMemberMessageAAQToPartner(message1);
+                systemLog.setEventdesc("发送消息失败:调用API失败");
+                SystemLogUtils.saveLog(systemLog);
+                AjaxSupport.sendFailText("fail", res);
+                logger.error("-----------订单发送消息失败:"+res);
+                return;
             }
-            systemLog.setEventdesc("发送消息成功");
-            SystemLogUtils.saveLog(systemLog);
-            AjaxSupport.sendSuccessText("success", "发送成功");
-        }else{
-            TradingOrderAddMemberMessageAAQToPartner message1=new TradingOrderAddMemberMessageAAQToPartner();
-            message1.setBody(body);
-            message1.setItemid(itemid);
-            message1.setRecipientid(buyeruserid);
-            message1.setSubject(subject);
-            message1.setSender(sender);
-            message1.setMessagetype(4);
-            message1.setTransactionid(transactionid);
-            message1.setReplied("false");
-            message1.setMessageid(messageID);
-            message1.setFailereason(SamplePaseXml.getWarningInformation(res));
-            iTradingOrderAddMemberMessageAAQToPartner.saveOrderAddMemberMessageAAQToPartner(message1);
-            systemLog.setEventdesc("发送消息失败:调用API失败");
-            SystemLogUtils.saveLog(systemLog);
-            AjaxSupport.sendFailText("fail", SamplePaseXml.getWarningInformation(res));
+            String ack = SamplePaseXml.getVFromXmlString(res, "Ack");
+            if ("Success".equalsIgnoreCase(ack)) {
+                TradingOrderAddMemberMessageAAQToPartner message1=new TradingOrderAddMemberMessageAAQToPartner();
+                message1.setBody(body);
+                message1.setItemid(itemid);
+                message1.setRecipientid(buyeruserid);
+                message1.setSubject(subject);
+                message1.setSender(sender);
+                message1.setMessagetype(4);
+                message1.setTransactionid(transactionid);
+                message1.setReplied("true");
+                message1.setMessageid(messageID);
+                iTradingOrderAddMemberMessageAAQToPartner.saveOrderAddMemberMessageAAQToPartner(message1);
+                if(StringUtils.isNotBlank(messageID)&&StringUtils.isNotBlank(buyeruserid)){
+                    List<TradingMessageGetmymessage> messageGetmymessage=iTradingMessageGetmymessage.selectMessageGetmymessageByMessageId(messageID,buyeruserid);
+                    if(messageGetmymessage!=null&&messageGetmymessage.size()>0){
+                        TradingMessageGetmymessage messageGetmymessage1=messageGetmymessage.get(0);
+                        messageGetmymessage1.setReplied("true");
+                        iTradingMessageGetmymessage.saveMessageGetmymessage(messageGetmymessage1);
+                    }
+                }
+                systemLog.setEventdesc("发送消息成功");
+                SystemLogUtils.saveLog(systemLog);
+                AjaxSupport.sendSuccessText("success", "发送成功");
+            }else{
+                TradingOrderAddMemberMessageAAQToPartner message1=new TradingOrderAddMemberMessageAAQToPartner();
+                message1.setBody(body);
+                message1.setItemid(itemid);
+                message1.setRecipientid(buyeruserid);
+                message1.setSubject(subject);
+                message1.setSender(sender);
+                message1.setMessagetype(4);
+                message1.setTransactionid(transactionid);
+                message1.setReplied("false");
+                message1.setMessageid(messageID);
+                message1.setFailereason(SamplePaseXml.getWarningInformation(res));
+                iTradingOrderAddMemberMessageAAQToPartner.saveOrderAddMemberMessageAAQToPartner(message1);
+                systemLog.setEventdesc("发送消息失败:调用API失败");
+                SystemLogUtils.saveLog(systemLog);
+                logger.error("-----------订单发送消息失败:"+SamplePaseXml.getWarningInformation(res));
+                AjaxSupport.sendFailText("fail", SamplePaseXml.getWarningInformation(res));
+            }
+        }catch(Exception e){
+            logger.error("------订单发送消息异常:"+e);
+            AjaxSupport.sendFailText("fail", "发送消息异常");
         }
+
     }
     /*
     *根据订单号同步订单
@@ -1676,7 +1694,8 @@ public class GetOrdersController extends BaseAction {
         //测试环境
         addApiTask.execDelayReturn(d, xml,apiUrl, taskMessageVO);
         //真实环境
-        //addApiTask.execDelayReturn(d, xml,"https://api.ebay.com/ws/api.dll", taskMessageVO);
+        //
+        // addApiTask.execDelayReturn(d, xml,"https://api.ebay.com/ws/api.dll", taskMessageVO);
         AjaxSupport.sendSuccessText("message", "操作成功！结果请稍后查看消息！");
     }
     /*

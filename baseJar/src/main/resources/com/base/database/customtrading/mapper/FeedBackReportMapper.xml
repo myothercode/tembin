@@ -58,7 +58,7 @@
     </select>
     <select id="selectFeedBackDetailByAutoMessageFlag" resultMap="BaseResultMap1" parameterType="map">
         select feed.* from trading_feedbackdetail feed  where 1=1
-        and feed.Role="Seller" and feed.autoMessageFlag is null
+        and feed.Role="Seller" and feed.autoMessageFlag =0
         <if test="sentTime!=null">
             and feed.sentTime &lt; #{sentTime}
         </if>

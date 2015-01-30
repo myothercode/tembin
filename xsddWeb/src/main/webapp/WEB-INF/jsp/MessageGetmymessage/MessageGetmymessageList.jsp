@@ -23,7 +23,8 @@
             $("#MessageGetmymessageListTable").initTable({
                 url:path + "/message/ajax/loadMessageGetmymessageList.do?folderID=0",
                 columnData:[
-                    {title:"",name:"pictureUrl",width:"2%",align:"left",format:makeOption4},
+                    {title:"",name:"pictureUrl",width:"1%",align:"left",format:makeOption4},
+                    {title:"状态",name:"status",width:"1%",align:"center",format:makeOption11,click:makeOption1},
                     {title:"主题",name:"read",width:"8%",align:"center",format:makeOption2,click:makeOption1},
                     {title:"From > to",name:"sender",width:"8%",align:"center",format:makeOption9,click:makeOption1},
                     {title:"SKU",name:"sku",width:"8%",align:"center",format:makeOption6,click:makeOption1},
@@ -39,6 +40,16 @@
             refreshTable();
 
         });
+        function makeOption11(json){
+            var src1=path+"/img/";
+            if(json.replied=="true"){
+                return "<img src='"+src1+"replied.png' title='已回复'/>"
+            }else if(json.read=="true"){
+                return "<img src='"+src1+"Read.png' title='已读'/>"
+            }else{
+                return "<img src='"+src1+"noRead.png'title='未读'/>"
+            }
+        }
         function refreshTable(){
             $("#MessageGetmymessageListTable").selectDataAfterSetParm({"bedDetailVO.deptId":"", "isTrue":0});
         }
@@ -57,10 +68,11 @@
         /**查看消息*/
         var OrderGetOrders;
         function makeOption1(json,messageid,id){
+            var src1=path+"/img/";
             var url=path+"/message/viewMessageGetmymessage.do";
             var input=null;
             if(json!=null){
-                url='url:'+url+'?messageID='+json.messageid;
+                url='url:'+url+'?messageID='+json.messageid+'&sender='+json.sender;
                 input=$("input[type=checkbox][name=templateId][value="+json.id+"]");
             }else{
                 url='url:'+url+'?messageID='+messageid;
@@ -77,8 +89,15 @@
                     $(a).attr("value","2");
                     var font=a.find("font");
                     font[0].innerHTML="标记未读";
-                    }
+                }
             }
+            var tds=$(tr).find("td");;
+            if(json.replied=="true"){
+                tds[1].innerHTML= "<img src='"+src1+"replied.png' title='已回复'/>"
+            }else{
+                tds[1].innerHTML="<img src='"+src1+"Read.png' title='已读'/>"
+            }
+
             //-----
             OrderGetOrders=openMyDialog({title: '查看消息',
                 content: url,
@@ -91,26 +110,26 @@
         }
         function makeOption8(json){
             var hs="";
-            hs+="<li style=\"height:25px;\" onclick=selectOption("+json.messageid+","+json.id+",this); value='1' doaction=\"readed\" ><font>处理消息</font></li>";
+            hs+="<li style=\"height:25px;\" onclick=selectOption("+json.messageid+","+json.id+",this,'"+json.replied+"'); value='1' doaction=\"readed\" ><font>处理消息</font></li>";
             if(json.read=="true"){
-                hs+="<li style=\"height:25px;\" onclick=selectOption("+json.messageid+","+json.id+",this); value='2' doaction=\"look\" ><font>标记未读</font></li>";
+                hs+="<li style=\"height:25px;\" onclick=selectOption("+json.messageid+","+json.id+",this,'"+json.replied+"'); value='2' doaction=\"look\" ><font>标记未读</font></li>";
             }else{
-                hs+="<li style=\"height:25px;\" onclick=selectOption("+json.messageid+","+json.id+",this); value='3' doaction=\"look\" ><font>标记已读</font></li>";
+                hs+="<li style=\"height:25px;\" onclick=selectOption("+json.messageid+","+json.id+",this,'"+json.replied+"'); value='3' doaction=\"look\" ><font>标记已读</font></li>";
             }
-            hs+="<li style=\"height:25px;\" onclick=selectOption("+json.messageid+","+json.id+",this); value='4' doaction=\"look\" ><font>添加备注</font></li>";
+            hs+="<li style=\"height:25px;\" onclick=selectOption("+json.messageid+","+json.id+",this,'"+json.replied+"'); value='4' doaction=\"look\" ><font>添加备注</font></li>";
             var pp={"liString":hs};
             return getULSelect(pp);
         }
-        function selectOption(messageid,id,obj){
+        function selectOption(messageid,id,obj,replied){
             var value=$(obj).attr("value");
             if(value=='1'){
                 makeOption1(null,messageid,id);
             }
             if(value=='2'){
-                markReaded(null,"false",id);
+                markReaded(null,"false",id,replied);
             }
             if(value=='3'){
-                markReaded(null,"true",id);
+                markReaded(null,"true",id,replied);
             }
             if(value=='4'){
                 addComment(id);
@@ -351,7 +370,8 @@
             $("#MessageGetmymessageListTable").initTable({
                 url:path + "/message/ajax/loadMessageGetmymessageList.do?folderID=0",
                 columnData:[
-                    {title:"",name:"pictureUrl",width:"2%",align:"left",format:makeOption4},
+                    {title:"",name:"pictureUrl",width:"1%",align:"left",format:makeOption4},
+                    {title:"状态",name:"status",width:"1%",align:"center",format:makeOption11,click:makeOption1},
                     {title:"主题",name:"read",width:"8%",align:"center",format:makeOption2,click:makeOption1},
                     {title:"From > to",name:"sender",width:"8%",align:"center",format:makeOption9,click:makeOption1},
                     {title:"SKU",name:"sku",width:"8%",align:"center",format:makeOption6,click:makeOption1},
@@ -377,7 +397,8 @@
             $("#MessageGetmymessageListTable1").initTable({
                 url:path + "/message/ajax/loadMessageGetmymessageList.do?folderID=1",
                 columnData:[
-                    {title:"",name:"pictureUrl",width:"2%",align:"left",format:makeOption4},
+                    {title:"",name:"pictureUrl",width:"1%",align:"left",format:makeOption4},
+                    {title:"状态",name:"status",width:"1%",align:"center",format:makeOption11,click:makeOption1},
                     {title:"主题",name:"read",width:"8%",align:"center",format:makeOption2,click:makeOption1},
                     {title:"From > to",name:"sender",width:"8%",align:"center",format:makeOption9,click:makeOption1},
                     {title:"SKU",name:"sku",width:"8%",align:"center",format:makeOption6,click:makeOption1},
@@ -427,7 +448,8 @@
                 $(table).initTable({
                     url:url,
                     columnData:[
-                        {title:"",name:"pictureUrl",width:"2%",align:"left",format:makeOption4},
+                        {title:"",name:"pictureUrl",width:"1%",align:"left",format:makeOption4},
+                        {title:"状态",name:"status",width:"1%",align:"center",format:makeOption11,click:makeOption1},
                         {title:"主题",name:"read",width:"8%",align:"center",format:makeOption2,click:makeOption1},
                         {title:"From > to",name:"sender",width:"8%",align:"center",format:makeOption9,click:makeOption1},
                         {title:"SKU",name:"sku",width:"8%",align:"center",format:makeOption6,click:makeOption1},
@@ -477,7 +499,7 @@
                 $(obj).val(value+"以内");
             }
         }
-        function markReaded(value1,value2,id){
+        function markReaded(value1,value2,id,replied){
             /*"<input type=\"checkbox\"  name=\"templateId\" value=" + json.id + ">";*/
             var inputs= $("input[type=checkbox][name=templateId]:checked");
             var url="";
@@ -506,9 +528,11 @@
                         if(value1!=null){
                             refreshTable();
                         }else{
+                            var src1=path+"/img/";
                             var input= $("input[type=checkbox][name=templateId][value="+id+"]");
                             var tr=$(input).parent().parent();
                             var spans=$(tr).find("span");
+                            var tds=$(tr).find("td");
                             for(var i=0;i<spans.length;i++){
                                 if(value2=='true'){
                                     $(spans[i]).attr("style","color: #999999;");
@@ -520,6 +544,7 @@
                                         var font=a.find("font");
                                         font[0].innerHTML="标记未读";
                                     }
+                                    tds[1].innerHTML="<img src='"+src1+"Read.png' title='已读'/>";
                                 }
                                 if(value2=='false'){
                                     $(spans[i]).attr("style","color: #0000ff;");
@@ -530,8 +555,11 @@
                                         var font=a.find("font");
                                         font[0].innerHTML="标记已读";
                                     }
+                                    tds[1].innerHTML="<img src='"+src1+"noRead.png'title='未读'/>";
                                 }
-
+                            }
+                            if(replied=="true"){
+                                tds[1].innerHTML= "<img src='"+src1+"replied.png' title='已回复'/>";
                             }
                         }
                         var noReadCount=document.getElementById("noReadCount");
@@ -764,7 +792,7 @@
 <span id="sleHid">
 <select id="typeQuery1" name="type" class="select">
     <option value=""  selected="selected">选择类型</option>
-    <option value="1">发件人</option>
+    <option value="4">收件人</option>
     <option value="2">主题</option>
     <option value="3">SKU</option>
 </select>

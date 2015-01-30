@@ -50,7 +50,7 @@ public class TradingOrderGetOrdersNoTransactionDoImpl {
                 TradingOrderGetOrders t = tradingOrderGetOrdersMapper.selectByPrimaryKey(oo.getId());
                 Asserts.assertTrue(t != null && t.getCreateUser() != null, "没有找到记录或者记录创建者为空");
                 ObjectUtils.valiUpdate(t.getCreateUser(), TradingOrderGetOrdersMapper.class, oo.getId(), "Synchronize");
-                tradingOrderGetOrdersMapper.updateByPrimaryKeySelective(oo);
+                tradingOrderGetOrdersMapper.updateByPrimaryKey(oo);
             }
         } catch (Exception e) {
             logger.error("写入TradingOrderGetOrders报错:",e);

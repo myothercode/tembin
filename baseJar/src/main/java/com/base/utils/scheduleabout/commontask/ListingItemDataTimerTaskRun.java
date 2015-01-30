@@ -5,10 +5,7 @@ import com.base.database.task.model.TaskComplement;
 import com.base.database.task.model.TaskGetOrders;
 import com.base.database.task.model.TradingTaskXml;
 import com.base.database.trading.mapper.TradingListingDataMapper;
-import com.base.database.trading.model.TradingAutoComplement;
-import com.base.database.trading.model.TradingListingData;
-import com.base.database.trading.model.TradingListingDataExample;
-import com.base.database.trading.model.TradingListingSuccess;
+import com.base.database.trading.model.*;
 import com.base.domains.userinfo.UsercontrollerDevAccountExtend;
 import com.base.sampleapixml.APINameStatic;
 import com.base.userinfo.service.UserInfoService;
@@ -29,6 +26,7 @@ import com.complement.service.ITradingAutoComplement;
 import com.task.service.IListingDataTask;
 import com.task.service.ITaskComplement;
 import com.task.service.ITradingTaskXml;
+import com.trading.service.ITradingItem;
 import com.trading.service.ITradingListingSuccess;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -62,7 +60,7 @@ public class ListingItemDataTimerTaskRun extends BaseScheduledClass implements S
                 "<EndTimeFrom>"+startTime+"</EndTimeFrom>\n" +
                 "<EndTimeTo>"+endTime+"</EndTimeTo>\n" +
                 "<UserID>"+ebayName+"</UserID>\n" +
-                "<IncludeVariations>true</IncludeVariations><IncludeWatchCount>true</IncludeWatchCount>\n" +
+                "<GranularityLevel>Fine</GranularityLevel><IncludeVariations>true</IncludeVariations><IncludeWatchCount>true</IncludeWatchCount>\n" +
                 "<DetailLevel>ReturnAll</DetailLevel>\n" +
                 "</GetSellerListRequest>​";
         return colStr;
@@ -77,6 +75,7 @@ public class ListingItemDataTimerTaskRun extends BaseScheduledClass implements S
         ITradingAutoComplement iTradingAutoComplement = (ITradingAutoComplement) ApplicationContextUtil.getBean(ITradingAutoComplement.class);
         ITaskComplement iTaskComplement = (ITaskComplement) ApplicationContextUtil.getBean(ITaskComplement.class);
         ITradingTaskXml iTradingTaskXml = (ITradingTaskXml) ApplicationContextUtil.getBean(ITradingTaskXml.class);
+        ITradingItem iTradingItem = (ITradingItem) ApplicationContextUtil.getBean(ITradingItem.class);
         SimpleDateFormat dft = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         Date beginDate = new Date();
         Calendar date = Calendar.getInstance();
@@ -135,6 +134,16 @@ public class ListingItemDataTimerTaskRun extends BaseScheduledClass implements S
                                 td.setCreateDate(new Date());
                                 tldm.insertSelective(td);
                             }
+                            //如查物品下架，改变范本表中的状态
+                            if("1".equals(td.getIsFlag())) {
+                                TradingItemWithBLOBs tradingItemWithBLOBs = iTradingItem.selectByItemId(td.getItemId());
+                                if (tradingItemWithBLOBs != null) {
+                                    tradingItemWithBLOBs.setIsFlag("");
+                                    tradingItemWithBLOBs.setItemId("");
+                                    iTradingItem.saveTradingItem(tradingItemWithBLOBs);
+                                }
+                            }
+
                             iTradingAutoComplement.checkAutoComplementType(td,token,siteid);
                             List<TradingListingSuccess> litls = iTradingListingSuccess.selectByItemid(td.getItemId());
                             if(litls==null||litls.size()==0){

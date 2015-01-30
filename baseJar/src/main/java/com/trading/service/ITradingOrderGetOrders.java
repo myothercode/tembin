@@ -34,7 +34,9 @@ public interface ITradingOrderGetOrders {
 
     List<OrderGetOrdersQuery> selectOrderGetOrdersBySendShipMessage();
 
-    List<TradingOrderGetOrders> selectOrderGetOrdersByeBayAccountAndTime(String ebay,Date start,Date end);
+    List<TradingOrderGetOrders> selectOrderGetOrdersByeBayAccountAndTime1(String ebay,Date start,Date end);
+
+    List<OrderGetOrdersQuery> selectOrderGetOrdersByeBayAccountAndTime(String ebay,Date start,Date end);
 
     TradingOrderGetOrders selectOrderGetOrdersById(Long id);
 
@@ -49,4 +51,6 @@ public interface ITradingOrderGetOrders {
     List<TradingOrderGetOrders> selectOrderGetOrdersByTrackNumber();
 
     List<TradingOrderGetOrders> selectOrderGetOrdersByCreatedDateAndEbayAcount(Date date,String ebayName);
+
+    List<TradingOrderGetOrders> selectOrderGetOrdersByAutoMessageId();
 }

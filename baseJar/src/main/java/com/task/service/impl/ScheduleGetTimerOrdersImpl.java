@@ -93,7 +93,8 @@ public class ScheduleGetTimerOrdersImpl implements IScheduleGetTimerOrders {
     private ITradingOrderGetOrdersNoTransaction iTradingOrderGetOrdersNoTransaction;
     @Autowired
     private ITaskGetOrdersSellerTransaction iTaskGetOrdersSellerTransaction;
-
+    @Autowired
+    private ITradingAutoMessageAndOrder iTradingAutoMessageAndOrder;
     @Override
     public void synchronizeOrders(List<TaskGetOrders> taskGetOrders) throws Exception {
         /*CommAutowiredClass commPars = (CommAutowiredClass) ApplicationContextUtil.getBean(CommAutowiredClass.class);*/
@@ -271,48 +272,36 @@ public class ScheduleGetTimerOrdersImpl implements IScheduleGetTimerOrders {
                                 List<TradingOrderGetOrders> ls = iTradingOrderGetOrders.selectOrderGetOrdersByTransactionId(order.getTransactionid(),order.getSelleruserid());
                                 if(ls!=null&&ls.size()>0){
                                     order.setId(ls.get(0).getId());
+                                    order.setCreateTime(ls.get(0).getCreateTime());
+                                    order.setUuid(ls.get(0).getUuid());
+                                    if(ls.get(0).getAccountflag()!=null){
+                                        order.setAccountflag(ls.get(0).getAccountflag());
+                                    }else{
+                                        order.setAccountflag(0);
+                                    }
+                                    if(ls.get(0).getItemflag()!=null){
+                                        order.setItemflag(ls.get(0).getItemflag());
+                                    }else{
+                                        order.setItemflag(0);
+                                    }
+                                    if(ls.get(0).getSellertrasactionflag()!=null){
+                                        order.setSellertrasactionflag(ls.get(0).getSellertrasactionflag());
+                                    }else{
+                                        order.setSellertrasactionflag(0);
+                                    }
                                 }else{
                                     order.setAccountflag(0);
                                     order.setSellertrasactionflag(0);
                                     order.setItemflag(0);
+                                    order.setAccountflag(0);
+                                    order.setItemflag(0);
+                                    order.setSellertrasactionflag(0);
                                 }
-                                //-----获取跟踪号状态-----------
-                               /* if (order.getShipmenttrackingnumber() != null) {
-                                    String trackStatus = null;
-                                    try {
-                                        trackStatus = OrderQueryTrack.queryTrack(order);
-                                        if("0".equalsIgnoreCase(trackStatus)){
-                                            order.setTrackstatus("0");
-                                        }
-                                        else{
-                                            order.setTrackstatus(trackStatus);
-                                        }
-                                    } catch (Exception e) {
-                                        MainTask.taskRunTime.put("91trackTask_ERROR",new Date());
-                                        order.setTrackstatus("0");
-                                        logger.error("",e);
-                                    }
-                                }*/
-                                //--------------自动发送消息-------------------------
                                 List<TradingOrderAddMemberMessageAAQToPartner> addmessages = iTradingOrderAddMemberMessageAAQToPartner.selectTradingOrderAddMemberMessageAAQToPartnerByTransactionId(order.getTransactionid(), 2, order.getSelleruserid());
+                                Date date1=DateUtils.buildDateTime(2015,0,29,0,0,0);
+                                Date date2=DateUtils.buildDateTime(2015,0,24,0,0,0);
                                 if (addmessages != null && addmessages.size() > 0) {
-                                    order=autoMessageSet("标记已发货",taskGetOrder.getUserid(),order);
-                                  /*  List<TradingAutoMessage> partners = iTradingAutoMessage.selectAutoMessageByType("标记已发货", taskGetOrder.getUserid());
-                                    if(partners!=null&&partners.size()>0) {
-                                        for (TradingAutoMessage partner : partners) {
-                                            if(partner==null){
-                                                continue;
-                                            }
-                                            if (partner.getStartuse() == 1) {
-                                                int day = partner.getDay();
-                                                int hour = partner.getHour();
-                                                Date date = order.getLastmodifiedtime();
-                                                Date date1 = org.apache.commons.lang.time.DateUtils.addDays(date, day);
-                                                Date date2 = org.apache.commons.lang.time.DateUtils.addHours(date1, hour);
-                                                order.setSendmessagetime(date2);
-                                            }
-                                        }
-                                    }*/
+                                    //order=autoMessageSet("标记已发货",taskGetOrder.getUserid(),order);
                                     boolean flag = false;
                                     String trackingnumber = order.getShipmenttrackingnumber();
                                     for (TradingOrderAddMemberMessageAAQToPartner addmessage : addmessages) {
@@ -320,63 +309,60 @@ public class ScheduleGetTimerOrdersImpl implements IScheduleGetTimerOrders {
                                             flag = true;
                                         }
                                     }
-                                    if (flag && StringUtils.isNotBlank(trackingnumber)) {
-                                        order.setPaypalflag(null);
+                                    Date modifyDate=order.getLastmodifiedtime();
+                                    if (!flag && StringUtils.isNotBlank(trackingnumber)&&modifyDate.after(date2)) {
+                                        order.setPaypalflag(0);
                                         order.setShippedflag(1);
+                                        order.setAutomessageId(1L);
                                     } else {
                                         order.setPaypalflag(1);
                                         order.setShippedflag(1);
+                                        order.setAutomessageId(0L);
                                     }
                                 } else {
                                     String trackingnumber = order.getShipmenttrackingnumber();
                                     if ("Complete".equals(order.getStatus()) && !StringUtils.isNotBlank(trackingnumber) && "Completed".equals(order.getOrderstatus())) {
                                         //付款后发送消息
-                                        order=autoMessageSet("收到买家付款",taskGetOrder.getUserid(),order);
-                                       /* List<TradingAutoMessage> partners = iTradingAutoMessage.selectAutoMessageByType("收到买家付款", taskGetOrder.getUserid());
-                                       *//* TradingAutoMessage autoMessage = new TradingAutoMessage();*//*
-                                        if(partners!=null&&partners.size()>0){
-                                            for (TradingAutoMessage partner : partners) {
-                                                if(partner==null){
-                                                    continue;
-                                                }
-                                                if (partner.getStartuse() == 1) {
-                                                    int day = partner.getDay();
-                                                    int hour = partner.getHour();
-                                                    Date date = order.getLastmodifiedtime();
-                                                    Date date1 = org.apache.commons.lang.time.DateUtils.addDays(date, day);
-                                                    Date date2 = org.apache.commons.lang.time.DateUtils.addHours(date1, hour);
-                                                    order.setSendmessagetime(date2);
-                                                }
-                                            }
-                                        }*/
-                                        order.setPaypalflag(1);
-                                        order.setShippedflag(null);
-                                    }
-                                    if (StringUtils.isNotBlank(trackingnumber)) {
-                                        order=autoMessageSet("标记已发货",taskGetOrder.getUserid(),order);
-                                       /* List<TradingAutoMessage> partners = iTradingAutoMessage.selectAutoMessageByType("标记已发货", taskGetOrder.getUserid());
-                                        TradingAutoMessage autoMessage = new TradingAutoMessage();
-                                        if(partners!=null&&partners.size()>0) {
-                                            for (TradingAutoMessage partner : partners) {
-                                                if (partner == null) {
-                                                    continue;
-                                                }
-                                                if (partner.getStartuse() == 1) {
-                                                    int day = partner.getDay();
-                                                    int hour = partner.getHour();
-                                                    Date date = order.getLastmodifiedtime();
-                                                    Date date1 = org.apache.commons.lang.time.DateUtils.addDays(date, day);
-                                                    Date date2 = org.apache.commons.lang.time.DateUtils.addHours(date1, hour);
-                                                    order.setSendmessagetime(date2);
-                                                }
-                                            }
-                                        }*/
-                                        order.setPaypalflag(null);
-                                        order.setShippedflag(1);
+                                        //order=autoMessageSet("收到买家付款",taskGetOrder.getUserid(),order);
+                                        Date creatDate=order.getCreatedtime();
+                                        if(creatDate.after(date1)){
+                                            order.setPaypalflag(1);
+                                            order.setShippedflag(0);
+                                            order.setAutomessageId(1L);
+                                        }else{
+                                            order.setPaypalflag(0);
+                                            order.setShippedflag(0);
+                                            order.setAutomessageId(0L);
+                                        }
+                                    }else if ("Complete".equals(order.getStatus())&&StringUtils.isNotBlank(trackingnumber)&& "Completed".equals(order.getOrderstatus())) {
+                                        //order=autoMessageSet("标记已发货",taskGetOrder.getUserid(),order);
+                                        Date modifyDate=order.getLastmodifiedtime();
+                                        if(modifyDate.after(date2)){
+                                            order.setPaypalflag(0);
+                                            order.setShippedflag(1);
+                                            order.setAutomessageId(1L);
+                                        }else{
+                                            order.setPaypalflag(0);
+                                            order.setShippedflag(0);
+                                            order.setAutomessageId(0L);
+                                        }
+                                    }else{
+                                        order.setPaypalflag(0);
+                                        order.setShippedflag(0);
+                                        order.setAutomessageId(0L);
                                     }
                                 }
                                 order.setTrackstatus("0");
                                 order.setCreateUser(taskGetOrder.getUserid());
+                             /*   if(!StringUtils.isNotBlank(order.getShipmenttrackingnumber())){
+                                    order.setShipmenttrackingnumber("");
+                                }
+                                if(!StringUtils.isNotBlank(order.getShippingcarrierused())){
+                                    order.setShippingcarrierused("");
+                                }
+                                if(order.getShippedtime()==null){
+                                    order.setShippedtime(null);
+                                }*/
                                 TaskPool.togos.put(order);
                                 //iTradingOrderGetOrdersNoTransaction.saveOrderGetOrders(order);
                             }
@@ -401,7 +387,7 @@ public class ScheduleGetTimerOrdersImpl implements IScheduleGetTimerOrders {
 
             }
     }
-    private Date sendAutoMessageTime(TradingAutoMessage partner,TradingOrderGetOrders order){
+   /* private Date sendAutoMessageTime(TradingAutoMessage partner,TradingOrderGetOrders order){
         int day = partner.getDay();
         int hour = partner.getHour();
         Date date = order.getLastmodifiedtime();
@@ -409,32 +395,31 @@ public class ScheduleGetTimerOrdersImpl implements IScheduleGetTimerOrders {
         Date date2 = org.apache.commons.lang.time.DateUtils.addHours(date1, hour);
         return date2;
     }
-    private TradingOrderGetOrders autoMessageSet(String type,Long userId,TradingOrderGetOrders order){
+    private TradingOrderGetOrders autoMessageSet(String type,Long userId,TradingOrderGetOrders order) throws Exception {
         List<TradingAutoMessage> partners = iTradingAutoMessage.selectAutoMessageByType(type, userId);
         if(partners!=null&&partners.size()>0) {
-            for (TradingAutoMessage partner : partners) {
-                if(partner==null){
-                    order.setAutomessageId(0L);
+            Boolean automessageFlag=false;
+            List<TradingAutoMessageAndOrder> autoMessageAndOrders= iTradingAutoMessageAndOrder.selectAutoMessageAndOrderByAutoOrderId(order.getId());
+            if(autoMessageAndOrders!=null&&autoMessageAndOrders.size()>0){
+                for(TradingAutoMessageAndOrder autoMessageAndOrder:autoMessageAndOrders){
+                    iTradingAutoMessageAndOrder.deleteAutoMessageAndOrder(autoMessageAndOrder);
                 }
-                if (partner.getStartuse() == 1) {
+            }
+            for (TradingAutoMessage partner : partners) {
+                if (partner!=null&&partner.getStartuse() == 1) {
                     Boolean autoFlag = false;
-                    List<TradingAutoMessageAttr> allOrders = iTradingAutoMessageAttr.selectAutoMessageListByautoMessageId(partner.getId(), "allOrder");
-                    List<TradingAutoMessageAttr> allEbays = iTradingAutoMessageAttr.selectAutoMessageListByautoMessageId(partner.getId(), "allEbay");
-                    if ((allOrders != null && allOrders.size() > 0)||(allEbays!=null&&allEbays.size()>0)) {
-                        autoFlag = true;
-                    } else {
-                        Boolean orderItemFlag = false;
-                        Boolean countryFlag = false;
-                        Boolean amountFlag = false;
-                        Boolean serviceFlag = false;
-                        Boolean internationalServiceFlag = false;
-                        Boolean exceptCountryFlag = false;
-                        List<TradingAutoMessageAttr> orderItemAttrs = iTradingAutoMessageAttr.selectAutoMessageListByautoMessageId(partner.getId(), "orderItem");
-                        List<TradingAutoMessageAttr> countryAttrs = iTradingAutoMessageAttr.selectAutoMessageListByautoMessageId(partner.getId(), "country");
-                        List<TradingAutoMessageAttr> amountAttrs = iTradingAutoMessageAttr.selectAutoMessageListByautoMessageId(partner.getId(), "amount");
-                        List<TradingAutoMessageAttr> serviceAttrs = iTradingAutoMessageAttr.selectAutoMessageListByautoMessageId(partner.getId(), "service");
-                        List<TradingAutoMessageAttr> internationalServiceAttrs = iTradingAutoMessageAttr.selectAutoMessageListByautoMessageId(partner.getId(), "internationalService");
-                        List<TradingAutoMessageAttr> exceptCountryAttrs = iTradingAutoMessageAttr.selectAutoMessageListByautoMessageId(partner.getId(), "exceptCountry");
+                    Boolean orderItemFlag = false;
+                    Boolean countryFlag = false;
+                    Boolean amountFlag = false;
+                    Boolean serviceFlag = false;
+                    Boolean internationalServiceFlag = false;
+                    Boolean exceptCountryFlag = false;
+                    List<TradingAutoMessageAttr> orderItemAttrs = iTradingAutoMessageAttr.selectAutoMessageListByautoMessageId(partner.getId(), "orderItem");
+                    List<TradingAutoMessageAttr> countryAttrs = iTradingAutoMessageAttr.selectAutoMessageListByautoMessageId(partner.getId(), "country");
+                    List<TradingAutoMessageAttr> amountAttrs = iTradingAutoMessageAttr.selectAutoMessageListByautoMessageId(partner.getId(), "amount");
+                    List<TradingAutoMessageAttr> serviceAttrs = iTradingAutoMessageAttr.selectAutoMessageListByautoMessageId(partner.getId(), "service");
+                    List<TradingAutoMessageAttr> internationalServiceAttrs = iTradingAutoMessageAttr.selectAutoMessageListByautoMessageId(partner.getId(), "internationalService");
+                    List<TradingAutoMessageAttr> exceptCountryAttrs = iTradingAutoMessageAttr.selectAutoMessageListByautoMessageId(partner.getId(), "exceptCountry");
                         if (orderItemAttrs != null && orderItemAttrs.size() > 0) {
                             for (TradingAutoMessageAttr orderItemAttr : orderItemAttrs) {
                                 String sku = order.getSku();
@@ -467,15 +452,19 @@ public class ScheduleGetTimerOrdersImpl implements IScheduleGetTimerOrders {
                         }
                         if (serviceAttrs != null && serviceAttrs.size() > 0) {
                             for (TradingAutoMessageAttr serviceAttr : serviceAttrs) {
+                                TradingDataDictionary dataDict=DataDictionarySupport.getTradingDataDictionaryByID(serviceAttr.getDictionaryId());
                                 String service = order.getSelectedshippingservice();
-                                if (serviceAttr.getValue().contains(service)) {
+                                String dicService=dataDict.getValue();
+                                if (dicService.equals(service)) {
                                     serviceFlag = true;
                                 }
                             }
                             if (internationalServiceAttrs != null && internationalServiceAttrs.size() > 0) {
                                 for (TradingAutoMessageAttr internationalServiceAttr : internationalServiceAttrs) {
                                     String internationalService = order.getSelectedshippingservice();
-                                    if (internationalServiceAttr.getValue().contains(internationalService)) {
+                                    TradingDataDictionary dataDict=DataDictionarySupport.getTradingDataDictionaryByID(internationalServiceAttr.getDictionaryId());
+                                    String dicInternationalService=dataDict.getValue();
+                                    if (dicInternationalService.equals(internationalService)) {
                                         internationalServiceFlag = true;
                                     }
                                 }
@@ -484,12 +473,25 @@ public class ScheduleGetTimerOrdersImpl implements IScheduleGetTimerOrders {
                             }
                         } else if (internationalServiceAttrs != null && internationalServiceAttrs.size() > 0) {
                             for (TradingAutoMessageAttr internationalServiceAttr : internationalServiceAttrs) {
+                                TradingDataDictionary dataDict=DataDictionarySupport.getTradingDataDictionaryByID(internationalServiceAttr.getDictionaryId());
+                                String dicInternationalService=dataDict.getValue();
                                 String internationalService = order.getSelectedshippingservice();
-                                if (internationalServiceAttr.getValue().contains(internationalService)) {
+                                if (dicInternationalService.equals(internationalService)) {
                                     internationalServiceFlag = true;
                                 }
                             }
-                            serviceFlag = true;
+                            if (serviceAttrs != null && serviceAttrs.size() > 0) {
+                                for (TradingAutoMessageAttr serviceAttr : serviceAttrs) {
+                                    String service = order.getSelectedshippingservice();
+                                    TradingDataDictionary dataDict=DataDictionarySupport.getTradingDataDictionaryByID(serviceAttr.getDictionaryId());
+                                    String dicService=dataDict.getValue();
+                                    if (dicService.equals(service)) {
+                                        serviceFlag = true;
+                                    }
+                                }
+                            }else{
+                                serviceFlag = true;
+                            }
                         } else {
                             serviceFlag = true;
                             internationalServiceFlag = true;
@@ -504,25 +506,49 @@ public class ScheduleGetTimerOrdersImpl implements IScheduleGetTimerOrders {
                         } else {
                             exceptCountryFlag = true;
                         }
+                        *//*if (!orderItemFlag){
+                            logger.error("订单号("+order.getOrderid()+")不符合自动消息id("+partner.getId()+")订单商品的设置");
+                        }
+                        if (!countryFlag){
+                            logger.error("订单号("+order.getOrderid()+")不符合自动消息id("+partner.getId()+")订单目的地的设置");
+                        }
+                        if (!exceptCountryFlag){
+                            logger.error("订单号("+order.getOrderid()+")不符合自动消息id("+partner.getId()+")订单不包括目的地的设置");
+                        }
+                        if (!amountFlag){
+                            logger.error("订单号("+order.getOrderid()+")不符合自动消息id("+partner.getId()+")订单卖家账号的设置");
+                        }
+                        if (!serviceFlag){
+                            logger.error("订单号("+order.getOrderid()+")不符合自动消息id("+partner.getId()+")订单国内运输选项的设置");
+                        }
+                        if (!internationalServiceFlag){
+                            logger.error("订单号("+order.getOrderid()+")不符合自动消息id("+partner.getId()+")订单国际运输选项的设置");
+                        }*//*
                         if (exceptCountryFlag && internationalServiceFlag && serviceFlag && amountFlag && countryFlag && orderItemFlag) {
                             autoFlag = true;
                         }
-                    }
                     if (autoFlag) {
                         Date date2 = sendAutoMessageTime(partner, order);
                         order.setSendmessagetime(date2);
                         order.setAutomessageId(partner.getId());
-                        continue;
-                    }else{
-                        order.setAutomessageId(0L);
+                        automessageFlag=true;
+                        TradingAutoMessageAndOrder messageAndOrder=new TradingAutoMessageAndOrder();
+                        messageAndOrder.setOrderId(order.getId());
+                        messageAndOrder.setAutomessageId(partner.getId());
+                        messageAndOrder.setSendtime(date2);
+                        iTradingAutoMessageAndOrder.saveAutoMessageAndOrder(messageAndOrder);
                     }
-                }else{
-                    order.setAutomessageId(0L);
+                    *//*logger.error("----------------------------判断符合自动消息条件的订单结束---------------------------------");*//*
                 }
+            }
+            if(automessageFlag){
+                order.setAutomessageId(1L);
+            }else{
+                order.setAutomessageId(0L);
             }
         }
         return order;
-    }
+    }*/
     @Override
     public void synchronizeOrderItems(List<TradingOrderGetOrders> orders) throws Exception {
         //测试环境

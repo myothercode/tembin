@@ -18,5 +18,5 @@ public interface OrderGetOrdersMapper {
 
     List<OrderGetOrdersQuery> selectOrderGetOrdersBySendShipMessage(Map map,Page page);
 
-
+    List<OrderGetOrdersQuery> selectOrderGetOrdersByeBayAccountAndTime(Map map,Page page);
 }

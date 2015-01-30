@@ -113,6 +113,7 @@ public class SystemUserManagerServiceImpl implements SystemUserManagerService {
     public List<UsercontrollerEbayAccountExtend> queryCurrAllEbay(Map map){
         if(!map.containsKey("userID") && !map.containsKey("AllEbay")){
             SessionVO sessionVO=SessionCacheSupport.getSessionVO();
+            if (sessionVO==null){return null;}
             map.put("userID",sessionVO.getId());
         }
         List<UsercontrollerEbayAccountExtend> ebays = userInfoServiceMapper.queryEbayAccountForUser(map);

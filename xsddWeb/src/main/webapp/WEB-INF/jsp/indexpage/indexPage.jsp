@@ -37,6 +37,7 @@
     <script type="text/javascript" src=<c:url value ="/js/jquery/jquery-1.9.0.min.js" /> ></script>
     <script type="text/javascript" src=<c:url value ="/js/jquery/jquery-migrate-1.2.1.min.js" /> ></script>
     <script type="text/javascript" src=<c:url value ="/js/jquery/jquery.cookie.js" /> ></script>
+    <script type="text/javascript" src=<c:url value ="/js/jquery-blockui/jquery.blockUI.min.js" /> ></script>
     <script src="<c:url value ="/js/bootstrap.min.js"/>"></script>
     <script src="<c:url value ="/js/theme.js"/>"></script>
     <script type="text/javascript" src=<c:url value ="/js/base.js" /> ></script>

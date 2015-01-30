@@ -22,9 +22,10 @@ public class MainTaskStaticParam {
         SOME_MULIT_TASK.put(MainTask.SYNCHRONIZE_GET_TIMER_ORDERS,2);
         SOME_MULIT_TASK.put(MainTask.LISTING_TIMER_TASK_DATA,4);
         SOME_MULIT_TASK.put(MainTask.SYNCHRONIZE_GET_ORDERS_ACCOUNT_TIMER,2);
-        SOME_MULIT_TASK.put(MainTask.SYNCHRONIZE_GET_MESSAGES_TIMER,1);
+        SOME_MULIT_TASK.put(MainTask.SYNCHRONIZE_GET_MESSAGES_TIMER,2);
         SOME_MULIT_TASK.put(MainTask.SYNCHRONIZE_GET_USER_CASES_TIMER,2);
         SOME_MULIT_TASK.put(MainTask.SYNCHRONIZE_FEED_BACK_TIMER,2);
+        SOME_MULIT_TASK.put(MainTask.AUTO_MESSAGE,1);
     }
         /**定义一个抓订单需要的ebay帐号队列*/
         public final static BlockingQueue<TaskGetOrders> CATCH_ORDER_QUEUE=new ArrayBlockingQueue<TaskGetOrders>(10000);
@@ -41,6 +42,9 @@ public class MainTaskStaticParam {
         public final static BlockingQueue<TaskGetUserCases> CATCH_CASE_QUEUE=new ArrayBlockingQueue<TaskGetUserCases>(10000);
         /**获取FEEDBACK评价队列*/
         public final static BlockingQueue<TaskFeedBack> CATCH_FEEDBACK_QUEUE=new ArrayBlockingQueue<TaskFeedBack>(10000);
+
+        /**定义一个选择需要发送自动消息的队列*/
+        public final static BlockingQueue<TradingOrderGetOrders> CATCH_AUTO_MESSAGE_QUEUE=new ArrayBlockingQueue<TradingOrderGetOrders>(10000);
 
 
 
@@ -70,7 +74,9 @@ public class MainTaskStaticParam {
             doList.add(MainTask.PRICE_TRACKING_AUTO_PRICING);
             doList.add(MainTask.LISTING_TIMER_REPORT);
             doList.add(MainTask.CHECK_AUTO_ASSESS);
-
+            doList.add(MainTask.SYNCHRONIZE_SELECT_AUTO_MESSAGE_TASK_RUN);
+            doList.add(MainTask.CHECK_SYNC_INVENTORY);
+            doList.add(MainTask.SYNC_INVENTORY);
             doList.add("Test_Test_test");
     }
     /**定义各个任务的间隔时间*/

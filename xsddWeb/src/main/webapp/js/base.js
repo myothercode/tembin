@@ -84,7 +84,21 @@ if(url.indexOf("?")==-1){
         var self = this;
 
         if(config.isConverPage){
-            $.blockUI({ message: '<h1><img src="/xsddWeb/img/busy.gif" /></h1>' });
+            $.blockUI({ message: '<img src="/xsddWeb/img/82lod.gif" />' ,
+                css: {
+                    padding:        0,
+                    margin:         0,
+                    width:          '30%',
+                    top:            '40%',
+                    left:           '35%',
+                    textAlign:      'center',
+                    color:          '#000',
+                    border:         '0px solid #aaa',
+                    //backgroundColor:'#fff',
+                    cursor:         'wait'
+                    //opacity:         0.6
+                }
+            });
         }
 
         $.ajax({

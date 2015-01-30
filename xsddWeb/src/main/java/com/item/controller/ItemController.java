@@ -500,45 +500,47 @@ public class ItemController extends BaseAction{
             List<String> lipicurl = picd.getPictureURL();
             List<String> liebaypic = new ArrayList();
             for (int i = 0; i < picUrl.length; i++) {
-                List<TradingListingpicUrl> litam = this.iTradingListingPicUrl.selectByMackId(picUrl[i]);
-                if(litam!=null&&litam.size()>0){
-                    TradingListingpicUrl tam = litam.get(0);
-                    String url = tam.getUrl();
-                    String picName = url.substring(url.lastIndexOf("/")+1,url.lastIndexOf("."));
-                    if(tam.getEbayurl()==null&&tam.getCheckFlag().equals("0")){
-                        Thread.sleep(5000L);
-                        Asserts.assertTrue(picUrl[i]!=null&&!"".equals(picUrl[i]),"图片上传失败，请从新选择图片上传");
-                        List<TradingListingpicUrl> litamss = this.iTradingListingPicUrl.selectByMackId(picUrl[i]);
-                        tam = litamss.get(0);
-                        if(tam.getCheckFlag().equals("1")){
-                            liebaypic.add(tam.getEbayurl());
-                        }else{
+                if(picUrl[i]!=null) {
+                    List<TradingListingpicUrl> litam = this.iTradingListingPicUrl.selectByMackId(picUrl[i]);
+                    if (litam != null && litam.size() > 0) {
+                        TradingListingpicUrl tam = litam.get(0);
+                        String url = tam.getUrl();
+                        String picName = url.substring(url.lastIndexOf("/") + 1, url.lastIndexOf("."));
+                        if (tam.getEbayurl() == null && tam.getCheckFlag().equals("0")) {
+                            Thread.sleep(5000L);
+                            Asserts.assertTrue(picUrl[i] != null && !"".equals(picUrl[i]), "图片上传失败，请从新选择图片上传");
+                            List<TradingListingpicUrl> litamss = this.iTradingListingPicUrl.selectByMackId(picUrl[i]);
+                            tam = litamss.get(0);
+                            if (tam.getCheckFlag().equals("1")) {
+                                liebaypic.add(tam.getEbayurl());
+                            } else {
+                                try {
+                                    tam = this.iTradingListingPicUrl.uploadPic(tradingItem, tam.getUrl(), picName, tam);
+                                    if (tam.getEbayurl() == null && tam.getCheckFlag().equals("2")) {
+                                        Asserts.assertTrue(false, "图片上传失败，请从新选择图片上传");
+                                    } else {
+                                        liebaypic.add(tam.getEbayurl());
+                                    }
+                                } catch (Exception e) {
+                                    logger.error(url + "图片上传失败！", e);
+                                    Asserts.assertTrue(false, "图片上传失败，请从新选择图片上传");
+                                }
+                            }
+                        } else if (tam.getEbayurl() == null && tam.getCheckFlag().equals("2")) {
                             try {
-                                tam = this.iTradingListingPicUrl.uploadPic(tradingItem,tam.getUrl(),picName,tam);
-                                if(tam.getEbayurl()==null&&tam.getCheckFlag().equals("2")){
-                                    Asserts.assertTrue(false,"图片上传失败，请从新选择图片上传");
-                                }else{
+                                tam = this.iTradingListingPicUrl.uploadPic(tradingItem, tam.getUrl(), picName, tam);
+                                if (tam.getEbayurl() == null && tam.getCheckFlag().equals("2")) {
+                                    Asserts.assertTrue(false, "图片上传失败，请从新选择图片上传");
+                                } else {
                                     liebaypic.add(tam.getEbayurl());
                                 }
                             } catch (Exception e) {
-                                logger.error(url+"图片上传失败！",e);
+                                logger.error(url + "", e);
                                 Asserts.assertTrue(false, "图片上传失败，请从新选择图片上传");
                             }
+                        } else if (tam.getCheckFlag().equals("1")) {
+                            liebaypic.add(tam.getEbayurl());
                         }
-                    }else if(tam.getEbayurl()==null&&tam.getCheckFlag().equals("2")){
-                        try {
-                            tam = this.iTradingListingPicUrl.uploadPic(tradingItem,tam.getUrl(),picName,tam);
-                            if(tam.getEbayurl()==null&&tam.getCheckFlag().equals("2")){
-                                Asserts.assertTrue(false,"图片上传失败，请从新选择图片上传");
-                            }else{
-                                liebaypic.add(tam.getEbayurl());
-                            }
-                        } catch (Exception e) {
-                            logger.error(url+"",e);
-                            Asserts.assertTrue(false, "图片上传失败，请从新选择图片上传");
-                        }
-                    }else if(tam.getCheckFlag().equals("1")){
-                        liebaypic.add(tam.getEbayurl());
                     }
                 }
             }
@@ -549,45 +551,47 @@ public class ItemController extends BaseAction{
             String [] picurl = request.getParameterValues("PictureDetails_"+ebayAccountId+".PictureURL");
             picd = new PictureDetails();
             for(int i=0;i<picurl.length;i++){
-                List<TradingListingpicUrl> litam = this.iTradingListingPicUrl.selectByMackId(picUrl[i]);
-                if(litam!=null&&litam.size()>0){
-                    TradingListingpicUrl tam = litam.get(0);
-                    String url = tam.getUrl();
-                    String picName = url.substring(url.lastIndexOf("/")+1,url.lastIndexOf("."));
-                    if(tam.getEbayurl()==null&&tam.getCheckFlag().equals("0")){
-                        Thread.sleep(5000L);
-                        Asserts.assertTrue(picUrl[i]!=null&&!"".equals(picUrl[i]),"图片上传失败，请从新选择图片上传");
-                        List<TradingListingpicUrl> litamss = this.iTradingListingPicUrl.selectByMackId(picUrl[i]);
-                        tam = litamss.get(0);
-                        if(tam.getCheckFlag().equals("1")){
-                            liebaypic.add(tam.getEbayurl());
-                        }else{
+                if(picUrl[i]!=null) {
+                    List<TradingListingpicUrl> litam = this.iTradingListingPicUrl.selectByMackId(picUrl[i]);
+                    if (litam != null && litam.size() > 0) {
+                        TradingListingpicUrl tam = litam.get(0);
+                        String url = tam.getUrl();
+                        String picName = url.substring(url.lastIndexOf("/") + 1, url.lastIndexOf("."));
+                        if (tam.getEbayurl() == null && tam.getCheckFlag().equals("0")) {
+                            Thread.sleep(5000L);
+                            Asserts.assertTrue(picUrl[i] != null && !"".equals(picUrl[i]), "图片上传失败，请从新选择图片上传");
+                            List<TradingListingpicUrl> litamss = this.iTradingListingPicUrl.selectByMackId(picUrl[i]);
+                            tam = litamss.get(0);
+                            if (tam.getCheckFlag().equals("1")) {
+                                liebaypic.add(tam.getEbayurl());
+                            } else {
+                                try {
+                                    tam = this.iTradingListingPicUrl.uploadPic(tradingItem, tam.getUrl(), picName, tam);
+                                    if (tam.getEbayurl() == null && tam.getCheckFlag().equals("2")) {
+                                        Asserts.assertTrue(false, "图片上传失败，请从新选择图片上传");
+                                    } else {
+                                        liebaypic.add(tam.getEbayurl());
+                                    }
+                                } catch (Exception e) {
+                                    logger.error(url + "图片上传失败！", e);
+                                    Asserts.assertTrue(false, "图片上传失败，请从新选择图片上传");
+                                }
+                            }
+                        } else if (tam.getEbayurl() == null && tam.getCheckFlag().equals("2")) {
                             try {
-                                tam = this.iTradingListingPicUrl.uploadPic(tradingItem,tam.getUrl(),picName,tam);
-                                if(tam.getEbayurl()==null&&tam.getCheckFlag().equals("2")){
-                                    Asserts.assertTrue(false,"图片上传失败，请从新选择图片上传");
-                                }else{
+                                tam = this.iTradingListingPicUrl.uploadPic(tradingItem, tam.getUrl(), picName, tam);
+                                if (tam.getEbayurl() == null && tam.getCheckFlag().equals("2")) {
+                                    Asserts.assertTrue(false, "图片上传失败，请从新选择图片上传");
+                                } else {
                                     liebaypic.add(tam.getEbayurl());
                                 }
                             } catch (Exception e) {
-                                logger.error(url+"图片上传失败！",e);
+                                logger.error(url + "", e);
                                 Asserts.assertTrue(false, "图片上传失败，请从新选择图片上传");
                             }
+                        } else if (tam.getCheckFlag().equals("1")) {
+                            liebaypic.add(tam.getEbayurl());
                         }
-                    }else if(tam.getEbayurl()==null&&tam.getCheckFlag().equals("2")){
-                        try {
-                            tam = this.iTradingListingPicUrl.uploadPic(tradingItem,tam.getUrl(),picName,tam);
-                            if(tam.getEbayurl()==null&&tam.getCheckFlag().equals("2")){
-                                Asserts.assertTrue(false,"图片上传失败，请从新选择图片上传");
-                            }else{
-                                liebaypic.add(tam.getEbayurl());
-                            }
-                        } catch (Exception e) {
-                            logger.error(url+"",e);
-                            Asserts.assertTrue(false, "图片上传失败，请从新选择图片上传");
-                        }
-                    }else if(tam.getCheckFlag().equals("1")){
-                        liebaypic.add(tam.getEbayurl());
                     }
                 }
             }
@@ -779,7 +783,7 @@ public class ItemController extends BaseAction{
     @AvoidDuplicateSubmission(needRemoveToken = true)
     @ResponseBody
     public void saveItem(HttpServletRequest request,Item item,TradingItemWithBLOBs tradingItem,Date timerListing) throws Exception {
-
+        //logger.error(item.getSKU()+"请求开始时间："+DateUtils.formatDateTime(new Date()));
         String mouth = request.getParameter("dataMouth");
         if("save".equals(mouth)||"othersave".equals(mouth)){//保存范本、另存为新范本
             //保存商品信息到数据库中
@@ -1054,7 +1058,9 @@ public class ItemController extends BaseAction{
                         }
                         item.setPictureDetails(pd);
                     }
+                    //logger.error(tradingItem.getId()+":::检查图片是否上传开始:::"+DateUtils.formatDateTime(new Date()));
                     getEbayPicUrl(item,tradingItem,request,paypal);
+                    //logger.error(tradingItem.getId()+":::检查图片上传结束:::"+DateUtils.formatDateTime(new Date()));
                     //getEbayPicUrl(item,tradingItem,paypal);
                     UsercontrollerEbayAccount ua = this.iUsercontrollerEbayAccount.selectById(Long.parseLong(paypal));
                     //PublicUserConfig pUserConfig = DataDictionarySupport.getPublicUserConfigByID(ua.getPaypalAccountId());
@@ -1137,7 +1143,10 @@ public class ItemController extends BaseAction{
                         }
                         item.setPictureDetails(pd);
                     }
+
+                    //logger.error(tradingItem.getId()+":::检查图片是否上传开始:::"+DateUtils.formatDateTime(new Date()));
                     getEbayPicUrl(item,tradingItem,request,paypal);
+                    //logger.error(tradingItem.getId()+":::检查图片上传结束:::"+DateUtils.formatDateTime(new Date()));
                     //getEbayPicUrl(item,tradingItem,paypal);
                     UsercontrollerEbayAccount ua = this.iUsercontrollerEbayAccount.selectById(Long.parseLong(paypal));
                     //PublicUserConfig pUserConfig = DataDictionarySupport.getPublicUserConfigByID(ua.getPaypalAccountId());
@@ -1201,13 +1210,16 @@ public class ItemController extends BaseAction{
                         AjaxSupport.sendSuccessText("message", "操作成功！结果请稍后查看消息！");
                         return;
                     }else {
+                        //logger.error(tradingItem.getId()+":::调用ＡＰＩ开始:::"+DateUtils.formatDateTime(new Date()));
                         Map<String, String> resMap = addApiTask.exec(d, xml, apiUrl);
+                        //logger.error(tradingItem.getId()+":::调用ＡＰＩ结束:::"+DateUtils.formatDateTime(new Date()));
                         String r1 = resMap.get("stat");
                         String res = resMap.get("message");
                         if ("fail".equalsIgnoreCase(r1)) {
                             logger.error("数据已保存，但刊登失败！由于返回报文不全，无法得到更详细的信息！");
                             //AjaxSupport.sendFailText("fail", "数据已保存，但刊登失败！");
                             AjaxSupport.sendFailText("fail", "{\"isFlag\":\"1\",\"message\":\"数据已保存，但刊登失败！\",\"tradingItemId\":\""+tradingItem.getId()+"\"}");
+                            //logger.error(item.getSKU()+"解悉ＸＭＬ报错，时间："+DateUtils.formatDateTime(new Date()));
                             return;
                         }
                         String ack = SamplePaseXml.getVFromXmlString(res, "Ack");
@@ -1220,6 +1232,7 @@ public class ItemController extends BaseAction{
                             //新增在线商品表数据
                             this.iTradingListingData.saveTradingListingDataByTradingItem(tradingItem,res);
                             AjaxSupport.sendSuccessText("message", "商品SKU为："+tradingItem.getSku()+"，名称为：<a target=_blank style='color:blue' href='"+service_item_url+itemId+"'>"+tradingItem.getItemName()+"<a>，刊登成功！");
+                            //logger.error(item.getSKU()+"立即刊登成功请求结束时间："+DateUtils.formatDateTime(new Date()));
                         } else {
                             //String errors = SamplePaseXml.getVFromXmlString(res, "Errors");
                             TradingTaskXml ttx = new TradingTaskXml();
@@ -1239,6 +1252,7 @@ public class ItemController extends BaseAction{
                             }
                             logger.error("刊登失败："+errors);
                             AjaxSupport.sendFailText("fail", "{\"isFlag\":\"1\",\"message\":\"数据已保存，但刊登失败！"+errors+"\",\"tradingItemId\":\""+tradingItem.getId()+"\"}");
+                            //logger.error(item.getSKU()+"立即刊登失败请求结束时间："+DateUtils.formatDateTime(new Date()));
                         }
                     }
                 }
@@ -1246,8 +1260,10 @@ public class ItemController extends BaseAction{
         }else if("updateListing".equals(mouth)){//更新在线刊登
             this.updateListingData(item,tradingItem,request);
             AjaxSupport.sendSuccessText("message","更新成功！");
+            //logger.error(item.getSKU()+"更新在线范本请求结束时间："+DateUtils.formatDateTime(new Date()));
             return;
         }
+
     }
 
     public void updateListingData(Item item,TradingItemWithBLOBs tradingItem,HttpServletRequest request) throws Exception{
@@ -1296,7 +1312,7 @@ public class ItemController extends BaseAction{
                 for(int i=0;i<content.size();i++){
                     org.jsoup.nodes.Element el = content.get(i);
                     url = el.attr("src");
-                    if(url.indexOf("blank.jpg")>0&&j<=tempicUrls.length){
+                    if(url.indexOf("blank.jpg")>0&&j<=tempicUrls.length&&j<=content.size()){
                         el.attr("src",tempicUrls[j]);
                         j++;
                     }

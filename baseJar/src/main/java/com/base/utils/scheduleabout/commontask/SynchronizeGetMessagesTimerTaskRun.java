@@ -48,7 +48,7 @@ public class SynchronizeGetMessagesTimerTaskRun extends BaseScheduledClass imple
             UsercontrollerDevAccountExtend d = new UsercontrollerDevAccountExtend();//开发者帐号id
             d.setApiSiteid("0");
             //真实环境
-         /*   UsercontrollerDevAccountExtend d=new UsercontrollerDevAccountExtend();
+     /*       UsercontrollerDevAccountExtend d=new UsercontrollerDevAccountExtend();
             d.setApiDevName("5d70d647-b1e2-4c7c-a034-b343d58ca425");
             d.setApiAppName("sandpoin-23af-4f47-a304-242ffed6ff5b");
             d.setApiCertName("165cae7e-4264-4244-adff-e11c3aea204e");
@@ -134,6 +134,9 @@ public class SynchronizeGetMessagesTimerTaskRun extends BaseScheduledClass imple
 
                         parms.put("userInfoService",userInfoService);
                         String content=GetMyMessageAPI.getContent(parms);
+                        if(!StringUtils.isNotBlank(content)){
+                            content=null;
+                        }
                         ms.setTextHtml(StringEscapeUtils.escapeXml(content));
                         List<TradingMessageGetmymessage> getmymessages=iTradingMessageGetmymessage.selectMessageGetmymessageByMessageId(ms.getMessageid(),ms.getSender());
                         if(getmymessages.size()>0){
@@ -175,7 +178,7 @@ public class SynchronizeGetMessagesTimerTaskRun extends BaseScheduledClass imple
             UsercontrollerDevAccountExtend d = new UsercontrollerDevAccountExtend();//开发者帐号id
             d.setApiSiteid("0");
             //真实环境
-          /*  UsercontrollerDevAccountExtend d=new UsercontrollerDevAccountExtend();
+         /*   UsercontrollerDevAccountExtend d=new UsercontrollerDevAccountExtend();
             d.setApiDevName("5d70d647-b1e2-4c7c-a034-b343d58ca425");
             d.setApiAppName("sandpoin-23af-4f47-a304-242ffed6ff5b");
             d.setApiCertName("165cae7e-4264-4244-adff-e11c3aea204e");
@@ -261,6 +264,9 @@ public class SynchronizeGetMessagesTimerTaskRun extends BaseScheduledClass imple
 
                         parms.put("userInfoService",userInfoService);
                         String content=GetMyMessageAPI.getContent1(parms);
+                        if(!StringUtils.isNotBlank(content)){
+                            content=null;
+                        }
                         ms.setTextHtml(StringEscapeUtils.escapeXml(content));
                         List<TradingMessageGetmymessage> getmymessages=iTradingMessageGetmymessage.selectMessageGetmymessageByMessageId(ms.getMessageid(),ms.getSender());
                         if(getmymessages.size()>0){
@@ -340,7 +346,7 @@ public class SynchronizeGetMessagesTimerTaskRun extends BaseScheduledClass imple
         list1.add(o);
 
         synchronizeOrders(list1);
-        synchronizeOrders1(list1);
+        //synchronizeOrders1(list1);
         TaskPool.threadRunTime.remove("thread_" + getScheduledType()+"_"+o.getId());
         Thread.currentThread().setName("thread_" + getScheduledType()+"_"+o.getId()+ MyStringUtil.getRandomStringAndNum(5));
         //logger.error(getScheduledType()+o.getId() + "===任务结束===");

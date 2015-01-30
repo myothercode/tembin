@@ -32,7 +32,7 @@ public class TradingOrderGetOrdersNoTransactionImpl implements ITradingOrderGetO
         TaskPool.togosBS[0]="0";
         Boolean b= TaskPool.threadIsAliveByName("thread_UpdateTradingOrderGetOrders");
         if(b){
-            logger.error("UpdateTradingOrderGetOrders===之前的任务还未完成继续等待下一个循环===");
+            //logger.error("UpdateTradingOrderGetOrders===之前的任务还未完成继续等待下一个循环===");
             return;
         }
         UpdateTradingOrderGetOrders x=new UpdateTradingOrderGetOrders();

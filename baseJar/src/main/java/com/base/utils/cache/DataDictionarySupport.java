@@ -42,6 +42,9 @@ public class DataDictionarySupport extends CacheBaseSupport{
 
     public static final String PUBLIC_DATA_DICT_EBAYACCOUNT = "ebayaccount";
 
+    public static final String INVENTORY = "inventory";
+
+
 
 
 

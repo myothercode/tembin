@@ -24,7 +24,10 @@
         <result column="CommentText" jdbcType="LONGVARCHAR" property="commenttext" />
     </resultMap>
     <select id="selectClientAssessFeedBackList" resultMap="BaseResultMap" parameterType="map">
-        select * from trading_feedbackdetail feed  where 1=1
+        select feed.id,feed.CommentingUser,feed.CommentText,feed.CommentTime,feed.CommentType
+        ,feed.ItemID,feed.ItemTitle,feed.ebay_account from trading_feedbackdetail feed ,
+        (select acc.ebay_name from usercontroller_user_ebay ue,usercontroller_ebay_account acc where ue.ebay_id=acc.id and ue.user_id=#{userid}) us where 1=1
+        and feed.ebay_account =us.ebay_name and feed.Role='Seller'
         <if test="commentType!=null">
            and feed.CommentType=#{commentType}
         </if>
@@ -34,7 +37,7 @@
         <if test="selecttype!=null">
             and feed.${selecttype} like CONCAT(CONCAT('%', #{selectvalue, jdbcType=VARCHAR}),'%')
         </if>
-        and feed.ebay_account in (select ebay_account from usercontroller_ebay_account acc where acc.user_id=#{userid})
+        order by feed.CommentTime desc
     </select>
 
 </mapper>

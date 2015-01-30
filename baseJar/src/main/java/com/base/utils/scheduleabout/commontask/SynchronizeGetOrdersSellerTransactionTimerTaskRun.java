@@ -37,7 +37,7 @@ public class SynchronizeGetOrdersSellerTransactionTimerTaskRun extends BaseSched
         }
         Boolean b= TaskPool.threadIsAliveByName("thread_" + getScheduledType());
         if(b){
-            logger.error(getScheduledType()+"===之前的任务还未完成继续等待下一个循环===");
+            //logger.error(getScheduledType()+"===之前的任务还未完成继续等待下一个循环===");
             return;
         }
         Thread.currentThread().setName("thread_" + getScheduledType());

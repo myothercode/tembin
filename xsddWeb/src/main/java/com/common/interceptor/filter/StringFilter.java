@@ -19,12 +19,14 @@ public class StringFilter implements Filter {
     private static List<String> excludePaths=new ArrayList<String>();//不进行拦截的url
     static {
         excludePaths.add("http://www.tembin.com");
+        excludePaths.add("http://www2.tembin.com");
         excludePaths.add("http://task.tembin.com");
         excludePaths.add("http://tembin.com");
         excludePaths.add("http://localhost");
         excludePaths.add("http://192.168");
         excludePaths.add("http://localhost");
         excludePaths.add("http://127.0.0.1");
+        excludePaths.add("http://183.60.228.112");
     }
 
 

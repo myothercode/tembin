@@ -57,6 +57,11 @@ public class ItemInventoryImpl implements com.inventory.service.IItemInventory {
     private String deshifang_customerid;
     @Value("${DESHIFANG_TODEN}")
     private String deshifang_toden;
+    @Value("${SHIHAIYOU_NAME}")
+    private String shihaiyou_name;
+    @Value("${SHIHAIYOU_PASSWORD}")
+    private String shihaiyou_password;
+
 
     @Override
     public void saveItemInventory(ItemInventory itemInventory){
@@ -67,16 +72,16 @@ public class ItemInventoryImpl implements com.inventory.service.IItemInventory {
         }
     }
 
-    public List<ItemInventory> selectBySku(String sku,String storageno,String warehouse){
+    public List<ItemInventory> selectBySku(String sku,String storageno,String warehouse,String orgId){
         ItemInventoryExample iie = new ItemInventoryExample();
-        iie.createCriteria().andSkuEqualTo(sku).andStorageNoEqualTo(storageno).andWarehouseEqualTo(warehouse).andCreateDateBetween(DateUtils.turnToDateStart(new Date()),DateUtils.turnToDateEnd(new Date()));
+        iie.createCriteria().andSkuEqualTo(sku).andStorageNoEqualTo(storageno).andWarehouseEqualTo(warehouse).andCreateDateBetween(DateUtils.turnToDateStart(new Date()),DateUtils.turnToDateEnd(new Date())).andOrgIdEqualTo(orgId);
         return this.itemInventoryMapper.selectByExample(iie);
     }
 
     @Override
     public void saveListItemInventory(List<ItemInventory> liii){
         for(ItemInventory ii : liii){
-            List<ItemInventory> li = this.selectBySku(ii.getSku(),ii.getStorageNo(),ii.getWarehouse());
+            List<ItemInventory> li = this.selectBySku(ii.getSku(),ii.getStorageNo(),ii.getWarehouse(),ii.getOrgId());
             if(ii!=null&&li.size()>0){
                 ii.setId(li.get(0).getId());
             }
@@ -85,11 +90,11 @@ public class ItemInventoryImpl implements com.inventory.service.IItemInventory {
     }
 
     @Override
-    public void getChuKouYiInventory(){
+    public void getChuKouYiInventory(String userName,String userKey,String orgId){
         HttpClient httpClient= HttpClientUtil.getHttpClient();
         String abcd="";
         try {
-            String posurl = chukouyi_url+ ItemInventoryStatic.LIST_PRODUCT_STOCK+"?token="+chukouyi_token+"&user_key="+chukouyi_user_key+"&start_index=1&count=100";
+            String posurl = chukouyi_url+ ItemInventoryStatic.LIST_PRODUCT_STOCK+"?token="+userName+"&user_key="+userKey+"&start_index=1&count=100";
             String res = HttpClientUtil.get(httpClient, posurl);
             Map jsons = JSON.parseObject(res, HashMap.class);
             Map body = JSON.parseObject(jsons.get("body").toString(),HashMap.class);
@@ -127,6 +132,7 @@ public class ItemInventoryImpl implements com.inventory.service.IItemInventory {
                     ii.setStock(Integer.parseInt(stock_detail.get("stock") + ""));
                     ii.setStockShipping(Integer.parseInt(stock_detail.get("stock_shipping") + ""));
                     ii.setCreateDate(new Date());
+                    ii.setOrgId(orgId);
                     liii.add(ii);
                 }
             }
@@ -137,14 +143,14 @@ public class ItemInventoryImpl implements com.inventory.service.IItemInventory {
     }
 
     @Override
-    public void getSiHaiYouInventory(){
+    public void getSiHaiYouInventory(String userName,String userKey,String orgId){
         HttpClient httpClient= HttpClientUtil.getHttpClient();
         String xml = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n" +
                 "<soap:Envelope xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\">\n" +
                 "  <soap:Body>\n" +
                 "    <QueryInventory xmlns=\"http://www.4haiyou.com/\">\n" +
-                "      <userName>demo1@4haiyou.com</userName>\n" +
-                "      <password>"+this.md5("11111111auctivision")+"</password>\n" +
+                "      <userName>"+userName+"</userName>\n" +
+                "      <password>"+userKey+"</password>\n" +
                 "    </QueryInventory>\n" +
                 "  </soap:Body>\n" +
                 "</soap:Envelope>";
@@ -173,14 +179,15 @@ public class ItemInventoryImpl implements com.inventory.service.IItemInventory {
                     si.setIsdeleted(invent.element("IsDeleted").equals("false") ? "1" : "0");
                     si.setCreateddatetime(DateUtils.returnDate(invent.element("CreatedDatetime").getText()));
                     si.setModifieddatetime(DateUtils.returnDate(invent.element("ModifiedDatetime").getText()));
-                    si.setModifiedby(invent.element("ModifiedBy")==null?null:invent.element("ModifiedBy").getText());
+                    si.setModifiedby(invent.element("ModifiedBy") == null ? null : invent.element("ModifiedBy").getText());
                     si.setQuantity(Integer.parseInt(invent.element("Quantity").getText()));
                     si.setStatus(invent.element("Status").getText());
                     si.setAgencyid(Long.parseLong(invent.element("AgencyId").getText()));
-                    si.setAgencyname(invent.element("AgencyName")==null?null:invent.element("AgencyName").getText());
-                    si.setUnit(invent.element("Unit")==null?null:invent.element("Unit").getText());
+                    si.setAgencyname(invent.element("AgencyName") == null ? null : invent.element("AgencyName").getText());
+                    si.setUnit(invent.element("Unit") == null ? null : invent.element("Unit").getText());
                     si.setSku(invent.element("Sku").getText());
                     si.setCreateDate(new Date());
+                    si.setOrgId(orgId);
                     li.add(si);
                 }
                 this.saveShiHaiYouList(li);
@@ -191,15 +198,15 @@ public class ItemInventoryImpl implements com.inventory.service.IItemInventory {
         }
     }
     @Override
-    public List<ShihaiyouInventory> selectBySkuShiHaiYou(String sku,Long productId,String status){
+    public List<ShihaiyouInventory> selectBySkuShiHaiYou(String sku,Long productId,String status,String orgId){
         ShihaiyouInventoryExample sie = new ShihaiyouInventoryExample();
-        sie.createCriteria().andSkuEqualTo(sku).andProductidEqualTo(productId).andStatusEqualTo(status).andCreateDateBetween(DateUtils.turnToDateStart(new Date()),DateUtils.turnToDateEnd(new Date()));
+        sie.createCriteria().andSkuEqualTo(sku).andProductidEqualTo(productId).andStatusEqualTo(status).andCreateDateBetween(DateUtils.turnToDateStart(new Date()),DateUtils.turnToDateEnd(new Date())).andOrgIdEqualTo(orgId);
         return this.shihaiyouInventoryMapper.selectByExample(sie);
     }
     @Override
     public void saveShiHaiYouList(List<ShihaiyouInventory> li){
         for(ShihaiyouInventory si : li){
-            List<ShihaiyouInventory> lis = this.selectBySkuShiHaiYou(si.getSku(),si.getProductid(),si.getStatus());
+            List<ShihaiyouInventory> lis = this.selectBySkuShiHaiYou(si.getSku(),si.getProductid(),si.getStatus(),si.getOrgId());
             if(lis!=null&&lis.size()>0){
                 si.setId(lis.get(0).getId());
             }
@@ -243,7 +250,7 @@ public class ItemInventoryImpl implements com.inventory.service.IItemInventory {
     }
 
     @Override
-    public void getDeShiFangInventory(){
+    public void getDeShiFangInventory(String userName,String userKey,String orgId){
         HttpClient httpClient= HttpClientUtil.getHttpClient();
         String res="";
         try {
@@ -251,25 +258,28 @@ public class ItemInventoryImpl implements com.inventory.service.IItemInventory {
             BasicHeader head1 =  new BasicHeader("Content-Type","application/json");
             List<BasicHeader> list=new ArrayList<BasicHeader>();
             list.add(head1);
-            res = HttpClientUtil.post(httpClient,deshifang_url+ItemInventoryStatic.DESHIFANG_GETINVENTORY+"?format=json&customerId="+deshifang_customerid+"&token="+deshifang_toden+"&language=en_US","{}","utf-8",list);
+            res = HttpClientUtil.post(httpClient,deshifang_url+ItemInventoryStatic.DESHIFANG_GETINVENTORY+"?format=json&customerId="+userName+"&token="+userKey+"&language=en_US","{}","utf-8",list);
             Map jsons = JSON.parseObject(res, HashMap.class);
-            JSONArray dt = JSON.parseArray(jsons.get("data").toString());
-            List<ItemInventory> liii = new ArrayList<ItemInventory>();
-            for(int i=0;i<dt.size();i++){
-                Map stock_detail = JSON.parseObject(dt.get(i).toString(), HashMap.class);
-                ItemInventory ii = new ItemInventory();
-                ii.setDataSource("2");
-                ii.setSku(stock_detail.get("sku") + "");
-                ii.setStorageNo(stock_detail.get("skuId") + "");
-                ii.setWarehouse(stock_detail.get("warehouseCode") + "");
-                ii.setAvailStock(Integer.parseInt(stock_detail.get("actualQuantity") + ""));
-                ii.setStock(Integer.parseInt(stock_detail.get("availableQuantity") + ""));
-                ii.setStockShipping(Integer.parseInt(stock_detail.get("shippingQuantity") + ""));
-                ii.setStockPending(Integer.parseInt(stock_detail.get("pendingQuantity")+""));
-                ii.setCreateDate(new Date());
-                liii.add(ii);
+            if(jsons.get("data")!=null) {
+                JSONArray dt = JSON.parseArray(jsons.get("data").toString());
+                List<ItemInventory> liii = new ArrayList<ItemInventory>();
+                for (int i = 0; i < dt.size(); i++) {
+                    Map stock_detail = JSON.parseObject(dt.get(i).toString(), HashMap.class);
+                    ItemInventory ii = new ItemInventory();
+                    ii.setDataSource("2");
+                    ii.setSku(stock_detail.get("sku") + "");
+                    ii.setStorageNo(stock_detail.get("skuId") + "");
+                    ii.setWarehouse(stock_detail.get("warehouseCode") + "");
+                    ii.setAvailStock(Integer.parseInt(stock_detail.get("actualQuantity") + ""));
+                    ii.setStock(Integer.parseInt(stock_detail.get("availableQuantity") + ""));
+                    ii.setStockShipping(Integer.parseInt(stock_detail.get("shippingQuantity") + ""));
+                    ii.setStockPending(Integer.parseInt(stock_detail.get("pendingQuantity") + ""));
+                    ii.setCreateDate(new Date());
+                    ii.setOrgId(orgId);
+                    liii.add(ii);
+                }
+                this.saveListItemInventory(liii);
             }
-            this.saveListItemInventory(liii);
         } catch (Exception e) {
             logger.error("itemInvent11" + res,e);
         }

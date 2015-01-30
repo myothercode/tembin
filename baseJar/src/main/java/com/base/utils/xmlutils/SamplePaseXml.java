@@ -215,6 +215,16 @@ public class SamplePaseXml {
         if(lisso.size()>0){
             sd.setShippingServiceOptions(lisso);
         }
+        //不运送到的国家
+        Iterator<Element> excEl = elsd.elementIterator("ExcludeShipToLocation");
+        List<String> liex = new ArrayList<String>();
+        while(excEl.hasNext()){
+            Element els = excEl.next();
+            liex.add(els.getText());
+        }
+        if(liex.size()>0){
+            sd.setExcludeShipToLocation(liex);
+        }
         //国际运输
         Iterator<Element> iteInt = elsd.elementIterator("InternationalShippingServiceOption");
         List<InternationalShippingServiceOption> liint = new ArrayList<InternationalShippingServiceOption>();

@@ -10,13 +10,13 @@
 <html>
 <head>
 <title></title>
-<script type="text/javascript" src=<c:url value ="/js/item/shipping.js" /> ></script>
-<script type="text/javascript" src=<c:url value ="/js/item/itemAddress.js" /> ></script>
-<script type="text/javascript" src=<c:url value ="/js/item/paypal.js" /> ></script>
-<script type="text/javascript" src=<c:url value ="/js/item/returnpolicy.js" /> ></script>
-<script type="text/javascript" src=<c:url value ="/js/item/buyer.js" /> ></script>
-<script type="text/javascript" src=<c:url value ="/js/item/description.js" /> ></script>
-<script type="text/javascript" src=<c:url value ="/js/item/disprice.js" /> ></script>
+<script type="text/javascript" src=<c:url value ="/js/item/shipping.js" />${jsfileVersion} ></script>
+<script type="text/javascript" src=<c:url value ="/js/item/itemAddress.js" />${jsfileVersion} ></script>
+<script type="text/javascript" src=<c:url value ="/js/item/paypal.js" />${jsfileVersion} ></script>
+<script type="text/javascript" src=<c:url value ="/js/item/returnpolicy.js" />${jsfileVersion} ></script>
+<script type="text/javascript" src=<c:url value ="/js/item/buyer.js" />${jsfileVersion} ></script>
+<script type="text/javascript" src=<c:url value ="/js/item/description.js" />${jsfileVersion} ></script>
+<script type="text/javascript" src=<c:url value ="/js/item/disprice.js" />${jsfileVersion} ></script>
 <%--<script type="text/javascript" src=
         <c:url value="/js/ueditor/ueditor.config.js"/>></script>
 <script type="text/javascript" src=
@@ -28,9 +28,9 @@
 <script type="text/javascript" src=
         <c:url value="/js/batchAjaxUtil.js"/>></script>
 <script type="text/javascript" src=
-        <c:url value="/js/item/addItem.js"/>></script>
+        <c:url value="/js/item/addItem.js"/>${jsfileVersion}></script>
 <script type="text/javascript" src=
-        <c:url value="/js/item/addItem2.js"/>></script>
+        <c:url value="/js/item/addItem2.js"/>${jsfileVersion}></script>
 <script type="text/javascript" src=
 <c:url value="/js/table/jquery.tablednd.js"/>></script>
 
@@ -269,6 +269,7 @@
                 "<b class='new_button' style='margin: 10px;'><a href='javascript:void(0)' bsid='online' id='apicUrlsSKU_" + ebayAccount + "' onclick='selectPic(this)' style=''>选择SKU图片</a></b>" +
                 "<b class='new_button' style='margin: 10px;'><a href='javascript:void(0)' bsid='remote' id='apicUrlsOther_" + ebayAccount + "' onclick='selectPic(this)' style=''>选择外部图片</a></b>" +
                 "<b class='new_button' style='margin: 10px;'><a href='javascript:void(0)' id='apicUrlsclear_" + ebayAccount + "' onclick='clearAllPic(this)' style=''>清空所选图片</a></b>" +
+                "<b class='new_button' style='margin: 10px;'><a href='javascript:void(0)' id='apicUrlsCopy_" + ebayAccount + "' onclick='copyPic(this)' style=''>复制图片到描述</a></b>" +
                 "</div> </div> ";
         $("#showPics").append(showStr);
         /*$().image_editor.init("picUrls_" + ebayAccount); //编辑器的实例id
@@ -818,16 +819,16 @@
 
     <%--<li><a href="javascript:void(0)">预览</a></li>
     <li><a href="javascript:void(0)">检查eBay费</a></li>--%>
-    <c:if test="${item.isFlag==null}">
+    <c:if test="${item.isFlag==null||item.isFlag==''}">
         <li ><a href="javascript:void(0)" onclick="saveData(this,'all')">立即刊登</a></li>
         <li id="houtaikd"><a  href="javascript:void(0)" onclick="saveData(this,'Backgrounder')">后台刊登</a></li>
     </c:if>
     <li><a href="javascript:void(0)" onclick="saveData(this,'save')">保存范本</a></li>
-    <c:if test="${item.isFlag==null}">
+    <c:if test="${item.isFlag==null||item.isFlag==''}">
         <li><a href="javascript:void(0)" name="timeSave" onclick="selectTimer(this)">定时</a></li>
     </c:if>
     <li><a href="javascript:void(0)" onclick="saveData(this,'othersave')">另存为新范本</a></li>
-    <c:if test="${item.itemId!=null}">
+    <c:if test="${item.itemId!=null||item.isFlag==''}">
         <li><a href="javascript:void(0)" onclick="saveData(this,'updateListing')">更新在线刊登</a></li>
     </c:if>
     <li><a onclick="previewItem()" href="javascript:void(0)" target="_blank">预览</a></li>

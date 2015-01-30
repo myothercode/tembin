@@ -18,8 +18,8 @@
 <script type="text/javascript" src=<c:url value="/js/item/addItem2.js"/>></script>
 <link href=
       <c:url value="/js/gridly/css/style.css"/> rel='stylesheet' type='text/css'>
-<script src=
-        <c:url value="/js/gridly/js/jquery.sortable.js"/> type='text/javascript'></script>
+<%--<script src=
+        <c:url value="/js/gridly/js/jquery.sortable.js"/> type='text/javascript'></script>--%>
 <!-- libraries -->
 <link href=
       <c:url value="/css/lib/font-awesome.css"/> type="text/css" rel="stylesheet"/>
@@ -34,8 +34,8 @@
 <%--<link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.2/themes/base/jquery-ui.css" />--%>
 <%--<link type="text/css" rel="stylesheet" href="http://code.jquery.com/mobile/1.2.0/jquery.mobile-1.2.0.min.css" />--%>
 <%--<link rel="stylesheet" href="http://gregfranko.com/jquery.selectBoxIt.js/css/jquery.selectBoxIt.css" />--%>
-<script type="text/javascript" src=
-        <c:url value="/js/selectBoxIt/javascripts/jquery-ui.min.js"/>></script>
+<%--<script type="text/javascript" src=
+        <c:url value="/js/selectBoxIt/javascripts/jquery-ui.min.js"/>></script>--%>
 <%--<script src="http://gregfranko.com/jquery.selectBoxIt.js/js/jquery.selectBoxIt.min.js"></script>--%>
 <script type="text/javascript" src=
         <c:url value="/js/selectBoxIt/javascripts/jquery.selectBoxIt.min.js"/>></script>
@@ -44,6 +44,7 @@
 var myDescription=null;
 var isload = false;
 var isclic = false;
+var shippingService = "";
 function next(obj){
     isclic = true;
     $("#bodyid").block({ message: "<h1>正在查询数据，请等待...</h1>",css: {
@@ -106,7 +107,7 @@ function nextShows(obj){
         $(obj).text("确定");
         $("#previousShow").show();
     }else{
-        converDiv_();
+        converDivWithLoding_();
         var moreTable  = $("table[name='moreTable']").each(function(i,d){
             $(d).find("select,input").each(function(ii,dd){
                 var name_= $(dd).prop("name");
@@ -114,7 +115,7 @@ function nextShows(obj){
                 $(dd).prop("name",t+name_);
             });
         });
-
+        $("input[type='checkbox'][name='ShipToLocationInter']").attr("name","ShipToLocation");
         var interMoreTables = $("table[name='interMoreTable']").each(function(i,d){
             $(d).find("select,input[type='text']").each(function(ii,dd){
                 var name_= $(dd).prop("name");
@@ -143,6 +144,7 @@ function nextShows(obj){
                     W.editPage.close();
                 },
                     function (m, r) {
+                        $("#pop1").remove();
                         alert(r);
                         $(obj).attr("disabled",false);
                     }],{isConverPage:true}
@@ -307,11 +309,12 @@ function loadListingItem(itemId,ebayAccount,siteid){
                 //加载运输选项
                 //国内运输选项
                 if(item.shippingDetails!=null&&item.shippingDetails.shippingServiceOptions!=null){
+                    selectSite(siteid);
                     for(var i=0;i<item.shippingDetails.shippingServiceOptions.length;i++){
                         var shi = item.shippingDetails.shippingServiceOptions[i];
                         $("#shippingMore").append(createTables(shi.shippingService,shi.shippingServiceCost.value,shi.freeShipping,shi.shippingServiceAdditionalCost.value,shi.shippingSurcharge.value));
+                        $("select[name='ShippingService'][shortName='a1']").eq(i).find("option[atta='"+shi.shippingService+"']").attr("selected",true);
                     }
-                    selectSite(siteid);
                 }
                 //国际运输选项
                 if(item.shippingDetails!=null&&item.shippingDetails.internationalShippingServiceOption!=null){
@@ -327,6 +330,16 @@ function loadListingItem(itemId,ebayAccount,siteid){
                             });
                         }
                     }
+
+                }
+                //不运送到的国家列表
+                if(item.shippingDetails!=null&&item.shippingDetails.excludeShipToLocation!=null){
+                    $("select[name='selecttype']").find("option[value='2']").attr("selected", true);
+                    $("#createNoLocationList").show();
+                    var exstr = "";
+                    var exs = item.shippingDetails.excludeShipToLocation;
+                    $("#notLocationName").text(item.shippingDetails.excludeShipToLocation);
+                    $("#notLocationValue").val(item.shippingDetails.excludeShipToLocation);
                 }
                 //物品状况
                 $("select[name='ConditionID']").find("option[value='"+item.conditionID+"']").attr("selected",true);
@@ -345,6 +358,7 @@ function loadListingItem(itemId,ebayAccount,siteid){
                 //刊登天数
                 $("select[name='ListingDuration']").find("option[value='"+ListingDuration+"']").attr("selected",true);
                 $("input[name='PrivateListing']").attr("checked",PrivateListing);
+                initDraug();//初始化拖动图片
 
                 isload=true;
                 if(isclic){//如果数据加载完成前，就点击了下一步，那么关闭遮罩层，并执行下一步方法
@@ -368,7 +382,7 @@ $(document).ready(function() {
     var ebayAccount = '${ebayAccount}';
     var itemidstr= '${itemidstr}';
     loadListingItem(itemidstr,ebayAccount,'${siteid}');
-
+    selectSite('${siteid}');
     _sku = '${sku}';
     var paypal = '${item.payPalEmailAddress}';
     $("select[name='PayPalEmailAddress']").find("option[value='"+paypal+"']").attr("selected",true);
@@ -513,7 +527,7 @@ function selectType(){
 function incount(obj){
     $("#incount").text($(obj).val().length);
 }
-var shippingService = "";
+
 function selectSite(obj){
     var array = new Array();
     <%--<c:forEach var="obj" items="${litso}">
@@ -535,13 +549,13 @@ function selectSite(obj){
                 for(var i = 0;i< r.length;i++){
                     shippingService +=' <optgroup label="'+r[i].name1+'">';
                     for(var j = 0;j<r[i].dictionaries.length;j++){
-                        shippingService +='<option value="'+r[i].dictionaries[j].id+'">'+r[i].dictionaries[j].name+'</option>';
+                        shippingService +='<option value="'+r[i].dictionaries[j].id+'" atta="'+r[i].dictionaries[j].value+'">'+r[i].dictionaries[j].name+'</option>';
                     }
                     shippingService +='</optgroup>';
                 }
-                $("select[name='ShippingService'][shortName='a1']").each(function(i,d){
+                /*$("select[name='ShippingService'][shortName='a1']").each(function(i,d){
                     $(d).html(shippingService);
-                });
+                });*/
             },
                 function (m, r) {
                     alert(r);
@@ -549,7 +563,7 @@ function selectSite(obj){
     );
 }
 
-setTimeout(function(){
+/*setTimeout(function(){
     <c:forEach var="obj" items="${item.shippingDetails.shippingServiceOptions}" varStatus="ind">
     $("select[name='ShippingService'][shortName='a1']").each(function(i,d){
         if('${ind.index}'==i){
@@ -557,7 +571,7 @@ setTimeout(function(){
         }
     });
     </c:forEach>
-},500);
+},500);*/
 </script>
 <style type="text/css">
     body {
@@ -966,7 +980,7 @@ setTimeout(function(){
             </tr>
             <tr>
                 <td colspan="2">
-                    <span id="notLocationName"></span>
+                    <span id="notLocationName" style="line-height: 32px;word-break:normal; width:auto; display:block; white-space:pre-wrap;word-wrap : break-word ;overflow: hidden ;"></span>
                     <input type="hidden" name="notLocationValue" id="notLocationValue">
                     <br/>
                     <a href="javascript:void(0)" onclick="createNoLocationList()" style="display: none;" id="createNoLocationList">创建不运送地区列表</a>
@@ -992,6 +1006,12 @@ setTimeout(function(){
 <script>
     //选择不运送国家下拉列表
     function selectLocation(obj){
+        if($(obj).prop("checked")){
+            $(obj).parent().parent().find("input[name='ShipToLocation']").prop("checked",false);
+            $(obj).parent().parent().find("input[name='ShipToLocation']").attr("disabled",true);
+        }else{
+            $(obj).parent().parent().find("input[name='ShipToLocation']").attr("disabled",false);
+        }
         if($(obj).val()=="2"){
             $("#createNoLocationList").show();
         }else{
@@ -1162,7 +1182,7 @@ setTimeout(function(){
         intertable +=' <tr> ';
         intertable +=' <td align="right" style="vertical-align: top;">运到</td> ';
         intertable +=' <td> ';
-        intertable +=' <input type="checkbox" name="ShipToLocationInter" onclick="selectLocation(this)"/> 全球 <a href="javascript:void(0)" onclick="selectAllLocation(this)">选择以下所有国家和地区</a>';
+        intertable +=' <input type="checkbox" name="ShipToLocationInter"  value="Worldwide" onclick="selectLocation(this)"/> 全球 <a href="javascript:void(0)" onclick="selectAllLocation(this)">选择以下所有国家和地区</a>';
         intertable +=' </br>';
         intertable +=' <input type="checkbox" name="ShipToLocation" value="Asia"> 亚洲 ';
         intertable +=' <input type="checkbox" name="ShipToLocation" value="AU"> 澳大利亚 ';

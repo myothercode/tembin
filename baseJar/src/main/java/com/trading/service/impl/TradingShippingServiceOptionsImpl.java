@@ -111,6 +111,9 @@ public class TradingShippingServiceOptionsImpl implements com.trading.service.IT
                 if(doc.getShippingsurcharge()!=null&&doc.getShippingsurcharge()!=0){
                     sso.setShippingSurcharge(new ShippingSurcharge(tdd.getValue1(),doc.getShippingsurcharge()));
                 }
+                if(sso.getShippingServiceCost().getValue()>0||sso.getShippingServiceAdditionalCost().getValue()>0){
+                    sso.setFreeShipping(false);
+                }
                 lisso.add(sso);
             }
         }

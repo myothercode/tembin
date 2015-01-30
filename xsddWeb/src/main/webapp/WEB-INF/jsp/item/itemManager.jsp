@@ -15,7 +15,7 @@
         }
     </style>
     <title>范本列表</title>
-    <script type="text/javascript" src=<c:url value ="/js/item/itemManager.js" /> ></script>
+    <script type="text/javascript" src=<c:url value ="/js/item/itemManager.js" />${jsfileVersion} ></script>
 
     <link rel="stylesheet" type="text/css" href="<c:url value ="/js/select2/select2.css" />"/>
     <script type="text/javascript" src=<c:url value ="/js/select2/select2.min.js" /> ></script>
@@ -68,7 +68,7 @@
                     <a name="t_a" href="javascript:void(0)" onclick="selectAllData(this)" value="">
                         <span class="newusa_ici">全部</span>
                     </a>
-                    <a name="t_a" href="javascript:void(0)" onclick="chageOldDom(this)" value="sku">
+                    <%--<a name="t_a" href="javascript:void(0)" onclick="chageOldDom(this)" value="sku">
                         <span class="newusa_ici_1" >SKU</span>
                     </a>
                     <a name="t_a" href="javascript:void(0)" onclick="chageOldDom(this)" value="title">
@@ -76,10 +76,21 @@
                     </a>
                     <a name="t_a" href="javascript:void(0)" onclick="chageOldDom(this)" value="item_name">
                         <span class="newusa_ici_1" >范本名称</span>
-                    </a>
+                    </a>--%>
+                    <span id="sleBG" style="width:82px;background-position: 67px 10px;">
+                    <span id="sleHid1" style="width: 80px;">
+                    <select name="selecttype" onchange="chageOldDom(this)" class="select" style="color: #737FA7;width: 80px;float: left">
+                        <option selected="selected" value="">选择类型</option>
+                        <option value="sku">SKU</option>
+                        <option value="title">物品标题</option>
+                        <option value="item_name">范本名称</option>
+                    </select>
+                    </span>
+                    </span>
+
                     <span>
                         <input id="_selectvalue" type="text" style="width:200px;float: left"  multiple class="multiSelect">
-                        <input name="newbut" onclick="selectData()" type="button" class="key_2">
+                        <input style="display: none;" name="newbut" onclick="selectData()" type="button" class="key_2">
                     </span>
 
                 </div>
@@ -90,12 +101,12 @@
                     <a href="javascript:void(0)" onclick="selectAllData(this)" value=""><span class="newusa_ici">全部</span></a>
                     <span id="sleBG" style="width:82px;background-position: 67px 10px;">
                     <span id="sleHid" style="width: 80px;">
-                    <select name="selecttype" class="select" style="color: #737FA7;width: 80px;">
+                    <%--<select name="selecttype" class="select" style="color: #737FA7;width: 80px;">
                         <option selected="selected" value="">选择类型</option>
                         <option value="sku">SKU</option>
                         <option value="title">物品标题</option>
                         <option value="item_name">范本名称</option>
-                    </select>
+                    </select>--%>
                     </span>
                     </span>
 

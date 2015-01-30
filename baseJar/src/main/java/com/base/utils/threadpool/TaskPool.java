@@ -107,7 +107,7 @@ public class TaskPool {
                     logger.error(tname+"线程阻塞！=========");
                     return true;
                 }else if("TIMED_WAITING".equalsIgnoreCase(x)){
-                    logger.error(tname+"线程定时等待！=========");
+                    //logger.error(tname+"线程定时等待！=========");
                     return true;
                 }
                 else if("WAITING".equalsIgnoreCase(x)){

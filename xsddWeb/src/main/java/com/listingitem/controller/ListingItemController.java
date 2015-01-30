@@ -773,6 +773,13 @@ public class ListingItemController extends BaseAction {
                 this.iTradingListingData.updateTradingListingData(tld);
                 this.saveEndListingItem(res,tld.getItemId());
                 litld.add(tld);
+                TradingItemWithBLOBs tradingItemWithBLOBs = this.iTradingItem.selectByItemId(tld.getItemId());
+                if(tradingItemWithBLOBs!=null){
+                    tradingItemWithBLOBs.setIsFlag("");
+                    tradingItemWithBLOBs.setItemId("");
+                    this.iTradingItem.saveTradingItem(tradingItemWithBLOBs);
+                }
+
             }else{
                 String resStr = "";
                 if(res!=null){
@@ -1030,7 +1037,7 @@ public class ListingItemController extends BaseAction {
             }
             modelMap.put("siteid",siteid);
             List<TradingDataDictionary> litype = DataDictionarySupport.getTradingDataDictionaryByType(DataDictionarySupport.DATA_DICT_SHIPPING_TYPE,siteid);
-            List<TradingDataDictionary> li1 = new ArrayList<TradingDataDictionary>();
+            /*List<TradingDataDictionary> li1 = new ArrayList<TradingDataDictionary>();
             List<TradingDataDictionary> li2 = new ArrayList<TradingDataDictionary>();
             List<TradingDataDictionary> li3 = new ArrayList<TradingDataDictionary>();
             List<TradingDataDictionary> li4 = new ArrayList<TradingDataDictionary>();
@@ -1052,7 +1059,7 @@ public class ListingItemController extends BaseAction {
             modelMap.put("li2",li2);
             modelMap.put("li3",li3);
             modelMap.put("li4",li4);
-            modelMap.put("li5",li5);
+            modelMap.put("li5",li5);*/
 
             List<TradingDataDictionary> liinter = DataDictionarySupport.getTradingDataDictionaryByType(DataDictionarySupport.DATA_DICT_SHIPPINGINTER_TYPE);
             List<TradingDataDictionary> inter1 = new ArrayList();
@@ -1515,6 +1522,13 @@ public class ListingItemController extends BaseAction {
                     tla.setAmendType("ShippingDetails");
                     tla.setContent("修改运输详情");
                     ShippingDetails sdf = item.getShippingDetails();
+                    List<ShippingServiceOptions> liss = sdf.getShippingServiceOptions();
+                    for(ShippingServiceOptions sso:liss){
+                        sso.setShippingService(DataDictionarySupport.getTradingDataDictionaryByID(Long.parseLong(sso.getShippingService())).getValue());
+                        if(sso.getShippingSurcharge()!=null&&sso.getShippingSurcharge().getValue()==0){
+                            sso.setShippingSurcharge(null);
+                        }
+                    }
                     String nottoLocation = request.getParameter("notLocationValue");
                     if(!ObjectUtils.isLogicalNull(nottoLocation)){
                         String noLocation[] =nottoLocation.split(",");
@@ -1540,13 +1554,11 @@ public class ListingItemController extends BaseAction {
             xml = PojoXmlUtil.pojoToXml(rir);
             xml = "<?xml version=\"1.0\" encoding=\"utf-8\"?>"+xml;
             System.out.println(xml);
-
             String returnString = this.cosPostXml(xml,APINameStatic.ReviseItem);
             String ack = SamplePaseXml.getVFromXmlString(returnString,"Ack");
             if("Success".equalsIgnoreCase(ack)||"Warning".equalsIgnoreCase(ack)){
                 this.saveAmend(litla,"1");
                 this.iTradingListingData.updateTradingListingData(tld);
-
             }else{
                 this.saveAmend(litla,"0");
                 Document document= SamplePaseXml.formatStr2Doc(returnString);
@@ -1556,7 +1568,6 @@ public class ListingItemController extends BaseAction {
                 if(longMessage==null){
                     longMessage = tl.elementText("ShortMessage");
                 }
-
                 this.saveSystemLog(longMessage,"在线修改商品报错",SiteMessageStatic.LISTING_DATA_UPDATE);
                 AjaxSupport.sendFailText("fail",longMessage);
             }
@@ -1596,7 +1607,7 @@ public class ListingItemController extends BaseAction {
                 "<EndTimeFrom>"+startTime+"</EndTimeFrom>\n" +
                 "<EndTimeTo>"+endTime+"</EndTimeTo>\n" +
                 "<UserID>"+ebayName+"</UserID>\n" +
-                "<IncludeVariations>true</IncludeVariations><IncludeWatchCount>true</IncludeWatchCount>\n" +
+                "<GranularityLevel>Fine</GranularityLevel><IncludeVariations>true</IncludeVariations><IncludeWatchCount>true</IncludeWatchCount>\n" +
                 "<DetailLevel>ReturnAll</DetailLevel>\n" +
                 "</GetSellerListRequest>​";
         return colStr;

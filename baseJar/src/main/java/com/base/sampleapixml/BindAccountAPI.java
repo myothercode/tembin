@@ -88,7 +88,7 @@ public class BindAccountAPI {
                 "<EmailCopyToSender>"+addmessage.getEmailcopytosender()+"</EmailCopyToSender>" +
                 "<DisplayToPublic>"+addmessage.getDisplaytopublic()+"</DisplayToPublic>" +
                 "<RecipientID>"+addmessage.getRecipientid()+"</RecipientID>" +
-                "<Body>"+addmessage.getBody()+"</Body>" +
+                "<Body><![CDATA["+addmessage.getBody()+"]]></Body>" +
                 "<ParentMessageID>"+addmessage.getParentmessageid()+"</ParentMessageID>" +
                 "</MemberMessage>" +
                 "<ItemID>"+addmessage.getItemid()+"</ItemID>" +
@@ -100,13 +100,15 @@ public class BindAccountAPI {
     public static String getGetMyMessagesByReturnHeader(String messageID,String token){
         String xml="<?xml version=\"1.0\" encoding=\"utf-8\"?> " +
                 "<GetMyMessagesRequest xmlns=\"urn:ebay:apis:eBLBaseComponents\"> " +
-                "<Version>467</Version> " +
+                "<Version>879</Version> " +
                 "<DetailLevel>ReturnMessages</DetailLevel>" +
                 "<RequesterCredentials>" +
                 "<eBayAuthToken>"+token+"</eBayAuthToken>" +
+                //"<eBayAuthToken>AgAAAA**AQAAAA**aAAAAA**EdCjVA**nY+sHZ2PrBmdj6wVnY+sEZ2PrA2dj6AFlIWnC5iEpAidj6x9nY+seQ**blACAA**AAMAAA**CZ8RElUP/IGF0VLNusPZTJy+mEX+76qobIHfTxZYNWZXJM9zozal/wnl7E2R3DxGy0yCHOoGTActbZXK+S3w8ba6IjYmo8yK3x09WZKyTiHVIg+ya3z1O4tG5K3YUkI4sSknxMSgm8BQj7Pnt6Yf8RjZBVIYODOHGKEgZt0iEEhFojTGFkQ/aIf+49xkZ4rs2c4JIpob3varAZE57izIHRreIcn0txHbrAPV4lim7DpZkuWvcIgsd7x3W1j3Zwd1xRHxJ7CkMLOilWOPrkkgWGp5ATfCxcxmvHsg5DYoTrMH+CdvZgnj3RUJ+v8gnjweiVYhqgX9SVkWtXY0EmTbfw1wvDWvHxo7TRwDOg8k3xQGlehmn1EuOiV92uNo5eeTsYLgrctY4lh3vENdpAKAqgCro4wWXe+Wog+wBwfFDcs3o92UN+YSl6EaO4hrIex8RuEsUHP16jiiLlI0cvpFn94OKrLGK9lPofL5iXn+7u1xlEKMSrkSXJkrVQOgh0FdvjEhjQPBKV+OatrXlCXP6ym1McGA21k1ivpOHDpXau857xS/rJdtZ56/kzEKayCJ08cOxgc2XjotKx0VmdqjKDxGuiAhkCn6EipNy04V/hT6sjeuab1lnwt/TQAzq2jk52JcKd6+A+Vzql2QsQGGnEMUTPE4Y+RW/G6z4gQSDWpZeRqF7MtmFhJKE8u4tf1C0aUnWeaXLDGyxFqhPO8I3Nt3YEr4yphZVUEqnnBtmJa0QyLSKfrvAZkvt4X8qvNO</eBayAuthToken>" +
                 "</RequesterCredentials>" +
                 "<MessageIDs>" +
                 "<MessageID>"+messageID+"</MessageID>" +
+                //"<MessageID>64089757004</MessageID>"+
                 "</MessageIDs>" +
                 "</GetMyMessagesRequest> ";
         return xml;
@@ -114,7 +116,7 @@ public class BindAccountAPI {
     public static String getGetMyMessagesByReturnHeader1(String messageID,String token){
         String xml="<?xml version=\"1.0\" encoding=\"utf-8\"?> " +
                 "<GetMyMessagesRequest xmlns=\"urn:ebay:apis:eBLBaseComponents\"> " +
-                "<Version>467</Version> " +
+                "<Version>879</Version> " +
                 "<DetailLevel>ReturnMessages</DetailLevel>" +
                 "<RequesterCredentials>" +
                 "<eBayAuthToken>"+token+"</eBayAuthToken>" +
@@ -209,7 +211,7 @@ public class BindAccountAPI {
                 "<ItemID>"+map.get("itemid")+"</ItemID>" +
                 "<MemberMessage>" +
                 "<Subject>"+map.get("subject")+"</Subject>" +
-                "<Body>"+map.get("body")+"</Body>" +
+                "<Body><![CDATA["+map.get("body")+"]]></Body>" +
                 "<QuestionType>General</QuestionType>" +
                 "<RecipientID>"+map.get("buyeruserid")+"</RecipientID>" +
                 "</MemberMessage>" +

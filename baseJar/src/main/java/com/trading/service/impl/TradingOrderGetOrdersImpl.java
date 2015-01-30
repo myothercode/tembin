@@ -241,7 +241,6 @@ public class TradingOrderGetOrdersImpl implements com.trading.service.ITradingOr
         List<TradingOrderGetOrders> list=tradingOrderGetOrdersMapper.selectByExample(example);
         return list;*/
         Map map=new HashMap();
-        map.put("sendMessageTime",new Date());
         Page page=new Page();
         page.setCurrentPage(1);
         page.setPageSize(10);
@@ -259,7 +258,6 @@ public class TradingOrderGetOrdersImpl implements com.trading.service.ITradingOr
         List<TradingOrderGetOrders> list=tradingOrderGetOrdersMapper.selectByExample(example);
         return list;*/
         Map map=new HashMap();
-        map.put("sendMessageTime",new Date());
         Page page=new Page();
         page.setCurrentPage(1);
         page.setPageSize(10);
@@ -267,9 +265,14 @@ public class TradingOrderGetOrdersImpl implements com.trading.service.ITradingOr
     }
 
     @Override
-    public List<TradingOrderGetOrders> selectOrderGetOrdersByeBayAccountAndTime(String ebay, Date start,Date end) {
+    public List<TradingOrderGetOrders> selectOrderGetOrdersByeBayAccountAndTime1(String ebay, Date start, Date end) {
         TradingOrderGetOrdersExample example=new TradingOrderGetOrdersExample();
         TradingOrderGetOrdersExample.Criteria cr=example.createCriteria();
+        cr.andOrderstatusEqualTo("Completed");
+        cr.andStatusEqualTo("Complete");
+        if(start!=null&&end!=null){
+            cr.andPaidtimeBetween(start,end);
+        }
         if(ebay!=null){
             cr.andSelleruseridEqualTo(ebay);
         }else{
@@ -279,17 +282,36 @@ public class TradingOrderGetOrdersImpl implements com.trading.service.ITradingOr
             for(UsercontrollerEbayAccountExtend ebayAccountExtend:ebays){
                 ebayNames.add(ebayAccountExtend.getEbayName());
             }
-            if(ebayNames.size()>0) {
+            if(ebayNames!=null&&ebayNames.size()>0) {
                 cr.andSelleruseridIn(ebayNames);
             }else{
                 return new ArrayList<TradingOrderGetOrders>();
             }
         }
-        if(start!=null&&end!=null){
-            cr.andPaidtimeBetween(start,end);
-        }
         List<TradingOrderGetOrders> list=tradingOrderGetOrdersMapper.selectByExample(example);
         return list;
+    }
+
+    @Override
+    public List<OrderGetOrdersQuery> selectOrderGetOrdersByeBayAccountAndTime(String ebay, Date start,Date end) {
+
+        Map map=new HashMap();
+        Page page=new Page();
+        page.setCurrentPage(1);
+        page.setPageSize(10);
+        map.put("start",start);
+        map.put("end",end);
+        List<UsercontrollerEbayAccountExtend> ebays=new ArrayList<UsercontrollerEbayAccountExtend>();
+        if(ebay!=null){
+            UsercontrollerEbayAccountExtend ebay1=new UsercontrollerEbayAccountExtend();
+            ebay1.setEbayName(ebay);
+            ebays.add(ebay1);
+        }else{
+            Map ebayMap=new HashMap();
+            ebays=systemUserManagerService.queryCurrAllEbay(ebayMap);
+        }
+        map.put("ebays",ebays);
+        return orderGetOrdersMapper.selectOrderGetOrdersByeBayAccountAndTime(map,page);
     }
 
     @Override
@@ -351,6 +373,15 @@ public class TradingOrderGetOrdersImpl implements com.trading.service.ITradingOr
         TradingOrderGetOrdersExample.Criteria cr=example.createCriteria();
         cr.andLastmodifiedtimeLessThan(date);
         cr.andSelleruseridEqualTo(ebayName);
+        List<TradingOrderGetOrders> list=tradingOrderGetOrdersMapper.selectByExample(example);
+        return list;
+    }
+
+    @Override
+    public List<TradingOrderGetOrders> selectOrderGetOrdersByAutoMessageId() {
+        TradingOrderGetOrdersExample example=new TradingOrderGetOrdersExample();
+        TradingOrderGetOrdersExample.Criteria cr=example.createCriteria();
+        cr.andAutomessageIdNotEqualTo(0L);
         List<TradingOrderGetOrders> list=tradingOrderGetOrdersMapper.selectByExample(example);
         return list;
     }

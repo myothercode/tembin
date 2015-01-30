@@ -72,6 +72,8 @@
       <result column="uuid" jdbcType="VARCHAR" property="uuid" />
       <result column="updateTime" jdbcType="TIMESTAMP" property="updatetime" />
       <result column="countNum" property="countNum" jdbcType="BIGINT" />
+      <result column="totalAmount" property="totalAmount" jdbcType="VARCHAR" />
+
   </resultMap>
     <select id="selectOrderGetOrdersByGroupList" resultMap="BaseResultMap" parameterType="map">
         select OrderGetOrders.id,OrderGetOrders.cancelStatus,OrderGetOrders.orderStatus,OrderGetOrders.orderID,OrderGetOrders.itemID,OrderGetOrders.transactionID,OrderGetOrders.transactionPrice,OrderGetOrders.createdTime,OrderGetOrders.lastModifiedTime,OrderGetOrders.quantityPurchased,OrderGetOrders.sellerUserID,OrderGetOrders.status,OrderGetOrders.shipmentTrackingNumber,OrderGetOrders.shippingCarrierUsed,OrderGetOrders.buyerUserID,OrderGetOrders.buyerEmail,OrderGetOrders.title,OrderGetOrders.sKU,OrderGetOrders.comment,count(*) countNum,item.site from trading_order_get_orders OrderGetOrders
@@ -236,7 +238,7 @@
     </select>
     <select id="selectOrderGetOrdersBySendPaidMessage" resultMap="BaseResultMap" parameterType="map">
         select OrderGetOrders.* from trading_order_get_orders OrderGetOrders where 1=1
-        and OrderGetOrders.paypalFlag is not null and OrderGetOrders.shippedFlag is null
+        and OrderGetOrders.paypalFlag=1 and OrderGetOrders.shippedFlag =0
         and OrderGetOrders.autoMessage_id != 0
         <if test="sendMessageTime!=null">
             and OrderGetOrders.sendMessageTime &lt; #{sendMessageTime}
@@ -244,12 +246,29 @@
     </select>
     <select id="selectOrderGetOrdersBySendShipMessage" resultMap="BaseResultMap" parameterType="map">
         select OrderGetOrders.* from trading_order_get_orders OrderGetOrders where 1=1
-        and OrderGetOrders.paypalFlag is null and OrderGetOrders.shippedFlag is not null
+        and OrderGetOrders.paypalFlag =0 and OrderGetOrders.shippedFlag =1
         and OrderGetOrders.autoMessage_id != 0
         <if test="sendMessageTime!=null">
             and OrderGetOrders.sendMessageTime &lt; #{sendMessageTime}
         </if>
     </select>
-
-
+    <select id="selectOrderGetOrdersByeBayAccountAndTime" resultMap="BaseResultMap" parameterType="map">
+        select sum(t.amount) totalAmount from (
+         select o.orderID,(o.amountPaid) amount from trading_order_get_orders o where 1=1
+         and o.orderStatus ="Completed" and o.status="Complete"
+         <if test="start!=null">
+             and o.paidTime >= #{start}
+         </if>
+        <if test="end!=null">
+            and o.paidTime &lt; #{end}
+        </if>
+        <if test="ebays!=null">
+            and o.sellerUserID in
+            <foreach collection="ebays" item="ebay" index="index" open="(" separator="," close=")">
+                #{ebay.ebayName}
+            </foreach>
+        </if>
+        GROUP BY o.orderID,o.amountPaid
+        ) t
+    </select>
 </mapper>

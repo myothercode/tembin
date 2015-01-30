@@ -73,7 +73,7 @@ public class SynchronizeGetOrdersAccountTimerTaskRun extends BaseScheduledClass 
                 }
             }
         }else {
-            logger.error("线程编号不为0,执行====");
+            //logger.error("线程编号不为0,执行====");
         }
 
         if( MainTaskStaticParam.CATCH_OEDERACCOUNT_QUEUE.isEmpty()){return;}

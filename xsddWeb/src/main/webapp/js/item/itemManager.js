@@ -37,17 +37,18 @@ function initSearchInput(bs){
         _map={id:"sku",text:"sku"};
     }
 
-    mySelect2I([{url:_url,
-        data:{currInputName:"content"},bs:".multiSelect",multiple:false,maping:_map}]);
+    mySelect2I([{url:_url,doitAfterSelect:selectData,
+        data:{currInputName:"content"},bs:"#_selectvalue",multiple:false,maping:_map}]);
 }
 /**点击后下原来的select也做出相应的变化*/
     function chageOldDom(obj){
-    $(obj).parent().find("a[name='t_a']").each(function(i,d){
+    /*$(obj).parent().find("a[name='t_a']").each(function(i,d){
         $(d).find("span").attr("class","newusa_ici_1");
     });
     $(obj).find("span").attr("class","newusa_ici");
-    $("select[name='selecttype']").val($(obj).attr("value"));
-    initSearchInput($(obj).attr("value"));
+    $("select[name='selecttype']").val($(obj).attr("value"));*/
+
+    initSearchInput($(obj).val());
     $("input[name='_selectvalue']").val('');
 }
 
@@ -422,18 +423,37 @@ function makeOption0(json){
 /**组装操作选项*/
 function makeOption1(json){
     var hs="";
-    hs+="<li style='height:25px' onclick=editItem('"+json.id+"') value='"+json.id+"' doaction=\"look\" >编辑</li>";
-    hs+="<li style='height:25px' onclick=delItem('"+json.id+"') value='"+json.id+"' doaction=\"look\" >删除</li>";
-    hs+="<li style='height:25px' onclick=copyItem('"+json.id+"') value='"+json.id+"' doaction=\"look\" >复制</li>";
-    hs+="<li style='height:25px' onclick=renameItem('"+json.id+"') value='"+json.id+"' doaction=\"look\" >重命名</li>";
-    hs+="<li style='height:25px' onclick=toFolder('"+json.id+"') value='"+json.id+"' doaction=\"look\" >移动</li>";
-    if(json.isFlag!="Success"&&json.listingWay=="0"){
-        hs+="<li style='height:25px' onclick=selectTimer('"+json.id+"') value='"+json.id+"' doaction=\"look\" >定时刊登</li>";
+    if(json.isFlag=="Success"){
+        hs+="<li style='height:25px' onclick=editItem('"+json.id+"') value='"+json.id+"' doaction=\"look\" >编辑</li>";
+        hs+="<li style='height:25px' onclick=delItem('"+json.id+"') value='"+json.id+"' doaction=\"look\" >删除</li>";
+        hs+="<li style='height:25px' onclick=copyItem('"+json.id+"') value='"+json.id+"' doaction=\"look\" >复制</li>";
+        hs+="<li style='height:25px' onclick=renameItem('"+json.id+"') value='"+json.id+"' doaction=\"look\" >重命名</li>";
+        hs+="<li style='height:25px' onclick=toFolder('"+json.id+"') value='"+json.id+"' doaction=\"look\" >移动</li>";
+    }else{
+        if(json.listingWay=="1"){
+            hs+="<li style='height:25px' onclick=delTradingTimer('"+json.id+"') value='"+json.id+"' doaction=\"look\" >取消定时</li>";
+        }else{
+            hs+="<li style='height:25px' onclick=editItem('"+json.id+"') value='"+json.id+"' doaction=\"look\" >编辑</li>";
+            hs+="<li style='height:25px' onclick=delItem('"+json.id+"') value='"+json.id+"' doaction=\"look\" >删除</li>";
+            hs+="<li style='height:25px' onclick=copyItem('"+json.id+"') value='"+json.id+"' doaction=\"look\" >复制</li>";
+            hs+="<li style='height:25px' onclick=renameItem('"+json.id+"') value='"+json.id+"' doaction=\"look\" >重命名</li>";
+            hs+="<li style='height:25px' onclick=toFolder('"+json.id+"') value='"+json.id+"' doaction=\"look\" >移动</li>";
+            hs+="<li style='height:25px' onclick=listingItem('"+json.id+"','"+json.isFlag+"') value='"+json.id+"' doaction=\"look\" >立即刊登</li>";
+            hs+="<li style='height:25px' onclick=selectTimers('"+json.id+"') value='"+json.id+"' doaction=\"look\" >定时刊登</li>";
+        }
     }
-    hs+="<li style='height:25px' onclick=listingItem('"+json.id+"','"+json.isFlag+"') value='"+json.id+"' doaction=\"look\" >立即刊登</li>";
+    /*if(json.isFlag!="Success"&&json.listingWay=="0"){
+        hs+="<li style='height:25px' onclick=editItem('"+json.id+"') value='"+json.id+"' doaction=\"look\" >编辑</li>";
+        hs+="<li style='height:25px' onclick=delItem('"+json.id+"') value='"+json.id+"' doaction=\"look\" >删除</li>";
+        hs+="<li style='height:25px' onclick=copyItem('"+json.id+"') value='"+json.id+"' doaction=\"look\" >复制</li>";
+        hs+="<li style='height:25px' onclick=renameItem('"+json.id+"') value='"+json.id+"' doaction=\"look\" >重命名</li>";
+        hs+="<li style='height:25px' onclick=toFolder('"+json.id+"') value='"+json.id+"' doaction=\"look\" >移动</li>";
+        hs+="<li style='height:25px' onclick=selectTimers('"+json.id+"') value='"+json.id+"' doaction=\"look\" >定时刊登</li>";
+        hs+="<li style='height:25px' onclick=listingItem('"+json.id+"','"+json.isFlag+"') value='"+json.id+"' doaction=\"look\" >立即刊登</li>";
+    }
     if(json.listingWay=="1"){
         hs+="<li style='height:25px' onclick=delTradingTimer('"+json.id+"') value='"+json.id+"' doaction=\"look\" >取消定时</li>";
-    }
+    }*/
     hs+="<li style='height:25px' onclick=addRemark('"+json.id+"','"+json.remark+"') value='"+json.id+"' doaction=\"look\" >备注</li>";
     var pp={"liString":hs,"setDivStyle":"padding-top:2px;"};
     return getULSelect(pp);
@@ -704,7 +724,7 @@ function changeSelect(obj){
     }else if($(obj).val()=="remark"){
         addRemark(idStr);
     }else if($(obj).val()=="timerListingItem"){
-        selectTimer(idStr);
+        selectTimers(idStr);
     }
     $(obj).val("");
 }
@@ -874,7 +894,7 @@ function delTradingTimer(itemids){
 }
 
 var timerPage
-function selectTimer(obj){
+function selectTimers(obj){
     $("#idStr").val(obj)
     var urls = path+'/selectTimer.do';
     timerPage = openMyDialog({title: '选择定时时间',
@@ -886,7 +906,7 @@ function selectTimer(obj){
     //saveData(this,'timeSave')
 }
 //重写方法，不可改变方法名称
-function saveData(a,b){
+function saveDatas(a,b){
     var url = path+"/ajax/timerListingItem.do?id="+$("#idStr").val()+"&timerStr="+$("#timerListing").val();
     $().invoke(url, {},
         [function (m, r) {

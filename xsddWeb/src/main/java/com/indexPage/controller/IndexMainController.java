@@ -4,6 +4,7 @@ import com.base.database.trading.model.TradingGetUserCases;
 import com.base.database.trading.model.TradingMessageGetmymessage;
 import com.base.database.trading.model.TradingOrderGetOrders;
 import com.base.domains.SessionVO;
+import com.base.domains.querypojos.OrderGetOrdersQuery;
 import com.base.domains.querypojos.hicharts.HchartsIndexVO;
 import com.base.domains.querypojos.hicharts.PieVo;
 import com.base.domains.userinfo.UsercontrollerEbayAccountExtend;
@@ -165,16 +166,18 @@ public class IndexMainController extends BaseAction{
                 Date date3=DateUtils.addMonths(date,i+1);
                 Date start=DateUtils.addMonths(date, i);
                 Date end=com.base.utils.common.DateUtils.turnToDateEnd(DateUtils.addDays(date3, -1));
-                List<TradingOrderGetOrders> list=iTradingOrderGetOrders.selectOrderGetOrdersByeBayAccountAndTime(amount,start,end);
+                List<OrderGetOrdersQuery> list1=iTradingOrderGetOrders.selectOrderGetOrdersByeBayAccountAndTime(amount, start, end);
+                List<TradingOrderGetOrders> list=iTradingOrderGetOrders.selectOrderGetOrdersByeBayAccountAndTime1(amount, start, end);
                 int count=list.size();
                 Double money=0.0;
-                for(TradingOrderGetOrders order:list){
-                    String money1=order.getAmountpaid();
-                    Double money2=0.0;
-                    if(StringUtils.isNotBlank(money1)){
-                        money2=Double.valueOf(money1);
+                if(list1!=null&&list1.size()>0){
+                    OrderGetOrdersQuery query=list1.get(0);
+                    if(query!=null){
+                        String money11=query.getTotalAmount();
+                        if(StringUtils.isNotBlank(money11)){
+                            money=Double.valueOf(money11);
+                        }
                     }
-                    money=money+money2;
                 }
                 DecimalFormat formater = new DecimalFormat();
                 formater.setMaximumFractionDigits(2);
@@ -200,16 +203,18 @@ public class IndexMainController extends BaseAction{
             for(int i=0;i<15;i++){
                 Date start=DateUtils.addDays(date,i);
                 Date end=DateUtils.addDays(date1,i);
-                List<TradingOrderGetOrders> list=iTradingOrderGetOrders.selectOrderGetOrdersByeBayAccountAndTime(amount, start, end);
+                List<OrderGetOrdersQuery> list1=iTradingOrderGetOrders.selectOrderGetOrdersByeBayAccountAndTime(amount, start, end);
+                List<TradingOrderGetOrders> list=iTradingOrderGetOrders.selectOrderGetOrdersByeBayAccountAndTime1(amount, start, end);
                 int count=list.size();
                 Double money=0.0;
-                for(TradingOrderGetOrders order:list){
-                    String money1=order.getAmountpaid();
-                    Double money2=0.0;
-                    if(StringUtils.isNotBlank(money1)){
-                        money2=Double.valueOf(money1);
+                if(list1!=null&&list1.size()>0){
+                    OrderGetOrdersQuery query=list1.get(0);
+                    if(query!=null){
+                        String money11=query.getTotalAmount();
+                        if(StringUtils.isNotBlank(money11)){
+                            money=Double.valueOf(money11);
+                        }
                     }
-                    money=money+money2;
                 }
                 DecimalFormat formater = new DecimalFormat();
                 formater.setMaximumFractionDigits(2);
@@ -235,16 +240,18 @@ public class IndexMainController extends BaseAction{
             for(int i=0;i<30;i++){
                 Date start=DateUtils.addDays(date,i);
                 Date end=DateUtils.addDays(date1,i);
-                List<TradingOrderGetOrders> list=iTradingOrderGetOrders.selectOrderGetOrdersByeBayAccountAndTime(amount, start, end);
+                List<OrderGetOrdersQuery> list1=iTradingOrderGetOrders.selectOrderGetOrdersByeBayAccountAndTime(amount, start, end);
+                List<TradingOrderGetOrders> list=iTradingOrderGetOrders.selectOrderGetOrdersByeBayAccountAndTime1(amount, start, end);
                 int count=list.size();
                 Double money=0.0;
-                for(TradingOrderGetOrders order:list){
-                    String money1=order.getAmountpaid();
-                    Double money2=0.0;
-                    if(StringUtils.isNotBlank(money1)){
-                        money2=Double.valueOf(money1);
+                if(list1!=null&&list1.size()>0){
+                    OrderGetOrdersQuery query=list1.get(0);
+                    if(query!=null){
+                        String money11=query.getTotalAmount();
+                        if(StringUtils.isNotBlank(money11)){
+                            money=Double.valueOf(money11);
+                        }
                     }
-                    money=money+money2;
                 }
                 DecimalFormat formater = new DecimalFormat();
                 formater.setMaximumFractionDigits(2);

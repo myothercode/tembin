@@ -88,7 +88,7 @@ public class AutoComplementTimerTaskRun extends BaseScheduledClass implements Sc
         if(StringUtils.isNotEmpty(isRunging)){return;}
         TempStoreDataSupport.pushData("task_" + getScheduledType(), "x");
         ITaskComplement iTaskComplement = (ITaskComplement) ApplicationContextUtil.getBean(ITaskComplement.class);
-        List<TaskComplement> lildt = iTaskComplement.selectByList();
+        List<TaskComplement> lildt = iTaskComplement.selectByTaskComplement("0");
         if(lildt.size()>20){
             lildt =filterLimitList(lildt);
         }

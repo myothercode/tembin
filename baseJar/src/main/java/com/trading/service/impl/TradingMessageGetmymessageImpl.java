@@ -137,7 +137,7 @@ public class TradingMessageGetmymessageImpl implements com.trading.service.ITrad
         Map map=new HashMap();
         Page page=new Page();
         page.setCurrentPage(1);
-        page.setPageSize(10);
+        page.setPageSize(Integer.MAX_VALUE);
         return MessageGetmymessageMapper.selectByMessageGetmymessageNoReadCount(map,page);
     }
 

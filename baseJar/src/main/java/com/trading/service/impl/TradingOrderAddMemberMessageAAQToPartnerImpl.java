@@ -52,6 +52,7 @@ public class TradingOrderAddMemberMessageAAQToPartnerImpl implements com.trading
         if(messageflag!=null&&messageflag.length>0){
             cr.andMessageflagEqualTo(messageflag[0]);
         }
+        cr.andRepliedEqualTo("true");
         List<TradingOrderAddMemberMessageAAQToPartner> list=tradingOrderAddMemberMessageAAQToPartnerMapper.selectByExample(example);
         return list;
     }

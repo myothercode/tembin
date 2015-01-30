@@ -22,7 +22,7 @@ import java.util.List;
 public class CXFPostClient {
     @Value("${POSTSERVER.WS.URL}")
     private String wsurl;
-    public static final int CXF_CLIENT_CONNECT_TIMEOUT = 1 * 1000 * 60;//设置连接超时时间，单位是毫秒
+    public static final int CXF_CLIENT_CONNECT_TIMEOUT = 8 * 1000 * 60;//设置连接超时时间，单位是毫秒
     public static final int CXF_CLIENT_RECEIVE_TIMEOUT = 8 * 1000 * 60;//设置接收数据超时时间
 
 

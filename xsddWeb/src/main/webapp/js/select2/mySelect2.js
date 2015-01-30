@@ -14,9 +14,10 @@ function mySelect2I(ps){
     if(!Base.isArray(ps)){
         ps=[ps];
     };
-
     for(var i in ps){
         var targ=ps[i];
+        $(targ["bs"]).select2("destroy");
+        $(targ["bs"]).unbind();
         $(targ["bs"]).select2({
             multiple: targ["multiple"]==null?true:targ["multiple"],
             query: function (query){
@@ -61,6 +62,17 @@ function mySelect2I(ps){
                 }
             }
         });
+
+        if(targ["doitAfterSelect"]){
+            $(targ["bs"]).on("select2-close",function(event){
+                try{
+                    (targ["doitAfterSelect"])();
+                }catch (e){
+                    console.log(e)
+                }
+            });
+        }
+
     }
 
 

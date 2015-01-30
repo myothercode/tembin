@@ -682,6 +682,14 @@ public class DateUtils {
     /**两个日期之间相差多少秒date2-date1*/
     public static int secondsBetween(Date date1,Date date2){
         int i= Seconds.secondsBetween(new DateTime(date1), new DateTime(date2)).getSeconds();
+		/*long t1 = d1.getTime();
+		long t2 = d2.getTime();
+
+		long millis = t2 - t1;
+
+		long seconds = TimeUnit.MILLISECONDS.toSeconds(millis);
+
+		long days = TimeUnit.MILLISCONDS.toDays(millis);*/
         return i;
     }
 

@@ -663,11 +663,11 @@ public class TradingItemImpl implements com.trading.service.ITradingItem {
                 for(int i=0;i<content.size();i++){
                     org.jsoup.nodes.Element el = content.get(i);
                     url = el.attr("src");
-                    if(url.indexOf("blank.jpg")>0&&j<=tempicUrls.length){
+                    if(url.indexOf("blank.jpg")>0&&j<=tempicUrls.length&&j<=content.size()){
                         el.attr("src",tempicUrls[j]);
                         j++;
                     }
-                }
+            }
                 template=doc.html();
             }
             template = template.replace("{ProductDetail}",item.getDescription());
@@ -1123,7 +1123,9 @@ public class TradingItemImpl implements com.trading.service.ITradingItem {
             }
         }
         tradingItem.setId(tradingItem1.getId());
-        this.tradingItemMapper.updateByPrimaryKeySelective(tradingItem);
+        if(selectType!=null&&selectType.length>0){
+            this.tradingItemMapper.updateByPrimaryKeySelective(tradingItem);
+        }
     }
     @Override
     public void saveListingItem(Item item, KeyMoveList kml,String categoryName) throws Exception {
@@ -1650,7 +1652,7 @@ public class TradingItemImpl implements com.trading.service.ITradingItem {
                             tlu.setEbayAccountId(DataDictionarySupport.getTradingDataDictionaryByID(Long.parseLong(item.getSite())).getName1());
                             tlu.setSiteId(item.getSite());
                             this.iTradingListingPicUrl.saveListingPicUrl(tlu);
-                            PublicItemInformation itemInformationssss = this.iPublicItemInformation.selectItemInformationBySKU(tradingItem.getSku());
+                            PublicItemInformation itemInformationssss = this.iPublicItemInformation.selectItemInformationBySKU(tradingItem.getSku()==null?"null":tradingItem.getSku());
                             if(itemInformationssss!=null) {
                                 List<PublicItemPictureaddrAndAttr> lipip = this.iPublicItemPictureaddrAndAttr.selectPictureaddrAndAttrByInformationId(itemInformationssss.getId(),"picture");
                                 if(lipip==null||(lipip!=null&&lipip.size()<picurl.size())){
@@ -2124,6 +2126,7 @@ public class TradingItemImpl implements com.trading.service.ITradingItem {
             tradingItem.setEbayAccount(ebayaccount);
             tradingItem.setItemId(null);
             tradingItem.setIsFlag(null);
+            tradingItem.setListingWay("0");
             tradingItem.setItemName(tradingItem.getItemName()+"_Copy");
             this.saveTradingItem(tradingItem);
 

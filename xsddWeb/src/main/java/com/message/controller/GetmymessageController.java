@@ -86,8 +86,9 @@ public class GetmymessageController extends BaseAction{
     public ModelAndView MessageGetmymessageList(HttpServletRequest request,HttpServletResponse response,ModelMap modelMap){
         List<MessageGetmymessageQuery> list=iTradingMessageGetmymessage.selectByMessageGetmymessageNoReadCount();
         if(list!=null&&list.size()>0){
-            modelMap.put("noReadNumber",list.get(0).getCountNum());
+            modelMap.put("noReadNumber",list.size());
         }
+
         return forword("MessageGetmymessage/MessageGetmymessageList",modelMap);
     }
     @RequestMapping("/addComment.do")
@@ -233,9 +234,9 @@ public class GetmymessageController extends BaseAction{
             }
         }
         List<MessageGetmymessageQuery> list=iTradingMessageGetmymessage.selectByMessageGetmymessageNoReadCount();
-        Long countNum=0L;
+        Integer countNum=0;
         if(list!=null&&list.size()>0){
-            countNum=list.get(0).getCountNum();
+            countNum=list.size();
         }
         Map<String,String> map=new HashMap<String, String>();
         map.put("message","已标记为已读");
@@ -259,9 +260,9 @@ public class GetmymessageController extends BaseAction{
             iTradingMessageGetmymessage.saveMessageGetmymessage(message);
         }
         List<MessageGetmymessageQuery> list=iTradingMessageGetmymessage.selectByMessageGetmymessageNoReadCount();
-        Long countNum=0L;
+        Integer countNum=0;
         if(list!=null&&list.size()>0){
-            countNum=list.get(0).getCountNum();
+            countNum=list.size();
         }
         AjaxSupport.sendSuccessText("",countNum);
     }
@@ -405,6 +406,16 @@ public class GetmymessageController extends BaseAction{
             String text=message.getTextHtml();
             if(StringUtils.isNotBlank(text)) {
                 text = StringEscapeUtils.unescapeHtml(text);
+                if(StringUtils.isNotBlank(text)){
+                   /* text=text.replace("&lt;![CDATA["," ");
+                    text=text.replace("]]&gt;"," ");
+                    text=text.replace("<![CDATA[ "," ");
+                    text=text.replace("]]>"," ");*/
+                    text = StringUtils.removeStart(text, "&lt;![CDATA[");
+                    text = StringUtils.removeStart(text, "<![CDATA[");
+                    text = StringUtils.removeEnd(text, "]]&gt;");
+                    text = StringUtils.removeEnd(text, "]]>");
+                }
                 List<TradingOrderAddMemberMessageAAQToPartner> addMessages3 = new ArrayList<TradingOrderAddMemberMessageAAQToPartner>();
                 if (!"eBay".equals(message.getSender())) {
                     List<String> bodys = HtmlUtil.getByerMessageFromXML(text);
@@ -619,6 +630,7 @@ public class GetmymessageController extends BaseAction{
     @AvoidDuplicateSubmission(needSaveToken = true)
     public ModelAndView viewTemplateInitTable(HttpServletRequest request,HttpServletResponse response,@ModelAttribute( "initSomeParmMap" )ModelMap modelMap) throws Exception {
         String messageID=request.getParameter("messageID");
+        String sender=request.getParameter("sender");
         Map map=new HashMap();
         List<UsercontrollerEbayAccountExtend> ebays = systemUserManagerService.queryCurrAllEbay(map);
         if(!StringUtils.isNotBlank(messageID)){
@@ -627,7 +639,7 @@ public class GetmymessageController extends BaseAction{
         Map m=new HashMap();
         m.put("messageID",messageID);
         m.put("ebays",ebays);
-
+        m.put("sender",sender);
         List<MessageGetmymessageQuery> messages=iTradingMessageGetmymessage.selectMessageGetmymessageBySender(m);
             List<TradingOrderAddMemberMessageAAQToPartner> addMessages=new ArrayList<TradingOrderAddMemberMessageAAQToPartner>();
             List<TradingMessageGetmymessage> messages1=new ArrayList<TradingMessageGetmymessage>();
@@ -651,6 +663,12 @@ public class GetmymessageController extends BaseAction{
                 String text=message.getTextHtml();
                 if(StringUtils.isNotBlank(text)){
                     text=StringEscapeUtils.unescapeHtml(text);
+                    if(StringUtils.isNotBlank(text)){
+                        text=text.replace("&lt;![CDATA["," ");
+                        text=text.replace("]]&gt;"," ");
+                        text=text.replace("<![CDATA[ "," ");
+                        text=text.replace("]]>"," ");
+                    }
                     List<TradingOrderAddMemberMessageAAQToPartner> addMessages3=new ArrayList<TradingOrderAddMemberMessageAAQToPartner>();
                     if(!"eBay".equals(message.getSender())){
                         List<String> bodys=HtmlUtil.getByerMessageFromXML(text);
@@ -673,7 +691,7 @@ public class GetmymessageController extends BaseAction{
                             addMessages3.add(partner);
                         }
                     }else{
-                        org.jsoup.nodes.Document doc = org.jsoup.Jsoup.parse(text);
+                        /*org.jsoup.nodes.Document doc = org.jsoup.Jsoup.parse(text);
                         Element div=doc.getElementById("SingleItemCTA");
                         Boolean ebayFlag=false;
                         if(div!=null){
@@ -694,16 +712,16 @@ public class GetmymessageController extends BaseAction{
                                 }
                             }
                         }
-                        if(!ebayFlag){
+                        if(!ebayFlag){*/
                             TradingOrderAddMemberMessageAAQToPartner partner=new TradingOrderAddMemberMessageAAQToPartner();
                             partner.setSender(message.getSender());
                             partner.setSubject(message.getSubject());
                             partner.setRecipientid(message.getRecipientuserid());
                             partner.setCreateTime(message.getReceivedate());
                             partner.setItemid(message.getItemid());
-                            partner.setBody(message.getSubject());
+                            partner.setBody(text);
                             addMessages3.add(partner);
-                        }
+                     /*   }*/
                     }
                     Object[] addMessages3s=addMessages3.toArray();
                     for(int i=addMessages3s.length-1;i>=0;i--){

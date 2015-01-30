@@ -42,9 +42,8 @@
                 W.refreshTable();
             }*/
             var messageID="${messageID}";
-
             if(messageID&&messageID!=""){
-                var sender="${message.sender}";
+                var sender="${sender}";
                 var url=path+"/message/ajax/updateReadStatus.do?messageid="+messageID+"&sender="+sender;
                 $().invoke(url,null,
                         [function(m,r){
@@ -183,6 +182,8 @@
             if(!$("#sendForm").validationEngine("validate")){
                 return;
             }
+            var text=$("#textarea").val();
+
             var url=path+"/order/apiGetOrdersSendMessage.do?flag=${flag}&messageID=${messageID}&parentMessageID=${parentMessageID}";
             var data=$("#sendForm").serialize();
             $().invoke(url,data,
@@ -207,6 +208,7 @@
                         "<div class=\"dpan\"></div>";
                         $("#add").append(div);
                         document.getElementById("textarea").innerHTML="";
+                        W.OrderGetOrders.close();
                         Base.token;
                     },
                         function(m,r){
@@ -342,6 +344,9 @@
                     }]
         );
     }
+    function lianjieItemid(itemid){
+        window.open(serviceItemUrl+itemid+"");
+    }
     </script>
     <style>
         .table-a table{border:1px solid rgba(0, 0, 0, 0.23)
@@ -374,7 +379,7 @@
             <input type="hidden" name="orderId" id="paypal" value="${order.orderid}">
         </c:if>
         <c:if test="${flag=='false'}">
-            ${message.sender}</span> [来自eBay账号：${message.recipientuserid} 的买家]
+            ${message.sender}</span> [来自eBay账号：${message.recipientuserid} 的买家]&nbsp;&nbsp;物品号:<a href="javascript:void(0);" onclick="lianjieItemid('${message.itemid}');">${message.itemid}</a>
             <input type="hidden" name="orderId" id="paypal" value="">
         </c:if>
         </td>
@@ -667,6 +672,7 @@
                         </c:if>
                     </p>
                 <c:forEach items="${addMessage1}" var="addMessage">
+                    <c:if test="${addMessage.sender!='eBay'}">
                     <c:if test="${addMessage.sender==sender}">
                         <p class="user"></p>
                         <div class="user_co">
@@ -696,6 +702,18 @@
                                 </c:if>
                             </ul>
                             <div class="admin_co_2"></div>
+                        </div>
+                        <div class="dpan"></div>
+                    </c:if>
+                    </c:if>
+                    <c:if test="${addMessage.sender=='eBay'}">
+                        <p class="user"></p>
+                        <div class="user_co">
+                            <div class="user_co_1"></div>
+                            <ul style="width: 620px;"><br/> ${addMessage.body}
+                                <span></span>
+                            </ul>
+                            <div class="user_co_2"></div>
                         </div>
                         <div class="dpan"></div>
                     </c:if>

@@ -17,17 +17,17 @@ public interface IItemInventory {
 
     void saveListItemInventory(List<ItemInventory> liii);
 
-    void getChuKouYiInventory();
+    void getChuKouYiInventory(String userName,String userKey,String orgId);
 
-    void getSiHaiYouInventory();
+    void getSiHaiYouInventory(String userName,String userKey,String orgId);
 
-    List<ShihaiyouInventory> selectBySkuShiHaiYou(String sku, Long productId, String status);
+    List<ShihaiyouInventory> selectBySkuShiHaiYou(String sku, Long productId, String status,String orgId);
 
     void saveShiHaiYouList(List<ShihaiyouInventory> li);
 
     void saveShiHaiYouData(ShihaiyouInventory shihaiyouInventory);
 
-    void getDeShiFangInventory();
+    void getDeShiFangInventory(String userName,String userKey,String orgId);
 
     List<ItemInventoryQuery> selectBySku(Map map, Page page);
 
